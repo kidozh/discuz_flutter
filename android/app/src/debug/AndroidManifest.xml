@@ -1,0 +1,11 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.kidozh.discuz_flutter">
+    <!-- Flutter needs it to communicate with the running application
+         to allow setting breakpoints, to provide hot reload, etc.
+    -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application android:usesCleartextTraffic="true">
+        <meta-data android:name="io.flutter.network-policy" android:resource="@xml/network_security_config"/>
+    </application>
+</manifest>
