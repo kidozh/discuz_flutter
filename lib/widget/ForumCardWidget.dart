@@ -2,6 +2,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/User.dart';
+import 'package:discuz_flutter/page/DisplayForumPage.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:flutter/material.dart';
 
@@ -9,8 +11,10 @@ import 'package:flutter/material.dart';
 class ForumCardWidget extends StatelessWidget{
 
   Forum _forum;
+  Discuz _discuz;
+  User? _user;
 
-  ForumCardWidget(this._forum);
+  ForumCardWidget(this._discuz,this._user,this._forum);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +27,12 @@ class ForumCardWidget extends StatelessWidget{
       ),
       title: Text(_forum.name),
       subtitle: Text(_forum.description),
-      dense: true,
+      onTap: () async{
+        await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => DisplayForumPage(discuz: _discuz, user: _user, fid: _forum.getFid(), key: Key("LoginPage"),))
+        );
+      },
     );
   }
 

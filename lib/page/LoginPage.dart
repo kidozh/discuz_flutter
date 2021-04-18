@@ -180,7 +180,9 @@ class _LoginFormFieldState
               if (error.isNotEmpty)
                 Column(
                   children: [
-                    ErrorCard("发生错误", error),
+                    ErrorCard("发生错误", error,(){
+                      _verifyAccountAndPassword();
+                    }),
                   ],
                 ),
 

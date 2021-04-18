@@ -14,6 +14,8 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:form_validator/form_validator.dart';
 
 class AddDiscuzPage extends StatelessWidget {
+  AddDiscuzPage({Key? key}):super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,6 +27,7 @@ class AddDiscuzPage extends StatelessWidget {
 }
 
 class AddDiscuzForumFieldStatefulWidget extends StatefulWidget {
+  AddDiscuzForumFieldStatefulWidget({Key? key}):super(key: key);
   @override
   _AddDiscuzFormFieldState createState() {
     // TODO: implement createState
@@ -135,7 +138,9 @@ class _AddDiscuzFormFieldState
               if (error.isNotEmpty)
                 Column(
                   children: [
-                    ErrorCard("发生错误", error),
+                    ErrorCard("发生错误", error,(){
+                      _checkApiAvailable();
+                    }),
                   ],
                 ),
               ButtonBar(

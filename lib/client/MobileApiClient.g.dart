@@ -119,6 +119,37 @@ class _MobileApiClient implements MobileApiClient {
     return value;
   }
 
+  @override
+  Future<DisplayForumResult> displayForumResult(fid, page) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'fid': fid, r'page': page};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<DisplayForumResult>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options,
+                    '/api/mobile/index.php?version=4&module=forumdisplay',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = DisplayForumResult.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<String> displayForumRaw(fid, page) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'fid': fid, r'page': page};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
+            method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+        .compose(
+            _dio.options, '/api/mobile/index.php?version=4&module=forumdisplay',
+            queryParameters: queryParameters, data: _data)
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

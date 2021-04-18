@@ -17,5 +17,17 @@ class BaseResult{
     @JsonKey(required: false)
     String? error;
 
+    String? getErrorString(){
+        if(error!=null){
+            return error!;
+        }
+        else if(errorResult!=null){
+            return "${errorResult!.content} (${errorResult!.key})";
+        }
+        else{
+            return null;
+        }
+    }
+
 
 }

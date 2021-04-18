@@ -1,4 +1,7 @@
 import 'dart:developer';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
 
 import 'package:discuz_flutter/page/AddDiscuzPage.dart';
 import 'package:discuz_flutter/page/LoginPage.dart';
@@ -10,6 +13,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'entity/Discuz.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:discuz_flutter/generated/l10n.dart';
 
 void main() {
   runApp(MyApp());
@@ -22,7 +27,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: GlobalTheme.getThemeData(),
-      home: MyHomePage(title: '谈聊'),
+      home: MyHomePage(title: "谈坛"),
+      // localization
+      localizationsDelegates: [
+        S.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: S.delegate.supportedLocales,
+      builder: EasyLoading.init(),
     );
   }
 }
@@ -106,7 +120,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(S.of(context).appName),
+        centerTitle: true,
       ),
       drawer: Drawer(
         child: ListView(

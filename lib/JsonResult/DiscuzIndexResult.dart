@@ -90,18 +90,18 @@ class ForumPartition{
 
   List<Forum> getForumList(List<Forum> forumList){
     List<Forum> subforumList = [];
-    //log("Get ${forumIdList} from ${forumList}");
+
     for(var forumId in forumIdList){
-      log("fid ${forumId}");
+
       for(Forum eachForum in forumList){
-        //log("searched fid ${eachForum.fid} ${eachForum.name}");
+
         if(eachForum.fid == forumId){
           subforumList.add(eachForum);
           break;
         }
       }
     }
-    // log("Get ${subforumList} length ${subforumList.length}");
+
     return subforumList;
   }
 }
