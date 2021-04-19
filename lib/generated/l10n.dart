@@ -1216,6 +1216,16 @@ class S {
       args: [],
     );
   }
+
+  /// `View a thread`
+  String get viewThreadTitle {
+    return Intl.message(
+      'View a thread',
+      name: 'viewThreadTitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

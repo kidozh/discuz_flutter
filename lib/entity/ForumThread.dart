@@ -1,3 +1,4 @@
+import 'package:discuz_flutter/converter/SecondToDateTimeConverter.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'ForumThread.g.dart';
@@ -48,10 +49,9 @@ class ForumThread{
   @JsonKey(name: "replycredit")
   String replyCredit = "0";
   @JsonKey(name: "dbdateline")
-  String dbdatelineMinutes = "0";
-  DateTime getPublishedTime(){
-    return DateTime.fromMillisecondsSinceEpoch(int.parse(dbdatelineMinutes) * 1000);
-  }
+  @SecondToDateTimeConverter()
+  DateTime dbdatelineMinutes = DateTime.now();
+
   @JsonKey(name:"dblastpost")
   String dblastpostMinutes = "0";
   DateTime getUpdatedTime(){

@@ -435,7 +435,7 @@ packages:
     source: hosted
     version: "4.0.1"
   json_serializable:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: json_serializable
       url: "https://pub.flutter-io.cn"
@@ -916,7 +916,7 @@ packages:
     source: hosted
     version: "2.0.0"
   webview_flutter:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: webview_flutter
       url: "https://pub.flutter-io.cn"

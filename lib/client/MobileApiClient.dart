@@ -2,6 +2,7 @@ import 'package:discuz_flutter/JsonResult/CheckResult.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/JsonResult/LoginResult.dart';
+import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:dio/dio.dart' hide Headers;
 import 'package:retrofit/retrofit.dart';
@@ -56,6 +57,12 @@ abstract class MobileApiClient {
 
   @GET("/api/mobile/index.php?version=4&module=forumdisplay")
   Future<String> displayForumRaw(@Query("fid") String fid,@Query("page") int page);
+
+  @GET("/api/mobile/index.php?version=4&module=viewthread")
+  Future<ViewThreadResult> viewThreadResult(@Query("tid") int tid,@Query("page") int page);
+
+  @GET("/api/mobile/index.php?version=4&module=viewthread")
+  Future<String> viewThreadRaw(@Query("tid") int tid,@Query("page") int page);
 
 
 }

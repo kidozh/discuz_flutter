@@ -150,6 +150,37 @@ class _MobileApiClient implements MobileApiClient {
     return value;
   }
 
+  @override
+  Future<ViewThreadResult> viewThreadResult(tid, page) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'tid': tid, r'page': page};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ViewThreadResult>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options,
+                    '/api/mobile/index.php?version=4&module=viewthread',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ViewThreadResult.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<String> viewThreadRaw(tid, page) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'tid': tid, r'page': page};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
+            method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+        .compose(
+            _dio.options, '/api/mobile/index.php?version=4&module=viewthread',
+            queryParameters: queryParameters, data: _data)
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

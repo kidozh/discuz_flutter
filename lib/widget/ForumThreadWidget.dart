@@ -8,6 +8,7 @@ import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/DisplayForumPage.dart';
+import 'package:discuz_flutter/page/ViewThreadPage.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:flutter/material.dart';
@@ -62,11 +63,17 @@ class ForumThreadWidget extends StatelessWidget{
             style: DefaultTextStyle.of(context).style,
             children: <TextSpan>[
               TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
-              TextSpan(text: timeago.format(_forumThread.getPublishedTime(),locale: locale.scriptCode)),
+              TextSpan(text: timeago.format(_forumThread.dbdatelineMinutes,locale: locale.scriptCode)),
             ],
           ),
         ),
         trailing: getTailingWidget(),
+        onTap: () async {
+          await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ViewThreadPage(discuz: _discuz, user: _user, tid: _forumThread.getTid(), key: UniqueKey(),))
+          );
+        },
 
 
       ),

@@ -41,11 +41,11 @@ class ForumPartitionWidget extends StatelessWidget{
           ),
 
           GridView.builder(
-
+              physics: new NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: orientation == Orientation.portrait ? 2 : 3,
-                childAspectRatio: 3
+                  childAspectRatio: orientation == Orientation.portrait ? 2 : 3,
 
               ),
               itemCount: _subForumList.length,

@@ -136,6 +136,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vertical" : MessageLookupByLibrary.simpleMessage("Vertical"),
     "vibration" : MessageLookupByLibrary.simpleMessage("vibration"),
     "vibrationDescribe" : MessageLookupByLibrary.simpleMessage("Triggered vibration feedback"),
+    "viewThreadTitle" : MessageLookupByLibrary.simpleMessage("View a thread"),
     "weiXinPay" : MessageLookupByLibrary.simpleMessage("WeiXin Pay"),
     "welcomeToSecondFloor" : MessageLookupByLibrary.simpleMessage("Welcome to second floor")
   };

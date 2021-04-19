@@ -136,6 +136,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vertical" : MessageLookupByLibrary.simpleMessage("垂直"),
     "vibration" : MessageLookupByLibrary.simpleMessage("震动"),
     "vibrationDescribe" : MessageLookupByLibrary.simpleMessage("触发震动反馈"),
+    "viewThreadTitle" : MessageLookupByLibrary.simpleMessage("查看帖子"),
     "weiXinPay" : MessageLookupByLibrary.simpleMessage("微信钱包"),
     "welcomeToSecondFloor" : MessageLookupByLibrary.simpleMessage("欢迎来到二楼")
   };

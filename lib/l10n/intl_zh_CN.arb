@@ -115,5 +115,6 @@
   "bobMinionDescribe": "可爱的小黄人",
   "anonymous": "未知",
   "publishAt": " 发帖于 ",
-  "forumDisplayTitle": "显示板块"
+  "forumDisplayTitle": "显示板块",
+  "viewThreadTitle": "查看帖子"
 }

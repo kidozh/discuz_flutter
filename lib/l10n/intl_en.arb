@@ -115,5 +115,6 @@
   "bobMinionDescribe": "Cute yellow Minions",
   "anonymous": "A",
   "publishAt": " published at ",
-  "forumDisplayTitle": "Display a forum"
+  "forumDisplayTitle": "Display a forum",
+  "viewThreadTitle": "View a thread"
 }

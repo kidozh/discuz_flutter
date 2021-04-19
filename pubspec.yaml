@@ -47,13 +47,14 @@ dependencies:
   flutter_html: ^2.0.0-nullsafety.0
   flutter_spinkit: any
   flutter_easyloading: ^3.0.0
+  json_serializable: ^4.1.0
+  webview_flutter: ^2.0.4
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: any
-  json_serializable: any
   retrofit_generator: any
   floor_generator: ^1.0.1
 

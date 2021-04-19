@@ -2,15 +2,17 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:discuz_flutter/JsonResult/CheckResult.dart';
-import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
+import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/ForumThread.dart';
+import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
+import 'package:discuz_flutter/widget/PostWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -22,55 +24,54 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 
-class DisplayForumPage extends StatelessWidget {
+class ViewThreadPage extends StatelessWidget {
   late final Discuz discuz;
   late final User? user;
-  int fid = 0;
+  int tid = 0;
 
-  DisplayForumPage(
-      {Key? key, required this.discuz, this.user, required this.fid})
+  ViewThreadPage(
+      {Key? key, required this.discuz, this.user, required this.tid})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(S.of(context).forumDisplayTitle),
+          title: Text(S.of(context).viewThreadTitle),
           centerTitle: true,
         ),
-        body: DisplayForumStatefulWidget(
-            key: this.key, discuz: discuz, user: user, fid: fid));
+        body: ViewThreadStatefulWidget(
+            key: this.key, discuz: discuz, user: user, tid: tid));
   }
 }
 
-class DisplayForumStatefulWidget extends StatefulWidget {
+class ViewThreadStatefulWidget extends StatefulWidget {
   late final Discuz discuz;
   late final User? user;
-  int fid = 0;
+  int tid = 0;
 
-  DisplayForumStatefulWidget(
-      {Key? key, required this.discuz, this.user, required this.fid})
+  ViewThreadStatefulWidget(
+      {Key? key, required this.discuz, this.user, required this.tid})
       : super(key: key);
 
   @override
-  _DisplayForumState createState() {
+  _ViewThreadState createState() {
     // TODO: implement createState
-    return _DisplayForumState(this.discuz, this.user, this.fid);
+    return _ViewThreadState(this.discuz, this.user, this.tid);
   }
 }
 
-class _DisplayForumState extends State<DisplayForumStatefulWidget> {
-  DisplayForumResult? _displayForumResult = null;
+class _ViewThreadState extends State<ViewThreadStatefulWidget> {
+  ViewThreadResult? _ViewThreadResult = null;
   DiscuzError? _error = null;
-  bool _isLoading = false;
-  List<ForumThread> _forumThreadList = [];
+  List<Post> _postList = [];
   int _page = 1;
 
   late final Discuz discuz;
   late final User? user;
-  int fid = 0;
+  int tid = 0;
 
-  _DisplayForumState(this.discuz, this.user, this.fid);
+  _ViewThreadState(this.discuz, this.user, this.tid);
 
   late EasyRefreshController _controller;
   late ScrollController _scrollController;
@@ -104,7 +105,7 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
     super.initState();
     _controller = EasyRefreshController();
     _scrollController = ScrollController();
-    _invalidateContent();
+    _loadForumContent();
   }
 
   void _invalidateContent() {
@@ -119,23 +120,28 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
     log("Base url ${discuz.baseURL} ${_page}");
     final dio = Dio();
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
-    setState(() {
-      _isLoading = true;
+
+
+    client.viewThreadRaw(tid, _page).then((value) {
+
+      log(value.toString());
+      // convert string to json
+      Map<String, dynamic> resultJson = jsonDecode(value);
+      ViewThreadResult result = ViewThreadResult.fromJson(resultJson);
     });
 
-    client.displayForumResult(fid.toString(), _page).then((value) {
+    client.viewThreadResult(tid, _page).then((value) {
       setState(() {
-        _displayForumResult = value;
+        _ViewThreadResult = value;
         _error = null;
         if (_page == 1) {
-          _forumThreadList = value.discuzIndexVariables.forumThreadList;
+          _postList = value.threadVariables.postList;
         } else {
-          _forumThreadList.addAll(value.discuzIndexVariables.forumThreadList);
-          _forumThreadList = _forumThreadList;
+          _postList.addAll(value.threadVariables.postList);
+          _postList = _postList;
         }
-        _page += 1;
       });
-
+      _page += 1;
 
       if (!_enableControlFinish) {
         _controller.resetLoadState();
@@ -144,8 +150,8 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
       // check for loaded all?
       if (!_enableControlFinish) {
         _controller.finishLoad(
-            noMore: _forumThreadList.length >=
-                value.discuzIndexVariables.forum.getThreadCount());
+            noMore: _postList.length >=
+                value.threadVariables.threadInfo.replies);
       }
 
       if (value.getErrorString() != null) {
@@ -163,7 +169,7 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
         });
       }
 
-      log("set successful result ${_displayForumResult} ${_forumThreadList.length}");
+      log("set successful result ${_ViewThreadResult} ${_postList.length}");
     }).catchError((onError) {
       log(onError);
       EasyLoading.showError('${onError}');
@@ -288,18 +294,15 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    log("${_forumThreadList[index].subject} ${_forumThreadList}");
                     return Column(
                       children: [
-                        ForumThreadWidget(
-                            discuz, user, _forumThreadList[index]),
+                        PostWidget(
+                            discuz, user, _postList[index]),
                         Divider()
                       ],
                     );
-                    return ForumThreadWidget(
-                        discuz, user, _forumThreadList[index]);
                   },
-                  childCount: _forumThreadList.length,
+                  childCount: _postList.length,
                 ),
               ),
             ],

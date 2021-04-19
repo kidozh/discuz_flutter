@@ -26,7 +26,9 @@ class ForumCardWidget extends StatelessWidget{
         errorWidget: (context, url, error) => Icon(Icons.forum_outlined),
       ),
       title: Text(_forum.name),
-      subtitle: Text(_forum.description),
+      subtitle: Expanded(
+        child: Text(_forum.description),
+      ),
       onTap: () async{
         await Navigator.push(
             context,
