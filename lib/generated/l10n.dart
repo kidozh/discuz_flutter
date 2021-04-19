@@ -1226,6 +1226,56 @@ class S {
       args: [],
     );
   }
+
+  /// `# {pos}`
+  String postPosition(Object pos) {
+    return Intl.message(
+      '# $pos',
+      name: 'postPosition',
+      desc: '',
+      args: [pos],
+    );
+  }
+
+  /// `Index`
+  String get index {
+    return Intl.message(
+      'Index',
+      name: 'index',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dashboard`
+  String get dashboard {
+    return Intl.message(
+      'Dashboard',
+      name: 'dashboard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Notification`
+  String get notification {
+    return Intl.message(
+      'Notification',
+      name: 'notification',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add a new Discuz! forum`
+  String get addNewDiscuz {
+    return Intl.message(
+      'Add a new Discuz! forum',
+      name: 'addNewDiscuz',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -62,7 +62,7 @@ class ViewThreadStatefulWidget extends StatefulWidget {
 }
 
 class _ViewThreadState extends State<ViewThreadStatefulWidget> {
-  ViewThreadResult? _ViewThreadResult = null;
+  ViewThreadResult _viewThreadResult = ViewThreadResult();
   DiscuzError? _error = null;
   List<Post> _postList = [];
   int _page = 1;
@@ -122,17 +122,17 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
 
-    // client.viewThreadRaw(tid, _page).then((value) {
-    //
-    //   log(value.toString());
-    //   // convert string to json
-    //   Map<String, dynamic> resultJson = jsonDecode(value);
-    //   ViewThreadResult result = ViewThreadResult.fromJson(resultJson);
-    // });
+    client.viewThreadRaw(tid, _page).then((value) {
+
+      log(value.toString());
+      // convert string to json
+      Map<String, dynamic> resultJson = jsonDecode(value);
+      ViewThreadResult result = ViewThreadResult.fromJson(resultJson);
+    });
 
     client.viewThreadResult(tid, _page).then((value) {
       setState(() {
-        _ViewThreadResult = value;
+        _viewThreadResult = value;
         _error = null;
         if (_page == 1) {
           _postList = value.threadVariables.postList;
@@ -169,7 +169,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
         });
       }
 
-      log("set successful result ${_ViewThreadResult} ${_postList.length}");
+      log("set successful result ${_viewThreadResult} ${_postList.length}");
     }).catchError((onError) {
       log(onError);
       EasyLoading.showError('${onError}');
@@ -297,8 +297,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
                     return Column(
                       children: [
                         PostWidget(
-                            discuz, user, _postList[index]),
-                        Divider()
+                            discuz, user, _postList[index],_viewThreadResult.threadVariables.threadInfo.authorId),
                       ],
                     );
                   },

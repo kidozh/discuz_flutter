@@ -116,5 +116,15 @@
   "anonymous": "A",
   "publishAt": " published at ",
   "forumDisplayTitle": "Display a forum",
-  "viewThreadTitle": "View a thread"
+  "viewThreadTitle": "View a thread",
+  "postPosition": "# {pos}",
+  "@postPosition": {
+    "placeholders": {
+      "pos": {}
+    }
+  },
+  "index": "Index",
+  "dashboard": "Dashboard",
+  "notification": "Notification",
+  "addNewDiscuz": "Add a new Discuz! forum"
 }

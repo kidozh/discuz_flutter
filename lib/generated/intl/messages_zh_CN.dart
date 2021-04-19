@@ -19,9 +19,12 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'zh_CN';
 
+  static m0(pos) => "第${pos}层";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
     "about" : MessageLookupByLibrary.simpleMessage("关于"),
+    "addNewDiscuz" : MessageLookupByLibrary.simpleMessage("添加一个论坛"),
     "aliPay" : MessageLookupByLibrary.simpleMessage("支付宝"),
     "anonymous" : MessageLookupByLibrary.simpleMessage("未知"),
     "appName" : MessageLookupByLibrary.simpleMessage("谈坛"),
@@ -48,6 +51,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "controlFinishDescribe" : MessageLookupByLibrary.simpleMessage("使用控制器结束异步任务"),
     "cupertinoDescribe" : MessageLookupByLibrary.simpleMessage("ios风格"),
     "customScrollViewDescribe" : MessageLookupByLibrary.simpleMessage("带头部折叠的列表，监听器示例"),
+    "dashboard" : MessageLookupByLibrary.simpleMessage("看板"),
     "deliveryDescribe" : MessageLookupByLibrary.simpleMessage("气球快递"),
     "direction" : MessageLookupByLibrary.simpleMessage("方向"),
     "email" : MessageLookupByLibrary.simpleMessage("邮箱"),
@@ -63,6 +67,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "headerFloat" : MessageLookupByLibrary.simpleMessage("Header浮动"),
     "headerFloatDescribe" : MessageLookupByLibrary.simpleMessage("Header显示在列表之上"),
     "horizontal" : MessageLookupByLibrary.simpleMessage("水平"),
+    "index" : MessageLookupByLibrary.simpleMessage("索引"),
     "infiniteLoad" : MessageLookupByLibrary.simpleMessage("无限加载"),
     "infiniteLoadDescribe" : MessageLookupByLibrary.simpleMessage("滑动到底部自动触发加载"),
     "joinDiscussion" : MessageLookupByLibrary.simpleMessage("加入讨论"),
@@ -92,10 +97,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "noBald" : MessageLookupByLibrary.simpleMessage("没到秃头的年龄"),
     "noData" : MessageLookupByLibrary.simpleMessage("没有数据"),
     "noMore" : MessageLookupByLibrary.simpleMessage("没有更多数据"),
+    "notification" : MessageLookupByLibrary.simpleMessage("通知"),
     "old" : MessageLookupByLibrary.simpleMessage("年龄"),
     "payPal" : MessageLookupByLibrary.simpleMessage("PayPal"),
     "phoenixDescribe" : MessageLookupByLibrary.simpleMessage("金色校园"),
     "phone" : MessageLookupByLibrary.simpleMessage("电话"),
+    "postPosition" : m0,
     "projectAddress" : MessageLookupByLibrary.simpleMessage("项目地址"),
     "publishAt" : MessageLookupByLibrary.simpleMessage(" 发帖于 "),
     "pullToRefresh" : MessageLookupByLibrary.simpleMessage("拉动刷新"),

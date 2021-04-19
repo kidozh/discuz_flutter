@@ -19,8 +19,9 @@ class PostWidget extends StatelessWidget {
   Post _post;
   Discuz _discuz;
   User? _user;
+  int _authorId;
 
-  PostWidget(this._discuz, this._user, this._post);
+  PostWidget(this._discuz, this._user, this._post, this._authorId);
 
   @override
   Widget build(BuildContext context) {
@@ -38,13 +39,17 @@ class PostWidget extends StatelessWidget {
                 child: CachedNetworkImage(
                   imageUrl: URLUtils.getAvatarURL(_discuz, _post.authorId.toString()),
                   progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-                  errorWidget: (context, url, error) => CircleAvatar(
-                    backgroundColor:
-                    CustomizeColor.getColorBackgroundById(_post.authorId),
-                    child: Text(
-                      _post.author.length != 0
-                          ? _post.author[0].toUpperCase()
-                          : S.of(context).anonymous,
+                  errorWidget: (context, url, error) => Container(
+                    width: 16.0,
+                    height: 16.0,
+                    child: CircleAvatar(
+                      backgroundColor: CustomizeColor.getColorBackgroundById(_post.authorId),
+                      child: Text(
+                        _post.author.length != 0
+                            ? _post.author[0].toUpperCase()
+                            : S.of(context).anonymous,
+                        style: TextStyle(color: Colors.white,fontSize: 12),
+                      ),
                     ),
                   ),
                   imageBuilder: (context, imageProvider) => Container(
@@ -66,14 +71,23 @@ class PostWidget extends StatelessWidget {
                           text: "",
                           style: DefaultTextStyle.of(context).style,
                           children: <TextSpan>[
-                            TextSpan(text: _post.author, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo.shade400, fontSize: 12)),
+                            if(_authorId == _post.authorId)
+                              TextSpan(text: _post.author, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.deepOrange.shade400, fontSize: 12)),
+                            if(_authorId != _post.authorId)
+                              TextSpan(text: _post.author, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo.shade400, fontSize: 12)),
                             TextSpan(text: ' · '),
                             TextSpan(text: timeago.format(_post.publishAt, locale: locale.scriptCode), style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
 
                           ],
                         ),
-
                       ),
+                      Spacer(),
+                      Padding(
+                        padding: EdgeInsets.only(right: 8.0),
+                        child: Text(S.of(context).postPosition(_post.position),style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12),),
+                      )
+                      ,
+
                     ],
                 )
               )

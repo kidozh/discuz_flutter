@@ -116,5 +116,15 @@
   "anonymous": "未知",
   "publishAt": " 发帖于 ",
   "forumDisplayTitle": "显示板块",
-  "viewThreadTitle": "查看帖子"
+  "viewThreadTitle": "查看帖子",
+  "postPosition": "第{pos}层",
+  "@postPosition": {
+    "placeholders": {
+      "pos": {}
+    }
+  },
+  "index": "索引",
+  "dashboard": "看板",
+  "notification": "通知",
+  "addNewDiscuz": "添加一个论坛"
 }

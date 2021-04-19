@@ -19,9 +19,12 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
+  static m0(pos) => "# ${pos}";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
     "about" : MessageLookupByLibrary.simpleMessage("About"),
+    "addNewDiscuz" : MessageLookupByLibrary.simpleMessage("Add a new Discuz! forum"),
     "aliPay" : MessageLookupByLibrary.simpleMessage("AliPay"),
     "anonymous" : MessageLookupByLibrary.simpleMessage("A"),
     "appName" : MessageLookupByLibrary.simpleMessage("Discuzhao"),
@@ -48,6 +51,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "controlFinishDescribe" : MessageLookupByLibrary.simpleMessage("Using Controller to End Asynchronous Tasks"),
     "cupertinoDescribe" : MessageLookupByLibrary.simpleMessage("ios style"),
     "customScrollViewDescribe" : MessageLookupByLibrary.simpleMessage("List with AppBar Folding, listener example"),
+    "dashboard" : MessageLookupByLibrary.simpleMessage("Dashboard"),
     "deliveryDescribe" : MessageLookupByLibrary.simpleMessage("Express balloon"),
     "direction" : MessageLookupByLibrary.simpleMessage("Direction"),
     "email" : MessageLookupByLibrary.simpleMessage("E-Mail"),
@@ -63,6 +67,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "headerFloat" : MessageLookupByLibrary.simpleMessage("Header float"),
     "headerFloatDescribe" : MessageLookupByLibrary.simpleMessage("Header is displayed on the list"),
     "horizontal" : MessageLookupByLibrary.simpleMessage("Horizontal"),
+    "index" : MessageLookupByLibrary.simpleMessage("Index"),
     "infiniteLoad" : MessageLookupByLibrary.simpleMessage("Infinite load"),
     "infiniteLoadDescribe" : MessageLookupByLibrary.simpleMessage("Slide to bottom trigger loading"),
     "joinDiscussion" : MessageLookupByLibrary.simpleMessage("Join the discussion"),
@@ -92,10 +97,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "noBald" : MessageLookupByLibrary.simpleMessage("Has not the bald"),
     "noData" : MessageLookupByLibrary.simpleMessage("No data"),
     "noMore" : MessageLookupByLibrary.simpleMessage("No more"),
+    "notification" : MessageLookupByLibrary.simpleMessage("Notification"),
     "old" : MessageLookupByLibrary.simpleMessage("Old"),
     "payPal" : MessageLookupByLibrary.simpleMessage("PayPal"),
     "phoenixDescribe" : MessageLookupByLibrary.simpleMessage("Golden campus"),
     "phone" : MessageLookupByLibrary.simpleMessage("Phone"),
+    "postPosition" : m0,
     "projectAddress" : MessageLookupByLibrary.simpleMessage("Project address"),
     "publishAt" : MessageLookupByLibrary.simpleMessage(" published at "),
     "pullToRefresh" : MessageLookupByLibrary.simpleMessage("Pull to refresh"),

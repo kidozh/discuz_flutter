@@ -1,6 +1,7 @@
 
 import 'dart:developer';
 
+import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -28,10 +29,11 @@ class ForumThreadWidget extends StatelessWidget{
       return Icon(Icons.vertical_align_top, color: Colors.redAccent,);
     }
     else{
-      return Container(
-        height: 0,
-        width: 0,
+      return Badge(
+        badgeContent: Text(_forumThread.replies,style: TextStyle(color: Colors.white),),
+        child: Icon(Icons.message_outlined),
       );
+
     }
   }
 
@@ -43,15 +45,18 @@ class ForumThreadWidget extends StatelessWidget{
     return Container(
       child: ListTile(
         leading: ClipRRect(
+
           borderRadius: BorderRadius.circular(10000.0),
           child: CachedNetworkImage(
             imageUrl: URLUtils.getAvatarURL(_discuz, _forumThread.authorId),
             progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
             errorWidget: (context, url, error) =>
                 CircleAvatar(
+
                   backgroundColor: CustomizeColor.getColorBackgroundById(_forumThread.getAuthorId()),
                   child: Text(_forumThread.author.length !=0 ? _forumThread.author[0].toUpperCase()
-                      : S.of(context).anonymous,),
+                      : S.of(context).anonymous,
+                      style: TextStyle(color: Colors.white)),
                 )
             ,
           ),

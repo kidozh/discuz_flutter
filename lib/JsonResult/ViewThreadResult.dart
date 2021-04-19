@@ -66,24 +66,20 @@ class ThreadVariables extends BaseVariableResult{
 @JsonSerializable(ignoreUnannotated: true)
 class DetailedThreadInfo {
 
-  String tid = "0";
-  int getTid(){
-    return int.parse(tid);
-  }
-  String fid = "0";
-  int getFid(){
-    return int.parse(fid);
-  }
+  @StringToIntConverter()
+  int tid = 0;
+
+  @StringToIntConverter()
+  int fid = 0;
+
   @JsonKey(name:"posttableid")
   String postableId= "";
   @JsonKey(name:"typeid")
   String typeId= "";
   String author= "", subject= "";
+  @StringToIntConverter()
   @JsonKey(name:"authorid")
-  String authorId = "0";
-  int getAuthorId(){
-    return int.parse(authorId);
-  }
+  int authorId = 0;
   @JsonKey(name:"sortid")
   String sortId = "0";
   @JsonKey(name:"dateline")
@@ -138,16 +134,16 @@ class DetailedThreadInfo {
   String subjectenc = "", short_subject="";
 
   String relay = "", ordertype = "", recommend = "";
-  @JsonKey(name:"recommendlevel")
+  @JsonKey(name:"recommendlevel",defaultValue: "0")
   String recommendLevel = "0";
-  @JsonKey(name:"heatlevel")
+  @JsonKey(name:"heatlevel",defaultValue: "0")
   String heatLevel = "0";
   @JsonKey(name:"freemessage",defaultValue: "")
   String freeMessage = "";
 
   //
   @JsonKey(name:"replycredit_rule")
-  ReplyCreditRule creditRule = ReplyCreditRule();
+  ReplyCreditRule? creditRule = ReplyCreditRule();
 
   DetailedThreadInfo();
   factory DetailedThreadInfo.fromJson(Map<String, dynamic> json) => _$DetailedThreadInfoFromJson(json);
@@ -157,17 +153,17 @@ class DetailedThreadInfo {
 @JsonSerializable(ignoreUnannotated: true)
 class ReplyCreditRule{
 
-  String tid = "0";
+  final String tid = "0";
   @JsonKey(name:"extcredits",defaultValue: "0")
-  String extCredits = "0";
+  final String extCredits = "0";
   @JsonKey(name:"extcreditstype",defaultValue: "0")
-  String extCreditsType = "0";
+  final String extCreditsType = "0";
 
-  String times = "0", membertimes = "0";
-  String random = "0";
-  String remaining = "0";
+  final String times = "0", membertimes = "0";
+  final String random = "0";
+  final String remaining = "0";
 
-  ReplyCreditRule();
+  const ReplyCreditRule();
   factory ReplyCreditRule.fromJson(Map<String, dynamic> json) => _$ReplyCreditRuleFromJson(json);
   Map<String, dynamic> toJson() => _$ReplyCreditRuleToJson(this);
 }

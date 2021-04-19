@@ -140,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   if(_selectedDiscuz!= null){
                     await Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginPage(discuz: _selectedDiscuz!, key: Key("LoginPage"),))
+                        MaterialPageRoute(builder: (context) => LoginPage(discuz: _selectedDiscuz!, key: UniqueKey(),))
                     );
                   }
                 },
@@ -181,23 +181,24 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _bottomNavigationbarIndex,
         items: [
           BottomNavigationBarItem(
               icon: new Icon(Icons.home_outlined),
               activeIcon: Icon(Icons.home),
-              label: "主页"
+              label: S.of(context).index
           ),
           BottomNavigationBarItem(
               icon: new Icon(Icons.explore_outlined),
               activeIcon: Icon(Icons.explore),
-              label: "探索"
+              label: S.of(context).dashboard
           ),
           BottomNavigationBarItem(
               icon: new Icon(Icons.notifications_outlined),
               activeIcon: Icon(Icons.notifications),
-              label: "探索"
+              label: S.of(context).notification
           ),
         ],
         onTap: (index){
@@ -209,8 +210,8 @@ class _MyHomePageState extends State<MyHomePage> {
       body: getBodyWidget(_bottomNavigationbarIndex),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+        tooltip: S.of(context).addNewDiscuz,
+        child: Icon(Icons.account_tree),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

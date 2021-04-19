@@ -29,6 +29,15 @@ Map<String, dynamic> _$ViewThreadResultToJson(ViewThreadResult instance) =>
 
 ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) {
   return ThreadVariables()
+    ..cookiepre = json['cookiepre'] as String
+    ..auth = json['auth'] as String?
+    ..saltkey = json['saltkey'] as String
+    ..member_username = json['member_username'] as String
+    ..member_avatar = json['member_avatar'] as String
+    ..member_uid = json['member_uid'] as String
+    ..groupid = json['groupid'] as String
+    ..readaccess = json['readaccess'] as String
+    ..ismoderator = json['ismoderator'] as String?
     ..noticeCount = NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
     ..threadInfo =
         DetailedThreadInfo.fromJson(json['thread'] as Map<String, dynamic>)
@@ -45,6 +54,15 @@ ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$ThreadVariablesToJson(ThreadVariables instance) =>
     <String, dynamic>{
+      'cookiepre': instance.cookiepre,
+      'auth': instance.auth,
+      'saltkey': instance.saltkey,
+      'member_username': instance.member_username,
+      'member_avatar': instance.member_avatar,
+      'member_uid': instance.member_uid,
+      'groupid': instance.groupid,
+      'readaccess': instance.readaccess,
+      'ismoderator': instance.ismoderator,
       'notice': instance.noticeCount,
       'thread': instance.threadInfo,
       'postlist': instance.postList,
@@ -56,7 +74,8 @@ DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) {
   return DetailedThreadInfo()
     ..postableId = json['posttableid'] as String
     ..typeId = json['typeid'] as String
-    ..authorId = json['authorid'] as String
+    ..authorId =
+        const StringToIntConverter().fromJson(json['authorid'] as String)
     ..sortId = json['sortid'] as String
     ..lastPostTime = json['dateline'] as String
     ..lastPostTimeString = json['lastpost'] as String
@@ -69,18 +88,20 @@ DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) {
     ..maxPosition = json['maxposition'] as String
     ..comments = json['comments'] as String
     ..allreplies = json['allreplies'] as String
-    ..recommendLevel = json['recommendlevel'] as String
-    ..heatLevel = json['heatlevel'] as String
+    ..recommendLevel = json['recommendlevel'] as String? ?? '0'
+    ..heatLevel = json['heatlevel'] as String? ?? '0'
     ..freeMessage = json['freemessage'] as String? ?? ''
-    ..creditRule = ReplyCreditRule.fromJson(
-        json['replycredit_rule'] as Map<String, dynamic>);
+    ..creditRule = json['replycredit_rule'] == null
+        ? null
+        : ReplyCreditRule.fromJson(
+            json['replycredit_rule'] as Map<String, dynamic>);
 }
 
 Map<String, dynamic> _$DetailedThreadInfoToJson(DetailedThreadInfo instance) =>
     <String, dynamic>{
       'posttableid': instance.postableId,
       'typeid': instance.typeId,
-      'authorid': instance.authorId,
+      'authorid': const StringToIntConverter().toJson(instance.authorId),
       'sortid': instance.sortId,
       'dateline': instance.lastPostTime,
       'lastpost': instance.lastPostTimeString,
@@ -100,16 +121,11 @@ Map<String, dynamic> _$DetailedThreadInfoToJson(DetailedThreadInfo instance) =>
     };
 
 ReplyCreditRule _$ReplyCreditRuleFromJson(Map<String, dynamic> json) {
-  return ReplyCreditRule()
-    ..extCredits = json['extcredits'] as String? ?? '0'
-    ..extCreditsType = json['extcreditstype'] as String? ?? '0';
+  return ReplyCreditRule();
 }
 
 Map<String, dynamic> _$ReplyCreditRuleToJson(ReplyCreditRule instance) =>
-    <String, dynamic>{
-      'extcredits': instance.extCredits,
-      'extcreditstype': instance.extCreditsType,
-    };
+    <String, dynamic>{};
 
 Comment _$CommentFromJson(Map<String, dynamic> json) {
   return Comment()
