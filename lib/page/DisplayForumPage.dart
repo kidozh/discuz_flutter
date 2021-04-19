@@ -104,7 +104,7 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
     super.initState();
     _controller = EasyRefreshController();
     _scrollController = ScrollController();
-    _invalidateContent();
+    //_invalidateContent();
   }
 
   void _invalidateContent() {
