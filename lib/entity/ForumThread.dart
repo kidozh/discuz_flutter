@@ -35,6 +35,7 @@ class ForumThread{
   String subject = "";
   String dateline = "";
   String lastpost = "";
+  @JsonKey(name: "lastposter",defaultValue: "")
   String lastposter = "";
   String views = "";
   String replies = "";

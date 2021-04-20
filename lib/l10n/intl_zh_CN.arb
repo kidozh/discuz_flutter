@@ -126,5 +126,9 @@
   "index": "索引",
   "dashboard": "看板",
   "notification": "通知",
-  "addNewDiscuz": "添加一个论坛"
+  "addNewDiscuz": "添加一个论坛",
+  "nullDiscuzTitle": "还没有指定一个论坛",
+  "nullDiscuzSubTitle": "现在就添加一个论坛吗？",
+  "retry": "重试",
+  "chooseDiscuz": "选择一个论坛"
 }

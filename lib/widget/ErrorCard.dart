@@ -29,7 +29,7 @@ class ErrorCard extends StatelessWidget{
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 TextButton(
-                  child: Text(S.of(context).refresh),
+                  child: Text(S.of(context).retry),
                   onPressed: () {
                     onRefreshCallback();
                   },

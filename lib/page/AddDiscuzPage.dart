@@ -102,73 +102,75 @@ class _AddDiscuzFormFieldState
 
     return Container(
         padding: const EdgeInsets.all(4.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // title and page
-              if (_isLoading)
-                LinearProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(
-                      GlobalTheme.getThemeData().primaryColor),
-                ),
-              Padding(
-                  padding: EdgeInsets.all(32.0),
-                  child: Center(
-                    child: SvgPicture.asset(
-                      "assets/images/add-a-new-discuz-site.svg",
-                      semanticsLabel: '论坛的图形标识',
-                      allowDrawingOutsideViewBox: true,
-                      width: MediaQuery.of(context).size.width * 0.5,
-                    ),
-                  )),
-              // input fields
-              new TextFormField(
-                controller: _urlController,
-                decoration: new InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "网页地址",
-                  hintText: "键入网页地址，如https://bbs.nwpu.edu.cn",
-                  helperText: "网页地址通常是论坛服务的地址",
-                  prefixIcon: Icon(Icons.web),
-                ),
-                validator: ValidationBuilder().url().build(),
-              ),
-              if (error.isNotEmpty)
-                Column(
-                  children: [
-                    ErrorCard("发生错误", error,(){
-                      _checkApiAvailable();
-                    }),
-                  ],
-                ),
-              ButtonBar(
-                children: [
-                  TextButton(
-                    child: Text("取消添加"),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // title and page
+                if (_isLoading)
+                  LinearProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(
+                        GlobalTheme.getThemeData().primaryColor),
                   ),
-                  ElevatedButton(
-                    child: Text("检查并添加"),
-                    onPressed: () {
-                      log("Press the elevated button");
-                      if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(SnackBar(content: Text('访问网页API中')));
+                Padding(
+                    padding: EdgeInsets.all(32.0),
+                    child: Center(
+                      child: SvgPicture.asset(
+                        "assets/images/add-a-new-discuz-site.svg",
+                        semanticsLabel: '论坛的图形标识',
+                        allowDrawingOutsideViewBox: true,
+                        width: MediaQuery.of(context).size.width * 0.5,
+                      ),
+                    )),
+                // input fields
+                new TextFormField(
+                  controller: _urlController,
+                  decoration: new InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: "网页地址",
+                    hintText: "键入网页地址，如https://bbs.nwpu.edu.cn",
+                    helperText: "网页地址通常是论坛服务的地址",
+                    prefixIcon: Icon(Icons.web),
+                  ),
+                  validator: ValidationBuilder().url().build(),
+                ),
+                if (error.isNotEmpty)
+                  Column(
+                    children: [
+                      ErrorCard("发生错误", error,(){
                         _checkApiAvailable();
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("您输入的内容似乎不正确？")));
-                      }
-                    },
-                  )
-                ],
-              )
-            ],
-          ),
-        ));
+                      }),
+                    ],
+                  ),
+                ButtonBar(
+                  children: [
+                    TextButton(
+                      child: Text("取消添加"),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ElevatedButton(
+                      child: Text("检查并添加"),
+                      onPressed: () {
+                        log("Press the elevated button");
+                        if (_formKey.currentState!.validate()) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(SnackBar(content: Text('访问网页API中')));
+                          _checkApiAvailable();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("您输入的内容似乎不正确？")));
+                        }
+                      },
+                    )
+                  ],
+                )
+              ],
+            ),
+          )),
+        );
   }
 }

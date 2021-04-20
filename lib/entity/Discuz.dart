@@ -18,6 +18,12 @@ class Discuz {
   String defaultFid = "";
   String baseURL = "";
 
+  String getDiscuzAvatarURL(){
+    return this.baseURL + "/static/image/common/logo.png";
+  }
+
+
+
   Discuz(
       this.id,
       this.baseURL,

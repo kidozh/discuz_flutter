@@ -41,7 +41,7 @@ class ViewThreadPage extends StatelessWidget {
           centerTitle: true,
         ),
         body: ViewThreadStatefulWidget(
-            key: this.key, discuz: discuz, user: user, tid: tid));
+            key: UniqueKey(), discuz: discuz, user: user, tid: tid));
   }
 }
 
@@ -148,6 +148,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
         _controller.finishRefresh();
       }
       // check for loaded all?
+      log("Get list ${value.threadVariables.threadInfo.getReplyNumber()} ${_postList.length} ${value.threadVariables.threadInfo.replies}");
       if (!_enableControlFinish) {
         _controller.finishLoad(
             noMore: _postList.length >=

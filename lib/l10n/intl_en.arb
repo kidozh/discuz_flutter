@@ -126,5 +126,9 @@
   "index": "Index",
   "dashboard": "Dashboard",
   "notification": "Notification",
-  "addNewDiscuz": "Add a new Discuz! forum"
+  "addNewDiscuz": "Add a new Discuz! forum",
+  "nullDiscuzTitle": "No Discuz! BBS is selected",
+  "nullDiscuzSubTitle": "Why not consider add a discuz forum?",
+  "retry": "retry",
+  "chooseDiscuz": "Choose a BBS"
 }

@@ -1,4 +1,6 @@
 import 'dart:developer';
+import 'package:discuz_flutter/dialog/SwitchDiscuzDialog.dart';
+import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -11,13 +13,20 @@ import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/widget/DiscuzInfoCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'entity/Discuz.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+      ChangeNotifierProvider(
+          create: (context) => DiscuzAndUserNotifier(),
+          child: MyApp(),
+      )
+
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -65,7 +74,6 @@ class _MyHomePageState extends State<MyHomePage> {
   late List<Widget> bodies = [];
 
   //
-  Discuz? _selectedDiscuz;
   List<Discuz> _allDiscuzs = [];
   Stream<List<Discuz>>? _discuzListStream;
 
@@ -76,31 +84,40 @@ class _MyHomePageState extends State<MyHomePage> {
     ];
   }
 
-  String getSelectedDiscuzTitle() {
-    if (_selectedDiscuz == null) {
-      return "还没有添加一个论坛";
-    } else {
-      return _selectedDiscuz!.siteName;
+  void _triggerSwitchDiscuzDialog() async {
+    List<Widget> widgetList = [];
+    for(int i=0;i<_allDiscuzs.length; i++){
+      Discuz discuz = _allDiscuzs[i];
+      Discuz _selecteddiscuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
+
+      widgetList.add(
+          SimpleDialogItem(
+            key: UniqueKey(),
+            icon: _selecteddiscuz == discuz ? Icons.check_circle: Icons.amp_stories,
+            color: _selecteddiscuz == discuz ? Colors.green: Colors.grey,
+            text: discuz.siteName,
+            onPressed: () {
+              setState(() {
+                Provider.of<DiscuzAndUserNotifier>(context, listen: false).setDiscuz(discuz);
+                Navigator.of(context).pop();
+              });
+
+            },
+          )
+      );
     }
+
+    await showDialog<Null>(
+        context: context, //BuildContext对象
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: Text(S.of(context).chooseDiscuz),
+            children:widgetList
+          );
+        });
   }
 
-  void _incrementCounter() {
-    _navigateToAddForumPage(context);
-  }
 
-  void _navigateToAddForumPage(BuildContext context) async {
-    final result = await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => AddDiscuzPage()));
-  }
-
-  Widget getBodyWidget(int index){
-    if(_selectedDiscuz == null){
-      return Text("未选择一个论坛");
-    }
-    else{
-      return DiscuzPortalScreen(_selectedDiscuz!, null);
-    }
-  }
 
   void _queryDiscuzList() async {
     final db = await DBHelper.getDiscuzDb();
@@ -111,7 +128,8 @@ class _MyHomePageState extends State<MyHomePage> {
     log("recv discuz list ${_allDiscuzs.length}");
 
     setState(() {
-      _selectedDiscuz = _allDiscuzs.first;
+      // set
+      Provider.of<DiscuzAndUserNotifier>(context, listen: false).setDiscuz(_allDiscuzs.first);
     });
   }
 
@@ -127,20 +145,18 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
-              child: DiscuzInfoCard(_selectedDiscuz),
-              decoration: BoxDecoration(color: Colors.white),
-            ),
+
             Column(children: [
               ListTile(
                 title: Text("登录账号"),
                 subtitle: Text("使用账号密码或者网页登录账号"),
                 leading: Icon(Icons.person_add),
                 onTap: () async {
-                  if(_selectedDiscuz!= null){
+                  Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+                  if(discuz != null){
                     await Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginPage(discuz: _selectedDiscuz!, key: UniqueKey(),))
+                        MaterialPageRoute(builder: (context) => LoginPage(discuz: discuz, key: UniqueKey(),))
                     );
                   }
                 },
@@ -165,9 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               title: Text(eachDiscuz.siteName),
                               subtitle: Text(eachDiscuz.baseURL),
                               onTap: () {
-                                setState(() {
-                                  _selectedDiscuz = eachDiscuz;
-                                });
+                                Provider.of<DiscuzAndUserNotifier>(context, listen: false).setDiscuz(eachDiscuz);
                               },
                             );
                           });
@@ -207,9 +221,9 @@ class _MyHomePageState extends State<MyHomePage> {
           });
         },
       ),
-      body: getBodyWidget(_bottomNavigationbarIndex),
+      body: DiscuzPortalScreen(),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: _triggerSwitchDiscuzDialog,
         tooltip: S.of(context).addNewDiscuz,
         child: Icon(Icons.account_tree),
       ), // This trailing comma makes auto-formatting nicer for build methods.

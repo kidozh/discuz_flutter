@@ -1276,6 +1276,46 @@ class S {
       args: [],
     );
   }
+
+  /// `No Discuz! BBS is selected`
+  String get nullDiscuzTitle {
+    return Intl.message(
+      'No Discuz! BBS is selected',
+      name: 'nullDiscuzTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Why not consider add a discuz forum?`
+  String get nullDiscuzSubTitle {
+    return Intl.message(
+      'Why not consider add a discuz forum?',
+      name: 'nullDiscuzSubTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `retry`
+  String get retry {
+    return Intl.message(
+      'retry',
+      name: 'retry',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose a BBS`
+  String get chooseDiscuz {
+    return Intl.message(
+      'Choose a BBS',
+      name: 'chooseDiscuz',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

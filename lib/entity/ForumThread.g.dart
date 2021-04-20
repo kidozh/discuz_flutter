@@ -17,7 +17,7 @@ ForumThread _$ForumThreadFromJson(Map<String, dynamic> json) {
     ..subject = json['subject'] as String
     ..dateline = json['dateline'] as String
     ..lastpost = json['lastpost'] as String
-    ..lastposter = json['lastposter'] as String
+    ..lastposter = json['lastposter'] as String? ?? ''
     ..views = json['views'] as String
     ..replies = json['replies'] as String
     ..displayOrder = json['displayorder'] as String

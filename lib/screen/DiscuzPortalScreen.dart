@@ -9,6 +9,8 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumPartitionWidget.dart';
@@ -16,34 +18,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
 
 class DiscuzPortalScreen extends StatelessWidget {
-  Discuz _discuz;
-  User? _user;
 
-  DiscuzPortalScreen(this._discuz, this._user);
+
+  DiscuzPortalScreen();
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return DiscuzPortalStatefulWidget(_discuz, _user);
+    return DiscuzPortalStatefulWidget(key: UniqueKey());
   }
 }
 
 class DiscuzPortalStatefulWidget extends StatefulWidget {
-  Discuz _discuz;
-  User? _user;
 
-  DiscuzPortalStatefulWidget(this._discuz, this._user);
+
+  DiscuzPortalStatefulWidget({required Key key}):super(key: key);
 
   _DiscuzPortalState createState() {
-    return _DiscuzPortalState(_discuz, _user);
+    return _DiscuzPortalState();
   }
 }
 
 class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
-  Discuz _discuz;
-  User? _user;
+
   late Dio _dio;
   late MobileApiClient _client;
   bool _isLoading = false;
@@ -77,9 +77,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
   // 底部回弹
   bool _bottomBouncing = true;
 
-  _DiscuzPortalState(this._discuz, this._user) {
-    this._dio = Dio();
-    this._client = MobileApiClient(_dio, baseUrl: _discuz.baseURL);
+  _DiscuzPortalState() {
 
   }
 
@@ -89,10 +87,12 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
     super.initState();
     _controller = EasyRefreshController();
     _scrollController = ScrollController();
-    _loadPortalContent();
+
   }
 
-  void _loadPortalContent() {
+  void _loadPortalContent(Discuz discuz) {
+    this._dio = Dio();
+    this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
     setState(() {
       _isLoading = true;
     });
@@ -131,14 +131,23 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
     });
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    if(!_loaded){
-      _loaded = true;
-      _loadPortalContent();
-    }
 
+    return Consumer<DiscuzAndUserNotifier>(builder: (context,discuzAndUser, child){
+      if(discuzAndUser.discuz == null){
+        return NullDiscuzScreen();
+      }
+      else{
+        return getEasyRefreshWidget(discuzAndUser.discuz!,discuzAndUser.user);
+      }
+    });
+  }
+
+  Widget getEasyRefreshWidget(Discuz discuz, User? user){
     return EasyRefresh.custom(
 
       enableControlFinishRefresh: true,
@@ -181,7 +190,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
           : null,
       onRefresh: _enableRefresh
           ? () async {
-        _loadPortalContent();
+        _loadPortalContent(discuz);
         if (!_enableControlFinish) {
           _controller.resetLoadState();
           _controller.finishRefresh();
@@ -220,19 +229,19 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       slivers: <Widget>[
         if(_error!=null)
           ErrorCard(_error!.key, _error!.content,(){
-            _loadPortalContent();
+            _loadPortalContent(discuz);
           }
           ),
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  List<ForumPartition> forumPartitionList =
-                      result!.discuzIndexVariables.forumPartitionList;
-                  List<Forum> _allForumList =
-                      result!.discuzIndexVariables.forumList;
-                  ForumPartition forumPartition = forumPartitionList[index];
-                  //log("Forum partition length ${result!.discuzIndexVariables.forumPartitionList.length} all ${_allForumList.length}" );
-                  return ForumPartitionWidget(_discuz,_user,forumPartition, _allForumList);
+              List<ForumPartition> forumPartitionList =
+                  result!.discuzIndexVariables.forumPartitionList;
+              List<Forum> _allForumList =
+                  result!.discuzIndexVariables.forumList;
+              ForumPartition forumPartition = forumPartitionList[index];
+              //log("Forum partition length ${result!.discuzIndexVariables.forumPartitionList.length} all ${_allForumList.length}" );
+              return ForumPartitionWidget(discuz,user,forumPartition, _allForumList);
             },
             childCount: result == null
                 ? 0

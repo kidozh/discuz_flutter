@@ -94,6 +94,7 @@ class DetailedThreadInfo {
   String displayOrder = "";
 
   String views = "";
+  @JsonKey(name:"replies")
   @StringToIntConverter()
   int replies = 0;
   String highlight = "";

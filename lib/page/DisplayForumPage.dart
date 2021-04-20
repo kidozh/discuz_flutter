@@ -123,6 +123,10 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
       _isLoading = true;
     });
 
+    client.displayForumRaw(fid.toString(), _page).then((value){
+      DisplayForumResult result = DisplayForumResult.fromJson(jsonDecode(value));
+    });
+
     client.displayForumResult(fid.toString(), _page).then((value) {
       setState(() {
         _displayForumResult = value;

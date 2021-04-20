@@ -80,6 +80,7 @@ DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) {
     ..lastPostTime = json['dateline'] as String
     ..lastPostTimeString = json['lastpost'] as String
     ..displayOrder = json['displayorder'] as String
+    ..replies = const StringToIntConverter().fromJson(json['replies'] as String)
     ..stickReply = json['stickreply'] as String
     ..recommends = json['recommends'] as String? ?? '0'
     ..recommend_add = json['recommend_add'] as String? ?? '0'
@@ -106,6 +107,7 @@ Map<String, dynamic> _$DetailedThreadInfoToJson(DetailedThreadInfo instance) =>
       'dateline': instance.lastPostTime,
       'lastpost': instance.lastPostTimeString,
       'displayorder': instance.displayOrder,
+      'replies': const StringToIntConverter().toJson(instance.replies),
       'stickreply': instance.stickReply,
       'recommends': instance.recommends,
       'recommend_add': instance.recommend_add,
