@@ -105,7 +105,22 @@ class _MyHomePageState extends State<MyHomePage> {
             },
           )
       );
+
     }
+
+    widgetList.add(
+        SimpleDialogItem(key: UniqueKey(),
+            icon: Icons.add_box_outlined,
+            color: Colors.blueAccent,
+            text: S.of(context).addNewDiscuz,
+            onPressed: (){
+              Navigator.of(context).pop();
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddDiscuzPage(key: UniqueKey())));
+            }
+        )
+    );
 
     await showDialog<Null>(
         context: context, //BuildContext对象

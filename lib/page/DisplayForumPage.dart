@@ -33,13 +33,7 @@ class DisplayForumPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(S.of(context).forumDisplayTitle),
-          centerTitle: true,
-        ),
-        body: DisplayForumStatefulWidget(
-            key: this.key, discuz: discuz, user: user, fid: fid));
+    return DisplayForumStatefulWidget(key: this.key, discuz: discuz, user: user, fid: fid);
   }
 }
 
@@ -197,25 +191,30 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
   Widget build(BuildContext context) {
     // TODO: implement build
 
-    return Column(
-      children: [
-        if(_error!=null)
-          ErrorCard(_error!.key, _error!.content,(){_invalidateContent();}),
-        Expanded(
-            child: Container(
-          //height: _direction == Axis.vertical ? double.infinity : 210.0,
-          child: EasyRefresh.custom(
-            enableControlFinishRefresh: true,
-            enableControlFinishLoad: true,
-            taskIndependence: _taskIndependence,
-            controller: _controller,
-            scrollController: _scrollController,
-            reverse: _reverse,
-            scrollDirection: _direction,
-            topBouncing: _topBouncing,
-            bottomBouncing: _bottomBouncing,
-            header: _enableRefresh
-                ? ClassicalHeader(
+    return Scaffold(
+      appBar: AppBar(
+        title: _displayForumResult == null ? Text(S.of(context).forumDisplayTitle): Text(_displayForumResult!.discuzIndexVariables.forum.name),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          if(_error!=null)
+            ErrorCard(_error!.key, _error!.content,(){_invalidateContent();}),
+          Expanded(
+              child: Container(
+                //height: _direction == Axis.vertical ? double.infinity : 210.0,
+                child: EasyRefresh.custom(
+                  enableControlFinishRefresh: true,
+                  enableControlFinishLoad: true,
+                  taskIndependence: _taskIndependence,
+                  controller: _controller,
+                  scrollController: _scrollController,
+                  reverse: _reverse,
+                  scrollDirection: _direction,
+                  topBouncing: _topBouncing,
+                  bottomBouncing: _bottomBouncing,
+                  header: _enableRefresh
+                      ? ClassicalHeader(
                     enableInfiniteRefresh: false,
                     bgColor: _headerFloat
                         ? Theme.of(context).primaryColor
@@ -231,9 +230,9 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
                     noMoreText: S.of(context).noMore,
                     infoText: S.of(context).updateAt,
                   )
-                : null,
-            footer: _enableLoad
-                ? ClassicalFooter(
+                      : null,
+                  footer: _enableLoad
+                      ? ClassicalFooter(
                     enableInfiniteLoad: _enableInfiniteLoad,
                     enableHapticFeedback: _vibration,
                     loadText: S.of(context).pushToLoad,
@@ -244,72 +243,76 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
                     noMoreText: S.of(context).noMore,
                     infoText: S.of(context).updateAt,
                   )
-                : null,
-            onRefresh: _enableRefresh
-                ? () async {
+                      : null,
+                  onRefresh: _enableRefresh
+                      ? () async {
                     _invalidateContent();
                     if (!_enableControlFinish) {
                       _controller.resetLoadState();
                       _controller.finishRefresh();
                     }
                   }
-                : null,
-            onLoad: _enableLoad
-                ? () async {
+                      : null,
+                  onLoad: _enableLoad
+                      ? () async {
                     _loadForumContent();
                   }
-                : null,
-            firstRefresh: true,
-            firstRefreshWidget: Container(
-              width: double.infinity,
-              height: double.infinity,
-              child: Center(
-                  child: SizedBox(
-                height: 200.0,
-                width: 300.0,
-                child: Card(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        width: 50.0,
-                        height: 50.0,
-                        child: SpinKitFadingCube(
-                          color: Theme.of(context).primaryColor,
-                          size: 25.0,
-                        ),
-                      ),
-                      Container(
-                        child: Text(S.of(context).loading),
-                      )
-                    ],
+                      : null,
+                  firstRefresh: true,
+                  firstRefreshWidget: Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Center(
+                        child: SizedBox(
+                          height: 200.0,
+                          width: 300.0,
+                          child: Card(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Container(
+                                  width: 50.0,
+                                  height: 50.0,
+                                  child: SpinKitFadingCube(
+                                    color: Theme.of(context).primaryColor,
+                                    size: 25.0,
+                                  ),
+                                ),
+                                Container(
+                                  child: Text(S.of(context).loading),
+                                )
+                              ],
+                            ),
+                          ),
+                        )),
                   ),
+                  slivers: <Widget>[
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                          log("${_forumThreadList[index].subject} ${_forumThreadList}");
+                          return Column(
+                            children: [
+                              ForumThreadWidget(
+                                  discuz, user, _forumThreadList[index]),
+                              Divider()
+                            ],
+                          );
+                          return ForumThreadWidget(
+                              discuz, user, _forumThreadList[index]);
+                        },
+                        childCount: _forumThreadList.length,
+                      ),
+                    ),
+                  ],
                 ),
               )),
-            ),
-            slivers: <Widget>[
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    log("${_forumThreadList[index].subject} ${_forumThreadList}");
-                    return Column(
-                      children: [
-                        ForumThreadWidget(
-                            discuz, user, _forumThreadList[index]),
-                        Divider()
-                      ],
-                    );
-                    return ForumThreadWidget(
-                        discuz, user, _forumThreadList[index]);
-                  },
-                  childCount: _forumThreadList.length,
-                ),
-              ),
-            ],
-          ),
-        )),
-      ],
+        ],
+      ),
     );
+
+
+
   }
 }
