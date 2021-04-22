@@ -131,6 +131,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "secondFloor" : MessageLookupByLibrary.simpleMessage("Second floor"),
     "secondFloorDescribe" : MessageLookupByLibrary.simpleMessage("Imitate the second floor of Taobao"),
     "send" : MessageLookupByLibrary.simpleMessage("Send"),
+    "settingTitle" : MessageLookupByLibrary.simpleMessage("Settings"),
     "spaceDescribe" : MessageLookupByLibrary.simpleMessage("Flare animation - Space"),
     "star" : MessageLookupByLibrary.simpleMessage("Star project"),
     "style" : MessageLookupByLibrary.simpleMessage("Style"),

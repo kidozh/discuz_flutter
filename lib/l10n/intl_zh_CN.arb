@@ -132,5 +132,6 @@
   "retry": "重试",
   "chooseDiscuz": "选择一个论坛",
   "googleAdTitle": "广告",
-  "googleAdSubTitle": "由Google提供的广告"
+  "googleAdSubTitle": "由Google提供的广告",
+  "settingTitle": "设置"
 }

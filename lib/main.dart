@@ -19,6 +19,7 @@ import 'package:provider/provider.dart';
 import 'entity/Discuz.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/page/SettingPage.dart';
 
 void main() {
   // init google ads
@@ -178,6 +179,19 @@ class _MyHomePageState extends State<MyHomePage> {
                     await Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => LoginPage(discuz: discuz, key: UniqueKey(),))
+                    );
+                  }
+                },
+              ),
+              ListTile(
+                title: Text(S.of(context).settingTitle),
+                leading: Icon(Icons.settings),
+                onTap: () async {
+                  Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+                  if(discuz != null){
+                    await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SettingPage())
                     );
                   }
                 },

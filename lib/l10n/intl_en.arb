@@ -132,5 +132,6 @@
   "retry": "retry",
   "chooseDiscuz": "Choose a BBS",
   "googleAdTitle": "AD",
-  "googleAdSubTitle": "Advertisement provided by Google"
+  "googleAdSubTitle": "Advertisement provided by Google",
+  "settingTitle": "Settings"
 }
