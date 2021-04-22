@@ -63,7 +63,7 @@ class ThreadVariables extends BaseVariableResult{
 
 }
 
-@JsonSerializable(ignoreUnannotated: true, disallowUnrecognizedKeys: false)
+@JsonSerializable()
 class DetailedThreadInfo {
 
   @StringToIntConverter()
@@ -72,10 +72,11 @@ class DetailedThreadInfo {
   @StringToIntConverter()
   int fid = 0;
 
-  @JsonKey(name:"posttableid")
+  @JsonKey(name:"posttableid",defaultValue: "0")
   String postableId= "";
+  @StringToIntConverter()
   @JsonKey(name:"typeid")
-  String typeId= "";
+  int typeId= 0;
   String author= "", subject= "";
   @JsonKey(name: "readperm")
   @StringToIntConverter()
@@ -87,8 +88,6 @@ class DetailedThreadInfo {
   int authorId = 0;
   @JsonKey(name:"sortid")
   String sortId = "0";
-  @JsonKey(name:"dateline")
-  String lastPostTime = "0";
   // @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="s")
   // public Date lastPostTime = new Date();
   @JsonKey(name:"lastpost")
@@ -134,10 +133,9 @@ class DetailedThreadInfo {
   String hidden = "0";
   String threadtable = "", threadtableid = "", posttable = "";
   @JsonKey(name:"allreplies")
-  String allreplies = "0";
-  int getReplyNumber(){
-    return int.parse(allreplies);
-  }
+  @StringToIntConverter()
+  int allreplies = 0;
+
   @JsonKey(defaultValue: "")
   String archiveid = "";
   @JsonKey(defaultValue: "")
@@ -152,8 +150,8 @@ class DetailedThreadInfo {
   String freeMessage = "";
 
   //
-  @JsonKey(name:"replycredit_rule")
-  ReplyCreditRule? creditRule = ReplyCreditRule();
+  // @JsonKey(name:"replycredit_rule")
+  // ReplyCreditRule? creditRule = ReplyCreditRule();
 
   DetailedThreadInfo();
   factory DetailedThreadInfo.fromJson(Map<String, dynamic> json) => _$DetailedThreadInfoFromJson(json);

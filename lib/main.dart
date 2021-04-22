@@ -13,6 +13,7 @@ import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/widget/DiscuzInfoCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
 import 'entity/Discuz.dart';
@@ -20,6 +21,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 
 void main() {
+  // init google ads
+  WidgetsFlutterBinding.ensureInitialized();
+  log("initial for ads");
+  MobileAds.instance.initialize();
+
   runApp(
       ChangeNotifierProvider(
           create: (context) => DiscuzAndUserNotifier(),

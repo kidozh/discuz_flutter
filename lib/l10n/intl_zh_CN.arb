@@ -130,5 +130,7 @@
   "nullDiscuzTitle": "还没有指定一个论坛",
   "nullDiscuzSubTitle": "现在就添加一个论坛吗？",
   "retry": "重试",
-  "chooseDiscuz": "选择一个论坛"
+  "chooseDiscuz": "选择一个论坛",
+  "googleAdTitle": "广告",
+  "googleAdSubTitle": "由Google提供的广告"
 }

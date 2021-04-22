@@ -64,6 +64,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "floatViewDescribe" : MessageLookupByLibrary.simpleMessage("顶部或底部视图浮动在列表上"),
     "forumDisplayTitle" : MessageLookupByLibrary.simpleMessage("显示板块"),
     "github" : MessageLookupByLibrary.simpleMessage("Github"),
+    "googleAdSubTitle" : MessageLookupByLibrary.simpleMessage("由Google提供的广告"),
+    "googleAdTitle" : MessageLookupByLibrary.simpleMessage("广告"),
     "hangzhou" : MessageLookupByLibrary.simpleMessage("中国 - 杭州"),
     "headerFloat" : MessageLookupByLibrary.simpleMessage("Header浮动"),
     "headerFloatDescribe" : MessageLookupByLibrary.simpleMessage("Header显示在列表之上"),

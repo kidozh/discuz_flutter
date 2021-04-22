@@ -11,6 +11,7 @@ import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
+import 'package:discuz_flutter/widget/GoogleBannerAdWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -21,6 +22,8 @@ import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+
+
 
 class DisplayForumPage extends StatelessWidget {
   late final Discuz discuz;
@@ -92,6 +95,8 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
   // 底部回弹
   bool _bottomBouncing = true;
 
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -99,7 +104,9 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
     _controller = EasyRefreshController();
     _scrollController = ScrollController();
     //_invalidateContent();
+    // init ad
   }
+
 
   void _invalidateContent() {
     setState(() {
@@ -289,20 +296,37 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
                   ),
                   slivers: <Widget>[
                     SliverList(
+
                       delegate: SliverChildBuilderDelegate(
                             (context, index) {
                           log("${_forumThreadList[index].subject} ${_forumThreadList}");
-                          return Column(
-                            children: [
-                              ForumThreadWidget(
-                                  discuz, user, _forumThreadList[index]),
-                              Divider()
-                            ],
-                          );
-                          return ForumThreadWidget(
-                              discuz, user, _forumThreadList[index]);
+                          if(index != 0 && index % 10 == 0){
+
+                            return Column(
+                              children: [
+                                ForumThreadWidget(
+                                    discuz, user, _forumThreadList[index]),
+                                Divider(),
+                                GoogleBannerAdWidget(),
+                                Divider()
+                              ],
+                            );
+                          }
+                          else{
+                            return Column(
+                              children: [
+                                ForumThreadWidget(
+                                    discuz, user, _forumThreadList[index]),
+                                Divider(),
+
+
+                              ],
+                            );
+                          }
+
                         },
                         childCount: _forumThreadList.length,
+
                       ),
                     ),
                   ],

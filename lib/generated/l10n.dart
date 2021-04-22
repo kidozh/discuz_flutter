@@ -1316,6 +1316,26 @@ class S {
       args: [],
     );
   }
+
+  /// `AD`
+  String get googleAdTitle {
+    return Intl.message(
+      'AD',
+      name: 'googleAdTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Advertisement provided by Google`
+  String get googleAdSubTitle {
+    return Intl.message(
+      'Advertisement provided by Google',
+      name: 'googleAdSubTitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

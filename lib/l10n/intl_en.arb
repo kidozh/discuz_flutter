@@ -130,5 +130,7 @@
   "nullDiscuzTitle": "No Discuz! BBS is selected",
   "nullDiscuzSubTitle": "Why not consider add a discuz forum?",
   "retry": "retry",
-  "chooseDiscuz": "Choose a BBS"
+  "chooseDiscuz": "Choose a BBS",
+  "googleAdTitle": "AD",
+  "googleAdSubTitle": "Advertisement provided by Google"
 }

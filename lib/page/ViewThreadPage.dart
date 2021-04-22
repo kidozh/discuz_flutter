@@ -116,13 +116,14 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
 
-    client.viewThreadRaw(tid, _page).then((value) {
-
-      log(value.toString());
-      // convert string to json
-      Map<String, dynamic> resultJson = jsonDecode(value);
-      ViewThreadResult result = ViewThreadResult.fromJson(resultJson);
-    });
+    // client.viewThreadRaw(tid, _page).then((value) {
+    //
+    //   log(value.toString());
+    //   // convert string to json
+    //   Map<String, dynamic> resultJson = jsonDecode(value);
+    //   ViewThreadResult result = ViewThreadResult.fromJson(resultJson);
+    //   log(result.threadVariables.threadInfo.subject);
+    // });
 
     client.viewThreadResult(tid, _page).then((value) {
       setState(() {
@@ -142,7 +143,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
         _controller.finishRefresh();
       }
       // check for loaded all?
-      log("Get list ${value.threadVariables.threadInfo.getReplyNumber()} ${_postList.length} ${value.threadVariables.threadInfo.replies}");
+      log("Get list ${value.threadVariables.threadInfo.allreplies} ${_postList.length} ${value.threadVariables.threadInfo.replies}");
       if (!_enableControlFinish) {
         _controller.finishLoad(
             noMore: _postList.length >=

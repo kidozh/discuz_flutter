@@ -54,17 +54,22 @@ Map<String, dynamic> _$ThreadVariablesToJson(ThreadVariables instance) =>
 
 DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) {
   return DetailedThreadInfo()
-    ..postableId = json['posttableid'] as String
-    ..typeId = json['typeid'] as String
+    ..tid = const StringToIntConverter().fromJson(json['tid'] as String)
+    ..fid = const StringToIntConverter().fromJson(json['fid'] as String)
+    ..postableId = json['posttableid'] as String? ?? '0'
+    ..typeId = const StringToIntConverter().fromJson(json['typeid'] as String)
+    ..author = json['author'] as String
+    ..subject = json['subject'] as String
     ..readPerm =
         const StringToIntConverter().fromJson(json['readperm'] as String)
+    ..price = const StringToIntConverter().fromJson(json['price'] as String)
     ..authorId =
         const StringToIntConverter().fromJson(json['authorid'] as String)
     ..sortId = json['sortid'] as String
-    ..lastPostTime = json['dateline'] as String
     ..lastPostTimeString = json['lastpost'] as String
     ..lastposter = json['lastposter'] as String? ?? ''
     ..displayOrder = json['displayorder'] as String
+    ..views = json['views'] as String
     ..replies = const StringToIntConverter().fromJson(json['replies'] as String)
     ..highlight = json['highlight'] as String? ?? ''
     ..special = json['special'] as String? ?? '0'
@@ -79,6 +84,7 @@ DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) {
     ..recommends = json['recommends'] as String? ?? '0'
     ..recommend_add = json['recommend_add'] as String? ?? '0'
     ..recommend_sub = json['recommend_sub'] as String? ?? '0'
+    ..isgroup = json['isgroup'] as String
     ..favtimes = json['favtimes'] as String? ?? '0'
     ..sharedtimes = json['sharedtimes'] as String? ?? '0'
     ..heats = json['heats'] as String? ?? '0'
@@ -92,7 +98,11 @@ DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) {
     ..maxPosition = json['maxposition'] as String
     ..comments = json['comments'] as String? ?? '0'
     ..hidden = json['hidden'] as String? ?? '0'
-    ..allreplies = json['allreplies'] as String
+    ..threadtable = json['threadtable'] as String
+    ..threadtableid = json['threadtableid'] as String
+    ..posttable = json['posttable'] as String
+    ..allreplies =
+        const StringToIntConverter().fromJson(json['allreplies'] as String)
     ..archiveid = json['archiveid'] as String? ?? ''
     ..subjectenc = json['subjectenc'] as String? ?? ''
     ..short_subject = json['short_subject'] as String? ?? ''
@@ -101,24 +111,25 @@ DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) {
     ..recommend = json['recommend'] as String? ?? ''
     ..recommendLevel = json['recommendlevel'] as String? ?? '0'
     ..heatLevel = json['heatlevel'] as String? ?? '0'
-    ..freeMessage = json['freemessage'] as String? ?? ''
-    ..creditRule = json['replycredit_rule'] == null
-        ? null
-        : ReplyCreditRule.fromJson(
-            json['replycredit_rule'] as Map<String, dynamic>);
+    ..freeMessage = json['freemessage'] as String? ?? '';
 }
 
 Map<String, dynamic> _$DetailedThreadInfoToJson(DetailedThreadInfo instance) =>
     <String, dynamic>{
+      'tid': const StringToIntConverter().toJson(instance.tid),
+      'fid': const StringToIntConverter().toJson(instance.fid),
       'posttableid': instance.postableId,
-      'typeid': instance.typeId,
+      'typeid': const StringToIntConverter().toJson(instance.typeId),
+      'author': instance.author,
+      'subject': instance.subject,
       'readperm': const StringToIntConverter().toJson(instance.readPerm),
+      'price': const StringToIntConverter().toJson(instance.price),
       'authorid': const StringToIntConverter().toJson(instance.authorId),
       'sortid': instance.sortId,
-      'dateline': instance.lastPostTime,
       'lastpost': instance.lastPostTimeString,
       'lastposter': instance.lastposter,
       'displayorder': instance.displayOrder,
+      'views': instance.views,
       'replies': const StringToIntConverter().toJson(instance.replies),
       'highlight': instance.highlight,
       'special': instance.special,
@@ -133,6 +144,7 @@ Map<String, dynamic> _$DetailedThreadInfoToJson(DetailedThreadInfo instance) =>
       'recommends': instance.recommends,
       'recommend_add': instance.recommend_add,
       'recommend_sub': instance.recommend_sub,
+      'isgroup': instance.isgroup,
       'favtimes': instance.favtimes,
       'sharedtimes': instance.sharedtimes,
       'heats': instance.heats,
@@ -146,7 +158,10 @@ Map<String, dynamic> _$DetailedThreadInfoToJson(DetailedThreadInfo instance) =>
       'maxposition': instance.maxPosition,
       'comments': instance.comments,
       'hidden': instance.hidden,
-      'allreplies': instance.allreplies,
+      'threadtable': instance.threadtable,
+      'threadtableid': instance.threadtableid,
+      'posttable': instance.posttable,
+      'allreplies': const StringToIntConverter().toJson(instance.allreplies),
       'archiveid': instance.archiveid,
       'subjectenc': instance.subjectenc,
       'short_subject': instance.short_subject,
@@ -156,7 +171,6 @@ Map<String, dynamic> _$DetailedThreadInfoToJson(DetailedThreadInfo instance) =>
       'recommendlevel': instance.recommendLevel,
       'heatlevel': instance.heatLevel,
       'freemessage': instance.freeMessage,
-      'replycredit_rule': instance.creditRule,
     };
 
 ReplyCreditRule _$ReplyCreditRuleFromJson(Map<String, dynamic> json) {

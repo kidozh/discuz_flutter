@@ -64,6 +64,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "floatViewDescribe" : MessageLookupByLibrary.simpleMessage("At the top or bottom view floating on the list"),
     "forumDisplayTitle" : MessageLookupByLibrary.simpleMessage("Display a forum"),
     "github" : MessageLookupByLibrary.simpleMessage("Github"),
+    "googleAdSubTitle" : MessageLookupByLibrary.simpleMessage("Advertisement provided by Google"),
+    "googleAdTitle" : MessageLookupByLibrary.simpleMessage("AD"),
     "hangzhou" : MessageLookupByLibrary.simpleMessage("China - HangZhou"),
     "headerFloat" : MessageLookupByLibrary.simpleMessage("Header float"),
     "headerFloatDescribe" : MessageLookupByLibrary.simpleMessage("Header is displayed on the list"),
