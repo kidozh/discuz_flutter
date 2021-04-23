@@ -1,5 +1,6 @@
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 
 import 'BaseResult.dart';
 import 'ErrorResult.dart';

@@ -1,5 +1,6 @@
 import 'dart:core';
 import 'dart:core';
+import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -24,10 +25,9 @@ class BaseVariableResult{
 
   String member_username = "";
   String member_avatar = "";
-  String member_uid = "";
-  int getUid(){
-    return int.parse(this.member_uid);
-  }
+  @StringToIntConverter()
+  int member_uid = 0;
+
 
   String groupid = "";
   int getGroupId(){
@@ -47,7 +47,7 @@ class BaseVariableResult{
   User getUser(Discuz discuz){
     return User(null, this.getAuth(), saltkey,
         this.member_username, this.member_avatar,
-        this.getGroupId(), this.getUid(), this.getReadAccessScore(),
+        this.getGroupId(), this.member_uid, this.getReadAccessScore(),
         discuz.id!);
   }
 

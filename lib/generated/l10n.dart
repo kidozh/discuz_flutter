@@ -1386,6 +1386,26 @@ class S {
       args: [],
     );
   }
+
+  /// `User {username} expired`
+  String userExpiredTitle(Object username) {
+    return Intl.message(
+      'User $username expired',
+      name: 'userExpiredTitle',
+      desc: '',
+      args: [username],
+    );
+  }
+
+  /// `The current user is expired, some function may not work.`
+  String get userExpiredSubtitle {
+    return Intl.message(
+      'The current user is expired, some function may not work.',
+      name: 'userExpiredSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

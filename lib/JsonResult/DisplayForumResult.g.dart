@@ -29,15 +29,6 @@ Map<String, dynamic> _$DisplayForumResultToJson(DisplayForumResult instance) =>
 
 ForumVariables _$ForumVariablesFromJson(Map<String, dynamic> json) {
   return ForumVariables()
-    ..cookiepre = json['cookiepre'] as String
-    ..auth = json['auth'] as String?
-    ..saltkey = json['saltkey'] as String
-    ..member_username = json['member_username'] as String
-    ..member_avatar = json['member_avatar'] as String
-    ..member_uid = json['member_uid'] as String
-    ..groupid = json['groupid'] as String
-    ..readaccess = json['readaccess'] as String
-    ..ismoderator = json['ismoderator'] as String?
     ..noticeCount = NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
     ..forum = ForumDetail.fromJson(json['forum'] as Map<String, dynamic>)
     ..group = Group.fromJson(json['group'] as Map<String, dynamic>)
@@ -54,15 +45,6 @@ ForumVariables _$ForumVariablesFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$ForumVariablesToJson(ForumVariables instance) =>
     <String, dynamic>{
-      'cookiepre': instance.cookiepre,
-      'auth': instance.auth,
-      'saltkey': instance.saltkey,
-      'member_username': instance.member_username,
-      'member_avatar': instance.member_avatar,
-      'member_uid': instance.member_uid,
-      'groupid': instance.groupid,
-      'readaccess': instance.readaccess,
-      'ismoderator': instance.ismoderator,
       'notice': instance.noticeCount,
       'forum': instance.forum,
       'group': instance.group,

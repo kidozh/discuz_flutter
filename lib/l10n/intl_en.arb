@@ -137,5 +137,12 @@
   "loginTitle": "Login",
   "loginSubtitle": "Add a new user",
   "incognitoTitle": "Incognito mode",
-  "incognitoSubtitle": "You will browse the forum in incognito mode"
+  "incognitoSubtitle": "You will browse the forum in incognito mode",
+  "userExpiredTitle": "User {username} expired",
+  "@userExpiredTitle": {
+    "placeholders": {
+      "username": {}
+    }
+  },
+  "userExpiredSubtitle": "The current user is expired, some function may not work."
 }

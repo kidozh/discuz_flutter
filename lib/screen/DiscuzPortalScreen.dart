@@ -113,6 +113,14 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       if (!_enableControlFinish) {
         _controller.finishLoad(noMore: true);
       }
+
+      // check with user
+      if(value.discuzIndexVariables.member_username != user!.uid){
+        setState(() {
+          _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle);
+        });
+      }
+
     }).catchError((onError) {
       EasyLoading.showError('${onError}');
       log(onError);

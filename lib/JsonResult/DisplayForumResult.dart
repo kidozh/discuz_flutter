@@ -8,6 +8,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 import 'BaseResult.dart';
 import 'ErrorResult.dart';
+import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 
 
 part 'DisplayForumResult.g.dart';

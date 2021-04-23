@@ -34,7 +34,8 @@ ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) {
     ..saltkey = json['saltkey'] as String
     ..member_username = json['member_username'] as String
     ..member_avatar = json['member_avatar'] as String
-    ..member_uid = json['member_uid'] as String
+    ..member_uid =
+        const StringToIntConverter().fromJson(json['member_uid'] as String)
     ..groupid = json['groupid'] as String
     ..readaccess = json['readaccess'] as String
     ..ismoderator = json['ismoderator'] as String?
@@ -59,7 +60,7 @@ Map<String, dynamic> _$ThreadVariablesToJson(ThreadVariables instance) =>
       'saltkey': instance.saltkey,
       'member_username': instance.member_username,
       'member_avatar': instance.member_avatar,
-      'member_uid': instance.member_uid,
+      'member_uid': const StringToIntConverter().toJson(instance.member_uid),
       'groupid': instance.groupid,
       'readaccess': instance.readaccess,
       'ismoderator': instance.ismoderator,

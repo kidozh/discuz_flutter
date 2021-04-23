@@ -21,6 +21,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static m0(pos) => "第${pos}层";
 
+  static m1(username) => "用户 ${username} 已失效";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
     "about" : MessageLookupByLibrary.simpleMessage("关于"),
@@ -149,6 +151,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "topBouncing" : MessageLookupByLibrary.simpleMessage("顶部回弹"),
     "topBouncingDescribe" : MessageLookupByLibrary.simpleMessage("顶部可越界"),
     "updateAt" : MessageLookupByLibrary.simpleMessage("更新于 %T"),
+    "userExpiredSubtitle" : MessageLookupByLibrary.simpleMessage("当前用户授权已过期，你需要重新登录以重新激活此用户。"),
+    "userExpiredTitle" : m1,
     "userProfile" : MessageLookupByLibrary.simpleMessage("个人中心"),
     "userProfileDescribe" : MessageLookupByLibrary.simpleMessage("带回弹效果的个人中心"),
     "vertical" : MessageLookupByLibrary.simpleMessage("垂直"),

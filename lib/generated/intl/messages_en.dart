@@ -21,6 +21,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static m0(pos) => "# ${pos}";
 
+  static m1(username) => "User ${username} expired";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
     "about" : MessageLookupByLibrary.simpleMessage("About"),
@@ -149,6 +151,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "topBouncing" : MessageLookupByLibrary.simpleMessage("Top bouncing"),
     "topBouncingDescribe" : MessageLookupByLibrary.simpleMessage("Top can be crossed"),
     "updateAt" : MessageLookupByLibrary.simpleMessage("Update at %T"),
+    "userExpiredSubtitle" : MessageLookupByLibrary.simpleMessage("The current user is expired, some function may not work."),
+    "userExpiredTitle" : m1,
     "userProfile" : MessageLookupByLibrary.simpleMessage("User Profile"),
     "userProfileDescribe" : MessageLookupByLibrary.simpleMessage("User Profile with the springback effect"),
     "vertical" : MessageLookupByLibrary.simpleMessage("Vertical"),

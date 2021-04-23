@@ -137,5 +137,12 @@
   "loginTitle": "登录",
   "loginSubtitle": "添加一个新的用户",
   "incognitoTitle": "匿名模式",
-  "incognitoSubtitle": "某些功能可能不可用"
+  "incognitoSubtitle": "某些功能可能不可用",
+  "userExpiredTitle": "用户 {username} 已失效",
+  "@userExpiredTitle": {
+    "placeholders": {
+      "username": {}
+    }
+  },
+  "userExpiredSubtitle": "当前用户授权已过期，你需要重新登录以重新激活此用户。"
 }
