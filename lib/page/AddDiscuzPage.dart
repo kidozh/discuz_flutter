@@ -44,7 +44,7 @@ class _AddDiscuzFormFieldState
   final TextEditingController _urlController = new TextEditingController();
 
   Future<void> _saveDiscuzInDb(Discuz discuz) async {
-    final db = await DBHelper.getDiscuzDb();
+    final db = await DBHelper.getAppDb();
     final dao = db.discuzDao;
     dao.insertDiscuz(discuz);
     // pop the activity

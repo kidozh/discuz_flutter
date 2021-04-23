@@ -1346,6 +1346,46 @@ class S {
       args: [],
     );
   }
+
+  /// `Login`
+  String get loginTitle {
+    return Intl.message(
+      'Login',
+      name: 'loginTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add a new user`
+  String get loginSubtitle {
+    return Intl.message(
+      'Add a new user',
+      name: 'loginSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Incognito mode`
+  String get incognitoTitle {
+    return Intl.message(
+      'Incognito mode',
+      name: 'incognitoTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You will browse the forum in incognito mode`
+  String get incognitoSubtitle {
+    return Intl.message(
+      'You will browse the forum in incognito mode',
+      name: 'incognitoSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

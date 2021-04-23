@@ -1,9 +1,13 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:discuz_flutter/JsonResult/LoginResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
+import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -52,25 +56,29 @@ class _LoginFormFieldState
 
   _LoginFormFieldState(@required this.discuz){}
 
-  void _verifyAccountAndPassword() {
+  void _verifyAccountAndPassword() async{
+    // create a dio
+    var dio =  Dio();
+    PersistCookieJar cookieJar = await NetworkUtils.getTemporaryCookieJar();
+    dio.interceptors.add(CookieManager(cookieJar));
 
     String account = _accountController.text;
     String password = _passwdController.text;
+
     log("Recv url " + discuz.baseURL);
     // check the availability
-    final dio = Dio();
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
     setState(() {
       _isLoading = true;
     });
 
-    client.sendLoginRequestInString(account, password).then((value) {
-      log(value);
-      LoginResult.fromJson(jsonDecode(value));
+    // client.sendLoginRequestInString(account, password).then((value) {
+    //   log(value);
+    //   LoginResult.fromJson(jsonDecode(value));
+    //
+    // });
 
-    });
-
-    client.sendLoginRequest(account,password).then((value) {
+    client.sendLoginRequest(account,password).then((value) async {
       setState(() {
         _isLoading = false;
         error = "";
@@ -78,8 +86,28 @@ class _LoginFormFieldState
       // check if the
       log("Recv a result ${value}");
       // if user is validated
+      User user = value.loginVariables.getUser(discuz);
       if(value.errorResult!.key == "login_succeed"){
-        _saveDiscuzUserInDb(discuz, value.loginVariables.getUser(discuz));
+        // save it in database
+        try{
+          final db = await DBHelper.getAppDb();
+          final dao = db.userDao;
+
+          int primaryKey = await dao.insert(user);
+
+          // save it in cookiejar
+          List<Cookie> cookies = await cookieJar.loadForRequest(Uri.parse(discuz.baseURL));
+          PersistCookieJar savedCookieJar = await NetworkUtils.getPersistentCookieJarByUserId(primaryKey);
+          log("cookies ${cookies}");
+          savedCookieJar.saveFromResponse(Uri.parse(discuz.baseURL), cookies);
+          // pop the activity
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('成功添加用户(${user.username})至${discuz.siteName}论坛')));
+          Navigator.pop(context);
+        }
+        catch(e,s){
+          log("${e},${s}");
+        }
       }
       else{
         setState(() {
@@ -114,10 +142,10 @@ class _LoginFormFieldState
 
   Future<void> _saveDiscuzUserInDb(Discuz discuz, User user) async {
     try{
-      final db = await DBHelper.getDiscuzDb();
-      final dao = db.discuzDao;
+      final db = await DBHelper.getAppDb();
+      final dao = db.userDao;
 
-      dao.insertDiscuz(discuz);
+      dao.insert(user);
       // pop the activity
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('成功添加用户(${user.username})至${discuz.siteName}论坛')));

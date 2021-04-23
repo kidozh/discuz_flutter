@@ -9,4 +9,12 @@ class GlobalTheme {
       visualDensity: VisualDensity.adaptivePlatformDensity,
     );
   }
+
+  static ThemeData getDarkThemeData(){
+    return ThemeData(
+      primarySwatch: Colors.indigo,
+      accentColor: Colors.amber,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+    );
+  }
 }

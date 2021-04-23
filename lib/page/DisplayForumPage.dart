@@ -7,8 +7,10 @@ import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
+import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
+import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
 import 'package:discuz_flutter/widget/GoogleBannerAdWidget.dart';
@@ -22,6 +24,7 @@ import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:provider/provider.dart';
 
 
 
@@ -115,18 +118,20 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
     _loadForumContent();
   }
 
-  void _loadForumContent() {
+  Future<void> _loadForumContent() async {
     // check the availability
     log("Base url ${discuz.baseURL} ${_page}");
-    final dio = Dio();
+    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    var dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
     setState(() {
       _isLoading = true;
     });
 
-    client.displayForumRaw(fid.toString(), _page).then((value){
-      DisplayForumResult result = DisplayForumResult.fromJson(jsonDecode(value));
-    });
+    // client.displayForumRaw(fid.toString(), _page).then((value){
+    //   log(value);
+    //   DisplayForumResult result = DisplayForumResult.fromJson(jsonDecode(value));
+    // });
 
     client.displayForumResult(fid.toString(), _page).then((value) {
       setState(() {
@@ -304,8 +309,11 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
 
                             return Column(
                               children: [
-                                ForumThreadWidget(
-                                    discuz, user, _forumThreadList[index]),
+                                Consumer<DiscuzAndUserNotifier>(builder: (context,discuzAndUser, child){
+                                  return ForumThreadWidget(
+                                      discuz, discuzAndUser.user, _forumThreadList[index]);
+                                }),
+
                                 Divider(),
                                 GoogleBannerAdWidget(),
                                 Divider()

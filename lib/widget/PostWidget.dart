@@ -18,10 +18,9 @@ import 'package:webview_flutter/webview_flutter.dart';
 class PostWidget extends StatelessWidget {
   Post _post;
   Discuz _discuz;
-  User? _user;
   int _authorId;
 
-  PostWidget(this._discuz, this._user, this._post, this._authorId);
+  PostWidget(this._discuz, this._post, this._authorId);
 
   @override
   Widget build(BuildContext context) {

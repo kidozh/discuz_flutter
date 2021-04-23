@@ -133,5 +133,9 @@
   "chooseDiscuz": "选择一个论坛",
   "googleAdTitle": "广告",
   "googleAdSubTitle": "由Google提供的广告",
-  "settingTitle": "设置"
+  "settingTitle": "设置",
+  "loginTitle": "登录",
+  "loginSubtitle": "添加一个新的用户",
+  "incognitoTitle": "匿名模式",
+  "incognitoSubtitle": "某些功能可能不可用"
 }

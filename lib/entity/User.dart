@@ -3,7 +3,6 @@ import 'package:floor/floor.dart';
 import 'Discuz.dart';
 
 @Entity(
-    tableName:"User",
     foreignKeys:[
       ForeignKey(
           childColumns: ["discuz_id"],

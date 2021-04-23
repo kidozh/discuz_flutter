@@ -12,6 +12,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
+import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumPartitionWidget.dart';
 import 'package:flutter/material.dart';
@@ -46,10 +47,8 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
 
   late Dio _dio;
   late MobileApiClient _client;
-  bool _isLoading = false;
   DiscuzIndexResult? result = null;
   DiscuzError? _error;
-  bool _loaded = false;
 
   late EasyRefreshController _controller;
   late ScrollController _scrollController;
@@ -77,9 +76,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
   // 底部回弹
   bool _bottomBouncing = true;
 
-  _DiscuzPortalState() {
-
-  }
+  _DiscuzPortalState();
 
   @override
   void initState() {
@@ -90,21 +87,21 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
 
   }
 
-  void _loadPortalContent(Discuz discuz) {
-    this._dio = Dio();
+  Future<void> _loadPortalContent(Discuz discuz) async {
+    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
-    setState(() {
-      _isLoading = true;
-    });
 
+    // _client.getDiscuzPortalRaw().then((value){
+    //   log(value);
+    //
+    // });
 
 
     _client.getDiscuzPortalResult().then((value) {
       // render page
       setState(() {
         result = value;
-        _isLoading = false;
-
       });
       if(value.getErrorString()!= null){
         EasyLoading.showError(value.getErrorString()!);
@@ -126,7 +123,6 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       setState(() {
         _error =
             DiscuzError(onError.runtimeType.toString(), onError.toString());
-        _isLoading = false;
       });
     });
   }

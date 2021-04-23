@@ -29,6 +29,15 @@ Map<String, dynamic> _$ViewThreadResultToJson(ViewThreadResult instance) =>
 
 ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) {
   return ThreadVariables()
+    ..cookiepre = json['cookiepre'] as String
+    ..auth = json['auth'] as String?
+    ..saltkey = json['saltkey'] as String
+    ..member_username = json['member_username'] as String
+    ..member_avatar = json['member_avatar'] as String
+    ..member_uid = json['member_uid'] as String
+    ..groupid = json['groupid'] as String
+    ..readaccess = json['readaccess'] as String
+    ..ismoderator = json['ismoderator'] as String?
     ..noticeCount = NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
     ..threadInfo =
         DetailedThreadInfo.fromJson(json['thread'] as Map<String, dynamic>)
@@ -45,6 +54,15 @@ ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$ThreadVariablesToJson(ThreadVariables instance) =>
     <String, dynamic>{
+      'cookiepre': instance.cookiepre,
+      'auth': instance.auth,
+      'saltkey': instance.saltkey,
+      'member_username': instance.member_username,
+      'member_avatar': instance.member_avatar,
+      'member_uid': instance.member_uid,
+      'groupid': instance.groupid,
+      'readaccess': instance.readaccess,
+      'ismoderator': instance.ismoderator,
       'notice': instance.noticeCount,
       'thread': instance.threadInfo,
       'postlist': instance.postList,

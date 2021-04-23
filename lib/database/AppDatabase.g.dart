@@ -1,26 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'UserDatabase.dart';
+part of 'AppDatabase.dart';
 
 // **************************************************************************
 // FloorGenerator
 // **************************************************************************
 
-class $FloorUserDatabase {
+class $FloorAppDatabase {
   /// Creates a database builder for a persistent database.
   /// Once a database is built, you should keep a reference to it and re-use it.
-  static _$UserDatabaseBuilder databaseBuilder(String name) =>
-      _$UserDatabaseBuilder(name);
+  static _$AppDatabaseBuilder databaseBuilder(String name) =>
+      _$AppDatabaseBuilder(name);
 
   /// Creates a database builder for an in memory database.
   /// Information stored in an in memory database disappears when the process is killed.
   /// Once a database is built, you should keep a reference to it and re-use it.
-  static _$UserDatabaseBuilder inMemoryDatabaseBuilder() =>
-      _$UserDatabaseBuilder(null);
+  static _$AppDatabaseBuilder inMemoryDatabaseBuilder() =>
+      _$AppDatabaseBuilder(null);
 }
 
-class _$UserDatabaseBuilder {
-  _$UserDatabaseBuilder(this.name);
+class _$AppDatabaseBuilder {
+  _$AppDatabaseBuilder(this.name);
 
   final String? name;
 
@@ -29,23 +29,23 @@ class _$UserDatabaseBuilder {
   Callback? _callback;
 
   /// Adds migrations to the builder.
-  _$UserDatabaseBuilder addMigrations(List<Migration> migrations) {
+  _$AppDatabaseBuilder addMigrations(List<Migration> migrations) {
     _migrations.addAll(migrations);
     return this;
   }
 
   /// Adds a database [Callback] to the builder.
-  _$UserDatabaseBuilder addCallback(Callback callback) {
+  _$AppDatabaseBuilder addCallback(Callback callback) {
     _callback = callback;
     return this;
   }
 
   /// Creates the database and initializes it.
-  Future<UserDatabase> build() async {
+  Future<AppDatabase> build() async {
     final path = name != null
         ? await sqfliteDatabaseFactory.getDatabasePath(name!)
         : ':memory:';
-    final database = _$UserDatabase();
+    final database = _$AppDatabase();
     database.database = await database.open(
       path,
       _migrations,
@@ -55,12 +55,14 @@ class _$UserDatabaseBuilder {
   }
 }
 
-class _$UserDatabase extends UserDatabase {
-  _$UserDatabase([StreamController<String>? listener]) {
+class _$AppDatabase extends AppDatabase {
+  _$AppDatabase([StreamController<String>? listener]) {
     changeListener = listener ?? StreamController<String>.broadcast();
   }
 
   UserDao? _userDaoInstance;
+
+  DiscuzDao? _discuzDaoInstance;
 
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
@@ -93,6 +95,11 @@ class _$UserDatabase extends UserDatabase {
   @override
   UserDao get userDao {
     return _userDaoInstance ??= _$UserDao(database, changeListener);
+  }
+
+  @override
+  DiscuzDao get discuzDao {
+    return _discuzDaoInstance ??= _$DiscuzDao(database, changeListener);
   }
 }
 
@@ -157,7 +164,7 @@ class _$UserDao extends UserDao {
 
   @override
   Future<List<User>> findAllUsersByDiscuzId(int discuzId) async {
-    return _queryAdapter.queryList('SELECT * FROM User WHERE discuzId=?1',
+    return _queryAdapter.queryList('SELECT * FROM User WHERE discuz_id=?1',
         mapper: (Map<String, Object?> row) => User(
             row['id'] as int?,
             row['auth'] as String,
@@ -172,7 +179,107 @@ class _$UserDao extends UserDao {
   }
 
   @override
-  Future<void> insert(User user) async {
-    await _userInsertionAdapter.insert(user, OnConflictStrategy.replace);
+  Stream<List<User>> findAllUsersStreamByDiscuzId(int discuzId) {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM User WHERE discuz_id=?1',
+        mapper: (Map<String, Object?> row) => User(
+            row['id'] as int?,
+            row['auth'] as String,
+            row['saltkey'] as String,
+            row['username'] as String,
+            row['avatarUrl'] as String,
+            row['groupId'] as int,
+            row['uid'] as int,
+            row['readPerm'] as int,
+            row['discuz_id'] as int),
+        arguments: [discuzId],
+        queryableName: 'User',
+        isView: false);
+  }
+
+  @override
+  Future<int> insert(User user) {
+    return _userInsertionAdapter.insertAndReturnId(
+        user, OnConflictStrategy.replace);
+  }
+}
+
+class _$DiscuzDao extends DiscuzDao {
+  _$DiscuzDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database, changeListener),
+        _discuzInsertionAdapter = InsertionAdapter(
+            database,
+            'Discuz',
+            (Discuz item) => <String, Object?>{
+                  'id': item.id,
+                  'discuzVersion': item.discuzVersion,
+                  'charset': item.charset,
+                  'apiVersion': item.apiVersion,
+                  'pluginVersion': item.pluginVersion,
+                  'regname': item.regname,
+                  'qqconnect': item.qqconnect ? 1 : 0,
+                  'wsqqqconnect': item.wsqqqconnect,
+                  'wsqhideregister': item.wsqhideregister,
+                  'siteName': item.siteName,
+                  'siteId': item.siteId,
+                  'uCenterURL': item.uCenterURL,
+                  'defaultFid': item.defaultFid,
+                  'baseURL': item.baseURL
+                },
+            changeListener);
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<Discuz> _discuzInsertionAdapter;
+
+  @override
+  Future<List<Discuz>> findAllDiscuzs() async {
+    return _queryAdapter.queryList('SELECT * FROM Discuz',
+        mapper: (Map<String, Object?> row) => Discuz(
+            row['id'] as int?,
+            row['baseURL'] as String,
+            row['discuzVersion'] as String,
+            row['charset'] as String,
+            row['apiVersion'] as int,
+            row['pluginVersion'] as String,
+            row['regname'] as String,
+            (row['qqconnect'] as int) != 0,
+            row['wsqqqconnect'] as String,
+            row['wsqhideregister'] as String,
+            row['siteName'] as String,
+            row['siteId'] as String,
+            row['uCenterURL'] as String,
+            row['defaultFid'] as String));
+  }
+
+  @override
+  Stream<List<Discuz>> findAllDiscuzStream() {
+    return _queryAdapter.queryListStream('SELECT * FROM Discuz',
+        mapper: (Map<String, Object?> row) => Discuz(
+            row['id'] as int?,
+            row['baseURL'] as String,
+            row['discuzVersion'] as String,
+            row['charset'] as String,
+            row['apiVersion'] as int,
+            row['pluginVersion'] as String,
+            row['regname'] as String,
+            (row['qqconnect'] as int) != 0,
+            row['wsqqqconnect'] as String,
+            row['wsqhideregister'] as String,
+            row['siteName'] as String,
+            row['siteId'] as String,
+            row['uCenterURL'] as String,
+            row['defaultFid'] as String),
+        queryableName: 'Discuz',
+        isView: false);
+  }
+
+  @override
+  Future<void> insertDiscuz(Discuz discuz) async {
+    await _discuzInsertionAdapter.insert(discuz, OnConflictStrategy.replace);
   }
 }

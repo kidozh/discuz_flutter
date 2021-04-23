@@ -133,5 +133,9 @@
   "chooseDiscuz": "Choose a BBS",
   "googleAdTitle": "AD",
   "googleAdSubTitle": "Advertisement provided by Google",
-  "settingTitle": "Settings"
+  "settingTitle": "Settings",
+  "loginTitle": "Login",
+  "loginSubtitle": "Add a new user",
+  "incognitoTitle": "Incognito mode",
+  "incognitoSubtitle": "You will browse the forum in incognito mode"
 }

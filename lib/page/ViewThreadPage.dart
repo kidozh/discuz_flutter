@@ -8,8 +8,10 @@ import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/entity/User.dart';
+import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
+import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
 import 'package:discuz_flutter/widget/PostWidget.dart';
@@ -23,6 +25,7 @@ import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:provider/provider.dart';
 
 class ViewThreadPage extends StatelessWidget {
   late final Discuz discuz;
@@ -109,10 +112,11 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
     _loadForumContent();
   }
 
-  void _loadForumContent() {
+  Future<void> _loadForumContent() async {
     // check the availability
     log("Base url ${discuz.baseURL} ${_page}");
-    final dio = Dio();
+    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
 
@@ -298,7 +302,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
                           return Column(
                             children: [
                               PostWidget(
-                                  discuz, user, _postList[index],_viewThreadResult.threadVariables.threadInfo.authorId),
+                                  discuz, _postList[index],_viewThreadResult.threadVariables.threadInfo.authorId),
                             ],
                           );
                         },
