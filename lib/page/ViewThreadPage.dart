@@ -75,6 +75,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
 
   late EasyRefreshController _controller;
   late ScrollController _scrollController;
+  ButtonState _sendReplyStatus = ButtonState.idle;
 
   // 反向
   bool _reverse = false;
@@ -115,6 +116,65 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
     _loadForumContent();
   }
 
+  Future<void> _sendReply() async{
+    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    String formhash = _viewThreadResult.threadVariables.formHash;
+    int fid = _viewThreadResult.threadVariables.fid;
+    if(user == null){
+      return ;
+    }
+    setState(() {
+      _sendReplyStatus = ButtonState.loading;
+    });
+    final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
+    String message = _replyController.text;
+    log("send ${tid}");
+
+    // client.sendReplyRaw(fid, tid, formhash, message,"","").then((value){
+    //   log(value);
+    // });
+
+    client.sendReplyResult(fid, tid, formhash, message, "", "").then((value){
+      if(value.errorResult!.key == "post_reply_succeed"){
+        EasyLoading.showSuccess('${value.errorResult!.content}(${value.errorResult!.key})');
+        setState(() {
+          _sendReplyStatus = ButtonState.success;
+        });
+        // delay
+        Future.delayed(Duration(seconds: 1),(){
+          setState(() {
+            _sendReplyStatus = ButtonState.idle;
+            _replyController.clear();
+          });
+        });
+      }
+      else{
+        setState(() {
+          _sendReplyStatus = ButtonState.fail;
+        });
+        Future.delayed(Duration(seconds: 1),(){
+          setState(() {
+            _sendReplyStatus = ButtonState.idle;
+            _replyController.clear();
+          });
+        });
+        EasyLoading.showError('${value.errorResult!.content}(${value.errorResult!.key})');
+
+
+      }
+    })
+    .catchError((onError){
+      EasyLoading.showError('${onError}');
+      setState(() {
+        _sendReplyStatus = ButtonState.fail;
+      });
+    });
+
+
+
+  }
+
   Future<void> _loadForumContent() async {
     // check the availability
     log("Base url ${discuz.baseURL} ${_page}");
@@ -123,14 +183,14 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
 
-    // client.viewThreadRaw(tid, _page).then((value) {
-    //
-    //   log(value.toString());
-    //   // convert string to json
-    //   Map<String, dynamic> resultJson = jsonDecode(value);
-    //   ViewThreadResult result = ViewThreadResult.fromJson(resultJson);
-    //   log(result.threadVariables.threadInfo.subject);
-    // });
+    client.viewThreadRaw(tid, _page).then((value) {
+
+      log(value.toString());
+      // convert string to json
+      Map<String, dynamic> resultJson = jsonDecode(value);
+      ViewThreadResult result = ViewThreadResult.fromJson(resultJson);
+      log(result.threadVariables.threadInfo.subject);
+    });
 
     client.viewThreadResult(tid, _page).then((value) {
       setState(() {
@@ -179,7 +239,6 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
 
       log("set successful result ${_viewThreadResult} ${_postList.length}");
     }).catchError((onError) {
-      log(onError);
       EasyLoading.showError('${onError}');
       if (!_enableControlFinish) {
         _controller.resetLoadState();
@@ -235,7 +294,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
                     bgColor: _headerFloat
                         ? Theme.of(context).primaryColor
                         : Colors.transparent,
-                    infoColor: _headerFloat ? Colors.black87 : Colors.teal,
+                    infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
                     float: _headerFloat,
                     enableHapticFeedback: _vibration,
                     refreshText: S.of(context).pullToRefresh,
@@ -346,11 +405,11 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
                           IconedButton(
                               text: S.of(context).sendReply,
                               icon: Icon(Icons.send,color: Colors.white),
-                              color: Colors.deepPurple.shade500),
+                              color: Theme.of(context).primaryColor),
                           ButtonState.loading:
                           IconedButton(
                               text: S.of(context).progressButtonReplySending,
-                              color: Colors.deepPurple.shade700),
+                              color: Theme.of(context).primaryColorDark),
                           ButtonState.fail:
                           IconedButton(
                               text: S.of(context).progressButtonReplyFailed,
@@ -363,9 +422,9 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
                               color: Colors.green.shade400)
                         },
                           onPressed: (){
-
+                            _sendReply();
                           },
-                          state: ButtonState.idle
+                          state: _sendReplyStatus
                       )
                     ],
                   );

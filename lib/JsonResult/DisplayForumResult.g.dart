@@ -35,10 +35,12 @@ ForumVariables _$ForumVariablesFromJson(Map<String, dynamic> json) {
     ..member_username = json['member_username'] as String
     ..member_avatar = json['member_avatar'] as String
     ..member_uid =
-        const StringToIntConverter().fromJson(json['member_uid'] as String)
-    ..groupId = const StringToIntConverter().fromJson(json['groupid'] as String)
+        const StringToIntConverter().fromJson(json['member_uid'] as String?)
+    ..groupId =
+        const StringToIntConverter().fromJson(json['groupid'] as String?)
     ..readAccess =
-        const StringToIntConverter().fromJson(json['readaccess'] as String)
+        const StringToIntConverter().fromJson(json['readaccess'] as String?)
+    ..formHash = json['formhash'] as String
     ..ismoderator = json['ismoderator'] as String?
     ..noticeCount = NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
     ..forum = ForumDetail.fromJson(json['forum'] as Map<String, dynamic>)
@@ -64,6 +66,7 @@ Map<String, dynamic> _$ForumVariablesToJson(ForumVariables instance) =>
       'member_uid': const StringToIntConverter().toJson(instance.member_uid),
       'groupid': const StringToIntConverter().toJson(instance.groupId),
       'readaccess': const StringToIntConverter().toJson(instance.readAccess),
+      'formhash': instance.formHash,
       'ismoderator': instance.ismoderator,
       'notice': instance.noticeCount,
       'forum': instance.forum,

@@ -158,5 +158,25 @@
       "uid": {}
     }
   },
-  "sendReplyHint": "Say something"
+  "sendReplyHint": "Say something",
+  "signInTitle": "Sign in at {discuzName}",
+  "@signInTitle": {
+    "placeholders": {
+      "discuzName": {}
+    }
+  },
+  "account": "Account",
+  "password": "Password",
+  "forgetPassword": "Forget password?",
+  "or": "or",
+  "signInViaBrowser": "Sign in by web",
+  "signUp": "Sign up",
+  "error": "Error",
+  "signInSuccessTitle": "User {username} sign in at {discuzName} successfully.",
+  "@signInSuccessTitle": {
+    "placeholders": {
+      "username": {},
+      "discuzName": {}
+    }
+  }
 }

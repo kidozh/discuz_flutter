@@ -21,6 +21,12 @@ class DiscuzAndUserNotifier with ChangeNotifier {
     notifyListeners();
   }
 
+  void initDiscuz(Discuz? discuz){
+    this.discuz = discuz;
+    this.user = null;
+    notifyListeners();
+  }
+
   void setUser(User? user){
     this.user = user;
     notifyListeners();

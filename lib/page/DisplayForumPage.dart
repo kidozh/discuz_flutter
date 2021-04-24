@@ -128,10 +128,10 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
       _isLoading = true;
     });
 
-    client.displayForumRaw(fid.toString(), _page).then((value){
-      log(value);
-      DisplayForumResult result = DisplayForumResult.fromJson(jsonDecode(value));
-    });
+    // client.displayForumRaw(fid.toString(), _page).then((value){
+    //   log(value);
+    //   DisplayForumResult result = DisplayForumResult.fromJson(jsonDecode(value));
+    // });
 
     client.displayForumResult(fid.toString(), _page).then((value) {
       setState(() {
@@ -238,7 +238,7 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
                     bgColor: _headerFloat
                         ? Theme.of(context).primaryColor
                         : Colors.transparent,
-                    infoColor: _headerFloat ? Colors.black87 : Colors.teal,
+                    infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
                     float: _headerFloat,
                     enableHapticFeedback: _vibration,
                     refreshText: S.of(context).pullToRefresh,

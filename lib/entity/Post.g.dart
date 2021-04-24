@@ -8,8 +8,8 @@ part of 'Post.dart';
 
 Post _$PostFromJson(Map<String, dynamic> json) {
   return Post()
-    ..pid = const StringToIntConverter().fromJson(json['pid'] as String)
-    ..tid = const StringToIntConverter().fromJson(json['tid'] as String)
+    ..pid = const StringToIntConverter().fromJson(json['pid'] as String?)
+    ..tid = const StringToIntConverter().fromJson(json['tid'] as String?)
     ..first = const StringToBoolConverter().fromJson(json['first'] as String)
     ..anonymous =
         const StringToBoolConverter().fromJson(json['anonymous'] as String)
@@ -18,19 +18,20 @@ Post _$PostFromJson(Map<String, dynamic> json) {
     ..message = json['message'] as String
     ..username = json['username'] as String
     ..authorId =
-        const StringToIntConverter().fromJson(json['authorid'] as String)
+        const StringToIntConverter().fromJson(json['authorid'] as String?)
     ..attachment =
-        const StringToIntConverter().fromJson(json['attachment'] as String)
-    ..status = const StringToIntConverter().fromJson(json['status'] as String)
+        const StringToIntConverter().fromJson(json['attachment'] as String?)
+    ..status = const StringToIntConverter().fromJson(json['status'] as String?)
     ..replycredit =
-        const StringToIntConverter().fromJson(json['replycredit'] as String)
-    ..number = const StringToIntConverter().fromJson(json['number'] as String)
+        const StringToIntConverter().fromJson(json['replycredit'] as String?)
+    ..number = const StringToIntConverter().fromJson(json['number'] as String?)
     ..position =
-        const StringToIntConverter().fromJson(json['position'] as String)
-    ..adminId = const StringToIntConverter().fromJson(json['adminid'] as String)
-    ..groupId = const StringToIntConverter().fromJson(json['groupid'] as String)
-    ..memberStatus =
-        const StringToIntConverter().fromJson(json['memberstatus'] as String)
+        const StringToIntConverter().fromJson(json['position'] as String?)
+    ..groupId =
+        const StringToIntConverter().fromJson(json['groupid'] as String?) ?? 0
+    ..memberStatus = const StringToIntConverter()
+            .fromJson(json['memberstatus'] as String?) ??
+        0
     ..publishAt =
         const SecondToDateTimeConverter().fromJson(json['dbdateline'] as String)
     ..attachmentIdList = (json['attachlist'] as List<dynamic>?)
@@ -59,7 +60,6 @@ Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
       'replycredit': const StringToIntConverter().toJson(instance.replycredit),
       'number': const StringToIntConverter().toJson(instance.number),
       'position': const StringToIntConverter().toJson(instance.position),
-      'adminid': const StringToIntConverter().toJson(instance.adminId),
       'groupid': const StringToIntConverter().toJson(instance.groupId),
       'memberstatus':
           const StringToIntConverter().toJson(instance.memberStatus),
@@ -73,14 +73,14 @@ Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
 Attachment _$AttachmentFromJson(Map<String, dynamic> json) {
   return Attachment()
     ..fileSize =
-        const StringToIntConverter().fromJson(json['filesize'] as String)
+        const StringToIntConverter().fromJson(json['filesize'] as String?)
     ..description = json['description'] as String? ?? ''
     ..readPerm =
-        const StringToIntConverter().fromJson(json['readperm'] as String)
-    ..picId = const StringToIntConverter().fromJson(json['picid'] as String)
+        const StringToIntConverter().fromJson(json['readperm'] as String?)
+    ..picId = const StringToIntConverter().fromJson(json['picid'] as String?)
     ..aidEncode = json['aidencode'] as String? ?? ''
     ..downloads =
-        const StringToIntConverter().fromJson(json['downloads'] as String)
+        const StringToIntConverter().fromJson(json['downloads'] as String?)
     ..imageAlt = json['imgalt'] as String? ?? '';
 }
 

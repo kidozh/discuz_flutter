@@ -34,6 +34,8 @@ class BaseVariableResult{
   @JsonKey(name: "readaccess")
   @StringToIntConverter()
   int readAccess = 0;
+  @JsonKey(name: "formhash")
+  String formHash = "";
 
   String? ismoderator;
 
@@ -46,6 +48,10 @@ class BaseVariableResult{
         this.groupId, this.member_uid, this.readAccess,
         discuz.id!);
   }
+
+  BaseVariableResult();
+
+  factory BaseVariableResult.fromJson(Map<String, dynamic> json) => _$BaseVariableResultFromJson(json);
 
 }
 

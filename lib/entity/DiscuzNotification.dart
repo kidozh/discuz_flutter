@@ -1,0 +1,32 @@
+
+import 'package:discuz_flutter/converter/SecondToDateTimeConverter.dart';
+import 'package:discuz_flutter/converter/StringToIntConverter.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'DiscuzNotification.g.dart';
+
+@JsonSerializable(ignoreUnannotated: true)
+class DiscuzNotification{
+  @JsonKey(defaultValue: 0)
+  @StringToIntConverter()
+  int id = 0, uid = 0;
+  String type = "";
+  @JsonKey(required: false, defaultValue: "")
+  String author = "";
+  @JsonKey(name: "authorid",defaultValue: 0)
+  @StringToIntConverter()
+  int authorId = 0;
+  String note = "";
+  @JsonKey(name: "dateline")
+  @SecondToDateTimeConverter()
+  DateTime dateline = DateTime.now();
+  @JsonKey(name: "from_id")
+  @StringToIntConverter()
+  int fromId = 0;
+  @JsonKey(name: "from_idtype", defaultValue: "")
+  String fromIdType = "";
+
+  DiscuzNotification();
+  factory DiscuzNotification.fromJson(Map<String, dynamic> json) => _$DiscuzNotificationFromJson(json);
+  Map<String, dynamic> toJson() => _$DiscuzNotificationToJson(this);
+}

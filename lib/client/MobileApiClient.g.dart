@@ -181,6 +181,59 @@ class _MobileApiClient implements MobileApiClient {
     return value;
   }
 
+  @override
+  Future<String> sendReplyRaw(
+      fid, tid, formhash, message, captchaHash, captchaCode) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = {
+      'fid': fid,
+      'tid': tid,
+      'formhash': formhash,
+      'message': message,
+      'seccodehash': captchaHash,
+      'seccodeverify': captchaCode
+    };
+    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded')
+        .compose(_dio.options,
+            '/api/mobile/index.php?version=4&module=sendreply&action=reply&replysubmit=yes&usesig=1&seccodemodid=forum::viewthread',
+            queryParameters: queryParameters, data: _data)
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<ApiResult> sendReplyResult(
+      fid, tid, formhash, message, captchaHash, captchaCode) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = {
+      'fid': fid,
+      'tid': tid,
+      'formhash': formhash,
+      'message': message,
+      'seccodehash': captchaHash,
+      'seccodeverify': captchaCode
+    };
+    final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
+        ApiResult>(Options(
+            method: 'POST',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded')
+        .compose(_dio.options,
+            '/api/mobile/index.php?version=4&module=sendreply&action=reply&replysubmit=yes&usesig=1&seccodemodid=forum::viewthread',
+            queryParameters: queryParameters, data: _data)
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ApiResult.fromJson(_result.data!);
+    return value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

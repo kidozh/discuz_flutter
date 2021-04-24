@@ -21,13 +21,18 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static m0(pos) => "第${pos}层";
 
-  static m1(username) => "用户 ${username} 已失效";
+  static m1(username, discuzName) => "用户 ${username} 已成功登录到 ${discuzName}。";
 
-  static m2(uid) => "用户编号： ${uid}";
+  static m2(discuzName) => "登录至 ${discuzName}";
+
+  static m3(username) => "用户 ${username} 已失效";
+
+  static m4(uid) => "用户编号： ${uid}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
     "about" : MessageLookupByLibrary.simpleMessage("关于"),
+    "account" : MessageLookupByLibrary.simpleMessage("账号"),
     "addNewDiscuz" : MessageLookupByLibrary.simpleMessage("添加一个论坛"),
     "aliPay" : MessageLookupByLibrary.simpleMessage("支付宝"),
     "anonymous" : MessageLookupByLibrary.simpleMessage("未知"),
@@ -62,10 +67,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "email" : MessageLookupByLibrary.simpleMessage("邮箱"),
     "emptyWidget" : MessageLookupByLibrary.simpleMessage("空视图"),
     "emptyWidgetDescribe" : MessageLookupByLibrary.simpleMessage("没有数据时显示空视图"),
+    "error" : MessageLookupByLibrary.simpleMessage("出错了"),
     "firstRefresh" : MessageLookupByLibrary.simpleMessage("首次刷新"),
     "firstRefreshDescribe" : MessageLookupByLibrary.simpleMessage("首次刷新视图"),
     "floatView" : MessageLookupByLibrary.simpleMessage("浮动视图"),
     "floatViewDescribe" : MessageLookupByLibrary.simpleMessage("顶部或底部视图浮动在列表上"),
+    "forgetPassword" : MessageLookupByLibrary.simpleMessage("忘记密码?"),
     "forumDisplayTitle" : MessageLookupByLibrary.simpleMessage("显示板块"),
     "github" : MessageLookupByLibrary.simpleMessage("Github"),
     "googleAdSubTitle" : MessageLookupByLibrary.simpleMessage("由Google提供的广告"),
@@ -112,6 +119,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "nullDiscuzSubTitle" : MessageLookupByLibrary.simpleMessage("现在就添加一个论坛吗？"),
     "nullDiscuzTitle" : MessageLookupByLibrary.simpleMessage("还没有指定一个论坛"),
     "old" : MessageLookupByLibrary.simpleMessage("年龄"),
+    "or" : MessageLookupByLibrary.simpleMessage("或者"),
+    "password" : MessageLookupByLibrary.simpleMessage("密码"),
     "payPal" : MessageLookupByLibrary.simpleMessage("PayPal"),
     "phoenixDescribe" : MessageLookupByLibrary.simpleMessage("金色校园"),
     "phone" : MessageLookupByLibrary.simpleMessage("电话"),
@@ -148,6 +157,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "sendReply" : MessageLookupByLibrary.simpleMessage("回帖"),
     "sendReplyHint" : MessageLookupByLibrary.simpleMessage("说些什么吧。"),
     "settingTitle" : MessageLookupByLibrary.simpleMessage("设置"),
+    "signInSuccessTitle" : m1,
+    "signInTitle" : m2,
+    "signInViaBrowser" : MessageLookupByLibrary.simpleMessage("使用网页登录"),
+    "signUp" : MessageLookupByLibrary.simpleMessage("注册"),
     "spaceDescribe" : MessageLookupByLibrary.simpleMessage("Flare动画 - 星空"),
     "star" : MessageLookupByLibrary.simpleMessage("Star 项目"),
     "style" : MessageLookupByLibrary.simpleMessage("样式"),
@@ -162,8 +175,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "topBouncingDescribe" : MessageLookupByLibrary.simpleMessage("顶部可越界"),
     "updateAt" : MessageLookupByLibrary.simpleMessage("更新于 %T"),
     "userExpiredSubtitle" : MessageLookupByLibrary.simpleMessage("当前用户授权已过期，你需要重新登录以重新激活此用户。"),
-    "userExpiredTitle" : m1,
-    "userIdTitle" : m2,
+    "userExpiredTitle" : m3,
+    "userIdTitle" : m4,
     "userProfile" : MessageLookupByLibrary.simpleMessage("个人中心"),
     "userProfileDescribe" : MessageLookupByLibrary.simpleMessage("带回弹效果的个人中心"),
     "vertical" : MessageLookupByLibrary.simpleMessage("垂直"),

@@ -158,5 +158,25 @@
       "uid": {}
     }
   },
-  "sendReplyHint": "说些什么吧。"
+  "sendReplyHint": "说些什么吧。",
+  "signInTitle": "登录至 {discuzName}",
+  "@signInTitle": {
+    "placeholders": {
+      "discuzName": {}
+    }
+  },
+  "account": "账号",
+  "password": "密码",
+  "forgetPassword": "忘记密码?",
+  "or": "或者",
+  "signInViaBrowser": "使用网页登录",
+  "signUp": "注册",
+  "error": "出错了",
+  "signInSuccessTitle": "用户 {username} 已成功登录到 {discuzName}。",
+  "@signInSuccessTitle": {
+    "placeholders": {
+      "username": {},
+      "discuzName": {}
+    }
+  }
 }

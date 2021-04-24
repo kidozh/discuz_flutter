@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/DiscuzNotification.dart';
 import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
@@ -16,12 +17,11 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:webview_flutter/webview_flutter.dart';
 
 // ignore: must_be_immutable
-class PostWidget extends StatelessWidget {
-  Post _post;
+class DiscuzNotificationWidget extends StatelessWidget {
+  DiscuzNotification _notification;
   Discuz _discuz;
-  int _authorId;
 
-  PostWidget(this._discuz, this._post, this._authorId);
+  DiscuzNotificationWidget(this._discuz, this._notification);
 
   @override
   Widget build(BuildContext context) {
@@ -37,17 +37,17 @@ class PostWidget extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.all(4.0),
                 child: CachedNetworkImage(
-                  imageUrl: URLUtils.getAvatarURL(_discuz, _post.authorId.toString()),
+                  imageUrl: URLUtils.getAvatarURL(_discuz, _notification.uid.toString()),
                   progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
                   errorWidget: (context, url, error) => Container(
                     width: 16.0,
                     height: 16.0,
                     child: CircleAvatar(
-                      backgroundColor: CustomizeColor.getColorBackgroundById(_post.authorId),
+                      backgroundColor: CustomizeColor.getColorBackgroundById(_notification.uid),
                       child: Text(
-                        _post.author.length != 0
-                            ? _post.author[0].toUpperCase()
-                            : S.of(context).anonymous,
+                        _notification.author.length != 0
+                            ? _notification.author[0].toUpperCase()
+                            : S.of(context).notification[0].toUpperCase(),
                         style: TextStyle(color: Colors.white,fontSize: 12),
                       ),
                     ),
@@ -71,12 +71,12 @@ class PostWidget extends StatelessWidget {
                           text: "",
                           style: DefaultTextStyle.of(context).style,
                           children: <TextSpan>[
-                            if(_authorId == _post.authorId)
-                              TextSpan(text: _post.author, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.deepOrange.shade400, fontSize: 12)),
-                            if(_authorId != _post.authorId)
-                              TextSpan(text: _post.author, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo.shade400, fontSize: 12)),
+                            if(_notification.author.isNotEmpty)
+                              TextSpan(text: _notification.author, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.deepOrange.shade400, fontSize: 12)),
+                            if(_notification.author.isEmpty)
+                              TextSpan(text: _notification.type, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo.shade400, fontSize: 12)),
                             TextSpan(text: ' · '),
-                            TextSpan(text: timeago.format(_post.publishAt, locale: locale.scriptCode), style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
+                            TextSpan(text: timeago.format(_notification.dateline, locale: locale.scriptCode), style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
 
                           ],
                         ),
@@ -84,7 +84,7 @@ class PostWidget extends StatelessWidget {
                       Spacer(),
                       Padding(
                         padding: EdgeInsets.only(right: 8.0),
-                        child: Text(S.of(context).postPosition(_post.position),style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12),),
+                        child: Text(S.of(context).postPosition(_notification.type),style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12),),
                       )
                       ,
 
@@ -94,7 +94,7 @@ class PostWidget extends StatelessWidget {
             ],
           ),
           // rich text rendering
-          DiscuzHtmlWidget(_post.message)
+          DiscuzHtmlWidget(_notification.note)
         ],
       ),
     ));

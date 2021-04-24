@@ -1,3 +1,4 @@
+import 'package:discuz_flutter/JsonResult/ApiResult.dart';
 import 'package:discuz_flutter/JsonResult/CheckResult.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
@@ -64,5 +65,32 @@ abstract class MobileApiClient {
   @GET("/api/mobile/index.php?version=4&module=viewthread")
   Future<String> viewThreadRaw(@Query("tid") int tid,@Query("page") int page);
 
+  // map{
+  // "seccodemodid", "forum::viewthread",
+  // "seccodehash" , CAPTCHA_HASH,
+  // "seccodeverify", CAPTCHA_CODE
+  // }
+  @POST("/api/mobile/index.php?version=4&module=sendreply&action=reply&replysubmit=yes&usesig=1&seccodemodid=forum::viewthread")
+  @FormUrlEncoded()
+  Future<String> sendReplyRaw(
+      @Field() int fid,
+      @Field("tid") int tid,
+      @Field("formhash") String formhash,
+      @Field("message") String message,
+      @Field("seccodehash") String captchaHash,
+      @Field("seccodeverify") String captchaCode,
 
+      // @Body() Map<String, dynamic> map
+      );
+
+  @POST("/api/mobile/index.php?version=4&module=sendreply&action=reply&replysubmit=yes&usesig=1&seccodemodid=forum::viewthread")
+  @FormUrlEncoded()
+  Future<ApiResult> sendReplyResult(
+      @Field() int fid,
+      @Field("tid") int tid,
+      @Field("formhash") String formhash,
+      @Field("message") String message,
+      @Field("seccodehash") String captchaHash,
+      @Field("seccodeverify") String captchaCode,
+      );
 }

@@ -7,7 +7,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'Post.g.dart';
 
-@JsonSerializable(disallowUnrecognizedKeys: false)
+@JsonSerializable()
 class Post{
   @StringToIntConverter()
   int pid = 0;
@@ -30,13 +30,13 @@ class Post{
   int attachment = 0;
   @StringToIntConverter()
   int status = 0,replycredit = 0, number = 0, position = 0;
-  @JsonKey(name:"adminid")
-  @StringToIntConverter()
-  int adminId = 0;
-  @JsonKey(name:"groupid")
+  @JsonKey(name:"adminid",ignore: true, required: false)
+  // @StringToIntConverter()
+  String adminId = "0";
+  @JsonKey(name:"groupid",defaultValue: 0)
   @StringToIntConverter()
   int groupId = 0;
-  @JsonKey(name:"memberstatus")
+  @JsonKey(name:"memberstatus",defaultValue: 0)
   @StringToIntConverter()
   int memberStatus = 0;
   @JsonKey(name: "dbdateline")

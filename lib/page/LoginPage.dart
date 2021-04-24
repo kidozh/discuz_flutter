@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:discuz_flutter/JsonResult/LoginResult.dart';
@@ -29,7 +30,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("登录账号至 ${discuz.siteName}"),
+          title: Text(S.of(context).signInTitle(discuz.siteName)),
 
         ),
         body: LoginForumFieldStatefulWidget(discuz));
@@ -109,7 +110,7 @@ class _LoginFormFieldState
           savedCookieJar.saveFromResponse(Uri.parse(discuz.baseURL), cookies);
           // pop the activity
           ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('成功添加用户(${user.username})至${discuz.siteName}论坛')));
+              .showSnackBar(SnackBar(content: Text(S.of(context).signInSuccessTitle(user.username, discuz.siteName))));
           Navigator.pop(context);
         }
         catch(e,s){
@@ -124,29 +125,29 @@ class _LoginFormFieldState
       }
 
     })
-    //     .catchError((onError) {
-    //   setState(() {
-    //     _isLoading = false;
-    //   });
-    //   log(onError);
-    //
-    //
-    //   switch (onError.runtimeType) {
-    //
-    //     case DioError:
-    //       {
-    //         error = onError.message;
-    //
-    //         break;
-    //       }
-    //     default:
-    //       {
-    //         setState(() {
-    //           error = onError.toString();
-    //         });
-    //       }
-    //   }
-    // })
+        .catchError((onError) {
+      setState(() {
+        error = onError.toString();
+        _loginState = ButtonState.fail;
+      });
+
+
+      switch (onError.runtimeType) {
+
+        case DioError:
+          {
+            error = onError.message;
+
+            break;
+          }
+        default:
+          {
+            setState(() {
+              error = onError.toString();
+            });
+          }
+      }
+    })
     ;
   }
 
@@ -155,7 +156,7 @@ class _LoginFormFieldState
     // TODO: implement build
 
     return SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal: 4.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal: 8.0),
         child: Form(
           key: _formKey,
           child: Column(
@@ -163,23 +164,34 @@ class _LoginFormFieldState
             children: [
               // title and page
               Padding(
-                  padding: EdgeInsets.all(32.0),
+                  padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 16.0),
                   child: Center(
-                    child: SvgPicture.asset(
-                      "assets/images/login-user.svg",
-                      semanticsLabel: '登录账号logo',
-                      allowDrawingOutsideViewBox: true,
-                      width: MediaQuery.of(context).size.width * 0.4,
-                    ),
+                    child: CachedNetworkImage(
+                      imageUrl: discuz.getDiscuzAvatarURL(),
+                      progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+                      errorWidget: (context, url, error) => ListTile(
+                        title: Text(discuz.siteName),
+                        subtitle: Text(discuz.baseURL),
+                        leading: CircleAvatar(
+                          backgroundColor: Theme.of(context).primaryColor,
+                          child: Text(
+                            discuz.siteName.length != 0
+                                ? discuz.siteName[0].toUpperCase()
+                                : S.of(context).anonymous,
+                            style: TextStyle(color: Colors.white,fontSize: 18),
+                          ),
+                        ),
+                      )
+                    )
                   )),
               // input fields
               new TextFormField(
                 controller: _accountController,
                 decoration: new InputDecoration(
 
-                  labelText: "账号",
-                  hintText: "账号",
-                  prefixIcon: Icon(Icons.account_box),
+                  labelText: S.of(context).account,
+                  hintText: S.of(context).account,
+                  prefixIcon: Icon(Icons.account_circle),
                 ),
                 validator: ValidationBuilder().required().build()
               ),
@@ -187,7 +199,7 @@ class _LoginFormFieldState
                 controller: _passwdController,
                 decoration: new InputDecoration(
 
-                  labelText: "密码",
+                  labelText: S.of(context).password,
                   prefixIcon: Icon(Icons.vpn_key),
                 ),
                 obscureText: true,
@@ -196,7 +208,7 @@ class _LoginFormFieldState
               if (error.isNotEmpty)
                 Column(
                   children: [
-                    ErrorCard("发生错误", error,(){
+                    ErrorCard(S.of(context).error, error,(){
                       _verifyAccountAndPassword();
                     }),
                   ],
@@ -216,12 +228,12 @@ class _LoginFormFieldState
                               ButtonState.idle:
                               IconedButton(
                                   text: S.of(context).loginTitle,
-                                  icon: Icon(Icons.send,color: Colors.white),
-                                  color: Colors.deepPurple.shade500),
+                                  icon: Icon(Icons.login,color: Colors.white),
+                                  color: Theme.of(context).primaryColor),
                               ButtonState.loading:
                               IconedButton(
                                   text: S.of(context).progressButtonLogining,
-                                  color: Colors.deepPurple.shade700),
+                                  color: Theme.of(context).primaryColorDark),
                               ButtonState.fail:
                               IconedButton(
                                   text: S.of(context).progressButtonLoginFailed,
@@ -242,9 +254,13 @@ class _LoginFormFieldState
 
                       SizedBox(
                         width: double.infinity,
-                        child: TextButton(onPressed: (){
+                        child: TextButton(
+                          
+                            onPressed: (){
 
-                        }, child: Text("忘记密码？",style: TextStyle(color:Colors.black54),)),
+                        }, 
+                            child: Text(S.of(context).forgetPassword,style: TextStyle(color:Colors.black54),),
+                        ),
                       ),
                       Row(
                           children: <Widget>[
@@ -252,7 +268,7 @@ class _LoginFormFieldState
                                 child: Divider()
                             ),
 
-                            Text(" 或者 ",style: TextStyle(color: Colors.black26),),
+                            Text(S.of(context).or,style: TextStyle(color: Colors.black26),),
 
                             Expanded(
                                 child: Divider()
@@ -264,16 +280,18 @@ class _LoginFormFieldState
                       ),
                       SizedBox(
                         width: double.infinity,
-                        child: OutlinedButton(child:
-                        Text("使用网页验证"),
+                        child: OutlinedButton.icon(
+                          icon: Icon(Icons.open_in_browser),
+                          label: Text(S.of(context).signInViaBrowser),
                             onPressed: (){
 
-                            }),
+                            }, ),
                       ),
                       SizedBox(
                         width: double.infinity,
-                        child: TextButton(child:
-                        Text("注册账号"),
+                        child: TextButton.icon(
+                            icon: Icon(Icons.app_registration),
+                            label: Text(S.of(context).signUp),
                             onPressed: (){
 
                             }),

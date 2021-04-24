@@ -35,10 +35,12 @@ ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) {
     ..member_username = json['member_username'] as String
     ..member_avatar = json['member_avatar'] as String
     ..member_uid =
-        const StringToIntConverter().fromJson(json['member_uid'] as String)
-    ..groupId = const StringToIntConverter().fromJson(json['groupid'] as String)
+        const StringToIntConverter().fromJson(json['member_uid'] as String?)
+    ..groupId =
+        const StringToIntConverter().fromJson(json['groupid'] as String?)
     ..readAccess =
-        const StringToIntConverter().fromJson(json['readaccess'] as String)
+        const StringToIntConverter().fromJson(json['readaccess'] as String?)
+    ..formHash = json['formhash'] as String
     ..ismoderator = json['ismoderator'] as String?
     ..noticeCount = NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
     ..threadInfo =
@@ -64,6 +66,7 @@ Map<String, dynamic> _$ThreadVariablesToJson(ThreadVariables instance) =>
       'member_uid': const StringToIntConverter().toJson(instance.member_uid),
       'groupid': const StringToIntConverter().toJson(instance.groupId),
       'readaccess': const StringToIntConverter().toJson(instance.readAccess),
+      'formhash': instance.formHash,
       'ismoderator': instance.ismoderator,
       'notice': instance.noticeCount,
       'thread': instance.threadInfo,
@@ -74,23 +77,24 @@ Map<String, dynamic> _$ThreadVariablesToJson(ThreadVariables instance) =>
 
 DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) {
   return DetailedThreadInfo()
-    ..tid = const StringToIntConverter().fromJson(json['tid'] as String)
-    ..fid = const StringToIntConverter().fromJson(json['fid'] as String)
+    ..tid = const StringToIntConverter().fromJson(json['tid'] as String?)
+    ..fid = const StringToIntConverter().fromJson(json['fid'] as String?)
     ..postableId = json['posttableid'] as String? ?? '0'
-    ..typeId = const StringToIntConverter().fromJson(json['typeid'] as String)
+    ..typeId = const StringToIntConverter().fromJson(json['typeid'] as String?)
     ..author = json['author'] as String
     ..subject = json['subject'] as String
     ..readPerm =
-        const StringToIntConverter().fromJson(json['readperm'] as String)
-    ..price = const StringToIntConverter().fromJson(json['price'] as String)
+        const StringToIntConverter().fromJson(json['readperm'] as String?)
+    ..price = const StringToIntConverter().fromJson(json['price'] as String?)
     ..authorId =
-        const StringToIntConverter().fromJson(json['authorid'] as String)
+        const StringToIntConverter().fromJson(json['authorid'] as String?)
     ..sortId = json['sortid'] as String
     ..lastPostTimeString = json['lastpost'] as String
     ..lastposter = json['lastposter'] as String? ?? ''
     ..displayOrder = json['displayorder'] as String
     ..views = json['views'] as String
-    ..replies = const StringToIntConverter().fromJson(json['replies'] as String)
+    ..replies =
+        const StringToIntConverter().fromJson(json['replies'] as String?)
     ..highlight = json['highlight'] as String? ?? ''
     ..special = json['special'] as String? ?? '0'
     ..moderated = json['moderated'] as String? ?? '0'
@@ -122,7 +126,7 @@ DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) {
     ..threadtableid = json['threadtableid'] as String
     ..posttable = json['posttable'] as String
     ..allreplies =
-        const StringToIntConverter().fromJson(json['allreplies'] as String)
+        const StringToIntConverter().fromJson(json['allreplies'] as String?)
     ..archiveid = json['archiveid'] as String? ?? ''
     ..subjectenc = json['subjectenc'] as String? ?? ''
     ..short_subject = json['short_subject'] as String? ?? ''
@@ -203,7 +207,7 @@ Map<String, dynamic> _$ReplyCreditRuleToJson(ReplyCreditRule instance) =>
 Comment _$CommentFromJson(Map<String, dynamic> json) {
   return Comment()
     ..authorId =
-        const StringToIntConverter().fromJson(json['authorid'] as String);
+        const StringToIntConverter().fromJson(json['authorid'] as String?);
 }
 
 Map<String, dynamic> _$CommentToJson(Comment instance) => <String, dynamic>{

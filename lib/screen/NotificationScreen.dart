@@ -21,29 +21,29 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
-class DiscuzPortalScreen extends StatelessWidget {
+class NotificationScreen extends StatelessWidget {
 
 
-  DiscuzPortalScreen();
+  NotificationScreen();
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return DiscuzPortalStatefulWidget(key: UniqueKey());
+    return NotificationStatefulWidget(key: UniqueKey());
   }
 }
 
-class DiscuzPortalStatefulWidget extends StatefulWidget {
+class NotificationStatefulWidget extends StatefulWidget {
 
 
-  DiscuzPortalStatefulWidget({required Key key}):super(key: key);
+  NotificationStatefulWidget({required Key key}):super(key: key);
 
-  _DiscuzPortalState createState() {
-    return _DiscuzPortalState();
+  _NotificationState createState() {
+    return _NotificationState();
   }
 }
 
-class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
+class _NotificationState extends State<NotificationStatefulWidget> {
 
   late Dio _dio;
   late MobileApiClient _client;
@@ -76,7 +76,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
   // 底部回弹
   bool _bottomBouncing = true;
 
-  _DiscuzPortalState();
+  _NotificationState();
 
   @override
   void initState() {
@@ -92,7 +92,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
 
-    // _client.getDiscuzPortalRaw().then((value){
+    // _client.getNotificationRaw().then((value){
     //   log(value);
     //   var res = DiscuzIndexResult.fromJson(jsonDecode(value));
     //
@@ -100,41 +100,41 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
 
 
 
-    _client.getDiscuzPortalResult().then((value) {
-      // render page
-      setState(() {
-        result = value;
-      });
-      if(value.getErrorString()!= null){
-        EasyLoading.showError(value.getErrorString()!);
-      }
-      if (!_enableControlFinish) {
-        _controller.resetLoadState();
-        _controller.finishRefresh();
-      }
-      if (!_enableControlFinish) {
-        _controller.finishLoad(noMore: true);
-      }
-
-      // check with user
-      if(user != null && value.discuzIndexVariables.member_uid != user.uid){
-        log("Recv user ${value.discuzIndexVariables.member_uid} ${user.uid}");
-        setState(() {
-          _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle);
-        });
-      }
-
-    }).catchError((onError) {
-      EasyLoading.showError('${onError}');
-      if (!_enableControlFinish) {
-        _controller.resetLoadState();
-        _controller.finishRefresh();
-      }
-      setState(() {
-        _error =
-            DiscuzError(onError.runtimeType.toString(), onError.toString());
-      });
-    });
+    // _client.getNotificationResult().then((value) {
+    //   // render page
+    //   setState(() {
+    //     result = value;
+    //   });
+    //   if(value.getErrorString()!= null){
+    //     EasyLoading.showError(value.getErrorString()!);
+    //   }
+    //   if (!_enableControlFinish) {
+    //     _controller.resetLoadState();
+    //     _controller.finishRefresh();
+    //   }
+    //   if (!_enableControlFinish) {
+    //     _controller.finishLoad(noMore: true);
+    //   }
+    //
+    //   // check with user
+    //   if(user != null && value.discuzIndexVariables.member_uid != user.uid){
+    //     log("Recv user ${value.discuzIndexVariables.member_uid} ${user.uid}");
+    //     setState(() {
+    //       _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle);
+    //     });
+    //   }
+    //
+    // }).catchError((onError) {
+    //   EasyLoading.showError('${onError}');
+    //   if (!_enableControlFinish) {
+    //     _controller.resetLoadState();
+    //     _controller.finishRefresh();
+    //   }
+    //   setState(() {
+    //     _error =
+    //         DiscuzError(onError.runtimeType.toString(), onError.toString());
+    //   });
+    // });
   }
 
 

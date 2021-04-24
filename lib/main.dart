@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/dialog/SwitchDiscuzDialog.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -119,13 +120,13 @@ class _MyHomePageState extends State<MyHomePage> {
       widgetList.add(SimpleDialogItem(
         key: UniqueKey(),
         icon:
-            _selecteddiscuz == discuz ? Icons.check_circle : Icons.amp_stories,
-        color: _selecteddiscuz == discuz ? Colors.green : Colors.grey,
+        (_selecteddiscuz != null && _selecteddiscuz.id == discuz.id) ? Icons.check_circle : Icons.amp_stories,
+        color: (_selecteddiscuz != null && _selecteddiscuz.id == discuz.id) ? Colors.green : Colors.grey,
         text: discuz.siteName,
         onPressed: () {
           setState(() {
             Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-                .setDiscuz(discuz);
+                .initDiscuz(discuz);
             Navigator.of(context).pop();
           });
         },
@@ -166,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ListTile(
           title: Text(S.of(context).loginTitle),
           subtitle: Text(S.of(context).loginSubtitle),
-          leading: Icon(Icons.person_add),
+          leading: Icon(Icons.login),
           onTap: () async {
             Discuz? discuz =
                 Provider.of<DiscuzAndUserNotifier>(context, listen: false)
@@ -184,7 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         ListTile(
           title: Text(S.of(context).settingTitle),
-          leading: Icon(Icons.settings),
+          leading: Icon(Icons.settings_outlined),
           onTap: () async {
             Discuz? discuz =
                 Provider.of<DiscuzAndUserNotifier>(context, listen: false)
@@ -244,7 +245,19 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                       title: Text(user.username),
                       subtitle: Text(S.of(context).userIdTitle(user.uid)),
-                      // leading: UserAvatar(discuz,user)
+                      leading: Container(
+                        // width: 16.0,
+                        // height: 16.0,
+                        child: CircleAvatar(
+                          backgroundColor: CustomizeColor.getColorBackgroundById(user.uid),
+                          child: Text(
+                            user.username.length != 0
+                                ? user.username[0].toUpperCase()
+                                : S.of(context).anonymous,
+                            style: TextStyle(color: Colors.white,fontSize: 18),
+                          ),
+                        ),
+                      )
                     );
                   } else {
                     return ListTile(
@@ -278,7 +291,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         // set
         Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-            .setDiscuz(_allDiscuzs.first);
+            .initDiscuz(_allDiscuzs.first);
       });
     }
 

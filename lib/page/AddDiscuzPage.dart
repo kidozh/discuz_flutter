@@ -46,7 +46,7 @@ class _AddDiscuzFormFieldState
   Future<void> _saveDiscuzInDb(Discuz discuz) async {
     final db = await DBHelper.getAppDb();
     final dao = db.discuzDao;
-    dao.insertDiscuz(discuz);
+    await dao.insertDiscuz(discuz);
     // pop the activity
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('成功添加${discuz.siteName}论坛')));

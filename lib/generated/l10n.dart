@@ -1496,6 +1496,96 @@ class S {
       args: [],
     );
   }
+
+  /// `Sign in at {discuzName}`
+  String signInTitle(Object discuzName) {
+    return Intl.message(
+      'Sign in at $discuzName',
+      name: 'signInTitle',
+      desc: '',
+      args: [discuzName],
+    );
+  }
+
+  /// `Account`
+  String get account {
+    return Intl.message(
+      'Account',
+      name: 'account',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password`
+  String get password {
+    return Intl.message(
+      'Password',
+      name: 'password',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Forget password?`
+  String get forgetPassword {
+    return Intl.message(
+      'Forget password?',
+      name: 'forgetPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `or`
+  String get or {
+    return Intl.message(
+      'or',
+      name: 'or',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sign in by web`
+  String get signInViaBrowser {
+    return Intl.message(
+      'Sign in by web',
+      name: 'signInViaBrowser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sign up`
+  String get signUp {
+    return Intl.message(
+      'Sign up',
+      name: 'signUp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error`
+  String get error {
+    return Intl.message(
+      'Error',
+      name: 'error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `User {username} sign in at {discuzName} successfully.`
+  String signInSuccessTitle(Object username, Object discuzName) {
+    return Intl.message(
+      'User $username sign in at $discuzName successfully.',
+      name: 'signInSuccessTitle',
+      desc: '',
+      args: [username, discuzName],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -21,13 +21,18 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static m0(pos) => "# ${pos}";
 
-  static m1(username) => "User ${username} expired";
+  static m1(username, discuzName) => "User ${username} sign in at ${discuzName} successfully.";
 
-  static m2(uid) => "UserId ${uid}";
+  static m2(discuzName) => "Sign in at ${discuzName}";
+
+  static m3(username) => "User ${username} expired";
+
+  static m4(uid) => "UserId ${uid}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
     "about" : MessageLookupByLibrary.simpleMessage("About"),
+    "account" : MessageLookupByLibrary.simpleMessage("Account"),
     "addNewDiscuz" : MessageLookupByLibrary.simpleMessage("Add a new Discuz! forum"),
     "aliPay" : MessageLookupByLibrary.simpleMessage("AliPay"),
     "anonymous" : MessageLookupByLibrary.simpleMessage("A"),
@@ -62,10 +67,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "email" : MessageLookupByLibrary.simpleMessage("E-Mail"),
     "emptyWidget" : MessageLookupByLibrary.simpleMessage("Empty widget"),
     "emptyWidgetDescribe" : MessageLookupByLibrary.simpleMessage("Show empty widget when there is no data"),
+    "error" : MessageLookupByLibrary.simpleMessage("Error"),
     "firstRefresh" : MessageLookupByLibrary.simpleMessage("First refresh"),
     "firstRefreshDescribe" : MessageLookupByLibrary.simpleMessage("First refresh widget"),
     "floatView" : MessageLookupByLibrary.simpleMessage("Floating view"),
     "floatViewDescribe" : MessageLookupByLibrary.simpleMessage("At the top or bottom view floating on the list"),
+    "forgetPassword" : MessageLookupByLibrary.simpleMessage("Forget password?"),
     "forumDisplayTitle" : MessageLookupByLibrary.simpleMessage("Display a forum"),
     "github" : MessageLookupByLibrary.simpleMessage("Github"),
     "googleAdSubTitle" : MessageLookupByLibrary.simpleMessage("Advertisement provided by Google"),
@@ -112,6 +119,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "nullDiscuzSubTitle" : MessageLookupByLibrary.simpleMessage("Why not consider add a discuz forum?"),
     "nullDiscuzTitle" : MessageLookupByLibrary.simpleMessage("No Discuz! BBS is selected"),
     "old" : MessageLookupByLibrary.simpleMessage("Old"),
+    "or" : MessageLookupByLibrary.simpleMessage("or"),
+    "password" : MessageLookupByLibrary.simpleMessage("Password"),
     "payPal" : MessageLookupByLibrary.simpleMessage("PayPal"),
     "phoenixDescribe" : MessageLookupByLibrary.simpleMessage("Golden campus"),
     "phone" : MessageLookupByLibrary.simpleMessage("Phone"),
@@ -148,6 +157,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "sendReply" : MessageLookupByLibrary.simpleMessage("Send"),
     "sendReplyHint" : MessageLookupByLibrary.simpleMessage("Say something"),
     "settingTitle" : MessageLookupByLibrary.simpleMessage("Settings"),
+    "signInSuccessTitle" : m1,
+    "signInTitle" : m2,
+    "signInViaBrowser" : MessageLookupByLibrary.simpleMessage("Sign in by web"),
+    "signUp" : MessageLookupByLibrary.simpleMessage("Sign up"),
     "spaceDescribe" : MessageLookupByLibrary.simpleMessage("Flare animation - Space"),
     "star" : MessageLookupByLibrary.simpleMessage("Star project"),
     "style" : MessageLookupByLibrary.simpleMessage("Style"),
@@ -162,8 +175,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "topBouncingDescribe" : MessageLookupByLibrary.simpleMessage("Top can be crossed"),
     "updateAt" : MessageLookupByLibrary.simpleMessage("Update at %T"),
     "userExpiredSubtitle" : MessageLookupByLibrary.simpleMessage("The current user is expired, some function may not work."),
-    "userExpiredTitle" : m1,
-    "userIdTitle" : m2,
+    "userExpiredTitle" : m3,
+    "userIdTitle" : m4,
     "userProfile" : MessageLookupByLibrary.simpleMessage("User Profile"),
     "userProfileDescribe" : MessageLookupByLibrary.simpleMessage("User Profile with the springback effect"),
     "vertical" : MessageLookupByLibrary.simpleMessage("Vertical"),
