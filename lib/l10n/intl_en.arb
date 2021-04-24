@@ -144,5 +144,19 @@
       "username": {}
     }
   },
-  "userExpiredSubtitle": "The current user is expired, some function may not work."
+  "userExpiredSubtitle": "The current user is expired, some function may not work.",
+  "sendReply": "Send",
+  "progressButtonReplySending": "Sending",
+  "progressButtonReplyFailed": "Failed",
+  "progressButtonReplySuccess": "Success",
+  "progressButtonLogining": "Sigining in...",
+  "progressButtonLoginFailed": "Login Failed",
+  "progressButtonLoginSuccess": "Login Success",
+  "userIdTitle": "UserId {uid}",
+  "@userIdTitle": {
+    "placeholders": {
+      "uid": {}
+    }
+  },
+  "sendReplyHint": "Say something"
 }

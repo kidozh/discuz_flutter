@@ -23,6 +23,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static m1(username) => "用户 ${username} 已失效";
 
+  static m2(uid) => "用户编号： ${uid}";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
     "about" : MessageLookupByLibrary.simpleMessage("关于"),
@@ -114,6 +116,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "phoenixDescribe" : MessageLookupByLibrary.simpleMessage("金色校园"),
     "phone" : MessageLookupByLibrary.simpleMessage("电话"),
     "postPosition" : m0,
+    "progressButtonLoginFailed" : MessageLookupByLibrary.simpleMessage("登陆失败"),
+    "progressButtonLoginSuccess" : MessageLookupByLibrary.simpleMessage("登陆成功！"),
+    "progressButtonLogining" : MessageLookupByLibrary.simpleMessage("登陆中..."),
+    "progressButtonReplyFailed" : MessageLookupByLibrary.simpleMessage("回帖失败"),
+    "progressButtonReplySending" : MessageLookupByLibrary.simpleMessage("回帖中"),
+    "progressButtonReplySuccess" : MessageLookupByLibrary.simpleMessage("回帖成功"),
     "projectAddress" : MessageLookupByLibrary.simpleMessage("项目地址"),
     "publishAt" : MessageLookupByLibrary.simpleMessage(" 发帖于 "),
     "pullToRefresh" : MessageLookupByLibrary.simpleMessage("拉动刷新"),
@@ -137,6 +145,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "secondFloor" : MessageLookupByLibrary.simpleMessage("二楼"),
     "secondFloorDescribe" : MessageLookupByLibrary.simpleMessage("模仿淘宝二楼"),
     "send" : MessageLookupByLibrary.simpleMessage("发送"),
+    "sendReply" : MessageLookupByLibrary.simpleMessage("回帖"),
+    "sendReplyHint" : MessageLookupByLibrary.simpleMessage("说些什么吧。"),
     "settingTitle" : MessageLookupByLibrary.simpleMessage("设置"),
     "spaceDescribe" : MessageLookupByLibrary.simpleMessage("Flare动画 - 星空"),
     "star" : MessageLookupByLibrary.simpleMessage("Star 项目"),
@@ -153,6 +163,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "updateAt" : MessageLookupByLibrary.simpleMessage("更新于 %T"),
     "userExpiredSubtitle" : MessageLookupByLibrary.simpleMessage("当前用户授权已过期，你需要重新登录以重新激活此用户。"),
     "userExpiredTitle" : m1,
+    "userIdTitle" : m2,
     "userProfile" : MessageLookupByLibrary.simpleMessage("个人中心"),
     "userProfileDescribe" : MessageLookupByLibrary.simpleMessage("带回弹效果的个人中心"),
     "vertical" : MessageLookupByLibrary.simpleMessage("垂直"),

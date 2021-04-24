@@ -23,6 +23,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static m1(username) => "User ${username} expired";
 
+  static m2(uid) => "UserId ${uid}";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
     "about" : MessageLookupByLibrary.simpleMessage("About"),
@@ -114,6 +116,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "phoenixDescribe" : MessageLookupByLibrary.simpleMessage("Golden campus"),
     "phone" : MessageLookupByLibrary.simpleMessage("Phone"),
     "postPosition" : m0,
+    "progressButtonLoginFailed" : MessageLookupByLibrary.simpleMessage("Login Failed"),
+    "progressButtonLoginSuccess" : MessageLookupByLibrary.simpleMessage("Login Success"),
+    "progressButtonLogining" : MessageLookupByLibrary.simpleMessage("Sigining in..."),
+    "progressButtonReplyFailed" : MessageLookupByLibrary.simpleMessage("Failed"),
+    "progressButtonReplySending" : MessageLookupByLibrary.simpleMessage("Sending"),
+    "progressButtonReplySuccess" : MessageLookupByLibrary.simpleMessage("Success"),
     "projectAddress" : MessageLookupByLibrary.simpleMessage("Project address"),
     "publishAt" : MessageLookupByLibrary.simpleMessage(" published at "),
     "pullToRefresh" : MessageLookupByLibrary.simpleMessage("Pull to refresh"),
@@ -137,6 +145,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "secondFloor" : MessageLookupByLibrary.simpleMessage("Second floor"),
     "secondFloorDescribe" : MessageLookupByLibrary.simpleMessage("Imitate the second floor of Taobao"),
     "send" : MessageLookupByLibrary.simpleMessage("Send"),
+    "sendReply" : MessageLookupByLibrary.simpleMessage("Send"),
+    "sendReplyHint" : MessageLookupByLibrary.simpleMessage("Say something"),
     "settingTitle" : MessageLookupByLibrary.simpleMessage("Settings"),
     "spaceDescribe" : MessageLookupByLibrary.simpleMessage("Flare animation - Space"),
     "star" : MessageLookupByLibrary.simpleMessage("Star project"),
@@ -153,6 +163,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "updateAt" : MessageLookupByLibrary.simpleMessage("Update at %T"),
     "userExpiredSubtitle" : MessageLookupByLibrary.simpleMessage("The current user is expired, some function may not work."),
     "userExpiredTitle" : m1,
+    "userIdTitle" : m2,
     "userProfile" : MessageLookupByLibrary.simpleMessage("User Profile"),
     "userProfileDescribe" : MessageLookupByLibrary.simpleMessage("User Profile with the springback effect"),
     "vertical" : MessageLookupByLibrary.simpleMessage("Vertical"),

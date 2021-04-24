@@ -15,8 +15,9 @@ BaseVariableResult _$BaseVariableResultFromJson(Map<String, dynamic> json) {
     ..member_avatar = json['member_avatar'] as String
     ..member_uid =
         const StringToIntConverter().fromJson(json['member_uid'] as String)
-    ..groupid = json['groupid'] as String
-    ..readaccess = json['readaccess'] as String
+    ..groupId = const StringToIntConverter().fromJson(json['groupid'] as String)
+    ..readAccess =
+        const StringToIntConverter().fromJson(json['readaccess'] as String)
     ..ismoderator = json['ismoderator'] as String?
     ..noticeCount =
         NoticeCount.fromJson(json['notice'] as Map<String, dynamic>);
@@ -30,8 +31,8 @@ Map<String, dynamic> _$BaseVariableResultToJson(BaseVariableResult instance) =>
       'member_username': instance.member_username,
       'member_avatar': instance.member_avatar,
       'member_uid': const StringToIntConverter().toJson(instance.member_uid),
-      'groupid': instance.groupid,
-      'readaccess': instance.readaccess,
+      'groupid': const StringToIntConverter().toJson(instance.groupId),
+      'readaccess': const StringToIntConverter().toJson(instance.readAccess),
       'ismoderator': instance.ismoderator,
       'notice': instance.noticeCount,
     };

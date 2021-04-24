@@ -243,8 +243,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         _toggleNavigationStatus();
                       },
                       title: Text(user.username),
-                      subtitle: Text("${user.uid} ${user.discuzId}"),
-                      leading: UserAvatar(discuz,user)
+                      subtitle: Text(S.of(context).userIdTitle(user.uid)),
+                      // leading: UserAvatar(discuz,user)
                     );
                   } else {
                     return ListTile(

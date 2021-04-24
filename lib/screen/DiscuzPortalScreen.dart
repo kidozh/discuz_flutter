@@ -92,10 +92,12 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
 
-    // _client.getDiscuzPortalRaw().then((value){
-    //   log(value);
-    //
-    // });
+    _client.getDiscuzPortalRaw().then((value){
+      log(value);
+      var res = DiscuzIndexResult.fromJson(jsonDecode(value));
+
+    });
+
 
 
     _client.getDiscuzPortalResult().then((value) {
@@ -115,7 +117,8 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       }
 
       // check with user
-      if(value.discuzIndexVariables.member_username != user!.uid){
+      if(user != null && value.discuzIndexVariables.member_uid != user.uid){
+        log("Recv user ${value.discuzIndexVariables.member_uid} ${user.uid}");
         setState(() {
           _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle);
         });
@@ -123,7 +126,6 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
 
     }).catchError((onError) {
       EasyLoading.showError('${onError}');
-      log(onError);
       if (!_enableControlFinish) {
         _controller.resetLoadState();
         _controller.finishRefresh();
@@ -146,7 +148,18 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
         return NullDiscuzScreen();
       }
       else{
-        return getEasyRefreshWidget(discuzAndUser.discuz!,discuzAndUser.user);
+        return Column(
+          children: [
+            if(_error!=null)
+              ErrorCard(_error!.key, _error!.content,(){
+                _controller.callRefresh();
+              }
+              ),
+              Expanded(
+                  child: getEasyRefreshWidget(discuzAndUser.discuz!,discuzAndUser.user)
+              )
+          ],
+        );
       }
     });
   }
@@ -231,11 +244,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
             )),
       ),
       slivers: <Widget>[
-        if(_error!=null)
-          ErrorCard(_error!.key, _error!.content,(){
-            _loadPortalContent(discuz);
-          }
-          ),
+
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (context, index) {

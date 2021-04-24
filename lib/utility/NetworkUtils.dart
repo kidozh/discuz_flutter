@@ -26,7 +26,7 @@ class NetworkUtils{
 
   static Future<PersistCookieJar> getTemporaryCookieJar() async{
     Directory tempDir = await getTemporaryDirectory();
-    var tempPath = tempDir.path;
+    var tempPath = tempDir.path+"/temp_cookie";
     var cookieJar=PersistCookieJar(storage:FileStorage(tempPath));
     // clear before using it
     cookieJar.deleteAll();

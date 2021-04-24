@@ -27,17 +27,13 @@ class BaseVariableResult{
   String member_avatar = "";
   @StringToIntConverter()
   int member_uid = 0;
+  @JsonKey(name:"groupid")
+  @StringToIntConverter()
+  int groupId = 0;
 
-
-  String groupid = "";
-  int getGroupId(){
-    return int.parse(this.groupid);
-  }
-
-  String readaccess = "";
-  int getReadAccessScore(){
-    return int.parse(readaccess);
-  }
+  @JsonKey(name: "readaccess")
+  @StringToIntConverter()
+  int readAccess = 0;
 
   String? ismoderator;
 
@@ -47,7 +43,7 @@ class BaseVariableResult{
   User getUser(Discuz discuz){
     return User(null, this.getAuth(), saltkey,
         this.member_username, this.member_avatar,
-        this.getGroupId(), this.member_uid, this.getReadAccessScore(),
+        this.groupId, this.member_uid, this.readAccess,
         discuz.id!);
   }
 

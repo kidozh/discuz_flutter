@@ -144,5 +144,19 @@
       "username": {}
     }
   },
-  "userExpiredSubtitle": "当前用户授权已过期，你需要重新登录以重新激活此用户。"
+  "userExpiredSubtitle": "当前用户授权已过期，你需要重新登录以重新激活此用户。",
+  "sendReply": "回帖",
+  "progressButtonReplySending": "回帖中",
+  "progressButtonReplyFailed": "回帖失败",
+  "progressButtonReplySuccess": "回帖成功",
+  "progressButtonLogining": "登陆中...",
+  "progressButtonLoginFailed": "登陆失败",
+  "progressButtonLoginSuccess": "登陆成功！",
+  "userIdTitle": "用户编号： {uid}",
+  "@userIdTitle": {
+    "placeholders": {
+      "uid": {}
+    }
+  },
+  "sendReplyHint": "说些什么吧。"
 }

@@ -1406,6 +1406,96 @@ class S {
       args: [],
     );
   }
+
+  /// `Send`
+  String get sendReply {
+    return Intl.message(
+      'Send',
+      name: 'sendReply',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sending`
+  String get progressButtonReplySending {
+    return Intl.message(
+      'Sending',
+      name: 'progressButtonReplySending',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed`
+  String get progressButtonReplyFailed {
+    return Intl.message(
+      'Failed',
+      name: 'progressButtonReplyFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Success`
+  String get progressButtonReplySuccess {
+    return Intl.message(
+      'Success',
+      name: 'progressButtonReplySuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sigining in...`
+  String get progressButtonLogining {
+    return Intl.message(
+      'Sigining in...',
+      name: 'progressButtonLogining',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Login Failed`
+  String get progressButtonLoginFailed {
+    return Intl.message(
+      'Login Failed',
+      name: 'progressButtonLoginFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Login Success`
+  String get progressButtonLoginSuccess {
+    return Intl.message(
+      'Login Success',
+      name: 'progressButtonLoginSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `UserId {uid}`
+  String userIdTitle(Object uid) {
+    return Intl.message(
+      'UserId $uid',
+      name: 'userIdTitle',
+      desc: '',
+      args: [uid],
+    );
+  }
+
+  /// `Say something`
+  String get sendReplyHint {
+    return Intl.message(
+      'Say something',
+      name: 'sendReplyHint',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

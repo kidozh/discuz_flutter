@@ -29,6 +29,17 @@ Map<String, dynamic> _$DiscuzIndexResultToJson(DiscuzIndexResult instance) =>
 
 DiscuzIndexVariables _$DiscuzIndexVariablesFromJson(Map<String, dynamic> json) {
   return DiscuzIndexVariables()
+    ..cookiepre = json['cookiepre'] as String
+    ..auth = json['auth'] as String?
+    ..saltkey = json['saltkey'] as String
+    ..member_username = json['member_username'] as String
+    ..member_avatar = json['member_avatar'] as String
+    ..member_uid =
+        const StringToIntConverter().fromJson(json['member_uid'] as String)
+    ..groupId = const StringToIntConverter().fromJson(json['groupid'] as String)
+    ..readAccess =
+        const StringToIntConverter().fromJson(json['readaccess'] as String)
+    ..ismoderator = json['ismoderator'] as String?
     ..noticeCount = NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
     ..memberEmail = json['member_email'] as String?
     ..memberCredits = json['member_credits'] as String
@@ -45,6 +56,15 @@ DiscuzIndexVariables _$DiscuzIndexVariablesFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$DiscuzIndexVariablesToJson(
         DiscuzIndexVariables instance) =>
     <String, dynamic>{
+      'cookiepre': instance.cookiepre,
+      'auth': instance.auth,
+      'saltkey': instance.saltkey,
+      'member_username': instance.member_username,
+      'member_avatar': instance.member_avatar,
+      'member_uid': const StringToIntConverter().toJson(instance.member_uid),
+      'groupid': const StringToIntConverter().toJson(instance.groupId),
+      'readaccess': const StringToIntConverter().toJson(instance.readAccess),
+      'ismoderator': instance.ismoderator,
       'notice': instance.noticeCount,
       'member_email': instance.memberEmail,
       'member_credits': instance.memberCredits,

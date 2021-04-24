@@ -25,6 +25,8 @@ import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:progress_state_button/iconed_button.dart';
+import 'package:progress_state_button/progress_button.dart';
 import 'package:provider/provider.dart';
 
 class ViewThreadPage extends StatelessWidget {
@@ -63,6 +65,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
   DiscuzError? _error = null;
   List<Post> _postList = [];
   int _page = 1;
+  final TextEditingController _replyController = new TextEditingController();
 
   late final Discuz discuz;
   late final User? user;
@@ -168,6 +171,11 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
           _error = null;
         });
       }
+      if(user != null && value.threadVariables.member_uid != user.uid){
+        setState(() {
+          _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle);
+        });
+      }
 
       log("set successful result ${_viewThreadResult} ${_postList.length}");
     }).catchError((onError) {
@@ -207,7 +215,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
       body: Column(
         children: [
           if(_error!=null)
-            ErrorCard(_error!.key, _error!.content,(){_invalidateContent();}),
+            ErrorCard(_error!.key, _error!.content,(){_controller.callRefresh();}),
           Expanded(
               child: Container(
                 //height: _direction == Axis.vertical ? double.infinity : 210.0,
@@ -312,6 +320,64 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
                   ],
                 ),
               )),
+            Consumer<DiscuzAndUserNotifier>(
+              builder: (context,discuzAndUser, child){
+                if(discuzAndUser.user!= null){
+                  return Row(
+                    children: [
+                      Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.all(6.0),
+                            child: TextField(
+                              controller: _replyController,
+                              decoration: InputDecoration(
+                                  hintText: S.of(context).sendReplyHint
+                              ),
+                            ),
+                          )
+
+                      ),
+
+                      ProgressButton.icon(
+                        maxWidth: 90.0,
+                        height: 25.0,
+                        iconedButtons: {
+                          ButtonState.idle:
+                          IconedButton(
+                              text: S.of(context).sendReply,
+                              icon: Icon(Icons.send,color: Colors.white),
+                              color: Colors.deepPurple.shade500),
+                          ButtonState.loading:
+                          IconedButton(
+                              text: S.of(context).progressButtonReplySending,
+                              color: Colors.deepPurple.shade700),
+                          ButtonState.fail:
+                          IconedButton(
+                              text: S.of(context).progressButtonReplyFailed,
+                              icon: Icon(Icons.cancel,color: Colors.white),
+                              color: Colors.red.shade300),
+                          ButtonState.success:
+                          IconedButton(
+                              text: S.of(context).progressButtonReplySuccess,
+                              icon: Icon(Icons.check_circle,color: Colors.white,),
+                              color: Colors.green.shade400)
+                        },
+                          onPressed: (){
+
+                          },
+                          state: ButtonState.idle
+                      )
+                    ],
+                  );
+                }
+                else{
+                  return Container(
+                    width: 0,
+                    height: 0,
+                  );
+                }
+              },
+            )
         ],
       ),
     );

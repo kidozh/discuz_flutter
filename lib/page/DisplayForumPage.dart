@@ -128,10 +128,10 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
       _isLoading = true;
     });
 
-    // client.displayForumRaw(fid.toString(), _page).then((value){
-    //   log(value);
-    //   DisplayForumResult result = DisplayForumResult.fromJson(jsonDecode(value));
-    // });
+    client.displayForumRaw(fid.toString(), _page).then((value){
+      log(value);
+      DisplayForumResult result = DisplayForumResult.fromJson(jsonDecode(value));
+    });
 
     client.displayForumResult(fid.toString(), _page).then((value) {
       setState(() {
@@ -173,6 +173,13 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
         });
       }
 
+      // check with user
+      if(user != null && value.discuzIndexVariables.member_uid != user.uid){
+        setState(() {
+          _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle);
+        });
+      }
+
       log("set successful result ${_displayForumResult} ${_forumThreadList.length}");
     }).catchError((onError) {
       log(onError);
@@ -211,7 +218,7 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
       body: Column(
         children: [
           if(_error!=null)
-            ErrorCard(_error!.key, _error!.content,(){_invalidateContent();}),
+            ErrorCard(_error!.key, _error!.content,(){_controller.callRefresh();}),
           Expanded(
               child: Container(
                 //height: _direction == Axis.vertical ? double.infinity : 210.0,

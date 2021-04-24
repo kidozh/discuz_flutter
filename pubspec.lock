@@ -630,6 +630,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.2.1"
+  progress_state_button:
+    dependency: "direct main"
+    description:
+      name: progress_state_button
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.3"
   provider:
     dependency: "direct main"
     description:

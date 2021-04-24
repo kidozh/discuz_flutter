@@ -5,6 +5,7 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:discuz_flutter/JsonResult/LoginResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
+import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
@@ -16,6 +17,8 @@ import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:form_validator/form_validator.dart';
+import 'package:progress_state_button/iconed_button.dart';
+import 'package:progress_state_button/progress_button.dart';
 
 class LoginPage extends StatelessWidget {
   late final Discuz discuz;
@@ -50,7 +53,7 @@ class _LoginFormFieldState
 
   final _formKey = GlobalKey<FormState>();
   String error = "";
-  bool _isLoading = false;
+  ButtonState _loginState = ButtonState.idle;
   final TextEditingController _accountController = new TextEditingController();
   final TextEditingController _passwdController = new TextEditingController();
 
@@ -69,18 +72,19 @@ class _LoginFormFieldState
     // check the availability
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
     setState(() {
-      _isLoading = true;
+      _loginState = ButtonState.loading;
     });
 
     // client.sendLoginRequestInString(account, password).then((value) {
     //   log(value);
-    //   LoginResult.fromJson(jsonDecode(value));
+    //   var res = LoginResult.fromJson(jsonDecode(value));
+    //   log(res.toString());
     //
     // });
 
     client.sendLoginRequest(account,password).then((value) async {
       setState(() {
-        _isLoading = false;
+
         error = "";
       });
       // check if the
@@ -89,6 +93,9 @@ class _LoginFormFieldState
       User user = value.loginVariables.getUser(discuz);
       if(value.errorResult!.key == "login_succeed"){
         // save it in database
+        setState(() {
+          _loginState = ButtonState.success;
+        });
         try{
           final db = await DBHelper.getAppDb();
           final dao = db.userDao;
@@ -112,49 +119,35 @@ class _LoginFormFieldState
       else{
         setState(() {
           error = value.errorResult!.content;
+          _loginState = ButtonState.fail;
         });
       }
 
-    }).catchError((onError) {
-      setState(() {
-        _isLoading = false;
-      });
-      log(onError);
-
-
-      switch (onError.runtimeType) {
-
-        case DioError:
-          {
-            error = onError.message;
-
-            break;
-          }
-        default:
-          {
-            setState(() {
-              error = onError.toString();
-            });
-          }
-      }
-    });
-  }
-
-  Future<void> _saveDiscuzUserInDb(Discuz discuz, User user) async {
-    try{
-      final db = await DBHelper.getAppDb();
-      final dao = db.userDao;
-
-      dao.insert(user);
-      // pop the activity
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('成功添加用户(${user.username})至${discuz.siteName}论坛')));
-      Navigator.pop(context);
-    }
-    catch(e,s){
-      log("${e},${s}");
-    }
-
+    })
+    //     .catchError((onError) {
+    //   setState(() {
+    //     _isLoading = false;
+    //   });
+    //   log(onError);
+    //
+    //
+    //   switch (onError.runtimeType) {
+    //
+    //     case DioError:
+    //       {
+    //         error = onError.message;
+    //
+    //         break;
+    //       }
+    //     default:
+    //       {
+    //         setState(() {
+    //           error = onError.toString();
+    //         });
+    //       }
+    //   }
+    // })
+    ;
   }
 
   @override
@@ -169,11 +162,6 @@ class _LoginFormFieldState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // title and page
-              if (_isLoading)
-                LinearProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(
-                      GlobalTheme.getThemeData().primaryColor),
-                ),
               Padding(
                   padding: EdgeInsets.all(32.0),
                   child: Center(
@@ -181,7 +169,7 @@ class _LoginFormFieldState
                       "assets/images/login-user.svg",
                       semanticsLabel: '登录账号logo',
                       allowDrawingOutsideViewBox: true,
-                      width: MediaQuery.of(context).size.width * 0.5,
+                      width: MediaQuery.of(context).size.width * 0.4,
                     ),
                   )),
               // input fields
@@ -222,16 +210,36 @@ class _LoginFormFieldState
                     children: [
                       SizedBox(
                         width: double.infinity,
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-
-                          ),
-                          child: Text("登录",style: TextStyle(color: Colors.white),),
-                          onPressed: (){
-                            _verifyAccountAndPassword();
-                          },
+                        child: ProgressButton.icon(
+                            maxWidth: 230.0,
+                            iconedButtons: {
+                              ButtonState.idle:
+                              IconedButton(
+                                  text: S.of(context).loginTitle,
+                                  icon: Icon(Icons.send,color: Colors.white),
+                                  color: Colors.deepPurple.shade500),
+                              ButtonState.loading:
+                              IconedButton(
+                                  text: S.of(context).progressButtonLogining,
+                                  color: Colors.deepPurple.shade700),
+                              ButtonState.fail:
+                              IconedButton(
+                                  text: S.of(context).progressButtonLoginFailed,
+                                  icon: Icon(Icons.cancel,color: Colors.white),
+                                  color: Colors.red.shade300),
+                              ButtonState.success:
+                              IconedButton(
+                                  text: S.of(context).progressButtonLoginSuccess,
+                                  icon: Icon(Icons.check_circle,color: Colors.white,),
+                                  color: Colors.green.shade400)
+                            },
+                            onPressed: (){
+                              _verifyAccountAndPassword();
+                            },
+                            state: _loginState
                         ),
                       ),
+
                       SizedBox(
                         width: double.infinity,
                         child: TextButton(onPressed: (){
