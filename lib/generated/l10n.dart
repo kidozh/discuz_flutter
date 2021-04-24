@@ -1586,6 +1586,16 @@ class S {
       args: [username, discuzName],
     );
   }
+
+  /// `No user is currently activated`
+  String get selectUserNull {
+    return Intl.message(
+      'No user is currently activated',
+      name: 'selectUserNull',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

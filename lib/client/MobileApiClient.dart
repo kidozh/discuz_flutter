@@ -3,6 +3,7 @@ import 'package:discuz_flutter/JsonResult/CheckResult.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/JsonResult/LoginResult.dart';
+import 'package:discuz_flutter/JsonResult/UserDiscuzNotificationResult.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:dio/dio.dart' hide Headers;
@@ -93,4 +94,10 @@ abstract class MobileApiClient {
       @Field("seccodehash") String captchaHash,
       @Field("seccodeverify") String captchaCode,
       );
+
+  @GET("/api/mobile/index.php?version=4&module=mynotelist")
+  Future<String> userNotificationRaw(@Query("page") int page);
+
+  @GET("/api/mobile/index.php?version=4&module=mynotelist")
+  Future<UserDiscuzNotificationResult> userNotificationResult(@Query("page") int page);
 }

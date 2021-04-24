@@ -178,5 +178,7 @@
       "username": {},
       "discuzName": {}
     }
-  }
+  },
+  "selectUserNull": "No user is currently activated"
+
 }

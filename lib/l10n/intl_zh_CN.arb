@@ -178,5 +178,6 @@
       "username": {},
       "discuzName": {}
     }
-  }
+  },
+  "selectUserNull": "未选中一个用户"
 }

@@ -41,6 +41,9 @@ class ThreadVariables extends BaseVariableResult{
   // @JsonKey(name: "comments",defaultValue: {})
   // Map<String, List<Comment>> commentList = {};
 
+  @JsonKey(name: "setting_rewriterule",required: false)
+  RewriteRule? rewriteRule = RewriteRule();
+
 
   String ppp = "0";
   @JsonKey(defaultValue: "1")
@@ -197,3 +200,29 @@ class Comment{
   Map<String, dynamic> toJson() => _$CommentToJson(this);
 }
 
+@JsonSerializable()
+class RewriteRule{
+  @JsonKey(name: "portal_topic",defaultValue: "")
+  String portalTopic = "";
+  @JsonKey(name: "portal_article",defaultValue: "")
+  String portalArticle = "";
+  @JsonKey(name:"forum_forumdisplay",defaultValue: "")
+  String forumDisplay = "";
+  @JsonKey(name:"forum_viewthread",defaultValue: "")
+  String viewThread = "";
+  @JsonKey(name:"group_group",defaultValue: "")
+  String group = "";
+  @JsonKey(name:"home_space",defaultValue: "")
+  String userSpace = "";
+  @JsonKey(name:"home_blog",defaultValue: "")
+  String homeBlog = "";
+  @JsonKey(name:"forum_archiver",defaultValue: "")
+  String forumArchiver = "";
+  @JsonKey(name:"plugin",defaultValue: "")
+  String plugin = "";
+
+  RewriteRule();
+  factory RewriteRule.fromJson(Map<String, dynamic> json) => _$RewriteRuleFromJson(json);
+  Map<String, dynamic> toJson() => _$RewriteRuleToJson(this);
+
+}

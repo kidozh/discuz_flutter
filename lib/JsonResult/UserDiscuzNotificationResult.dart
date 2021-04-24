@@ -24,15 +24,19 @@ class UserDiscuzNotificationResult extends BaseResult{
 
 }
 
-@JsonSerializable(ignoreUnannotated: true)
+@JsonSerializable()
 class DiscuzNotificationVariables extends BaseVariableResult{
 
 
   @JsonKey(name:"list",defaultValue: [])
   List<DiscuzNotification> notificationList = [];
+  @JsonKey(name:"count")
   @StringToIntConverter()
   int count = 0;
-  int perpage = 0;
+  @JsonKey(name:"perpage")
+  @StringToIntConverter()
+  int perPage = 0;
+  @JsonKey(name:"page")
   @StringToIntConverter()
   int page = 0;
 

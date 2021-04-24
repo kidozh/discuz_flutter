@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/dialog/SwitchDiscuzDialog.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -362,7 +363,7 @@ class _MyHomePageState extends State<MyHomePage> {
           });
         },
       ),
-      body: DiscuzPortalScreen(),
+      body: [DiscuzPortalScreen(),DiscuzPortalScreen(),NotificationScreen()][_bottomNavigationbarIndex],
       floatingActionButton: FloatingActionButton(
         onPressed: _triggerSwitchDiscuzDialog,
         tooltip: S.of(context).addNewDiscuz,

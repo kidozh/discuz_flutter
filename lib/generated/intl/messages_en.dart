@@ -153,6 +153,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "scrollBarDescribe" : MessageLookupByLibrary.simpleMessage("Add a scroll bar to the list"),
     "secondFloor" : MessageLookupByLibrary.simpleMessage("Second floor"),
     "secondFloorDescribe" : MessageLookupByLibrary.simpleMessage("Imitate the second floor of Taobao"),
+    "selectUserNull" : MessageLookupByLibrary.simpleMessage("No user is currently activated"),
     "send" : MessageLookupByLibrary.simpleMessage("Send"),
     "sendReply" : MessageLookupByLibrary.simpleMessage("Send"),
     "sendReplyHint" : MessageLookupByLibrary.simpleMessage("Say something"),

@@ -37,7 +37,7 @@ class DiscuzNotificationWidget extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.all(4.0),
                 child: CachedNetworkImage(
-                  imageUrl: URLUtils.getAvatarURL(_discuz, _notification.uid.toString()),
+                  imageUrl: URLUtils.getAvatarURL(_discuz, _notification.authorId.toString()),
                   progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
                   errorWidget: (context, url, error) => Container(
                     width: 16.0,
@@ -84,7 +84,7 @@ class DiscuzNotificationWidget extends StatelessWidget {
                       Spacer(),
                       Padding(
                         padding: EdgeInsets.only(right: 8.0),
-                        child: Text(S.of(context).postPosition(_notification.type),style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12),),
+                        child: Text(_notification.type,style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12),),
                       )
                       ,
 

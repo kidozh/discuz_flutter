@@ -12,6 +12,7 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
 import 'package:discuz_flutter/widget/PostWidget.dart';
@@ -183,14 +184,14 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
 
-    client.viewThreadRaw(tid, _page).then((value) {
-
-      log(value.toString());
-      // convert string to json
-      Map<String, dynamic> resultJson = jsonDecode(value);
-      ViewThreadResult result = ViewThreadResult.fromJson(resultJson);
-      log(result.threadVariables.threadInfo.subject);
-    });
+    // client.viewThreadRaw(tid, _page).then((value) {
+    //
+    //   log(value.toString());
+    //   // convert string to json
+    //   Map<String, dynamic> resultJson = jsonDecode(value);
+    //   ViewThreadResult result = ViewThreadResult.fromJson(resultJson);
+    //   log(result.threadVariables.threadInfo.subject);
+    // });
 
     client.viewThreadResult(tid, _page).then((value) {
       setState(() {
@@ -238,6 +239,19 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
       }
 
       log("set successful result ${_viewThreadResult} ${_postList.length}");
+
+      // save rewrite rule
+      if(value.threadVariables.rewriteRule!= null){
+        // save rewrite url in database
+        RewriteRule rewriteRule = value.threadVariables.rewriteRule!;
+        if(rewriteRule.forumDisplay.isNotEmpty){
+          RewriteRuleUtils.putForumDisplayRule(discuz, rewriteRule.forumDisplay);
+        }
+
+        if(rewriteRule.viewThread.isNotEmpty){
+          RewriteRuleUtils.putViewThreadRule(discuz, rewriteRule.viewThread);
+        }
+      }
     }).catchError((onError) {
       EasyLoading.showError('${onError}');
       if (!_enableControlFinish) {

@@ -153,6 +153,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "scrollBarDescribe" : MessageLookupByLibrary.simpleMessage("为列表添加滚动条"),
     "secondFloor" : MessageLookupByLibrary.simpleMessage("二楼"),
     "secondFloorDescribe" : MessageLookupByLibrary.simpleMessage("模仿淘宝二楼"),
+    "selectUserNull" : MessageLookupByLibrary.simpleMessage("未选中一个用户"),
     "send" : MessageLookupByLibrary.simpleMessage("发送"),
     "sendReply" : MessageLookupByLibrary.simpleMessage("回帖"),
     "sendReplyHint" : MessageLookupByLibrary.simpleMessage("说些什么吧。"),

@@ -5,12 +5,14 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'DiscuzNotification.g.dart';
 
-@JsonSerializable(ignoreUnannotated: true)
+@JsonSerializable()
 class DiscuzNotification{
   @JsonKey(defaultValue: 0)
   @StringToIntConverter()
   int id = 0, uid = 0;
   String type = "";
+  @JsonKey(name: "new",required: false,defaultValue: "0")
+  String isNew = "0";
   @JsonKey(required: false, defaultValue: "")
   String author = "";
   @JsonKey(name: "authorid",defaultValue: 0)

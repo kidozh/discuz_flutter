@@ -4,15 +4,19 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
+import 'package:discuz_flutter/JsonResult/UserDiscuzNotificationResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
+import 'package:discuz_flutter/entity/DiscuzNotification.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
+import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/widget/DiscuzNotificationWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumPartitionWidget.dart';
 import 'package:flutter/material.dart';
@@ -47,8 +51,10 @@ class _NotificationState extends State<NotificationStatefulWidget> {
 
   late Dio _dio;
   late MobileApiClient _client;
-  DiscuzIndexResult? result = null;
+  UserDiscuzNotificationResult result = UserDiscuzNotificationResult();
   DiscuzError? _error;
+  int _page = 1;
+  List<DiscuzNotification> _noteList = [];
 
   late EasyRefreshController _controller;
   late ScrollController _scrollController;
@@ -60,7 +66,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
   // Header浮动
   bool _headerFloat = false;
   // 无限加载
-  bool _enableInfiniteLoad = false;
+  bool _enableInfiniteLoad = true;
   // 控制结束
   bool _enableControlFinish = false;
   // 任务独立
@@ -70,13 +76,15 @@ class _NotificationState extends State<NotificationStatefulWidget> {
   // 是否开启刷新
   bool _enableRefresh = true;
   // 是否开启加载
-  bool _enableLoad = false;
+  bool _enableLoad = true;
   // 顶部回弹
   bool _topBouncing = true;
   // 底部回弹
   bool _bottomBouncing = true;
 
   _NotificationState();
+
+
 
   @override
   void initState() {
@@ -87,54 +95,78 @@ class _NotificationState extends State<NotificationStatefulWidget> {
 
   }
 
-  Future<void> _loadPortalContent(Discuz discuz) async {
+  _invalidateNotificationContent(Discuz discuz) async{
+    _page = 1;
+    await _loadNotificationContent(discuz);
+  }
+
+  Future<void> _loadNotificationContent(Discuz discuz) async {
     User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
 
-    // _client.getNotificationRaw().then((value){
+    // _client.userNotificationRaw(_page).then((value){
     //   log(value);
-    //   var res = DiscuzIndexResult.fromJson(jsonDecode(value));
+    //   result = UserDiscuzNotificationResult.fromJson(jsonDecode(value));
     //
     // });
 
+    _client.userNotificationResult(_page).then((value){
+      setState(() {
+        result = value;
+        _error = null;
+        if (_page == 1) {
+          _noteList = value.variables.notificationList;
+        } else {
+          _noteList.addAll(value.variables.notificationList);
+        }
+      });
+      _page += 1;
+      if (!_enableControlFinish) {
+        _controller.resetLoadState();
+        _controller.finishRefresh();
+      }
+      // check for loaded all?
+      log("Get Notification ${_noteList.length} ${value.variables.count}");
+      if (!_enableControlFinish) {
+        _controller.finishLoad(
+            noMore: _noteList.length >= value.variables.count);
+      }
+
+      if(user != null && value.variables.member_uid != user.uid){
+        setState(() {
+          _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle);
+        });
+      }
+
+      if (value.getErrorString() != null) {
+        EasyLoading.showError(value.getErrorString()!);
+      }
+
+      if(value.errorResult!= null){
+        setState(() {
+          _error = DiscuzError(value.errorResult!.key, value.errorResult!.content);
+        });
+      }
+      else{
+        setState(() {
+          _error = null;
+        });
+      }
 
 
-    // _client.getNotificationResult().then((value) {
-    //   // render page
-    //   setState(() {
-    //     result = value;
-    //   });
-    //   if(value.getErrorString()!= null){
-    //     EasyLoading.showError(value.getErrorString()!);
-    //   }
-    //   if (!_enableControlFinish) {
-    //     _controller.resetLoadState();
-    //     _controller.finishRefresh();
-    //   }
-    //   if (!_enableControlFinish) {
-    //     _controller.finishLoad(noMore: true);
-    //   }
-    //
-    //   // check with user
-    //   if(user != null && value.discuzIndexVariables.member_uid != user.uid){
-    //     log("Recv user ${value.discuzIndexVariables.member_uid} ${user.uid}");
-    //     setState(() {
-    //       _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle);
-    //     });
-    //   }
-    //
-    // }).catchError((onError) {
-    //   EasyLoading.showError('${onError}');
-    //   if (!_enableControlFinish) {
-    //     _controller.resetLoadState();
-    //     _controller.finishRefresh();
-    //   }
-    //   setState(() {
-    //     _error =
-    //         DiscuzError(onError.runtimeType.toString(), onError.toString());
-    //   });
-    // });
+    })
+    .catchError((onError){
+      EasyLoading.showError('${onError}');
+      if (!_enableControlFinish) {
+        _controller.resetLoadState();
+        _controller.finishRefresh();
+      }
+      setState(() {
+        _error = DiscuzError(
+            onError.runtimeType.toString(), onError.toString());
+      });
+    });
   }
 
 
@@ -146,6 +178,9 @@ class _NotificationState extends State<NotificationStatefulWidget> {
     return Consumer<DiscuzAndUserNotifier>(builder: (context,discuzAndUser, child){
       if(discuzAndUser.discuz == null){
         return NullDiscuzScreen();
+      }
+      else if(discuzAndUser.user == null){
+        return NullUserScreen();
       }
       else{
         return Column(
@@ -207,13 +242,18 @@ class _NotificationState extends State<NotificationStatefulWidget> {
           : null,
       onRefresh: _enableRefresh
           ? () async {
-        _loadPortalContent(discuz);
+        _invalidateNotificationContent(discuz);
         if (!_enableControlFinish) {
           _controller.resetLoadState();
           _controller.finishRefresh();
         }
 
       } : null,
+      onLoad: _enableLoad
+          ? () async {
+        _loadNotificationContent(discuz);
+      }
+          : null,
       firstRefresh: true,
       firstRefreshWidget: Container(
         width: double.infinity,
@@ -248,17 +288,9 @@ class _NotificationState extends State<NotificationStatefulWidget> {
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (context, index) {
-              List<ForumPartition> forumPartitionList =
-                  result!.discuzIndexVariables.forumPartitionList;
-              List<Forum> _allForumList =
-                  result!.discuzIndexVariables.forumList;
-              ForumPartition forumPartition = forumPartitionList[index];
-              //log("Forum partition length ${result!.discuzIndexVariables.forumPartitionList.length} all ${_allForumList.length}" );
-              return ForumPartitionWidget(discuz,user,forumPartition, _allForumList);
+              return DiscuzNotificationWidget(discuz, _noteList[index]);
             },
-            childCount: result == null
-                ? 0
-                : result!.discuzIndexVariables.forumPartitionList.length,
+            childCount: _noteList.length
           ),
         ),
       ],
