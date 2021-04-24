@@ -29,14 +29,23 @@ Map<String, dynamic> _$ViewThreadResultToJson(ViewThreadResult instance) =>
 
 ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) {
   return ThreadVariables()
+    ..cookiepre = json['cookiepre'] as String
+    ..auth = json['auth'] as String?
+    ..saltkey = json['saltkey'] as String
+    ..member_username = json['member_username'] as String
+    ..member_avatar = json['member_avatar'] as String
+    ..member_uid =
+        const StringToIntConverter().fromJson(json['member_uid'] as String?)
     ..groupId =
         const StringToIntConverter().fromJson(json['groupid'] as String?)
     ..readAccess =
         const StringToIntConverter().fromJson(json['readaccess'] as String?)
     ..formHash = json['formhash'] as String
+    ..ismoderator = json['ismoderator'] as String?
     ..noticeCount = NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
     ..threadInfo =
         DetailedThreadInfo.fromJson(json['thread'] as Map<String, dynamic>)
+    ..fid = const StringToIntConverter().fromJson(json['fid'] as String?)
     ..postList = (json['postlist'] as List<dynamic>?)
             ?.map((e) => Post.fromJson(e as Map<String, dynamic>))
             .toList() ??
@@ -49,19 +58,29 @@ ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) {
         ? null
         : RewriteRule.fromJson(
             json['setting_rewriterule'] as Map<String, dynamic>)
+    ..ppp = json['ppp'] as String
     ..page = json['page'] as String? ?? '1';
 }
 
 Map<String, dynamic> _$ThreadVariablesToJson(ThreadVariables instance) =>
     <String, dynamic>{
+      'cookiepre': instance.cookiepre,
+      'auth': instance.auth,
+      'saltkey': instance.saltkey,
+      'member_username': instance.member_username,
+      'member_avatar': instance.member_avatar,
+      'member_uid': const StringToIntConverter().toJson(instance.member_uid),
       'groupid': const StringToIntConverter().toJson(instance.groupId),
       'readaccess': const StringToIntConverter().toJson(instance.readAccess),
       'formhash': instance.formHash,
+      'ismoderator': instance.ismoderator,
       'notice': instance.noticeCount,
       'thread': instance.threadInfo,
+      'fid': const StringToIntConverter().toJson(instance.fid),
       'postlist': instance.postList,
       'allowpostcomment': instance.allowPostCommentList,
       'setting_rewriterule': instance.rewriteRule,
+      'ppp': instance.ppp,
       'page': instance.page,
     };
 

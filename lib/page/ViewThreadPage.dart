@@ -157,7 +157,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
         Future.delayed(Duration(seconds: 1),(){
           setState(() {
             _sendReplyStatus = ButtonState.idle;
-            _replyController.clear();
+            //_replyController.clear();
           });
         });
         EasyLoading.showError('${value.errorResult!.content}(${value.errorResult!.key})');
@@ -190,7 +190,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
     //   // convert string to json
     //   Map<String, dynamic> resultJson = jsonDecode(value);
     //   ViewThreadResult result = ViewThreadResult.fromJson(resultJson);
-    //   log(result.threadVariables.threadInfo.subject);
+    //   log(result.threadVariables.member_username);
     // });
 
     client.viewThreadResult(tid, _page).then((value) {
@@ -233,6 +233,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
         });
       }
       if(user != null && value.threadVariables.member_uid != user.uid){
+        log("recv user uid different! ${user.uid} ${value.threadVariables.member_uid} ${value.threadVariables.member_username}");
         setState(() {
           _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle);
         });

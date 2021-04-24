@@ -23,7 +23,7 @@ class ViewThreadResult extends BaseResult{
 
 }
 
-@JsonSerializable(ignoreUnannotated: true)
+@JsonSerializable()
 class ThreadVariables extends BaseVariableResult{
 
   @JsonKey(name:"thread")

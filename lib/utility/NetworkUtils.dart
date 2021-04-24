@@ -13,14 +13,14 @@ class NetworkUtils{
   static Future<PersistCookieJar> getPersistentCookieJarByUser(User user) async{
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath =appDocDir.path+"/cookie_${user.id}";
-    var cookieJar=PersistCookieJar(storage:FileStorage(appDocPath));
+    var cookieJar=PersistCookieJar(storage:FileStorage(appDocPath),ignoreExpires: true,);
     return cookieJar;
   }
 
   static Future<PersistCookieJar> getPersistentCookieJarByUserId(int uid) async{
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath =appDocDir.path+"/cookie_${uid}";
-    var cookieJar=PersistCookieJar(storage:FileStorage(appDocPath));
+    var cookieJar=PersistCookieJar(storage:FileStorage(appDocPath),ignoreExpires: true,);
     return cookieJar;
   }
 
