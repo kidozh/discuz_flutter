@@ -302,7 +302,25 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).appName),
+        title: Consumer<DiscuzAndUserNotifier>(
+          builder: (context, value, child){
+            if(value.discuz == null){
+              return Text(S.of(context).appName);
+            }
+            else{
+              return Column(
+                children: [
+                  Text(value.discuz!.siteName),
+                  if(value.user == null)
+                    Text(S.of(context).incognitoTitle,style: TextStyle(fontSize: 12)),
+                  if(value.user!= null)
+                    Text("${value.user!.username} (${value.user!.uid})",style: TextStyle(fontSize: 12),)
+                ],
+              );
+            }
+
+          },
+        ),
         centerTitle: true,
       ),
       drawer: Drawer(

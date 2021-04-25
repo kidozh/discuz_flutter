@@ -94,7 +94,7 @@ class DiscuzNotificationWidget extends StatelessWidget {
             ],
           ),
           // rich text rendering
-          DiscuzHtmlWidget(_notification.note)
+          DiscuzHtmlWidget(_discuz,_notification.note)
         ],
       ),
     ));

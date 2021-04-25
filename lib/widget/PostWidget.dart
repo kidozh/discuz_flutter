@@ -36,29 +36,33 @@ class PostWidget extends StatelessWidget {
             children: [
               Padding(
                 padding: EdgeInsets.all(4.0),
-                child: CachedNetworkImage(
-                  imageUrl: URLUtils.getAvatarURL(_discuz, _post.authorId.toString()),
-                  progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-                  errorWidget: (context, url, error) => Container(
-                    width: 16.0,
-                    height: 16.0,
-                    child: CircleAvatar(
-                      backgroundColor: CustomizeColor.getColorBackgroundById(_post.authorId),
-                      child: Text(
-                        _post.author.length != 0
-                            ? _post.author[0].toUpperCase()
-                            : S.of(context).anonymous,
-                        style: TextStyle(color: Colors.white,fontSize: 12),
+                child: Container(
+                  width: 16.0,
+                  height: 16.0,
+                  child: CachedNetworkImage(
+                    imageUrl: URLUtils.getAvatarURL(_discuz, _post.authorId.toString()),
+                    progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+                    errorWidget: (context, url, error) => Container(
+                      width: 16.0,
+                      height: 16.0,
+                      child: CircleAvatar(
+                        backgroundColor: CustomizeColor.getColorBackgroundById(_post.authorId),
+                        child: Text(
+                          _post.author.length != 0
+                              ? _post.author[0].toUpperCase()
+                              : S.of(context).anonymous,
+                          style: TextStyle(color: Colors.white,fontSize: 12),
+                        ),
                       ),
                     ),
-                  ),
-                  imageBuilder: (context, imageProvider) => Container(
-                    width: 16.0,
-                    height: 16.0,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                          image: imageProvider, fit: BoxFit.cover),
+                    imageBuilder: (context, imageProvider) => Container(
+                      width: 16.0,
+                      height: 16.0,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            image: imageProvider, fit: BoxFit.cover),
+                      ),
                     ),
                   ),
                 ),
@@ -94,7 +98,7 @@ class PostWidget extends StatelessWidget {
             ],
           ),
           // rich text rendering
-          DiscuzHtmlWidget(_post.message)
+          DiscuzHtmlWidget(_discuz,_post.message)
         ],
       ),
     ));

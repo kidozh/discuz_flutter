@@ -55,6 +55,7 @@ dependencies:
   dio_cookie_manager: ^2.0.0
   path_provider: ^2.0.1
   progress_state_button: ^1.0.3
+  url_launcher: ^6.0.3
 
 
 

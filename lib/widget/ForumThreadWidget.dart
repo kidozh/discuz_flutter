@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
+import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
@@ -21,8 +22,9 @@ class ForumThreadWidget extends StatelessWidget{
   ForumThread _forumThread;
   Discuz _discuz;
   User? _user;
+  ThreadType? threadType;
 
-  ForumThreadWidget(this._discuz,this._user,this._forumThread);
+  ForumThreadWidget(this._discuz,this._user,this._forumThread, this.threadType);
 
   Widget getTailingWidget(){
     if(_forumThread.getDisplayOrder() > 0){
@@ -42,6 +44,12 @@ class ForumThreadWidget extends StatelessWidget{
     // TODO: implement build
     Locale locale = Localizations.localeOf(context);
     log("languages ${locale} ${locale.toLanguageTag()} ${locale.scriptCode} ${locale.languageCode}");
+    // retrieve threadtype
+    String threadCategory = "";
+    if(threadType!=null && threadType!.idNameMap.isNotEmpty && threadType!.idNameMap.containsKey(_forumThread.typeId)){
+      threadCategory = threadType!.idNameMap[_forumThread.typeId]!;
+    }
+
     return Container(
       child: ListTile(
         leading: ClipRRect(
@@ -67,8 +75,13 @@ class ForumThreadWidget extends StatelessWidget{
             text: _forumThread.author,
             style: DefaultTextStyle.of(context).style,
             children: <TextSpan>[
-              TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
+              //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
+              TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
               TextSpan(text: timeago.format(_forumThread.dbdatelineMinutes,locale: locale.scriptCode)),
+              if(threadCategory.isNotEmpty)
+                TextSpan(text: " / ",style: TextStyle(fontWeight: FontWeight.w300)),
+              if(threadCategory.isNotEmpty)
+                TextSpan(text: threadCategory,style: TextStyle(color: Theme.of(context).primaryColorDark)),
             ],
           ),
         ),

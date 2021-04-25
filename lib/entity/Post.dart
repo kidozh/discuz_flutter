@@ -23,8 +23,9 @@ class Post{
   String dateline = "";
   String message = "";
   String username = "";
-  @StringToIntConverter()
+
   @JsonKey(name:"authorid")
+  @StringToIntConverter()
   int authorId = 0;
   @StringToIntConverter()
   int attachment = 0;
@@ -36,7 +37,7 @@ class Post{
   @JsonKey(name:"groupid",defaultValue: 0)
   @StringToIntConverter()
   int groupId = 0;
-  @JsonKey(name:"memberstatus",defaultValue: 0)
+  @JsonKey(name:"memberstatus")
   @StringToIntConverter()
   int memberStatus = 0;
   @JsonKey(name: "dbdateline")

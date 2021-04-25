@@ -318,7 +318,7 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
                               children: [
                                 Consumer<DiscuzAndUserNotifier>(builder: (context,discuzAndUser, child){
                                   return ForumThreadWidget(
-                                      discuz, discuzAndUser.user, _forumThreadList[index]);
+                                      discuz, discuzAndUser.user, _forumThreadList[index], _displayForumResult!.discuzIndexVariables.threadType);
                                 }),
 
                                 Divider(),
@@ -331,7 +331,7 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
                             return Column(
                               children: [
                                 ForumThreadWidget(
-                                    discuz, user, _forumThreadList[index]),
+                                    discuz, user, _forumThreadList[index],_displayForumResult!.discuzIndexVariables.threadType),
                                 Divider(),
 
 
