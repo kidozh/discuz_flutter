@@ -179,5 +179,19 @@
       "discuzName": {}
     }
   },
-  "selectUserNull": "未选中一个用户"
+  "selectUserNull": "未选中一个用户",
+  "linkUnableToOpen": "无法打开此链接 : {uri}.",
+  "@linkUnableToOpen": {
+    "placeholders": {
+      "uri": {}
+    }
+  },
+  "outerlinkOpenTitle": "你正要打开外链",
+  "outerlinkOpenMessage": "链接({url})使用的域名与此论坛不一致，其很有可能不是论坛所有的。谨防钓鱼、木马和诈骗。",
+  "@outerlinkOpenMessage": {
+    "placeholders": {
+      "url": {}
+    }
+  },
+  "ok": "好"
 }

@@ -1596,6 +1596,46 @@ class S {
       args: [],
     );
   }
+
+  /// `Unable to open the uri: {uri}.`
+  String linkUnableToOpen(Object uri) {
+    return Intl.message(
+      'Unable to open the uri: $uri.',
+      name: 'linkUnableToOpen',
+      desc: '',
+      args: [uri],
+    );
+  }
+
+  /// `The link doesn't belong to the BBS`
+  String get outerlinkOpenTitle {
+    return Intl.message(
+      'The link doesn\'t belong to the BBS',
+      name: 'outerlinkOpenTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Host of the link({url}) is not the same as the BBS. It would be dangerous to browse.`
+  String outerlinkOpenMessage(Object url) {
+    return Intl.message(
+      'Host of the link($url) is not the same as the BBS. It would be dangerous to browse.',
+      name: 'outerlinkOpenMessage',
+      desc: '',
+      args: [url],
+    );
+  }
+
+  /// `ok`
+  String get ok {
+    return Intl.message(
+      'ok',
+      name: 'ok',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

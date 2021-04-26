@@ -19,15 +19,19 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
-  static m0(pos) => "# ${pos}";
+  static m0(uri) => "Unable to open the uri: ${uri}.";
 
-  static m1(username, discuzName) => "User ${username} sign in at ${discuzName} successfully.";
+  static m1(url) => "Host of the link(${url}) is not the same as the BBS. It would be dangerous to browse.";
 
-  static m2(discuzName) => "Sign in at ${discuzName}";
+  static m2(pos) => "# ${pos}";
 
-  static m3(username) => "User ${username} expired";
+  static m3(username, discuzName) => "User ${username} sign in at ${discuzName} successfully.";
 
-  static m4(uid) => "UserId ${uid}";
+  static m4(discuzName) => "Sign in at ${discuzName}";
+
+  static m5(username) => "User ${username} expired";
+
+  static m6(uid) => "UserId ${uid}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
@@ -90,6 +94,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "joinDiscussionDescribe" : MessageLookupByLibrary.simpleMessage("Join the QQ group 554981921"),
     "linkHeader" : MessageLookupByLibrary.simpleMessage("Header linker"),
     "linkHeaderDescribeDescribe" : MessageLookupByLibrary.simpleMessage("Customize Header with linker"),
+    "linkUnableToOpen" : m0,
     "listDirection" : MessageLookupByLibrary.simpleMessage("List direction"),
     "listEmbed" : MessageLookupByLibrary.simpleMessage("List embed"),
     "listEmbedDescribe" : MessageLookupByLibrary.simpleMessage("Use the connector to set the Header and Footer positions"),
@@ -118,13 +123,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "notification" : MessageLookupByLibrary.simpleMessage("Notification"),
     "nullDiscuzSubTitle" : MessageLookupByLibrary.simpleMessage("Why not consider add a discuz forum?"),
     "nullDiscuzTitle" : MessageLookupByLibrary.simpleMessage("No Discuz! BBS is selected"),
+    "ok" : MessageLookupByLibrary.simpleMessage("ok"),
     "old" : MessageLookupByLibrary.simpleMessage("Old"),
     "or" : MessageLookupByLibrary.simpleMessage("or"),
+    "outerlinkOpenMessage" : m1,
+    "outerlinkOpenTitle" : MessageLookupByLibrary.simpleMessage("The link doesn\'t belong to the BBS"),
     "password" : MessageLookupByLibrary.simpleMessage("Password"),
     "payPal" : MessageLookupByLibrary.simpleMessage("PayPal"),
     "phoenixDescribe" : MessageLookupByLibrary.simpleMessage("Golden campus"),
     "phone" : MessageLookupByLibrary.simpleMessage("Phone"),
-    "postPosition" : m0,
+    "postPosition" : m2,
     "progressButtonLoginFailed" : MessageLookupByLibrary.simpleMessage("Login Failed"),
     "progressButtonLoginSuccess" : MessageLookupByLibrary.simpleMessage("Login Success"),
     "progressButtonLogining" : MessageLookupByLibrary.simpleMessage("Sigining in..."),
@@ -158,8 +166,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "sendReply" : MessageLookupByLibrary.simpleMessage("Send"),
     "sendReplyHint" : MessageLookupByLibrary.simpleMessage("Say something"),
     "settingTitle" : MessageLookupByLibrary.simpleMessage("Settings"),
-    "signInSuccessTitle" : m1,
-    "signInTitle" : m2,
+    "signInSuccessTitle" : m3,
+    "signInTitle" : m4,
     "signInViaBrowser" : MessageLookupByLibrary.simpleMessage("Sign in by web"),
     "signUp" : MessageLookupByLibrary.simpleMessage("Sign up"),
     "spaceDescribe" : MessageLookupByLibrary.simpleMessage("Flare animation - Space"),
@@ -176,8 +184,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "topBouncingDescribe" : MessageLookupByLibrary.simpleMessage("Top can be crossed"),
     "updateAt" : MessageLookupByLibrary.simpleMessage("Update at %T"),
     "userExpiredSubtitle" : MessageLookupByLibrary.simpleMessage("The current user is expired, some function may not work."),
-    "userExpiredTitle" : m3,
-    "userIdTitle" : m4,
+    "userExpiredTitle" : m5,
+    "userIdTitle" : m6,
     "userProfile" : MessageLookupByLibrary.simpleMessage("User Profile"),
     "userProfileDescribe" : MessageLookupByLibrary.simpleMessage("User Profile with the springback effect"),
     "vertical" : MessageLookupByLibrary.simpleMessage("Vertical"),

@@ -3,11 +3,14 @@ import 'dart:developer';
 
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
+import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/DisplayForumPage.dart';
 import 'package:discuz_flutter/page/ViewThreadPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
 import 'package:provider/provider.dart';
@@ -46,15 +49,61 @@ class DiscuzHtmlWidget extends StatelessWidget{
           urlString = urlString.replaceAll("&amp;", "&");
           bool urlLauchable = await canLaunch(urlString);
           User? user = Provider.of<DiscuzAndUserNotifier>(context.buildContext, listen: false).user;
+          // judge if it is a path
+          Uri? tryUri = Uri.tryParse(urlString);
+          if(tryUri == null){
+            // add a prefix to test if it's a url
+            urlString = discuz.baseURL+ "/" + urlString;
+            log("Press after link ${urlString} ");
+            urlLauchable = await canLaunch(urlString);
+          }
+
 
           if(urlLauchable){
             // parse url
             Uri uri = Uri.parse(urlString);
+            // check host
+            if(uri.host != Uri.parse(discuz.baseURL).host){
+              showDialog(context: context.buildContext, builder: (context){
+                return AlertDialog(
+                  backgroundColor: Colors.pink.shade50,
+                  title: Text(S.of(context).outerlinkOpenTitle, style: TextStyle(color: Colors.redAccent),),
+                  content: Text(S.of(context).outerlinkOpenMessage(urlString!),style: TextStyle(fontSize: 14),),
+                  actions: [
+                    TextButton(
+                        onPressed: (){
+                          launch(urlString!);
+                        },
+                        child: Text(S.of(context).ok,)
+                    )
+                  ],
+                );
+              });
+
+              return ;
+            }
+
             // check query parameters for full url
             if(uri.queryParameters.containsKey("mod")){
               String modParamter = uri.queryParameters["mod"]!;
+              log("recv modParamter ${modParamter}");
               // check forum display
               switch (modParamter){
+                case "redirect":{
+                  if(uri.queryParameters.containsKey("ptid")){
+                    String tidString = uri.queryParameters["ptid"]!;
+                    // trigger tid
+                    if(int.tryParse(tidString) != null){
+                      int tid = int.tryParse(tidString)!;
+                      await Navigator.push(
+                          context.buildContext,
+                          MaterialPageRoute(builder: (context) => ViewThreadPage(discuz: discuz, user: user, tid: tid, key: UniqueKey(),))
+                      );
+                      return;
+                    }
+                  }
+                  break;
+                }
                 case "viewthread":{
                   // check for forum, query fid
                   if(uri.queryParameters.containsKey("tid")){
@@ -91,13 +140,39 @@ class DiscuzHtmlWidget extends StatelessWidget{
 
             }
             // check short
+            String? fid = await RewriteRuleUtils.findFidInURL(discuz, urlString);
+            if(fid!=null && int.tryParse(fid) != null){
+              await Navigator.push(
+                  context.buildContext,
+                  MaterialPageRoute(builder: (context) => DisplayForumPage(discuz: discuz, user: user, fid: int.tryParse(fid)!, key: UniqueKey(),))
+              );
+              return;
+            }
+
+            // check short
+            String? tid = await RewriteRuleUtils.findTidInURL(discuz, urlString);
+            if(tid!=null && int.tryParse(tid) != null){
+              await Navigator.push(
+                  context.buildContext,
+                  MaterialPageRoute(builder: (context) => ViewThreadPage(discuz: discuz, user: user, tid: int.tryParse(tid)!, key: UniqueKey(),))
+              );
+              return;
+            }
 
             
             await launch(urlString);
           }
+          else{
+            // show the link
+            EasyLoading.showError(S.of(context.buildContext).linkUnableToOpen(urlString));
+          }
         }
 
 
+      },
+      shrinkWrap: true,
+      onImageError: (e,s){
+        log(s);
       },
     );
   }

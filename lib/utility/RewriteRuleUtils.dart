@@ -1,5 +1,7 @@
 
 
+import 'dart:developer';
+
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,44 +39,57 @@ class RewriteRuleUtils{
   }
 
   // the example could be f{fid}-{page}
-  Future<String?> findFidInURL(Discuz discuz,String url) async{
+  static Future<String?> findFidInURL(Discuz discuz,String url) async{
     // transfer rewrite url to regex
-    String rewriteUrl = await getForumDisplayRewriteRuleName(discuz);
+    String rewriteUrl = await getForumDisplayRule(discuz);
     if(rewriteUrl.isEmpty){
       return null;
     }
     rewriteUrl = rewriteUrl.replaceAll("{fid}", "(?<fid>[0-9]+)");
     rewriteUrl = rewriteUrl.replaceAll("{page}", "(?<page>[0-9]+)");
-
-    RegExp regExp = new RegExp(url);
+    log("rewrite url ${rewriteUrl}");
+    RegExp regExp = new RegExp(rewriteUrl);
     RegExpMatch? regExpMatch = regExp.firstMatch(url);
     if(regExpMatch == null){
       return null;
     }
     else{
-      return regExpMatch.namedGroup("fid");
+      try{
+        return regExpMatch.namedGroup("fid");
+      }
+      catch(e){
+        return null;
+      }
+
     }
 
   }
 
   // the example could be t{tid}-{page}-{prevpage}
-  Future<String?> findTidInURL(Discuz discuz,String url) async{
+  static Future<String?> findTidInURL(Discuz discuz,String url) async{
     // transfer rewrite url to regex
-    String rewriteUrl = await getViewThreadRewriteRuleName(discuz);
+    String rewriteUrl = await getViewThreadRule(discuz);
     if(rewriteUrl.isEmpty){
       return null;
     }
     rewriteUrl = rewriteUrl.replaceAll("{tid}", "(?<tid>[0-9]+)");
     rewriteUrl = rewriteUrl.replaceAll("{page}", "(?<page>[0-9]+)");
     rewriteUrl = rewriteUrl.replaceAll("{prevpage}", "(?<prevpage>[0-9]+)");
-
-    RegExp regExp = new RegExp(url);
+    log("rewrite url ${rewriteUrl}");
+    RegExp regExp = new RegExp(rewriteUrl);
     RegExpMatch? regExpMatch = regExp.firstMatch(url);
+    log(rewriteUrl);
     if(regExpMatch == null){
       return null;
     }
     else{
-      return regExpMatch.namedGroup("tid");
+      try{
+        return regExpMatch.namedGroup("tid");
+      }
+      catch(e){
+        return null;
+      }
+
     }
 
   }

@@ -60,10 +60,10 @@ abstract class MobileApiClient {
   @GET("/api/mobile/index.php?version=4&module=forumdisplay")
   Future<String> displayForumRaw(@Query("fid") String fid,@Query("page") int page);
 
-  @GET("/api/mobile/index.php?version=4&module=viewthread")
+  @GET("/api/mobile/index.php?version=4&module=viewthread&ppp=10")
   Future<ViewThreadResult> viewThreadResult(@Query("tid") int tid,@Query("page") int page);
 
-  @GET("/api/mobile/index.php?version=4&module=viewthread")
+  @GET("/api/mobile/index.php?version=4&module=viewthread&ppp=10")
   Future<String> viewThreadRaw(@Query("tid") int tid,@Query("page") int page);
 
   // map{

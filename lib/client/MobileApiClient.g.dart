@@ -159,7 +159,7 @@ class _MobileApiClient implements MobileApiClient {
         _setStreamType<ViewThreadResult>(
             Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
                 .compose(_dio.options,
-                    '/api/mobile/index.php?version=4&module=viewthread',
+                    '/api/mobile/index.php?version=4&module=viewthread&ppp=10',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ViewThreadResult.fromJson(_result.data!);
@@ -171,12 +171,12 @@ class _MobileApiClient implements MobileApiClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'tid': tid, r'page': page};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-        .compose(
-            _dio.options, '/api/mobile/index.php?version=4&module=viewthread',
-            queryParameters: queryParameters, data: _data)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
+        Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            .compose(_dio.options,
+                '/api/mobile/index.php?version=4&module=viewthread&ppp=10',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }

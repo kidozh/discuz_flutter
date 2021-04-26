@@ -29,9 +29,8 @@ Post _$PostFromJson(Map<String, dynamic> json) {
         const StringToIntConverter().fromJson(json['position'] as String?)
     ..groupId =
         const StringToIntConverter().fromJson(json['groupid'] as String?) ?? 0
-    ..memberStatus = const StringToIntConverter()
-            .fromJson(json['memberstatus'] as String?) ??
-        0
+    ..memberStatus =
+        const StringToIntConverter().fromJson(json['memberstatus'] as String?)
     ..publishAt =
         const SecondToDateTimeConverter().fromJson(json['dbdateline'] as String)
     ..attachmentIdList = (json['attachlist'] as List<dynamic>?)

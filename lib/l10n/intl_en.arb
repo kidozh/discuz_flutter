@@ -179,6 +179,19 @@
       "discuzName": {}
     }
   },
-  "selectUserNull": "No user is currently activated"
-
+  "selectUserNull": "No user is currently activated",
+  "linkUnableToOpen": "Unable to open the uri: {uri}.",
+  "@linkUnableToOpen": {
+    "placeholders": {
+      "uri": {}
+    }
+  },
+  "outerlinkOpenTitle": "The link doesn't belong to the BBS",
+  "outerlinkOpenMessage": "Host of the link({url}) is not the same as the BBS. It would be dangerous to browse.",
+  "@outerlinkOpenMessage": {
+    "placeholders": {
+      "url": {}
+    }
+  },
+  "ok": "ok"
 }
