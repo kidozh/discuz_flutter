@@ -309,7 +309,8 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
                     bgColor: _headerFloat
                         ? Theme.of(context).primaryColor
                         : Colors.transparent,
-                    infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
+                    // infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
+                    textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
                     float: _headerFloat,
                     enableHapticFeedback: _vibration,
                     refreshText: S.of(context).pullToRefresh,
@@ -325,6 +326,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
                       ? ClassicalFooter(
                     enableInfiniteLoad: _enableInfiniteLoad,
                     enableHapticFeedback: _vibration,
+                    textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
                     loadText: S.of(context).pushToLoad,
                     loadReadyText: S.of(context).releaseToLoad,
                     loadingText: S.of(context).loading,

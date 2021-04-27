@@ -21,17 +21,15 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static m0(uri) => "Unable to open the uri: ${uri}.";
 
-  static m1(url) => "Host of the link(${url}) is not the same as the BBS. It would be dangerous to browse.";
+  static m1(pos) => "# ${pos}";
 
-  static m2(pos) => "# ${pos}";
+  static m2(username, discuzName) => "User ${username} sign in at ${discuzName} successfully.";
 
-  static m3(username, discuzName) => "User ${username} sign in at ${discuzName} successfully.";
+  static m3(discuzName) => "Sign in at ${discuzName}";
 
-  static m4(discuzName) => "Sign in at ${discuzName}";
+  static m4(username) => "User ${username} expired";
 
-  static m5(username) => "User ${username} expired";
-
-  static m6(uid) => "UserId ${uid}";
+  static m5(uid) => "UserId ${uid}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
@@ -125,14 +123,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "nullDiscuzTitle" : MessageLookupByLibrary.simpleMessage("No Discuz! BBS is selected"),
     "ok" : MessageLookupByLibrary.simpleMessage("ok"),
     "old" : MessageLookupByLibrary.simpleMessage("Old"),
+    "openInBrowser" : MessageLookupByLibrary.simpleMessage("Open in browser"),
     "or" : MessageLookupByLibrary.simpleMessage("or"),
-    "outerlinkOpenMessage" : m1,
+    "outerlinkOpenMessage" : MessageLookupByLibrary.simpleMessage("Host of the link is not the same as the BBS. It would be dangerous to browse."),
     "outerlinkOpenTitle" : MessageLookupByLibrary.simpleMessage("The link doesn\'t belong to the BBS"),
     "password" : MessageLookupByLibrary.simpleMessage("Password"),
     "payPal" : MessageLookupByLibrary.simpleMessage("PayPal"),
     "phoenixDescribe" : MessageLookupByLibrary.simpleMessage("Golden campus"),
     "phone" : MessageLookupByLibrary.simpleMessage("Phone"),
-    "postPosition" : m2,
+    "postPosition" : m1,
     "progressButtonLoginFailed" : MessageLookupByLibrary.simpleMessage("Login Failed"),
     "progressButtonLoginSuccess" : MessageLookupByLibrary.simpleMessage("Login Success"),
     "progressButtonLogining" : MessageLookupByLibrary.simpleMessage("Sigining in..."),
@@ -157,6 +156,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "retry" : MessageLookupByLibrary.simpleMessage("retry"),
     "reverse" : MessageLookupByLibrary.simpleMessage("reverse"),
     "sample" : MessageLookupByLibrary.simpleMessage("Sample"),
+    "savePictureToDevice" : MessageLookupByLibrary.simpleMessage("Save"),
     "scrollBar" : MessageLookupByLibrary.simpleMessage("ScrollBar"),
     "scrollBarDescribe" : MessageLookupByLibrary.simpleMessage("Add a scroll bar to the list"),
     "secondFloor" : MessageLookupByLibrary.simpleMessage("Second floor"),
@@ -166,8 +166,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "sendReply" : MessageLookupByLibrary.simpleMessage("Send"),
     "sendReplyHint" : MessageLookupByLibrary.simpleMessage("Say something"),
     "settingTitle" : MessageLookupByLibrary.simpleMessage("Settings"),
-    "signInSuccessTitle" : m3,
-    "signInTitle" : m4,
+    "signInSuccessTitle" : m2,
+    "signInTitle" : m3,
     "signInViaBrowser" : MessageLookupByLibrary.simpleMessage("Sign in by web"),
     "signUp" : MessageLookupByLibrary.simpleMessage("Sign up"),
     "spaceDescribe" : MessageLookupByLibrary.simpleMessage("Flare animation - Space"),
@@ -184,8 +184,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "topBouncingDescribe" : MessageLookupByLibrary.simpleMessage("Top can be crossed"),
     "updateAt" : MessageLookupByLibrary.simpleMessage("Update at %T"),
     "userExpiredSubtitle" : MessageLookupByLibrary.simpleMessage("The current user is expired, some function may not work."),
-    "userExpiredTitle" : m5,
-    "userIdTitle" : m6,
+    "userExpiredTitle" : m4,
+    "userIdTitle" : m5,
     "userProfile" : MessageLookupByLibrary.simpleMessage("User Profile"),
     "userProfileDescribe" : MessageLookupByLibrary.simpleMessage("User Profile with the springback effect"),
     "vertical" : MessageLookupByLibrary.simpleMessage("Vertical"),

@@ -110,6 +110,14 @@ class _MyHomePageState extends State<MyHomePage> {
     _discuzDao = db.discuzDao;
   }
 
+  void _setFirstUserInDiscuz(int discuzId) async{
+    List<User> userList = await _userDao.findAllUsersByDiscuzId(discuzId);
+    if(userList.isNotEmpty && userList.length > 0){
+      Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(userList.first);
+    }
+
+  }
+
   void _triggerSwitchDiscuzDialog() async {
     _getDiscuzList();
     List<Widget> widgetList = [];
@@ -128,6 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
           setState(() {
             Provider.of<DiscuzAndUserNotifier>(context, listen: false)
                 .initDiscuz(discuz);
+            _setFirstUserInDiscuz(discuz.id!);
             Navigator.of(context).pop();
           });
         },
@@ -293,6 +302,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // set
         Provider.of<DiscuzAndUserNotifier>(context, listen: false)
             .initDiscuz(_allDiscuzs.first);
+        _setFirstUserInDiscuz(_allDiscuzs.first.id!);
       });
     }
 

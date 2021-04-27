@@ -238,7 +238,8 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
                     bgColor: _headerFloat
                         ? Theme.of(context).primaryColor
                         : Colors.transparent,
-                    infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
+                    // infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
+                    textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
                     float: _headerFloat,
                     enableHapticFeedback: _vibration,
                     refreshText: S.of(context).pullToRefresh,
@@ -253,6 +254,7 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
                   footer: _enableLoad
                       ? ClassicalFooter(
                     enableInfiniteLoad: _enableInfiniteLoad,
+                    textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
                     enableHapticFeedback: _vibration,
                     loadText: S.of(context).pushToLoad,
                     loadReadyText: S.of(context).releaseToLoad,

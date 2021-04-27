@@ -187,11 +187,8 @@
     }
   },
   "outerlinkOpenTitle": "The link doesn't belong to the BBS",
-  "outerlinkOpenMessage": "Host of the link({url}) is not the same as the BBS. It would be dangerous to browse.",
-  "@outerlinkOpenMessage": {
-    "placeholders": {
-      "url": {}
-    }
-  },
-  "ok": "ok"
+  "outerlinkOpenMessage": "Host of the link is not the same as the BBS. It would be dangerous to browse.",
+  "ok": "ok",
+  "savePictureToDevice": "Save",
+  "openInBrowser": "Open in browser"
 }

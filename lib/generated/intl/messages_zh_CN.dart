@@ -21,17 +21,15 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static m0(uri) => "无法打开此链接 : ${uri}.";
 
-  static m1(url) => "链接(${url})使用的域名与此论坛不一致，其很有可能不是论坛所有的。谨防钓鱼、木马和诈骗。";
+  static m1(pos) => "第${pos}层";
 
-  static m2(pos) => "第${pos}层";
+  static m2(username, discuzName) => "用户 ${username} 已成功登录到 ${discuzName}。";
 
-  static m3(username, discuzName) => "用户 ${username} 已成功登录到 ${discuzName}。";
+  static m3(discuzName) => "登录至 ${discuzName}";
 
-  static m4(discuzName) => "登录至 ${discuzName}";
+  static m4(username) => "用户 ${username} 已失效";
 
-  static m5(username) => "用户 ${username} 已失效";
-
-  static m6(uid) => "用户编号： ${uid}";
+  static m5(uid) => "用户编号： ${uid}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
@@ -125,14 +123,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "nullDiscuzTitle" : MessageLookupByLibrary.simpleMessage("还没有指定一个论坛"),
     "ok" : MessageLookupByLibrary.simpleMessage("好"),
     "old" : MessageLookupByLibrary.simpleMessage("年龄"),
+    "openInBrowser" : MessageLookupByLibrary.simpleMessage("在浏览器中打开"),
     "or" : MessageLookupByLibrary.simpleMessage("或者"),
-    "outerlinkOpenMessage" : m1,
+    "outerlinkOpenMessage" : MessageLookupByLibrary.simpleMessage("链接使用的域名与此论坛不一致，其很有可能不是论坛所有的。谨防钓鱼、木马和诈骗。"),
     "outerlinkOpenTitle" : MessageLookupByLibrary.simpleMessage("你正要打开外链"),
     "password" : MessageLookupByLibrary.simpleMessage("密码"),
     "payPal" : MessageLookupByLibrary.simpleMessage("PayPal"),
     "phoenixDescribe" : MessageLookupByLibrary.simpleMessage("金色校园"),
     "phone" : MessageLookupByLibrary.simpleMessage("电话"),
-    "postPosition" : m2,
+    "postPosition" : m1,
     "progressButtonLoginFailed" : MessageLookupByLibrary.simpleMessage("登陆失败"),
     "progressButtonLoginSuccess" : MessageLookupByLibrary.simpleMessage("登陆成功！"),
     "progressButtonLogining" : MessageLookupByLibrary.simpleMessage("登陆中..."),
@@ -157,6 +156,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "retry" : MessageLookupByLibrary.simpleMessage("重试"),
     "reverse" : MessageLookupByLibrary.simpleMessage("反向"),
     "sample" : MessageLookupByLibrary.simpleMessage("示例"),
+    "savePictureToDevice" : MessageLookupByLibrary.simpleMessage("保存图片至此设备"),
     "scrollBar" : MessageLookupByLibrary.simpleMessage("滚动条"),
     "scrollBarDescribe" : MessageLookupByLibrary.simpleMessage("为列表添加滚动条"),
     "secondFloor" : MessageLookupByLibrary.simpleMessage("二楼"),
@@ -166,8 +166,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "sendReply" : MessageLookupByLibrary.simpleMessage("回帖"),
     "sendReplyHint" : MessageLookupByLibrary.simpleMessage("说些什么吧。"),
     "settingTitle" : MessageLookupByLibrary.simpleMessage("设置"),
-    "signInSuccessTitle" : m3,
-    "signInTitle" : m4,
+    "signInSuccessTitle" : m2,
+    "signInTitle" : m3,
     "signInViaBrowser" : MessageLookupByLibrary.simpleMessage("使用网页登录"),
     "signUp" : MessageLookupByLibrary.simpleMessage("注册"),
     "spaceDescribe" : MessageLookupByLibrary.simpleMessage("Flare动画 - 星空"),
@@ -184,8 +184,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "topBouncingDescribe" : MessageLookupByLibrary.simpleMessage("顶部可越界"),
     "updateAt" : MessageLookupByLibrary.simpleMessage("更新于 %T"),
     "userExpiredSubtitle" : MessageLookupByLibrary.simpleMessage("当前用户授权已过期，你需要重新登录以重新激活此用户。"),
-    "userExpiredTitle" : m5,
-    "userIdTitle" : m6,
+    "userExpiredTitle" : m4,
+    "userIdTitle" : m5,
     "userProfile" : MessageLookupByLibrary.simpleMessage("个人中心"),
     "userProfileDescribe" : MessageLookupByLibrary.simpleMessage("带回弹效果的个人中心"),
     "vertical" : MessageLookupByLibrary.simpleMessage("垂直"),

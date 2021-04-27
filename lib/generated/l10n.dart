@@ -1617,13 +1617,13 @@ class S {
     );
   }
 
-  /// `Host of the link({url}) is not the same as the BBS. It would be dangerous to browse.`
-  String outerlinkOpenMessage(Object url) {
+  /// `Host of the link is not the same as the BBS. It would be dangerous to browse.`
+  String get outerlinkOpenMessage {
     return Intl.message(
-      'Host of the link($url) is not the same as the BBS. It would be dangerous to browse.',
+      'Host of the link is not the same as the BBS. It would be dangerous to browse.',
       name: 'outerlinkOpenMessage',
       desc: '',
-      args: [url],
+      args: [],
     );
   }
 
@@ -1632,6 +1632,26 @@ class S {
     return Intl.message(
       'ok',
       name: 'ok',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save`
+  String get savePictureToDevice {
+    return Intl.message(
+      'Save',
+      name: 'savePictureToDevice',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open in browser`
+  String get openInBrowser {
+    return Intl.message(
+      'Open in browser',
+      name: 'openInBrowser',
       desc: '',
       args: [],
     );

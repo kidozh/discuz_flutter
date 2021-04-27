@@ -1,0 +1,62 @@
+
+
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
+import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:flutter/material.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:photo_view/photo_view.dart';
+
+class FullImagePage extends StatelessWidget{
+  String imageUrl;
+  FullImagePage(this.imageUrl);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(imageUrl.split("/").last),
+      ),
+      body: Container(
+          child: Column(
+            children: [
+              Expanded(
+                  child: PhotoView(
+                    imageProvider: CachedNetworkImageProvider(imageUrl),
+                  )
+
+              ),
+              if(Platform.isIOS || Platform.isAndroid)
+                ElevatedButton.icon(
+                    icon: Icon(Icons.save),
+                    onPressed: (){
+                      _save();
+                    },
+                    label: Text(S.of(context).savePictureToDevice)
+                )
+            ],
+          )
+      )
+    );
+
+  }
+
+  _save() async {
+    if(Platform.isIOS || Platform.isAndroid){
+      print(imageUrl);
+      var response = await Dio().get(imageUrl,
+          options: Options(responseType: ResponseType.bytes)
+      );
+      final result = await ImageGallerySaver.saveImage(
+          Uint8List.fromList(response.data),
+          quality: 100,
+          name: imageUrl.split("/").last);
+
+      print(result);
+    }
+
+  }
+}

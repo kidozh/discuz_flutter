@@ -215,7 +215,8 @@ class _NotificationState extends State<NotificationStatefulWidget> {
         enableInfiniteRefresh: false,
         bgColor:
         _headerFloat ? Theme.of(context).primaryColor : Colors.transparent,
-        infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
+        // infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
+        textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
         float: _headerFloat,
         enableHapticFeedback: _vibration,
         refreshText: S.of(context).pullToRefresh,
@@ -229,6 +230,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
           : null,
       footer: _enableLoad
           ? ClassicalFooter(
+        textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
         enableInfiniteLoad: _enableInfiniteLoad,
         enableHapticFeedback: _vibration,
         loadText: S.of(context).pushToLoad,

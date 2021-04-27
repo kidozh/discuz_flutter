@@ -81,7 +81,7 @@ class ForumThreadWidget extends StatelessWidget{
               if(threadCategory.isNotEmpty)
                 TextSpan(text: " / ",style: TextStyle(fontWeight: FontWeight.w300)),
               if(threadCategory.isNotEmpty)
-                TextSpan(text: threadCategory,style: TextStyle(color: Theme.of(context).primaryColorDark)),
+                TextSpan(text: threadCategory,style: TextStyle(color: Theme.of(context).accentColor)),
             ],
           ),
         ),

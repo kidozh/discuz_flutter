@@ -5,6 +5,7 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/DisplayForumPage.dart';
+import 'package:discuz_flutter/page/FullImagePage.dart';
 import 'package:discuz_flutter/page/ViewThreadPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
@@ -37,10 +38,10 @@ class DiscuzHtmlWidget extends StatelessWidget{
       },
       style: {
         ".reply_wrap" :Style(
-          backgroundColor: Colors.grey.shade100,
+          backgroundColor: MediaQuery.of(context).platformBrightness == Brightness.light ? Colors.grey.shade200: Colors.grey.shade600,
           padding: const EdgeInsets.all(8),
           margin: const EdgeInsets.only(bottom: 8.0),
-          border: Border(left: BorderSide(color: Theme.of(context).primaryColor, width: 4)),
+          border: Border(left: BorderSide(color: Theme.of(context).accentColor, width: 4)),
         )
       },
       onLinkTap: (urlString, context,attribute, element) async{
@@ -66,15 +67,31 @@ class DiscuzHtmlWidget extends StatelessWidget{
             if(uri.host != Uri.parse(discuz.baseURL).host){
               showDialog(context: context.buildContext, builder: (context){
                 return AlertDialog(
-                  backgroundColor: Colors.pink.shade50,
-                  title: Text(S.of(context).outerlinkOpenTitle, style: TextStyle(color: Colors.redAccent),),
-                  content: Text(S.of(context).outerlinkOpenMessage(urlString!),style: TextStyle(fontSize: 14),),
+                  title: Text(S.of(context).outerlinkOpenTitle,),
+                  content: Column(
+                      children:[
+                        Text(S.of(context).outerlinkOpenMessage,style: Theme.of(context).textTheme.bodyText2,),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(Icons.link,color: Theme.of(context).errorColor,),
+                            SizedBox(width: 8.0),
+                            Expanded(
+                                child: Text(urlString!,softWrap: true,)
+
+                            )
+
+                          ],
+                        ),
+                      ]
+                  ),
                   actions: [
                     TextButton(
                         onPressed: (){
                           launch(urlString!);
                         },
-                        child: Text(S.of(context).ok,)
+                        child: Text(S.of(context).openInBrowser,style: TextStyle(color: Theme.of(context).errorColor),)
                     )
                   ],
                 );
@@ -172,7 +189,15 @@ class DiscuzHtmlWidget extends StatelessWidget{
       },
       shrinkWrap: true,
       onImageError: (e,s){
-        log(s);
+
+      },
+      onImageTap: (string, context,attribute, element){
+        if(string!= null){
+          Navigator.push(
+              context.buildContext,
+              MaterialPageRoute(builder: (context) => FullImagePage(string))
+          );
+        }
       },
     );
   }
