@@ -66,6 +66,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "dashboard" : MessageLookupByLibrary.simpleMessage("看板"),
     "deliveryDescribe" : MessageLookupByLibrary.simpleMessage("气球快递"),
     "direction" : MessageLookupByLibrary.simpleMessage("方向"),
+    "downloadAttachment" : MessageLookupByLibrary.simpleMessage("下载附件"),
     "email" : MessageLookupByLibrary.simpleMessage("邮箱"),
     "emptyWidget" : MessageLookupByLibrary.simpleMessage("空视图"),
     "emptyWidgetDescribe" : MessageLookupByLibrary.simpleMessage("没有数据时显示空视图"),
@@ -193,6 +194,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vibration" : MessageLookupByLibrary.simpleMessage("震动"),
     "vibrationDescribe" : MessageLookupByLibrary.simpleMessage("触发震动反馈"),
     "viewThreadTitle" : MessageLookupByLibrary.simpleMessage("查看帖子"),
+    "watchPictureInFullScreen" : MessageLookupByLibrary.simpleMessage("查看大图"),
     "weiXinPay" : MessageLookupByLibrary.simpleMessage("微信钱包"),
     "welcomeToSecondFloor" : MessageLookupByLibrary.simpleMessage("欢迎来到二楼"),
     "writeStorageDenied" : MessageLookupByLibrary.simpleMessage("无法获得写入权限。")

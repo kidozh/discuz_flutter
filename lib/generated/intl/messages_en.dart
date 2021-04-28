@@ -66,6 +66,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "dashboard" : MessageLookupByLibrary.simpleMessage("Dashboard"),
     "deliveryDescribe" : MessageLookupByLibrary.simpleMessage("Express balloon"),
     "direction" : MessageLookupByLibrary.simpleMessage("Direction"),
+    "downloadAttachment" : MessageLookupByLibrary.simpleMessage("Download"),
     "email" : MessageLookupByLibrary.simpleMessage("E-Mail"),
     "emptyWidget" : MessageLookupByLibrary.simpleMessage("Empty widget"),
     "emptyWidgetDescribe" : MessageLookupByLibrary.simpleMessage("Show empty widget when there is no data"),
@@ -193,6 +194,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vibration" : MessageLookupByLibrary.simpleMessage("vibration"),
     "vibrationDescribe" : MessageLookupByLibrary.simpleMessage("Triggered vibration feedback"),
     "viewThreadTitle" : MessageLookupByLibrary.simpleMessage("View a thread"),
+    "watchPictureInFullScreen" : MessageLookupByLibrary.simpleMessage("Full display"),
     "weiXinPay" : MessageLookupByLibrary.simpleMessage("WeiXin Pay"),
     "welcomeToSecondFloor" : MessageLookupByLibrary.simpleMessage("Welcome to second floor"),
     "writeStorageDenied" : MessageLookupByLibrary.simpleMessage("Write storage permission denied.")

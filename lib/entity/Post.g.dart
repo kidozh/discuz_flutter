@@ -95,7 +95,8 @@ Attachment _$AttachmentFromJson(Map<String, dynamic> json) {
     ..updateAt =
         const SecondToDateTimeConverter().fromJson(json['dbdateline'] as String)
     ..attachmentSizeString = json['attachsize'] as String
-    ..attachmentPathName = json['attachment'] as String? ?? '';
+    ..attachmentPathName = json['attachment'] as String? ?? ''
+    ..ext = json['ext'] as String? ?? '';
 }
 
 Map<String, dynamic> _$AttachmentToJson(Attachment instance) =>
@@ -113,4 +114,5 @@ Map<String, dynamic> _$AttachmentToJson(Attachment instance) =>
       'dbdateline': const SecondToDateTimeConverter().toJson(instance.updateAt),
       'attachsize': instance.attachmentSizeString,
       'attachment': instance.attachmentPathName,
+      'ext': instance.ext,
     };

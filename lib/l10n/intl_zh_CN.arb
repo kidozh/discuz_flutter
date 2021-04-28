@@ -192,5 +192,7 @@
   "savePictureToDevice": "保存图片至此设备",
   "openInBrowser": "在浏览器中打开",
   "writeStorageDenied": "无法获得写入权限。",
-  "saveImageSuccessfully": "成功保存图片至此设备中."
+  "saveImageSuccessfully": "成功保存图片至此设备中.",
+  "downloadAttachment": "下载附件",
+  "watchPictureInFullScreen": "查看大图"
 }

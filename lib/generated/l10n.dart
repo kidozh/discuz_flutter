@@ -1676,6 +1676,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Download`
+  String get downloadAttachment {
+    return Intl.message(
+      'Download',
+      name: 'downloadAttachment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Full display`
+  String get watchPictureInFullScreen {
+    return Intl.message(
+      'Full display',
+      name: 'watchPictureInFullScreen',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
