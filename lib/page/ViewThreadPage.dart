@@ -184,14 +184,14 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
 
-    // client.viewThreadRaw(tid, _page).then((value) {
-    //
-    //   log(value.toString());
-    //   // convert string to json
-    //   Map<String, dynamic> resultJson = jsonDecode(value);
-    //   ViewThreadResult result = ViewThreadResult.fromJson(resultJson);
-    //   log(result.threadVariables.member_username);
-    // });
+    client.viewThreadRaw(tid, _page).then((value) {
+
+      log(value.toString());
+      // convert string to json
+      Map<String, dynamic> resultJson = jsonDecode(value);
+      ViewThreadResult result = ViewThreadResult.fromJson(resultJson);
+      log(result.threadVariables.member_username);
+    });
 
     client.viewThreadResult(tid, _page).then((value) {
       setState(() {
@@ -215,7 +215,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
       if (!_enableControlFinish) {
         _controller.finishLoad(
             noMore: _postList.length >=
-                value.threadVariables.threadInfo.replies);
+                value.threadVariables.threadInfo.replies+1);
       }
 
       if (value.getErrorString() != null) {

@@ -41,7 +41,9 @@ Post _$PostFromJson(Map<String, dynamic> json) {
             ?.map((e) => e as String)
             .toList() ??
         []
-    ..groupIconId = json['groupiconid'] as String? ?? '0';
+    ..groupIconId = json['groupiconid'] as String? ?? '0'
+    ..attachmentMapper =
+        const AttachmentConverter().fromJson(json['attachments']) ?? {};
 }
 
 Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
@@ -67,29 +69,48 @@ Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
       'attachlist': instance.attachmentIdList,
       'imagelist': instance.imageIdList,
       'groupiconid': instance.groupIconId,
+      'attachments':
+          const AttachmentConverter().toJson(instance.attachmentMapper),
     };
 
 Attachment _$AttachmentFromJson(Map<String, dynamic> json) {
   return Attachment()
+    ..dateline = json['dateline'] as String? ?? ''
+    ..filename = json['filename'] as String? ?? ''
     ..fileSize =
-        const StringToIntConverter().fromJson(json['filesize'] as String?)
-    ..description = json['description'] as String? ?? ''
+        const StringToIntConverter().fromJson(json['filesize'] as String?) ?? 0
+    ..remote =
+        const StringToBoolConverter().fromJson(json['remote'] as String) ??
+            false
+    ..thumb =
+        const StringToBoolConverter().fromJson(json['thumb'] as String) ?? false
+    ..payed =
+        const StringToBoolConverter().fromJson(json['payed'] as String) ?? false
     ..readPerm =
-        const StringToIntConverter().fromJson(json['readperm'] as String?)
-    ..picId = const StringToIntConverter().fromJson(json['picid'] as String?)
+        const StringToIntConverter().fromJson(json['readperm'] as String?) ?? 0
     ..aidEncode = json['aidencode'] as String? ?? ''
+    ..url = json['url'] as String? ?? ''
     ..downloads =
-        const StringToIntConverter().fromJson(json['downloads'] as String?)
-    ..imageAlt = json['imgalt'] as String? ?? '';
+        const StringToIntConverter().fromJson(json['downloads'] as String?) ?? 0
+    ..updateAt =
+        const SecondToDateTimeConverter().fromJson(json['dbdateline'] as String)
+    ..attachmentSizeString = json['attachsize'] as String
+    ..attachmentPathName = json['attachment'] as String? ?? '';
 }
 
 Map<String, dynamic> _$AttachmentToJson(Attachment instance) =>
     <String, dynamic>{
+      'dateline': instance.dateline,
+      'filename': instance.filename,
       'filesize': const StringToIntConverter().toJson(instance.fileSize),
-      'description': instance.description,
+      'remote': const StringToBoolConverter().toJson(instance.remote),
+      'thumb': const StringToBoolConverter().toJson(instance.thumb),
+      'payed': const StringToBoolConverter().toJson(instance.payed),
       'readperm': const StringToIntConverter().toJson(instance.readPerm),
-      'picid': const StringToIntConverter().toJson(instance.picId),
       'aidencode': instance.aidEncode,
+      'url': instance.url,
       'downloads': const StringToIntConverter().toJson(instance.downloads),
-      'imgalt': instance.imageAlt,
+      'dbdateline': const SecondToDateTimeConverter().toJson(instance.updateAt),
+      'attachsize': instance.attachmentSizeString,
+      'attachment': instance.attachmentPathName,
     };

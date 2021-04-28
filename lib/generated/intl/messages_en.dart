@@ -156,6 +156,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "retry" : MessageLookupByLibrary.simpleMessage("retry"),
     "reverse" : MessageLookupByLibrary.simpleMessage("reverse"),
     "sample" : MessageLookupByLibrary.simpleMessage("Sample"),
+    "saveImageSuccessfully" : MessageLookupByLibrary.simpleMessage("Save Image to device successfully."),
     "savePictureToDevice" : MessageLookupByLibrary.simpleMessage("Save"),
     "scrollBar" : MessageLookupByLibrary.simpleMessage("ScrollBar"),
     "scrollBarDescribe" : MessageLookupByLibrary.simpleMessage("Add a scroll bar to the list"),
@@ -193,6 +194,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vibrationDescribe" : MessageLookupByLibrary.simpleMessage("Triggered vibration feedback"),
     "viewThreadTitle" : MessageLookupByLibrary.simpleMessage("View a thread"),
     "weiXinPay" : MessageLookupByLibrary.simpleMessage("WeiXin Pay"),
-    "welcomeToSecondFloor" : MessageLookupByLibrary.simpleMessage("Welcome to second floor")
+    "welcomeToSecondFloor" : MessageLookupByLibrary.simpleMessage("Welcome to second floor"),
+    "writeStorageDenied" : MessageLookupByLibrary.simpleMessage("Write storage permission denied.")
   };
 }

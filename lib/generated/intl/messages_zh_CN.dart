@@ -156,6 +156,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "retry" : MessageLookupByLibrary.simpleMessage("重试"),
     "reverse" : MessageLookupByLibrary.simpleMessage("反向"),
     "sample" : MessageLookupByLibrary.simpleMessage("示例"),
+    "saveImageSuccessfully" : MessageLookupByLibrary.simpleMessage("成功保存图片至此设备中."),
     "savePictureToDevice" : MessageLookupByLibrary.simpleMessage("保存图片至此设备"),
     "scrollBar" : MessageLookupByLibrary.simpleMessage("滚动条"),
     "scrollBarDescribe" : MessageLookupByLibrary.simpleMessage("为列表添加滚动条"),
@@ -193,6 +194,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vibrationDescribe" : MessageLookupByLibrary.simpleMessage("触发震动反馈"),
     "viewThreadTitle" : MessageLookupByLibrary.simpleMessage("查看帖子"),
     "weiXinPay" : MessageLookupByLibrary.simpleMessage("微信钱包"),
-    "welcomeToSecondFloor" : MessageLookupByLibrary.simpleMessage("欢迎来到二楼")
+    "welcomeToSecondFloor" : MessageLookupByLibrary.simpleMessage("欢迎来到二楼"),
+    "writeStorageDenied" : MessageLookupByLibrary.simpleMessage("无法获得写入权限。")
   };
 }

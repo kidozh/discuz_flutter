@@ -35,8 +35,8 @@ class ThreadVariables extends BaseVariableResult{
 
 
 
-  @JsonKey(name:"allowpostcomment",defaultValue: [])
-  List<String>? allowPostCommentList = [];
+  // @JsonKey(name:"allowpostcomment",defaultValue: [])
+  // List<String>? allowPostCommentList = [];
 
   // @JsonKey(name: "comments",defaultValue: {})
   // Map<String, List<Comment>> commentList = {};
@@ -75,11 +75,11 @@ class DetailedThreadInfo {
   @StringToIntConverter()
   int fid = 0;
 
-  @JsonKey(name:"posttableid",defaultValue: "0")
-  String postableId= "";
-  @StringToIntConverter()
-  @JsonKey(name:"typeid")
-  int typeId= 0;
+  // @JsonKey(name:"posttableid",defaultValue: "0")
+  // String postableId= "";
+  // @StringToIntConverter()
+  // @JsonKey(name:"typeid")
+  // int typeId= 0;
   String author= "", subject= "";
   @JsonKey(name: "readperm")
   @StringToIntConverter()
@@ -108,47 +108,47 @@ class DetailedThreadInfo {
   @JsonKey(defaultValue: "")
   String highlight = "";
   @JsonKey(defaultValue: "0")
-  String special="0", moderated="0", is_archived="0";
+  // String special="0", moderated="0", is_archived="0";
   @JsonKey(defaultValue: "0")
   String rate = "0", status = "0", digest= "0", closed= "0";
 
-  @JsonKey(defaultValue: "0")
-  String attachment = "0";
+  // @JsonKey(defaultValue: "0")
+  // String attachment = "0";
 
-  @JsonKey(name:"stickreply")
-  String stickReply = "0";
-  @JsonKey(defaultValue: "0")
-  String recommends = "0", recommend_add= "0", recommend_sub= "0";
-  String isgroup = "0";
-  @JsonKey(defaultValue: "0")
-  String favtimes = "0", sharedtimes = "0", heats = "0";
-  @JsonKey(defaultValue: "0")
-  String stamp = "0", icon = "0", pushedaid = "0", cover = "0";
-  @JsonKey(name:"replycredit")
-  String replyCredit = "";
-  @JsonKey(defaultValue: "")
-  String relatebytag = "", bgcolor= "";
-  @JsonKey(name:"maxposition")
-  String maxPosition = "";
-  @JsonKey(name:"comments",defaultValue: "0")
-  String comments = "0";
-  @JsonKey(defaultValue: "0")
-  String hidden = "0";
-  String threadtable = "", threadtableid = "", posttable = "";
+  // @JsonKey(name:"stickreply")
+  // String stickReply = "0";
+  // @JsonKey(defaultValue: "0")
+  // String recommends = "0", recommend_add= "0", recommend_sub= "0";
+  // String isgroup = "0";
+  // @JsonKey(defaultValue: "0")
+  // String favtimes = "0", sharedtimes = "0", heats = "0";
+  // @JsonKey(defaultValue: "0")
+  // String stamp = "0", icon = "0", pushedaid = "0", cover = "0";
+  // @JsonKey(name:"replycredit")
+  // String replyCredit = "";
+  // @JsonKey(defaultValue: "")
+  // String relatebytag = "", bgcolor= "";
+  // @JsonKey(name:"maxposition")
+  // String maxPosition = "";
+  // @JsonKey(name:"comments",defaultValue: "0")
+  // String comments = "0";
+  // @JsonKey(defaultValue: "0")
+  // String hidden = "0";
+  // String threadtable = "", threadtableid = "", posttable = "";
   @JsonKey(name:"allreplies")
   @StringToIntConverter()
   int allreplies = 0;
 
-  @JsonKey(defaultValue: "")
-  String archiveid = "";
-  @JsonKey(defaultValue: "")
-  String subjectenc = "", short_subject="";
-  @JsonKey(defaultValue: "")
-  String relay = "", ordertype = "", recommend = "";
-  @JsonKey(name:"recommendlevel",defaultValue: "0")
-  String recommendLevel = "0";
-  @JsonKey(name:"heatlevel",defaultValue: "0")
-  String heatLevel = "0";
+  // @JsonKey(defaultValue: "")
+  // String archiveid = "";
+  // @JsonKey(defaultValue: "")
+  // String subjectenc = "", short_subject="";
+  // @JsonKey(defaultValue: "")
+  // String relay = "", ordertype = "", recommend = "";
+  // @JsonKey(name:"recommendlevel",defaultValue: "0")
+  // String recommendLevel = "0";
+  // @JsonKey(name:"heatlevel",defaultValue: "0")
+  // String heatLevel = "0";
   @JsonKey(name:"freemessage",defaultValue: "")
   String freeMessage = "";
 

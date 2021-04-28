@@ -50,10 +50,6 @@ ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) {
             ?.map((e) => Post.fromJson(e as Map<String, dynamic>))
             .toList() ??
         []
-    ..allowPostCommentList = (json['allowpostcomment'] as List<dynamic>?)
-            ?.map((e) => e as String)
-            .toList() ??
-        []
     ..rewriteRule = json['setting_rewriterule'] == null
         ? null
         : RewriteRule.fromJson(
@@ -78,7 +74,6 @@ Map<String, dynamic> _$ThreadVariablesToJson(ThreadVariables instance) =>
       'thread': instance.threadInfo,
       'fid': const StringToIntConverter().toJson(instance.fid),
       'postlist': instance.postList,
-      'allowpostcomment': instance.allowPostCommentList,
       'setting_rewriterule': instance.rewriteRule,
       'ppp': instance.ppp,
       'page': instance.page,
@@ -88,8 +83,6 @@ DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) {
   return DetailedThreadInfo()
     ..tid = const StringToIntConverter().fromJson(json['tid'] as String?)
     ..fid = const StringToIntConverter().fromJson(json['fid'] as String?)
-    ..postableId = json['posttableid'] as String? ?? '0'
-    ..typeId = const StringToIntConverter().fromJson(json['typeid'] as String?)
     ..author = json['author'] as String
     ..subject = json['subject'] as String
     ..readPerm =
@@ -105,45 +98,12 @@ DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) {
     ..replies =
         const StringToIntConverter().fromJson(json['replies'] as String?)
     ..highlight = json['highlight'] as String? ?? ''
-    ..special = json['special'] as String? ?? '0'
-    ..moderated = json['moderated'] as String? ?? '0'
-    ..is_archived = json['is_archived'] as String? ?? '0'
     ..rate = json['rate'] as String? ?? '0'
     ..status = json['status'] as String? ?? '0'
     ..digest = json['digest'] as String? ?? '0'
     ..closed = json['closed'] as String? ?? '0'
-    ..attachment = json['attachment'] as String? ?? '0'
-    ..stickReply = json['stickreply'] as String
-    ..recommends = json['recommends'] as String? ?? '0'
-    ..recommend_add = json['recommend_add'] as String? ?? '0'
-    ..recommend_sub = json['recommend_sub'] as String? ?? '0'
-    ..isgroup = json['isgroup'] as String
-    ..favtimes = json['favtimes'] as String? ?? '0'
-    ..sharedtimes = json['sharedtimes'] as String? ?? '0'
-    ..heats = json['heats'] as String? ?? '0'
-    ..stamp = json['stamp'] as String? ?? '0'
-    ..icon = json['icon'] as String? ?? '0'
-    ..pushedaid = json['pushedaid'] as String? ?? '0'
-    ..cover = json['cover'] as String? ?? '0'
-    ..replyCredit = json['replycredit'] as String
-    ..relatebytag = json['relatebytag'] as String? ?? ''
-    ..bgcolor = json['bgcolor'] as String? ?? ''
-    ..maxPosition = json['maxposition'] as String
-    ..comments = json['comments'] as String? ?? '0'
-    ..hidden = json['hidden'] as String? ?? '0'
-    ..threadtable = json['threadtable'] as String
-    ..threadtableid = json['threadtableid'] as String
-    ..posttable = json['posttable'] as String
     ..allreplies =
         const StringToIntConverter().fromJson(json['allreplies'] as String?)
-    ..archiveid = json['archiveid'] as String? ?? ''
-    ..subjectenc = json['subjectenc'] as String? ?? ''
-    ..short_subject = json['short_subject'] as String? ?? ''
-    ..relay = json['relay'] as String? ?? ''
-    ..ordertype = json['ordertype'] as String? ?? ''
-    ..recommend = json['recommend'] as String? ?? ''
-    ..recommendLevel = json['recommendlevel'] as String? ?? '0'
-    ..heatLevel = json['heatlevel'] as String? ?? '0'
     ..freeMessage = json['freemessage'] as String? ?? '';
 }
 
@@ -151,8 +111,6 @@ Map<String, dynamic> _$DetailedThreadInfoToJson(DetailedThreadInfo instance) =>
     <String, dynamic>{
       'tid': const StringToIntConverter().toJson(instance.tid),
       'fid': const StringToIntConverter().toJson(instance.fid),
-      'posttableid': instance.postableId,
-      'typeid': const StringToIntConverter().toJson(instance.typeId),
       'author': instance.author,
       'subject': instance.subject,
       'readperm': const StringToIntConverter().toJson(instance.readPerm),
@@ -165,44 +123,11 @@ Map<String, dynamic> _$DetailedThreadInfoToJson(DetailedThreadInfo instance) =>
       'views': instance.views,
       'replies': const StringToIntConverter().toJson(instance.replies),
       'highlight': instance.highlight,
-      'special': instance.special,
-      'moderated': instance.moderated,
-      'is_archived': instance.is_archived,
       'rate': instance.rate,
       'status': instance.status,
       'digest': instance.digest,
       'closed': instance.closed,
-      'attachment': instance.attachment,
-      'stickreply': instance.stickReply,
-      'recommends': instance.recommends,
-      'recommend_add': instance.recommend_add,
-      'recommend_sub': instance.recommend_sub,
-      'isgroup': instance.isgroup,
-      'favtimes': instance.favtimes,
-      'sharedtimes': instance.sharedtimes,
-      'heats': instance.heats,
-      'stamp': instance.stamp,
-      'icon': instance.icon,
-      'pushedaid': instance.pushedaid,
-      'cover': instance.cover,
-      'replycredit': instance.replyCredit,
-      'relatebytag': instance.relatebytag,
-      'bgcolor': instance.bgcolor,
-      'maxposition': instance.maxPosition,
-      'comments': instance.comments,
-      'hidden': instance.hidden,
-      'threadtable': instance.threadtable,
-      'threadtableid': instance.threadtableid,
-      'posttable': instance.posttable,
       'allreplies': const StringToIntConverter().toJson(instance.allreplies),
-      'archiveid': instance.archiveid,
-      'subjectenc': instance.subjectenc,
-      'short_subject': instance.short_subject,
-      'relay': instance.relay,
-      'ordertype': instance.ordertype,
-      'recommend': instance.recommend,
-      'recommendlevel': instance.recommendLevel,
-      'heatlevel': instance.heatLevel,
       'freemessage': instance.freeMessage,
     };
 

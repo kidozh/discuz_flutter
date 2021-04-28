@@ -1656,6 +1656,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Write storage permission denied.`
+  String get writeStorageDenied {
+    return Intl.message(
+      'Write storage permission denied.',
+      name: 'writeStorageDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save Image to device successfully.`
+  String get saveImageSuccessfully {
+    return Intl.message(
+      'Save Image to device successfully.',
+      name: 'saveImageSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -190,5 +190,7 @@
   "outerlinkOpenMessage": "Host of the link is not the same as the BBS. It would be dangerous to browse.",
   "ok": "ok",
   "savePictureToDevice": "Save",
-  "openInBrowser": "Open in browser"
+  "openInBrowser": "Open in browser",
+  "writeStorageDenied": "Write storage permission denied.",
+  "saveImageSuccessfully": "Save Image to device successfully."
 }

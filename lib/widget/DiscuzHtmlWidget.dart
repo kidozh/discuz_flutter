@@ -52,7 +52,8 @@ class DiscuzHtmlWidget extends StatelessWidget{
           User? user = Provider.of<DiscuzAndUserNotifier>(context.buildContext, listen: false).user;
           // judge if it is a path
           Uri? tryUri = Uri.tryParse(urlString);
-          if(tryUri == null){
+          log("${Uri.parse(urlString).isAbsolute}");
+          if(!Uri.parse(urlString).isAbsolute){
             // add a prefix to test if it's a url
             urlString = discuz.baseURL+ "/" + urlString;
             log("Press after link ${urlString} ");
@@ -69,21 +70,29 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 return AlertDialog(
                   title: Text(S.of(context).outerlinkOpenTitle,),
                   content: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children:[
-                        Text(S.of(context).outerlinkOpenMessage,style: Theme.of(context).textTheme.bodyText2,),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Icon(Icons.link,color: Theme.of(context).errorColor,),
-                            SizedBox(width: 8.0),
-                            Expanded(
-                                child: Text(urlString!,softWrap: true,)
+                        Container(
+                          color: Colors.red.shade50,
+                          padding: EdgeInsets.symmetric(vertical: 4.0,horizontal: 4.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.link,color: Colors.red,),
+                              SizedBox(width: 8.0),
+                              Expanded(
+                                  child: Text(urlString!,softWrap: true,style: TextStyle(color: Colors.red,),)
 
-                            )
+                              )
 
-                          ],
+                            ],
+                          ),
                         ),
+                        SizedBox(height: 16.0,),
+                        Text(S.of(context).outerlinkOpenMessage,style: Theme.of(context).textTheme.bodyText1,),
+
+
                       ]
                   ),
                   actions: [

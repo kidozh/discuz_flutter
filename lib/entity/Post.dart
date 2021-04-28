@@ -5,6 +5,8 @@ import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import 'Discuz.dart';
+
 part 'Post.g.dart';
 
 @JsonSerializable()
@@ -53,9 +55,17 @@ class Post{
   @JsonKey(name:"groupiconid",defaultValue: "0")
   String groupIconId = "0";
 
-  // @JsonKey(name:"attachments",defaultValue: {}, required: false)
-  // @AttachmentConverter()
-  // Map<String, Attachment> attachmentMapper  = {};
+  @JsonKey(name:"attachments",defaultValue: {}, required: false)
+  @AttachmentConverter()
+  Map<String, Attachment> attachmentMapper  = {};
+
+  List<Attachment> getAttachmentList(){
+    List<Attachment> attachmentList = [];
+    for(var entry in attachmentMapper.entries){
+      attachmentList.add(entry.value);
+    }
+    return attachmentList;
+  }
 
 
   Post();
@@ -74,31 +84,48 @@ class Post{
 class Attachment{
   @StringToIntConverter()
   int aid=0, tid=0, pid=0, uid=0;
-
-  String? dateline = "", filename = "";
+  @JsonKey(defaultValue: "")
+  String dateline = "", filename = "";
   @StringToIntConverter()
-  @JsonKey(name:"filesize")
+  @JsonKey(name:"filesize",defaultValue: 0)
   int fileSize = 0;
+  @JsonKey(defaultValue: false)
   @StringToBoolConverter()
   bool remote = false, thumb = false, payed = false;
-  @JsonKey(defaultValue: "")
-  String description = "";
+  // @JsonKey(defaultValue: "")
+  // String description = "";
   @StringToIntConverter()
-  @JsonKey(name:"readperm")
+  @JsonKey(name:"readperm",defaultValue: 0)
   int readPerm = 0;
-  @StringToIntConverter()
-  @JsonKey(name:"picid")
-  int picId = 0;
+  // @StringToIntConverter()
+  // @JsonKey(name:"picid",defaultValue: 0)
+  // int picId = 0;
   @JsonKey(name:"aidencode",defaultValue: "")
   String aidEncode = "";
+  @JsonKey(defaultValue: "")
+  String url = "";
   @StringToIntConverter()
-  @JsonKey(name:"downloads")
+  @JsonKey(name:"downloads",defaultValue: 0)
   int downloads = 0;
+  @JsonKey(name: "dbdateline",required: false)
+  @SecondToDateTimeConverter()
+  DateTime updateAt = DateTime.now();
+  @JsonKey(name: "attachsize")
+  String attachmentSizeString = "";
+  @JsonKey(name: "attachment",defaultValue: "")
+  String attachmentPathName = "";
+  @JsonKey(defaultValue: "")
+  String ext = "";
 
-  @JsonKey(name:"imgalt", defaultValue: "")
-  String? imageAlt = "";
+
+  // @JsonKey(name:"imgalt", defaultValue: "")
+  // String? imageAlt = "";
 
   Attachment();
   factory Attachment.fromJson(Map<String, dynamic> json) => _$AttachmentFromJson(json);
   Map<String, dynamic> toJson() => _$AttachmentToJson(this);
+
+  String getAttachmentRealUrl(Discuz discuz){
+    return discuz.baseURL + "/" + url + attachmentPathName;
+  }
 }
