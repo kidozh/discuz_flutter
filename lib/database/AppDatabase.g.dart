@@ -198,6 +198,23 @@ class _$UserDao extends UserDao {
   }
 
   @override
+  Future<User?> findUsersByDiscuzIdAndUid(int discuzId, int uid) async {
+    return _queryAdapter.query(
+        'SELECT * FROM User WHERE discuz_id=?1 AND uid=?2 LIMIT 1',
+        mapper: (Map<String, Object?> row) => User(
+            row['id'] as int?,
+            row['auth'] as String,
+            row['saltkey'] as String,
+            row['username'] as String,
+            row['avatarUrl'] as String,
+            row['groupId'] as int,
+            row['uid'] as int,
+            row['readPerm'] as int,
+            row['discuz_id'] as int),
+        arguments: [discuzId, uid]);
+  }
+
+  @override
   Future<int> insert(User user) {
     return _userInsertionAdapter.insertAndReturnId(
         user, OnConflictStrategy.replace);

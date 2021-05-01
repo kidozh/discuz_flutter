@@ -13,7 +13,7 @@ import 'Discuz.dart';
 )
 class User {
   @PrimaryKey(autoGenerate: true)
-  final int? id;
+  int? id;
   String auth;
   String saltkey;
   String username;

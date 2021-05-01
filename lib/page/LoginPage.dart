@@ -100,6 +100,11 @@ class _LoginFormFieldState
         try{
           final db = await DBHelper.getAppDb();
           final dao = db.userDao;
+          // search in database first
+          User? userInDataBase = await dao.findUsersByDiscuzIdAndUid(discuz.id!, user.uid);
+          if(userInDataBase != null){
+            user.id = userInDataBase.id;
+          }
 
           int primaryKey = await dao.insert(user);
 

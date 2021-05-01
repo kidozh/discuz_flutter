@@ -21,4 +21,7 @@ abstract class UserDao {
   // Future<void> insertUser(User user);
   @Insert(onConflict: OnConflictStrategy.replace)
   Future<int> insert(User user);
+
+  @Query('SELECT * FROM User WHERE discuz_id=:discuzId AND uid=:uid LIMIT 1')
+  Future<User?> findUsersByDiscuzIdAndUid(int discuzId, int uid);
 }

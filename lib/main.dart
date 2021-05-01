@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/dialog/SwitchDiscuzDialog.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/screen/HotThreadScreen.dart';
 import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
@@ -190,6 +191,24 @@ class _MyHomePageState extends State<MyHomePage> {
                             discuz: discuz,
                             key: UniqueKey(),
                           )));
+            }
+          },
+        ),
+        ListTile(
+          title: Text(S.of(context).manageAccount),
+          leading: Icon(Icons.account_circle_outlined),
+          onTap: () async {
+            Discuz? discuz =
+                Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                    .discuz;
+            if (discuz != null) {
+              await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => LoginPage(
+                        discuz: discuz,
+                        key: UniqueKey(),
+                      )));
             }
           },
         ),
@@ -391,7 +410,7 @@ class _MyHomePageState extends State<MyHomePage> {
           });
         },
       ),
-      body: [DiscuzPortalScreen(),DiscuzPortalScreen(),NotificationScreen()][_bottomNavigationbarIndex],
+      body: [DiscuzPortalScreen(),HotThreadScreen(),NotificationScreen()][_bottomNavigationbarIndex],
       floatingActionButton: FloatingActionButton(
         onPressed: _triggerSwitchDiscuzDialog,
         tooltip: S.of(context).addNewDiscuz,

@@ -2,9 +2,11 @@ import 'package:discuz_flutter/JsonResult/ApiResult.dart';
 import 'package:discuz_flutter/JsonResult/CheckResult.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
+import 'package:discuz_flutter/JsonResult/HotThreadResult.dart';
 import 'package:discuz_flutter/JsonResult/LoginResult.dart';
 import 'package:discuz_flutter/JsonResult/UserDiscuzNotificationResult.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
+import 'package:discuz_flutter/entity/HotThread.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:dio/dio.dart' hide Headers;
 import 'package:retrofit/retrofit.dart';
@@ -100,4 +102,10 @@ abstract class MobileApiClient {
 
   @GET("/api/mobile/index.php?version=4&module=mynotelist")
   Future<UserDiscuzNotificationResult> userNotificationResult(@Query("page") int page);
+
+  @GET("/api/mobile/index.php?version=4&module=hotthread")
+  Future<String> hotThreadRaw(@Query("page") int page);
+
+  @GET("/api/mobile/index.php?version=4&module=hotthread")
+  Future<HotThreadResult> hotThreadResult(@Query("page") int page);
 }

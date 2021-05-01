@@ -194,5 +194,21 @@
   "writeStorageDenied": "Write storage permission denied.",
   "saveImageSuccessfully": "Save Image to device successfully.",
   "downloadAttachment": "Download",
-  "watchPictureInFullScreen": "Full display"
+  "watchPictureInFullScreen": "Full display",
+  "manageAccount": "Manage account",
+  "successfullyDownloadFiles": "Successfully download file: {filename}.",
+  "@successfullyDownloadFiles": {
+    "placeholders": {
+      "filename": {}
+    }
+  },
+  "downloadingFiles": "Downloading file: {filename} in background.",
+  "@downloadingFiles": {
+    "placeholders": {
+      "filename": {}
+    }
+  },
+  "openFileInExternalAppActionText": "Open",
+  "openFileInExternalAppContent": "File downloads successfully. Do you want to open it now?",
+  "cancel": "Cancel"
 }

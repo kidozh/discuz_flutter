@@ -194,5 +194,21 @@
   "writeStorageDenied": "无法获得写入权限。",
   "saveImageSuccessfully": "成功保存图片至此设备中.",
   "downloadAttachment": "下载附件",
-  "watchPictureInFullScreen": "查看大图"
+  "watchPictureInFullScreen": "查看大图",
+  "manageAccount": "管理账号",
+  "successfullyDownloadFiles": "成功下载文件： {filename}。",
+  "@successfullyDownloadFiles": {
+    "placeholders": {
+      "filename": {}
+    }
+  },
+  "downloadingFiles": "后台下载文件 {filename} 中。",
+  "@downloadingFiles": {
+    "placeholders": {
+      "filename": {}
+    }
+  },
+  "openFileInExternalAppActionText": "打开",
+  "openFileInExternalAppContent": "您成功下载了文件，您想现在打开它吗？",
+  "cancel": "取消"
 }
