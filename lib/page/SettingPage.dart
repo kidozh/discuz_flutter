@@ -1,4 +1,5 @@
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 
@@ -12,6 +13,23 @@ class _SettingPageState extends State<SettingPage> {
   bool lockInBackground = true;
   bool notificationsEnabled = true;
 
+  bool recordHistory = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getPreference();
+  }
+
+  void getPreference() async{
+    recordHistory = await UserPreferencesUtils.getRecordHistoryEnabled();
+    setState(() {
+      recordHistory = recordHistory;
+    });
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,12 +42,21 @@ class _SettingPageState extends State<SettingPage> {
     return SettingsList(
       sections: [
         SettingsSection(
-          title: 'Common',
+          title: S.of(context).common,
           tiles: [
-            SettingsTile(
-              title: 'Environment',
-              subtitle: 'Production',
-              leading: Icon(Icons.cloud_queue),
+            SettingsTile.switchTile(
+              title: S.of(context).recordHistoryTitle,
+              subtitle: recordHistory? S.of(context).recordHistoryOnDescription : S.of(context).recordHistoryOffDescription,
+              leading: Icon(Icons.history),
+              switchValue: recordHistory,
+              onToggle: (bool value) {
+                print("set record history ${value} ");
+                UserPreferencesUtils.putRecordHistoryEnabled(value);
+                setState(() {
+                  recordHistory = value;
+
+                });
+              },
             ),
           ],
         ),
@@ -55,35 +82,14 @@ class _SettingPageState extends State<SettingPage> {
                 });
               },
             ),
-            SettingsTile.switchTile(
-                title: 'Use fingerprint',
-                subtitle: 'Allow application to access stored fingerprint IDs.',
-                leading: Icon(Icons.fingerprint),
-                onToggle: (bool value) {},
-                switchValue: false),
-            SettingsTile.switchTile(
-              title: 'Change password',
-              leading: Icon(Icons.lock),
-              switchValue: true,
-              onToggle: (bool value) {},
-            ),
-            SettingsTile.switchTile(
-              title: 'Enable Notifications',
-              enabled: notificationsEnabled,
-              leading: Icon(Icons.notifications_active),
-              switchValue: true,
-              onToggle: (value) {},
-            ),
           ],
         ),
         SettingsSection(
-          title: 'Misc',
+          title: S.of(context).policy,
           tiles: [
-            SettingsTile(
-                title: 'Terms of Service', leading: Icon(Icons.description)),
-            SettingsTile(
-                title: 'Open source licenses',
-                leading: Icon(Icons.collections_bookmark)),
+            SettingsTile(title: S.of(context).termsOfService, leading: Icon(Icons.description)),
+            SettingsTile(title: S.of(context).privacyPolicy, leading: Icon(Icons.privacy_tip)),
+            SettingsTile(title: S.of(context).openSourceLicence, leading: Icon(Icons.collections_bookmark)),
           ],
         ),
         CustomSection(
@@ -99,7 +105,7 @@ class _SettingPageState extends State<SettingPage> {
                 ),
               ),
               Text(
-                'Version: 2.4.0 (287)',
+                'Version: 1.0.0 (alpha)',
                 style: TextStyle(color: Color(0xFF777777)),
               ),
             ],

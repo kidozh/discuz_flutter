@@ -1759,6 +1759,236 @@ class S {
       args: [],
     );
   }
+
+  /// `Manage accounts`
+  String get manageAccountTitle {
+    return Intl.message(
+      'Manage accounts',
+      name: 'manageAccountTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete`
+  String get deleteAccount {
+    return Intl.message(
+      'Delete',
+      name: 'deleteAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete account {account} successfully.`
+  String deleteAccountSuccessfully(Object account) {
+    return Intl.message(
+      'Delete account $account successfully.',
+      name: 'deleteAccountSuccessfully',
+      desc: '',
+      args: [account],
+    );
+  }
+
+  /// `Preparing the page.`
+  String get preparingPage {
+    return Intl.message(
+      'Preparing the page.',
+      name: 'preparingPage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete discuz {account} successfully.`
+  String deleteDiscuzSuccessfully(Object account) {
+    return Intl.message(
+      'Delete discuz $account successfully.',
+      name: 'deleteDiscuzSuccessfully',
+      desc: '',
+      args: [account],
+    );
+  }
+
+  /// `Manage BBS`
+  String get manageDiscuz {
+    return Intl.message(
+      'Manage BBS',
+      name: 'manageDiscuz',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `relogin`
+  String get relogin {
+    return Intl.message(
+      'relogin',
+      name: 'relogin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Record history`
+  String get recordHistoryTitle {
+    return Intl.message(
+      'Record history',
+      name: 'recordHistoryTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `App will record your browser history`
+  String get recordHistoryOnDescription {
+    return Intl.message(
+      'App will record your browser history',
+      name: 'recordHistoryOnDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `App Won't record your browser history`
+  String get recordHistoryOffDescription {
+    return Intl.message(
+      'App Won\'t record your browser history',
+      name: 'recordHistoryOffDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Common`
+  String get common {
+    return Intl.message(
+      'Common',
+      name: 'common',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Terms of Service`
+  String get termsOfService {
+    return Intl.message(
+      'Terms of Service',
+      name: 'termsOfService',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Privacy policy`
+  String get privacyPolicy {
+    return Intl.message(
+      'Privacy policy',
+      name: 'privacyPolicy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open source licence`
+  String get openSourceLicence {
+    return Intl.message(
+      'Open source licence',
+      name: 'openSourceLicence',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Our policy`
+  String get policy {
+    return Intl.message(
+      'Our policy',
+      name: 'policy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View History`
+  String get viewHistory {
+    return Intl.message(
+      'View History',
+      name: 'viewHistory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Clear all histories`
+  String get clearAllViewHistories {
+    return Intl.message(
+      'Clear all histories',
+      name: 'clearAllViewHistories',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The content is empty`
+  String get emptyListDescription {
+    return Intl.message(
+      'The content is empty',
+      name: 'emptyListDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Successfully remove view history {title}.`
+  String successfullyDeleteViewHistoryContent(Object title) {
+    return Intl.message(
+      'Successfully remove view history $title.',
+      name: 'successfullyDeleteViewHistoryContent',
+      desc: '',
+      args: [title],
+    );
+  }
+
+  /// `Clearing operation is irrecoverable, please take care.`
+  String get deleteViewHistoryWarnContent {
+    return Intl.message(
+      'Clearing operation is irrecoverable, please take care.',
+      name: 'deleteViewHistoryWarnContent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Undo`
+  String get undo {
+    return Intl.message(
+      'Undo',
+      name: 'undo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Trusted host`
+  String get trustHostTitle {
+    return Intl.message(
+      'Trusted host',
+      name: 'trustHostTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Trust this host`
+  String get trustHostActionText {
+    return Intl.message(
+      'Trust this host',
+      name: 'trustHostActionText',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

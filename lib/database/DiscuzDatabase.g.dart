@@ -116,6 +116,27 @@ class _$DiscuzDao extends DiscuzDao {
                   'defaultFid': item.defaultFid,
                   'baseURL': item.baseURL
                 },
+            changeListener),
+        _discuzDeletionAdapter = DeletionAdapter(
+            database,
+            'Discuz',
+            ['id'],
+            (Discuz item) => <String, Object?>{
+                  'id': item.id,
+                  'discuzVersion': item.discuzVersion,
+                  'charset': item.charset,
+                  'apiVersion': item.apiVersion,
+                  'pluginVersion': item.pluginVersion,
+                  'regname': item.regname,
+                  'qqconnect': item.qqconnect ? 1 : 0,
+                  'wsqqqconnect': item.wsqqqconnect,
+                  'wsqhideregister': item.wsqhideregister,
+                  'siteName': item.siteName,
+                  'siteId': item.siteId,
+                  'uCenterURL': item.uCenterURL,
+                  'defaultFid': item.defaultFid,
+                  'baseURL': item.baseURL
+                },
             changeListener);
 
   final sqflite.DatabaseExecutor database;
@@ -125,6 +146,8 @@ class _$DiscuzDao extends DiscuzDao {
   final QueryAdapter _queryAdapter;
 
   final InsertionAdapter<Discuz> _discuzInsertionAdapter;
+
+  final DeletionAdapter<Discuz> _discuzDeletionAdapter;
 
   @override
   Future<List<Discuz>> findAllDiscuzs() async {
@@ -171,5 +194,10 @@ class _$DiscuzDao extends DiscuzDao {
   @override
   Future<void> insertDiscuz(Discuz discuz) async {
     await _discuzInsertionAdapter.insert(discuz, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> deleteDiscuz(Discuz discuz) async {
+    await _discuzDeletionAdapter.delete(discuz);
   }
 }

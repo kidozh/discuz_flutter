@@ -210,5 +210,43 @@
   },
   "openFileInExternalAppActionText": "打开",
   "openFileInExternalAppContent": "您成功下载了文件，您想现在打开它吗？",
-  "cancel": "取消"
+  "cancel": "取消",
+  "manageAccountTitle": "管理账号",
+  "deleteAccount": "删除",
+  "deleteAccountSuccessfully": "成功移除账号 {account}。",
+  "@deleteAccountSuccessfully": {
+    "placeholders": {
+      "account": {}
+    }
+  },
+  "preparingPage": "正在准备此界面。",
+  "deleteDiscuzSuccessfully": "成功删除论坛 {account}。",
+  "@deleteDiscuzSuccessfully": {
+    "placeholders": {
+      "account": {}
+    }
+  },
+  "manageDiscuz": "管理论坛",
+  "relogin": "重新登陆",
+  "recordHistoryTitle": "历史记录",
+  "recordHistoryOnDescription": "应用将会记录您的浏览历史",
+  "recordHistoryOffDescription": "应用不会记录您的浏览历史",
+  "common": "常规",
+  "termsOfService": "使用条款",
+  "privacyPolicy": "隐私政策",
+  "openSourceLicence": "开源软件许可",
+  "policy": "条款",
+  "viewHistory": "浏览历史",
+  "clearAllViewHistories": "清除历史记录",
+  "emptyListDescription": "当前列表为空。",
+  "successfullyDeleteViewHistoryContent": "成功删除历史记录 {title}.",
+  "@successfullyDeleteViewHistoryContent": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "deleteViewHistoryWarnContent": "清除历史记录是不可恢复的，确认要继续？",
+  "undo": "撤销",
+  "trustHostTitle": "主机域名白名单",
+  "trustHostActionText": "信任此域名"
 }

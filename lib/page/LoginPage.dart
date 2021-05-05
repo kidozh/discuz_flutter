@@ -23,8 +23,9 @@ import 'package:progress_state_button/progress_button.dart';
 
 class LoginPage extends StatelessWidget {
   late final Discuz discuz;
+  String? accountName;
 
-  LoginPage({required Key key, required this.discuz}): super(key: key);
+  LoginPage({required Key key, required this.discuz, this.accountName}): super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,24 +34,26 @@ class LoginPage extends StatelessWidget {
           title: Text(S.of(context).signInTitle(discuz.siteName)),
 
         ),
-        body: LoginForumFieldStatefulWidget(discuz));
+        body: LoginForumFieldStatefulWidget(discuz,accountName));
   }
 }
 
 class LoginForumFieldStatefulWidget extends StatefulWidget {
   late final Discuz discuz;
+  String? accountName;
 
-  LoginForumFieldStatefulWidget(@required this.discuz){}
+  LoginForumFieldStatefulWidget(@required this.discuz, this.accountName){}
   @override
   _LoginFormFieldState createState() {
     // TODO: implement createState
-    return _LoginFormFieldState(discuz);
+    return _LoginFormFieldState(discuz,accountName);
   }
 }
 
 class _LoginFormFieldState
     extends State<LoginForumFieldStatefulWidget> {
   late final Discuz discuz;
+  String? accountName;
 
   final _formKey = GlobalKey<FormState>();
   String error = "";
@@ -58,7 +61,16 @@ class _LoginFormFieldState
   final TextEditingController _accountController = new TextEditingController();
   final TextEditingController _passwdController = new TextEditingController();
 
-  _LoginFormFieldState(@required this.discuz){}
+  _LoginFormFieldState(@required this.discuz, this.accountName){}
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(accountName !=null){
+      _accountController.text = accountName!;
+    }
+  }
 
   void _verifyAccountAndPassword() async{
     // create a dio
@@ -234,11 +246,11 @@ class _LoginFormFieldState
                               IconedButton(
                                   text: S.of(context).loginTitle,
                                   icon: Icon(Icons.login,color: Colors.white),
-                                  color: Theme.of(context).primaryColor),
+                                  color: Theme.of(context).accentColor),
                               ButtonState.loading:
                               IconedButton(
                                   text: S.of(context).progressButtonLogining,
-                                  color: Theme.of(context).primaryColorDark),
+                                  color: Colors.blue.shade300),
                               ButtonState.fail:
                               IconedButton(
                                   text: S.of(context).progressButtonLoginFailed,
@@ -264,7 +276,7 @@ class _LoginFormFieldState
                             onPressed: (){
 
                         }, 
-                            child: Text(S.of(context).forgetPassword,style: TextStyle(color:Colors.black54),),
+                            child: Text(S.of(context).forgetPassword,style: Theme.of(context).textTheme.bodyText2),
                         ),
                       ),
                       Row(
@@ -273,7 +285,7 @@ class _LoginFormFieldState
                                 child: Divider()
                             ),
 
-                            Text(S.of(context).or,style: TextStyle(color: Colors.black26),),
+                            Text(S.of(context).or,style: Theme.of(context).textTheme.bodyText2),
 
                             Expanded(
                                 child: Divider()

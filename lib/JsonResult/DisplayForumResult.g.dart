@@ -80,10 +80,11 @@ Map<String, dynamic> _$ForumVariablesToJson(ForumVariables instance) =>
 
 ForumDetail _$ForumDetailFromJson(Map<String, dynamic> json) {
   return ForumDetail()
-    ..fid = json['fid'] as String
-    ..fup = json['fup'] as String
-    ..threads = json['threads'] as String
-    ..posts = json['posts'] as String
+    ..fid = const StringToIntConverter().fromJson(json['fid'] as String?)
+    ..fup = const StringToIntConverter().fromJson(json['fup'] as String?)
+    ..threads =
+        const StringToIntConverter().fromJson(json['threads'] as String?)
+    ..posts = const StringToIntConverter().fromJson(json['posts'] as String?)
     ..description = json['description'] as String? ?? ''
     ..rules = json['rules'] as String? ?? ''
     ..name = json['name'] as String? ?? ''
@@ -98,10 +99,10 @@ ForumDetail _$ForumDetailFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$ForumDetailToJson(ForumDetail instance) =>
     <String, dynamic>{
-      'fid': instance.fid,
-      'fup': instance.fup,
-      'threads': instance.threads,
-      'posts': instance.posts,
+      'fid': const StringToIntConverter().toJson(instance.fid),
+      'fup': const StringToIntConverter().toJson(instance.fup),
+      'threads': const StringToIntConverter().toJson(instance.threads),
+      'posts': const StringToIntConverter().toJson(instance.posts),
       'description': instance.description,
       'rules': instance.rules,
       'name': instance.name,

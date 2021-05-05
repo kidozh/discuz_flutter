@@ -4,15 +4,18 @@ import 'dart:developer';
 import 'package:discuz_flutter/JsonResult/CheckResult.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
+import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/entity/User.dart';
+import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
+import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
 import 'package:discuz_flutter/widget/PostWidget.dart';
@@ -72,6 +75,8 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
   late final User? user;
   int tid = 0;
 
+  bool historySaved = false;
+
   _ViewThreadState(this.discuz, this.user, this.tid);
 
   late EasyRefreshController _controller;
@@ -108,6 +113,24 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
     _controller = EasyRefreshController();
     _scrollController = ScrollController();
     //_invalidateContent();
+  }
+
+  void _saveViewHistory(DetailedThreadInfo threadInfo, String contents) async{
+    // check if needed
+    bool allowViewHistory = await UserPreferencesUtils.getRecordHistoryEnabled();
+    if(!allowViewHistory){
+      historySaved = true;
+      return;
+    }
+
+    // prepare database
+    final db = await DBHelper.getAppDb();
+    ViewHistoryDao viewHistoryDao = db.viewHistoryDao;
+
+    ViewHistory insertViewHistory = ViewHistory(null,threadInfo.subject, contents, threadInfo.freeMessage, "thread", threadInfo.tid, threadInfo.author, threadInfo.authorId, discuz.id!, DateTime.now());
+    int primaryKey = await viewHistoryDao.insertViewHistory(insertViewHistory);
+    print("save history with primary key ${primaryKey}");
+    historySaved = true;
   }
 
   void _invalidateContent() {
@@ -194,6 +217,11 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
     });
 
     client.viewThreadResult(tid, _page).then((value) {
+      if(!historySaved && _page == 1 && value.threadVariables.postList.length > 0){
+
+        _saveViewHistory(value.threadVariables.threadInfo, value.threadVariables.postList.first.message);
+      }
+
       setState(() {
         _viewThreadResult = value;
         _error = null;

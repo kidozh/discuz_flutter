@@ -72,8 +72,8 @@ class ForumVariables extends BaseVariableResult{
 
 @JsonSerializable()
 class ForumDetail{
-
-  String fid = "0", fup="0", threads = "0", posts = "0";
+  @StringToIntConverter()
+  int fid = 0, fup=0, threads = 0, posts = 0;
   @JsonKey(defaultValue: "")
   String description = "", rules = "", name = "", password="";
   @JsonKey(name:"picstyle",defaultValue: "")

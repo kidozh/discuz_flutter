@@ -1,13 +1,17 @@
 
 import 'dart:developer';
 
+import 'package:discuz_flutter/dao/TrustHostDao.dart';
+import 'package:discuz_flutter/database/TrustHostDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/TrustHost.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/DisplayForumPage.dart';
 import 'package:discuz_flutter/page/FullImagePage.dart';
 import 'package:discuz_flutter/page/ViewThreadPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +29,12 @@ class DiscuzHtmlWidget extends StatelessWidget{
   Discuz discuz;
 
   DiscuzHtmlWidget(this.discuz,this.html);
+
+  _trustHost(String host) async{
+    TrustHostDatabase trustHostDatabase = await DBHelper.getTrustHostDb();
+    TrustHostDao trustHostDao = trustHostDatabase.trustHostDatabaseDao;
+    await trustHostDao.insertTrustHost(TrustHost(null, host));
+  }
 
 
   @override
@@ -66,45 +76,65 @@ class DiscuzHtmlWidget extends StatelessWidget{
             Uri uri = Uri.parse(urlString);
             // check host
             if(uri.host != Uri.parse(discuz.baseURL).host){
-              showDialog(context: context.buildContext, builder: (context){
-                return AlertDialog(
-                  title: Text(S.of(context).outerlinkOpenTitle,),
-                  content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children:[
-                        Container(
-                          color: Colors.red.shade50,
-                          padding: EdgeInsets.symmetric(vertical: 4.0,horizontal: 4.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.link,color: Colors.red,),
-                              SizedBox(width: 8.0),
-                              Expanded(
-                                  child: Text(urlString!,softWrap: true,style: TextStyle(color: Colors.red,),)
+              // check if database exists
+              TrustHostDatabase trustHostDatabase = await DBHelper.getTrustHostDb();
+              TrustHostDao trustHostDao = trustHostDatabase.trustHostDatabaseDao;
+              TrustHost? trustHostInDb = await trustHostDao.findTrustHostByName(uri.host);
+              if(trustHostInDb == null){
+                showDialog(context: context.buildContext, builder: (context){
+                  return AlertDialog(
+                    title: Text(S.of(context).outerlinkOpenTitle,),
+                    content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children:[
+                          Container(
+                            color: Colors.red.shade50,
+                            padding: EdgeInsets.symmetric(vertical: 4.0,horizontal: 4.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.link,color: Colors.red,),
+                                SizedBox(width: 8.0),
+                                Expanded(
+                                    child: Text(urlString!,softWrap: true,style: TextStyle(color: Colors.red,),)
 
-                              )
+                                )
 
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 16.0,),
-                        Text(S.of(context).outerlinkOpenMessage,style: Theme.of(context).textTheme.bodyText1,),
+                          SizedBox(height: 16.0,),
+                          Text(S.of(context).outerlinkOpenMessage,style: Theme.of(context).textTheme.bodyText1,),
 
 
-                      ]
-                  ),
-                  actions: [
-                    TextButton(
-                        onPressed: (){
-                          launch(urlString!);
-                        },
-                        child: Text(S.of(context).openInBrowser,style: TextStyle(color: Theme.of(context).errorColor),)
-                    )
-                  ],
-                );
-              });
+                        ]
+                    ),
+                    actions: [
+                      TextButton(
+                          onPressed: () async{
+                            String host = uri.host;
+                            await _trustHost(host);
+                            launch(urlString!);
+                          },
+                          child: Text(S.of(context).trustHostActionText)
+                      ),
+                      TextButton(
+                          onPressed: (){
+                            launch(urlString!);
+                          },
+                          child: Text(S.of(context).openInBrowser)
+                      )
+                    ],
+                  );
+                });
+              }
+              else{
+                // direct open it
+                launch(urlString);
+              }
+
+
 
               return ;
             }

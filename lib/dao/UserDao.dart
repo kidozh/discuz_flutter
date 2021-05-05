@@ -24,4 +24,7 @@ abstract class UserDao {
 
   @Query('SELECT * FROM User WHERE discuz_id=:discuzId AND uid=:uid LIMIT 1')
   Future<User?> findUsersByDiscuzIdAndUid(int discuzId, int uid);
+
+  @delete
+  Future<void> deleteUser(User user);
 }

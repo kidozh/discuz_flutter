@@ -1,19 +1,24 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:discuz_flutter/JsonResult/CheckResult.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
+import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
+import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
 import 'package:discuz_flutter/widget/GoogleBannerAdWidget.dart';
+import 'package:floor/floor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -25,6 +30,7 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 
@@ -69,6 +75,8 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
   late final Discuz discuz;
   late final User? user;
   int fid = 0;
+
+  bool historySaved = false;
 
   _DisplayForumState(this.discuz, this.user, this.fid);
 
@@ -118,6 +126,24 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
     _loadForumContent();
   }
 
+  void _saveViewHistory(ForumDetail forumDetail) async{
+    // check if needed
+    bool allowViewHistory = await UserPreferencesUtils.getRecordHistoryEnabled();
+    if(!allowViewHistory){
+      historySaved = true;
+      return;
+    }
+
+    // prepare database
+    final db = await DBHelper.getAppDb();
+    ViewHistoryDao viewHistoryDao = db.viewHistoryDao;
+
+    ViewHistory insertViewHistory = ViewHistory(null,forumDetail.name, forumDetail.description, forumDetail.rules, "forum", forumDetail.fid, "", 0, discuz.id!, DateTime.now());
+    int primaryKey = await viewHistoryDao.insertViewHistory(insertViewHistory);
+    print("save history with primary key ${primaryKey}");
+    historySaved = true;
+  }
+
   Future<void> _loadForumContent() async {
     // check the availability
     log("Base url ${discuz.baseURL} ${_page}");
@@ -134,6 +160,10 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
     // });
 
     client.displayForumResult(fid.toString(), _page).then((value) {
+      if(!historySaved && _page == 1){
+        _saveViewHistory(value.discuzIndexVariables.forum);
+      }
+
       setState(() {
         _displayForumResult = value;
         _error = null;
@@ -145,6 +175,8 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
         }
         _page += 1;
       });
+
+
 
 
       if (!_enableControlFinish) {

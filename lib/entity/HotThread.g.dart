@@ -29,7 +29,7 @@ HotThread _$HotThreadFromJson(Map<String, dynamic> json) {
     ..displayOrder =
         const StringToIntConverter().fromJson(json['displayorder'] as String?)
     ..highlight = json['highlight'] as String
-    ..digest = const StringToBoolConverter().fromJson(json['digest'] as String)
+    ..digest = const StringToBoolConverter().fromJson(json['digest'] as String?)
     ..typeHtml = json['typehtml'] as String? ?? ''
     ..typeName = json['typename'] as String? ?? ''
     ..publishAt =

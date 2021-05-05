@@ -19,22 +19,28 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
-  static String m0(filename) => "Downloading file: ${filename} in background.";
+  static String m0(account) => "Delete account ${account} successfully.";
 
-  static String m1(uri) => "Unable to open the uri: ${uri}.";
+  static String m1(account) => "Delete discuz ${account} successfully.";
 
-  static String m2(pos) => "# ${pos}";
+  static String m2(filename) => "Downloading file: ${filename} in background.";
 
-  static String m3(username, discuzName) =>
+  static String m3(uri) => "Unable to open the uri: ${uri}.";
+
+  static String m4(pos) => "# ${pos}";
+
+  static String m5(username, discuzName) =>
       "User ${username} sign in at ${discuzName} successfully.";
 
-  static String m4(discuzName) => "Sign in at ${discuzName}";
+  static String m6(discuzName) => "Sign in at ${discuzName}";
 
-  static String m5(filename) => "Successfully download file: ${filename}.";
+  static String m7(title) => "Successfully remove view history ${title}.";
 
-  static String m6(username) => "User ${username} expired";
+  static String m8(filename) => "Successfully download file: ${filename}.";
 
-  static String m7(uid) => "UserId ${uid}";
+  static String m9(username) => "User ${username} expired";
+
+  static String m10(uid) => "UserId ${uid}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -74,6 +80,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "classic": MessageLookupByLibrary.simpleMessage("Classic"),
         "classicDescribe":
             MessageLookupByLibrary.simpleMessage("Classic and default"),
+        "clearAllViewHistories":
+            MessageLookupByLibrary.simpleMessage("Clear all histories"),
+        "common": MessageLookupByLibrary.simpleMessage("Common"),
         "completeLoad": MessageLookupByLibrary.simpleMessage("Load done"),
         "completeRefresh": MessageLookupByLibrary.simpleMessage("Refresh done"),
         "controlFinish": MessageLookupByLibrary.simpleMessage("Control finish"),
@@ -83,12 +92,19 @@ class MessageLookup extends MessageLookupByLibrary {
         "customScrollViewDescribe": MessageLookupByLibrary.simpleMessage(
             "List with AppBar Folding, listener example"),
         "dashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
+        "deleteAccount": MessageLookupByLibrary.simpleMessage("Delete"),
+        "deleteAccountSuccessfully": m0,
+        "deleteDiscuzSuccessfully": m1,
+        "deleteViewHistoryWarnContent": MessageLookupByLibrary.simpleMessage(
+            "Clearing operation is irrecoverable, please take care."),
         "deliveryDescribe":
             MessageLookupByLibrary.simpleMessage("Express balloon"),
         "direction": MessageLookupByLibrary.simpleMessage("Direction"),
         "downloadAttachment": MessageLookupByLibrary.simpleMessage("Download"),
-        "downloadingFiles": m0,
+        "downloadingFiles": m2,
         "email": MessageLookupByLibrary.simpleMessage("E-Mail"),
+        "emptyListDescription":
+            MessageLookupByLibrary.simpleMessage("The content is empty"),
         "emptyWidget": MessageLookupByLibrary.simpleMessage("Empty widget"),
         "emptyWidgetDescribe": MessageLookupByLibrary.simpleMessage(
             "Show empty widget when there is no data"),
@@ -127,7 +143,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "linkHeader": MessageLookupByLibrary.simpleMessage("Header linker"),
         "linkHeaderDescribeDescribe": MessageLookupByLibrary.simpleMessage(
             "Customize Header with linker"),
-        "linkUnableToOpen": m1,
+        "linkUnableToOpen": m3,
         "listDirection": MessageLookupByLibrary.simpleMessage("List direction"),
         "listEmbed": MessageLookupByLibrary.simpleMessage("List embed"),
         "listEmbedDescribe": MessageLookupByLibrary.simpleMessage(
@@ -144,6 +160,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginSubtitle": MessageLookupByLibrary.simpleMessage("Add a new user"),
         "loginTitle": MessageLookupByLibrary.simpleMessage("Login"),
         "manageAccount": MessageLookupByLibrary.simpleMessage("Manage account"),
+        "manageAccountTitle":
+            MessageLookupByLibrary.simpleMessage("Manage accounts"),
+        "manageDiscuz": MessageLookupByLibrary.simpleMessage("Manage BBS"),
         "manualControl": MessageLookupByLibrary.simpleMessage("Manual control"),
         "manualControlDescribe": MessageLookupByLibrary.simpleMessage(
             "Control the timing of completion of refresh and load"),
@@ -173,6 +192,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "File downloads successfully. Do you want to open it now?"),
         "openInBrowser":
             MessageLookupByLibrary.simpleMessage("Open in browser"),
+        "openSourceLicence":
+            MessageLookupByLibrary.simpleMessage("Open source licence"),
         "or": MessageLookupByLibrary.simpleMessage("or"),
         "outerlinkOpenMessage": MessageLookupByLibrary.simpleMessage(
             "Host of the link is not the same as the BBS. It would be dangerous to browse."),
@@ -183,7 +204,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "phoenixDescribe":
             MessageLookupByLibrary.simpleMessage("Golden campus"),
         "phone": MessageLookupByLibrary.simpleMessage("Phone"),
-        "postPosition": m2,
+        "policy": MessageLookupByLibrary.simpleMessage("Our policy"),
+        "postPosition": m4,
+        "preparingPage":
+            MessageLookupByLibrary.simpleMessage("Preparing the page."),
+        "privacyPolicy": MessageLookupByLibrary.simpleMessage("Privacy policy"),
         "progressButtonLoginFailed":
             MessageLookupByLibrary.simpleMessage("Login Failed"),
         "progressButtonLoginSuccess":
@@ -204,6 +229,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushToLoad": MessageLookupByLibrary.simpleMessage("Push to load"),
         "qqGroup": MessageLookupByLibrary.simpleMessage("QQ group"),
         "qqPay": MessageLookupByLibrary.simpleMessage("QQ Pay"),
+        "recordHistoryOffDescription": MessageLookupByLibrary.simpleMessage(
+            "App Won\'t record your browser history"),
+        "recordHistoryOnDescription": MessageLookupByLibrary.simpleMessage(
+            "App will record your browser history"),
+        "recordHistoryTitle":
+            MessageLookupByLibrary.simpleMessage("Record history"),
         "refresh": MessageLookupByLibrary.simpleMessage("Refresh"),
         "refreshFailed": MessageLookupByLibrary.simpleMessage("Refresh failed"),
         "refreshFinish":
@@ -217,6 +248,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Release to load"),
         "releaseToRefresh":
             MessageLookupByLibrary.simpleMessage("Release to refresh"),
+        "relogin": MessageLookupByLibrary.simpleMessage("relogin"),
         "retry": MessageLookupByLibrary.simpleMessage("retry"),
         "reverse": MessageLookupByLibrary.simpleMessage("reverse"),
         "sample": MessageLookupByLibrary.simpleMessage("Sample"),
@@ -235,8 +267,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "sendReply": MessageLookupByLibrary.simpleMessage("Send"),
         "sendReplyHint": MessageLookupByLibrary.simpleMessage("Say something"),
         "settingTitle": MessageLookupByLibrary.simpleMessage("Settings"),
-        "signInSuccessTitle": m3,
-        "signInTitle": m4,
+        "signInSuccessTitle": m5,
+        "signInTitle": m6,
         "signInViaBrowser":
             MessageLookupByLibrary.simpleMessage("Sign in by web"),
         "signUp": MessageLookupByLibrary.simpleMessage("Sign up"),
@@ -244,7 +276,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Flare animation - Space"),
         "star": MessageLookupByLibrary.simpleMessage("Star project"),
         "style": MessageLookupByLibrary.simpleMessage("Style"),
-        "successfullyDownloadFiles": m5,
+        "successfullyDeleteViewHistoryContent": m7,
+        "successfullyDownloadFiles": m8,
         "supportAuthor":
             MessageLookupByLibrary.simpleMessage("Support the author"),
         "supportAuthorDescribe": MessageLookupByLibrary.simpleMessage(
@@ -259,14 +292,20 @@ class MessageLookup extends MessageLookupByLibrary {
             "Refresh and load tasks are not affected by each other"),
         "taurusDescribe":
             MessageLookupByLibrary.simpleMessage("Rushing into the sky"),
+        "termsOfService":
+            MessageLookupByLibrary.simpleMessage("Terms of Service"),
         "topBouncing": MessageLookupByLibrary.simpleMessage("Top bouncing"),
         "topBouncingDescribe":
             MessageLookupByLibrary.simpleMessage("Top can be crossed"),
+        "trustHostActionText":
+            MessageLookupByLibrary.simpleMessage("Trust this host"),
+        "trustHostTitle": MessageLookupByLibrary.simpleMessage("Trusted host"),
+        "undo": MessageLookupByLibrary.simpleMessage("Undo"),
         "updateAt": MessageLookupByLibrary.simpleMessage("Update at %T"),
         "userExpiredSubtitle": MessageLookupByLibrary.simpleMessage(
             "The current user is expired, some function may not work."),
-        "userExpiredTitle": m6,
-        "userIdTitle": m7,
+        "userExpiredTitle": m9,
+        "userIdTitle": m10,
         "userProfile": MessageLookupByLibrary.simpleMessage("User Profile"),
         "userProfileDescribe": MessageLookupByLibrary.simpleMessage(
             "User Profile with the springback effect"),
@@ -274,6 +313,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "vibration": MessageLookupByLibrary.simpleMessage("vibration"),
         "vibrationDescribe": MessageLookupByLibrary.simpleMessage(
             "Triggered vibration feedback"),
+        "viewHistory": MessageLookupByLibrary.simpleMessage("View History"),
         "viewThreadTitle":
             MessageLookupByLibrary.simpleMessage("View a thread"),
         "watchPictureInFullScreen":

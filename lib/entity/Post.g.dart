@@ -10,9 +10,9 @@ Post _$PostFromJson(Map<String, dynamic> json) {
   return Post()
     ..pid = const StringToIntConverter().fromJson(json['pid'] as String?)
     ..tid = const StringToIntConverter().fromJson(json['tid'] as String?)
-    ..first = const StringToBoolConverter().fromJson(json['first'] as String)
+    ..first = const StringToBoolConverter().fromJson(json['first'] as String?)
     ..anonymous =
-        const StringToBoolConverter().fromJson(json['anonymous'] as String)
+        const StringToBoolConverter().fromJson(json['anonymous'] as String?)
     ..author = json['author'] as String
     ..dateline = json['dateline'] as String
     ..message = json['message'] as String
@@ -80,12 +80,14 @@ Attachment _$AttachmentFromJson(Map<String, dynamic> json) {
     ..fileSize =
         const StringToIntConverter().fromJson(json['filesize'] as String?) ?? 0
     ..remote =
-        const StringToBoolConverter().fromJson(json['remote'] as String) ??
+        const StringToBoolConverter().fromJson(json['remote'] as String?) ??
             false
     ..thumb =
-        const StringToBoolConverter().fromJson(json['thumb'] as String) ?? false
+        const StringToBoolConverter().fromJson(json['thumb'] as String?) ??
+            false
     ..payed =
-        const StringToBoolConverter().fromJson(json['payed'] as String) ?? false
+        const StringToBoolConverter().fromJson(json['payed'] as String?) ??
+            false
     ..readPerm =
         const StringToIntConverter().fromJson(json['readperm'] as String?) ?? 0
     ..aidEncode = json['aidencode'] as String? ?? ''

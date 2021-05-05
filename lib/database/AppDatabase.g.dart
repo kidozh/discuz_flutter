@@ -64,6 +64,8 @@ class _$AppDatabase extends AppDatabase {
 
   DiscuzDao? _discuzDaoInstance;
 
+  ViewHistoryDao? _viewHistoryDaoInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
@@ -85,6 +87,8 @@ class _$AppDatabase extends AppDatabase {
             'CREATE TABLE IF NOT EXISTS `User` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `auth` TEXT NOT NULL, `saltkey` TEXT NOT NULL, `username` TEXT NOT NULL, `avatarUrl` TEXT NOT NULL, `groupId` INTEGER NOT NULL, `uid` INTEGER NOT NULL, `readPerm` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Discuz` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `discuzVersion` TEXT NOT NULL, `charset` TEXT NOT NULL, `apiVersion` INTEGER NOT NULL, `pluginVersion` TEXT NOT NULL, `regname` TEXT NOT NULL, `qqconnect` INTEGER NOT NULL, `wsqqqconnect` TEXT NOT NULL, `wsqhideregister` TEXT NOT NULL, `siteName` TEXT NOT NULL, `siteId` TEXT NOT NULL, `uCenterURL` TEXT NOT NULL, `defaultFid` TEXT NOT NULL, `baseURL` TEXT NOT NULL)');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `ViewHistory` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `subject` TEXT NOT NULL, `description` TEXT NOT NULL, `type` TEXT NOT NULL, `identification` INTEGER NOT NULL, `author` TEXT NOT NULL, `authorId` INTEGER NOT NULL, `insertTime` INTEGER NOT NULL, `updateTime` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -100,6 +104,12 @@ class _$AppDatabase extends AppDatabase {
   @override
   DiscuzDao get discuzDao {
     return _discuzDaoInstance ??= _$DiscuzDao(database, changeListener);
+  }
+
+  @override
+  ViewHistoryDao get viewHistoryDao {
+    return _viewHistoryDaoInstance ??=
+        _$ViewHistoryDao(database, changeListener);
   }
 }
 
@@ -120,6 +130,22 @@ class _$UserDao extends UserDao {
                   'readPerm': item.readPerm,
                   'discuz_id': item.discuzId
                 },
+            changeListener),
+        _userDeletionAdapter = DeletionAdapter(
+            database,
+            'User',
+            ['id'],
+            (User item) => <String, Object?>{
+                  'id': item.id,
+                  'auth': item.auth,
+                  'saltkey': item.saltkey,
+                  'username': item.username,
+                  'avatarUrl': item.avatarUrl,
+                  'groupId': item.groupId,
+                  'uid': item.uid,
+                  'readPerm': item.readPerm,
+                  'discuz_id': item.discuzId
+                },
             changeListener);
 
   final sqflite.DatabaseExecutor database;
@@ -129,6 +155,8 @@ class _$UserDao extends UserDao {
   final QueryAdapter _queryAdapter;
 
   final InsertionAdapter<User> _userInsertionAdapter;
+
+  final DeletionAdapter<User> _userDeletionAdapter;
 
   @override
   Future<List<User>> findAllUsers() async {
@@ -219,6 +247,11 @@ class _$UserDao extends UserDao {
     return _userInsertionAdapter.insertAndReturnId(
         user, OnConflictStrategy.replace);
   }
+
+  @override
+  Future<void> deleteUser(User user) async {
+    await _userDeletionAdapter.delete(user);
+  }
 }
 
 class _$DiscuzDao extends DiscuzDao {
@@ -227,6 +260,27 @@ class _$DiscuzDao extends DiscuzDao {
         _discuzInsertionAdapter = InsertionAdapter(
             database,
             'Discuz',
+            (Discuz item) => <String, Object?>{
+                  'id': item.id,
+                  'discuzVersion': item.discuzVersion,
+                  'charset': item.charset,
+                  'apiVersion': item.apiVersion,
+                  'pluginVersion': item.pluginVersion,
+                  'regname': item.regname,
+                  'qqconnect': item.qqconnect ? 1 : 0,
+                  'wsqqqconnect': item.wsqqqconnect,
+                  'wsqhideregister': item.wsqhideregister,
+                  'siteName': item.siteName,
+                  'siteId': item.siteId,
+                  'uCenterURL': item.uCenterURL,
+                  'defaultFid': item.defaultFid,
+                  'baseURL': item.baseURL
+                },
+            changeListener),
+        _discuzDeletionAdapter = DeletionAdapter(
+            database,
+            'Discuz',
+            ['id'],
             (Discuz item) => <String, Object?>{
                   'id': item.id,
                   'discuzVersion': item.discuzVersion,
@@ -252,6 +306,8 @@ class _$DiscuzDao extends DiscuzDao {
   final QueryAdapter _queryAdapter;
 
   final InsertionAdapter<Discuz> _discuzInsertionAdapter;
+
+  final DeletionAdapter<Discuz> _discuzDeletionAdapter;
 
   @override
   Future<List<Discuz>> findAllDiscuzs() async {
@@ -299,4 +355,143 @@ class _$DiscuzDao extends DiscuzDao {
   Future<void> insertDiscuz(Discuz discuz) async {
     await _discuzInsertionAdapter.insert(discuz, OnConflictStrategy.replace);
   }
+
+  @override
+  Future<void> deleteDiscuz(Discuz discuz) async {
+    await _discuzDeletionAdapter.delete(discuz);
+  }
 }
+
+class _$ViewHistoryDao extends ViewHistoryDao {
+  _$ViewHistoryDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database, changeListener),
+        _viewHistoryInsertionAdapter = InsertionAdapter(
+            database,
+            'ViewHistory',
+            (ViewHistory item) => <String, Object?>{
+                  'id': item.id,
+                  'title': item.title,
+                  'subject': item.subject,
+                  'description': item.description,
+                  'type': item.type,
+                  'identification': item.identification,
+                  'author': item.author,
+                  'authorId': item.authorId,
+                  'insertTime': _floorDateTimeConverter.encode(item.insertTime),
+                  'updateTime': _floorDateTimeConverter.encode(item.updateTime),
+                  'discuz_id': item.discuzId
+                },
+            changeListener),
+        _viewHistoryDeletionAdapter = DeletionAdapter(
+            database,
+            'ViewHistory',
+            ['id'],
+            (ViewHistory item) => <String, Object?>{
+                  'id': item.id,
+                  'title': item.title,
+                  'subject': item.subject,
+                  'description': item.description,
+                  'type': item.type,
+                  'identification': item.identification,
+                  'author': item.author,
+                  'authorId': item.authorId,
+                  'insertTime': _floorDateTimeConverter.encode(item.insertTime),
+                  'updateTime': _floorDateTimeConverter.encode(item.updateTime),
+                  'discuz_id': item.discuzId
+                },
+            changeListener);
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<ViewHistory> _viewHistoryInsertionAdapter;
+
+  final DeletionAdapter<ViewHistory> _viewHistoryDeletionAdapter;
+
+  @override
+  Future<List<ViewHistory>> findAllViewHistoriesByDiscuzId(int discuzId) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM ViewHistory WHERE discuz_id=?1 ORDER BY updateTime DESC',
+        mapper: (Map<String, Object?> row) => ViewHistory(
+            row['id'] as int?,
+            row['title'] as String,
+            row['subject'] as String,
+            row['description'] as String,
+            row['type'] as String,
+            row['identification'] as int,
+            row['author'] as String,
+            row['authorId'] as int,
+            row['discuz_id'] as int,
+            _floorDateTimeConverter.decode(row['updateTime'] as int)),
+        arguments: [discuzId]);
+  }
+
+  @override
+  Stream<List<ViewHistory>> findAllViewHistoriesStreamByDiscuzId(int discuzId) {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM ViewHistory WHERE discuz_id=?1 ORDER BY updateTime DESC',
+        mapper: (Map<String, Object?> row) => ViewHistory(
+            row['id'] as int?,
+            row['title'] as String,
+            row['subject'] as String,
+            row['description'] as String,
+            row['type'] as String,
+            row['identification'] as int,
+            row['author'] as String,
+            row['authorId'] as int,
+            row['discuz_id'] as int,
+            _floorDateTimeConverter.decode(row['updateTime'] as int)),
+        arguments: [discuzId],
+        queryableName: 'ViewHistory',
+        isView: false);
+  }
+
+  @override
+  Future<void> deleteAllViewHistory() async {
+    await _queryAdapter.queryNoReturn('DELETE FROM ViewHistory');
+  }
+
+  @override
+  Future<void> deleteViewHistoryByBBSId(int discuzId) async {
+    await _queryAdapter.queryNoReturn(
+        'DELETE FROM ViewHistory WHERE discuz_id=?1',
+        arguments: [discuzId]);
+  }
+
+  @override
+  Future<int> insertViewHistory(ViewHistory viewHistory) {
+    return _viewHistoryInsertionAdapter.insertAndReturnId(
+        viewHistory, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<int> deleteViewHistory(ViewHistory viewHistory) {
+    return _viewHistoryDeletionAdapter.deleteAndReturnChangedRows(viewHistory);
+  }
+
+  @override
+  Future<int> deleteViewHistories(List<ViewHistory> viewHistories) {
+    return _viewHistoryDeletionAdapter
+        .deleteListAndReturnChangedRows(viewHistories);
+  }
+
+  @override
+  Future<void> deleteAllHistories() async {
+    if (database is sqflite.Transaction) {
+      await super.deleteAllHistories();
+    } else {
+      await (database as sqflite.Database)
+          .transaction<void>((transaction) async {
+        final transactionDatabase = _$AppDatabase(changeListener)
+          ..database = transaction;
+        await transactionDatabase.viewHistoryDao.deleteAllHistories();
+      });
+    }
+  }
+}
+
+// ignore_for_file: unused_element
+final _floorDateTimeConverter = FloorDateTimeConverter();

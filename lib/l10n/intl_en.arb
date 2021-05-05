@@ -210,5 +210,43 @@
   },
   "openFileInExternalAppActionText": "Open",
   "openFileInExternalAppContent": "File downloads successfully. Do you want to open it now?",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "manageAccountTitle": "Manage accounts",
+  "deleteAccount": "Delete",
+  "deleteAccountSuccessfully": "Delete account {account} successfully.",
+  "@deleteAccountSuccessfully": {
+    "placeholders": {
+      "account": {}
+    }
+  },
+  "preparingPage": "Preparing the page.",
+  "deleteDiscuzSuccessfully": "Delete discuz {account} successfully.",
+  "@deleteDiscuzSuccessfully": {
+    "placeholders": {
+      "account": {}
+    }
+  },
+  "manageDiscuz": "Manage BBS",
+  "relogin": "relogin",
+  "recordHistoryTitle": "Record history",
+  "recordHistoryOnDescription": "App will record your browser history",
+  "recordHistoryOffDescription": "App Won't record your browser history",
+  "common": "Common",
+  "termsOfService": "Terms of Service",
+  "privacyPolicy": "Privacy policy",
+  "openSourceLicence": "Open source licence",
+  "policy": "Our policy",
+  "viewHistory": "View History",
+  "clearAllViewHistories": "Clear all histories",
+  "emptyListDescription": "The content is empty",
+  "successfullyDeleteViewHistoryContent": "Successfully remove view history {title}.",
+  "@successfullyDeleteViewHistoryContent": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "deleteViewHistoryWarnContent": "Clearing operation is irrecoverable, please take care.",
+  "undo": "Undo",
+  "trustHostTitle": "Trusted host",
+  "trustHostActionText": "Trust this host"
 }

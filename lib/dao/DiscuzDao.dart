@@ -12,4 +12,7 @@ abstract class DiscuzDao {
 
   @Insert(onConflict: OnConflictStrategy.replace)
   Future<void> insertDiscuz(Discuz discuz);
+
+  @delete
+  Future<void> deleteDiscuz(Discuz discuz);
 }

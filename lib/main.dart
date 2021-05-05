@@ -1,6 +1,10 @@
 import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/dialog/SwitchDiscuzDialog.dart';
+import 'package:discuz_flutter/page/ManageAccountPage.dart';
+import 'package:discuz_flutter/page/ManageDiscuzPage.dart';
+import 'package:discuz_flutter/page/ManageTrustHostPage.dart';
+import 'package:discuz_flutter/page/ViewHistoryPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/HotThreadScreen.dart';
 import 'package:discuz_flutter/screen/NotificationScreen.dart';
@@ -14,7 +18,6 @@ import 'package:discuz_flutter/page/LoginPage.dart';
 import 'package:discuz_flutter/screen/DiscuzPortalScreen.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
-import 'package:discuz_flutter/widget/DiscuzInfoCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -205,11 +208,42 @@ class _MyHomePageState extends State<MyHomePage> {
               await Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => LoginPage(
-                        discuz: discuz,
-                        key: UniqueKey(),
+                      builder: (context) => ManageAccountPage(
+                        discuz,
                       )));
             }
+          },
+        ),
+        ListTile(
+          title: Text(S.of(context).manageDiscuz),
+          leading: Icon(Icons.forum_outlined),
+          onTap: () async {
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ManageDiscuzPage()));
+          },
+        ),
+        ListTile(
+          title: Text(S.of(context).viewHistory),
+          leading: Icon(Icons.history),
+          onTap: () async {
+            Discuz? discuz =
+                Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+            if(discuz != null){
+              await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ViewHistoryPage(discuz)));
+            }
+
+          },
+        ),
+        ListTile(
+          title: Text(S.of(context).trustHostTitle),
+          leading: Icon(Icons.verified_user_outlined),
+          onTap: () async {
+            await Navigator.push(context,MaterialPageRoute(builder: (context) => ManageTrustHostPage()));
           },
         ),
         ListTile(
