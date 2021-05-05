@@ -52,10 +52,17 @@ class _MobileApiClient implements MobileApiClient {
   }
 
   @override
-  Future<LoginResult> sendLoginRequest(username, password) async {
+  Future<LoginResult> sendLoginRequest(
+      username, password, captchaHash, captchaType, verification) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _data = {'username': username, 'password': password};
+    final _data = {
+      'username': username,
+      'password': password,
+      'seccodehash': captchaHash,
+      'seccodemodid': captchaType,
+      'seccodeverify': verification
+    };
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
         LoginResult>(Options(
             method: 'POST',
@@ -71,10 +78,17 @@ class _MobileApiClient implements MobileApiClient {
   }
 
   @override
-  Future<String> sendLoginRequestInString(username, password) async {
+  Future<String> sendLoginRequestInString(
+      username, password, captchaHash, captchaType, verification) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _data = {'username': username, 'password': password};
+    final _data = {
+      'username': username,
+      'password': password,
+      'seccodehash': captchaHash,
+      'seccodemodid': captchaType,
+      'seccodeverify': verification
+    };
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
             method: 'POST',
             headers: <String, dynamic>{},
@@ -182,8 +196,8 @@ class _MobileApiClient implements MobileApiClient {
   }
 
   @override
-  Future<String> sendReplyRaw(
-      fid, tid, formhash, message, captchaHash, captchaCode) async {
+  Future<String> sendReplyRaw(fid, tid, formhash, message, captchaHash,
+      captchaType, verification) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = {
@@ -192,7 +206,8 @@ class _MobileApiClient implements MobileApiClient {
       'formhash': formhash,
       'message': message,
       'seccodehash': captchaHash,
-      'seccodeverify': captchaCode
+      'seccodemodid': captchaType,
+      'seccodeverify': verification
     };
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
             method: 'POST',
@@ -208,8 +223,8 @@ class _MobileApiClient implements MobileApiClient {
   }
 
   @override
-  Future<ApiResult> sendReplyResult(
-      fid, tid, formhash, message, captchaHash, captchaCode) async {
+  Future<ApiResult> sendReplyResult(fid, tid, formhash, message, captchaHash,
+      captchaType, verification) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = {
@@ -218,7 +233,8 @@ class _MobileApiClient implements MobileApiClient {
       'formhash': formhash,
       'message': message,
       'seccodehash': captchaHash,
-      'seccodeverify': captchaCode
+      'seccodemodid': captchaType,
+      'seccodeverify': verification
     };
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
         ApiResult>(Options(
@@ -293,6 +309,22 @@ class _MobileApiClient implements MobileApiClient {
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = HotThreadResult.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CaptchaResult> captchaResult(type) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'type': type};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<CaptchaResult>(Options(
+                method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            .compose(
+                _dio.options, '/api/mobile/index.php?version=4&module=secure',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CaptchaResult.fromJson(_result.data!);
     return value;
   }
 

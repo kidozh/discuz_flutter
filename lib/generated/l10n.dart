@@ -1989,6 +1989,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Captcha required.`
+  String get captchaRequired {
+    return Intl.message(
+      'Captcha required.',
+      name: 'captchaRequired',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

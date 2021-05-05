@@ -64,6 +64,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "bottomBouncing": MessageLookupByLibrary.simpleMessage("底部回弹"),
         "bottomBouncingDescribe": MessageLookupByLibrary.simpleMessage("底部可越界"),
         "cancel": MessageLookupByLibrary.simpleMessage("取消"),
+        "captchaRequired": MessageLookupByLibrary.simpleMessage("需要验证码"),
         "chatPage": MessageLookupByLibrary.simpleMessage("聊天页面"),
         "chatPageDescribe": MessageLookupByLibrary.simpleMessage("模仿聊天页面"),
         "chengdu": MessageLookupByLibrary.simpleMessage("中国 - 成都"),

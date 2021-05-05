@@ -71,6 +71,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "bottomBouncingDescribe":
             MessageLookupByLibrary.simpleMessage("Bottom can be crossed"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+        "captchaRequired":
+            MessageLookupByLibrary.simpleMessage("Captcha required."),
         "chatPage": MessageLookupByLibrary.simpleMessage("Chat page"),
         "chatPageDescribe":
             MessageLookupByLibrary.simpleMessage("Chat page example"),

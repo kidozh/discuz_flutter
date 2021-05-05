@@ -16,6 +16,7 @@ import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
+import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
 import 'package:discuz_flutter/widget/PostWidget.dart';
@@ -38,13 +39,13 @@ class ViewThreadPage extends StatelessWidget {
   late final User? user;
   int tid = 0;
 
-  ViewThreadPage(
-      {Key? key, required this.discuz, this.user, required this.tid})
+  ViewThreadPage({Key? key, required this.discuz, this.user, required this.tid})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ViewThreadStatefulWidget(key: UniqueKey(), discuz: discuz, user: user, tid: tid);
+    return ViewThreadStatefulWidget(
+        key: UniqueKey(), discuz: discuz, user: user, tid: tid);
   }
 }
 
@@ -70,6 +71,8 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
   List<Post> _postList = [];
   int _page = 1;
   final TextEditingController _replyController = new TextEditingController();
+  final CaptchaController _captchaController =
+      new CaptchaController(new CaptchaFields("", "post", ""));
 
   late final Discuz discuz;
   late final User? user;
@@ -115,10 +118,11 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
     //_invalidateContent();
   }
 
-  void _saveViewHistory(DetailedThreadInfo threadInfo, String contents) async{
+  void _saveViewHistory(DetailedThreadInfo threadInfo, String contents) async {
     // check if needed
-    bool allowViewHistory = await UserPreferencesUtils.getRecordHistoryEnabled();
-    if(!allowViewHistory){
+    bool allowViewHistory =
+        await UserPreferencesUtils.getRecordHistoryEnabled();
+    if (!allowViewHistory) {
       historySaved = true;
       return;
     }
@@ -127,7 +131,17 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
     final db = await DBHelper.getAppDb();
     ViewHistoryDao viewHistoryDao = db.viewHistoryDao;
 
-    ViewHistory insertViewHistory = ViewHistory(null,threadInfo.subject, contents, threadInfo.freeMessage, "thread", threadInfo.tid, threadInfo.author, threadInfo.authorId, discuz.id!, DateTime.now());
+    ViewHistory insertViewHistory = ViewHistory(
+        null,
+        threadInfo.subject,
+        contents,
+        threadInfo.freeMessage,
+        "thread",
+        threadInfo.tid,
+        threadInfo.author,
+        threadInfo.authorId,
+        discuz.id!,
+        DateTime.now());
     int primaryKey = await viewHistoryDao.insertViewHistory(insertViewHistory);
     print("save history with primary key ${primaryKey}");
     historySaved = true;
@@ -140,12 +154,13 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
     _loadForumContent();
   }
 
-  Future<void> _sendReply() async{
-    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+  Future<void> _sendReply() async {
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     String formhash = _viewThreadResult.threadVariables.formHash;
     int fid = _viewThreadResult.threadVariables.fid;
-    if(user == null){
-      return ;
+    if (user == null) {
+      return;
     }
     setState(() {
       _sendReplyStatus = ButtonState.loading;
@@ -155,60 +170,68 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
     String message = _replyController.text;
     log("send ${tid}");
 
-    // client.sendReplyRaw(fid, tid, formhash, message,"","").then((value){
+    // check for captcha information
+    CaptchaFields? captchaFields = _captchaController.value;
+    String captchaHash = "";
+    String captchaMod = "";
+    String verification = "";
+    if(captchaFields!= null && captchaFields.captchaFormHash.isNotEmpty){
+      captchaHash = captchaFields.captchaFormHash;
+      verification = captchaFields.verification;
+      // captchaMod = "forum::post";
+      captchaMod = "forum::viewthread";
+      print("Captcha hash: ${captchaFields.captchaFormHash} verification: ${captchaFields.verification}");
+    }
+
+    // client.sendReplyRaw(fid, tid, formhash, message, captchaHash, captchaMod, verification).then((value){
     //   log(value);
     // });
 
-    client.sendReplyResult(fid, tid, formhash, message, "", "").then((value){
-      if(value.errorResult!.key == "post_reply_succeed"){
-        EasyLoading.showSuccess('${value.errorResult!.content}(${value.errorResult!.key})');
+
+    client.sendReplyResult(fid, tid, formhash, message, captchaHash, captchaMod, verification).then((value) {
+      if (value.errorResult!.key == "post_reply_succeed") {
+        EasyLoading.showSuccess(
+            '${value.errorResult!.content}(${value.errorResult!.key})');
         setState(() {
           _sendReplyStatus = ButtonState.success;
         });
         // delay
-        Future.delayed(Duration(seconds: 1),(){
+        Future.delayed(Duration(seconds: 1), () {
           setState(() {
             _sendReplyStatus = ButtonState.idle;
             _replyController.clear();
           });
         });
-      }
-      else{
+      } else {
         setState(() {
           _sendReplyStatus = ButtonState.fail;
         });
-        Future.delayed(Duration(seconds: 1),(){
+        Future.delayed(Duration(seconds: 1), () {
           setState(() {
             _sendReplyStatus = ButtonState.idle;
             //_replyController.clear();
           });
         });
-        EasyLoading.showError('${value.errorResult!.content}(${value.errorResult!.key})');
-
-
+        EasyLoading.showError(
+            '${value.errorResult!.content}(${value.errorResult!.key})');
       }
-    })
-    .catchError((onError){
+    }).catchError((onError) {
       EasyLoading.showError('${onError}');
       setState(() {
         _sendReplyStatus = ButtonState.fail;
       });
     });
-
-
-
   }
 
   Future<void> _loadForumContent() async {
     // check the availability
     log("Base url ${discuz.baseURL} ${_page}");
-    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
-
     client.viewThreadRaw(tid, _page).then((value) {
-
       log(value.toString());
       // convert string to json
       Map<String, dynamic> resultJson = jsonDecode(value);
@@ -217,9 +240,11 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
     });
 
     client.viewThreadResult(tid, _page).then((value) {
-      if(!historySaved && _page == 1 && value.threadVariables.postList.length > 0){
-
-        _saveViewHistory(value.threadVariables.threadInfo, value.threadVariables.postList.first.message);
+      if (!historySaved &&
+          _page == 1 &&
+          value.threadVariables.postList.length > 0) {
+        _saveViewHistory(value.threadVariables.threadInfo,
+            value.threadVariables.postList.first.message);
       }
 
       setState(() {
@@ -243,41 +268,43 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
       if (!_enableControlFinish) {
         _controller.finishLoad(
             noMore: _postList.length >=
-                value.threadVariables.threadInfo.replies+1);
+                value.threadVariables.threadInfo.replies + 1);
       }
 
       if (value.getErrorString() != null) {
         EasyLoading.showError(value.getErrorString()!);
       }
 
-      if(value.errorResult!= null){
+      if (value.errorResult != null) {
         setState(() {
-          _error = DiscuzError(value.errorResult!.key, value.errorResult!.content);
+          _error =
+              DiscuzError(value.errorResult!.key, value.errorResult!.content);
         });
-      }
-      else{
+      } else {
         setState(() {
           _error = null;
         });
       }
-      if(user != null && value.threadVariables.member_uid != user.uid){
+      if (user != null && value.threadVariables.member_uid != user.uid) {
         log("recv user uid different! ${user.uid} ${value.threadVariables.member_uid} ${value.threadVariables.member_username}");
         setState(() {
-          _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle);
+          _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
+              S.of(context).userExpiredSubtitle);
         });
       }
 
       log("set successful result ${_viewThreadResult} ${_postList.length}");
 
       // save rewrite rule
-      if(value.threadVariables.rewriteRule!= null){
+      if (value.threadVariables.rewriteRule != null) {
         // save rewrite url in database
         RewriteRule rewriteRule = value.threadVariables.rewriteRule!;
-        if(rewriteRule.forumDisplay.isNotEmpty){
-          RewriteRuleUtils.putForumDisplayRule(discuz, rewriteRule.forumDisplay);
+        if (rewriteRule.forumDisplay.isNotEmpty) {
+          RewriteRuleUtils.putForumDisplayRule(
+              discuz, rewriteRule.forumDisplay);
         }
 
-        if(rewriteRule.viewThread.isNotEmpty){
+        if (rewriteRule.viewThread.isNotEmpty) {
           RewriteRuleUtils.putViewThreadRule(discuz, rewriteRule.viewThread);
         }
       }
@@ -311,177 +338,190 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
 
     return Scaffold(
       appBar: AppBar(
-        title: _viewThreadResult == null ? Text(S.of(context).viewThreadTitle): Text(_viewThreadResult.threadVariables.threadInfo.subject),
+        title: _viewThreadResult == null
+            ? Text(S.of(context).viewThreadTitle)
+            : Text(_viewThreadResult.threadVariables.threadInfo.subject),
         centerTitle: true,
       ),
       body: Column(
         children: [
-          if(_error!=null)
-            ErrorCard(_error!.key, _error!.content,(){_controller.callRefresh();}),
+          if (_error != null)
+            ErrorCard(_error!.key, _error!.content, () {
+              _controller.callRefresh();
+            }),
           Expanded(
               child: Container(
-                //height: _direction == Axis.vertical ? double.infinity : 210.0,
-                child: EasyRefresh.custom(
-                  enableControlFinishRefresh: true,
-                  enableControlFinishLoad: true,
-                  taskIndependence: _taskIndependence,
-                  controller: _controller,
-                  scrollController: _scrollController,
-                  reverse: _reverse,
-                  scrollDirection: _direction,
-                  topBouncing: _topBouncing,
-                  bottomBouncing: _bottomBouncing,
-                  header: _enableRefresh
-                      ? ClassicalHeader(
-                    enableInfiniteRefresh: false,
-                    bgColor: _headerFloat
-                        ? Theme.of(context).primaryColor
-                        : Colors.transparent,
-                    // infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
-                    textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
-                    float: _headerFloat,
-                    enableHapticFeedback: _vibration,
-                    refreshText: S.of(context).pullToRefresh,
-                    refreshReadyText: S.of(context).releaseToRefresh,
-                    refreshingText: S.of(context).refreshing,
-                    refreshedText: S.of(context).refreshed,
-                    refreshFailedText: S.of(context).refreshFailed,
-                    noMoreText: S.of(context).noMore,
-                    infoText: S.of(context).updateAt,
-                  )
-                      : null,
-                  footer: _enableLoad
-                      ? ClassicalFooter(
-                    enableInfiniteLoad: _enableInfiniteLoad,
-                    enableHapticFeedback: _vibration,
-                    textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
-                    loadText: S.of(context).pushToLoad,
-                    loadReadyText: S.of(context).releaseToLoad,
-                    loadingText: S.of(context).loading,
-                    loadedText: S.of(context).loaded,
-                    loadFailedText: S.of(context).loadFailed,
-                    noMoreText: S.of(context).noMore,
-                    infoText: S.of(context).updateAt,
-                  )
-                      : null,
-                  onRefresh: _enableRefresh
-                      ? () async {
-                    _invalidateContent();
-                    if (!_enableControlFinish) {
-                      _controller.resetLoadState();
-                      _controller.finishRefresh();
+            //height: _direction == Axis.vertical ? double.infinity : 210.0,
+            child: EasyRefresh.custom(
+              enableControlFinishRefresh: true,
+              enableControlFinishLoad: true,
+              taskIndependence: _taskIndependence,
+              controller: _controller,
+              scrollController: _scrollController,
+              reverse: _reverse,
+              scrollDirection: _direction,
+              topBouncing: _topBouncing,
+              bottomBouncing: _bottomBouncing,
+              header: _enableRefresh
+                  ? ClassicalHeader(
+                      enableInfiniteRefresh: false,
+                      bgColor: _headerFloat
+                          ? Theme.of(context).primaryColor
+                          : Colors.transparent,
+                      // infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
+                      textColor:
+                          Theme.of(context).textTheme.headline1!.color == null
+                              ? Theme.of(context).primaryColorDark
+                              : Theme.of(context).textTheme.headline1!.color!,
+                      float: _headerFloat,
+                      enableHapticFeedback: _vibration,
+                      refreshText: S.of(context).pullToRefresh,
+                      refreshReadyText: S.of(context).releaseToRefresh,
+                      refreshingText: S.of(context).refreshing,
+                      refreshedText: S.of(context).refreshed,
+                      refreshFailedText: S.of(context).refreshFailed,
+                      noMoreText: S.of(context).noMore,
+                      infoText: S.of(context).updateAt,
+                    )
+                  : null,
+              footer: _enableLoad
+                  ? ClassicalFooter(
+                      enableInfiniteLoad: _enableInfiniteLoad,
+                      enableHapticFeedback: _vibration,
+                      textColor:
+                          Theme.of(context).textTheme.headline1!.color == null
+                              ? Theme.of(context).primaryColorDark
+                              : Theme.of(context).textTheme.headline1!.color!,
+                      loadText: S.of(context).pushToLoad,
+                      loadReadyText: S.of(context).releaseToLoad,
+                      loadingText: S.of(context).loading,
+                      loadedText: S.of(context).loaded,
+                      loadFailedText: S.of(context).loadFailed,
+                      noMoreText: S.of(context).noMore,
+                      infoText: S.of(context).updateAt,
+                    )
+                  : null,
+              onRefresh: _enableRefresh
+                  ? () async {
+                      _invalidateContent();
+                      if (!_enableControlFinish) {
+                        _controller.resetLoadState();
+                        _controller.finishRefresh();
+                      }
                     }
-                  }
-                      : null,
-                  onLoad: _enableLoad
-                      ? () async {
-                    _loadForumContent();
-                  }
-                      : null,
-                  firstRefresh: true,
-                  firstRefreshWidget: Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    child: Center(
-                        child: SizedBox(
-                          height: 200.0,
-                          width: 300.0,
-                          child: Card(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Container(
-                                  width: 50.0,
-                                  height: 50.0,
-                                  child: SpinKitFadingCube(
-                                    color: Theme.of(context).primaryColor,
-                                    size: 25.0,
-                                  ),
-                                ),
-                                Container(
-                                  child: Text(S.of(context).loading),
-                                )
-                              ],
-                            ),
+                  : null,
+              onLoad: _enableLoad
+                  ? () async {
+                      _loadForumContent();
+                    }
+                  : null,
+              firstRefresh: true,
+              firstRefreshWidget: Container(
+                width: double.infinity,
+                height: double.infinity,
+                child: Center(
+                    child: SizedBox(
+                  height: 200.0,
+                  width: 300.0,
+                  child: Card(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          width: 50.0,
+                          height: 50.0,
+                          child: SpinKitFadingCube(
+                            color: Theme.of(context).primaryColor,
+                            size: 25.0,
+                          ),
+                        ),
+                        Container(
+                          child: Text(S.of(context).loading),
+                        )
+                      ],
+                    ),
+                  ),
+                )),
+              ),
+              slivers: <Widget>[
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      return Column(
+                        children: [
+                          PostWidget(
+                              discuz,
+                              _postList[index],
+                              _viewThreadResult
+                                  .threadVariables.threadInfo.authorId),
+                        ],
+                      );
+                    },
+                    childCount: _postList.length,
+                  ),
+                ),
+              ],
+            ),
+          )),
+          Consumer<DiscuzAndUserNotifier>(
+            builder: (context, discuzAndUser, child) {
+              if (discuzAndUser.user != null) {
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                            child: Padding(
+                          padding: EdgeInsets.all(6.0),
+                          child: TextField(
+                            controller: _replyController,
+                            decoration: InputDecoration(
+                                hintText: S.of(context).sendReplyHint),
                           ),
                         )),
-                  ),
-                  slivers: <Widget>[
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                          return Column(
-                            children: [
-                              PostWidget(
-                                  discuz, _postList[index],_viewThreadResult.threadVariables.threadInfo.authorId),
-                            ],
-                          );
-                        },
-                        childCount: _postList.length,
-                      ),
+                        ProgressButton.icon(
+                            maxWidth: 90.0,
+                            height: 25.0,
+                            iconedButtons: {
+                              ButtonState.idle: IconedButton(
+                                  text: S.of(context).sendReply,
+                                  icon: Icon(Icons.send, color: Colors.white),
+                                  color: Theme.of(context).primaryColor),
+                              ButtonState.loading: IconedButton(
+                                  text:
+                                      S.of(context).progressButtonReplySending,
+                                  color: Theme.of(context).primaryColorDark),
+                              ButtonState.fail: IconedButton(
+                                  text: S.of(context).progressButtonReplyFailed,
+                                  icon: Icon(Icons.cancel, color: Colors.white),
+                                  color: Colors.red.shade300),
+                              ButtonState.success: IconedButton(
+                                  text:
+                                      S.of(context).progressButtonReplySuccess,
+                                  icon: Icon(
+                                    Icons.check_circle,
+                                    color: Colors.white,
+                                  ),
+                                  color: Colors.green.shade400)
+                            },
+                            onPressed: () {
+                              _sendReply();
+                            },
+                            state: _sendReplyStatus)
+                      ],
                     ),
+                    CaptchaWidget(null, discuz, user, "post", captchaController: _captchaController,)
                   ],
-                ),
-              )),
-            Consumer<DiscuzAndUserNotifier>(
-              builder: (context,discuzAndUser, child){
-                if(discuzAndUser.user!= null){
-                  return Row(
-                    children: [
-                      Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.all(6.0),
-                            child: TextField(
-                              controller: _replyController,
-                              decoration: InputDecoration(
-                                  hintText: S.of(context).sendReplyHint
-                              ),
-                            ),
-                          )
-
-                      ),
-
-                      ProgressButton.icon(
-                        maxWidth: 90.0,
-                        height: 25.0,
-                        iconedButtons: {
-                          ButtonState.idle:
-                          IconedButton(
-                              text: S.of(context).sendReply,
-                              icon: Icon(Icons.send,color: Colors.white),
-                              color: Theme.of(context).primaryColor),
-                          ButtonState.loading:
-                          IconedButton(
-                              text: S.of(context).progressButtonReplySending,
-                              color: Theme.of(context).primaryColorDark),
-                          ButtonState.fail:
-                          IconedButton(
-                              text: S.of(context).progressButtonReplyFailed,
-                              icon: Icon(Icons.cancel,color: Colors.white),
-                              color: Colors.red.shade300),
-                          ButtonState.success:
-                          IconedButton(
-                              text: S.of(context).progressButtonReplySuccess,
-                              icon: Icon(Icons.check_circle,color: Colors.white,),
-                              color: Colors.green.shade400)
-                        },
-                          onPressed: (){
-                            _sendReply();
-                          },
-                          state: _sendReplyStatus
-                      )
-                    ],
-                  );
-                }
-                else{
-                  return Container(
-                    width: 0,
-                    height: 0,
-                  );
-                }
-              },
-            )
+                );
+              } else {
+                return Container(
+                  width: 0,
+                  height: 0,
+                );
+              }
+            },
+          )
         ],
       ),
     );

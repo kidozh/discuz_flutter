@@ -248,5 +248,6 @@
   "deleteViewHistoryWarnContent": "清除历史记录是不可恢复的，确认要继续？",
   "undo": "撤销",
   "trustHostTitle": "主机域名白名单",
-  "trustHostActionText": "信任此域名"
+  "trustHostActionText": "信任此域名",
+  "captchaRequired": "需要验证码"
 }

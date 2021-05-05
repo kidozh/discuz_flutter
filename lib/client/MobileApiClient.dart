@@ -1,4 +1,5 @@
 import 'package:discuz_flutter/JsonResult/ApiResult.dart';
+import 'package:discuz_flutter/JsonResult/CaptchaResult.dart';
 import 'package:discuz_flutter/JsonResult/CheckResult.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
@@ -38,6 +39,11 @@ abstract class MobileApiClient {
   Future<LoginResult> sendLoginRequest(
       @Field("username") String username,
       @Field("password") String password,
+      // for captcha services
+      @Field("seccodehash") String captchaHash,
+      @Field("seccodemodid") String captchaType,
+      @Field("seccodeverify") String verification
+
       );
 
   @POST("/api/mobile/index.php?version=4"
@@ -48,6 +54,10 @@ abstract class MobileApiClient {
   Future<String> sendLoginRequestInString(
       @Field("username") String username,
       @Field("password") String password,
+      // for captcha services
+      @Field("seccodehash") String captchaHash,
+      @Field("seccodemodid") String captchaType,
+      @Field("seccodeverify") String verification
       );
 
   @GET("/api/mobile/index.php?version=4&module=forumindex")
@@ -80,8 +90,10 @@ abstract class MobileApiClient {
       @Field("tid") int tid,
       @Field("formhash") String formhash,
       @Field("message") String message,
+      // for captcha services
       @Field("seccodehash") String captchaHash,
-      @Field("seccodeverify") String captchaCode,
+      @Field("seccodemodid") String captchaType,
+      @Field("seccodeverify") String verification
 
       // @Body() Map<String, dynamic> map
       );
@@ -93,8 +105,10 @@ abstract class MobileApiClient {
       @Field("tid") int tid,
       @Field("formhash") String formhash,
       @Field("message") String message,
+      // for captcha services
       @Field("seccodehash") String captchaHash,
-      @Field("seccodeverify") String captchaCode,
+      @Field("seccodemodid") String captchaType,
+      @Field("seccodeverify") String verification
       );
 
   @GET("/api/mobile/index.php?version=4&module=mynotelist")
@@ -108,4 +122,7 @@ abstract class MobileApiClient {
 
   @GET("/api/mobile/index.php?version=4&module=hotthread")
   Future<HotThreadResult> hotThreadResult(@Query("page") int page);
+
+  @GET("/api/mobile/index.php?version=4&module=secure")
+  Future<CaptchaResult> captchaResult(@Query("type") String type);
 }

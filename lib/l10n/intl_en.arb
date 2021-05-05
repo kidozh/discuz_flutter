@@ -248,5 +248,6 @@
   "deleteViewHistoryWarnContent": "Clearing operation is irrecoverable, please take care.",
   "undo": "Undo",
   "trustHostTitle": "Trusted host",
-  "trustHostActionText": "Trust this host"
+  "trustHostActionText": "Trust this host",
+  "captchaRequired": "Captcha required."
 }

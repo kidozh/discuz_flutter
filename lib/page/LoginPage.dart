@@ -10,6 +10,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -60,8 +61,9 @@ class _LoginFormFieldState
   ButtonState _loginState = ButtonState.idle;
   final TextEditingController _accountController = new TextEditingController();
   final TextEditingController _passwdController = new TextEditingController();
+  final CaptchaController _captchaController = new CaptchaController(new CaptchaFields("", "login", ""));
 
-  _LoginFormFieldState(@required this.discuz, this.accountName){}
+  _LoginFormFieldState(this.discuz, this.accountName){}
 
   @override
   void initState() {
@@ -70,20 +72,34 @@ class _LoginFormFieldState
     if(accountName !=null){
       _accountController.text = accountName!;
     }
+
+    _initDio();
+
+
+  }
+
+  Dio _dio = Dio();
+  late PersistCookieJar cookieJar;
+
+  void _initDio() async{
+    cookieJar = await NetworkUtils.getTemporaryCookieJar();
+    setState(() {
+
+      _dio.interceptors.add(CookieManager(cookieJar));
+    });
+
   }
 
   void _verifyAccountAndPassword() async{
     // create a dio
-    var dio =  Dio();
-    PersistCookieJar cookieJar = await NetworkUtils.getTemporaryCookieJar();
-    dio.interceptors.add(CookieManager(cookieJar));
+
 
     String account = _accountController.text;
     String password = _passwdController.text;
 
     log("Recv url " + discuz.baseURL);
     // check the availability
-    final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
+    final client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
     setState(() {
       _loginState = ButtonState.loading;
     });
@@ -94,8 +110,18 @@ class _LoginFormFieldState
     //   log(res.toString());
     //
     // });
+    CaptchaFields? captchaFields = _captchaController.value;
+    String captchaHash = "";
+    String captchaMod = "";
+    String verification = "";
+    if(captchaFields!= null && captchaFields.captchaFormHash.isNotEmpty){
+      captchaHash = captchaFields.captchaFormHash;
+      verification = captchaFields.verification;
+      captchaMod = "member::logging";
+      print("Captcha hash: ${captchaFields.captchaFormHash} verification: ${captchaFields.verification}");
+    }
 
-    client.sendLoginRequest(account,password).then((value) async {
+    client.sendLoginRequest(account,password,captchaHash,captchaMod,verification).then((value) async {
       setState(() {
 
         error = "";
@@ -135,14 +161,15 @@ class _LoginFormFieldState
         }
       }
       else{
+        _captchaController.reloadCaptcha();
         setState(() {
           error = value.errorResult!.content;
           _loginState = ButtonState.fail;
         });
       }
 
-    })
-        .catchError((onError) {
+    }).catchError((onError) {
+      _captchaController.reloadCaptcha();
       setState(() {
         error = onError.toString();
         _loginState = ButtonState.fail;
@@ -222,6 +249,7 @@ class _LoginFormFieldState
                 obscureText: true,
                 validator: ValidationBuilder().required().build()
               ),
+              CaptchaWidget(_dio, discuz, null, "login",captchaController: _captchaController,),
               if (error.isNotEmpty)
                 Column(
                   children: [
