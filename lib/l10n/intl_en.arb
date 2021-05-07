@@ -249,5 +249,24 @@
   "undo": "Undo",
   "trustHostTitle": "Trusted host",
   "trustHostActionText": "Trust this host",
-  "captchaRequired": "Captcha required."
+  "captchaRequired": "Captcha required.",
+  "submitPoll": "Submit ({checked} / {allowed})",
+  "@submitPoll": {
+    "placeholders": {
+      "checked": {},
+      "allowed": {}
+    }
+  },
+  "pollExpireAt": "Poll will expire at {time}.",
+  "@pollExpireAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "pollVoterNumber": "{people} have voted.",
+  "@pollVoterNumber": {
+    "placeholders": {
+      "people": {}
+    }
+  }
 }

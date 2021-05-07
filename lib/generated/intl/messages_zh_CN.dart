@@ -27,20 +27,26 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m3(uri) => "无法打开此链接 : ${uri}.";
 
-  static String m4(pos) => "第${pos}层";
+  static String m4(time) => "该投票将于${time}过期.";
 
-  static String m5(username, discuzName) =>
+  static String m5(people) => "共有${people}人已投票.";
+
+  static String m6(pos) => "第${pos}层";
+
+  static String m7(username, discuzName) =>
       "用户 ${username} 已成功登录到 ${discuzName}。";
 
-  static String m6(discuzName) => "登录至 ${discuzName}";
+  static String m8(discuzName) => "登录至 ${discuzName}";
 
-  static String m7(title) => "成功删除历史记录 ${title}.";
+  static String m9(checked, allowed) => "投票 (${checked} / ${allowed})";
 
-  static String m8(filename) => "成功下载文件： ${filename}。";
+  static String m10(title) => "成功删除历史记录 ${title}.";
 
-  static String m9(username) => "用户 ${username} 已失效";
+  static String m11(filename) => "成功下载文件： ${filename}。";
 
-  static String m10(uid) => "用户编号： ${uid}";
+  static String m12(username) => "用户 ${username} 已失效";
+
+  static String m13(uid) => "用户编号： ${uid}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -181,7 +187,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "phoenixDescribe": MessageLookupByLibrary.simpleMessage("金色校园"),
         "phone": MessageLookupByLibrary.simpleMessage("电话"),
         "policy": MessageLookupByLibrary.simpleMessage("条款"),
-        "postPosition": m4,
+        "pollExpireAt": m4,
+        "pollVoterNumber": m5,
+        "postPosition": m6,
         "preparingPage": MessageLookupByLibrary.simpleMessage("正在准备此界面。"),
         "privacyPolicy": MessageLookupByLibrary.simpleMessage("隐私政策"),
         "progressButtonLoginFailed":
@@ -232,15 +240,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "sendReply": MessageLookupByLibrary.simpleMessage("回帖"),
         "sendReplyHint": MessageLookupByLibrary.simpleMessage("说些什么吧。"),
         "settingTitle": MessageLookupByLibrary.simpleMessage("设置"),
-        "signInSuccessTitle": m5,
-        "signInTitle": m6,
+        "signInSuccessTitle": m7,
+        "signInTitle": m8,
         "signInViaBrowser": MessageLookupByLibrary.simpleMessage("使用网页登录"),
         "signUp": MessageLookupByLibrary.simpleMessage("注册"),
         "spaceDescribe": MessageLookupByLibrary.simpleMessage("Flare动画 - 星空"),
         "star": MessageLookupByLibrary.simpleMessage("Star 项目"),
         "style": MessageLookupByLibrary.simpleMessage("样式"),
-        "successfullyDeleteViewHistoryContent": m7,
-        "successfullyDownloadFiles": m8,
+        "submitPoll": m9,
+        "successfullyDeleteViewHistoryContent": m10,
+        "successfullyDownloadFiles": m11,
         "supportAuthor": MessageLookupByLibrary.simpleMessage("支持作者"),
         "supportAuthorDescribe":
             MessageLookupByLibrary.simpleMessage("你的支持是我最大的动力"),
@@ -261,8 +270,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "updateAt": MessageLookupByLibrary.simpleMessage("更新于 %T"),
         "userExpiredSubtitle":
             MessageLookupByLibrary.simpleMessage("当前用户授权已过期，你需要重新登录以重新激活此用户。"),
-        "userExpiredTitle": m9,
-        "userIdTitle": m10,
+        "userExpiredTitle": m12,
+        "userIdTitle": m13,
         "userProfile": MessageLookupByLibrary.simpleMessage("个人中心"),
         "userProfileDescribe":
             MessageLookupByLibrary.simpleMessage("带回弹效果的个人中心"),

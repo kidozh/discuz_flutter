@@ -609,6 +609,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.11.0"
+  percent_indicator:
+    dependency: "direct main"
+    description:
+      name: percent_indicator
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.1"
   permission_handler:
     dependency: "direct main"
     description:
@@ -658,6 +665,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.0"
+  polls:
+    dependency: "direct main"
+    description:
+      name: polls
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.1"
   pool:
     dependency: transitive
     description:

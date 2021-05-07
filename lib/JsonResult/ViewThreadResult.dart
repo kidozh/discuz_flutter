@@ -1,3 +1,5 @@
+import 'package:discuz_flutter/converter/SecondToDateTimeConverter.dart';
+import 'package:discuz_flutter/converter/StringToBoolConverter.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:discuz_flutter/converter/StringToIntConverter.dart';
@@ -57,6 +59,9 @@ class ThreadVariables extends BaseVariableResult{
     }
 
   }
+  // for poll
+  @JsonKey(name: "special_poll",defaultValue: null)
+  Poll? poll;
 
 
   ThreadVariables();
@@ -89,11 +94,11 @@ class DetailedThreadInfo {
   @JsonKey(name:"authorid")
   @StringToIntConverter()
   int authorId = 0;
-  @JsonKey(name:"sortid")
+  @JsonKey(name:"sortid",defaultValue: "0")
   String sortId = "0";
   // @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="s")
   // public Date lastPostTime = new Date();
-  @JsonKey(name:"lastpost")
+  @JsonKey(name:"lastpost",defaultValue: "")
   String lastPostTimeString = "";
   @JsonKey(defaultValue: "")
   String lastposter= "";
@@ -224,5 +229,53 @@ class RewriteRule{
   RewriteRule();
   factory RewriteRule.fromJson(Map<String, dynamic> json) => _$RewriteRuleFromJson(json);
   Map<String, dynamic> toJson() => _$RewriteRuleToJson(this);
+
+}
+
+@JsonSerializable(ignoreUnannotated: true)
+class Poll{
+  @JsonKey(name:"expirations")
+  @SecondToDateTimeConverter()
+  DateTime expiredAt = DateTime.now();
+  @JsonKey(name: "multiple")
+  @StringToBoolConverter()
+  bool multipleChoice = true;
+  @JsonKey(name: "maxchoices")
+  @StringToIntConverter()
+  int maxChoice = 1;
+  @JsonKey(name:"visiblepoll")
+  @StringToBoolConverter()
+  bool isResultVisible = true;
+  @JsonKey(name: "allowvote")
+  @StringToBoolConverter()
+  bool allowVote = true;
+  @JsonKey(name: "voterscount")
+  @StringToIntConverter()
+  int votersCount = 0;
+
+  @JsonKey(name: "polloptions", defaultValue: {})
+  Map<String, PollOption> pollOptionsMap = {};
+
+  Poll();
+  factory Poll.fromJson(Map<String, dynamic> json) => _$PollFromJson(json);
+  Map<String, dynamic> toJson() => _$PollToJson(this);
+}
+
+@JsonSerializable(ignoreUnannotated: true)
+class PollOption{
+  @JsonKey(name: "polloptionid")
+  @StringToIntConverter()
+  int id = 0;
+  @JsonKey(name: "polloption",defaultValue: "")
+  String name = "";
+  @JsonKey(name: "votes")
+  @StringToIntConverter()
+  int voteNumber = 0;
+  @JsonKey(defaultValue: "EEEEEE")
+  String color = "";
+  PollOption();
+
+  factory PollOption.fromJson(Map<String, dynamic> json) => _$PollOptionFromJson(json);
+  Map<String, dynamic> toJson() => _$PollOptionToJson(this);
 
 }

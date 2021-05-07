@@ -28,11 +28,11 @@ Post _$PostFromJson(Map<String, dynamic> json) {
     ..position =
         const StringToIntConverter().fromJson(json['position'] as String?)
     ..groupId =
-        const StringToIntConverter().fromJson(json['groupid'] as String?) ?? 0
+        const StringToIntConverter().fromJson(json['groupid'] as String?)
     ..memberStatus =
         const StringToIntConverter().fromJson(json['memberstatus'] as String?)
-    ..publishAt =
-        const SecondToDateTimeConverter().fromJson(json['dbdateline'] as String)
+    ..publishAt = const SecondToDateTimeConverter()
+        .fromJson(json['dbdateline'] as String?)
     ..attachmentIdList = (json['attachlist'] as List<dynamic>?)
             ?.map((e) => e as String)
             .toList() ??
@@ -78,7 +78,7 @@ Attachment _$AttachmentFromJson(Map<String, dynamic> json) {
     ..dateline = json['dateline'] as String? ?? ''
     ..filename = json['filename'] as String? ?? ''
     ..fileSize =
-        const StringToIntConverter().fromJson(json['filesize'] as String?) ?? 0
+        const StringToIntConverter().fromJson(json['filesize'] as String?)
     ..remote =
         const StringToBoolConverter().fromJson(json['remote'] as String?) ??
             false
@@ -89,13 +89,13 @@ Attachment _$AttachmentFromJson(Map<String, dynamic> json) {
         const StringToBoolConverter().fromJson(json['payed'] as String?) ??
             false
     ..readPerm =
-        const StringToIntConverter().fromJson(json['readperm'] as String?) ?? 0
+        const StringToIntConverter().fromJson(json['readperm'] as String?)
     ..aidEncode = json['aidencode'] as String? ?? ''
     ..url = json['url'] as String? ?? ''
     ..downloads =
-        const StringToIntConverter().fromJson(json['downloads'] as String?) ?? 0
-    ..updateAt =
-        const SecondToDateTimeConverter().fromJson(json['dbdateline'] as String)
+        const StringToIntConverter().fromJson(json['downloads'] as String?)
+    ..updateAt = const SecondToDateTimeConverter()
+        .fromJson(json['dbdateline'] as String?)
     ..attachmentSizeString = json['attachsize'] as String
     ..attachmentPathName = json['attachment'] as String? ?? ''
     ..ext = json['ext'] as String? ?? '';

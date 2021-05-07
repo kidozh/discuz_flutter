@@ -27,20 +27,26 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m3(uri) => "Unable to open the uri: ${uri}.";
 
-  static String m4(pos) => "# ${pos}";
+  static String m4(time) => "Poll will expire at ${time}.";
 
-  static String m5(username, discuzName) =>
+  static String m5(people) => "${people} have voted.";
+
+  static String m6(pos) => "# ${pos}";
+
+  static String m7(username, discuzName) =>
       "User ${username} sign in at ${discuzName} successfully.";
 
-  static String m6(discuzName) => "Sign in at ${discuzName}";
+  static String m8(discuzName) => "Sign in at ${discuzName}";
 
-  static String m7(title) => "Successfully remove view history ${title}.";
+  static String m9(checked, allowed) => "Submit (${checked} / ${allowed})";
 
-  static String m8(filename) => "Successfully download file: ${filename}.";
+  static String m10(title) => "Successfully remove view history ${title}.";
 
-  static String m9(username) => "User ${username} expired";
+  static String m11(filename) => "Successfully download file: ${filename}.";
 
-  static String m10(uid) => "UserId ${uid}";
+  static String m12(username) => "User ${username} expired";
+
+  static String m13(uid) => "UserId ${uid}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -207,7 +213,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Golden campus"),
         "phone": MessageLookupByLibrary.simpleMessage("Phone"),
         "policy": MessageLookupByLibrary.simpleMessage("Our policy"),
-        "postPosition": m4,
+        "pollExpireAt": m4,
+        "pollVoterNumber": m5,
+        "postPosition": m6,
         "preparingPage":
             MessageLookupByLibrary.simpleMessage("Preparing the page."),
         "privacyPolicy": MessageLookupByLibrary.simpleMessage("Privacy policy"),
@@ -269,8 +277,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "sendReply": MessageLookupByLibrary.simpleMessage("Send"),
         "sendReplyHint": MessageLookupByLibrary.simpleMessage("Say something"),
         "settingTitle": MessageLookupByLibrary.simpleMessage("Settings"),
-        "signInSuccessTitle": m5,
-        "signInTitle": m6,
+        "signInSuccessTitle": m7,
+        "signInTitle": m8,
         "signInViaBrowser":
             MessageLookupByLibrary.simpleMessage("Sign in by web"),
         "signUp": MessageLookupByLibrary.simpleMessage("Sign up"),
@@ -278,8 +286,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Flare animation - Space"),
         "star": MessageLookupByLibrary.simpleMessage("Star project"),
         "style": MessageLookupByLibrary.simpleMessage("Style"),
-        "successfullyDeleteViewHistoryContent": m7,
-        "successfullyDownloadFiles": m8,
+        "submitPoll": m9,
+        "successfullyDeleteViewHistoryContent": m10,
+        "successfullyDownloadFiles": m11,
         "supportAuthor":
             MessageLookupByLibrary.simpleMessage("Support the author"),
         "supportAuthorDescribe": MessageLookupByLibrary.simpleMessage(
@@ -306,8 +315,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "updateAt": MessageLookupByLibrary.simpleMessage("Update at %T"),
         "userExpiredSubtitle": MessageLookupByLibrary.simpleMessage(
             "The current user is expired, some function may not work."),
-        "userExpiredTitle": m9,
-        "userIdTitle": m10,
+        "userExpiredTitle": m12,
+        "userIdTitle": m13,
         "userProfile": MessageLookupByLibrary.simpleMessage("User Profile"),
         "userProfileDescribe": MessageLookupByLibrary.simpleMessage(
             "User Profile with the springback effect"),

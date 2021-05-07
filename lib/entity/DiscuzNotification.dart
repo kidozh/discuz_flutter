@@ -7,7 +7,7 @@ part 'DiscuzNotification.g.dart';
 
 @JsonSerializable()
 class DiscuzNotification{
-  @JsonKey(defaultValue: 0)
+
   @StringToIntConverter()
   int id = 0, uid = 0;
   String type = "";
@@ -15,7 +15,7 @@ class DiscuzNotification{
   String isNew = "0";
   @JsonKey(required: false, defaultValue: "")
   String author = "";
-  @JsonKey(name: "authorid",defaultValue: 0)
+  @JsonKey(name: "authorid")
   @StringToIntConverter()
   int authorId = 0;
   String note = "";

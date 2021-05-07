@@ -25,8 +25,8 @@ ForumThread _$ForumThreadFromJson(Map<String, dynamic> json) {
     ..special = json['special'] as String
     ..attachment = json['attachment'] as String
     ..replyCredit = json['replycredit'] as String
-    ..dbdatelineMinutes =
-        const SecondToDateTimeConverter().fromJson(json['dbdateline'] as String)
+    ..dbdatelineMinutes = const SecondToDateTimeConverter()
+        .fromJson(json['dbdateline'] as String?)
     ..dblastpostMinutes = json['dblastpost'] as String
     ..reply = (json['reply'] as List<dynamic>?)
             ?.map((e) => ShortReply.fromJson(e as Map<String, dynamic>))

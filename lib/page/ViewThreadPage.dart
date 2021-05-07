@@ -19,6 +19,7 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
+import 'package:discuz_flutter/widget/PollWidget.dart';
 import 'package:discuz_flutter/widget/PostWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -233,6 +234,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
       Map<String, dynamic> resultJson = jsonDecode(value);
       ViewThreadResult result = ViewThreadResult.fromJson(resultJson);
       log(result.threadVariables.member_username);
+      log("Poll ${result.threadVariables.poll}");
     });
 
     client.viewThreadResult(tid, _page).then((value) {
@@ -446,6 +448,9 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
                     (context, index) {
                       return Column(
                         children: [
+                          // insert poll here
+                          if(index == 0 && _viewThreadResult.threadVariables.poll!= null)
+                            PollWidget(_viewThreadResult.threadVariables.poll!),
                           PostWidget(
                               discuz,
                               _postList[index],

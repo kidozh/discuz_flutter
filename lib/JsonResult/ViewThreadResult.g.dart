@@ -55,7 +55,10 @@ ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) {
         : RewriteRule.fromJson(
             json['setting_rewriterule'] as Map<String, dynamic>)
     ..ppp = json['ppp'] as String
-    ..page = json['page'] as String? ?? '1';
+    ..page = json['page'] as String? ?? '1'
+    ..poll = json['special_poll'] == null
+        ? null
+        : Poll.fromJson(json['special_poll'] as Map<String, dynamic>);
 }
 
 Map<String, dynamic> _$ThreadVariablesToJson(ThreadVariables instance) =>
@@ -77,6 +80,7 @@ Map<String, dynamic> _$ThreadVariablesToJson(ThreadVariables instance) =>
       'setting_rewriterule': instance.rewriteRule,
       'ppp': instance.ppp,
       'page': instance.page,
+      'special_poll': instance.poll,
     };
 
 DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) {
@@ -90,8 +94,8 @@ DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) {
     ..price = const StringToIntConverter().fromJson(json['price'] as String?)
     ..authorId =
         const StringToIntConverter().fromJson(json['authorid'] as String?)
-    ..sortId = json['sortid'] as String
-    ..lastPostTimeString = json['lastpost'] as String
+    ..sortId = json['sortid'] as String? ?? '0'
+    ..lastPostTimeString = json['lastpost'] as String? ?? ''
     ..lastposter = json['lastposter'] as String? ?? ''
     ..displayOrder = json['displayorder'] as String
     ..views = json['views'] as String
@@ -172,4 +176,54 @@ Map<String, dynamic> _$RewriteRuleToJson(RewriteRule instance) =>
       'home_blog': instance.homeBlog,
       'forum_archiver': instance.forumArchiver,
       'plugin': instance.plugin,
+    };
+
+Poll _$PollFromJson(Map<String, dynamic> json) {
+  return Poll()
+    ..expiredAt = const SecondToDateTimeConverter()
+        .fromJson(json['expirations'] as String?)
+    ..multipleChoice =
+        const StringToBoolConverter().fromJson(json['multiple'] as String?)
+    ..maxChoice =
+        const StringToIntConverter().fromJson(json['maxchoices'] as String?)
+    ..isResultVisible =
+        const StringToBoolConverter().fromJson(json['visiblepoll'] as String?)
+    ..allowVote =
+        const StringToBoolConverter().fromJson(json['allowvote'] as String?)
+    ..votersCount =
+        const StringToIntConverter().fromJson(json['voterscount'] as String?)
+    ..pollOptionsMap = (json['polloptions'] as Map<String, dynamic>?)?.map(
+          (k, e) => MapEntry(k, PollOption.fromJson(e as Map<String, dynamic>)),
+        ) ??
+        {};
+}
+
+Map<String, dynamic> _$PollToJson(Poll instance) => <String, dynamic>{
+      'expirations':
+          const SecondToDateTimeConverter().toJson(instance.expiredAt),
+      'multiple': const StringToBoolConverter().toJson(instance.multipleChoice),
+      'maxchoices': const StringToIntConverter().toJson(instance.maxChoice),
+      'visiblepoll':
+          const StringToBoolConverter().toJson(instance.isResultVisible),
+      'allowvote': const StringToBoolConverter().toJson(instance.allowVote),
+      'voterscount': const StringToIntConverter().toJson(instance.votersCount),
+      'polloptions': instance.pollOptionsMap,
+    };
+
+PollOption _$PollOptionFromJson(Map<String, dynamic> json) {
+  return PollOption()
+    ..id =
+        const StringToIntConverter().fromJson(json['polloptionid'] as String?)
+    ..name = json['polloption'] as String? ?? ''
+    ..voteNumber =
+        const StringToIntConverter().fromJson(json['votes'] as String?)
+    ..color = json['color'] as String? ?? 'EEEEEE';
+}
+
+Map<String, dynamic> _$PollOptionToJson(PollOption instance) =>
+    <String, dynamic>{
+      'polloptionid': const StringToIntConverter().toJson(instance.id),
+      'polloption': instance.name,
+      'votes': const StringToIntConverter().toJson(instance.voteNumber),
+      'color': instance.color,
     };

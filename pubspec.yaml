@@ -61,6 +61,8 @@ dependencies:
   permission_handler: ^7.0.0
   open_file: ^3.2.0
   flutter_slidable:
+  polls: ^1.0.1
+  percent_indicator: ^3.0.1
 
 
 

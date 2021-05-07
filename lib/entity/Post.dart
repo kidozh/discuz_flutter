@@ -36,7 +36,7 @@ class Post{
   @JsonKey(name:"adminid",ignore: true, required: false)
   // @StringToIntConverter()
   String adminId = "0";
-  @JsonKey(name:"groupid",defaultValue: 0)
+  @JsonKey(name:"groupid")
   @StringToIntConverter()
   int groupId = 0;
   @JsonKey(name:"memberstatus")
@@ -87,7 +87,7 @@ class Attachment{
   @JsonKey(defaultValue: "")
   String dateline = "", filename = "";
   @StringToIntConverter()
-  @JsonKey(name:"filesize",defaultValue: 0)
+  @JsonKey(name:"filesize")
   int fileSize = 0;
   @JsonKey(defaultValue: false)
   @StringToBoolConverter()
@@ -95,7 +95,7 @@ class Attachment{
   // @JsonKey(defaultValue: "")
   // String description = "";
   @StringToIntConverter()
-  @JsonKey(name:"readperm",defaultValue: 0)
+  @JsonKey(name:"readperm")
   int readPerm = 0;
   // @StringToIntConverter()
   // @JsonKey(name:"picid",defaultValue: 0)
@@ -105,9 +105,9 @@ class Attachment{
   @JsonKey(defaultValue: "")
   String url = "";
   @StringToIntConverter()
-  @JsonKey(name:"downloads",defaultValue: 0)
+  @JsonKey(name:"downloads")
   int downloads = 0;
-  @JsonKey(name: "dbdateline",required: false)
+  @JsonKey(name: "dbdateline")
   @SecondToDateTimeConverter()
   DateTime updateAt = DateTime.now();
   @JsonKey(name: "attachsize")

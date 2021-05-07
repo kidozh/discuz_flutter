@@ -32,10 +32,10 @@ HotThread _$HotThreadFromJson(Map<String, dynamic> json) {
     ..digest = const StringToBoolConverter().fromJson(json['digest'] as String?)
     ..typeHtml = json['typehtml'] as String? ?? ''
     ..typeName = json['typename'] as String? ?? ''
-    ..publishAt =
-        const SecondToDateTimeConverter().fromJson(json['dbdateline'] as String)
+    ..publishAt = const SecondToDateTimeConverter()
+        .fromJson(json['dbdateline'] as String?)
     ..lastPostAt = const SecondToDateTimeConverter()
-        .fromJson(json['dblastpost'] as String);
+        .fromJson(json['dblastpost'] as String?);
 }
 
 Map<String, dynamic> _$HotThreadToJson(HotThread instance) => <String, dynamic>{

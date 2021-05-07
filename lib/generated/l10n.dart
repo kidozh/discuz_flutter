@@ -1999,6 +1999,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Submit ({checked} / {allowed})`
+  String submitPoll(Object checked, Object allowed) {
+    return Intl.message(
+      'Submit ($checked / $allowed)',
+      name: 'submitPoll',
+      desc: '',
+      args: [checked, allowed],
+    );
+  }
+
+  /// `Poll will expire at {time}.`
+  String pollExpireAt(Object time) {
+    return Intl.message(
+      'Poll will expire at $time.',
+      name: 'pollExpireAt',
+      desc: '',
+      args: [time],
+    );
+  }
+
+  /// `{people} have voted.`
+  String pollVoterNumber(Object people) {
+    return Intl.message(
+      '$people have voted.',
+      name: 'pollVoterNumber',
+      desc: '',
+      args: [people],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

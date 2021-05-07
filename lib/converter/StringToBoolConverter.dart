@@ -7,7 +7,7 @@ class StringToBoolConverter implements JsonConverter<bool, String?> {
 
   @override
   bool fromJson(String? json) {
-    if(json == null || json == "0"){
+    if(json == null || json.isEmpty || json == "0"){
       return false;
     }
     else{
