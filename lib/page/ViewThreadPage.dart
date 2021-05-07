@@ -488,11 +488,11 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
                               ButtonState.idle: IconedButton(
                                   text: S.of(context).sendReply,
                                   icon: Icon(Icons.send, color: Colors.white),
-                                  color: Theme.of(context).primaryColor),
+                                  color: Theme.of(context).accentColor),
                               ButtonState.loading: IconedButton(
                                   text:
                                       S.of(context).progressButtonReplySending,
-                                  color: Theme.of(context).primaryColorDark),
+                                  color: Theme.of(context).accentColor),
                               ButtonState.fail: IconedButton(
                                   text: S.of(context).progressButtonReplyFailed,
                                   icon: Icon(Icons.cancel, color: Colors.white),

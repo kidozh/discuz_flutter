@@ -43,7 +43,7 @@ Post _$PostFromJson(Map<String, dynamic> json) {
         []
     ..groupIconId = json['groupiconid'] as String? ?? '0'
     ..attachmentMapper =
-        const AttachmentConverter().fromJson(json['attachments']) ?? {};
+        const AttachmentConverter().fromJson(json['attachments']);
 }
 
 Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{

@@ -55,7 +55,7 @@ class Post{
   @JsonKey(name:"groupiconid",defaultValue: "0")
   String groupIconId = "0";
 
-  @JsonKey(name:"attachments",defaultValue: {}, required: false)
+  @JsonKey(name:"attachments", required: false)
   @AttachmentConverter()
   Map<String, Attachment> attachmentMapper  = {};
 
