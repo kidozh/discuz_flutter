@@ -29,7 +29,7 @@ class ManageAccountPage extends StatelessWidget{
       floatingActionButton: FloatingActionButton(
         onPressed: () async{
           await Navigator.push(context,
-              MaterialPageRoute(builder: (context) => LoginPage(key: UniqueKey(), discuz: discuz)));
+              MaterialPageRoute(builder: (context) => LoginPage(discuz, null)));
         },
         tooltip: S.of(context).addNewDiscuz,
         child: Icon(Icons.add),
@@ -117,7 +117,7 @@ class ManageAccountState extends State<ManageAccountStateWidget>{
               icon: Icons.refresh,
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => LoginPage(key: UniqueKey(), discuz: discuz, accountName: user.username)));
+                    MaterialPageRoute(builder: (context) => LoginPage(discuz, user.username)));
               },
             ),
           ],

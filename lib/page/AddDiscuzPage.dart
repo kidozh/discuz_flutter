@@ -14,7 +14,6 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:form_validator/form_validator.dart';
 
 class AddDiscuzPage extends StatelessWidget {
-  AddDiscuzPage({Key? key}):super(key: key);
 
   @override
   Widget build(BuildContext context) {

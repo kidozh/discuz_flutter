@@ -26,7 +26,7 @@ class LoginPage extends StatelessWidget {
   late final Discuz discuz;
   String? accountName;
 
-  LoginPage({required Key key, required this.discuz, this.accountName}): super(key: key);
+  LoginPage(this.discuz, this.accountName);
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class LoginForumFieldStatefulWidget extends StatefulWidget {
   late final Discuz discuz;
   String? accountName;
 
-  LoginForumFieldStatefulWidget(@required this.discuz, this.accountName){}
+  LoginForumFieldStatefulWidget(this.discuz, this.accountName);
   @override
   _LoginFormFieldState createState() {
     // TODO: implement createState

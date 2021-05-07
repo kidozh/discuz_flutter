@@ -153,7 +153,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                       int tid = int.tryParse(tidString)!;
                       await Navigator.push(
                           context.buildContext,
-                          MaterialPageRoute(builder: (context) => ViewThreadPage(discuz: discuz, user: user, tid: tid, key: UniqueKey(),))
+                          MaterialPageRoute(builder: (context) => ViewThreadPage( discuz,user, tid))
                       );
                       return;
                     }
@@ -169,7 +169,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                       int tid = int.tryParse(tidString)!;
                       await Navigator.push(
                           context.buildContext,
-                          MaterialPageRoute(builder: (context) => ViewThreadPage(discuz: discuz, user: user, tid: tid, key: UniqueKey(),))
+                          MaterialPageRoute(builder: (context) => ViewThreadPage(discuz,user,tid))
                       );
                       return;
                     }
@@ -185,7 +185,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                       int fid = int.tryParse(fidString)!;
                       await Navigator.push(
                           context.buildContext,
-                          MaterialPageRoute(builder: (context) => DisplayForumPage(discuz: discuz, user: user, fid: fid, key: UniqueKey(),))
+                          MaterialPageRoute(builder: (context) => DisplayForumPage(discuz,user, fid))
                       );
                       return;
                     }
@@ -200,7 +200,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
             if(fid!=null && int.tryParse(fid) != null){
               await Navigator.push(
                   context.buildContext,
-                  MaterialPageRoute(builder: (context) => DisplayForumPage(discuz: discuz, user: user, fid: int.tryParse(fid)!, key: UniqueKey(),))
+                  MaterialPageRoute(builder: (context) => DisplayForumPage(discuz, user, int.tryParse(fid)!))
               );
               return;
             }
@@ -210,7 +210,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
             if(tid!=null && int.tryParse(tid) != null){
               await Navigator.push(
                   context.buildContext,
-                  MaterialPageRoute(builder: (context) => ViewThreadPage(discuz: discuz, user: user, tid: int.tryParse(tid)!, key: UniqueKey(),))
+                  MaterialPageRoute(builder: (context) => ViewThreadPage(discuz, user, int.tryParse(tid)!))
               );
               return;
             }

@@ -39,13 +39,11 @@ class ViewThreadPage extends StatelessWidget {
   late final User? user;
   int tid = 0;
 
-  ViewThreadPage({Key? key, required this.discuz, this.user, required this.tid})
-      : super(key: key);
+  ViewThreadPage(this.discuz, this.user, this.tid);
 
   @override
   Widget build(BuildContext context) {
-    return ViewThreadStatefulWidget(
-        key: UniqueKey(), discuz: discuz, user: user, tid: tid);
+    return ViewThreadStatefulWidget( discuz, user, tid);
   }
 }
 
@@ -54,9 +52,7 @@ class ViewThreadStatefulWidget extends StatefulWidget {
   late final User? user;
   int tid = 0;
 
-  ViewThreadStatefulWidget(
-      {Key? key, required this.discuz, this.user, required this.tid})
-      : super(key: key);
+  ViewThreadStatefulWidget(this.discuz, this.user, this.tid);
 
   @override
   _ViewThreadState createState() {

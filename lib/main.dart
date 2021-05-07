@@ -157,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => AddDiscuzPage(key: UniqueKey())));
+                  builder: (context) => AddDiscuzPage()));
         }));
 
     await showDialog<Null>(
@@ -187,13 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Provider.of<DiscuzAndUserNotifier>(context, listen: false)
                     .discuz;
             if (discuz != null) {
-              await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => LoginPage(
-                            discuz: discuz,
-                            key: UniqueKey(),
-                          )));
+              await Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage(discuz, null)));
             }
           },
         ),

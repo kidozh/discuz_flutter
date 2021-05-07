@@ -39,13 +39,11 @@ class DisplayForumPage extends StatelessWidget {
   late final User? user;
   int fid = 0;
 
-  DisplayForumPage(
-      {Key? key, required this.discuz, this.user, required this.fid})
-      : super(key: key);
+  DisplayForumPage(this.discuz, this.user, this.fid);
 
   @override
   Widget build(BuildContext context) {
-    return DisplayForumStatefulWidget(key: this.key, discuz: discuz, user: user, fid: fid);
+    return DisplayForumStatefulWidget(discuz,user, fid);
   }
 }
 
@@ -54,9 +52,9 @@ class DisplayForumStatefulWidget extends StatefulWidget {
   late final User? user;
   int fid = 0;
 
-  DisplayForumStatefulWidget(
-      {Key? key, required this.discuz, this.user, required this.fid})
-      : super(key: key);
+
+
+  DisplayForumStatefulWidget(this.discuz, this.user, this.fid);
 
   @override
   _DisplayForumState createState() {

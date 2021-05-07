@@ -89,7 +89,7 @@ class ForumThreadWidget extends StatelessWidget{
         onTap: () async {
           await Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ViewThreadPage(discuz: _discuz, user: _user, tid: _forumThread.getTid(), key: UniqueKey(),))
+              MaterialPageRoute(builder: (context) => ViewThreadPage(_discuz,_user, _forumThread.getTid()))
           );
         },
 

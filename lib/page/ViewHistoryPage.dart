@@ -186,13 +186,13 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
                           if(viewHistory.type == "thread"){
                             await Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => ViewThreadPage(discuz: discuz, user: user, tid: viewHistory.identification, key: UniqueKey(),))
+                                MaterialPageRoute(builder: (context) => ViewThreadPage(discuz,user, viewHistory.identification))
                             );
                           }
                           else if(viewHistory.type == "forum"){
                             await Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => DisplayForumPage(discuz: discuz, user: user, fid: viewHistory.identification, key: UniqueKey(),))
+                                MaterialPageRoute(builder: (context) => DisplayForumPage(discuz, user, viewHistory.identification))
                             );
                           }
                         },

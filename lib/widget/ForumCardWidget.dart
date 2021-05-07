@@ -32,7 +32,7 @@ class ForumCardWidget extends StatelessWidget{
       onTap: () async{
         await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => DisplayForumPage(discuz: _discuz, user: _user, fid: _forum.getFid(), key: UniqueKey(),))
+            MaterialPageRoute(builder: (context) => DisplayForumPage(_discuz, _user, _forum.getFid()))
         );
       },
     );
