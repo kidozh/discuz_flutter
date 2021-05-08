@@ -125,4 +125,12 @@ abstract class MobileApiClient {
 
   @GET("/api/mobile/index.php?version=4&module=secure")
   Future<CaptchaResult> captchaResult(@Query("type") String type);
+
+  @POST("/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes")
+  @FormUrlEncoded()
+  Future<ApiResult> votePoll(@Query("fid") int fid,@Query("tid") int tid,@Field("formhash") String formHash, @Field("pollanswers") List<int> checkedOptionId);
+
+  @POST("/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes")
+  @FormUrlEncoded()
+  Future<String> votePollRaw(@Query("fid") int fid,@Query("tid") int tid,@Field("formhash") String formHash, @Field("pollanswers") List<int> checkedOptionId);
 }

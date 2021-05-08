@@ -79,15 +79,6 @@ Attachment _$AttachmentFromJson(Map<String, dynamic> json) {
     ..filename = json['filename'] as String? ?? ''
     ..fileSize =
         const StringToIntConverter().fromJson(json['filesize'] as String?)
-    ..remote =
-        const StringToBoolConverter().fromJson(json['remote'] as String?) ??
-            false
-    ..thumb =
-        const StringToBoolConverter().fromJson(json['thumb'] as String?) ??
-            false
-    ..payed =
-        const StringToBoolConverter().fromJson(json['payed'] as String?) ??
-            false
     ..readPerm =
         const StringToIntConverter().fromJson(json['readperm'] as String?)
     ..aidEncode = json['aidencode'] as String? ?? ''
@@ -106,9 +97,6 @@ Map<String, dynamic> _$AttachmentToJson(Attachment instance) =>
       'dateline': instance.dateline,
       'filename': instance.filename,
       'filesize': const StringToIntConverter().toJson(instance.fileSize),
-      'remote': const StringToBoolConverter().toJson(instance.remote),
-      'thumb': const StringToBoolConverter().toJson(instance.thumb),
-      'payed': const StringToBoolConverter().toJson(instance.payed),
       'readperm': const StringToIntConverter().toJson(instance.readPerm),
       'aidencode': instance.aidEncode,
       'url': instance.url,

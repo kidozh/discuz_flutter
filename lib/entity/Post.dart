@@ -89,7 +89,6 @@ class Attachment{
   @StringToIntConverter()
   @JsonKey(name:"filesize")
   int fileSize = 0;
-  @JsonKey(defaultValue: false)
   @StringToBoolConverter()
   bool remote = false, thumb = false, payed = false;
   // @JsonKey(defaultValue: "")

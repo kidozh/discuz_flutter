@@ -1,36 +1,55 @@
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
+import 'package:discuz_flutter/client/MobileApiClient.dart';
+import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class PollWidget extends StatelessWidget {
   Poll poll;
-  PollWidget(this.poll);
+  String formhash;
+  int tid;
+  int fid;
+  PollWidget(this.poll, this.formhash, this.tid, this.fid);
+
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return PollStatefulWidget(poll);
+    return PollStatefulWidget(poll, formhash, tid,fid);
   }
 }
 
 class PollStatefulWidget extends StatefulWidget{
   Poll poll;
-  PollStatefulWidget(this.poll);
+  String formhash;
+  int tid;
+  int fid;
+  PollStatefulWidget(this.poll, this.formhash, this.tid, this.fid);
   @override
   State<PollStatefulWidget> createState() {
     // TODO: implement createState
-    return PollState(poll);
+    return PollState(poll,formhash,tid,fid);
   }
 
 }
 
 class PollState extends State<PollStatefulWidget>{
   Poll poll;
-  PollState(this.poll);
+  String formhash;
+  int tid;
+  int fid;
+  PollState(this.poll, this.formhash, this.tid, this.fid);
   List<int> checkedOption = [];
+
+
 
   List<PollOption> getPollOptions() {
     List<PollOption> pollOptions = [];
@@ -54,6 +73,63 @@ class PollState extends State<PollStatefulWidget>{
       PollOption option = pollOption[index];
       return option.voteNumber.toDouble() / totalVote;
     }
+  }
+
+  void _vote() async{
+    List<PollOption> options = getPollOptions();
+    List<int> checkedPosition = checkedOption;
+    if(checkedPosition.length> poll.maxChoice || checkedOption.isEmpty){
+      return;
+    }
+    List<int> checkedOptionIds = [];
+    for(var i in checkedPosition){
+      checkedOptionIds.add(options[i].id);
+    }
+    // send it
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    Discuz discuz =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
+    final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
+    print("Checked id ${checkedOptionIds}");
+    // client.votePollRaw(tid, this.formhash, checkedOptionIds).then((value){
+    //   print(value);
+    // });
+
+    client.votePoll(fid,tid, this.formhash, checkedOptionIds).then((value){
+      if(value.errorResult != null && value.errorResult!.key == "thread_poll_succeed"){
+
+        // it's a success
+        // add proportion
+        Map<String, PollOption> pollOptionMap = poll.pollOptionsMap;
+        for(var entry in pollOptionMap.entries){
+          PollOption pollOption = entry.value;
+          if(checkedOptionIds.contains(pollOption.id)){
+            pollOption.voteNumber += 1;
+          }
+
+        }
+
+        setState(() {
+          // refresh it
+          poll.allowVote = false;
+          poll = poll;
+
+        });
+        EasyLoading.showSuccess("${value.errorResult!.content} (${value.errorResult!.key})");
+      }
+      else{
+        if(value.errorResult!= null){
+          EasyLoading.showError("${value.errorResult!.content} (${value.errorResult!.key})");
+        }
+        else{
+          EasyLoading.showError(S.of(context).error);
+        }
+
+      }
+    });
+
   }
 
   @override
@@ -102,6 +178,10 @@ class PollState extends State<PollStatefulWidget>{
                         ],
                       ),
                       onTap: (){
+                        // check whether it's simple choice
+                        if(!poll.allowVote){
+                          return;
+                        }
                         if(checkedOption.contains(index)){
                           // remove it
                           setState(() {
@@ -155,10 +235,10 @@ class PollState extends State<PollStatefulWidget>{
                         ),
                       ],
                     )),
-
+                if(poll.allowVote)
                 ElevatedButton(
-                    onPressed: checkedOption.length > poll.maxChoice? null :() {
-
+                    onPressed: checkedOption.length > poll.maxChoice || checkedOption.isEmpty? null :() {
+                      _vote();
                     },
                     child: Text(S.of(context).submitPoll(checkedOption.length, poll.maxChoice)))
               ],

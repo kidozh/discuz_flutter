@@ -18,3 +18,4 @@ class ApiResult extends BaseResult{
 
   factory ApiResult.fromJson(Map<String, dynamic> json) => _$ApiResultFromJson(json);
 }
+

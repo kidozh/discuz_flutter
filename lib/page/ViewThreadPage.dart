@@ -450,7 +450,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
                         children: [
                           // insert poll here
                           if(index == 0 && _viewThreadResult.threadVariables.poll!= null)
-                            PollWidget(_viewThreadResult.threadVariables.poll!),
+                            PollWidget(_viewThreadResult.threadVariables.poll!,_viewThreadResult.threadVariables.formHash,tid,_viewThreadResult.threadVariables.fid),
                           PostWidget(
                               discuz,
                               _postList[index],
