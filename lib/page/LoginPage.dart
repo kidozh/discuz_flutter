@@ -7,6 +7,7 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:discuz_flutter/JsonResult/LoginResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/page/LoginByWebviewPage.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
@@ -329,7 +330,8 @@ class _LoginFormFieldState
                           icon: Icon(Icons.open_in_browser),
                           label: Text(S.of(context).signInViaBrowser),
                             onPressed: (){
-
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) => LoginByWebviewPage(discuz)));
                             }, ),
                       ),
                       SizedBox(

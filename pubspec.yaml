@@ -66,12 +66,14 @@ dependencies:
 
 
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: any
   retrofit_generator: any
   floor_generator: ^1.0.1
+
 
 
 # For information on the generic Dart part of this file, see the

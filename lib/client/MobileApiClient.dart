@@ -1,5 +1,7 @@
 import 'package:discuz_flutter/JsonResult/ApiResult.dart';
+import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:discuz_flutter/JsonResult/CaptchaResult.dart';
+import 'package:discuz_flutter/JsonResult/CheckLoginResult.dart';
 import 'package:discuz_flutter/JsonResult/CheckResult.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
@@ -133,4 +135,8 @@ abstract class MobileApiClient {
   @POST("/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes")
   @FormUrlEncoded()
   Future<String> votePollRaw(@Query("fid") int fid,@Query("tid") int tid,@Field("formhash") String formHash, @Field("pollanswers") List<int> checkedOptionId);
+
+  @GET("/api/mobile/index.php?version=4&module=login")
+  Future<CheckLoginResult> checkLoginResult();
+
 }
