@@ -269,5 +269,8 @@
       "people": {}
     }
   },
-  "unableToVerifyAuthStatus": "Unable to verify your auth status"
+  "unableToVerifyAuthStatus": "Unable to verify your auth status",
+  "loginByWebTitle": "How to login by web?",
+  "loginByWebMessage": "Please login via webpage then press the floating button on bottom-right to save the authentication to the device.",
+  "loginByWebHttpWarn": "Please be aware that you are browsing a HTTP-served webpage, and it may be modified by a third-party entity. You should take caution in sending your information via the protocol. Consider using HTTPS for safety."
 }

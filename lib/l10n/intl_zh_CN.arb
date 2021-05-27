@@ -269,5 +269,8 @@
       "people": {}
     }
   },
-  "unableToVerifyAuthStatus": "无法验证登陆状态"
+  "unableToVerifyAuthStatus": "无法验证登陆状态",
+  "loginByWebTitle": "使用网页登录提醒",
+  "loginByWebMessage": "请在网页中完成登录，当您在网页中完成了登录过程后，请轻触右下方的浮动按钮完成账号录入操作。",
+  "loginByWebHttpWarn": "您正在使用不安全的HTTP连接，此界面有可能被第三方所劫持。您在此界面输入的信息有可能泄露。强烈建议您使用HTTPS协议访问此界面。"
 }

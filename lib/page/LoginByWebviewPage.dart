@@ -51,6 +51,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
     super.initState();
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
     webviewCookieManager.clearCookies();
+    _triggerNotificationDialog();
   }
 
   @override
@@ -61,7 +62,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         actions: <Widget>[
           NavigationControls(_controller.future),
-          SampleMenu(_controller.future),
+          // SampleMenu(_controller.future),
         ],
       ),
       // We're using a Builder here so we have a context that is below the Scaffold
@@ -133,6 +134,43 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           }
           return Container();
         });
+  }
+
+  void _triggerNotificationDialog() async{
+    print("show dialog");
+    await Future.delayed(Duration(seconds: 1));
+    await showDialog(context: context, builder: (context){
+      return AlertDialog(
+        title: Text(S.of(context).loginByWebTitle),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(S.of(context).loginByWebMessage),
+            if(discuz.baseURL.startsWith("http://"))
+              Container(
+                color: Colors.red.shade50,
+                padding: EdgeInsets.symmetric(vertical: 4.0,horizontal: 4.0),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Icon(Icons.warning,color: Colors.red,),
+                    ),
+                    Expanded(child: Text(S.of(context).loginByWebHttpWarn,style: TextStyle(color: Colors.red,)))
+                  ],
+                ),
+              )
+
+
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: (){
+            Navigator.of(context).pop(false);
+          }, child: Text(S.of(context).ok))
+        ],
+      );
+    });
   }
 
   void _checkUserLogined() async{

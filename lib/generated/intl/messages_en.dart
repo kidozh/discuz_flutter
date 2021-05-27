@@ -165,6 +165,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Whether to turn on load"),
         "loaded": MessageLookupByLibrary.simpleMessage("Load completed"),
         "loading": MessageLookupByLibrary.simpleMessage("Loading..."),
+        "loginByWebHttpWarn": MessageLookupByLibrary.simpleMessage(
+            "Please be aware that you are browsing a HTTP-served webpage, and it may be modified by a third-party entity. You should take caution in sending your information via the protocol. Consider using HTTPS for safety."),
+        "loginByWebMessage": MessageLookupByLibrary.simpleMessage(
+            "Please login via webpage then press the floating button on bottom-right to save the authentication to the device."),
+        "loginByWebTitle":
+            MessageLookupByLibrary.simpleMessage("How to login by web?"),
         "loginSubtitle": MessageLookupByLibrary.simpleMessage("Add a new user"),
         "loginTitle": MessageLookupByLibrary.simpleMessage("Login"),
         "manageAccount": MessageLookupByLibrary.simpleMessage("Manage account"),

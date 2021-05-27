@@ -2039,6 +2039,36 @@ class S {
       args: [],
     );
   }
+
+  /// `How to login by web?`
+  String get loginByWebTitle {
+    return Intl.message(
+      'How to login by web?',
+      name: 'loginByWebTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please login via webpage then press the floating button on bottom-right to save the authentication to the device.`
+  String get loginByWebMessage {
+    return Intl.message(
+      'Please login via webpage then press the floating button on bottom-right to save the authentication to the device.',
+      name: 'loginByWebMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please be aware that you are browsing a HTTP-served webpage, and it may be modified by a third-party entity. You should take caution in sending your information via the protocol. Consider using HTTPS for safety.`
+  String get loginByWebHttpWarn {
+    return Intl.message(
+      'Please be aware that you are browsing a HTTP-served webpage, and it may be modified by a third-party entity. You should take caution in sending your information via the protocol. Consider using HTTPS for safety.',
+      name: 'loginByWebHttpWarn',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

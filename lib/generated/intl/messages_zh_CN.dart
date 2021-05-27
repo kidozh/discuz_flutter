@@ -145,6 +145,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "loadSwitchDescribe": MessageLookupByLibrary.simpleMessage("是否开启加载"),
         "loaded": MessageLookupByLibrary.simpleMessage("加载完成"),
         "loading": MessageLookupByLibrary.simpleMessage("正在加载..."),
+        "loginByWebHttpWarn": MessageLookupByLibrary.simpleMessage(
+            "您正在使用不安全的HTTP连接，此界面有可能被第三方所劫持。您在此界面输入的信息有可能泄露。强烈建议您使用HTTPS协议访问此界面。"),
+        "loginByWebMessage": MessageLookupByLibrary.simpleMessage(
+            "请在网页中完成登录，当您在网页中完成了登录过程后，请轻触右下方的浮动按钮完成账号录入操作。"),
+        "loginByWebTitle": MessageLookupByLibrary.simpleMessage("使用网页登录提醒"),
         "loginSubtitle": MessageLookupByLibrary.simpleMessage("添加一个新的用户"),
         "loginTitle": MessageLookupByLibrary.simpleMessage("登录"),
         "manageAccount": MessageLookupByLibrary.simpleMessage("管理账号"),

@@ -128,13 +128,13 @@ abstract class MobileApiClient {
   @GET("/api/mobile/index.php?version=4&module=secure")
   Future<CaptchaResult> captchaResult(@Query("type") String type);
 
-  @POST("/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes")
+  @POST("/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes&action=votepoll")
   @FormUrlEncoded()
-  Future<ApiResult> votePoll(@Query("fid") int fid,@Query("tid") int tid,@Field("formhash") String formHash, @Field("pollanswers") List<int> checkedOptionId);
+  Future<ApiResult> votePoll(@Query("fid") int fid,@Query("tid") int tid,@Field("formhash") String formHash, @Field("pollanswers[]") List<int> checkedOptionId);
 
-  @POST("/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes")
+  @POST("/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes&action=votepoll")
   @FormUrlEncoded()
-  Future<String> votePollRaw(@Query("fid") int fid,@Query("tid") int tid,@Field("formhash") String formHash, @Field("pollanswers") List<int> checkedOptionId);
+  Future<String> votePollRaw(@Query("fid") int fid,@Query("tid") int tid,@Field("formhash") String formHash, @Field("pollanswers[]") List<int> checkedOptionId);
 
   @GET("/api/mobile/index.php?version=4&module=login")
   Future<CheckLoginResult> checkLoginResult();
