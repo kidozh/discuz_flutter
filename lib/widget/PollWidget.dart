@@ -193,6 +193,10 @@ class PollState extends State<PollStatefulWidget>{
                             checkedOption.add(index);
                           });
                         }
+                        // check if options is multiple
+                        if (poll.maxChoice == 1){
+                          _vote();
+                        }
 
                         print("object");
                       },
@@ -235,7 +239,7 @@ class PollState extends State<PollStatefulWidget>{
                         ),
                       ],
                     )),
-                if(poll.allowVote)
+                if(poll.allowVote && poll.maxChoice > 1)
                 ElevatedButton(
                     onPressed: checkedOption.length > poll.maxChoice || checkedOption.isEmpty? null :() {
                       _vote();

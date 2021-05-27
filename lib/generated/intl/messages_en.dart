@@ -169,6 +169,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Please be aware that you are browsing a HTTP-served webpage, and it may be modified by a third-party entity. You should take caution in sending your information via the protocol. Consider using HTTPS for safety."),
         "loginByWebMessage": MessageLookupByLibrary.simpleMessage(
             "Please login via webpage then press the floating button on bottom-right to save the authentication to the device."),
+        "loginByWebNotSupported": MessageLookupByLibrary.simpleMessage(
+            "Current operation system doesn\'t support webview."),
         "loginByWebTitle":
             MessageLookupByLibrary.simpleMessage("How to login by web?"),
         "loginSubtitle": MessageLookupByLibrary.simpleMessage("Add a new user"),

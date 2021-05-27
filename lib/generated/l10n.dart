@@ -2069,6 +2069,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Current operation system doesn't support webview.`
+  String get loginByWebNotSupported {
+    return Intl.message(
+      'Current operation system doesn\'t support webview.',
+      name: 'loginByWebNotSupported',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
