@@ -311,6 +311,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "trustHostActionText":
             MessageLookupByLibrary.simpleMessage("Trust this host"),
         "trustHostTitle": MessageLookupByLibrary.simpleMessage("Trusted host"),
+        "unableToVerifyAuthStatus": MessageLookupByLibrary.simpleMessage(
+            "Unable to verify your auth status"),
         "undo": MessageLookupByLibrary.simpleMessage("Undo"),
         "updateAt": MessageLookupByLibrary.simpleMessage("Update at %T"),
         "userExpiredSubtitle": MessageLookupByLibrary.simpleMessage(

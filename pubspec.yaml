@@ -63,6 +63,7 @@ dependencies:
   flutter_slidable:
   polls: ^1.0.1
   percent_indicator: ^3.0.1
+  webview_cookie_manager: ^2.0.0
 
 
 

@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart' as DioCookieManager;
 import 'package:discuz_flutter/client/MobileApiClient.dart';
+import 'package:webview_cookie_manager/webview_cookie_manager.dart';
+
 
 class LoginByWebviewPage extends StatelessWidget{
 
@@ -38,6 +40,7 @@ class LoginByWebviewStatefulWidget extends StatefulWidget {
 
 class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
   final Completer<WebViewController> _controller = Completer<WebViewController>();
+  final webviewCookieManager = WebviewCookieManager();
 
   final Discuz discuz;
 
@@ -47,6 +50,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
   void initState() {
     super.initState();
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
+    webviewCookieManager.clearCookies();
   }
 
   @override
@@ -66,8 +70,9 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
         return WebView(
           initialUrl: discuz.baseURL+"/member.php?mod=logging&action=login",
           javascriptMode: JavascriptMode.unrestricted,
-          onWebViewCreated: (WebViewController webViewController) {
+          onWebViewCreated: (WebViewController webViewController) async{
             _controller.complete(webViewController);
+
           },
           onProgress: (int progress) {
             print("WebView is loading (progress : $progress%)");
@@ -86,8 +91,12 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           onPageStarted: (String url) {
             print('Page started loading: $url');
           },
-          onPageFinished: (String url) {
+          onPageFinished: (String url) async{
             print('Page finished loading: $url');
+            final gotCookies = await webviewCookieManager.getCookies(url);
+            for (var item in gotCookies) {
+              print(item);
+            }
           },
           gestureNavigationEnabled: true,
         );
@@ -115,11 +124,9 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           if (controller.hasData) {
             return FloatingActionButton(
               onPressed: () async {
-                final String url = (await controller.data!.currentUrl())!;
+                // final String url = (await controller.data!.currentUrl())!;
                 // ignore: deprecated_member_use
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(content: Text('Favorited $url')),
-                );
+                _checkUserLogined();
               },
               child: const Icon(Icons.login),
             );
@@ -131,13 +138,19 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
   void _checkUserLogined() async{
     Dio _dio = Dio();
     var controller = await _controller.future;
-    final String cookies = await controller.evaluateJavascript('document.cookie');
+    // transfer from webview to cookiejar
+    // split by ;
+    List<Cookie> webviewCookie = await webviewCookieManager.getCookies(discuz.baseURL);
 
     PersistCookieJar cookieJar = await NetworkUtils.getTemporaryCookieJar();
+    // transfer from cookie string
+    print("webcookie list ${webviewCookie}");
+    cookieJar.saveFromResponse(Uri.parse(discuz.baseURL), webviewCookie);
 
     _dio.interceptors.add(DioCookieManager.CookieManager(cookieJar));
 
     final client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
+
     client.checkLoginResult().then((value) async {
       if(value.variables.member_uid!=0){
         // it's a success
@@ -159,14 +172,21 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           print("cookies ${cookies}");
           savedCookieJar.saveFromResponse(Uri.parse(discuz.baseURL), cookies);
           // pop the activity
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(S.of(context).signInSuccessTitle(user.username, discuz.siteName))));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(S.of(context).signInSuccessTitle(user.username, discuz.siteName))));
           Navigator.pop(context);
         }
         catch(e,s){
-          print("${e},${s}");
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
         }
       }
+      else{
+        print("Get auth ${value.variables.auth} ${value.variables.formHash}");
+        // trigger a alert
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(S.of(context).unableToVerifyAuthStatus)));
+      }
+    })
+    .catchError((e,s){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
     });
 
   }

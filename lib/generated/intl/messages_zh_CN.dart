@@ -266,6 +266,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "topBouncingDescribe": MessageLookupByLibrary.simpleMessage("顶部可越界"),
         "trustHostActionText": MessageLookupByLibrary.simpleMessage("信任此域名"),
         "trustHostTitle": MessageLookupByLibrary.simpleMessage("主机域名白名单"),
+        "unableToVerifyAuthStatus":
+            MessageLookupByLibrary.simpleMessage("无法验证登陆状态"),
         "undo": MessageLookupByLibrary.simpleMessage("撤销"),
         "updateAt": MessageLookupByLibrary.simpleMessage("更新于 %T"),
         "userExpiredSubtitle":

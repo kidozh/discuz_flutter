@@ -2029,6 +2029,16 @@ class S {
       args: [people],
     );
   }
+
+  /// `Unable to verify your auth status`
+  String get unableToVerifyAuthStatus {
+    return Intl.message(
+      'Unable to verify your auth status',
+      name: 'unableToVerifyAuthStatus',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

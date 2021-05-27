@@ -268,5 +268,6 @@
     "placeholders": {
       "people": {}
     }
-  }
+  },
+  "unableToVerifyAuthStatus": "Unable to verify your auth status"
 }

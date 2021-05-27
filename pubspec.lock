@@ -1055,6 +1055,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.0"
+  webview_cookie_manager:
+    dependency: "direct main"
+    description:
+      name: webview_cookie_manager
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.0"
   webview_flutter:
     dependency: "direct main"
     description:
