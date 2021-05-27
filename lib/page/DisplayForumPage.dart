@@ -15,12 +15,14 @@ import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
+import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
 import 'package:discuz_flutter/widget/GoogleBannerAdWidget.dart';
 import 'package:floor/floor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -32,8 +34,6 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
-
 class DisplayForumPage extends StatelessWidget {
   late final Discuz discuz;
   late final User? user;
@@ -43,7 +43,7 @@ class DisplayForumPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DisplayForumStatefulWidget(discuz,user, fid);
+    return DisplayForumStatefulWidget(discuz, user, fid);
   }
 }
 
@@ -51,8 +51,6 @@ class DisplayForumStatefulWidget extends StatefulWidget {
   late final Discuz discuz;
   late final User? user;
   int fid = 0;
-
-
 
   DisplayForumStatefulWidget(this.discuz, this.user, this.fid);
 
@@ -104,8 +102,6 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
   // 底部回弹
   bool _bottomBouncing = true;
 
-
-
   @override
   void initState() {
     // TODO: implement initState
@@ -116,7 +112,6 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
     // init ad
   }
 
-
   void _invalidateContent() {
     setState(() {
       _page = 1;
@@ -124,10 +119,11 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
     _loadForumContent();
   }
 
-  void _saveViewHistory(ForumDetail forumDetail) async{
+  void _saveViewHistory(ForumDetail forumDetail) async {
     // check if needed
-    bool allowViewHistory = await UserPreferencesUtils.getRecordHistoryEnabled();
-    if(!allowViewHistory){
+    bool allowViewHistory =
+        await UserPreferencesUtils.getRecordHistoryEnabled();
+    if (!allowViewHistory) {
       historySaved = true;
       return;
     }
@@ -136,7 +132,17 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
     final db = await DBHelper.getAppDb();
     ViewHistoryDao viewHistoryDao = db.viewHistoryDao;
 
-    ViewHistory insertViewHistory = ViewHistory(null,forumDetail.name, forumDetail.description, forumDetail.rules, "forum", forumDetail.fid, "", 0, discuz.id!, DateTime.now());
+    ViewHistory insertViewHistory = ViewHistory(
+        null,
+        forumDetail.name,
+        forumDetail.description,
+        forumDetail.rules,
+        "forum",
+        forumDetail.fid,
+        "",
+        0,
+        discuz.id!,
+        DateTime.now());
     int primaryKey = await viewHistoryDao.insertViewHistory(insertViewHistory);
     print("save history with primary key ${primaryKey}");
     historySaved = true;
@@ -145,7 +151,8 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
   Future<void> _loadForumContent() async {
     // check the availability
     log("Base url ${discuz.baseURL} ${_page}");
-    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     var dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
     setState(() {
@@ -158,7 +165,7 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
     // });
 
     client.displayForumResult(fid.toString(), _page).then((value) {
-      if(!historySaved && _page == 1){
+      if (!historySaved && _page == 1) {
         _saveViewHistory(value.discuzIndexVariables.forum);
       }
 
@@ -173,9 +180,6 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
         }
         _page += 1;
       });
-
-
-
 
       if (!_enableControlFinish) {
         _controller.resetLoadState();
@@ -192,21 +196,22 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
         EasyLoading.showError(value.getErrorString()!);
       }
 
-      if(value.errorResult!= null){
+      if (value.errorResult != null) {
         setState(() {
-          _error = DiscuzError(value.errorResult!.key, value.errorResult!.content);
+          _error =
+              DiscuzError(value.errorResult!.key, value.errorResult!.content);
         });
-      }
-      else{
+      } else {
         setState(() {
           _error = null;
         });
       }
 
       // check with user
-      if(user != null && value.discuzIndexVariables.member_uid != user.uid){
+      if (user != null && value.discuzIndexVariables.member_uid != user.uid) {
         setState(() {
-          _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle);
+          _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
+              S.of(context).userExpiredSubtitle);
         });
       }
 
@@ -242,148 +247,291 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
 
     return Scaffold(
       appBar: AppBar(
-        title: _displayForumResult == null ? Text(S.of(context).forumDisplayTitle): Text(_displayForumResult!.discuzIndexVariables.forum.name),
+        title: _displayForumResult == null
+            ? Text(S.of(context).forumDisplayTitle)
+            : Text(_displayForumResult!.discuzIndexVariables.forum.name),
         centerTitle: true,
+        actions: [
+          Row(
+            children: [
+              IconButton(
+                  icon: Icon(Icons.filter_alt_outlined),
+                  onPressed: () {
+                    _showInformationBottomSheet(context);
+                  }),
+              IconButton(
+                  icon: Icon(Icons.info_outlined),
+                  onPressed: () {
+                    _showInformationBottomSheet(context);
+                  })
+            ],
+          )
+        ],
       ),
       body: Column(
         children: [
-          if(_error!=null)
-            ErrorCard(_error!.key, _error!.content,(){_controller.callRefresh();}),
+          if (_error != null)
+            ErrorCard(_error!.key, _error!.content, () {
+              _controller.callRefresh();
+            }),
           Expanded(
               child: Container(
-                //height: _direction == Axis.vertical ? double.infinity : 210.0,
-                child: EasyRefresh.custom(
-                  enableControlFinishRefresh: true,
-                  enableControlFinishLoad: true,
-                  taskIndependence: _taskIndependence,
-                  controller: _controller,
-                  scrollController: _scrollController,
-                  reverse: _reverse,
-                  scrollDirection: _direction,
-                  topBouncing: _topBouncing,
-                  bottomBouncing: _bottomBouncing,
-                  header: _enableRefresh
-                      ? ClassicalHeader(
-                    enableInfiniteRefresh: false,
-                    bgColor: _headerFloat
-                        ? Theme.of(context).primaryColor
-                        : Colors.transparent,
-                    // infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
-                    textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
-                    float: _headerFloat,
-                    enableHapticFeedback: _vibration,
-                    refreshText: S.of(context).pullToRefresh,
-                    refreshReadyText: S.of(context).releaseToRefresh,
-                    refreshingText: S.of(context).refreshing,
-                    refreshedText: S.of(context).refreshed,
-                    refreshFailedText: S.of(context).refreshFailed,
-                    noMoreText: S.of(context).noMore,
-                    infoText: S.of(context).updateAt,
-                  )
-                      : null,
-                  footer: _enableLoad
-                      ? ClassicalFooter(
-                    enableInfiniteLoad: _enableInfiniteLoad,
-                    textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
-                    enableHapticFeedback: _vibration,
-                    loadText: S.of(context).pushToLoad,
-                    loadReadyText: S.of(context).releaseToLoad,
-                    loadingText: S.of(context).loading,
-                    loadedText: S.of(context).loaded,
-                    loadFailedText: S.of(context).loadFailed,
-                    noMoreText: S.of(context).noMore,
-                    infoText: S.of(context).updateAt,
-                  )
-                      : null,
-                  onRefresh: _enableRefresh
-                      ? () async {
-                    _invalidateContent();
-                    if (!_enableControlFinish) {
-                      _controller.resetLoadState();
-                      _controller.finishRefresh();
+            //height: _direction == Axis.vertical ? double.infinity : 210.0,
+            child: EasyRefresh.custom(
+              enableControlFinishRefresh: true,
+              enableControlFinishLoad: true,
+              taskIndependence: _taskIndependence,
+              controller: _controller,
+              scrollController: _scrollController,
+              reverse: _reverse,
+              scrollDirection: _direction,
+              topBouncing: _topBouncing,
+              bottomBouncing: _bottomBouncing,
+              header: _enableRefresh
+                  ? ClassicalHeader(
+                      enableInfiniteRefresh: false,
+                      bgColor: _headerFloat
+                          ? Theme.of(context).primaryColor
+                          : Colors.transparent,
+                      // infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
+                      textColor:
+                          Theme.of(context).textTheme.headline1!.color == null
+                              ? Theme.of(context).primaryColorDark
+                              : Theme.of(context).textTheme.headline1!.color!,
+                      float: _headerFloat,
+                      enableHapticFeedback: _vibration,
+                      refreshText: S.of(context).pullToRefresh,
+                      refreshReadyText: S.of(context).releaseToRefresh,
+                      refreshingText: S.of(context).refreshing,
+                      refreshedText: S.of(context).refreshed,
+                      refreshFailedText: S.of(context).refreshFailed,
+                      noMoreText: S.of(context).noMore,
+                      infoText: S.of(context).updateAt,
+                    )
+                  : null,
+              footer: _enableLoad
+                  ? ClassicalFooter(
+                      enableInfiniteLoad: _enableInfiniteLoad,
+                      textColor:
+                          Theme.of(context).textTheme.headline1!.color == null
+                              ? Theme.of(context).primaryColorDark
+                              : Theme.of(context).textTheme.headline1!.color!,
+                      enableHapticFeedback: _vibration,
+                      loadText: S.of(context).pushToLoad,
+                      loadReadyText: S.of(context).releaseToLoad,
+                      loadingText: S.of(context).loading,
+                      loadedText: S.of(context).loaded,
+                      loadFailedText: S.of(context).loadFailed,
+                      noMoreText: S.of(context).noMore,
+                      infoText: S.of(context).updateAt,
+                    )
+                  : null,
+              onRefresh: _enableRefresh
+                  ? () async {
+                      _invalidateContent();
+                      if (!_enableControlFinish) {
+                        _controller.resetLoadState();
+                        _controller.finishRefresh();
+                      }
                     }
-                  }
-                      : null,
-                  onLoad: _enableLoad
-                      ? () async {
-                    _loadForumContent();
-                  }
-                      : null,
-                  firstRefresh: true,
-                  firstRefreshWidget: Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    child: Center(
-                        child: SizedBox(
-                          height: 200.0,
-                          width: 300.0,
-                          child: Card(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Container(
-                                  width: 50.0,
-                                  height: 50.0,
-                                  child: SpinKitFadingCube(
-                                    color: Theme.of(context).primaryColor,
-                                    size: 25.0,
-                                  ),
-                                ),
-                                Container(
-                                  child: Text(S.of(context).loading),
-                                )
-                              ],
-                            ),
+                  : null,
+              onLoad: _enableLoad
+                  ? () async {
+                      _loadForumContent();
+                    }
+                  : null,
+              firstRefresh: true,
+              firstRefreshWidget: Container(
+                width: double.infinity,
+                height: double.infinity,
+                child: Center(
+                    child: SizedBox(
+                  height: 200.0,
+                  width: 300.0,
+                  child: Card(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          width: 50.0,
+                          height: 50.0,
+                          child: SpinKitFadingCube(
+                            color: Theme.of(context).primaryColor,
+                            size: 25.0,
                           ),
-                        )),
-                  ),
-                  slivers: <Widget>[
-                    SliverList(
-
-                      delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                          log("${_forumThreadList[index].subject} ${_forumThreadList}");
-                          if(index != 0 && index % 10 == 0){
-
-                            return Column(
-                              children: [
-                                Consumer<DiscuzAndUserNotifier>(builder: (context,discuzAndUser, child){
-                                  return ForumThreadWidget(
-                                      discuz, discuzAndUser.user, _forumThreadList[index], _displayForumResult!.discuzIndexVariables.threadType);
-                                }),
-
-                                Divider(),
-                                GoogleBannerAdWidget(),
-                                Divider()
-                              ],
-                            );
-                          }
-                          else{
-                            return Column(
-                              children: [
-                                ForumThreadWidget(
-                                    discuz, user, _forumThreadList[index],_displayForumResult!.discuzIndexVariables.threadType),
-                                Divider(),
-
-
-                              ],
-                            );
-                          }
-
-                        },
-                        childCount: _forumThreadList.length,
-
-                      ),
+                        ),
+                        Container(
+                          child: Text(S.of(context).loading),
+                        )
+                      ],
                     ),
-                  ],
+                  ),
+                )),
+              ),
+              slivers: <Widget>[
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      log("${_forumThreadList[index].subject} ${_forumThreadList}");
+                      if (index != 0 && index % 10 == 0) {
+                        return Column(
+                          children: [
+                            Consumer<DiscuzAndUserNotifier>(
+                                builder: (context, discuzAndUser, child) {
+                              return ForumThreadWidget(
+                                  discuz,
+                                  discuzAndUser.user,
+                                  _forumThreadList[index],
+                                  _displayForumResult!
+                                      .discuzIndexVariables.threadType);
+                            }),
+                            Divider(),
+                            GoogleBannerAdWidget(),
+                            Divider()
+                          ],
+                        );
+                      } else {
+                        return Column(
+                          children: [
+                            ForumThreadWidget(
+                                discuz,
+                                user,
+                                _forumThreadList[index],
+                                _displayForumResult!
+                                    .discuzIndexVariables.threadType),
+                            Divider(),
+                          ],
+                        );
+                      }
+                    },
+                    childCount: _forumThreadList.length,
+                  ),
                 ),
-              )),
+              ],
+            ),
+          )),
         ],
       ),
     );
+  }
 
+  void _showInformationBottomSheet(BuildContext context) {
+    if (_displayForumResult != null) {
+      showModalBottomSheet(
+          isScrollControlled: false,
+          context: context,
+          builder: (context) {
+            return Scrollable(
+              viewportBuilder: (BuildContext context, ViewportOffset position) {
+                return ListView(
+                  children: [
+                    Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.description_outlined,
+                            color: Colors.blue,
+                          ),
+                        ),
+                        Expanded(
+                            child: DiscuzHtmlWidget(
+                                discuz,
+                                _displayForumResult!
+                                    .discuzIndexVariables.forum.description))
+                      ],
+                    ),
+                    Divider(),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.rule,
+                            color: Colors.redAccent,
+                          ),
+                        ),
+                        Expanded(
+                            child: DiscuzHtmlWidget(
+                                discuz,
+                                _displayForumResult!
+                                    .discuzIndexVariables.forum.rules))
+                      ],
+                    )
+                  ],
+                );
+              },
+            );
+          });
+    }
+  }
 
+  void _showForumFilterBottomSheet(BuildContext context) {
+    if (_displayForumResult != null) {
+      showModalBottomSheet(
+          isScrollControlled: false,
+          context: context,
+          builder: (context) {
+            return Scrollable(
+              viewportBuilder: (BuildContext context, ViewportOffset position) {
+                return ListView(
+                  children: [
+                    Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.description_outlined,
+                            color: Colors.blue,
+                          ),
+                        ),
+                        Expanded(
+                            child: DiscuzHtmlWidget(
+                                discuz,
+                                _displayForumResult!
+                                    .discuzIndexVariables.forum.description))
+                      ],
+                    ),
+                    Divider(),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.rule,
+                            color: Colors.redAccent,
+                          ),
+                        ),
+                        Expanded(
+                            child: DiscuzHtmlWidget(
+                                discuz,
+                                _displayForumResult!
+                                    .discuzIndexVariables.forum.rules))
+                      ],
+                    )
+                  ],
+                );
+              },
+            );
+          });
+    }
+  }
+}
 
+class DisplayForumActionControls extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        IconButton(
+          icon: const Icon(Icons.favorite_border),
+          onPressed: () {
+            // add to favorite
+          },
+        ),
+        IconButton(icon: Icon(Icons.info_outlined), onPressed: () {})
+      ],
+    );
   }
 }
