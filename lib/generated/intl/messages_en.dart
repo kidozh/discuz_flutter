@@ -25,28 +25,33 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m2(filename) => "Downloading file: ${filename} in background.";
 
-  static String m3(uri) => "Unable to open the uri: ${uri}.";
+  static String m3(readAccess, star) =>
+      "Read Access: ${readAccess} and Star: ${star}";
 
-  static String m4(time) => "Poll will expire at ${time}.";
+  static String m4(uri) => "Unable to open the uri: ${uri}.";
 
-  static String m5(people) => "${people} have voted.";
+  static String m5(hour) => "${hour} hour(s).";
 
-  static String m6(pos) => "# ${pos}";
+  static String m6(time) => "Poll will expire at ${time}.";
 
-  static String m7(username, discuzName) =>
+  static String m7(people) => "${people} have voted.";
+
+  static String m8(pos) => "# ${pos}";
+
+  static String m9(username, discuzName) =>
       "User ${username} sign in at ${discuzName} successfully.";
 
-  static String m8(discuzName) => "Sign in at ${discuzName}";
+  static String m10(discuzName) => "Sign in at ${discuzName}";
 
-  static String m9(checked, allowed) => "Submit (${checked} / ${allowed})";
+  static String m11(checked, allowed) => "Submit (${checked} / ${allowed})";
 
-  static String m10(title) => "Successfully remove view history ${title}.";
+  static String m12(title) => "Successfully remove view history ${title}.";
 
-  static String m11(filename) => "Successfully download file: ${filename}.";
+  static String m13(filename) => "Successfully download file: ${filename}.";
 
-  static String m12(username) => "User ${username} expired";
+  static String m14(username) => "User ${username} expired";
 
-  static String m13(uid) => "UserId ${uid}";
+  static String m15(uid) => "UserId ${uid}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -69,6 +74,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Popup circle style"),
         "bezierHourGlassDescribe":
             MessageLookupByLibrary.simpleMessage("Popup HourGlass style"),
+        "bio": MessageLookupByLibrary.simpleMessage("Bio"),
+        "birthPlace": MessageLookupByLibrary.simpleMessage("Birth place"),
         "bobMinion": MessageLookupByLibrary.simpleMessage("Bob minion"),
         "bobMinionDescribe":
             MessageLookupByLibrary.simpleMessage("Cute yellow Minions"),
@@ -96,9 +103,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "controlFinish": MessageLookupByLibrary.simpleMessage("Control finish"),
         "controlFinishDescribe": MessageLookupByLibrary.simpleMessage(
             "Using Controller to End Asynchronous Tasks"),
+        "credit": MessageLookupByLibrary.simpleMessage("Credit"),
         "cupertinoDescribe": MessageLookupByLibrary.simpleMessage("ios style"),
         "customScrollViewDescribe": MessageLookupByLibrary.simpleMessage(
             "List with AppBar Folding, listener example"),
+        "customStatusTitle":
+            MessageLookupByLibrary.simpleMessage("Custom title"),
         "dashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
         "deleteAccount": MessageLookupByLibrary.simpleMessage("Delete"),
         "deleteAccountSuccessfully": m0,
@@ -113,6 +123,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "email": MessageLookupByLibrary.simpleMessage("E-Mail"),
         "emptyListDescription":
             MessageLookupByLibrary.simpleMessage("The content is empty"),
+        "emptyScreenTitle":
+            MessageLookupByLibrary.simpleMessage("The content here is empty."),
         "emptyWidget": MessageLookupByLibrary.simpleMessage("Empty widget"),
         "emptyWidgetDescribe": MessageLookupByLibrary.simpleMessage(
             "Show empty widget when there is no data"),
@@ -162,14 +174,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "forumFilterTimeToday": MessageLookupByLibrary.simpleMessage("Today"),
         "forumFilterTypeIdTitle":
             MessageLookupByLibrary.simpleMessage("Category"),
+        "friendNumber": MessageLookupByLibrary.simpleMessage("Friends"),
         "github": MessageLookupByLibrary.simpleMessage("Github"),
         "googleAdSubTitle": MessageLookupByLibrary.simpleMessage(
             "Advertisement provided by Google"),
         "googleAdTitle": MessageLookupByLibrary.simpleMessage("AD"),
+        "groupInfoDescription": m3,
+        "habit": MessageLookupByLibrary.simpleMessage("Habits"),
         "hangzhou": MessageLookupByLibrary.simpleMessage("China - HangZhou"),
         "headerFloat": MessageLookupByLibrary.simpleMessage("Header float"),
         "headerFloatDescribe": MessageLookupByLibrary.simpleMessage(
             "Header is displayed on the list"),
+        "homepage": MessageLookupByLibrary.simpleMessage("Homepage"),
         "horizontal": MessageLookupByLibrary.simpleMessage("Horizontal"),
         "incognitoSubtitle": MessageLookupByLibrary.simpleMessage(
             "You will browse the forum in incognito mode"),
@@ -183,10 +199,14 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Join the discussion"),
         "joinDiscussionDescribe":
             MessageLookupByLibrary.simpleMessage("Join the QQ group 554981921"),
+        "lastActivityTime":
+            MessageLookupByLibrary.simpleMessage("Last active at"),
+        "lastPostTime": MessageLookupByLibrary.simpleMessage("Last post at"),
+        "lastVisitTime": MessageLookupByLibrary.simpleMessage("Last visit at"),
         "linkHeader": MessageLookupByLibrary.simpleMessage("Header linker"),
         "linkHeaderDescribeDescribe": MessageLookupByLibrary.simpleMessage(
             "Customize Header with linker"),
-        "linkUnableToOpen": m3,
+        "linkUnableToOpen": m4,
         "listDirection": MessageLookupByLibrary.simpleMessage("List direction"),
         "listEmbed": MessageLookupByLibrary.simpleMessage("List embed"),
         "listEmbedDescribe": MessageLookupByLibrary.simpleMessage(
@@ -237,6 +257,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("No Discuz! BBS is selected"),
         "ok": MessageLookupByLibrary.simpleMessage("ok"),
         "old": MessageLookupByLibrary.simpleMessage("Old"),
+        "onlineHours": m5,
+        "onlineHoursTitle": MessageLookupByLibrary.simpleMessage("Online Time"),
         "openFileInExternalAppActionText":
             MessageLookupByLibrary.simpleMessage("Open"),
         "openFileInExternalAppContent": MessageLookupByLibrary.simpleMessage(
@@ -256,9 +278,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Golden campus"),
         "phone": MessageLookupByLibrary.simpleMessage("Phone"),
         "policy": MessageLookupByLibrary.simpleMessage("Our policy"),
-        "pollExpireAt": m4,
-        "pollVoterNumber": m5,
-        "postPosition": m6,
+        "pollExpireAt": m6,
+        "pollVoterNumber": m7,
+        "postNumber": MessageLookupByLibrary.simpleMessage("Post number"),
+        "postPosition": m8,
         "preparingPage":
             MessageLookupByLibrary.simpleMessage("Preparing the page."),
         "privacyPolicy": MessageLookupByLibrary.simpleMessage("Privacy policy"),
@@ -282,6 +305,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushToLoad": MessageLookupByLibrary.simpleMessage("Push to load"),
         "qqGroup": MessageLookupByLibrary.simpleMessage("QQ group"),
         "qqPay": MessageLookupByLibrary.simpleMessage("QQ Pay"),
+        "recentNote": MessageLookupByLibrary.simpleMessage("Recent note"),
         "recordHistoryOffDescription": MessageLookupByLibrary.simpleMessage(
             "App Won\'t record your browser history"),
         "recordHistoryOnDescription": MessageLookupByLibrary.simpleMessage(
@@ -297,11 +321,14 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Whether to turn on refresh"),
         "refreshed": MessageLookupByLibrary.simpleMessage("Refresh completed"),
         "refreshing": MessageLookupByLibrary.simpleMessage("Refreshing..."),
+        "registerAccountTime":
+            MessageLookupByLibrary.simpleMessage("Register at"),
         "releaseToLoad":
             MessageLookupByLibrary.simpleMessage("Release to load"),
         "releaseToRefresh":
             MessageLookupByLibrary.simpleMessage("Release to refresh"),
         "relogin": MessageLookupByLibrary.simpleMessage("relogin"),
+        "residentPlace": MessageLookupByLibrary.simpleMessage("Resident place"),
         "retry": MessageLookupByLibrary.simpleMessage("retry"),
         "reverse": MessageLookupByLibrary.simpleMessage("reverse"),
         "sample": MessageLookupByLibrary.simpleMessage("Sample"),
@@ -320,8 +347,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "sendReply": MessageLookupByLibrary.simpleMessage("Send"),
         "sendReplyHint": MessageLookupByLibrary.simpleMessage("Say something"),
         "settingTitle": MessageLookupByLibrary.simpleMessage("Settings"),
-        "signInSuccessTitle": m7,
-        "signInTitle": m8,
+        "signInSuccessTitle": m9,
+        "signInTitle": m10,
         "signInViaBrowser":
             MessageLookupByLibrary.simpleMessage("Sign in by web"),
         "signUp": MessageLookupByLibrary.simpleMessage("Sign up"),
@@ -329,9 +356,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Flare animation - Space"),
         "star": MessageLookupByLibrary.simpleMessage("Star project"),
         "style": MessageLookupByLibrary.simpleMessage("Style"),
-        "submitPoll": m9,
-        "successfullyDeleteViewHistoryContent": m10,
-        "successfullyDownloadFiles": m11,
+        "submitPoll": m11,
+        "successfullyDeleteViewHistoryContent": m12,
+        "successfullyDownloadFiles": m13,
         "supportAuthor":
             MessageLookupByLibrary.simpleMessage("Support the author"),
         "supportAuthorDescribe": MessageLookupByLibrary.simpleMessage(
@@ -360,11 +387,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "updateAt": MessageLookupByLibrary.simpleMessage("Update at %T"),
         "userExpiredSubtitle": MessageLookupByLibrary.simpleMessage(
             "The current user is expired, some function may not work."),
-        "userExpiredTitle": m12,
-        "userIdTitle": m13,
+        "userExpiredTitle": m14,
+        "userIdTitle": m15,
         "userProfile": MessageLookupByLibrary.simpleMessage("User Profile"),
         "userProfileDescribe": MessageLookupByLibrary.simpleMessage(
             "User Profile with the springback effect"),
+        "userProfileTitle":
+            MessageLookupByLibrary.simpleMessage("User Profiles"),
         "vertical": MessageLookupByLibrary.simpleMessage("Vertical"),
         "vibration": MessageLookupByLibrary.simpleMessage("vibration"),
         "vibrationDescribe": MessageLookupByLibrary.simpleMessage(

@@ -8,6 +8,7 @@ import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/JsonResult/HotThreadResult.dart';
 import 'package:discuz_flutter/JsonResult/LoginResult.dart';
 import 'package:discuz_flutter/JsonResult/UserDiscuzNotificationResult.dart';
+import 'package:discuz_flutter/JsonResult/UserProfileResult.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/entity/HotThread.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -139,4 +140,6 @@ abstract class MobileApiClient {
   @GET("/api/mobile/index.php?version=4&module=login")
   Future<CheckLoginResult> checkLoginResult();
 
+  @GET("/api/mobile/index.php?version=4&module=profile")
+  Future<UserProfileResult> userProfileResult(@Query("uid") int uid);
 }

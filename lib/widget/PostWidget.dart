@@ -5,6 +5,8 @@ import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/DisplayForumPage.dart';
+import 'package:discuz_flutter/page/UserProfilePage.dart';
+import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
@@ -13,6 +15,7 @@ import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
+import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -41,36 +44,44 @@ class PostWidget extends StatelessWidget {
                 child: Container(
                   width: 16.0,
                   height: 16.0,
-                  child: CachedNetworkImage(
-                    imageUrl: URLUtils.getAvatarURL(
-                        _discuz, _post.authorId.toString()),
-                    progressIndicatorBuilder:
-                        (context, url, downloadProgress) =>
-                            CircularProgressIndicator(
-                                value: downloadProgress.progress),
-                    errorWidget: (context, url, error) => Container(
-                      width: 16.0,
-                      height: 16.0,
-                      child: CircleAvatar(
-                        backgroundColor: CustomizeColor.getColorBackgroundById(
-                            _post.authorId),
-                        child: Text(
-                          _post.author.length != 0
-                              ? _post.author[0].toUpperCase()
-                              : S.of(context).anonymous,
-                          style: TextStyle(color: Colors.white, fontSize: 12),
+                  child: InkWell(
+                    child: CachedNetworkImage(
+                      imageUrl: URLUtils.getAvatarURL(
+                          _discuz, _post.authorId.toString()),
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) =>
+                          CircularProgressIndicator(
+                              value: downloadProgress.progress),
+                      errorWidget: (context, url, error) => Container(
+                        width: 16.0,
+                        height: 16.0,
+                        child: CircleAvatar(
+                          backgroundColor: CustomizeColor.getColorBackgroundById(
+                              _post.authorId),
+                          child: Text(
+                            _post.author.length != 0
+                                ? _post.author[0].toUpperCase()
+                                : S.of(context).anonymous,
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
+                        ),
+                      ),
+                      imageBuilder: (context, imageProvider) => Container(
+                        width: 16.0,
+                        height: 16.0,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              image: imageProvider, fit: BoxFit.cover),
                         ),
                       ),
                     ),
-                    imageBuilder: (context, imageProvider) => Container(
-                      width: 16.0,
-                      height: 16.0,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                            image: imageProvider, fit: BoxFit.cover),
-                      ),
-                    ),
+                    onTap: () async{
+                      User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+                      await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => UserProfilePage(_discuz,user, _post.authorId)));
+                    },
                   ),
                 ),
               ),

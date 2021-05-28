@@ -25,6 +25,9 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
+import 'BlankScreen.dart';
+import 'EmptyScreen.dart';
+
 class NotificationScreen extends StatelessWidget {
 
 
@@ -211,6 +214,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
       scrollDirection: _direction,
       topBouncing: _topBouncing,
       bottomBouncing: _bottomBouncing,
+      emptyWidget: _noteList.length == 0? EmptyScreen(): null,
       header: _enableRefresh? ClassicalHeader(
         enableInfiniteRefresh: false,
         bgColor:

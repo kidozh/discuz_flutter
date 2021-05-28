@@ -12,6 +12,7 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
+import 'package:discuz_flutter/screen/EmptyScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
@@ -206,6 +207,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       scrollDirection: _direction,
       topBouncing: _topBouncing,
       bottomBouncing: _bottomBouncing,
+      emptyWidget: _hotThreadList.length == 0? EmptyScreen(): null,
       header: _enableRefresh? ClassicalHeader(
         enableInfiniteRefresh: false,
         bgColor:

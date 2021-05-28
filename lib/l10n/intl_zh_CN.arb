@@ -293,5 +293,35 @@
   "forumFilterStatusTitle": "主题状态",
   "forumFilterStatusAll": "所有",
   "forumFilterStatusDigest": "精华帖",
-  "forumFilterStatusHot": "热门贴"
+  "forumFilterStatusHot": "热门贴",
+  "emptyScreenTitle": "当前列表为空。",
+  "userProfileTitle": "用户信息",
+  "groupInfoDescription": "阅读权限： {readAccess}， 等级： {star}",
+  "@groupInfoDescription": {
+    "placeholders": {
+      "readAccess": {},
+      "star": {}
+    }
+  },
+  "customStatusTitle": "自定义头衔",
+  "registerAccountTime": "注册时间",
+  "lastVisitTime": "上次访问时间",
+  "lastActivityTime": "上次活动于",
+  "recentNote": "最近的帖子",
+  "lastPostTime": "上次发帖时间",
+  "onlineHoursTitle": "在线时间",
+  "onlineHours": "{hour}小时",
+  "@onlineHours": {
+    "placeholders": {
+      "hour": {}
+    }
+  },
+  "birthPlace": "出生地",
+  "residentPlace": "居住地",
+  "credit": "积分",
+  "homepage": "个人主页",
+  "habit": "爱好",
+  "friendNumber": "好友数",
+  "postNumber": "回帖数",
+  "bio": "签名"
 }

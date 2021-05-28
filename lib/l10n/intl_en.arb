@@ -293,5 +293,36 @@
   "forumFilterStatusTitle": "Thread Status",
   "forumFilterStatusAll": "All",
   "forumFilterStatusDigest": "Digest",
-  "forumFilterStatusHot": "Hot"
+  "forumFilterStatusHot": "Hot",
+  "emptyScreenTitle": "The content here is empty.",
+  "userProfileTitle": "User Profiles",
+  "groupInfoDescription": "Read Access: {readAccess} and Star: {star}",
+  "@groupInfoDescription": {
+    "placeholders": {
+      "readAccess": {},
+      "star": {}
+    }
+  },
+  "customStatusTitle": "Custom title",
+  "registerAccountTime": "Register at",
+  "lastVisitTime": "Last visit at",
+  "lastActivityTime": "Last active at",
+  "lastPostTime": "Last post at",
+  "recentNote": "Recent note",
+  "onlineHoursTitle": "Online Time",
+  "onlineHours": "{hour} hour(s).",
+  "@onlineHours": {
+    "placeholders": {
+      "hour": {}
+    }
+  },
+  "birthPlace": "Birth place",
+  "residentPlace": "Resident place",
+  "credit": "Credit",
+  "homepage": "Homepage",
+  "habit": "Habits",
+  "friendNumber": "Friends",
+  "postNumber": "Post number",
+  "bio": "Bio"
+
 }

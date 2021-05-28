@@ -148,23 +148,14 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
                         child: Card(
                           child: Column(
                             children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 12,
-                                    child: viewHistory.type == "thread" ? Icon(Icons.message_outlined, color: Colors.teal,) : Icon(Icons.forum_outlined, color: Colors.blue),
-                                  ),
-                                  Expanded(
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 0.0,horizontal: 16.0),
-                                        child: Text(viewHistory.title, style: TextStyle(fontWeight: FontWeight.w400)),
-                                      )
-
-                                  )
-
-                                ],
+                              ListTile(
+                                leading: Container(
+                                  width: 12,
+                                  child: viewHistory.type == "thread" ? Icon(Icons.message_outlined, color: Colors.teal,) : Icon(Icons.forum_outlined, color: Colors.blue),
+                                ),
+                                title: Text(viewHistory.title),
+                                subtitle: DiscuzHtmlWidget(discuz,viewHistory.subject.substring(0,min(800,viewHistory.subject.length))),
                               ),
-                              DiscuzHtmlWidget(discuz,viewHistory.subject.substring(0,min(800,viewHistory.subject.length))),
                               Padding(
                                 padding: EdgeInsets.symmetric(vertical: 2.0,horizontal: 8.0),
                                 child: Row(
@@ -176,9 +167,9 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
                                 ),
 
                               ),
-                              Divider()
                             ],
                           ),
+
 
                         ),
                         onTap: () async{

@@ -14,32 +14,23 @@ class ErrorCard extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.all(0.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+
+    return MaterialBanner(
+      leading: CircleAvatar(child: Icon(Icons.error_outline),),
+      content: Column(
           children: [
-            ListTile(
-              leading: Icon(Icons.error_outline, color: CustomizeColor.error),
-              title: Text(errorTitle),
-              subtitle: Text(errorDescription),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                TextButton(
-                  child: Text(S.of(context).retry),
-                  onPressed: () {
-                    onRefreshCallback();
-                  },
-                ),
-                const SizedBox(width: 8),
-              ],
-            ),
+            Text(errorTitle, style: Theme.of(context).textTheme.headline3,),
+            Text(errorDescription, style: Theme.of(context).textTheme.bodyText1)
           ],
+      ),
+      actions: [
+        TextButton(
+          child: Text(S.of(context).retry),
+          onPressed: () {
+            onRefreshCallback();
+          },
         ),
-      )
+      ],
 
     );
   }

@@ -2279,6 +2279,196 @@ class S {
       args: [],
     );
   }
+
+  /// `The content here is empty.`
+  String get emptyScreenTitle {
+    return Intl.message(
+      'The content here is empty.',
+      name: 'emptyScreenTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `User Profiles`
+  String get userProfileTitle {
+    return Intl.message(
+      'User Profiles',
+      name: 'userProfileTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Read Access: {readAccess} and Star: {star}`
+  String groupInfoDescription(Object readAccess, Object star) {
+    return Intl.message(
+      'Read Access: $readAccess and Star: $star',
+      name: 'groupInfoDescription',
+      desc: '',
+      args: [readAccess, star],
+    );
+  }
+
+  /// `Custom title`
+  String get customStatusTitle {
+    return Intl.message(
+      'Custom title',
+      name: 'customStatusTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Register at`
+  String get registerAccountTime {
+    return Intl.message(
+      'Register at',
+      name: 'registerAccountTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last visit at`
+  String get lastVisitTime {
+    return Intl.message(
+      'Last visit at',
+      name: 'lastVisitTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last active at`
+  String get lastActivityTime {
+    return Intl.message(
+      'Last active at',
+      name: 'lastActivityTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last post at`
+  String get lastPostTime {
+    return Intl.message(
+      'Last post at',
+      name: 'lastPostTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recent note`
+  String get recentNote {
+    return Intl.message(
+      'Recent note',
+      name: 'recentNote',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Online Time`
+  String get onlineHoursTitle {
+    return Intl.message(
+      'Online Time',
+      name: 'onlineHoursTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{hour} hour(s).`
+  String onlineHours(Object hour) {
+    return Intl.message(
+      '$hour hour(s).',
+      name: 'onlineHours',
+      desc: '',
+      args: [hour],
+    );
+  }
+
+  /// `Birth place`
+  String get birthPlace {
+    return Intl.message(
+      'Birth place',
+      name: 'birthPlace',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Resident place`
+  String get residentPlace {
+    return Intl.message(
+      'Resident place',
+      name: 'residentPlace',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Credit`
+  String get credit {
+    return Intl.message(
+      'Credit',
+      name: 'credit',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Homepage`
+  String get homepage {
+    return Intl.message(
+      'Homepage',
+      name: 'homepage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Habits`
+  String get habit {
+    return Intl.message(
+      'Habits',
+      name: 'habit',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Friends`
+  String get friendNumber {
+    return Intl.message(
+      'Friends',
+      name: 'friendNumber',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Post number`
+  String get postNumber {
+    return Intl.message(
+      'Post number',
+      name: 'postNumber',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Bio`
+  String get bio {
+    return Intl.message(
+      'Bio',
+      name: 'bio',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

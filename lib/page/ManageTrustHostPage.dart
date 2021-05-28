@@ -92,13 +92,13 @@ class ManageTrustHostState extends State<ManageTrustHostStateWidget>{
                   TrustHost trustHost = list[index];
                   return Dismissible(
                     key: Key(trustHost.id.toString()),
-                    child: ListTile(
-                      title: Column(
-                        children: [
-                          Text(trustHost.host),
-                          Divider()
-                        ],
-                      ),
+                    child: Column(
+                      children: [
+                        ListTile(
+                          title: Text(trustHost.host),
+                        ),
+                        Divider()
+                      ],
                     ),
                     onDismissed: (direction){
                       _untrustHost(trustHost);

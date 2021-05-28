@@ -11,6 +11,8 @@ import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/screen/BlankScreen.dart';
+import 'package:discuz_flutter/screen/EmptyScreen.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
@@ -285,6 +287,7 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
               scrollDirection: _direction,
               topBouncing: _topBouncing,
               bottomBouncing: _bottomBouncing,
+              emptyWidget: _forumThreadList.length == 0? EmptyScreen(): null,
               header: _enableRefresh
                   ? ClassicalHeader(
                       enableInfiniteRefresh: false,

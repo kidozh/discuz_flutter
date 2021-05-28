@@ -383,6 +383,22 @@ class _MobileApiClient implements MobileApiClient {
     return value;
   }
 
+  @override
+  Future<UserProfileResult> userProfileResult(uid) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'uid': uid};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<UserProfileResult>(Options(
+                method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            .compose(
+                _dio.options, '/api/mobile/index.php?version=4&module=profile',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = UserProfileResult.fromJson(_result.data!);
+    return value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

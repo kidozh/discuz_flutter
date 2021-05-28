@@ -25,28 +25,32 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m2(filename) => "后台下载文件 ${filename} 中。";
 
-  static String m3(uri) => "无法打开此链接 : ${uri}.";
+  static String m3(readAccess, star) => "阅读权限： ${readAccess}， 等级： ${star}";
 
-  static String m4(time) => "该投票将于${time}过期.";
+  static String m4(uri) => "无法打开此链接 : ${uri}.";
 
-  static String m5(people) => "共有${people}人已投票.";
+  static String m5(hour) => "${hour}小时";
 
-  static String m6(pos) => "第${pos}层";
+  static String m6(time) => "该投票将于${time}过期.";
 
-  static String m7(username, discuzName) =>
+  static String m7(people) => "共有${people}人已投票.";
+
+  static String m8(pos) => "第${pos}层";
+
+  static String m9(username, discuzName) =>
       "用户 ${username} 已成功登录到 ${discuzName}。";
 
-  static String m8(discuzName) => "登录至 ${discuzName}";
+  static String m10(discuzName) => "登录至 ${discuzName}";
 
-  static String m9(checked, allowed) => "投票 (${checked} / ${allowed})";
+  static String m11(checked, allowed) => "投票 (${checked} / ${allowed})";
 
-  static String m10(title) => "成功删除历史记录 ${title}.";
+  static String m12(title) => "成功删除历史记录 ${title}.";
 
-  static String m11(filename) => "成功下载文件： ${filename}。";
+  static String m13(filename) => "成功下载文件： ${filename}。";
 
-  static String m12(username) => "用户 ${username} 已失效";
+  static String m14(username) => "用户 ${username} 已失效";
 
-  static String m13(uid) => "用户编号： ${uid}";
+  static String m15(uid) => "用户编号： ${uid}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -65,6 +69,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "bezierCircleDescribe": MessageLookupByLibrary.simpleMessage("弹出圆圈"),
         "bezierHourGlassDescribe":
             MessageLookupByLibrary.simpleMessage("弹出HourGlass"),
+        "bio": MessageLookupByLibrary.simpleMessage("签名"),
+        "birthPlace": MessageLookupByLibrary.simpleMessage("出生地"),
         "bobMinion": MessageLookupByLibrary.simpleMessage("Bob小黄人"),
         "bobMinionDescribe": MessageLookupByLibrary.simpleMessage("可爱的小黄人"),
         "bottomBouncing": MessageLookupByLibrary.simpleMessage("底部回弹"),
@@ -85,9 +91,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "controlFinish": MessageLookupByLibrary.simpleMessage("控制结束"),
         "controlFinishDescribe":
             MessageLookupByLibrary.simpleMessage("使用控制器结束异步任务"),
+        "credit": MessageLookupByLibrary.simpleMessage("积分"),
         "cupertinoDescribe": MessageLookupByLibrary.simpleMessage("ios风格"),
         "customScrollViewDescribe":
             MessageLookupByLibrary.simpleMessage("带头部折叠的列表，监听器示例"),
+        "customStatusTitle": MessageLookupByLibrary.simpleMessage("自定义头衔"),
         "dashboard": MessageLookupByLibrary.simpleMessage("看板"),
         "deleteAccount": MessageLookupByLibrary.simpleMessage("删除"),
         "deleteAccountSuccessfully": m0,
@@ -100,6 +108,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "downloadingFiles": m2,
         "email": MessageLookupByLibrary.simpleMessage("邮箱"),
         "emptyListDescription": MessageLookupByLibrary.simpleMessage("当前列表为空。"),
+        "emptyScreenTitle": MessageLookupByLibrary.simpleMessage("当前列表为空。"),
         "emptyWidget": MessageLookupByLibrary.simpleMessage("空视图"),
         "emptyWidgetDescribe":
             MessageLookupByLibrary.simpleMessage("没有数据时显示空视图"),
@@ -138,14 +147,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "forumFilterTimeTitle": MessageLookupByLibrary.simpleMessage("时间过滤"),
         "forumFilterTimeToday": MessageLookupByLibrary.simpleMessage("今天"),
         "forumFilterTypeIdTitle": MessageLookupByLibrary.simpleMessage("主题分类"),
+        "friendNumber": MessageLookupByLibrary.simpleMessage("好友数"),
         "github": MessageLookupByLibrary.simpleMessage("Github"),
         "googleAdSubTitle":
             MessageLookupByLibrary.simpleMessage("由Google提供的广告"),
         "googleAdTitle": MessageLookupByLibrary.simpleMessage("广告"),
+        "groupInfoDescription": m3,
+        "habit": MessageLookupByLibrary.simpleMessage("爱好"),
         "hangzhou": MessageLookupByLibrary.simpleMessage("中国 - 杭州"),
         "headerFloat": MessageLookupByLibrary.simpleMessage("Header浮动"),
         "headerFloatDescribe":
             MessageLookupByLibrary.simpleMessage("Header显示在列表之上"),
+        "homepage": MessageLookupByLibrary.simpleMessage("个人主页"),
         "horizontal": MessageLookupByLibrary.simpleMessage("水平"),
         "incognitoSubtitle": MessageLookupByLibrary.simpleMessage("某些功能可能不可用"),
         "incognitoTitle": MessageLookupByLibrary.simpleMessage("匿名模式"),
@@ -156,10 +169,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "joinDiscussion": MessageLookupByLibrary.simpleMessage("加入讨论"),
         "joinDiscussionDescribe":
             MessageLookupByLibrary.simpleMessage("加入QQ群554981921,进行讨论"),
+        "lastActivityTime": MessageLookupByLibrary.simpleMessage("上次活动于"),
+        "lastPostTime": MessageLookupByLibrary.simpleMessage("上次发帖时间"),
+        "lastVisitTime": MessageLookupByLibrary.simpleMessage("上次访问时间"),
         "linkHeader": MessageLookupByLibrary.simpleMessage("Header连接器"),
         "linkHeaderDescribeDescribe":
             MessageLookupByLibrary.simpleMessage("使用连接器自定义Header"),
-        "linkUnableToOpen": m3,
+        "linkUnableToOpen": m4,
         "listDirection": MessageLookupByLibrary.simpleMessage("列表方向"),
         "listEmbed": MessageLookupByLibrary.simpleMessage("列表嵌入"),
         "listEmbedDescribe":
@@ -206,6 +222,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "nullDiscuzTitle": MessageLookupByLibrary.simpleMessage("还没有指定一个论坛"),
         "ok": MessageLookupByLibrary.simpleMessage("好"),
         "old": MessageLookupByLibrary.simpleMessage("年龄"),
+        "onlineHours": m5,
+        "onlineHoursTitle": MessageLookupByLibrary.simpleMessage("在线时间"),
         "openFileInExternalAppActionText":
             MessageLookupByLibrary.simpleMessage("打开"),
         "openFileInExternalAppContent":
@@ -221,9 +239,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "phoenixDescribe": MessageLookupByLibrary.simpleMessage("金色校园"),
         "phone": MessageLookupByLibrary.simpleMessage("电话"),
         "policy": MessageLookupByLibrary.simpleMessage("条款"),
-        "pollExpireAt": m4,
-        "pollVoterNumber": m5,
-        "postPosition": m6,
+        "pollExpireAt": m6,
+        "pollVoterNumber": m7,
+        "postNumber": MessageLookupByLibrary.simpleMessage("回帖数"),
+        "postPosition": m8,
         "preparingPage": MessageLookupByLibrary.simpleMessage("正在准备此界面。"),
         "privacyPolicy": MessageLookupByLibrary.simpleMessage("隐私政策"),
         "progressButtonLoginFailed":
@@ -244,6 +263,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushToLoad": MessageLookupByLibrary.simpleMessage("拉动加载"),
         "qqGroup": MessageLookupByLibrary.simpleMessage("QQ群"),
         "qqPay": MessageLookupByLibrary.simpleMessage("QQ钱包"),
+        "recentNote": MessageLookupByLibrary.simpleMessage("最近的帖子"),
         "recordHistoryOffDescription":
             MessageLookupByLibrary.simpleMessage("应用不会记录您的浏览历史"),
         "recordHistoryOnDescription":
@@ -256,9 +276,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "refreshSwitchDescribe": MessageLookupByLibrary.simpleMessage("是否开启刷新"),
         "refreshed": MessageLookupByLibrary.simpleMessage("刷新完成"),
         "refreshing": MessageLookupByLibrary.simpleMessage("正在刷新..."),
+        "registerAccountTime": MessageLookupByLibrary.simpleMessage("注册时间"),
         "releaseToLoad": MessageLookupByLibrary.simpleMessage("释放加载"),
         "releaseToRefresh": MessageLookupByLibrary.simpleMessage("释放刷新"),
         "relogin": MessageLookupByLibrary.simpleMessage("重新登陆"),
+        "residentPlace": MessageLookupByLibrary.simpleMessage("居住地"),
         "retry": MessageLookupByLibrary.simpleMessage("重试"),
         "reverse": MessageLookupByLibrary.simpleMessage("反向"),
         "sample": MessageLookupByLibrary.simpleMessage("示例"),
@@ -274,16 +296,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "sendReply": MessageLookupByLibrary.simpleMessage("回帖"),
         "sendReplyHint": MessageLookupByLibrary.simpleMessage("说些什么吧。"),
         "settingTitle": MessageLookupByLibrary.simpleMessage("设置"),
-        "signInSuccessTitle": m7,
-        "signInTitle": m8,
+        "signInSuccessTitle": m9,
+        "signInTitle": m10,
         "signInViaBrowser": MessageLookupByLibrary.simpleMessage("使用网页登录"),
         "signUp": MessageLookupByLibrary.simpleMessage("注册"),
         "spaceDescribe": MessageLookupByLibrary.simpleMessage("Flare动画 - 星空"),
         "star": MessageLookupByLibrary.simpleMessage("Star 项目"),
         "style": MessageLookupByLibrary.simpleMessage("样式"),
-        "submitPoll": m9,
-        "successfullyDeleteViewHistoryContent": m10,
-        "successfullyDownloadFiles": m11,
+        "submitPoll": m11,
+        "successfullyDeleteViewHistoryContent": m12,
+        "successfullyDownloadFiles": m13,
         "supportAuthor": MessageLookupByLibrary.simpleMessage("支持作者"),
         "supportAuthorDescribe":
             MessageLookupByLibrary.simpleMessage("你的支持是我最大的动力"),
@@ -306,11 +328,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "updateAt": MessageLookupByLibrary.simpleMessage("更新于 %T"),
         "userExpiredSubtitle":
             MessageLookupByLibrary.simpleMessage("当前用户授权已过期，你需要重新登录以重新激活此用户。"),
-        "userExpiredTitle": m12,
-        "userIdTitle": m13,
+        "userExpiredTitle": m14,
+        "userIdTitle": m15,
         "userProfile": MessageLookupByLibrary.simpleMessage("个人中心"),
         "userProfileDescribe":
             MessageLookupByLibrary.simpleMessage("带回弹效果的个人中心"),
+        "userProfileTitle": MessageLookupByLibrary.simpleMessage("用户信息"),
         "vertical": MessageLookupByLibrary.simpleMessage("垂直"),
         "vibration": MessageLookupByLibrary.simpleMessage("震动"),
         "vibrationDescribe": MessageLookupByLibrary.simpleMessage("触发震动反馈"),

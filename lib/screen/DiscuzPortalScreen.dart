@@ -21,6 +21,8 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
+import 'EmptyScreen.dart';
+
 class DiscuzPortalScreen extends StatelessWidget {
 
 
@@ -176,6 +178,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       scrollDirection: _direction,
       topBouncing: _topBouncing,
       bottomBouncing: _bottomBouncing,
+      emptyWidget: result == null? EmptyScreen(): null,
       header: _enableRefresh? ClassicalHeader(
         enableInfiniteRefresh: false,
         bgColor:
