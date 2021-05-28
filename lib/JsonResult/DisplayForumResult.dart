@@ -136,6 +136,14 @@ class ThreadType{
   @JsonKey(name:"types",defaultValue: {})
   Map<String,String> idNameMap = {};
 
+  List<ThreadTypeInfo> getThreadTypeList(){
+    List<ThreadTypeInfo> threadTypeList = [];
+    for(var entry in idNameMap.entries){
+      threadTypeList.add(ThreadTypeInfo(int.parse(entry.key), entry.value));
+    }
+    return threadTypeList;
+  }
+
   @JsonKey(name:"icons",defaultValue: {})
 
   Map<String,String> idIconMap = {};
@@ -147,4 +155,11 @@ class ThreadType{
 
   factory ThreadType.fromJson(Map<String, dynamic> json) => _$ThreadTypeFromJson(json);
   Map<String, dynamic> toJson() => _$ThreadTypeToJson(this);
+}
+
+class ThreadTypeInfo{
+  int typeId;
+  String typeName;
+
+  ThreadTypeInfo(this.typeId, this.typeName);
 }

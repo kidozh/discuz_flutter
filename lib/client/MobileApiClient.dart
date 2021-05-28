@@ -69,10 +69,10 @@ abstract class MobileApiClient {
   Future<String> getDiscuzPortalRaw();
 
   @GET("/api/mobile/index.php?version=4&module=forumdisplay")
-  Future<DisplayForumResult> displayForumResult(@Query("fid") String fid,@Query("page") int page);
+  Future<DisplayForumResult> displayForumResult(@Query("fid") String fid,@Query("page") int page, @Queries() Map<String, dynamic> queries);
 
   @GET("/api/mobile/index.php?version=4&module=forumdisplay")
-  Future<String> displayForumRaw(@Query("fid") String fid,@Query("page") int page);
+  Future<String> displayForumRaw(@Query("fid") String fid,@Query("page") int page, @Queries() Map<String, dynamic> queries);
 
   @GET("/api/mobile/index.php?version=4&module=viewthread&ppp=10")
   Future<ViewThreadResult> viewThreadResult(@Query("tid") int tid,@Query("page") int page);

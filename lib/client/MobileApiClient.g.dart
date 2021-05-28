@@ -134,9 +134,10 @@ class _MobileApiClient implements MobileApiClient {
   }
 
   @override
-  Future<DisplayForumResult> displayForumResult(fid, page) async {
+  Future<DisplayForumResult> displayForumResult(fid, page, queries) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'fid': fid, r'page': page};
+    queryParameters.addAll(queries);
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<DisplayForumResult>(
@@ -150,9 +151,10 @@ class _MobileApiClient implements MobileApiClient {
   }
 
   @override
-  Future<String> displayForumRaw(fid, page) async {
+  Future<String> displayForumRaw(fid, page, queries) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'fid': fid, r'page': page};
+    queryParameters.addAll(queries);
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
             method: 'GET', headers: <String, dynamic>{}, extra: _extra)

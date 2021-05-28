@@ -111,6 +111,33 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("顶部或底部视图浮动在列表上"),
         "forgetPassword": MessageLookupByLibrary.simpleMessage("忘记密码?"),
         "forumDisplayTitle": MessageLookupByLibrary.simpleMessage("显示板块"),
+        "forumFilterSortByHeat": MessageLookupByLibrary.simpleMessage("最火人气"),
+        "forumFilterSortByLastPost":
+            MessageLookupByLibrary.simpleMessage("最新回复"),
+        "forumFilterSortByNewPost":
+            MessageLookupByLibrary.simpleMessage("最新发布"),
+        "forumFilterSortByTitle": MessageLookupByLibrary.simpleMessage("排序方法"),
+        "forumFilterSortByView": MessageLookupByLibrary.simpleMessage("最多查看"),
+        "forumFilterSpecialTypeActivity":
+            MessageLookupByLibrary.simpleMessage("活动"),
+        "forumFilterSpecialTypeDebate":
+            MessageLookupByLibrary.simpleMessage("辩论"),
+        "forumFilterSpecialTypePoll":
+            MessageLookupByLibrary.simpleMessage("投票"),
+        "forumFilterSpecialTypeTitle":
+            MessageLookupByLibrary.simpleMessage("功能类型"),
+        "forumFilterStatusAll": MessageLookupByLibrary.simpleMessage("所有"),
+        "forumFilterStatusDigest": MessageLookupByLibrary.simpleMessage("精华帖"),
+        "forumFilterStatusHot": MessageLookupByLibrary.simpleMessage("热门贴"),
+        "forumFilterStatusTitle": MessageLookupByLibrary.simpleMessage("主题状态"),
+        "forumFilterTimeThisMonth": MessageLookupByLibrary.simpleMessage("这个月"),
+        "forumFilterTimeThisQuarter":
+            MessageLookupByLibrary.simpleMessage("本季度"),
+        "forumFilterTimeThisWeek": MessageLookupByLibrary.simpleMessage("这周"),
+        "forumFilterTimeThisYear": MessageLookupByLibrary.simpleMessage("今年"),
+        "forumFilterTimeTitle": MessageLookupByLibrary.simpleMessage("时间过滤"),
+        "forumFilterTimeToday": MessageLookupByLibrary.simpleMessage("今天"),
+        "forumFilterTypeIdTitle": MessageLookupByLibrary.simpleMessage("主题分类"),
         "github": MessageLookupByLibrary.simpleMessage("Github"),
         "googleAdSubTitle":
             MessageLookupByLibrary.simpleMessage("由Google提供的广告"),

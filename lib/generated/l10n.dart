@@ -2079,6 +2079,206 @@ class S {
       args: [],
     );
   }
+
+  /// `Category`
+  String get forumFilterTypeIdTitle {
+    return Intl.message(
+      'Category',
+      name: 'forumFilterTypeIdTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sort by`
+  String get forumFilterSortByTitle {
+    return Intl.message(
+      'Sort by',
+      name: 'forumFilterSortByTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last post`
+  String get forumFilterSortByLastPost {
+    return Intl.message(
+      'Last post',
+      name: 'forumFilterSortByLastPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New post`
+  String get forumFilterSortByNewPost {
+    return Intl.message(
+      'New post',
+      name: 'forumFilterSortByNewPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View`
+  String get forumFilterSortByView {
+    return Intl.message(
+      'View',
+      name: 'forumFilterSortByView',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Heat`
+  String get forumFilterSortByHeat {
+    return Intl.message(
+      'Heat',
+      name: 'forumFilterSortByHeat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Special Thread`
+  String get forumFilterSpecialTypeTitle {
+    return Intl.message(
+      'Special Thread',
+      name: 'forumFilterSpecialTypeTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Debate`
+  String get forumFilterSpecialTypeDebate {
+    return Intl.message(
+      'Debate',
+      name: 'forumFilterSpecialTypeDebate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Activity`
+  String get forumFilterSpecialTypeActivity {
+    return Intl.message(
+      'Activity',
+      name: 'forumFilterSpecialTypeActivity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Poll`
+  String get forumFilterSpecialTypePoll {
+    return Intl.message(
+      'Poll',
+      name: 'forumFilterSpecialTypePoll',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Time Filter`
+  String get forumFilterTimeTitle {
+    return Intl.message(
+      'Time Filter',
+      name: 'forumFilterTimeTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Today`
+  String get forumFilterTimeToday {
+    return Intl.message(
+      'Today',
+      name: 'forumFilterTimeToday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This week`
+  String get forumFilterTimeThisWeek {
+    return Intl.message(
+      'This week',
+      name: 'forumFilterTimeThisWeek',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This month`
+  String get forumFilterTimeThisMonth {
+    return Intl.message(
+      'This month',
+      name: 'forumFilterTimeThisMonth',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This quarter`
+  String get forumFilterTimeThisQuarter {
+    return Intl.message(
+      'This quarter',
+      name: 'forumFilterTimeThisQuarter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This year`
+  String get forumFilterTimeThisYear {
+    return Intl.message(
+      'This year',
+      name: 'forumFilterTimeThisYear',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Thread Status`
+  String get forumFilterStatusTitle {
+    return Intl.message(
+      'Thread Status',
+      name: 'forumFilterStatusTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All`
+  String get forumFilterStatusAll {
+    return Intl.message(
+      'All',
+      name: 'forumFilterStatusAll',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Digest`
+  String get forumFilterStatusDigest {
+    return Intl.message(
+      'Digest',
+      name: 'forumFilterStatusDigest',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hot`
+  String get forumFilterStatusHot {
+    return Intl.message(
+      'Hot',
+      name: 'forumFilterStatusHot',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -127,6 +127,41 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Forget password?"),
         "forumDisplayTitle":
             MessageLookupByLibrary.simpleMessage("Display a forum"),
+        "forumFilterSortByHeat": MessageLookupByLibrary.simpleMessage("Heat"),
+        "forumFilterSortByLastPost":
+            MessageLookupByLibrary.simpleMessage("Last post"),
+        "forumFilterSortByNewPost":
+            MessageLookupByLibrary.simpleMessage("New post"),
+        "forumFilterSortByTitle":
+            MessageLookupByLibrary.simpleMessage("Sort by"),
+        "forumFilterSortByView": MessageLookupByLibrary.simpleMessage("View"),
+        "forumFilterSpecialTypeActivity":
+            MessageLookupByLibrary.simpleMessage("Activity"),
+        "forumFilterSpecialTypeDebate":
+            MessageLookupByLibrary.simpleMessage("Debate"),
+        "forumFilterSpecialTypePoll":
+            MessageLookupByLibrary.simpleMessage("Poll"),
+        "forumFilterSpecialTypeTitle":
+            MessageLookupByLibrary.simpleMessage("Special Thread"),
+        "forumFilterStatusAll": MessageLookupByLibrary.simpleMessage("All"),
+        "forumFilterStatusDigest":
+            MessageLookupByLibrary.simpleMessage("Digest"),
+        "forumFilterStatusHot": MessageLookupByLibrary.simpleMessage("Hot"),
+        "forumFilterStatusTitle":
+            MessageLookupByLibrary.simpleMessage("Thread Status"),
+        "forumFilterTimeThisMonth":
+            MessageLookupByLibrary.simpleMessage("This month"),
+        "forumFilterTimeThisQuarter":
+            MessageLookupByLibrary.simpleMessage("This quarter"),
+        "forumFilterTimeThisWeek":
+            MessageLookupByLibrary.simpleMessage("This week"),
+        "forumFilterTimeThisYear":
+            MessageLookupByLibrary.simpleMessage("This year"),
+        "forumFilterTimeTitle":
+            MessageLookupByLibrary.simpleMessage("Time Filter"),
+        "forumFilterTimeToday": MessageLookupByLibrary.simpleMessage("Today"),
+        "forumFilterTypeIdTitle":
+            MessageLookupByLibrary.simpleMessage("Category"),
         "github": MessageLookupByLibrary.simpleMessage("Github"),
         "googleAdSubTitle": MessageLookupByLibrary.simpleMessage(
             "Advertisement provided by Google"),

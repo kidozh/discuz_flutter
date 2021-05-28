@@ -64,7 +64,7 @@ class DisplayForumStatefulWidget extends StatefulWidget {
 class _DisplayForumState extends State<DisplayForumStatefulWidget> {
   DisplayForumResult? _displayForumResult = null;
   DiscuzError? _error = null;
-  bool _isLoading = false;
+  DisplayForumQuery _displayForumQuery = DisplayForumQuery();
   List<ForumThread> _forumThreadList = [];
   int _page = 1;
 
@@ -155,16 +155,14 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     var dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
-    setState(() {
-      _isLoading = true;
-    });
+
 
     // client.displayForumRaw(fid.toString(), _page).then((value){
     //   log(value);
     //   DisplayForumResult result = DisplayForumResult.fromJson(jsonDecode(value));
     // });
 
-    client.displayForumResult(fid.toString(), _page).then((value) {
+    client.displayForumResult(fid.toString(), _page, _displayForumQuery.generateForumQueriesMap()).then((value) {
       if (!historySaved && _page == 1) {
         _saveViewHistory(value.discuzIndexVariables.forum);
       }
@@ -257,7 +255,7 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
               IconButton(
                   icon: Icon(Icons.filter_alt_outlined),
                   onPressed: () {
-                    _showInformationBottomSheet(context);
+                    _showForumFilterBottomSheet(context);
                   }),
               IconButton(
                   icon: Icon(Icons.info_outlined),
@@ -468,53 +466,228 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
   }
 
   void _showForumFilterBottomSheet(BuildContext context) {
-    if (_displayForumResult != null) {
+    if (_displayForumResult != null && _displayForumResult!.discuzIndexVariables.threadType!= null) {
+      ThreadType threadType = _displayForumResult!.discuzIndexVariables.threadType!;
+      Map<String,String> idNameMap = threadType.idNameMap;
+      List<ThreadTypeInfo> threadTypeList = threadType.getThreadTypeList();
+
       showModalBottomSheet(
           isScrollControlled: false,
           context: context,
           builder: (context) {
-            return Scrollable(
-              viewportBuilder: (BuildContext context, ViewportOffset position) {
-                return ListView(
-                  children: [
-                    Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.description_outlined,
-                            color: Colors.blue,
+            return StatefulBuilder(builder: (BuildContext context, StateSetter setState){
+              return Scrollable(
+                viewportBuilder: (BuildContext context, ViewportOffset position) {
+                  return ListView(
+                    children: [
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.category,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                              Expanded(
+                                  child: Text(S.of(context).forumFilterTypeIdTitle)
+                              )
+                            ],
                           ),
-                        ),
-                        Expanded(
-                            child: DiscuzHtmlWidget(
-                                discuz,
-                                _displayForumResult!
-                                    .discuzIndexVariables.forum.description))
-                      ],
-                    ),
-                    Divider(),
-                    Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.rule,
-                            color: Colors.redAccent,
+                          Wrap(
+                            children: List<Widget>.generate(threadTypeList.length, (int index){
+                              ThreadTypeInfo threadTypeInfo = threadTypeList[index];
+                              return ChoiceChip(
+                                label: Text(threadTypeInfo.typeName),
+                                selected: _displayForumQuery.typeId == threadTypeInfo.typeId,
+                                onSelected: (bool selected){
+                                  setState(() {
+                                    _displayForumQuery.setTypeId(threadTypeInfo.typeId, selected);
+                                  });
+
+                                },
+
+                              );
+                            }
+                            ),
+                          )
+                        ],
+                      ),
+
+                      Divider(),
+
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.sort,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                              Expanded(
+                                  child: Text(S.of(context).forumFilterSortByTitle)
+                              )
+                            ],
                           ),
-                        ),
-                        Expanded(
-                            child: DiscuzHtmlWidget(
-                                discuz,
-                                _displayForumResult!
-                                    .discuzIndexVariables.forum.rules))
-                      ],
-                    )
-                  ],
-                );
-              },
-            );
-          });
+                          Wrap(
+                            children: [
+                              ChoiceChip(label: Text(S.of(context).forumFilterSortByLastPost), selected: _displayForumQuery.orderBy == "lastpost",onSelected: (bool selected){
+                                setState(() {
+                                  _displayForumQuery.setOrderBy("lastpost", true);
+                                });
+                              },),
+                              ChoiceChip(label: Text(S.of(context).forumFilterSortByNewPost), selected: _displayForumQuery.orderBy == "dateline", onSelected: (bool selected){
+                                setState(() {
+                                  _displayForumQuery.setOrderBy("dateline", selected);
+                                });
+                              },),
+                              ChoiceChip(label: Text(S.of(context).forumFilterSortByView), selected: _displayForumQuery.orderBy == "views", onSelected: (bool selected){
+                                setState(() {
+                                  _displayForumQuery.setOrderBy("views", selected);
+                                });
+                              },),
+                              ChoiceChip(label: Text(S.of(context).forumFilterSortByHeat), selected: _displayForumQuery.orderBy == "heats", onSelected: (bool selected){
+                                setState(() {
+                                  _displayForumQuery.setOrderBy("heats", selected);
+                                });
+                              },),
+                            ],
+                          )
+
+                        ],
+                      ),
+                      Divider(),
+
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.apps_outlined,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                              Expanded(
+                                  child: Text(S.of(context).forumFilterSpecialTypeTitle)
+                              )
+                            ],
+                          ),
+                          Wrap(
+                            children: [
+                              ChoiceChip(label: Text(S.of(context).forumFilterSpecialTypePoll), selected: _displayForumQuery.specialType == "poll", onSelected: (bool selected){
+                                setState(() {
+                                  _displayForumQuery.setSpecialType("poll", selected);
+                                });
+                              },),
+                              ChoiceChip(label: Text(S.of(context).forumFilterSpecialTypeDebate), selected: _displayForumQuery.specialType == "debate", onSelected: (bool selected){
+                                setState(() {
+                                  _displayForumQuery.setSpecialType("debate", selected);
+                                });
+                              },),
+                              ChoiceChip(label: Text(S.of(context).forumFilterSpecialTypeActivity), selected: _displayForumQuery.specialType == "activity", onSelected: (bool selected){
+                                setState(() {
+                                  _displayForumQuery.setSpecialType("activity", selected);
+                                });
+                              },),
+                            ],
+                          )
+
+                        ],
+                      ),
+
+                      Divider(),
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.access_time,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                              Expanded(
+                                  child: Text(S.of(context).forumFilterTimeTitle)
+                              )
+                            ],
+                          ),
+                          Wrap(
+                            children: [
+                              ChoiceChip(label: Text(S.of(context).forumFilterTimeToday), selected: _displayForumQuery.dateline == 86400, onSelected: (bool selected){
+                                setState(() {
+                                  _displayForumQuery.setDateline(86400, selected);
+                                });
+                              },),
+                              ChoiceChip(label: Text(S.of(context).forumFilterTimeThisWeek), selected: _displayForumQuery.dateline == 604800, onSelected: (bool selected){
+                                setState(() {
+                                  _displayForumQuery.setDateline(604800, selected);
+                                });
+                              },),
+                              ChoiceChip(label: Text(S.of(context).forumFilterTimeThisMonth), selected: _displayForumQuery.dateline == 2592000, onSelected: (bool selected){
+                                setState(() {
+                                  _displayForumQuery.setDateline(2592000, selected);
+                                });
+                              },),
+                              ChoiceChip(label: Text(S.of(context).forumFilterTimeThisQuarter), selected: _displayForumQuery.dateline == 7948800, onSelected: (bool selected){
+                                setState(() {
+                                  _displayForumQuery.setDateline(7948800, selected);
+                                });
+                              },),
+                              ChoiceChip(label: Text(S.of(context).forumFilterTimeThisYear), selected: _displayForumQuery.dateline == 31536000, onSelected: (bool selected){
+                                _displayForumQuery.setDateline(31536000, selected);
+                              },),
+                            ],
+                          )
+
+                        ],
+                      ),
+
+                      Divider(),
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.whatshot_outlined,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                              Expanded(
+                                  child: Text(S.of(context).forumFilterStatusTitle)
+                              )
+                            ],
+                          ),
+                          Wrap(
+                            children: [
+                              ChoiceChip(avatar: Icon(Icons.verified_outlined),label: Text(S.of(context).forumFilterStatusDigest), selected: false,onSelected: (bool selected){},),
+                              ChoiceChip(avatar: Icon(Icons.whatshot_rounded),label: Text(S.of(context).forumFilterStatusHot), selected: false,onSelected: (bool selected){},),
+                            ],
+                          )
+
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              );
+            });
+          })
+          .whenComplete(
+              () {
+                print("Closing the dialog");
+                _controller.callRefresh();
+
+              });
     }
   }
 }
@@ -533,5 +706,108 @@ class DisplayForumActionControls extends StatelessWidget {
         IconButton(icon: Icon(Icons.info_outlined), onPressed: () {})
       ],
     );
+  }
+}
+
+class DisplayForumQuery{
+  int typeId = 0, dateline = 0;
+  String specialType = "", orderBy = "lastpost";
+  String filter = "";
+
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DisplayForumQuery &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId &&
+          dateline == other.dateline &&
+          specialType == other.specialType &&
+          orderBy == other.orderBy &&
+          filter == other.filter;
+
+  @override
+  int get hashCode =>
+      typeId.hashCode ^
+      dateline.hashCode ^
+      specialType.hashCode ^
+      orderBy.hashCode ^
+      filter.hashCode;
+
+  void setTypeId(int typeId, bool selected){
+    if(selected){
+      this.typeId = typeId;
+    }
+    else{
+      this.typeId = 0;
+    }
+  }
+
+  void setDateline(int dateline, bool selected){
+    if(selected){
+      this.dateline = dateline;
+    }
+    else{
+      this.dateline = 0;
+    }
+  }
+
+  void setSpecialType(String specialType, bool selected){
+    if(selected){
+      this.specialType = specialType;
+    }
+    else{
+      this.specialType = "";
+    }
+  }
+
+  void setOrderBy(String orderBy, bool selected){
+    if(selected){
+      this.orderBy = orderBy;
+    }
+    else{
+      this.orderBy = "";
+    }
+  }
+
+  void setFilter(String filter, bool selected){
+    if(selected){
+      this.filter = filter;
+    }
+    else{
+      this.filter = "";
+    }
+  }
+
+
+
+  Map<String, String> generateForumQueriesMap(){
+    Map<String, String> forumQueriesMap = {};
+    if(typeId!=0){
+      forumQueriesMap["filter"] = "typeid";
+      forumQueriesMap["typeid"] = typeId.toString();
+    }
+
+    if(specialType!=""){
+      forumQueriesMap["filter"] = "specialtype";
+      forumQueriesMap["specialtype"] = specialType;
+    }
+
+    if(dateline!=0){
+      forumQueriesMap["filter"] = "dateline";
+      forumQueriesMap["dateline"] = dateline.toString();
+    }
+
+    if(orderBy != "lastpost"){
+      forumQueriesMap["orderby"] = orderBy;
+    }
+
+    if(filter != ""){
+      forumQueriesMap["filter"] = filter;
+    }
+
+
+    
+    return forumQueriesMap;
   }
 }
