@@ -323,5 +323,9 @@
   "habit": "爱好",
   "friendNumber": "好友数",
   "postNumber": "回帖数",
-  "bio": "签名"
+  "bio": "签名",
+  "favorites": "收藏",
+  "chatMessage": "信息",
+  "privateMessage": "私信",
+  "publicMessage": "公共消息"
 }

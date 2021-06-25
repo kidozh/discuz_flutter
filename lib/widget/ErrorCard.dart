@@ -16,11 +16,12 @@ class ErrorCard extends StatelessWidget{
     // TODO: implement build
 
     return MaterialBanner(
-      leading: CircleAvatar(child: Icon(Icons.error_outline),),
+      leading: Icon(Icons.error_outline,color: Colors.red,),
       content: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(errorTitle, style: Theme.of(context).textTheme.headline3,),
-            Text(errorDescription, style: Theme.of(context).textTheme.bodyText1)
+            Text(errorTitle, style: Theme.of(context).textTheme.subtitle1,),
+            Text(errorDescription, style: Theme.of(context).textTheme.caption)
           ],
       ),
       actions: [

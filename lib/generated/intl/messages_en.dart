@@ -86,6 +86,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "captchaRequired":
             MessageLookupByLibrary.simpleMessage("Captcha required."),
+        "chatMessage": MessageLookupByLibrary.simpleMessage("Chat"),
         "chatPage": MessageLookupByLibrary.simpleMessage("Chat page"),
         "chatPageDescribe":
             MessageLookupByLibrary.simpleMessage("Chat page example"),
@@ -129,6 +130,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "emptyWidgetDescribe": MessageLookupByLibrary.simpleMessage(
             "Show empty widget when there is no data"),
         "error": MessageLookupByLibrary.simpleMessage("Error"),
+        "favorites": MessageLookupByLibrary.simpleMessage("Favorites"),
         "firstRefresh": MessageLookupByLibrary.simpleMessage("First refresh"),
         "firstRefreshDescribe":
             MessageLookupByLibrary.simpleMessage("First refresh widget"),
@@ -285,6 +287,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "preparingPage":
             MessageLookupByLibrary.simpleMessage("Preparing the page."),
         "privacyPolicy": MessageLookupByLibrary.simpleMessage("Privacy policy"),
+        "privateMessage": MessageLookupByLibrary.simpleMessage("Private"),
         "progressButtonLoginFailed":
             MessageLookupByLibrary.simpleMessage("Login Failed"),
         "progressButtonLoginSuccess":
@@ -299,6 +302,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Success"),
         "projectAddress":
             MessageLookupByLibrary.simpleMessage("Project address"),
+        "publicMessage": MessageLookupByLibrary.simpleMessage("Public"),
         "publishAt": MessageLookupByLibrary.simpleMessage(" published at "),
         "pullToRefresh":
             MessageLookupByLibrary.simpleMessage("Pull to refresh"),

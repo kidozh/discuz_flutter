@@ -31,7 +31,7 @@ class ForumThreadWidget extends StatelessWidget{
 
   Widget getTailingWidget(){
     if(_forumThread.getDisplayOrder() > 0){
-      return Icon(Icons.vertical_align_top, color: Colors.redAccent,);
+      return Icon(Icons.push_pin, color: Colors.redAccent,);
     }
     else{
       return Badge(

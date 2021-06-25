@@ -323,6 +323,10 @@
   "habit": "Habits",
   "friendNumber": "Friends",
   "postNumber": "Post number",
-  "bio": "Bio"
+  "bio": "Bio",
+  "favorites": "Favorites",
+  "chatMessage": "Chat",
+  "privateMessage": "Private",
+  "publicMessage": "Public"
 
 }

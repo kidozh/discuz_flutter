@@ -6,6 +6,7 @@ import 'package:discuz_flutter/page/ManageDiscuzPage.dart';
 import 'package:discuz_flutter/page/ManageTrustHostPage.dart';
 import 'package:discuz_flutter/page/ViewHistoryPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
 import 'package:discuz_flutter/screen/HotThreadScreen.dart';
 import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
@@ -417,6 +418,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       )),
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Theme.of(context).accentColor,
+        unselectedItemColor: Colors.grey.shade500,
         currentIndex: _bottomNavigationbarIndex,
         items: [
           BottomNavigationBarItem(
@@ -431,6 +434,14 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: new Icon(Icons.notifications_outlined),
               activeIcon: Icon(Icons.notifications),
               label: S.of(context).notification),
+          BottomNavigationBarItem(
+              icon: new Icon(Icons.stars_outlined),
+              activeIcon: Icon(Icons.stars),
+              label: S.of(context).favorites),
+          BottomNavigationBarItem(
+              icon: new Icon(Icons.message_outlined),
+              activeIcon: Icon(Icons.message_rounded),
+              label: S.of(context).chatMessage),
         ],
         onTap: (index) {
           setState(() {
@@ -438,7 +449,9 @@ class _MyHomePageState extends State<MyHomePage> {
           });
         },
       ),
-      body: [DiscuzPortalScreen(),HotThreadScreen(),NotificationScreen()][_bottomNavigationbarIndex],
+      body: [DiscuzPortalScreen(),HotThreadScreen(),NotificationScreen(),
+        NotificationScreen(),DiscuzMessageScreen()
+      ][_bottomNavigationbarIndex],
       floatingActionButton: FloatingActionButton(
         onPressed: _triggerSwitchDiscuzDialog,
         tooltip: S.of(context).addNewDiscuz,

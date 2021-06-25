@@ -106,11 +106,11 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
 
-    _client.hotThreadRaw(_page).then((value){
-      log(value);
-      result = HotThreadResult.fromJson(jsonDecode(value));
-
-    });
+    // _client.hotThreadRaw(_page).then((value){
+    //   log(value);
+    //   result = HotThreadResult.fromJson(jsonDecode(value));
+    //
+    // });
 
     _client.hotThreadResult(_page).then((value){
       setState(() {

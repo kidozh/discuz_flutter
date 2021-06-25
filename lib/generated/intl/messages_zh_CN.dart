@@ -77,6 +77,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "bottomBouncingDescribe": MessageLookupByLibrary.simpleMessage("底部可越界"),
         "cancel": MessageLookupByLibrary.simpleMessage("取消"),
         "captchaRequired": MessageLookupByLibrary.simpleMessage("需要验证码"),
+        "chatMessage": MessageLookupByLibrary.simpleMessage("信息"),
         "chatPage": MessageLookupByLibrary.simpleMessage("聊天页面"),
         "chatPageDescribe": MessageLookupByLibrary.simpleMessage("模仿聊天页面"),
         "chengdu": MessageLookupByLibrary.simpleMessage("中国 - 成都"),
@@ -113,6 +114,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "emptyWidgetDescribe":
             MessageLookupByLibrary.simpleMessage("没有数据时显示空视图"),
         "error": MessageLookupByLibrary.simpleMessage("出错了"),
+        "favorites": MessageLookupByLibrary.simpleMessage("收藏"),
         "firstRefresh": MessageLookupByLibrary.simpleMessage("首次刷新"),
         "firstRefreshDescribe": MessageLookupByLibrary.simpleMessage("首次刷新视图"),
         "floatView": MessageLookupByLibrary.simpleMessage("浮动视图"),
@@ -245,6 +247,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "postPosition": m8,
         "preparingPage": MessageLookupByLibrary.simpleMessage("正在准备此界面。"),
         "privacyPolicy": MessageLookupByLibrary.simpleMessage("隐私政策"),
+        "privateMessage": MessageLookupByLibrary.simpleMessage("私信"),
         "progressButtonLoginFailed":
             MessageLookupByLibrary.simpleMessage("登陆失败"),
         "progressButtonLoginSuccess":
@@ -258,6 +261,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "progressButtonReplySuccess":
             MessageLookupByLibrary.simpleMessage("回帖成功"),
         "projectAddress": MessageLookupByLibrary.simpleMessage("项目地址"),
+        "publicMessage": MessageLookupByLibrary.simpleMessage("公共消息"),
         "publishAt": MessageLookupByLibrary.simpleMessage(" 发帖于 "),
         "pullToRefresh": MessageLookupByLibrary.simpleMessage("拉动刷新"),
         "pushToLoad": MessageLookupByLibrary.simpleMessage("拉动加载"),

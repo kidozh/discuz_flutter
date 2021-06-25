@@ -469,11 +469,13 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
   }
 
   void _showForumFilterBottomSheet(BuildContext context) {
+    List<ThreadTypeInfo> threadTypeList = [];
     if (_displayForumResult != null && _displayForumResult!.discuzIndexVariables.threadType!= null) {
-      ThreadType threadType = _displayForumResult!.discuzIndexVariables.threadType!;
-      Map<String,String> idNameMap = threadType.idNameMap;
-      List<ThreadTypeInfo> threadTypeList = threadType.getThreadTypeList();
-
+      ThreadType threadType = _displayForumResult!.discuzIndexVariables
+          .threadType!;
+      //Map<String, String> idNameMap = threadType.idNameMap;
+      threadTypeList = threadType.getThreadTypeList();
+    }
       showModalBottomSheet(
           isScrollControlled: false,
           context: context,
@@ -483,6 +485,7 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
                 viewportBuilder: (BuildContext context, ViewportOffset position) {
                   return ListView(
                     children: [
+                      if(threadTypeList.isNotEmpty)
                       Column(
                         children: [
                           Row(
@@ -518,7 +521,7 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
                           )
                         ],
                       ),
-
+                      if(threadTypeList.isNotEmpty)
                       Divider(),
 
                       Column(
@@ -692,7 +695,6 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
 
               });
     }
-  }
 }
 
 class DisplayForumActionControls extends StatelessWidget {

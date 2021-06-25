@@ -216,13 +216,11 @@ AdminGroupInfo _$AdminGroupInfoFromJson(Map<String, dynamic> json) {
   return AdminGroupInfo()
     ..type = json['type'] as String? ?? ''
     ..groupTitle = json['grouptitle'] as String? ?? ''
-    ..stars =
-        const StringToIntConverter().fromJson(json['stars'] as String?) ?? 0
+    ..stars = const StringToIntConverter().fromJson(json['stars'] as String?)
     ..icon = json['icon'] as String? ?? ''
     ..color = json['color'] as String? ?? ''
     ..readAccess =
-        const StringToIntConverter().fromJson(json['readaccess'] as String?) ??
-            0;
+        const StringToIntConverter().fromJson(json['readaccess'] as String?);
 }
 
 Map<String, dynamic> _$AdminGroupInfoToJson(AdminGroupInfo instance) =>

@@ -83,7 +83,12 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
   Widget build(BuildContext context) {
     // TODO: implement build
     if(_userProfileResult == null){
-      return BlankScreen();
+      return Scaffold(
+        appBar: AppBar(
+            title: Text(S.of(context).userProfile)
+        ),
+        body: BlankScreen(),
+      );
     }
     return Scaffold(
       appBar: AppBar(
@@ -183,6 +188,7 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                   ),
                   Container(
                     width: double.infinity,
+                    color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white12,
                     padding: EdgeInsets.all(10.0),
                     child: DiscuzHtmlWidget(discuz,_userProfileResult!.variables.space.signatureHtml),
                   ),
@@ -406,7 +412,7 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                       color: Colors.white,
                       padding: EdgeInsets.all(4),
                       child: Card(
-                        color: Colors.deepPurple,
+                        color: Colors.lightBlue,
                         child: Container(
                           padding: EdgeInsets.all(4.0),
                           child: Column(

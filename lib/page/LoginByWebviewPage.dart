@@ -145,7 +145,6 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(S.of(context).loginByWebMessage),
             if(discuz.baseURL.startsWith("http://"))
               Container(
                 color: Colors.red.shade50,
@@ -159,7 +158,10 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
                     Expanded(child: Text(S.of(context).loginByWebHttpWarn,style: TextStyle(color: Colors.red,)))
                   ],
                 ),
-              )
+              ),
+            Container(height: 8.0,),
+            Text(S.of(context).loginByWebMessage),
+
 
 
           ],

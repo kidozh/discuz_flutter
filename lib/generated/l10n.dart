@@ -2469,6 +2469,46 @@ class S {
       args: [],
     );
   }
+
+  /// `Favorites`
+  String get favorites {
+    return Intl.message(
+      'Favorites',
+      name: 'favorites',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Chat`
+  String get chatMessage {
+    return Intl.message(
+      'Chat',
+      name: 'chatMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Private`
+  String get privateMessage {
+    return Intl.message(
+      'Private',
+      name: 'privateMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Public`
+  String get publicMessage {
+    return Intl.message(
+      'Public',
+      name: 'publicMessage',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

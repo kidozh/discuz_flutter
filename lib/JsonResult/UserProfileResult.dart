@@ -120,14 +120,13 @@ class AdminGroupInfo{
   String type = "";
   @JsonKey(name: "grouptitle",defaultValue: "")
   String groupTitle = "";
-  @JsonKey(defaultValue: 0)
   @StringToIntConverter()
   int stars = 0;
   @JsonKey(defaultValue: "")
   String icon = "";
   @JsonKey(defaultValue: "")
   String color = "";
-  @JsonKey(name: "readaccess",defaultValue: 0)
+  @JsonKey(name: "readaccess")
   @StringToIntConverter()
   int readAccess = 0;
 
