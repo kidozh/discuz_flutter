@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/UserProfileResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
@@ -11,6 +13,7 @@ import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
+import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/UserProfileListItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -64,6 +67,8 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
     var dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     final MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
+    client.userProfileResultRaw(uid).then((value) => log(value));
+
     client.userProfileResult(uid).then((value){
       setState(() {
         this._userProfileResult = value;
@@ -90,9 +95,22 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
         body: BlankScreen(),
       );
     }
+    else if(_userProfileResult != null && _userProfileResult!.errorResult!= null){
+      return Scaffold(
+        appBar: AppBar(
+            title: Text(S.of(context).userProfile)
+        ),
+        body: ErrorCard(_userProfileResult!.errorResult!.key,
+          _userProfileResult!.errorResult!.content,
+          (){
+            _loadUserProfile();
+          }
+        ),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
-        title: _userProfileResult == null? Text(S.of(context).userProfile): Text(_userProfileResult!.variables.space.username),
+        title: _userProfileResult == null? Text(S.of(context).userProfile): Text(_userProfileResult!.variables.getSpace().username),
       ),
       body: Stack(
         children: [
@@ -143,7 +161,7 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                       Container(
                         margin: new EdgeInsets.only(top: 40.0),
                         child: new Center(
-                          child: Text(_userProfileResult!.variables.space.username, style: TextStyle(fontSize: 30.0, color: Colors.white),),
+                          child: Text(_userProfileResult!.variables.getSpace().username, style: TextStyle(fontSize: 30.0, color: Colors.white),),
                         ),
                       ),
                       Container(
@@ -164,8 +182,8 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                                   child: CircleAvatar(
                                     backgroundColor: CustomizeColor.getColorBackgroundById(uid),
                                     child: Text(
-                                      _userProfileResult!.variables.space.username.length != 0
-                                          ? _userProfileResult!.variables.space.username[0].toUpperCase()
+                                      _userProfileResult!.variables.getSpace().username.length != 0
+                                          ? _userProfileResult!.variables.getSpace().username[0].toUpperCase()
                                           : S.of(context).anonymous,
                                       style: TextStyle(color: Colors.white, fontSize: 12),
                                     ),
@@ -190,7 +208,7 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                     width: double.infinity,
                     color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white12,
                     padding: EdgeInsets.all(10.0),
-                    child: DiscuzHtmlWidget(discuz,_userProfileResult!.variables.space.signatureHtml),
+                    child: DiscuzHtmlWidget(discuz,_userProfileResult!.variables.getSpace().signatureHtml),
                   ),
                   // custom title
                   Container(
@@ -203,28 +221,28 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                           padding: EdgeInsets.all(4.0),
                           child: Column(
                             children: [
-                              if(_userProfileResult!.variables.space.customStatus.isNotEmpty)
+                              if(_userProfileResult!.variables.getSpace().customStatus.isNotEmpty)
                                 UserProfileListItem(
                                   icon: Icon(Icons.category, color: Colors.white,),
                                   title: S.of(context).customStatusTitle,
                                   titleColor: Colors.white,
-                                  describe: _userProfileResult!.variables.space.customStatus,
+                                  describe: _userProfileResult!.variables.getSpace().customStatus,
                                   describeColor: Colors.white,
                                 ),
-                              if(_userProfileResult!.variables.space.bio.isNotEmpty)
+                              if(_userProfileResult!.variables.getSpace().bio.isNotEmpty)
                                 UserProfileListItem(
                                   icon: Icon(Icons.edit, color: Colors.white,),
                                   title: S.of(context).bio,
                                   titleColor: Colors.white,
-                                  describe: _userProfileResult!.variables.space.bio,
+                                  describe: _userProfileResult!.variables.getSpace().bio,
                                   describeColor: Colors.white,
                                 ),
-                              if(_userProfileResult!.variables.space.recentNote.isNotEmpty)
+                              if(_userProfileResult!.variables.getSpace().recentNote.isNotEmpty)
                                 UserProfileListItem(
                                   icon: Icon(Icons.message_outlined, color: Colors.white,),
                                   title: S.of(context).recentNote,
                                   titleColor: Colors.white,
-                                  describe: _userProfileResult!.variables.space.recentNote,
+                                  describe: _userProfileResult!.variables.getSpace().recentNote,
                                   describeColor: Colors.white,
                                 )
                             ],
@@ -244,19 +262,19 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                           padding: EdgeInsets.all(4.0),
                           child: Column(
                             children: [
-                              if(_userProfileResult!.variables.space.adminGroupInfo.groupTitle.isNotEmpty)
+                              if(_userProfileResult!.variables.getSpace().adminGroupInfo.groupTitle.isNotEmpty)
                               UserProfileListItem(
                                 icon: Icon(Icons.verified_user_rounded, color: Colors.white,),
-                                title: _userProfileResult!.variables.space.adminGroupInfo.groupTitle.replaceAll(RegExp(r'<.*?>'), ""),
+                                title: _userProfileResult!.variables.getSpace().adminGroupInfo.groupTitle.replaceAll(RegExp(r'<.*?>'), ""),
                                 titleColor: Colors.white,
-                                describe: S.of(context).groupInfoDescription(_userProfileResult!.variables.space.adminGroupInfo.readAccess, _userProfileResult!.variables.space.adminGroupInfo.stars),
+                                describe: S.of(context).groupInfoDescription(_userProfileResult!.variables.getSpace().adminGroupInfo.readAccess, _userProfileResult!.variables.getSpace().adminGroupInfo.stars),
                                 describeColor: Colors.white,
                               ),
                               UserProfileListItem(
                                 icon: Icon(Icons.group, color: Colors.white,),
-                                title: _userProfileResult!.variables.space.groupInfo.groupTitle.replaceAll(RegExp(r'<.*?>'), ""),
+                                title: _userProfileResult!.variables.getSpace().groupInfo.groupTitle.replaceAll(RegExp(r'<.*?>'), ""),
                                 titleColor: Colors.white,
-                                describe: S.of(context).groupInfoDescription(_userProfileResult!.variables.space.groupInfo.readAccess, _userProfileResult!.variables.space.groupInfo.stars),
+                                describe: S.of(context).groupInfoDescription(_userProfileResult!.variables.getSpace().groupInfo.readAccess, _userProfileResult!.variables.getSpace().groupInfo.stars),
                                 describeColor: Colors.white,
                               )
                             ],
@@ -280,43 +298,43 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                                 icon: Icon(Icons.add_circle_outline_outlined, color: Colors.white,),
                                 title: S.of(context).registerAccountTime,
                                 titleColor: Colors.white,
-                                describe: _userProfileResult!.variables.space.registerDateString,
+                                describe: _userProfileResult!.variables.getSpace().registerDateString,
                                 describeColor: Colors.white,
                               ),
                               UserProfileListItem(
                                 icon: Icon(Icons.history, color: Colors.white,),
                                 title: S.of(context).lastVisitTime,
                                 titleColor: Colors.white,
-                                describe: _userProfileResult!.variables.space.lastvisit,
+                                describe: _userProfileResult!.variables.getSpace().lastvisit,
                                 describeColor: Colors.white,
                               ),
                               UserProfileListItem(
                                 icon: Icon(Icons.access_time, color: Colors.white,),
                                 title: S.of(context).onlineHoursTitle,
                                 titleColor: Colors.white,
-                                describe: S.of(context).onlineHours(_userProfileResult!.variables.space.oltime),
+                                describe: S.of(context).onlineHours(_userProfileResult!.variables.getSpace().oltime),
                                 describeColor: Colors.white,
                               ),
                               UserProfileListItem(
                                 icon: Icon(Icons.timelapse, color: Colors.white,),
                                 title: S.of(context).lastActivityTime,
                                 titleColor: Colors.white,
-                                describe: S.of(context).onlineHours(_userProfileResult!.variables.space.lastactivity),
+                                describe: S.of(context).onlineHours(_userProfileResult!.variables.getSpace().lastactivity),
                                 describeColor: Colors.white,
                               ),
                               UserProfileListItem(
                                 icon: Icon(Icons.av_timer, color: Colors.white,),
                                 title: S.of(context).lastPostTime,
                                 titleColor: Colors.white,
-                                describe: S.of(context).onlineHours(_userProfileResult!.variables.space.lastpost),
+                                describe: S.of(context).onlineHours(_userProfileResult!.variables.getSpace().lastpost),
                                 describeColor: Colors.white,
                               ),
-                              if(_userProfileResult!.variables.space.birthYear != 0)
+                              if(_userProfileResult!.variables.getSpace().birthYear != 0)
                                 UserProfileListItem(
                                   icon: Icon(Icons.cake_outlined, color: Colors.white,),
-                                  title: "${_userProfileResult!.variables.space.zodiac} · ${_userProfileResult!.variables.space.constellation}",
+                                  title: "${_userProfileResult!.variables.getSpace().zodiac} · ${_userProfileResult!.variables.getSpace().constellation}",
                                   titleColor: Colors.white,
-                                  describe: _userProfileResult!.variables.space.getBirthDay(),
+                                  describe: _userProfileResult!.variables.getSpace().getBirthDay(),
                                   describeColor: Colors.white,
                                 ),
                             ],
@@ -335,20 +353,20 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                           padding: EdgeInsets.all(4.0),
                           child: Column(
                             children: [
-                              if(_userProfileResult!.variables.space.site.isNotEmpty)
+                              if(_userProfileResult!.variables.getSpace().site.isNotEmpty)
                               UserProfileListItem(
                                 icon: Icon(Icons.work_outline, color: Colors.white,),
                                 title: S.of(context).homepage,
                                 titleColor: Colors.white,
-                                describe: _userProfileResult!.variables.space.site,
+                                describe: _userProfileResult!.variables.getSpace().site,
                                 describeColor: Colors.white,
                               ),
-                              if(_userProfileResult!.variables.space.interest.isNotEmpty)
+                              if(_userProfileResult!.variables.getSpace().interest.isNotEmpty)
                                 UserProfileListItem(
                                   icon: Icon(Icons.whatshot_rounded, color: Colors.white,),
                                   title: S.of(context).habit,
                                   titleColor: Colors.white,
-                                  describe: _userProfileResult!.variables.space.interest,
+                                  describe: _userProfileResult!.variables.getSpace().interest,
                                   describeColor: Colors.white,
                                 ),
 
@@ -368,36 +386,36 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                           padding: EdgeInsets.all(4.0),
                           child: Column(
                             children: [
-                              if(_userProfileResult!.variables.space.getBirthPlace().isNotEmpty)
+                              if(_userProfileResult!.variables.getSpace().getBirthPlace().isNotEmpty)
                               UserProfileListItem(
                                 icon: Icon(Icons.child_care, color: Colors.white,),
                                 title: S.of(context).birthPlace,
                                 titleColor: Colors.white,
-                                describe: _userProfileResult!.variables.space.getBirthPlace(),
+                                describe: _userProfileResult!.variables.getSpace().getBirthPlace(),
                                 describeColor: Colors.white,
                               ),
-                              if(_userProfileResult!.variables.space.getResidentPlace().isNotEmpty)
+                              if(_userProfileResult!.variables.getSpace().getResidentPlace().isNotEmpty)
                               UserProfileListItem(
                                 icon: Icon(Icons.location_city_outlined, color: Colors.white,),
                                 title: S.of(context).residentPlace,
                                 titleColor: Colors.white,
-                                describe: _userProfileResult!.variables.space.getResidentPlace(),
+                                describe: _userProfileResult!.variables.getSpace().getResidentPlace(),
                                 describeColor: Colors.white,
                               ),
-                              if(_userProfileResult!.variables.space.graduateschool.isNotEmpty || _userProfileResult!.variables.space.education.isNotEmpty)
+                              if(_userProfileResult!.variables.getSpace().graduateschool.isNotEmpty || _userProfileResult!.variables.getSpace().education.isNotEmpty)
                               UserProfileListItem(
                                 icon: Icon(Icons.history_edu, color: Colors.white,),
-                                title: _userProfileResult!.variables.space.education,
+                                title: _userProfileResult!.variables.getSpace().education,
                                 titleColor: Colors.white,
-                                describe: _userProfileResult!.variables.space.graduateschool,
+                                describe: _userProfileResult!.variables.getSpace().graduateschool,
                                 describeColor: Colors.white,
                               ),
-                              if(_userProfileResult!.variables.space.company.isNotEmpty || _userProfileResult!.variables.space.occupation.isNotEmpty)
+                              if(_userProfileResult!.variables.getSpace().company.isNotEmpty || _userProfileResult!.variables.getSpace().occupation.isNotEmpty)
                                 UserProfileListItem(
                                   icon: Icon(Icons.work_outline, color: Colors.white,),
-                                  title: _userProfileResult!.variables.space.occupation,
+                                  title: _userProfileResult!.variables.getSpace().occupation,
                                   titleColor: Colors.white,
-                                  describe: _userProfileResult!.variables.space.company,
+                                  describe: _userProfileResult!.variables.getSpace().company,
                                   describeColor: Colors.white,
                                 )
                             ],
@@ -421,7 +439,7 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                                 icon: Icon(Icons.work_outline, color: Colors.white,),
                                 title: S.of(context).credit,
                                 titleColor: Colors.white,
-                                describe: _userProfileResult!.variables.space.credits.toString(),
+                                describe: _userProfileResult!.variables.getSpace().credits.toString(),
                                 describeColor: Colors.white,
                               ),
 

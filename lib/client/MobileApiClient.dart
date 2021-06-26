@@ -142,4 +142,7 @@ abstract class MobileApiClient {
 
   @GET("/api/mobile/index.php?version=4&module=profile")
   Future<UserProfileResult> userProfileResult(@Query("uid") int uid);
+
+  @GET("/api/mobile/index.php?version=4&module=profile")
+  Future<String> userProfileResultRaw(@Query("uid") int uid);
 }

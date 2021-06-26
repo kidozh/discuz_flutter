@@ -1,6 +1,7 @@
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:discuz_flutter/converter/MedalListConverter.dart';
 import 'package:discuz_flutter/converter/StringToBoolConverter.dart';
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 
@@ -24,7 +25,12 @@ class UserProfileResult extends BaseResult{
 @JsonSerializable(ignoreUnannotated: true)
 class UserProfileVariables extends BaseVariableResult{
   @JsonKey(name: "space")
-  SpaceVariables space = SpaceVariables();
+  SpaceVariables? space = SpaceVariables();
+
+  SpaceVariables getSpace(){
+    return space == null? SpaceVariables() : space!;
+  }
+
   UserProfileVariables();
   factory UserProfileVariables.fromJson(Map<String, dynamic> json) => _$UserProfileVariablesFromJson(json);
 
@@ -32,6 +38,7 @@ class UserProfileVariables extends BaseVariableResult{
 
 @JsonSerializable()
 class SpaceVariables{
+
   @StringToIntConverter()
   int uid = 0;
   String username = "";
@@ -97,7 +104,14 @@ class SpaceVariables{
   String bio = "", interest = "";
 
   SpaceVariables();
-  factory SpaceVariables.fromJson(Map<String, dynamic> json) => _$SpaceVariablesFromJson(json);
+  factory SpaceVariables.fromJson(Map<String, dynamic> json){
+    try{
+      return _$SpaceVariablesFromJson(json);
+    }
+    catch (e,s){
+      return SpaceVariables();
+    }
+  }
 
 
 }

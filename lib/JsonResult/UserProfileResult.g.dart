@@ -35,7 +35,9 @@ UserProfileVariables _$UserProfileVariablesFromJson(Map<String, dynamic> json) {
         const StringToIntConverter().fromJson(json['readaccess'] as String?)
     ..formHash = json['formhash'] as String
     ..noticeCount = NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
-    ..space = SpaceVariables.fromJson(json['space'] as Map<String, dynamic>);
+    ..space = json['space'] == null
+        ? null
+        : SpaceVariables.fromJson(json['space'] as Map<String, dynamic>);
 }
 
 Map<String, dynamic> _$UserProfileVariablesToJson(
