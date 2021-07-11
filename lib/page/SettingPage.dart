@@ -1,7 +1,11 @@
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
+
+import 'ChooseThemeColorPage.dart';
 
 
 class SettingPage extends StatefulWidget {
@@ -56,6 +60,16 @@ class _SettingPageState extends State<SettingPage> {
                   recordHistory = value;
 
                 });
+              },
+            ),
+            SettingsTile(
+              title: S.of(context).chooseThemeTitle,
+              subtitle: Provider.of<ThemeNotifierProvider>(context).themeColorName,
+              leading: Icon(Icons.color_lens_outlined),
+              onPressed: (context) {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => ChooseThemeColorPage(),
+                ));
               },
             ),
           ],

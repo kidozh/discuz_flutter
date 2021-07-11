@@ -16,8 +16,8 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:get_time_ago/get_time_ago.dart';
 import 'package:provider/provider.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 // ignore: must_be_immutable
 class ForumThreadWidget extends StatelessWidget{
@@ -88,7 +88,7 @@ class ForumThreadWidget extends StatelessWidget{
             children: <TextSpan>[
               //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
               TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
-              TextSpan(text: timeago.format(_forumThread.dbdatelineMinutes,locale: locale.scriptCode)),
+              TextSpan(text: TimeAgo.getTimeAgo(_forumThread.dbdatelineMinutes,locale: locale.scriptCode)),
               if(threadCategory.isNotEmpty)
                 TextSpan(text: " / ",style: TextStyle(fontWeight: FontWeight.w300)),
               if(threadCategory.isNotEmpty)

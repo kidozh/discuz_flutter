@@ -6,10 +6,12 @@ import 'package:discuz_flutter/page/ManageDiscuzPage.dart';
 import 'package:discuz_flutter/page/ManageTrustHostPage.dart';
 import 'package:discuz_flutter/page/ViewHistoryPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
 import 'package:discuz_flutter/screen/HotThreadScreen.dart';
 import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
+import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -21,6 +23,7 @@ import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_time_ago/get_time_ago.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
@@ -38,32 +41,65 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   log("initial for ads");
   MobileAds.instance.initialize();
+  log("languages initialization");
+  TimeAgo.setDefaultLocale("zh");
 
-  runApp(ChangeNotifierProvider(
-    create: (context) => DiscuzAndUserNotifier(),
-    child: MyApp(),
-  ));
+  runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: ThemeNotifierProvider()),
+          ChangeNotifierProvider.value(value: DiscuzAndUserNotifier())
+        ],
+        child: MyApp(),
+      ));
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+  _loadThemeColor(context) async{
+    String colorName = await UserPreferencesUtils.getThemeColor();
+    print("Get color name "+colorName);
+    Provider.of<ThemeNotifierProvider>(context,listen: false).setTheme(colorName);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: GlobalTheme.getThemeData(),
-      darkTheme: GlobalTheme.getDarkThemeData(),
-      home: MyHomePage(title: "谈坛"),
-      // localization
-      localizationsDelegates: [
-        S.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
-      ],
-      supportedLocales: S.delegate.supportedLocales,
-      builder: EasyLoading.init(),
+    _loadThemeColor(context);
+    return Consumer<ThemeNotifierProvider>(
+      builder: (context, themeColorEntity, _){
+
+        return MaterialApp(
+          title: 'Flutter Demo',
+          theme: ThemeData(
+              primaryColor: themeColorEntity.themeColor,
+              floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
+              brightness: Brightness.light
+          ),
+          darkTheme: ThemeData(
+              primaryColor: themeColorEntity.themeColor,
+              floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
+              brightness: Brightness.dark
+          ),
+          home: MyHomePage(title: "谈坛"),
+          // localization
+          localizationsDelegates: [
+            S.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate
+          ],
+          supportedLocales: S.delegate.supportedLocales,
+          localeResolutionCallback: (locale, _){
+            if(locale!=null){
+              print("Locale ${locale.languageCode},${locale.scriptCode}, ${locale.countryCode}");
+              TimeAgo.setDefaultLocale(locale.languageCode);
+            }
+          },
+          builder: EasyLoading.init(),
+        );
+      },
     );
+
   }
 }
 

@@ -178,14 +178,16 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                                     CircularProgressIndicator(
                                         value: downloadProgress.progress),
                                 errorWidget: (context, url, error) => Container(
-
+                                  width: 100.0,
+                                  height: 100.0,
                                   child: CircleAvatar(
+
                                     backgroundColor: CustomizeColor.getColorBackgroundById(uid),
                                     child: Text(
                                       _userProfileResult!.variables.getSpace().username.length != 0
                                           ? _userProfileResult!.variables.getSpace().username[0].toUpperCase()
                                           : S.of(context).anonymous,
-                                      style: TextStyle(color: Colors.white, fontSize: 12),
+                                      style: TextStyle(color: Colors.white, fontSize: 45),
                                     ),
                                   ),
                                 ),
@@ -319,14 +321,14 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                                 icon: Icon(Icons.timelapse, color: Colors.white,),
                                 title: S.of(context).lastActivityTime,
                                 titleColor: Colors.white,
-                                describe: S.of(context).onlineHours(_userProfileResult!.variables.getSpace().lastactivity),
+                                describe: _userProfileResult!.variables.getSpace().lastactivity,
                                 describeColor: Colors.white,
                               ),
                               UserProfileListItem(
                                 icon: Icon(Icons.av_timer, color: Colors.white,),
                                 title: S.of(context).lastPostTime,
                                 titleColor: Colors.white,
-                                describe: S.of(context).onlineHours(_userProfileResult!.variables.getSpace().lastpost),
+                                describe: _userProfileResult!.variables.getSpace().lastpost,
                                 describeColor: Colors.white,
                               ),
                               if(_userProfileResult!.variables.getSpace().birthYear != 0)

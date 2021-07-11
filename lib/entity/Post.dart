@@ -24,7 +24,6 @@ class Post{
   String author = "";
   String dateline = "";
   String message = "";
-  String username = "";
 
   @JsonKey(name:"authorid")
   @StringToIntConverter()

@@ -2509,6 +2509,206 @@ class S {
       args: [],
     );
   }
+
+  /// `The post is warned.`
+  String get warnedPost {
+    return Intl.message(
+      'The post is warned.',
+      name: 'warnedPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The post is blocked.`
+  String get blockedPost {
+    return Intl.message(
+      'The post is blocked.',
+      name: 'blockedPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The post is revised to prevent duplicated scoring.`
+  String get revisedPost {
+    return Intl.message(
+      'The post is revised to prevent duplicated scoring.',
+      name: 'revisedPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Theme color`
+  String get chooseThemeTitle {
+    return Intl.message(
+      'Theme color',
+      name: 'chooseThemeTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Grey`
+  String get colorGrey {
+    return Intl.message(
+      'Grey',
+      name: 'colorGrey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Blue`
+  String get colorBlue {
+    return Intl.message(
+      'Blue',
+      name: 'colorBlue',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Blue Accent`
+  String get colorBlueAccent {
+    return Intl.message(
+      'Blue Accent',
+      name: 'colorBlueAccent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cyan`
+  String get colorCyan {
+    return Intl.message(
+      'Cyan',
+      name: 'colorCyan',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Deep purple`
+  String get colorDeepPurple {
+    return Intl.message(
+      'Deep purple',
+      name: 'colorDeepPurple',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Deep purple accent`
+  String get colorDeepPurpleAccent {
+    return Intl.message(
+      'Deep purple accent',
+      name: 'colorDeepPurpleAccent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Deep orange`
+  String get colorDeepOrange {
+    return Intl.message(
+      'Deep orange',
+      name: 'colorDeepOrange',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Green`
+  String get colorGreen {
+    return Intl.message(
+      'Green',
+      name: 'colorGreen',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Indigo`
+  String get colorIndigo {
+    return Intl.message(
+      'Indigo',
+      name: 'colorIndigo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Indigo accent`
+  String get colorIndigoAccent {
+    return Intl.message(
+      'Indigo accent',
+      name: 'colorIndigoAccent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Orange`
+  String get colorOrange {
+    return Intl.message(
+      'Orange',
+      name: 'colorOrange',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Purple`
+  String get colorPurple {
+    return Intl.message(
+      'Purple',
+      name: 'colorPurple',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pink`
+  String get colorPink {
+    return Intl.message(
+      'Pink',
+      name: 'colorPink',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Red`
+  String get colorRed {
+    return Intl.message(
+      'Red',
+      name: 'colorRed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Teal`
+  String get colorTeal {
+    return Intl.message(
+      'Teal',
+      name: 'colorTeal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Black`
+  String get colorBlack {
+    return Intl.message(
+      'Black',
+      name: 'colorBlack',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

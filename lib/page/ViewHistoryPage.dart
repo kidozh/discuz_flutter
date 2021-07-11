@@ -20,8 +20,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:get_time_ago/get_time_ago.dart';
 import 'package:provider/provider.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 import 'DisplayForumPage.dart';
 import 'ViewThreadPage.dart';
@@ -162,7 +162,7 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Icon(Icons.access_time, size: 12,),
-                                    Text(timeago.format(viewHistory.updateTime), style: TextStyle(fontSize: 12),)
+                                    Text(TimeAgo.getTimeAgo(viewHistory.updateTime), style: TextStyle(fontSize: 12),)
                                   ],
                                 ),
 

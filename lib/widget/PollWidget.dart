@@ -8,9 +8,9 @@ import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get_time_ago/get_time_ago.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 class PollWidget extends StatelessWidget {
   Poll poll;
@@ -223,7 +223,7 @@ class PollState extends State<PollStatefulWidget>{
                             SizedBox(
                               width: 8.0,
                             ),
-                            Text(S.of(context).pollExpireAt(timeago.format(poll.expiredAt)), style: TextStyle(fontSize: 12))
+                            Text(S.of(context).pollExpireAt(TimeAgo.getTimeAgo(poll.expiredAt)), style: TextStyle(fontSize: 12))
                           ],
                         ),
                         Row(

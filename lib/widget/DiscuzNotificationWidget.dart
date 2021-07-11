@@ -13,7 +13,7 @@ import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
-import 'package:timeago/timeago.dart' as timeago;
+import 'package:get_time_ago/get_time_ago.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 // ignore: must_be_immutable
@@ -76,7 +76,7 @@ class DiscuzNotificationWidget extends StatelessWidget {
                             if(_notification.author.isEmpty)
                               TextSpan(text: _notification.type, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo.shade400, fontSize: 12)),
                             TextSpan(text: ' · '),
-                            TextSpan(text: timeago.format(_notification.dateline, locale: locale.scriptCode), style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
+                            TextSpan(text: TimeAgo.getTimeAgo(_notification.dateline, locale: locale.scriptCode), style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
 
                           ],
                         ),

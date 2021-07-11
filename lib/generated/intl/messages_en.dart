@@ -76,6 +76,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Popup HourGlass style"),
         "bio": MessageLookupByLibrary.simpleMessage("Bio"),
         "birthPlace": MessageLookupByLibrary.simpleMessage("Birth place"),
+        "blockedPost":
+            MessageLookupByLibrary.simpleMessage("The post is blocked."),
         "bobMinion": MessageLookupByLibrary.simpleMessage("Bob minion"),
         "bobMinionDescribe":
             MessageLookupByLibrary.simpleMessage("Cute yellow Minions"),
@@ -92,12 +94,31 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Chat page example"),
         "chengdu": MessageLookupByLibrary.simpleMessage("China - ChengDu"),
         "chooseDiscuz": MessageLookupByLibrary.simpleMessage("Choose a BBS"),
+        "chooseThemeTitle": MessageLookupByLibrary.simpleMessage("Theme color"),
         "city": MessageLookupByLibrary.simpleMessage("City"),
         "classic": MessageLookupByLibrary.simpleMessage("Classic"),
         "classicDescribe":
             MessageLookupByLibrary.simpleMessage("Classic and default"),
         "clearAllViewHistories":
             MessageLookupByLibrary.simpleMessage("Clear all histories"),
+        "colorBlack": MessageLookupByLibrary.simpleMessage("Black"),
+        "colorBlue": MessageLookupByLibrary.simpleMessage("Blue"),
+        "colorBlueAccent": MessageLookupByLibrary.simpleMessage("Blue Accent"),
+        "colorCyan": MessageLookupByLibrary.simpleMessage("Cyan"),
+        "colorDeepOrange": MessageLookupByLibrary.simpleMessage("Deep orange"),
+        "colorDeepPurple": MessageLookupByLibrary.simpleMessage("Deep purple"),
+        "colorDeepPurpleAccent":
+            MessageLookupByLibrary.simpleMessage("Deep purple accent"),
+        "colorGreen": MessageLookupByLibrary.simpleMessage("Green"),
+        "colorGrey": MessageLookupByLibrary.simpleMessage("Grey"),
+        "colorIndigo": MessageLookupByLibrary.simpleMessage("Indigo"),
+        "colorIndigoAccent":
+            MessageLookupByLibrary.simpleMessage("Indigo accent"),
+        "colorOrange": MessageLookupByLibrary.simpleMessage("Orange"),
+        "colorPink": MessageLookupByLibrary.simpleMessage("Pink"),
+        "colorPurple": MessageLookupByLibrary.simpleMessage("Purple"),
+        "colorRed": MessageLookupByLibrary.simpleMessage("Red"),
+        "colorTeal": MessageLookupByLibrary.simpleMessage("Teal"),
         "common": MessageLookupByLibrary.simpleMessage("Common"),
         "completeLoad": MessageLookupByLibrary.simpleMessage("Load done"),
         "completeRefresh": MessageLookupByLibrary.simpleMessage("Refresh done"),
@@ -335,6 +356,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "residentPlace": MessageLookupByLibrary.simpleMessage("Resident place"),
         "retry": MessageLookupByLibrary.simpleMessage("retry"),
         "reverse": MessageLookupByLibrary.simpleMessage("reverse"),
+        "revisedPost": MessageLookupByLibrary.simpleMessage(
+            "The post is revised to prevent duplicated scoring."),
         "sample": MessageLookupByLibrary.simpleMessage("Sample"),
         "saveImageSuccessfully": MessageLookupByLibrary.simpleMessage(
             "Save Image to device successfully."),
@@ -405,6 +428,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewHistory": MessageLookupByLibrary.simpleMessage("View History"),
         "viewThreadTitle":
             MessageLookupByLibrary.simpleMessage("View a thread"),
+        "warnedPost":
+            MessageLookupByLibrary.simpleMessage("The post is warned."),
         "watchPictureInFullScreen":
             MessageLookupByLibrary.simpleMessage("Full display"),
         "weiXinPay": MessageLookupByLibrary.simpleMessage("WeiXin Pay"),

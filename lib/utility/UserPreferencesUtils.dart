@@ -108,5 +108,18 @@ class UserPreferencesUtils{
 
   }
 
+  static final String themeColorKey = "themeColorKey";
+
+  static Future<void> putThemeColor(String themeColor) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(themeColorKey, themeColor);
+  }
+
+  static Future<String> getThemeColor() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var boolValue =  prefs.getString(themeColorKey);
+    return boolValue == null ? "" : boolValue;
+  }
+
 
 }

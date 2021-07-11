@@ -16,7 +16,6 @@ Post _$PostFromJson(Map<String, dynamic> json) {
     ..author = json['author'] as String
     ..dateline = json['dateline'] as String
     ..message = json['message'] as String
-    ..username = json['username'] as String
     ..authorId =
         const StringToIntConverter().fromJson(json['authorid'] as String?)
     ..attachment =
@@ -54,7 +53,6 @@ Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
       'author': instance.author,
       'dateline': instance.dateline,
       'message': instance.message,
-      'username': instance.username,
       'authorid': const StringToIntConverter().toJson(instance.authorId),
       'attachment': const StringToIntConverter().toJson(instance.attachment),
       'status': const StringToIntConverter().toJson(instance.status),

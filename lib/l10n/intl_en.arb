@@ -327,6 +327,25 @@
   "favorites": "Favorites",
   "chatMessage": "Chat",
   "privateMessage": "Private",
-  "publicMessage": "Public"
-
+  "publicMessage": "Public",
+  "warnedPost": "The post is warned.",
+  "blockedPost": "The post is blocked.",
+  "revisedPost": "The post is revised to prevent duplicated scoring.",
+  "chooseThemeTitle": "Theme color",
+  "colorGrey": "Grey",
+  "colorBlue": "Blue",
+  "colorBlueAccent": "Blue Accent",
+  "colorCyan": "Cyan",
+  "colorDeepPurple": "Deep purple",
+  "colorDeepPurpleAccent": "Deep purple accent",
+  "colorDeepOrange": "Deep orange",
+  "colorGreen": "Green",
+  "colorIndigo": "Indigo",
+  "colorIndigoAccent": "Indigo accent",
+  "colorOrange": "Orange",
+  "colorPurple": "Purple",
+  "colorPink": "Pink",
+  "colorRed": "Red",
+  "colorTeal": "Teal",
+  "colorBlack": "Black"
 }

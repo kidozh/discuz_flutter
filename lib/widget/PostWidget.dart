@@ -12,12 +12,18 @@ import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/widget/AttachmentWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
+import 'package:get_time_ago/get_time_ago.dart';
 import 'package:provider/provider.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import 'package:webview_flutter/webview_flutter.dart';
+
+int POST_BLOCKED = 1;
+int POST_WARNED = 2;
+int POST_REVISED = 4;
+int POST_MOBILE = 8;
 
 // ignore: must_be_immutable
 class PostWidget extends StatelessWidget {
@@ -109,7 +115,7 @@ class PostWidget extends StatelessWidget {
                                   fontSize: 12)),
                         TextSpan(text: ' · '),
                         TextSpan(
-                            text: timeago.format(_post.publishAt,
+                            text: TimeAgo.getTimeAgo(_post.publishAt,
                                 locale: locale.scriptCode),
                             style: TextStyle(
                                 fontWeight: FontWeight.w400, fontSize: 12)),
@@ -129,6 +135,9 @@ class PostWidget extends StatelessWidget {
               ))
             ],
           ),
+          // banned or warn
+          if (_post.status & POST_BLOCKED != 0)
+            getPostBlockedBlock(context),
           // rich text rendering
           DiscuzHtmlWidget(_discuz, _post.message),
           if (_post.attachmentMapper.isNotEmpty)
@@ -144,5 +153,13 @@ class PostWidget extends StatelessWidget {
         ],
       ),
     ));
+  }
+
+  Widget getPostBlockedBlock(BuildContext context){
+    return Padding(
+        padding: EdgeInsets.all(4.0),
+        child: Text(S.of(context).blockedPost),
+
+    );
   }
 }

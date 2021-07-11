@@ -43,7 +43,6 @@ dependencies:
   flutter_easyrefresh: ^2.2.1
   flutter_localizations:
     sdk: flutter
-  timeago: ^3.0.2
   flutter_html: ^2.0.0-nullsafety.0
   flutter_spinkit: any
   flutter_easyloading: ^3.0.0
@@ -64,6 +63,7 @@ dependencies:
   polls: ^1.0.1
   percent_indicator: ^3.0.1
   webview_cookie_manager: ^2.0.0
+  get_time_ago: ^1.0.2
 
 
 
