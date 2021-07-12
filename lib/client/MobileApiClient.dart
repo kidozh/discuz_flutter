@@ -7,6 +7,7 @@ import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/JsonResult/HotThreadResult.dart';
 import 'package:discuz_flutter/JsonResult/LoginResult.dart';
+import 'package:discuz_flutter/JsonResult/SmileyResult.dart';
 import 'package:discuz_flutter/JsonResult/UserDiscuzNotificationResult.dart';
 import 'package:discuz_flutter/JsonResult/UserProfileResult.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
@@ -107,6 +108,8 @@ abstract class MobileApiClient {
       @Field() int fid,
       @Field("tid") int tid,
       @Field("formhash") String formhash,
+      @Field("reppid") int? replyPostId,
+      @Field("noticetrimstr") String? notifyTriPostMessage,
       @Field("message") String message,
       // for captcha services
       @Field("seccodehash") String captchaHash,
@@ -145,4 +148,7 @@ abstract class MobileApiClient {
 
   @GET("/api/mobile/index.php?version=4&module=profile")
   Future<String> userProfileResultRaw(@Query("uid") int uid);
+
+  @GET("/api/mobile/index.php?version=4&module=smiley")
+  Future<SmileyResult> smileyResult();
 }

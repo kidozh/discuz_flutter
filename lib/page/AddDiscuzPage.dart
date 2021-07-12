@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:discuz_flutter/JsonResult/CheckResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
+import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
@@ -126,12 +127,23 @@ class _AddDiscuzFormFieldState
                 // input fields
                 new TextFormField(
                   controller: _urlController,
+                  onFieldSubmitted: (text){
+                    if (_formKey.currentState!.validate()) {
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text(S.of(context).connectServerWhenAdding)));
+                      _checkApiAvailable();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(S.of(context).incorrectDiscuzAddress)));
+                    }
+                  },
                   decoration: new InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: "网页地址",
-                    hintText: "键入网页地址，如https://bbs.nwpu.edu.cn",
-                    helperText: "网页地址通常是论坛服务的地址",
+                    labelText: S.of(context).discuzServerAddress,
+                    hintText: S.of(context).discuzServerAddressHint,
+                    helperText: S.of(context).discuzServerAddressHelperText,
                     prefixIcon: Icon(Icons.web),
+
                   ),
                   validator: ValidationBuilder().url().build(),
                 ),
@@ -146,22 +158,22 @@ class _AddDiscuzFormFieldState
                 ButtonBar(
                   children: [
                     TextButton(
-                      child: Text("取消添加"),
+                      child: Text(S.of(context).cancel),
                       onPressed: () {
                         Navigator.pop(context);
                       },
                     ),
                     ElevatedButton(
-                      child: Text("检查并添加"),
+                      child: Text(S.of(context).continueAdding),
                       onPressed: () {
                         log("Press the elevated button");
                         if (_formKey.currentState!.validate()) {
                           ScaffoldMessenger.of(context)
-                              .showSnackBar(SnackBar(content: Text('访问网页API中')));
+                              .showSnackBar(SnackBar(content: Text(S.of(context).connectServerWhenAdding)));
                           _checkApiAvailable();
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("您输入的内容似乎不正确？")));
+                              SnackBar(content: Text(S.of(context).incorrectDiscuzAddress)));
                         }
                       },
                     )

@@ -162,7 +162,7 @@ class PollState extends State<PollStatefulWidget>{
                             animationDuration: 500,
                             percent: getOptionPercent(index),
                             backgroundColor: Theme.of(context).brightness == Brightness.dark? Colors.white24: Colors.grey.shade300,
-                            progressColor: Colors.blue.shade400,
+                            progressColor: Theme.of(context).primaryColor,
                             center: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [

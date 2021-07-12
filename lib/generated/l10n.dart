@@ -2709,6 +2709,127 @@ class S {
       args: [],
     );
   }
+
+  /// `Connect to BBS server for verification.`
+  String get connectServerWhenAdding {
+    return Intl.message(
+      'Connect to BBS server for verification.',
+      name: 'connectServerWhenAdding',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The Discuz's address`
+  String get discuzServerAddress {
+    return Intl.message(
+      'The Discuz\'s address',
+      name: 'discuzServerAddress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `eg. https://bbs.nwpu.edu.cn`
+  String get discuzServerAddressHint {
+    return Intl.message(
+      'eg. https://bbs.nwpu.edu.cn',
+      name: 'discuzServerAddressHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `It usually is the address discuz serves.`
+  String get discuzServerAddressHelperText {
+    return Intl.message(
+      'It usually is the address discuz serves.',
+      name: 'discuzServerAddressHelperText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invalid discuz address.`
+  String get incorrectDiscuzAddress {
+    return Intl.message(
+      'Invalid discuz address.',
+      name: 'incorrectDiscuzAddress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cancel`
+  String get cancelAdding {
+    return Intl.message(
+      'Cancel',
+      name: 'cancelAdding',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Continue`
+  String get continueAdding {
+    return Intl.message(
+      'Continue',
+      name: 'continueAdding',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View author's profile`
+  String get viewAuthorInfo {
+    return Intl.message(
+      'View author\'s profile',
+      name: 'viewAuthorInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reply`
+  String get replyPost {
+    return Intl.message(
+      'Reply',
+      name: 'replyPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View {user}'s profile.`
+  String viewUserInfo(Object user) {
+    return Intl.message(
+      'View $user\'s profile.',
+      name: 'viewUserInfo',
+      desc: '',
+      args: [user],
+    );
+  }
+
+  /// `[quote][size=2][url=forum.php?mod=redirect&goto=findpost&pid={pid}&ptid={ptid}]{author} posted at {fullTimeString}[/url][/size]\n{trimMessage}[/quote]`
+  String replyPostTrimMessage(Object pid, Object ptid, Object author,
+      Object fullTimeString, Object trimMessage) {
+    return Intl.message(
+      '[quote][size=2][url=forum.php?mod=redirect&goto=findpost&pid=$pid&ptid=$ptid]$author posted at $fullTimeString[/url][/size]\n$trimMessage[/quote]',
+      name: 'replyPostTrimMessage',
+      desc: '',
+      args: [pid, ptid, author, fullTimeString, trimMessage],
+    );
+  }
+
+  /// `[Pic]`
+  String get pictureTagInMessage {
+    return Intl.message(
+      '[Pic]',
+      name: 'pictureTagInMessage',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -6,6 +6,7 @@ import 'package:discuz_flutter/page/ManageDiscuzPage.dart';
 import 'package:discuz_flutter/page/ManageTrustHostPage.dart';
 import 'package:discuz_flutter/page/ViewHistoryPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
 import 'package:discuz_flutter/screen/HotThreadScreen.dart';
@@ -48,7 +49,8 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider.value(value: ThemeNotifierProvider()),
-          ChangeNotifierProvider.value(value: DiscuzAndUserNotifier())
+          ChangeNotifierProvider.value(value: DiscuzAndUserNotifier()),
+          ChangeNotifierProvider.value(value: ReplyPostNotifierProvider())
         ],
         child: MyApp(),
       ));

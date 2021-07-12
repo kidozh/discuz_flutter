@@ -347,5 +347,31 @@
   "colorPink": "Pink",
   "colorRed": "Red",
   "colorTeal": "Teal",
-  "colorBlack": "Black"
+  "colorBlack": "Black",
+  "connectServerWhenAdding": "Connect to BBS server for verification.",
+  "discuzServerAddress": "The Discuz's address",
+  "discuzServerAddressHint": "eg. https://bbs.nwpu.edu.cn",
+  "discuzServerAddressHelperText": "It usually is the address discuz serves.",
+  "incorrectDiscuzAddress": "Invalid discuz address.",
+  "cancelAdding": "Cancel",
+  "continueAdding": "Continue",
+  "viewAuthorInfo": "View author's profile",
+  "replyPost": "Reply",
+  "viewUserInfo": "View {user}'s profile.",
+  "@viewUserInfo": {
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "replyPostTrimMessage": "[quote][size=2][url=forum.php?mod=redirect&goto=findpost&pid={pid}&ptid={ptid}]{author} posted at {fullTimeString}[/url][/size]\n{trimMessage}[/quote]",
+  "@replyPostTrimMessage": {
+    "placeholders": {
+      "pid": {},
+      "ptid": {},
+      "author": {},
+      "fullTimeString": {},
+      "trimMessage": {}
+    }
+  },
+  "pictureTagInMessage": "[Pic]"
 }

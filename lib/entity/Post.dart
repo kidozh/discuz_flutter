@@ -124,6 +124,12 @@ class Attachment{
   Map<String, dynamic> toJson() => _$AttachmentToJson(this);
 
   String getAttachmentRealUrl(Discuz discuz){
-    return discuz.baseURL + "/" + url + attachmentPathName;
+    if(url.startsWith("http") || url.startsWith("http")){
+      return url + attachmentPathName;
+    }
+    else{
+      return discuz.baseURL + "/" + url + attachmentPathName;
+    }
+
   }
 }

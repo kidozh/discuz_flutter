@@ -225,19 +225,31 @@ class _MobileApiClient implements MobileApiClient {
   }
 
   @override
-  Future<ApiResult> sendReplyResult(fid, tid, formhash, message, captchaHash,
-      captchaType, verification) async {
+  Future<ApiResult> sendReplyResult(
+      fid,
+      tid,
+      formhash,
+      replyPostId,
+      notifyTriPostMessage,
+      message,
+      captchaHash,
+      captchaType,
+      verification) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _data = {
       'fid': fid,
       'tid': tid,
       'formhash': formhash,
+      'reppid': replyPostId,
+      'noticetrimstr': notifyTriPostMessage,
       'message': message,
       'seccodehash': captchaHash,
       'seccodemodid': captchaType,
       'seccodeverify': verification
     };
+    _data.removeWhere((k, v) => v == null);
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
         ApiResult>(Options(
             method: 'POST',
@@ -411,6 +423,22 @@ class _MobileApiClient implements MobileApiClient {
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<SmileyResult> smileyResult() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<SmileyResult>(Options(
+                method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            .compose(
+                _dio.options, '/api/mobile/index.php?version=4&module=smiley',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = SmileyResult.fromJson(_result.data!);
     return value;
   }
 

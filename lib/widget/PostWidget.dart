@@ -7,6 +7,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/DisplayForumPage.dart';
 import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
@@ -56,14 +57,15 @@ class PostWidget extends StatelessWidget {
                           _discuz, _post.authorId.toString()),
                       progressIndicatorBuilder:
                           (context, url, downloadProgress) =>
-                          CircularProgressIndicator(
-                              value: downloadProgress.progress),
+                              CircularProgressIndicator(
+                                  value: downloadProgress.progress),
                       errorWidget: (context, url, error) => Container(
                         width: 16.0,
                         height: 16.0,
                         child: CircleAvatar(
-                          backgroundColor: CustomizeColor.getColorBackgroundById(
-                              _post.authorId),
+                          backgroundColor:
+                              CustomizeColor.getColorBackgroundById(
+                                  _post.authorId),
                           child: Text(
                             _post.author.length != 0
                                 ? _post.author[0].toUpperCase()
@@ -82,11 +84,15 @@ class PostWidget extends StatelessWidget {
                         ),
                       ),
                     ),
-                    onTap: () async{
-                      User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+                    onTap: () async {
+                      User? user = Provider.of<DiscuzAndUserNotifier>(context,
+                              listen: false)
+                          .user;
                       await Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => UserProfilePage(_discuz,user, _post.authorId)));
+                          MaterialPageRoute(
+                              builder: (context) => UserProfilePage(
+                                  _discuz, user, _post.authorId)));
                     },
                   ),
                 ),
@@ -131,20 +137,50 @@ class PostWidget extends StatelessWidget {
                           TextStyle(fontWeight: FontWeight.w400, fontSize: 12),
                     ),
                   ),
+                  PopupMenuButton(
+                    itemBuilder: (context) => [
+                      PopupMenuItem<int>(
+                        child: Text(S.of(context).replyPost),
+                        value: 0,
+                      ),
+                      PopupMenuItem<int>(
+                        child: Text(S.of(context).viewUserInfo(_post.author)),
+                        value: 1,
+                      ),
+                    ],
+                    onSelected: (int pos) {
+                      switch (pos){
+                        case 0:{
+                          // set provider to
+                          Provider.of<ReplyPostNotifierProvider>(context,listen: false).setPost(_post);
+                          break;
+                        }
+                        case 1:{
+                          User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+                          Navigator.push(context,
+                              MaterialPageRoute(
+                                  builder: (context) => UserProfilePage(
+                                      _discuz, user, _post.authorId)));
+                          break;
+                        }
+                      }
+                    },
+                  )
                 ],
               ))
             ],
           ),
           // banned or warn
-          if (_post.status & POST_BLOCKED != 0)
-            getPostBlockedBlock(context),
+          if (_post.status & POST_BLOCKED != 0) getPostBlockedBlock(context),
+          if (_post.status & POST_WARNED != 0) getPostWarnBlock(context),
+          if (_post.status & POST_REVISED != 0) getPostRevisedBlock(context),
           // rich text rendering
           DiscuzHtmlWidget(_discuz, _post.message),
           if (_post.attachmentMapper.isNotEmpty)
             ListView.builder(
               itemBuilder: (context, index) {
                 Attachment attachment = _post.getAttachmentList()[index];
-                return AttachmentWidget(_discuz,attachment);
+                return AttachmentWidget(_discuz, attachment);
               },
               itemCount: _post.getAttachmentList().length,
               physics: new NeverScrollableScrollPhysics(),
@@ -155,11 +191,42 @@ class PostWidget extends StatelessWidget {
     ));
   }
 
-  Widget getPostBlockedBlock(BuildContext context){
-    return Padding(
-        padding: EdgeInsets.all(4.0),
-        child: Text(S.of(context).blockedPost),
+  Widget getPostBlockedBlock(BuildContext context) {
+    return Card(
+      color: Theme.of(context).brightness == Brightness.light
+          ? Colors.red.shade200
+          : Colors.red.shade700,
+      child: ListTile(
+        leading: Icon(Icons.block),
+        title: Text(S.of(context).blockedPost),
+        dense: true,
+      ),
+    );
+  }
 
+  Widget getPostWarnBlock(BuildContext context) {
+    return Card(
+      color: Theme.of(context).brightness == Brightness.light
+          ? Colors.amber.shade200
+          : Colors.amber.shade700,
+      child: ListTile(
+        leading: Icon(Icons.warning_amber_outlined),
+        title: Text(S.of(context).warnedPost),
+        dense: true,
+      ),
+    );
+  }
+
+  Widget getPostRevisedBlock(BuildContext context) {
+    return Card(
+      color: Theme.of(context).brightness == Brightness.light
+          ? Colors.blue.shade200
+          : Colors.blue.shade700,
+      child: ListTile(
+        leading: Icon(Icons.edit_outlined),
+        title: Text(S.of(context).revisedPost),
+        dense: true,
+      ),
     );
   }
 }
