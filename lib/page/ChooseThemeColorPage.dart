@@ -25,7 +25,15 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
       ),
       body: SettingsList(
         sections: [
+
           SettingsSection(tiles: [
+            SettingsTile(
+              title: S.of(context).colorAmber,
+              trailing: trailingWidget("amber"),
+              onPressed: (BuildContext context) {
+                changeColor("amber");
+              },
+            ),
             SettingsTile(
               title: S.of(context).colorGrey,
               trailing: trailingWidget("grey"),
@@ -38,13 +46,6 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
               trailing: trailingWidget("blue"),
               onPressed: (BuildContext context) {
                 changeColor("blue");
-              },
-            ),
-            SettingsTile(
-              title: S.of(context).colorBlueAccent,
-              trailing: trailingWidget("blueAccent"),
-              onPressed: (BuildContext context) {
-                changeColor("blueAccent");
               },
             ),
             SettingsTile(
@@ -62,17 +63,24 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
               },
             ),
             SettingsTile(
-              title: S.of(context).colorDeepPurpleAccent,
-              trailing: trailingWidget("deepPurpleAccent"),
-              onPressed: (BuildContext context) {
-                changeColor("deepPurpleAccent");
-              },
-            ),
-            SettingsTile(
               title: S.of(context).colorDeepOrange,
               trailing: trailingWidget("deepOrange"),
               onPressed: (BuildContext context) {
                 changeColor("deepOrange");
+              },
+            ),
+            SettingsTile(
+              title: S.of(context).colorYellow,
+              trailing: trailingWidget("yellow"),
+              onPressed: (BuildContext context) {
+                changeColor("yellow");
+              },
+            ),
+            SettingsTile(
+              title: S.of(context).colorLime,
+              trailing: trailingWidget("lime"),
+              onPressed: (BuildContext context) {
+                changeColor("lime");
               },
             ),
             SettingsTile(
@@ -87,13 +95,6 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
               trailing: trailingWidget("indigo"),
               onPressed: (BuildContext context) {
                 changeColor("indigo");
-              },
-            ),
-            SettingsTile(
-              title: S.of(context).colorIndigoAccent,
-              trailing: trailingWidget("indigoAccent"),
-              onPressed: (BuildContext context) {
-                changeColor("indigoAccent");
               },
             ),
             SettingsTile(
@@ -132,10 +133,31 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
               },
             ),
             SettingsTile(
-              title: S.of(context).colorBlack,
-              trailing: trailingWidget("black"),
+              title: S.of(context).colorBrown,
+              trailing: trailingWidget("brown"),
               onPressed: (BuildContext context) {
-                changeColor("black");
+                changeColor("brown");
+              },
+            ),
+            SettingsTile(
+              title: S.of(context).colorLightBlue,
+              trailing: trailingWidget("lightBlue"),
+              onPressed: (BuildContext context) {
+                changeColor("lightBlue");
+              },
+            ),
+            SettingsTile(
+              title: S.of(context).colorBlueGrey,
+              trailing: trailingWidget("blueGrey"),
+              onPressed: (BuildContext context) {
+                changeColor("blueGrey");
+              },
+            ),
+            SettingsTile(
+              title: S.of(context).colorLightGreen,
+              trailing: trailingWidget("lightGreen"),
+              onPressed: (BuildContext context) {
+                changeColor("lightGreen");
               },
             ),
           ]),

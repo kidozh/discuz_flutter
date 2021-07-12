@@ -35,8 +35,8 @@ class ForumPartitionWidget extends StatelessWidget{
       child: Column(
         children: [
           ListTile(
-            leading: Icon(Icons.forum_outlined,color: GlobalTheme.getThemeData().primaryColor,),
-            title: Text(_forumPartition.name, style: TextStyle(color: GlobalTheme.getThemeData().primaryColor),),
+            leading: Icon(Icons.forum_outlined,color: Theme.of(context).primaryColor,),
+            title: Text(_forumPartition.name, style: TextStyle(color: Theme.of(context).primaryColor),),
 
           ),
 

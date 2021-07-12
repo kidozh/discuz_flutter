@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/dialog/SwitchDiscuzDialog.dart';
 import 'package:discuz_flutter/page/ManageAccountPage.dart';
@@ -14,6 +15,7 @@ import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -24,6 +26,7 @@ import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get_time_ago/get_time_ago.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
@@ -69,35 +72,81 @@ class MyApp extends StatelessWidget {
     _loadThemeColor(context);
     return Consumer<ThemeNotifierProvider>(
       builder: (context, themeColorEntity, _){
+        final materialTheme = ThemeData(
+          brightness: MediaQuery.platformBrightnessOf(context),
+          cupertinoOverrideTheme: CupertinoThemeData(
+            primaryColor: themeColorEntity.themeColor,
+          ),
+          primarySwatch: themeColorEntity.themeColor,
+          outlinedButtonTheme: OutlinedButtonThemeData(
+            style: ButtonStyle(
+              padding: MaterialStateProperty.all(EdgeInsets.all(16.0)),
+              foregroundColor: MaterialStateProperty.all(themeColorEntity.themeColor),
+            ),
+          ),
+        );
+        if (Platform.isAndroid) {
+          print("Selected color ${themeColorEntity.themeColorName} ${themeColorEntity.themeColor}");
 
-        return MaterialApp(
-          title: 'Flutter Demo',
-          theme: ThemeData(
-              primaryColor: themeColorEntity.themeColor,
-              floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
-              brightness: Brightness.light
-          ),
-          darkTheme: ThemeData(
-              primaryColor: themeColorEntity.themeColor,
-              floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
-              brightness: Brightness.dark
-          ),
-          home: MyHomePage(title: "谈坛"),
-          // localization
-          localizationsDelegates: [
-            S.delegate,
-            GlobalCupertinoLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate
-          ],
-          supportedLocales: S.delegate.supportedLocales,
-          localeResolutionCallback: (locale, _){
-            if(locale!=null){
-              print("Locale ${locale.languageCode},${locale.scriptCode}, ${locale.countryCode}");
-              TimeAgo.setDefaultLocale(locale.languageCode);
-            }
-          },
-          builder: EasyLoading.init(),
+          SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.dark,
+            statusBarBrightness: themeColorEntity.brightness,
+            // systemNavigationBarColor: Color(themeColorEntity.themeColor.value),
+            // systemNavigationBarIconBrightness: themeColorEntity.brightness
+          );
+          SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+        }
+
+        return Theme(
+            data: materialTheme,
+            child: PlatformProvider(
+              settings: PlatformSettingsData(iosUsesMaterialWidgets: false),
+              builder: (context) => PlatformApp(
+                title: 'Flutter Demo',
+                // theme: ThemeData(
+                //     primaryColor: themeColorEntity.themeColor,
+                //     floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
+                //     brightness: Brightness.light
+                // ),
+                // darkTheme: ThemeData(
+                //     primaryColor: themeColorEntity.themeColor,
+                //     floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
+                //     brightness: Brightness.dark
+                // ),
+                material: (_,__)=> MaterialAppData(
+                  theme: materialTheme,
+                  darkTheme: ThemeData(
+                      primaryColor: themeColorEntity.themeColor,
+                      floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
+                      brightness: Brightness.dark
+                  )
+                ),
+                cupertino: (_,__) => CupertinoAppData(
+                  theme: CupertinoThemeData(
+                    primaryColor: themeColorEntity.themeColor,
+                  ),
+
+                ),
+                // localization
+                localizationsDelegates: [
+                  S.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate
+                ],
+                supportedLocales: S.delegate.supportedLocales,
+                localeResolutionCallback: (locale, _){
+                  if(locale!=null){
+                    print("Locale ${locale.languageCode},${locale.scriptCode}, ${locale.countryCode}");
+                    TimeAgo.setDefaultLocale(locale.languageCode);
+                  }
+                },
+                builder: EasyLoading.init(),
+                home: MyHomePage(title: "谈坛"),
+              ),
+            )
+
         );
       },
     );
@@ -456,7 +505,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       )),
       bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Theme.of(context).accentColor,
+        selectedItemColor: Theme.of(context).primaryColor,
         unselectedItemColor: Colors.grey.shade500,
         currentIndex: _bottomNavigationbarIndex,
         items: [

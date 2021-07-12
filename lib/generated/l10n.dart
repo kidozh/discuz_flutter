@@ -2710,6 +2710,76 @@ class S {
     );
   }
 
+  /// `Brown`
+  String get colorBrown {
+    return Intl.message(
+      'Brown',
+      name: 'colorBrown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Amber`
+  String get colorAmber {
+    return Intl.message(
+      'Amber',
+      name: 'colorAmber',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Light blue`
+  String get colorLightBlue {
+    return Intl.message(
+      'Light blue',
+      name: 'colorLightBlue',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Blue Grey`
+  String get colorBlueGrey {
+    return Intl.message(
+      'Blue Grey',
+      name: 'colorBlueGrey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Light green`
+  String get colorLightGreen {
+    return Intl.message(
+      'Light green',
+      name: 'colorLightGreen',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Lime`
+  String get colorLime {
+    return Intl.message(
+      'Lime',
+      name: 'colorLime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Yellow`
+  String get colorYellow {
+    return Intl.message(
+      'Yellow',
+      name: 'colorYellow',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Connect to BBS server for verification.`
   String get connectServerWhenAdding {
     return Intl.message(

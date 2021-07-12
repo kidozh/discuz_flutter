@@ -65,6 +65,7 @@ dependencies:
   webview_cookie_manager: ^2.0.0
   get_time_ago: ^1.0.2
   intl: ^0.17.0
+  flutter_platform_widgets: ^1.9.5
 
 
 

@@ -1,23 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-Map<String, Color> themeColorMap = {
+Map<String, MaterialColor> themeColorMap = {
   'grey': Colors.grey,
   'blue': Colors.blue,
-  'blueAccent': Colors.blueAccent,
   'cyan': Colors.cyan,
   'deepPurple': Colors.purple,
-  'deepPurpleAccent': Colors.deepPurpleAccent,
   'deepOrange': Colors.orange,
   'green': Colors.green,
   'indigo': Colors.indigo,
-  'indigoAccent': Colors.indigoAccent,
   'orange': Colors.orange,
   'purple': Colors.purple,
   'pink': Colors.pink,
   'red': Colors.red,
   'teal': Colors.teal,
-  'black': Colors.black,
+  'brown': Colors.brown,
+  "amber": Colors.amber,
+  "lightBlue": Colors.lightBlue,
+  "blueGrey":Colors.blueGrey,
+  "lightGreen": Colors.lightGreen,
+  "lime":Colors.lime,
+  "yellow":Colors.yellow,
 };
 
 class ThemeNotifierProvider with ChangeNotifier{
@@ -30,5 +33,23 @@ class ThemeNotifierProvider with ChangeNotifier{
     notifyListeners();
   }
 
-  Color get themeColor => themeColorMap[_themeColor] != null ? themeColorMap[_themeColor]! : Colors.blue;
+  MaterialColor get themeColor => themeColorMap[_themeColor] != null ? themeColorMap[_themeColor]! : Colors.blue;
+
+  Brightness get brightness {
+    if (["amber","grey","cyan","deepOrange","yellow","lime","orange","lightBlue","lightGreen"].contains(_themeColor)){
+      return Brightness.light;
+    }
+    else{
+      return Brightness.dark;
+    }
+  }
+
+  Brightness get iconBrightness{
+    if(brightness == Brightness.light){
+      return Brightness.dark;
+    }
+    else{
+      return Brightness.light;
+    }
+  }
 }
