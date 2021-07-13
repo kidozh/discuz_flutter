@@ -2,6 +2,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 
@@ -19,8 +20,8 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
 
     _selectedColorName = Provider.of<ThemeNotifierProvider>(context,listen: false).themeColorName;
 
-    return Scaffold(
-      appBar: AppBar(
+    return PlatformScaffold(
+      appBar: PlatformAppBar(
         title: Text(S.of(context).chooseThemeTitle),
       ),
       body: SettingsList(
@@ -168,7 +169,7 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
 
   Widget trailingWidget(String colorName) {
     return ( _selectedColorName == colorName)
-        ? Icon(Icons.check, color: Theme.of(context).primaryColor)
+        ? Icon(PlatformIcons(context).checkMark, color: Theme.of(context).primaryColor)
         : Icon(null);
   }
 

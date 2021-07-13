@@ -16,6 +16,7 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get_time_ago/get_time_ago.dart';
 import 'package:provider/provider.dart';
 
@@ -73,7 +74,7 @@ class HotThreadWidget extends StatelessWidget{
             User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
             await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => UserProfilePage(_discuz,user, _hotThread.authorId)));
+                platformPageRoute(context:context,builder: (context) => UserProfilePage(_discuz,user, _hotThread.authorId)));
           },
         ),
         title: Text(_hotThread.subject,style: TextStyle(fontWeight: FontWeight.bold)),
@@ -92,7 +93,7 @@ class HotThreadWidget extends StatelessWidget{
         onTap: () async {
           await Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ViewThreadPage( _discuz,  _user, _hotThread.tid,))
+              platformPageRoute(context:context,builder: (context) => ViewThreadPage( _discuz,  _user, _hotThread.tid,))
           );
         },
 

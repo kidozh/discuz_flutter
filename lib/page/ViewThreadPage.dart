@@ -27,6 +27,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:dio/dio.dart';
@@ -352,12 +353,14 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    return PlatformScaffold(
+        iosContentPadding: true,
+        iosContentBottomPadding: true,
+      appBar: PlatformAppBar(
         title: _viewThreadResult == null
             ? Text(S.of(context).viewThreadTitle)
             : Text(_viewThreadResult.threadVariables.threadInfo.subject),
-        centerTitle: true,
+        //centerTitle: true,
       ),
       body: Column(
         mainAxisSize: MainAxisSize.max,

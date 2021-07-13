@@ -19,6 +19,7 @@ import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_time_ago/get_time_ago.dart';
 import 'package:provider/provider.dart';
@@ -177,13 +178,13 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
                           if(viewHistory.type == "thread"){
                             await Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => ViewThreadPage(discuz,user, viewHistory.identification))
+                                platformPageRoute(context:context,builder: (context) => ViewThreadPage(discuz,user, viewHistory.identification))
                             );
                           }
                           else if(viewHistory.type == "forum"){
                             await Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => DisplayForumPage(discuz, user, viewHistory.identification))
+                                platformPageRoute(context:context,builder: (context) => DisplayForumPage(discuz, user, viewHistory.identification))
                             );
                           }
                         },

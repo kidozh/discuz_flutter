@@ -9,6 +9,7 @@ import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -18,9 +19,9 @@ class AddDiscuzPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("添加一个论坛"),
+    return PlatformScaffold(
+        appBar: PlatformAppBar(
+          title: Text(S.of(context).addDiscuzTitle),
         ),
         body: AddDiscuzForumFieldStatefulWidget());
   }
@@ -49,7 +50,7 @@ class _AddDiscuzFormFieldState
     await dao.insertDiscuz(discuz);
     // pop the activity
     ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('成功添加${discuz.siteName}论坛')));
+        .showSnackBar(SnackBar(content: Text(S.of(context).addDiscuzSuccessfully(discuz.siteName))));
     Navigator.pop(context);
   }
 

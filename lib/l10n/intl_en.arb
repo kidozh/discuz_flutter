@@ -380,5 +380,19 @@
       "trimMessage": {}
     }
   },
-  "pictureTagInMessage": "[Pic]"
+  "pictureTagInMessage": "[Pic]",
+  "httpBrowseWarn": "HTTP protocol warning",
+  "appearanceOptimizedPlatform": "Platform preference",
+  "appearanceOptimizedPlatformSubtitle": "Choose the app appearance on preferred platform.",
+  "ios": "iOS",
+  "android": "Android / Harmony OS(compatible)",
+  "fuchsia": "Fuchsia",
+  "followSystem": "Follow system",
+  "addDiscuzTitle": "Add a discuz! BBS",
+  "addDiscuzSuccessfully": "Add {discuz} to your device successfully.",
+  "@addDiscuzSuccessfull": {
+    "placeholders": {
+      "discuz": {}
+    }
+  }
 }

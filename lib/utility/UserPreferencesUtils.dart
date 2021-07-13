@@ -121,5 +121,18 @@ class UserPreferencesUtils{
     return boolValue == null ? "" : boolValue;
   }
 
+  static final String platformPreferenceKey = "platformPreferenceKey";
+
+  static Future<void> putPlatformPreference(String platformName) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(platformPreferenceKey, platformName);
+  }
+
+  static Future<String> getPlatformPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var platformName =  prefs.getString(platformPreferenceKey);
+    return platformName == null ? "" : platformName;
+  }
+
 
 }

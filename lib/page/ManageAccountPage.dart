@@ -11,6 +11,7 @@ import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class ManageAccountPage extends StatelessWidget{
@@ -29,7 +30,7 @@ class ManageAccountPage extends StatelessWidget{
       floatingActionButton: FloatingActionButton(
         onPressed: () async{
           await Navigator.push(context,
-              MaterialPageRoute(builder: (context) => LoginPage(discuz, null)));
+              platformPageRoute(context:context,builder: (context) => LoginPage(discuz, null)));
         },
         tooltip: S.of(context).addNewDiscuz,
         child: Icon(Icons.add),

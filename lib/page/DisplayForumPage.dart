@@ -27,6 +27,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:dio/dio.dart';
@@ -45,6 +46,7 @@ class DisplayForumPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // try ios
     return DisplayForumStatefulWidget(discuz, user, fid);
   }
 }
@@ -245,13 +247,14 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
   Widget build(BuildContext context) {
     // TODO: implement build
 
-    return Scaffold(
-      appBar: AppBar(
+    return PlatformScaffold(
+      iosContentPadding: true,
+      iosContentBottomPadding: true,
+      appBar: PlatformAppBar(
         title: _displayForumResult == null
             ? Text(S.of(context).forumDisplayTitle)
             : Text(_displayForumResult!.discuzIndexVariables.forum.name),
-        centerTitle: true,
-        actions: [
+        trailingActions: [
           Row(
             children: [
               IconButton(
@@ -260,7 +263,7 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
                     _showForumFilterBottomSheet(context);
                   }),
               IconButton(
-                  icon: Icon(Icons.info_outlined),
+                  icon: Icon(PlatformIcons(context).info),
                   onPressed: () {
                     _showInformationBottomSheet(context);
                   })
@@ -476,7 +479,7 @@ class _DisplayForumState extends State<DisplayForumStatefulWidget> {
       //Map<String, String> idNameMap = threadType.idNameMap;
       threadTypeList = threadType.getThreadTypeList();
     }
-      showModalBottomSheet(
+    showModalBottomSheet(
           isScrollControlled: false,
           context: context,
           builder: (context) {

@@ -6,6 +6,7 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/page/DisplayForumPage.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 // ignore: must_be_immutable
 class ForumCardWidget extends StatelessWidget{
@@ -32,7 +33,7 @@ class ForumCardWidget extends StatelessWidget{
       onTap: () async{
         await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => DisplayForumPage(_discuz, _user, _forum.getFid()))
+            platformPageRoute(context:context,builder: (context) => DisplayForumPage(_discuz, _user, _forum.getFid()))
         );
       },
     );

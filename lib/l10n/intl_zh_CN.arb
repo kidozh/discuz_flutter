@@ -380,5 +380,19 @@
       "trimMessage": {}
     }
   },
-  "pictureTagInMessage": "[图片]"
+  "pictureTagInMessage": "[图片]",
+  "httpBrowseWarn": "不安全的HTTP协议",
+  "appearanceOptimizedPlatform": "运行平台样式偏好",
+  "appearanceOptimizedPlatformSubtitle": "你可以选择对应平台下应用的显示样式",
+  "ios": "iOS",
+  "android": "Android或者兼容鸿蒙操作系统",
+  "fuchsia": "Fuchsia",
+  "followSystem": "跟随系统",
+  "addDiscuzTitle": "添加Discuz! 论坛",
+  "addDiscuzSuccessfully": "成功添加 {discuz} 论坛。",
+  "@addDiscuzSuccessfull": {
+    "placeholders": {
+      "discuz": {}
+    }
+  }
 }

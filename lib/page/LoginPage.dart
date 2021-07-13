@@ -15,6 +15,7 @@ import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -31,8 +32,10 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
+    return PlatformScaffold(
+        iosContentPadding: true,
+        iosContentBottomPadding: true,
+        appBar: PlatformAppBar(
           title: Text(S.of(context).signInTitle(discuz.siteName)),
 
         ),

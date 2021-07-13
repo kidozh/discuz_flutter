@@ -2900,6 +2900,96 @@ class S {
       args: [],
     );
   }
+
+  /// `HTTP protocol warning`
+  String get httpBrowseWarn {
+    return Intl.message(
+      'HTTP protocol warning',
+      name: 'httpBrowseWarn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Platform preference`
+  String get appearanceOptimizedPlatform {
+    return Intl.message(
+      'Platform preference',
+      name: 'appearanceOptimizedPlatform',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose the app appearance on preferred platform.`
+  String get appearanceOptimizedPlatformSubtitle {
+    return Intl.message(
+      'Choose the app appearance on preferred platform.',
+      name: 'appearanceOptimizedPlatformSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `iOS`
+  String get ios {
+    return Intl.message(
+      'iOS',
+      name: 'ios',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Android / Harmony OS(compatible)`
+  String get android {
+    return Intl.message(
+      'Android / Harmony OS(compatible)',
+      name: 'android',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fuchsia`
+  String get fuchsia {
+    return Intl.message(
+      'Fuchsia',
+      name: 'fuchsia',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Follow system`
+  String get followSystem {
+    return Intl.message(
+      'Follow system',
+      name: 'followSystem',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add a discuz! BBS`
+  String get addDiscuzTitle {
+    return Intl.message(
+      'Add a discuz! BBS',
+      name: 'addDiscuzTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add {discuz} to your device successfully.`
+  String addDiscuzSuccessfully(Object discuz) {
+    return Intl.message(
+      'Add $discuz to your device successfully.',
+      name: 'addDiscuzSuccessfully',
+      desc: '',
+      args: [discuz],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

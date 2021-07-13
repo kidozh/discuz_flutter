@@ -9,6 +9,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart' as DioCookieManager;
 import 'package:discuz_flutter/client/MobileApiClient.dart';
@@ -56,12 +57,20 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    return PlatformScaffold(
+      iosContentBottomPadding: true,
+      iosContentPadding: true,
+      appBar: PlatformAppBar(
         title: Text(S.of(context).signInViaBrowser),
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
-        actions: <Widget>[
-          NavigationControls(_controller.future),
+        trailingActions: <Widget>[
+          //NavigationControls(_controller.future),
+          PlatformIconButton(
+            icon: Icon(PlatformIcons(context).add),
+            onPressed: (){
+              _checkUserLogined();
+            },
+          )
           // SampleMenu(_controller.future),
         ],
       ),
@@ -102,7 +111,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           gestureNavigationEnabled: true,
         );
       }),
-      floatingActionButton: checkButton(),
+      //floatingActionButton: checkButton(),
     );
   }
 
@@ -137,33 +146,30 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
   }
 
   void _triggerNotificationDialog() async{
+    // if(discuz.baseURL.startsWith("http://")){
+    //   await showPlatformDialog(context: context, builder: (context){
+    //     return PlatformAlertDialog(
+    //       title: Text(S.of(context).httpBrowseWarn),
+    //       content: Text(S.of(context).loginByWebHttpWarn),
+    //       actions: [
+    //         TextButton(onPressed: (){
+    //           Navigator.of(context).pop(false);
+    //         }, child: Text(S.of(context).ok))
+    //       ],
+    //     );
+    //   });
+    // }
+
+
     print("show dialog");
     await Future.delayed(Duration(seconds: 1));
-    await showDialog(context: context, builder: (context){
-      return AlertDialog(
+    await showPlatformDialog(context: context, builder: (context){
+      return PlatformAlertDialog(
         title: Text(S.of(context).loginByWebTitle),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if(discuz.baseURL.startsWith("http://"))
-              Container(
-                color: Colors.red.shade50,
-                padding: EdgeInsets.symmetric(vertical: 4.0,horizontal: 4.0),
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Icon(Icons.warning,color: Colors.red,),
-                    ),
-                    Expanded(child: Text(S.of(context).loginByWebHttpWarn,style: TextStyle(color: Colors.red,)))
-                  ],
-                ),
-              ),
-            Container(height: 8.0,),
             Text(S.of(context).loginByWebMessage),
-
-
-
           ],
         ),
         actions: [

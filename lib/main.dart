@@ -48,6 +48,7 @@ void main() {
   log("languages initialization");
   TimeAgo.setDefaultLocale("zh");
 
+
   runApp(
       MultiProvider(
         providers: [
@@ -59,12 +60,32 @@ void main() {
       ));
 }
 
+
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   _loadThemeColor(context) async{
+
     String colorName = await UserPreferencesUtils.getThemeColor();
+    String platformName = await UserPreferencesUtils.getPlatformPreference();
     print("Get color name "+colorName);
     Provider.of<ThemeNotifierProvider>(context,listen: false).setTheme(colorName);
+    Provider.of<ThemeNotifierProvider>(context,listen: false).setPlatformName(platformName);
+    if(PlatformProvider.of(context)!=null){
+      switch (platformName){
+        case "":{
+          PlatformProvider.of(context)!.changeToAutoDetectPlatform();
+          break;
+        }
+        case "ios":{
+          PlatformProvider.of(context)!.changeToCupertinoPlatform();
+          break;
+        }
+        case "android":{
+          PlatformProvider.of(context)!.changeToMaterialPlatform();
+          break;
+        }
+      }
+    }
   }
 
   @override
@@ -73,7 +94,7 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeNotifierProvider>(
       builder: (context, themeColorEntity, _){
         final materialTheme = ThemeData(
-          brightness: MediaQuery.platformBrightnessOf(context),
+          //brightness: MediaQuery.platformBrightnessOf(context),
           cupertinoOverrideTheme: CupertinoThemeData(
             primaryColor: themeColorEntity.themeColor,
           ),
@@ -85,23 +106,27 @@ class MyApp extends StatelessWidget {
             ),
           ),
         );
-        if (Platform.isAndroid) {
-          print("Selected color ${themeColorEntity.themeColorName} ${themeColorEntity.themeColor}");
 
-          SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: Brightness.dark,
-            statusBarBrightness: themeColorEntity.brightness,
-            // systemNavigationBarColor: Color(themeColorEntity.themeColor.value),
-            // systemNavigationBarIconBrightness: themeColorEntity.brightness
-          );
-          SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
-        }
+        // if (Platform.isAndroid) {
+        //   print("Selected color ${themeColorEntity.themeColorName} ${themeColorEntity.themeColor}");
+        //
+        //   SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(
+        //     statusBarColor: Colors.transparent,
+        //     statusBarIconBrightness: Brightness.dark,
+        //     statusBarBrightness: themeColorEntity.brightness,
+        //     // systemNavigationBarColor: Color(themeColorEntity.themeColor.value),
+        //     // systemNavigationBarIconBrightness: themeColorEntity.brightness
+        //   );
+        //   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+        // }
 
         return Theme(
             data: materialTheme,
             child: PlatformProvider(
-              settings: PlatformSettingsData(iosUsesMaterialWidgets: false),
+              settings: PlatformSettingsData(
+                  iosUsesMaterialWidgets: true,
+
+              ),
               builder: (context) => PlatformApp(
                 title: 'Flutter Demo',
                 // theme: ThemeData(
@@ -244,7 +269,8 @@ class _MyHomePageState extends State<MyHomePage> {
           Navigator.of(context).pop();
           Navigator.push(
               context,
-              MaterialPageRoute(
+              platformPageRoute(
+                  context: context,
                   builder: (context) => AddDiscuzPage()));
         }));
 
@@ -269,19 +295,19 @@ class _MyHomePageState extends State<MyHomePage> {
         ListTile(
           title: Text(S.of(context).loginTitle),
           subtitle: Text(S.of(context).loginSubtitle),
-          leading: Icon(Icons.login),
+          leading: Icon(PlatformIcons(context).personAdd),
           onTap: () async {
             Discuz? discuz =
                 Provider.of<DiscuzAndUserNotifier>(context, listen: false)
                     .discuz;
             if (discuz != null) {
-              await Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage(discuz, null)));
+              await Navigator.push(context, platformPageRoute(context:context,builder: (context) => LoginPage(discuz, null)));
             }
           },
         ),
         ListTile(
           title: Text(S.of(context).manageAccount),
-          leading: Icon(Icons.account_circle_outlined),
+          leading: Icon(PlatformIcons(context).personOutline),
           onTap: () async {
             Discuz? discuz =
                 Provider.of<DiscuzAndUserNotifier>(context, listen: false)
@@ -289,7 +315,8 @@ class _MyHomePageState extends State<MyHomePage> {
             if (discuz != null) {
               await Navigator.push(
                   context,
-                  MaterialPageRoute(
+                  platformPageRoute(
+                    context: context,
                       builder: (context) => ManageAccountPage(
                         discuz,
                       )));
@@ -302,20 +329,22 @@ class _MyHomePageState extends State<MyHomePage> {
           onTap: () async {
             await Navigator.push(
                 context,
-                MaterialPageRoute(
+                platformPageRoute(
+                  context: context,
                     builder: (context) => ManageDiscuzPage()));
           },
         ),
         ListTile(
           title: Text(S.of(context).viewHistory),
-          leading: Icon(Icons.history),
+          leading: Icon(PlatformIcons(context).time),
           onTap: () async {
             Discuz? discuz =
                 Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
             if(discuz != null){
               await Navigator.push(
                   context,
-                  MaterialPageRoute(
+                  platformPageRoute(
+                    context: context,
                       builder: (context) => ViewHistoryPage(discuz)));
             }
 
@@ -323,21 +352,21 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         ListTile(
           title: Text(S.of(context).trustHostTitle),
-          leading: Icon(Icons.verified_user_outlined),
+          leading: Icon(PlatformIcons(context).checkMarkCircledOutline),
           onTap: () async {
-            await Navigator.push(context,MaterialPageRoute(builder: (context) => ManageTrustHostPage()));
+            await Navigator.push(context,platformPageRoute(context:context,builder: (context) => ManageTrustHostPage()));
           },
         ),
         ListTile(
           title: Text(S.of(context).settingTitle),
-          leading: Icon(Icons.settings_outlined),
+          leading: Icon(PlatformIcons(context).settingsSolid),
           onTap: () async {
             Discuz? discuz =
                 Provider.of<DiscuzAndUserNotifier>(context, listen: false)
                     .discuz;
             if (discuz != null) {
               await Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => SettingPage()));
+                  platformPageRoute(context:context,builder: (context) => SettingPage()));
             }
           },
         )

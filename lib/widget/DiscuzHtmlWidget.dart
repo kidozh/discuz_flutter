@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -154,7 +155,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                           int tid = int.tryParse(tidString)!;
                           await Navigator.push(
                               context.buildContext,
-                              MaterialPageRoute(builder: (context) => ViewThreadPage( discuz,user, tid))
+                              platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadPage( discuz,user, tid))
                           );
                           return;
                         }
@@ -170,7 +171,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                           int tid = int.tryParse(tidString)!;
                           await Navigator.push(
                               context.buildContext,
-                              MaterialPageRoute(builder: (context) => ViewThreadPage(discuz,user,tid))
+                              platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadPage(discuz,user,tid))
                           );
                           return;
                         }
@@ -186,7 +187,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                           int fid = int.tryParse(fidString)!;
                           await Navigator.push(
                               context.buildContext,
-                              MaterialPageRoute(builder: (context) => DisplayForumPage(discuz,user, fid))
+                              platformPageRoute(context:context.buildContext,builder: (context) => DisplayForumPage(discuz,user, fid))
                           );
                           return;
                         }
@@ -201,7 +202,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 if(fid!=null && int.tryParse(fid) != null){
                   await Navigator.push(
                       context.buildContext,
-                      MaterialPageRoute(builder: (context) => DisplayForumPage(discuz, user, int.tryParse(fid)!))
+                      platformPageRoute(context:context.buildContext,builder: (context) => DisplayForumPage(discuz, user, int.tryParse(fid)!))
                   );
                   return;
                 }
@@ -211,7 +212,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 if(tid!=null && int.tryParse(tid) != null){
                   await Navigator.push(
                       context.buildContext,
-                      MaterialPageRoute(builder: (context) => ViewThreadPage(discuz, user, int.tryParse(tid)!))
+                      platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadPage(discuz, user, int.tryParse(tid)!))
                   );
                   return;
                 }
@@ -235,7 +236,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
             if(string!= null){
               Navigator.push(
                   context.buildContext,
-                  MaterialPageRoute(builder: (context) => FullImagePage(string))
+                  platformPageRoute(context:context.buildContext,builder: (context) => FullImagePage(string))
               );
             }
           },

@@ -17,6 +17,7 @@ import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/UserProfileListItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
 
@@ -88,16 +89,20 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
   Widget build(BuildContext context) {
     // TODO: implement build
     if(_userProfileResult == null){
-      return Scaffold(
-        appBar: AppBar(
+      return PlatformScaffold(
+        iosContentPadding: true,
+        iosContentBottomPadding: true,
+        appBar: PlatformAppBar(
             title: Text(S.of(context).userProfile)
         ),
         body: BlankScreen(),
       );
     }
     else if(_userProfileResult != null && _userProfileResult!.errorResult!= null){
-      return Scaffold(
-        appBar: AppBar(
+      return PlatformScaffold(
+        iosContentPadding: true,
+        iosContentBottomPadding: true,
+        appBar: PlatformAppBar(
             title: Text(S.of(context).userProfile)
         ),
         body: ErrorCard(_userProfileResult!.errorResult!.key,
@@ -108,9 +113,22 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
         ),
       );
     }
-    return Scaffold(
-      appBar: AppBar(
+    return PlatformScaffold(
+      iosContentPadding: true,
+      iosContentBottomPadding: true,
+      appBar: PlatformAppBar(
         title: _userProfileResult == null? Text(S.of(context).userProfile): Text(_userProfileResult!.variables.getSpace().username),
+        trailingActions: [
+          Row(
+            children: [
+              IconButton(
+                  icon: Icon(Icons.message),
+                  onPressed: () {
+                  }),
+            ],
+          )
+
+        ],
       ),
       body: Stack(
         children: [
@@ -457,12 +475,13 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
           )
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // to new message
-        },
-        child: Icon(Icons.message),
-      ),
+
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     // to new message
+      //   },
+      //   child: Icon(Icons.message),
+      // ),
 
     );
   }

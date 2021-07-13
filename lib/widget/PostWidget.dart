@@ -17,6 +17,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get_time_ago/get_time_ago.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -90,7 +91,8 @@ class PostWidget extends StatelessWidget {
                           .user;
                       await Navigator.push(
                           context,
-                          MaterialPageRoute(
+                          platformPageRoute(
+                            context:context,
                               builder: (context) => UserProfilePage(
                                   _discuz, user, _post.authorId)));
                     },
@@ -158,7 +160,8 @@ class PostWidget extends StatelessWidget {
                         case 1:{
                           User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
                           Navigator.push(context,
-                              MaterialPageRoute(
+                              platformPageRoute(
+                                context: context,
                                   builder: (context) => UserProfilePage(
                                       _discuz, user, _post.authorId)));
                           break;
