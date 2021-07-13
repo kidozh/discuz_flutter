@@ -44,11 +44,11 @@ class DiscuzMessageState extends State<DiscuzMessageStatefulWidget> {
 
                   Tab(
                     icon: Icon(Icons.chat_bubble_rounded),
-                    text: S.of(context).privateMessage,
+                    //text: S.of(context).privateMessage,
                   ),
                   Tab(
                     icon: Icon(Icons.campaign_rounded),
-                    text: S.of(context).publicMessage,
+                    //text: S.of(context).publicMessage,
                   ),
                 ],
                   labelColor: Theme.of(context).primaryColor,

@@ -10,6 +10,7 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
+import 'package:discuz_flutter/screen/FavoriteThreadScreen.dart';
 import 'package:discuz_flutter/screen/HotThreadScreen.dart';
 import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
@@ -181,12 +182,13 @@ class MyApp extends StatelessWidget {
                       darkTheme: ThemeData(
                           primaryColor: themeColorEntity.themeColor,
                           floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
-                          brightness: Brightness.dark
+                          brightness: Brightness.dark,
                       )
                   ),
                   cupertino: (_,__) => CupertinoAppData(
                     theme: CupertinoThemeData(
                       primaryColor: themeColorEntity.themeColor,
+                      brightness: Brightness.dark
                     ),
 
                   ),
@@ -605,7 +607,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
       body: [DiscuzPortalScreen(),HotThreadScreen(),NotificationScreen(),
-        NotificationScreen(),DiscuzMessageScreen()
+        FavoriteThreadScreen(),DiscuzMessageScreen()
       ][_bottomNavigationbarIndex],
       floatingActionButton: FloatingActionButton(
         onPressed: _triggerSwitchDiscuzDialog,

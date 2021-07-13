@@ -3000,6 +3000,46 @@ class S {
       args: [],
     );
   }
+
+  /// `Legal information`
+  String get legalInformation {
+    return Intl.message(
+      'Legal information',
+      name: 'legalInformation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Display`
+  String get displaySettingTitle {
+    return Intl.message(
+      'Display',
+      name: 'displaySettingTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Font size in paragraph`
+  String get fontSizeInParagraph {
+    return Intl.message(
+      'Font size in paragraph',
+      name: 'fontSizeInParagraph',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{size} pt`
+  String fontSizeInParagraphUnit(Object size) {
+    return Intl.message(
+      '$size pt',
+      name: 'fontSizeInParagraphUnit',
+      desc: '',
+      args: [size],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

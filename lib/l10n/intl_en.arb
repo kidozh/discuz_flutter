@@ -395,5 +395,14 @@
       "discuz": {}
     }
   },
-  "buildDescription": "Built with flutter, made with ♥, run on multiple platforms."
+  "buildDescription": "Built with flutter, made with ♥, run on multiple platforms.",
+  "legalInformation": "Legal information",
+  "displaySettingTitle": "Display",
+  "fontSizeInParagraph": "Font size in paragraph",
+  "fontSizeInParagraphUnit": "{size} pt",
+  "@fontSizeInParagraphUnit": {
+    "placeholders": {
+      "size": {}
+    }
+  }
 }

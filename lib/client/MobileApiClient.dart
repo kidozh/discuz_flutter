@@ -5,6 +5,7 @@ import 'package:discuz_flutter/JsonResult/CheckLoginResult.dart';
 import 'package:discuz_flutter/JsonResult/CheckResult.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
+import 'package:discuz_flutter/JsonResult/FavoriteThreadResult.dart';
 import 'package:discuz_flutter/JsonResult/HotThreadResult.dart';
 import 'package:discuz_flutter/JsonResult/LoginResult.dart';
 import 'package:discuz_flutter/JsonResult/PrivateMessageDetailResult.dart';
@@ -170,4 +171,7 @@ abstract class MobileApiClient {
 
   @GET("/api/mobile/index.php?version=4&module=publicpm")
   Future<PublicMessagePortalResult> publicMessagePortalResult(@Query("page") int page);
+
+  @GET("/api/mobile/index.php?version=4&module=myfavthread")
+  Future<FavoriteThreadResult> favoriteThreadResult(@Query("page") int page);
 }

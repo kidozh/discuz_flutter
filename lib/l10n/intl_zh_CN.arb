@@ -395,5 +395,14 @@
       "discuz": {}
     }
   },
-  "buildDescription": "由flutter驱动, 能够兼容多种平台。"
+  "buildDescription": "由flutter驱动, 能够兼容多种平台。",
+  "legalInformation": "法律信息",
+  "displaySettingTitle": "显示",
+  "fontSizeInParagraph": "正文字体大小",
+  "fontSizeInParagraphUnit": "{size}逻辑像素",
+  "@fontSizeInParagraphUnit": {
+    "placeholders": {
+      "size": {}
+    }
+  }
 }

@@ -154,7 +154,7 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                 Expanded(
                   flex: 1,
                   child: Container(
-                    color: Colors.white,
+                    color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.grey.shade900,
                   ),
                 ),
               ],
@@ -168,7 +168,7 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                       Container(
                         width: double.infinity,
                         height: 220.0,
-                        color: Colors.white,
+                        color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.grey.shade900,
                       ),
                       ClipPath(
                         clipper: TopBarClipper(
@@ -235,14 +235,14 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                   ),
                   Container(
                     width: double.infinity,
-                    color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white12,
+                    color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.grey.shade900,
                     padding: EdgeInsets.all(10.0),
                     child: DiscuzHtmlWidget(discuz,_userProfileResult!.variables.getSpace().signatureHtml),
                   ),
                   // custom title
                   Container(
                       width: double.infinity,
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.grey.shade900,
                       padding: EdgeInsets.all(4),
                       child: Card(
                         color: Colors.blueGrey,
@@ -283,7 +283,7 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                   // admin group
                   Container(
                       width: double.infinity,
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.grey.shade900,
                       padding: EdgeInsets.all(4),
                       child: Card(
                         color: Colors.blue,
@@ -314,7 +314,7 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                   // register time
                   Container(
                       width: double.infinity,
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.grey.shade900,
                       padding: EdgeInsets.all(4),
                       child: Card(
                         color: Colors.green,
@@ -374,7 +374,7 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                   // birthplace and habits
                   Container(
                       width: double.infinity,
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.grey.shade900,
                       padding: EdgeInsets.all(4),
                       child: Card(
                         color: Colors.pink,
@@ -407,7 +407,7 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                   // birthplace
                   Container(
                       width: double.infinity,
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.grey.shade900,
                       padding: EdgeInsets.all(4),
                       child: Card(
                         color: Colors.orange,
@@ -456,7 +456,7 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
                   // credit
                   Container(
                       width: double.infinity,
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.grey.shade900,
                       padding: EdgeInsets.all(4),
                       child: Card(
                         color: Colors.lightBlue,

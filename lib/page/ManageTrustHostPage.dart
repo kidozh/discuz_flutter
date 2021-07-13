@@ -14,6 +14,7 @@ import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class ManageTrustHostPage extends StatelessWidget{
@@ -21,8 +22,10 @@ class ManageTrustHostPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      appBar: AppBar(
+    return PlatformScaffold(
+      iosContentPadding: true,
+      iosContentBottomPadding: true,
+      appBar: PlatformAppBar(
         title: Text(S.of(context).trustHostTitle),
       ),
       body: ManageTrustHostStateWidget(),

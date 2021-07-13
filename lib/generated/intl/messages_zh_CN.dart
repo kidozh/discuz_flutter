@@ -27,37 +27,39 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m3(filename) => "后台下载文件 ${filename} 中。";
 
-  static String m4(readAccess, star) => "阅读权限： ${readAccess}， 等级： ${star}";
+  static String m4(size) => "${size}逻辑像素";
 
-  static String m5(uri) => "无法打开此链接 : ${uri}.";
+  static String m5(readAccess, star) => "阅读权限： ${readAccess}， 等级： ${star}";
 
-  static String m6(hour) => "${hour}小时";
+  static String m6(uri) => "无法打开此链接 : ${uri}.";
 
-  static String m7(time) => "该投票将于${time}过期.";
+  static String m7(hour) => "${hour}小时";
 
-  static String m8(people) => "共有${people}人已投票.";
+  static String m8(time) => "该投票将于${time}过期.";
 
-  static String m9(pos) => "第${pos}层";
+  static String m9(people) => "共有${people}人已投票.";
 
-  static String m10(pid, ptid, author, fullTimeString, trimMessage) =>
+  static String m10(pos) => "第${pos}层";
+
+  static String m11(pid, ptid, author, fullTimeString, trimMessage) =>
       "[quote][size=2][url=forum.php?mod=redirect&goto=findpost&pid=${pid}&ptid=${ptid}]${author} 发表于 ${fullTimeString}[/url][/size]\n${trimMessage}[/quote]";
 
-  static String m11(username, discuzName) =>
+  static String m12(username, discuzName) =>
       "用户 ${username} 已成功登录到 ${discuzName}。";
 
-  static String m12(discuzName) => "登录至 ${discuzName}";
+  static String m13(discuzName) => "登录至 ${discuzName}";
 
-  static String m13(checked, allowed) => "投票 (${checked} / ${allowed})";
+  static String m14(checked, allowed) => "投票 (${checked} / ${allowed})";
 
-  static String m14(title) => "成功删除历史记录 ${title}.";
+  static String m15(title) => "成功删除历史记录 ${title}.";
 
-  static String m15(filename) => "成功下载文件： ${filename}。";
+  static String m16(filename) => "成功下载文件： ${filename}。";
 
-  static String m16(username) => "用户 ${username} 已失效";
+  static String m17(username) => "用户 ${username} 已失效";
 
-  static String m17(uid) => "用户编号： ${uid}";
+  static String m18(uid) => "用户编号： ${uid}";
 
-  static String m18(user) => "查看${user}详情";
+  static String m19(user) => "查看${user}详情";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -155,6 +157,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("其通常就是论坛的地址"),
         "discuzServerAddressHint":
             MessageLookupByLibrary.simpleMessage("例如： https://bbs.nwpu.edu.cn"),
+        "displaySettingTitle": MessageLookupByLibrary.simpleMessage("显示"),
         "downloadAttachment": MessageLookupByLibrary.simpleMessage("下载附件"),
         "downloadingFiles": m3,
         "email": MessageLookupByLibrary.simpleMessage("邮箱"),
@@ -171,6 +174,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "floatViewDescribe":
             MessageLookupByLibrary.simpleMessage("顶部或底部视图浮动在列表上"),
         "followSystem": MessageLookupByLibrary.simpleMessage("跟随系统"),
+        "fontSizeInParagraph": MessageLookupByLibrary.simpleMessage("正文字体大小"),
+        "fontSizeInParagraphUnit": m4,
         "forgetPassword": MessageLookupByLibrary.simpleMessage("忘记密码?"),
         "forumDisplayTitle": MessageLookupByLibrary.simpleMessage("显示板块"),
         "forumFilterSortByHeat": MessageLookupByLibrary.simpleMessage("最火人气"),
@@ -206,7 +211,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "googleAdSubTitle":
             MessageLookupByLibrary.simpleMessage("由Google提供的广告"),
         "googleAdTitle": MessageLookupByLibrary.simpleMessage("广告"),
-        "groupInfoDescription": m4,
+        "groupInfoDescription": m5,
         "habit": MessageLookupByLibrary.simpleMessage("爱好"),
         "hangzhou": MessageLookupByLibrary.simpleMessage("中国 - 杭州"),
         "headerFloat": MessageLookupByLibrary.simpleMessage("Header浮动"),
@@ -230,10 +235,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "lastActivityTime": MessageLookupByLibrary.simpleMessage("上次活动于"),
         "lastPostTime": MessageLookupByLibrary.simpleMessage("上次发帖时间"),
         "lastVisitTime": MessageLookupByLibrary.simpleMessage("上次访问时间"),
+        "legalInformation": MessageLookupByLibrary.simpleMessage("法律信息"),
         "linkHeader": MessageLookupByLibrary.simpleMessage("Header连接器"),
         "linkHeaderDescribeDescribe":
             MessageLookupByLibrary.simpleMessage("使用连接器自定义Header"),
-        "linkUnableToOpen": m5,
+        "linkUnableToOpen": m6,
         "listDirection": MessageLookupByLibrary.simpleMessage("列表方向"),
         "listEmbed": MessageLookupByLibrary.simpleMessage("列表嵌入"),
         "listEmbedDescribe":
@@ -280,7 +286,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "nullDiscuzTitle": MessageLookupByLibrary.simpleMessage("还没有指定一个论坛"),
         "ok": MessageLookupByLibrary.simpleMessage("好"),
         "old": MessageLookupByLibrary.simpleMessage("年龄"),
-        "onlineHours": m6,
+        "onlineHours": m7,
         "onlineHoursTitle": MessageLookupByLibrary.simpleMessage("在线时间"),
         "openFileInExternalAppActionText":
             MessageLookupByLibrary.simpleMessage("打开"),
@@ -298,10 +304,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "phone": MessageLookupByLibrary.simpleMessage("电话"),
         "pictureTagInMessage": MessageLookupByLibrary.simpleMessage("[图片]"),
         "policy": MessageLookupByLibrary.simpleMessage("条款"),
-        "pollExpireAt": m7,
-        "pollVoterNumber": m8,
+        "pollExpireAt": m8,
+        "pollVoterNumber": m9,
         "postNumber": MessageLookupByLibrary.simpleMessage("回帖数"),
-        "postPosition": m9,
+        "postPosition": m10,
         "preparingPage": MessageLookupByLibrary.simpleMessage("正在准备此界面。"),
         "privacyPolicy": MessageLookupByLibrary.simpleMessage("隐私政策"),
         "privateMessage": MessageLookupByLibrary.simpleMessage("私信"),
@@ -342,7 +348,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "releaseToRefresh": MessageLookupByLibrary.simpleMessage("释放刷新"),
         "relogin": MessageLookupByLibrary.simpleMessage("重新登陆"),
         "replyPost": MessageLookupByLibrary.simpleMessage("回复"),
-        "replyPostTrimMessage": m10,
+        "replyPostTrimMessage": m11,
         "residentPlace": MessageLookupByLibrary.simpleMessage("居住地"),
         "retry": MessageLookupByLibrary.simpleMessage("重试"),
         "reverse": MessageLookupByLibrary.simpleMessage("反向"),
@@ -360,16 +366,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "sendReply": MessageLookupByLibrary.simpleMessage("回帖"),
         "sendReplyHint": MessageLookupByLibrary.simpleMessage("说些什么吧。"),
         "settingTitle": MessageLookupByLibrary.simpleMessage("设置"),
-        "signInSuccessTitle": m11,
-        "signInTitle": m12,
+        "signInSuccessTitle": m12,
+        "signInTitle": m13,
         "signInViaBrowser": MessageLookupByLibrary.simpleMessage("使用网页登录"),
         "signUp": MessageLookupByLibrary.simpleMessage("注册"),
         "spaceDescribe": MessageLookupByLibrary.simpleMessage("Flare动画 - 星空"),
         "star": MessageLookupByLibrary.simpleMessage("Star 项目"),
         "style": MessageLookupByLibrary.simpleMessage("样式"),
-        "submitPoll": m13,
-        "successfullyDeleteViewHistoryContent": m14,
-        "successfullyDownloadFiles": m15,
+        "submitPoll": m14,
+        "successfullyDeleteViewHistoryContent": m15,
+        "successfullyDownloadFiles": m16,
         "supportAuthor": MessageLookupByLibrary.simpleMessage("支持作者"),
         "supportAuthorDescribe":
             MessageLookupByLibrary.simpleMessage("你的支持是我最大的动力"),
@@ -392,8 +398,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "updateAt": MessageLookupByLibrary.simpleMessage("更新于 %T"),
         "userExpiredSubtitle":
             MessageLookupByLibrary.simpleMessage("当前用户授权已过期，你需要重新登录以重新激活此用户。"),
-        "userExpiredTitle": m16,
-        "userIdTitle": m17,
+        "userExpiredTitle": m17,
+        "userIdTitle": m18,
         "userProfile": MessageLookupByLibrary.simpleMessage("个人中心"),
         "userProfileDescribe":
             MessageLookupByLibrary.simpleMessage("带回弹效果的个人中心"),
@@ -404,7 +410,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewAuthorInfo": MessageLookupByLibrary.simpleMessage("查看用户详情"),
         "viewHistory": MessageLookupByLibrary.simpleMessage("浏览历史"),
         "viewThreadTitle": MessageLookupByLibrary.simpleMessage("查看帖子"),
-        "viewUserInfo": m18,
+        "viewUserInfo": m19,
         "warnedPost": MessageLookupByLibrary.simpleMessage("此贴被警告。"),
         "watchPictureInFullScreen":
             MessageLookupByLibrary.simpleMessage("查看大图"),
