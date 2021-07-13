@@ -394,5 +394,6 @@
     "placeholders": {
       "discuz": {}
     }
-  }
+  },
+  "buildDescription": "由flutter驱动, 能够兼容多种平台。"
 }

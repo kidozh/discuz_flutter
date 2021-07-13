@@ -60,6 +60,8 @@ class PrivateMessageDetail{
   @JsonKey(name: "vdateline")
   String dateTimeString = "";
 
+  get readableString => dateTimeString.replaceAll("&nbsp;", "");
+
   PrivateMessageDetail();
 
   factory PrivateMessageDetail.fromJson(Map<String, dynamic> json) => _$PrivateMessageDetailFromJson(json);

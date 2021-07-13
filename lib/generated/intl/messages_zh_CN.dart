@@ -90,6 +90,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "bobMinionDescribe": MessageLookupByLibrary.simpleMessage("可爱的小黄人"),
         "bottomBouncing": MessageLookupByLibrary.simpleMessage("底部回弹"),
         "bottomBouncingDescribe": MessageLookupByLibrary.simpleMessage("底部可越界"),
+        "buildDescription":
+            MessageLookupByLibrary.simpleMessage("由flutter驱动, 能够兼容多种平台。"),
         "cancel": MessageLookupByLibrary.simpleMessage("取消"),
         "cancelAdding": MessageLookupByLibrary.simpleMessage("取消"),
         "captchaRequired": MessageLookupByLibrary.simpleMessage("需要验证码"),

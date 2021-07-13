@@ -56,7 +56,7 @@ class PrivateMessageDetailWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Text(
-                  _privateMessageDetail.dateTimeString,
+                  _privateMessageDetail.readableString,
                   style: TextStyle(
                     color: Colors.grey,
                     fontSize: 13.0,
@@ -184,7 +184,7 @@ class PrivateMessageDetailWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  _privateMessageDetail.msgFromName+" / "+_privateMessageDetail.dateTimeString,
+                  _privateMessageDetail.msgFromName+" / "+_privateMessageDetail.readableString,
                   style: TextStyle(
                     color: Colors.grey,
                     fontSize: 13.0,

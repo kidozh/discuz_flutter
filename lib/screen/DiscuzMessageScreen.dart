@@ -2,6 +2,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/screen/PrivateMessagePortalScreen.dart';
+import 'package:discuz_flutter/screen/PublicMessagePortalScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -58,7 +59,7 @@ class DiscuzMessageState extends State<DiscuzMessageStatefulWidget> {
                 Expanded(
                   child: TabBarView(children: [
                     PrivateMessagePortalScreen(),
-                    Icon(Icons.messenger_outline)
+                    PublicMessagePortalScreen()
                   ]),
                 )
               ],

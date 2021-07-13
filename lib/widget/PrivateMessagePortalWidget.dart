@@ -75,11 +75,11 @@ class PrivateMessagePortalWidget extends StatelessWidget{
             children: <TextSpan>[
               //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
               TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
-              TextSpan(text: _privateMessagePortal.dateTimeString),
+              TextSpan(text: _privateMessagePortal.readableString),
             ],
           ),
         ),
-        trailing: _privateMessagePortal.isNew ? Icon(Icons.new_releases_outlined) :null,
+        trailing: _privateMessagePortal.isNew ? Icon(Icons.new_releases_outlined, color: Theme.of(context).primaryColor,) :null,
         onTap: () async {
           await Navigator.push(
               context,

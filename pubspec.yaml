@@ -66,6 +66,7 @@ dependencies:
   get_time_ago: ^1.0.2
   intl: ^0.17.0
   flutter_platform_widgets: ^1.9.5
+  hive: ^2.0.4
 
 
 

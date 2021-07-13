@@ -2990,6 +2990,16 @@ class S {
       args: [discuz],
     );
   }
+
+  /// `Built with flutter, made with ♥, run on multiple platforms.`
+  String get buildDescription {
+    return Intl.message(
+      'Built with flutter, made with ♥, run on multiple platforms.',
+      name: 'buildDescription',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

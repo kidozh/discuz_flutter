@@ -394,5 +394,6 @@
     "placeholders": {
       "discuz": {}
     }
-  }
+  },
+  "buildDescription": "Built with flutter, made with ♥, run on multiple platforms."
 }

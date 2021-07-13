@@ -63,6 +63,8 @@ class PrivateMessagePortal{
   @JsonKey(name: "vdateline")
   String dateTimeString = "";
 
+  get readableString => dateTimeString.replaceAll("&nbsp;", "");
+
   PrivateMessagePortal();
 
   factory PrivateMessagePortal.fromJson(Map<String, dynamic> json) => _$PrivateMessagePortalFromJson(json);

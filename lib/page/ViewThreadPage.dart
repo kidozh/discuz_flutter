@@ -194,7 +194,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
     print("reply post ${replyPost}");
     String? notifyAuthorMessage = null;
     if(replyPost!= null){
-      DateFormat dateFormat = DateFormat.yMMMd(Intl.getCurrentLocale());
+      DateFormat dateFormat = DateFormat.yMEd().add_jms();
       String fullTimeString = dateFormat.format(replyPost.publishAt);
       String removedTagMessage = replyPost.message.replaceAll(RegExp(r"<.*?>"), "");
       if (removedTagMessage.length > 200){

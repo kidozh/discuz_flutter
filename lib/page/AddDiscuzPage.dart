@@ -156,30 +156,48 @@ class _AddDiscuzFormFieldState
                       }),
                     ],
                   ),
-                ButtonBar(
-                  children: [
-                    TextButton(
-                      child: Text(S.of(context).cancel),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                    ElevatedButton(
-                      child: Text(S.of(context).continueAdding),
-                      onPressed: () {
-                        log("Press the elevated button");
-                        if (_formKey.currentState!.validate()) {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(SnackBar(content: Text(S.of(context).connectServerWhenAdding)));
-                          _checkApiAvailable();
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(S.of(context).incorrectDiscuzAddress)));
-                        }
-                      },
-                    )
-                  ],
-                )
+                SizedBox(height: 32.0,),
+                SizedBox(
+                  width: double.infinity,
+                  child: PlatformElevatedButton(
+                    child: Text(S.of(context).continueAdding),
+                    onPressed: (){
+                      if (_formKey.currentState!.validate()) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(SnackBar(content: Text(S.of(context).connectServerWhenAdding)));
+                        _checkApiAvailable();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(S.of(context).incorrectDiscuzAddress)));
+                      }
+                    },
+                  ),
+                ),
+
+                // ButtonBar(
+                //   children: [
+                //     TextButton(
+                //       child: Text(S.of(context).cancel),
+                //       onPressed: () {
+                //         Navigator.pop(context);
+                //       },
+                //     ),
+                //     ElevatedButton(
+                //       child: Text(S.of(context).continueAdding),
+                //       onPressed: () {
+                //         log("Press the elevated button");
+                //         if (_formKey.currentState!.validate()) {
+                //           ScaffoldMessenger.of(context)
+                //               .showSnackBar(SnackBar(content: Text(S.of(context).connectServerWhenAdding)));
+                //           _checkApiAvailable();
+                //         } else {
+                //           ScaffoldMessenger.of(context).showSnackBar(
+                //               SnackBar(content: Text(S.of(context).incorrectDiscuzAddress)));
+                //         }
+                //       },
+                //     )
+                //   ],
+                // )
               ],
             ),
           )),

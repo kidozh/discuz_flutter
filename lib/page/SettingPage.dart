@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'ChooseThemeColorPage.dart';
 
@@ -89,36 +90,45 @@ class _SettingPageState extends State<SettingPage> {
                   ),
                 ],
               ),
-              SettingsSection(
-                title: 'Account',
-                tiles: [
-                  SettingsTile(title: 'Phone number', leading: Icon(Icons.phone)),
-                  SettingsTile(title: 'Email', leading: Icon(Icons.email)),
-                  SettingsTile(title: 'Sign out', leading: Icon(Icons.exit_to_app)),
-                ],
-              ),
-              SettingsSection(
-                title: 'Security',
-                tiles: [
-                  SettingsTile.switchTile(
-                    title: 'Lock app in background',
-                    leading: Icon(Icons.phonelink_lock),
-                    switchValue: lockInBackground,
-                    onToggle: (bool value) {
-                      setState(() {
-                        lockInBackground = value;
-                        notificationsEnabled = value;
-                      });
-                    },
-                  ),
-                ],
-              ),
+              // SettingsSection(
+              //   title: 'Account',
+              //   tiles: [
+              //     SettingsTile(title: 'Phone number', leading: Icon(Icons.phone)),
+              //     SettingsTile(title: 'Email', leading: Icon(Icons.email)),
+              //     SettingsTile(title: 'Sign out', leading: Icon(Icons.exit_to_app)),
+              //   ],
+              // ),
+              // SettingsSection(
+              //   title: 'Security',
+              //   tiles: [
+              //     SettingsTile.switchTile(
+              //       title: 'Lock app in background',
+              //       leading: Icon(Icons.phonelink_lock),
+              //       switchValue: lockInBackground,
+              //       onToggle: (bool value) {
+              //         setState(() {
+              //           lockInBackground = value;
+              //           notificationsEnabled = value;
+              //         });
+              //       },
+              //     ),
+              //   ],
+              // ),
               SettingsSection(
                 title: S.of(context).policy,
                 tiles: [
-                  SettingsTile(title: S.of(context).termsOfService, leading: Icon(Icons.description)),
-                  SettingsTile(title: S.of(context).privacyPolicy, leading: Icon(Icons.privacy_tip)),
-                  SettingsTile(title: S.of(context).openSourceLicence, leading: Icon(Icons.collections_bookmark)),
+                  SettingsTile(title: S.of(context).termsOfService, leading: Icon(Icons.description),
+                    onPressed: (_) {
+                      _launchURL("https://discuzhub.kidozh.com/term_of_use/");
+                    },),
+                  SettingsTile(title: S.of(context).privacyPolicy, leading: Icon(Icons.privacy_tip),
+                    onPressed: (_) {
+                      _launchURL("https://discuzhub.kidozh.com/privacy_policy/");
+                    },),
+                  SettingsTile(title: S.of(context).openSourceLicence, leading: Icon(Icons.collections_bookmark),
+                    onPressed: (_) {
+                      _launchURL("https://discuzhub.kidozh.com/open_source_licence/");
+                    },),
                 ],
               ),
               CustomSection(
@@ -126,15 +136,10 @@ class _SettingPageState extends State<SettingPage> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(top: 22, bottom: 8),
-                      child: Image.asset(
-                        'assets/settings.png',
-                        height: 50,
-                        width: 50,
-                        color: Color(0xFF777777),
-                      ),
+                      child: Icon(Icons.flutter_dash_rounded,size: 54,),
                     ),
                     Text(
-                      'Version: 1.0.0 (alpha)',
+                      S.of(context).buildDescription,
                       style: TextStyle(color: Color(0xFF777777)),
                     ),
                   ],
@@ -145,4 +150,7 @@ class _SettingPageState extends State<SettingPage> {
         });
 
   }
+
+  void _launchURL(String url) async =>
+      await canLaunch(url) ? await launch(url) : throw 'Could not launch $url';
 }

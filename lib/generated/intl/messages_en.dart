@@ -102,6 +102,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Bottom bouncing"),
         "bottomBouncingDescribe":
             MessageLookupByLibrary.simpleMessage("Bottom can be crossed"),
+        "buildDescription": MessageLookupByLibrary.simpleMessage(
+            "Built with flutter, made with ♥, run on multiple platforms."),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "cancelAdding": MessageLookupByLibrary.simpleMessage("Cancel"),
         "captchaRequired":
