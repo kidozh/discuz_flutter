@@ -506,7 +506,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
                               children: [
                                 ActionChip(
                                   label: Text(replyPost.post!.author),
-                                  avatar: Icon(Icons.reply),
+                                  avatar: Icon(PlatformIcons(context).clearThickCircled),
                                   onPressed: () {
                                     // removing it
                                     Provider.of<ReplyPostNotifierProvider>(context,listen: false).setPost(null);
@@ -536,7 +536,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
 
                                 child: Padding(
                                   padding: EdgeInsets.all(4.0),
-                                  child: showSmiley? Icon(Icons.emoji_emotions_outlined, color: Theme.of(context).primaryColor,):Icon(Icons.emoji_emotions),
+                                  child: !showSmiley? Icon(Icons.emoji_emotions_outlined, color: Theme.of(context).primaryColor,):Icon(Icons.emoji_emotions),
                                 ),
                                 onTap: (){
                                   setState(() {
@@ -596,20 +596,22 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
                               children: [SmileyListScreen((smiley){
                                 print("Smiley is pressed ${smiley.code} ${smiley.relativePath}");
                                 final text = _replyController.text;
+                                String smileyCode = smiley.code.substring(1,smiley.code.length-1);
+                                smileyCode = smileyCode.replaceAll(r"\:", ":").replaceAll(r"\{", "{");
                                 final selection = _replyController.selection;
                                 print("replacing ${selection.start} ${selection.end} ${selection.isCollapsed} ${_replyController.selection.isDirectional}");
                                 if(selection.start == -1 || selection.end == -1){
-                                  final newText = text + smiley.code;
+                                  final newText = text + smileyCode;
                                   _replyController.value = TextEditingValue(
                                       text: newText,
-                                      selection: TextSelection.collapsed(offset: text.length + smiley.code.length)
+                                      selection: TextSelection.collapsed(offset: text.length + smileyCode.length)
                                   );
                                 }
                                 else{
-                                  final newText = text.replaceRange(selection.start, selection.end, smiley.code);
+                                  final newText = text.replaceRange(selection.start, selection.end, smileyCode);
                                   _replyController.value = TextEditingValue(
                                       text: newText,
-                                      selection: TextSelection.collapsed(offset: selection.baseOffset + smiley.code.length)
+                                      selection: TextSelection.collapsed(offset: selection.baseOffset + smileyCode.length)
                                   );
                                 }
 

@@ -20,6 +20,8 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
+import 'PrivateMessageDetailPage.dart';
+
 
 class UserProfilePage extends StatelessWidget{
   late final Discuz discuz;
@@ -124,6 +126,13 @@ class UserProfileState extends State<UserProfileStatefulWidget>{
               IconButton(
                   icon: Icon(Icons.message),
                   onPressed: () {
+                    if(_userProfileResult!= null && _userProfileResult!.variables.space!= null){
+                      Navigator.push(
+                          context,
+                          platformPageRoute(context:context,builder: (context) => PrivateMessageDetailScreen(uid, _userProfileResult!.variables.space!.username))
+                      );
+                    }
+
                   }),
             ],
           )

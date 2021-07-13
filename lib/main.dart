@@ -40,13 +40,16 @@ import 'package:discuz_flutter/page/SettingPage.dart';
 
 import 'entity/User.dart';
 
-void main() {
+String initialPlatform = "";
+
+void main() async{
   // init google ads
+
   WidgetsFlutterBinding.ensureInitialized();
   log("initial for ads");
   MobileAds.instance.initialize();
   log("languages initialization");
-  TimeAgo.setDefaultLocale("zh");
+  initialPlatform = await UserPreferencesUtils.getPlatformPreference();
 
 
   runApp(
@@ -63,29 +66,60 @@ void main() {
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+  String platformName = "";
+
   _loadThemeColor(context) async{
 
     String colorName = await UserPreferencesUtils.getThemeColor();
-    String platformName = await UserPreferencesUtils.getPlatformPreference();
-    print("Get color name "+colorName);
+    platformName = await UserPreferencesUtils.getPlatformPreference();
+    print("Get color name "+colorName+"platform name "+platformName);
     Provider.of<ThemeNotifierProvider>(context,listen: false).setTheme(colorName);
     Provider.of<ThemeNotifierProvider>(context,listen: false).setPlatformName(platformName);
-    if(PlatformProvider.of(context)!=null){
-      switch (platformName){
-        case "":{
-          PlatformProvider.of(context)!.changeToAutoDetectPlatform();
-          break;
-        }
-        case "ios":{
-          PlatformProvider.of(context)!.changeToCupertinoPlatform();
-          break;
-        }
-        case "android":{
-          PlatformProvider.of(context)!.changeToMaterialPlatform();
-          break;
-        }
-      }
+    // if(PlatformProvider.of(context)!=null){
+    //   switch (platformName){
+    //     case "":{
+    //       PlatformProvider.of(context)!.changeToAutoDetectPlatform();
+    //       break;
+    //     }
+    //     case "ios":{
+    //       PlatformProvider.of(context)!.changeToCupertinoPlatform();
+    //       break;
+    //     }
+    //     case "android":{
+    //       PlatformProvider.of(context)!.changeToMaterialPlatform();
+    //       break;
+    //     }
+    //   }
+    // }
+  }
+
+  // _loadPlatformPreference(BuildContext context) async{
+  //   platformName = await UserPreferencesUtils.getPlatformPreference();
+  //   log("Platform provider ${PlatformProvider.of(context)}");
+  //   if(PlatformProvider.of(context)!=null){
+  //     switch (platformName){
+  //       case "":{
+  //         PlatformProvider.of(context)!.changeToAutoDetectPlatform();
+  //         break;
+  //       }
+  //       case "ios":{
+  //         PlatformProvider.of(context)!.changeToCupertinoPlatform();
+  //         break;
+  //       }
+  //       case "android":{
+  //         PlatformProvider.of(context)!.changeToMaterialPlatform();
+  //         break;
+  //       }
+  //     }
+  //   }
+  // }
+
+  TargetPlatform? getTargetPlatformByName(String name){
+    switch (name){
+      case "android": return TargetPlatform.android;
+      case "ios": return TargetPlatform.iOS;
     }
+    return null;
   }
 
   @override
@@ -123,53 +157,57 @@ class MyApp extends StatelessWidget {
         return Theme(
             data: materialTheme,
             child: PlatformProvider(
+              initialPlatform: getTargetPlatformByName(initialPlatform),
               settings: PlatformSettingsData(
                   iosUsesMaterialWidgets: true,
 
               ),
-              builder: (context) => PlatformApp(
-                title: 'Flutter Demo',
-                // theme: ThemeData(
-                //     primaryColor: themeColorEntity.themeColor,
-                //     floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
-                //     brightness: Brightness.light
-                // ),
-                // darkTheme: ThemeData(
-                //     primaryColor: themeColorEntity.themeColor,
-                //     floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
-                //     brightness: Brightness.dark
-                // ),
-                material: (_,__)=> MaterialAppData(
-                  theme: materialTheme,
-                  darkTheme: ThemeData(
-                      primaryColor: themeColorEntity.themeColor,
-                      floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
-                      brightness: Brightness.dark
-                  )
-                ),
-                cupertino: (_,__) => CupertinoAppData(
-                  theme: CupertinoThemeData(
-                    primaryColor: themeColorEntity.themeColor,
-                  ),
+              builder: (context){
+                return  PlatformApp(
+                  title: 'Flutter Demo',
+                  // theme: ThemeData(
+                  //     primaryColor: themeColorEntity.themeColor,
+                  //     floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
+                  //     brightness: Brightness.light
+                  // ),
+                  // darkTheme: ThemeData(
+                  //     primaryColor: themeColorEntity.themeColor,
+                  //     floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
+                  //     brightness: Brightness.dark
+                  // ),
 
-                ),
-                // localization
-                localizationsDelegates: [
-                  S.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate
-                ],
-                supportedLocales: S.delegate.supportedLocales,
-                localeResolutionCallback: (locale, _){
-                  if(locale!=null){
-                    print("Locale ${locale.languageCode},${locale.scriptCode}, ${locale.countryCode}");
-                    TimeAgo.setDefaultLocale(locale.languageCode);
-                  }
-                },
-                builder: EasyLoading.init(),
-                home: MyHomePage(title: "谈坛"),
-              ),
+                  material: (_,__)=> MaterialAppData(
+                      theme: materialTheme,
+                      darkTheme: ThemeData(
+                          primaryColor: themeColorEntity.themeColor,
+                          floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
+                          brightness: Brightness.dark
+                      )
+                  ),
+                  cupertino: (_,__) => CupertinoAppData(
+                    theme: CupertinoThemeData(
+                      primaryColor: themeColorEntity.themeColor,
+                    ),
+
+                  ),
+                  // localization
+                  localizationsDelegates: [
+                    S.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate
+                  ],
+                  supportedLocales: S.delegate.supportedLocales,
+                  localeResolutionCallback: (locale, _){
+                    if(locale!=null){
+                      print("Locale ${locale.languageCode},${locale.scriptCode}, ${locale.countryCode}");
+                      TimeAgo.setDefaultLocale(locale.languageCode);
+                    }
+                  },
+                  builder: EasyLoading.init(),
+                  home: MyHomePage(title: "谈坛"),
+                );
+              },
             )
 
         );
@@ -219,6 +257,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: implement initState
     super.initState();
     _initDb();
+
   }
 
   void _initDb() async {

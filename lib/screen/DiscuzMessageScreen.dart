@@ -1,6 +1,7 @@
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
+import 'package:discuz_flutter/screen/PrivateMessagePortalScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,9 +36,11 @@ class DiscuzMessageState extends State<DiscuzMessageStatefulWidget> {
       } else {
         return DefaultTabController(
             length: 2,
-            child: Scaffold(
-              appBar: AppBar(
-                bottom: TabBar(tabs: [
+            child: Column(
+              children: [
+                TabBar(
+                    tabs: [
+
                   Tab(
                     icon: Icon(Icons.chat_bubble_rounded),
                     text: S.of(context).privateMessage,
@@ -46,13 +49,19 @@ class DiscuzMessageState extends State<DiscuzMessageStatefulWidget> {
                     icon: Icon(Icons.campaign_rounded),
                     text: S.of(context).publicMessage,
                   ),
-                ]),
-                title: null,
-              ),
-              body: TabBarView(children: [
-                Icon(Icons.message_outlined),
-                Icon(Icons.messenger_outline)
-              ]),
+                ],
+                  labelColor: Theme.of(context).primaryColor,
+                  unselectedLabelColor: Theme.of(context).brightness == Brightness.light?  Colors.black54 : Colors.white54,
+                  unselectedLabelStyle: Theme.of(context).brightness == Brightness.light? Theme.of(context).textTheme.bodyText2: Theme.of(context).textTheme.subtitle1,
+
+                ),
+                Expanded(
+                  child: TabBarView(children: [
+                    PrivateMessagePortalScreen(),
+                    Icon(Icons.messenger_outline)
+                  ]),
+                )
+              ],
             ));
       }
     });

@@ -7,6 +7,9 @@ import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/JsonResult/HotThreadResult.dart';
 import 'package:discuz_flutter/JsonResult/LoginResult.dart';
+import 'package:discuz_flutter/JsonResult/PrivateMessageDetailResult.dart';
+import 'package:discuz_flutter/JsonResult/PrivateMessagePortalResult.dart';
+import 'package:discuz_flutter/JsonResult/PublicMessagePortalResult.dart';
 import 'package:discuz_flutter/JsonResult/SmileyResult.dart';
 import 'package:discuz_flutter/JsonResult/UserDiscuzNotificationResult.dart';
 import 'package:discuz_flutter/JsonResult/UserProfileResult.dart';
@@ -151,4 +154,20 @@ abstract class MobileApiClient {
 
   @GET("/api/mobile/index.php?version=4&module=smiley")
   Future<SmileyResult> smileyResult();
+
+  @GET("/api/mobile/index.php?version=4&module=mypm")
+  Future<PrivateMessagePortalResult> privateMessagePortalResult(@Query("page") int page);
+
+  @GET("/api/mobile/index.php?version=4&module=mypm&subop=view")
+  Future<PrivateMessageDetailResult> privateMessageDetailResult(@Query("touid") int toUid,@Query("page") int page);
+
+  @POST("/api/mobile/index.php?version=4&ac=pm&op=send&daterange=0&module=sendpm&pmsubmit=yes")
+  @FormUrlEncoded()
+  Future<ApiResult> sendPrivateMessageResult(
+      @Field("formhash") String formHash,
+      @Field("message") String message,
+      @Field("touid") int toUid);
+
+  @GET("/api/mobile/index.php?version=4&module=publicpm")
+  Future<PublicMessagePortalResult> publicMessagePortalResult(@Query("page") int page);
 }
