@@ -60,11 +60,11 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 border: Border(left: BorderSide(color: Theme.of(context).accentColor, width: 4)),
               ),
               "p":Style(
-                fontSize: FontSize(14*scalingParameter),
+                fontSize: scalingParameter <= 1.0? null: FontSize(14*scalingParameter),
               ),
               "a":Style(
                   color: Theme.of(context).primaryColor,
-                  fontSize: FontSize(14*scalingParameter),
+                  fontSize: scalingParameter <= 1.0? null: FontSize(14*scalingParameter),
               )
 
             },

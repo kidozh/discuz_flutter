@@ -12,7 +12,7 @@ class TypeSettingNotifierProvider with ChangeNotifier{
     notifyListeners();
   }
 
-  double get scalingParameter => _scalingParameter >= 1.0 && _scalingParameter <= 2.0 ? _scalingParameter : 1.0;
+  double get scalingParameter => _scalingParameter >= 1.0 && _scalingParameter <= 3.0 ? _scalingParameter : 1.0;
 
 
 }

@@ -9,14 +9,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'dart:math';
 
 class ChooseTypeSettingScalePage extends StatefulWidget {
   @override
   _ChooseTypeSettingScaleState createState() => _ChooseTypeSettingScaleState();
 }
 
+const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+Random _rnd = Random();
+
+String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
+    length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+
 class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
   double _scalingParamter = 1.0;
+
+  Post generateMockedPost(){
+    Post mockedPost = Post();
+    mockedPost.authorId = _rnd.nextInt(100);
+    mockedPost.position = _rnd.nextInt(400);
+    mockedPost.message = getRandomString(400);
+    mockedPost.author = getRandomString(10);
+    return mockedPost;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,11 +54,7 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
         "452",
         "uCenterURL",
         "1");
-    Post mockedPost = Post();
-    mockedPost.authorId = 4;
-    mockedPost.position = 12;
-    mockedPost.message = S.of(context).largeRichText;
-    mockedPost.author = S.of(context).largeRichTextDescription;
+
 
     return PlatformScaffold(
       appBar: PlatformAppBar(
@@ -98,7 +110,7 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
                     activeColor: Theme.of(context).primaryColor,
                     value: _scalingParamter,
                     min: 1.0,
-                    max: 2.0,
+                    max: 3.0,
                     onChanged: (value) {
                       changeScale(value);
                     },
@@ -110,9 +122,11 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    PostWidget(mockedDiscuz, mockedPost, 4),
-                    PostWidget(mockedDiscuz, mockedPost, 5),
-                    PostWidget(mockedDiscuz, mockedPost, 6)
+                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000)),
+                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000)),
+                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000)),
+                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000)),
+                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000))
                   ],
                 ),
               ),

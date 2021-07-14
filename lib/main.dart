@@ -192,7 +192,6 @@ class MyApp extends StatelessWidget {
                   cupertino: (_,__) => CupertinoAppData(
                     theme: CupertinoThemeData(
                       primaryColor: themeColorEntity.themeColor,
-                      brightness: Brightness.dark
                     ),
 
                   ),

@@ -597,7 +597,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
                                 print("Smiley is pressed ${smiley.code} ${smiley.relativePath}");
                                 final text = _replyController.text;
                                 String smileyCode = smiley.code.substring(1,smiley.code.length-1);
-                                smileyCode = smileyCode.replaceAll(r"\:", ":").replaceAll(r"\{", "{");
+                                smileyCode = smileyCode.replaceAll(r"\:", ":").replaceAll(r"\{", "{").replaceAll(r"\}", "}");
                                 final selection = _replyController.selection;
                                 print("replacing ${selection.start} ${selection.end} ${selection.isCollapsed} ${_replyController.selection.isDirectional}");
                                 if(selection.start == -1 || selection.end == -1){
