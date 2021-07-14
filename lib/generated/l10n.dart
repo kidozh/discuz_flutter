@@ -3040,6 +3040,46 @@ class S {
       args: [size],
     );
   }
+
+  /// `Scale parameter in typesetting`
+  String get fontSizeScaleParameter {
+    return Intl.message(
+      'Scale parameter in typesetting',
+      name: 'fontSizeScaleParameter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `x {size}`
+  String fontSizeScaleParameterUnit(Object size) {
+    return Intl.message(
+      'x $size',
+      name: 'fontSizeScaleParameterUnit',
+      desc: '',
+      args: [size],
+    );
+  }
+
+  /// `Welcome to Discuzhub<br/>Thanks for using our products and <a href="https://discuzhub.kidozh.com/en/term_of_use/">services</a> (“Services”).<br/>By using our Services, you are agreeing to these terms. Please read them <b>carefully</b>.<br/>Our Services are very diverse, so sometimes additional terms or product requirements (including age requirements) may apply. Additional terms will be available with the relevant Services, and those additional terms become part of your agreement with us if you use those Services`
+  String get largeRichText {
+    return Intl.message(
+      'Welcome to Discuzhub<br/>Thanks for using our products and <a href="https://discuzhub.kidozh.com/en/term_of_use/">services</a> (“Services”).<br/>By using our Services, you are agreeing to these terms. Please read them <b>carefully</b>.<br/>Our Services are very diverse, so sometimes additional terms or product requirements (including age requirements) may apply. Additional terms will be available with the relevant Services, and those additional terms become part of your agreement with us if you use those Services',
+      name: 'largeRichText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Comes From Our Term of Services`
+  String get largeRichTextDescription {
+    return Intl.message(
+      'Comes From Our Term of Services',
+      name: 'largeRichTextDescription',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

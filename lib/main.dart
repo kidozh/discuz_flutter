@@ -9,6 +9,7 @@ import 'package:discuz_flutter/page/ViewHistoryPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
+import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
 import 'package:discuz_flutter/screen/FavoriteThreadScreen.dart';
 import 'package:discuz_flutter/screen/HotThreadScreen.dart';
@@ -58,7 +59,8 @@ void main() async{
         providers: [
           ChangeNotifierProvider.value(value: ThemeNotifierProvider()),
           ChangeNotifierProvider.value(value: DiscuzAndUserNotifier()),
-          ChangeNotifierProvider.value(value: ReplyPostNotifierProvider())
+          ChangeNotifierProvider.value(value: ReplyPostNotifierProvider()),
+          ChangeNotifierProvider.value(value: TypeSettingNotifierProvider())
         ],
         child: MyApp(),
       ));
@@ -69,13 +71,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   String platformName = "";
 
-  _loadThemeColor(context) async{
+  _loadPreference(context) async{
 
     String colorName = await UserPreferencesUtils.getThemeColor();
     platformName = await UserPreferencesUtils.getPlatformPreference();
-    print("Get color name "+colorName+"platform name "+platformName);
+    double scale = await UserPreferencesUtils.getTypesettingScalePreference();
+
     Provider.of<ThemeNotifierProvider>(context,listen: false).setTheme(colorName);
     Provider.of<ThemeNotifierProvider>(context,listen: false).setPlatformName(platformName);
+    Provider.of<TypeSettingNotifierProvider>(context,listen: false).setScalingParameter(scale);
     // if(PlatformProvider.of(context)!=null){
     //   switch (platformName){
     //     case "":{
@@ -125,7 +129,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _loadThemeColor(context);
+    _loadPreference(context);
     return Consumer<ThemeNotifierProvider>(
       builder: (context, themeColorEntity, _){
         final materialTheme = ThemeData(

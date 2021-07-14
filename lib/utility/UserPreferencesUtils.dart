@@ -134,5 +134,18 @@ class UserPreferencesUtils{
     return platformName == null ? "" : platformName;
   }
 
+  static final String typesettingScalePreferenceKey = "typesettingScalePreferenceKey";
+
+  static Future<void> putTypesettingScalePreference(double scale) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(typesettingScalePreferenceKey, scale);
+  }
+
+  static Future<double> getTypesettingScalePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var scale =  prefs.getDouble(typesettingScalePreferenceKey);
+    return scale == null ? 1.0 : scale;
+  }
+
 
 }
