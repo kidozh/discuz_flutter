@@ -8,8 +8,11 @@ import 'package:discuz_flutter/entity/TrustHost.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/DisplayForumPage.dart';
+import 'package:discuz_flutter/page/DisplayForumSliverPage.dart';
 import 'package:discuz_flutter/page/FullImagePage.dart';
+import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/page/ViewThreadPage.dart';
+import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
@@ -167,7 +170,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                             int tid = int.tryParse(tidString)!;
                             await Navigator.push(
                                 context.buildContext,
-                                platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadPage( discuz,user, tid))
+                                platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadSliverPage( discuz,user, tid))
                             );
                             return;
                           }
@@ -183,7 +186,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                             int tid = int.tryParse(tidString)!;
                             await Navigator.push(
                                 context.buildContext,
-                                platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadPage(discuz,user,tid))
+                                platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadSliverPage(discuz,user,tid))
                             );
                             return;
                           }
@@ -199,7 +202,23 @@ class DiscuzHtmlWidget extends StatelessWidget{
                             int fid = int.tryParse(fidString)!;
                             await Navigator.push(
                                 context.buildContext,
-                                platformPageRoute(context:context.buildContext,builder: (context) => DisplayForumPage(discuz,user, fid))
+                                platformPageRoute(context:context.buildContext,builder: (context) => DisplayForumSliverPage(discuz,user, fid))
+                            );
+                            return;
+                          }
+                        }
+                        break;
+                      }
+                      case "space":{
+                        // check for forum, query fid
+                        if(uri.queryParameters.containsKey("uid")){
+                          String uidString = uri.queryParameters["uid"]!;
+                          // trigger tid
+                          if(int.tryParse(uidString) != null){
+                            int uid = int.tryParse(uidString)!;
+                            await Navigator.push(
+                                context.buildContext,
+                                platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadSliverPage(discuz,user,uid))
                             );
                             return;
                           }
@@ -214,7 +233,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                   if(fid!=null && int.tryParse(fid) != null){
                     await Navigator.push(
                         context.buildContext,
-                        platformPageRoute(context:context.buildContext,builder: (context) => DisplayForumPage(discuz, user, int.tryParse(fid)!))
+                        platformPageRoute(context:context.buildContext,builder: (context) => DisplayForumSliverPage(discuz, user, int.tryParse(fid)!))
                     );
                     return;
                   }
@@ -224,7 +243,16 @@ class DiscuzHtmlWidget extends StatelessWidget{
                   if(tid!=null && int.tryParse(tid) != null){
                     await Navigator.push(
                         context.buildContext,
-                        platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadPage(discuz, user, int.tryParse(tid)!))
+                        platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadSliverPage(discuz, user, int.tryParse(tid)!))
+                    );
+                    return;
+                  }
+
+                  String? uid = await RewriteRuleUtils.findUidInURL(discuz, urlString);
+                  if(uid!=null && int.tryParse(uid) != null){
+                    await Navigator.push(
+                        context.buildContext,
+                        platformPageRoute(context:context.buildContext,builder: (context) => UserProfilePage(discuz, user, int.tryParse(uid)!))
                     );
                     return;
                   }

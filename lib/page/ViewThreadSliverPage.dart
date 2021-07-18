@@ -21,6 +21,7 @@ import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
+import 'package:discuz_flutter/widget/PlatformSliverAppBar.dart';
 import 'package:discuz_flutter/widget/PollWidget.dart';
 import 'package:discuz_flutter/widget/PostWidget.dart';
 import 'package:flutter/cupertino.dart';
@@ -40,35 +41,35 @@ import 'package:progress_state_button/progress_button.dart';
 import 'package:provider/provider.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 
-class ViewThreadPage extends StatelessWidget {
+class ViewThreadSliverPage extends StatelessWidget {
   late final Discuz discuz;
   late final User? user;
   int tid = 0;
 
-  ViewThreadPage(this.discuz, this.user, this.tid);
+  ViewThreadSliverPage(this.discuz, this.user, this.tid);
 
   @override
   Widget build(BuildContext context) {
-    return ViewThreadStatefulWidget(discuz, user, tid);
+    return ViewThreadStatefulSliverWidget(discuz, user, tid);
 
   }
 }
 
-class ViewThreadStatefulWidget extends StatefulWidget {
+class ViewThreadStatefulSliverWidget extends StatefulWidget {
   late final Discuz discuz;
   late final User? user;
   int tid = 0;
 
-  ViewThreadStatefulWidget(this.discuz, this.user, this.tid);
+  ViewThreadStatefulSliverWidget(this.discuz, this.user, this.tid);
 
   @override
-  _ViewThreadState createState() {
+  _ViewThreadSliverState createState() {
     // TODO: implement createState
-    return _ViewThreadState(this.discuz, this.user, this.tid);
+    return _ViewThreadSliverState(this.discuz, this.user, this.tid);
   }
 }
 
-class _ViewThreadState extends State<ViewThreadStatefulWidget> {
+class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   ViewThreadResult _viewThreadResult = ViewThreadResult();
   DiscuzError? _error = null;
   List<Post> _postList = [];
@@ -83,7 +84,7 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
 
   bool historySaved = false;
 
-  _ViewThreadState(this.discuz, this.user, this.tid);
+  _ViewThreadSliverState(this.discuz, this.user, this.tid);
 
   late EasyRefreshController _controller;
   late ScrollController _scrollController;
@@ -357,6 +358,294 @@ class _ViewThreadState extends State<ViewThreadStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
+
+    return PlatformScaffold(
+      iosContentPadding: true,
+      iosContentBottomPadding: true,
+      body: Column(
+        children: [
+
+          Expanded(
+              child: EasyRefresh.custom(
+                enableControlFinishRefresh: true,
+                enableControlFinishLoad: true,
+                taskIndependence: _taskIndependence,
+                controller: _controller,
+                scrollController: _scrollController,
+                reverse: _reverse,
+                scrollDirection: _direction,
+                topBouncing: _topBouncing,
+                bottomBouncing: _bottomBouncing,
+                header: _enableRefresh
+                    ? ClassicalHeader(
+                  enableInfiniteRefresh: false,
+                  bgColor: _headerFloat
+                      ? Theme.of(context).primaryColor
+                      : Colors.transparent,
+                  // infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
+                  textColor:
+                  Theme.of(context).textTheme.headline1!.color == null
+                      ? Theme.of(context).primaryColorDark
+                      : Theme.of(context).textTheme.headline1!.color!,
+                  float: _headerFloat,
+                  enableHapticFeedback: _vibration,
+                  refreshText: S.of(context).pullToRefresh,
+                  refreshReadyText: S.of(context).releaseToRefresh,
+                  refreshingText: S.of(context).refreshing,
+                  refreshedText: S.of(context).refreshed,
+                  refreshFailedText: S.of(context).refreshFailed,
+                  noMoreText: S.of(context).noMore,
+                  infoText: S.of(context).updateAt,
+                )
+                    : null,
+                footer: _enableLoad
+                    ? ClassicalFooter(
+                  enableInfiniteLoad: _enableInfiniteLoad,
+                  enableHapticFeedback: _vibration,
+                  textColor:
+                  Theme.of(context).textTheme.headline1!.color == null
+                      ? Theme.of(context).primaryColorDark
+                      : Theme.of(context).textTheme.headline1!.color!,
+                  loadText: S.of(context).pushToLoad,
+                  loadReadyText: S.of(context).releaseToLoad,
+                  loadingText: S.of(context).loading,
+                  loadedText: S.of(context).loaded,
+                  loadFailedText: S.of(context).loadFailed,
+                  noMoreText: S.of(context).noMore,
+                  infoText: S.of(context).updateAt,
+                )
+                    : null,
+                onRefresh: _enableRefresh
+                    ? () async {
+                  _invalidateContent();
+                  if (!_enableControlFinish) {
+                    _controller.resetLoadState();
+                    _controller.finishRefresh();
+                  }
+                }
+                    : null,
+                onLoad: _enableLoad
+                    ? () async {
+                  _loadForumContent();
+                }
+                    : null,
+                firstRefresh: true,
+                firstRefreshWidget: Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: Center(
+                      child: SizedBox(
+                        height: 200.0,
+                        width: 300.0,
+                        child: Card(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                width: 50.0,
+                                height: 50.0,
+                                child: SpinKitFadingCube(
+                                  color: Theme.of(context).primaryColor,
+                                  size: 25.0,
+                                ),
+                              ),
+                              Container(
+                                child: Text(S.of(context).loading),
+                              )
+                            ],
+                          ),
+                        ),
+                      )),
+                ),
+                slivers: <Widget>[
+                  PlatformSliverAppBar(
+                    middle: Text(S.of(context).forumDisplayTitle),
+
+                    largeTitle: _viewThreadResult == null
+                        ? Text(S.of(context).viewThreadTitle)
+                        : Text(_viewThreadResult.threadVariables.threadInfo.subject),
+                  ),
+                  if (_error != null)
+                    SliverList(
+
+                        delegate: SliverChildBuilderDelegate(
+
+                              (context, _){
+                            return ErrorCard(_error!.key, _error!.content, () {
+                              _controller.callRefresh();
+                            });
+                          },
+                          childCount : 1,
+                        )),
+
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                        return Column(
+                          children: [
+                            // insert poll here
+                            if(index == 0 && _viewThreadResult.threadVariables.poll!= null)
+                              PollWidget(_viewThreadResult.threadVariables.poll!,_viewThreadResult.threadVariables.formHash,tid,_viewThreadResult.threadVariables.fid),
+                            PostWidget(
+                                discuz,
+                                _postList[index],
+                                _viewThreadResult
+                                    .threadVariables.threadInfo.authorId),
+                          ],
+                        );
+                      },
+                      childCount: _postList.length,
+                    ),
+                  ),
+                ],
+              )
+          ),
+          // comment parts
+          Consumer<DiscuzAndUserNotifier>(
+            builder: (context, discuzAndUser, child) {
+              if (discuzAndUser.user != null) {
+                return
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Consumer<ReplyPostNotifierProvider>(
+                        builder: (context, replyPost, child){
+                          if(replyPost.post != null){
+                            return Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                ActionChip(
+                                  label: Text(replyPost.post!.author),
+                                  avatar: Icon(PlatformIcons(context).clearThickCircled),
+                                  onPressed: () {
+                                    // removing it
+                                    Provider.of<ReplyPostNotifierProvider>(context,listen: false).setPost(null);
+                                  },
+                                ),
+                                Expanded(child:
+                                Padding(
+                                    padding: EdgeInsets.only(left: 8.0, right: 8.0),
+                                    child: Text(replyPost.post!.message.replaceAll(RegExp(r"<img*?>"), S.of(context).pictureTagInMessage).replaceAll(RegExp(r"<div.*?>.*?</div>"), "").replaceAll(RegExp(r"<.*?>"), ""), style: TextStyle(fontSize: 14),overflow: TextOverflow.ellipsis,)
+                                )
+                                )
+                              ],
+                            );
+                          }
+                          else{
+                            return Container(height: 0);
+                          }
+                        },
+                      ),
+
+                      // input fields
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              InkWell(
+
+                                child: Padding(
+                                  padding: EdgeInsets.all(4.0),
+                                  child: !showSmiley? Icon(Icons.emoji_emotions_outlined, color: Theme.of(context).primaryColor,):Icon(Icons.emoji_emotions),
+                                ),
+                                onTap: (){
+                                  setState(() {
+                                    showSmiley = !showSmiley;
+                                  });
+                                },
+                              ),
+                              Expanded(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(6.0),
+                                    child: TextField(
+                                      minLines: 1,
+                                      maxLines: 3,
+                                      controller: _replyController,
+                                      decoration: InputDecoration(
+                                          hintText: S.of(context).sendReplyHint),
+                                      onSubmitted: (text){
+                                        _sendReply();
+                                      },
+                                    ),
+                                  )),
+                              ProgressButton.icon(
+                                  maxWidth: 90.0,
+                                  height: 25.0,
+                                  iconedButtons: {
+                                    ButtonState.idle: IconedButton(
+                                        text: S.of(context).sendReply,
+                                        icon: Icon(Icons.send, color: Colors.white),
+                                        color: Theme.of(context).accentColor),
+                                    ButtonState.loading: IconedButton(
+                                        text:
+                                        S.of(context).progressButtonReplySending,
+                                        color: Theme.of(context).accentColor),
+                                    ButtonState.fail: IconedButton(
+                                        text: S.of(context).progressButtonReplyFailed,
+                                        icon: Icon(Icons.cancel, color: Colors.white),
+                                        color: Colors.red.shade300),
+                                    ButtonState.success: IconedButton(
+                                        text:
+                                        S.of(context).progressButtonReplySuccess,
+                                        icon: Icon(
+                                          Icons.check_circle,
+                                          color: Colors.white,
+                                        ),
+                                        color: Colors.green.shade400)
+                                  },
+                                  onPressed: () {
+                                    _sendReply();
+                                  },
+                                  state: _sendReplyStatus)
+                            ],
+                          ),
+                          CaptchaWidget(null, discuz, user, "post", captchaController: _captchaController,),
+                          if(showSmiley)
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [SmileyListScreen((smiley){
+                                print("Smiley is pressed ${smiley.code} ${smiley.relativePath}");
+                                final text = _replyController.text;
+                                String smileyCode = smiley.code.substring(1,smiley.code.length-1);
+                                smileyCode = smileyCode.replaceAll(r"\:", ":").replaceAll(r"\{", "{").replaceAll(r"\}", "}");
+                                final selection = _replyController.selection;
+                                print("replacing ${selection.start} ${selection.end} ${selection.isCollapsed} ${_replyController.selection.isDirectional}");
+                                if(selection.start == -1 || selection.end == -1){
+                                  final newText = text + smileyCode;
+                                  _replyController.value = TextEditingValue(
+                                      text: newText,
+                                      selection: TextSelection.collapsed(offset: text.length + smileyCode.length)
+                                  );
+                                }
+                                else{
+                                  final newText = text.replaceRange(selection.start, selection.end, smileyCode);
+                                  _replyController.value = TextEditingValue(
+                                      text: newText,
+                                      selection: TextSelection.collapsed(offset: selection.baseOffset + smileyCode.length)
+                                  );
+                                }
+
+
+                              })],
+                            )
+
+                        ],
+                      )
+                    ],
+                  );
+              } else {
+                return Container(
+                  width: 0,
+                  height: 0,
+                );
+              }
+            },
+          )
+        ],
+      ),
+    );
+
     return PlatformScaffold(
         iosContentPadding: true,
         iosContentBottomPadding: true,
