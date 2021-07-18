@@ -39,7 +39,7 @@ class RewriteRuleUtils{
   }
 
   static String getUserProfileRewriteRuleName(Discuz discuz){
-    return "ViewThread${discuz.baseURL}";
+    return "UserProfile${discuz.baseURL}";
   }
 
   static Future<void> putUserProfileRule(Discuz discuz, String rewriteRule) async{
@@ -84,7 +84,7 @@ class RewriteRuleUtils{
   // the example could be t{tid}-{page}-{prevpage}
   static Future<String?> findTidInURL(Discuz discuz,String url) async{
     // transfer rewrite url to regex
-    String rewriteUrl = await getUserProfileRule(discuz);
+    String rewriteUrl = await getViewThreadRule(discuz);
     if(rewriteUrl.isEmpty){
       return null;
     }
@@ -113,7 +113,7 @@ class RewriteRuleUtils{
   // the example could be space-{user}-{value}.html
   static Future<String?> findUidInURL(Discuz discuz,String url) async{
     // transfer rewrite url to regex
-    String rewriteUrl = await getViewThreadRule(discuz);
+    String rewriteUrl = await getUserProfileRule(discuz);
     if(rewriteUrl.isEmpty){
       return null;
     }
