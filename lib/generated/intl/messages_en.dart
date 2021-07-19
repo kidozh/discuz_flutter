@@ -276,8 +276,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Join the discussion"),
         "joinDiscussionDescribe":
             MessageLookupByLibrary.simpleMessage("Join the QQ group 554981921"),
-        "largeRichText":
-            MessageLookupByLibrary.simpleMessage("Welcome to Discuzhub"),
+        "largeRichText": MessageLookupByLibrary.simpleMessage(
+            "Welcome to Discuzhub<br/>Thanks for using our products and <a href=\"https://discuzhub.kidozh.com/en/term_of_use/\">services</a> (“Services”).<br/>By using our Services, you are agreeing to these terms. Please read them <b>carefully</b>.<br/>Our Services are very diverse, so sometimes additional terms or product requirements (including age requirements) may apply. Additional terms will be available with the relevant Services, and those additional terms become part of your agreement with us if you use those Services"),
         "largeRichTextDescription": MessageLookupByLibrary.simpleMessage(
             "Comes From Our Term of Services"),
         "lastActivityTime":
@@ -364,6 +364,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "policy": MessageLookupByLibrary.simpleMessage("Our policy"),
         "pollExpireAt": m9,
         "pollVoterNumber": m10,
+        "postAuthorLabel": MessageLookupByLibrary.simpleMessage("OP"),
         "postNumber": MessageLookupByLibrary.simpleMessage("Post number"),
         "postPosition": m11,
         "preparingPage":

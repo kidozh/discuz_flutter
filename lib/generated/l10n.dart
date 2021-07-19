@@ -3080,6 +3080,16 @@ class S {
       args: [],
     );
   }
+
+  /// `OP`
+  String get postAuthorLabel {
+    return Intl.message(
+      'OP',
+      name: 'postAuthorLabel',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
