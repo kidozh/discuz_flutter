@@ -218,7 +218,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                             int uid = int.tryParse(uidString)!;
                             await Navigator.push(
                                 context.buildContext,
-                                platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadSliverPage(discuz,user,uid))
+                                platformPageRoute(context:context.buildContext,builder: (context) => UserProfilePage(discuz,user,uid))
                             );
                             return;
                           }
