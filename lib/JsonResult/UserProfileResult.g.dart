@@ -29,40 +29,31 @@ Map<String, dynamic> _$UserProfileResultToJson(UserProfileResult instance) =>
 
 UserProfileVariables _$UserProfileVariablesFromJson(Map<String, dynamic> json) {
   return UserProfileVariables()
-    ..cookiepre = json['cookiepre'] as String
-    ..auth = json['auth'] as String?
-    ..saltkey = json['saltkey'] as String
-    ..member_username = json['member_username'] as String
-    ..member_avatar = json['member_avatar'] as String
-    ..member_uid =
-        const StringToIntConverter().fromJson(json['member_uid'] as String?)
     ..groupId =
         const StringToIntConverter().fromJson(json['groupid'] as String?)
     ..readAccess =
         const StringToIntConverter().fromJson(json['readaccess'] as String?)
     ..formHash = json['formhash'] as String
-    ..ismoderator = json['ismoderator'] as String?
     ..noticeCount = NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
     ..space = json['space'] == null
         ? null
-        : SpaceVariables.fromJson(json['space'] as Map<String, dynamic>);
+        : SpaceVariables.fromJson(json['space'] as Map<String, dynamic>)
+    ..extendCreditMap = (json['extcredits'] as Map<String, dynamic>?)?.map(
+          (k, e) =>
+              MapEntry(k, ExtendCredit.fromJson(e as Map<String, dynamic>)),
+        ) ??
+        {};
 }
 
 Map<String, dynamic> _$UserProfileVariablesToJson(
         UserProfileVariables instance) =>
     <String, dynamic>{
-      'cookiepre': instance.cookiepre,
-      'auth': instance.auth,
-      'saltkey': instance.saltkey,
-      'member_username': instance.member_username,
-      'member_avatar': instance.member_avatar,
-      'member_uid': const StringToIntConverter().toJson(instance.member_uid),
       'groupid': const StringToIntConverter().toJson(instance.groupId),
       'readaccess': const StringToIntConverter().toJson(instance.readAccess),
       'formhash': instance.formHash,
-      'ismoderator': instance.ismoderator,
       'notice': instance.noticeCount,
       'space': instance.space,
+      'extcredits': instance.extendCreditMap,
     };
 
 SpaceVariables _$SpaceVariablesFromJson(Map<String, dynamic> json) {
@@ -268,4 +259,26 @@ Map<String, dynamic> _$GroupInfoToJson(GroupInfo instance) => <String, dynamic>{
       'icon': instance.icon,
       'color': instance.color,
       'readaccess': const StringToIntConverter().toJson(instance.readAccess),
+    };
+
+ExtendCredit _$ExtendCreditFromJson(Map<String, dynamic> json) {
+  return ExtendCredit()
+    ..img = json['img'] as String? ?? ''
+    ..title = json['title'] as String? ?? ''
+    ..unit = json['unit'] as String? ?? ''
+    ..ratio = json['ratio'] as String? ?? ''
+    ..showInThread = json['showinthread'] as String? ?? ''
+    ..allowExchangeIn = json['allowexchangein'] as String? ?? ''
+    ..allowExchangeOut = json['allowexchangeout'] as String? ?? '';
+}
+
+Map<String, dynamic> _$ExtendCreditToJson(ExtendCredit instance) =>
+    <String, dynamic>{
+      'img': instance.img,
+      'title': instance.title,
+      'unit': instance.unit,
+      'ratio': instance.ratio,
+      'showinthread': instance.showInThread,
+      'allowexchangein': instance.allowExchangeIn,
+      'allowexchangeout': instance.allowExchangeOut,
     };

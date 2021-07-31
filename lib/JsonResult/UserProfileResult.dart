@@ -27,6 +27,9 @@ class UserProfileVariables extends BaseVariableResult{
   @JsonKey(name: "space")
   SpaceVariables? space = SpaceVariables();
 
+  @JsonKey(name: "extcredits",defaultValue: {})
+  Map<String,ExtendCredit> extendCreditMap = {};
+
   SpaceVariables getSpace(){
     return space == null? SpaceVariables() : space!;
   }
@@ -103,6 +106,7 @@ class SpaceVariables{
 
   String bio = "", interest = "";
 
+
   SpaceVariables();
   factory SpaceVariables.fromJson(Map<String, dynamic> json){
     try{
@@ -166,4 +170,27 @@ class GroupInfo{
 
   GroupInfo();
   factory GroupInfo.fromJson(Map<String, dynamic> json) => _$GroupInfoFromJson(json);
+}
+
+
+@JsonSerializable(ignoreUnannotated: true)
+class ExtendCredit{
+  @JsonKey(defaultValue: "")
+  String img = "";
+  @JsonKey(defaultValue: "")
+  String title = "";
+  @JsonKey(defaultValue: "")
+  String unit = "";
+  @JsonKey(defaultValue: "")
+  String ratio = "";
+  @JsonKey(name:"showinthread",defaultValue: "")
+  String showInThread = "";
+  @JsonKey(name:"allowexchangein",defaultValue: "")
+  String allowExchangeIn = "";
+  @JsonKey(name:"allowexchangeout",defaultValue: "")
+  String allowExchangeOut = "";
+
+
+  ExtendCredit();
+  factory ExtendCredit.fromJson(Map<String, dynamic> json) => _$ExtendCreditFromJson(json);
 }

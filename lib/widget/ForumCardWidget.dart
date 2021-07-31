@@ -21,22 +21,25 @@ class ForumCardWidget extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return ListTile(
-      leading: CachedNetworkImage(
-        imageUrl: _forum.iconUrl,
-        progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-        errorWidget: (context, url, error) => Icon(Icons.forum_outlined),
+    return Card(
+      elevation: 2.0,
+      child: ListTile(
+        leading: CachedNetworkImage(
+          imageUrl: _forum.iconUrl,
+          progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+          errorWidget: (context, url, error) => Icon(Icons.forum_outlined),
+        ),
+        title: Text(_forum.name,maxLines: 1, softWrap: true,),
+        subtitle: Container(
+          child: Text(_forum.description, maxLines: 2,),
+        ),
+        onTap: () async{
+          await Navigator.push(
+              context,
+              platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(_discuz, _user, _forum.getFid()))
+          );
+        },
       ),
-      title: Text(_forum.name),
-      subtitle: Container(
-        child: Text(_forum.description),
-      ),
-      onTap: () async{
-        await Navigator.push(
-            context,
-            platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(_discuz, _user, _forum.getFid()))
-        );
-      },
     );
   }
 

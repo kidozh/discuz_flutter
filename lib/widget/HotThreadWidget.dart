@@ -50,7 +50,8 @@ class HotThreadWidget extends StatelessWidget{
     // retrieve threadtype
 
 
-    return Container(
+    return Card(
+      elevation: 2.0,
       child: ListTile(
         leading: InkWell(
           child: ClipRRect(
