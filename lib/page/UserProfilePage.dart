@@ -628,7 +628,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                     : Colors.grey.shade900,
                 padding: EdgeInsets.all(4),
                 child: Card(
-                  color: Colors.lightBlue,
+                  color: Colors.purple,
                   child: Container(
                     padding: EdgeInsets.all(4.0),
                     child: Column(
