@@ -298,7 +298,7 @@ class _PublicMessagePortalState extends State<PublicMessagePortalStatefulWidget>
                   return ListTile(
                     leading: Icon(PlatformIcons(context).mail),
                     title: Text(_pmList[index].message),
-                    subtitle: Text(TimeAgo.getTimeAgo(_pmList[index].publishAt)),
+                    subtitle: Text(GetTimeAgo.parse(_pmList[index].publishAt)),
                   );
             },
             childCount: _pmList.length

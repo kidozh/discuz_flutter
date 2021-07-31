@@ -339,7 +339,7 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
                         TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
                         TextSpan(text: favoriteThread.description),
                         TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
-                        TextSpan(text: TimeAgo.getTimeAgo(favoriteThread.publishAt,locale: locale.scriptCode)),
+                        TextSpan(text: GetTimeAgo.parse(favoriteThread.publishAt,locale: locale.scriptCode)),
                       ],
                     ),
                   ),

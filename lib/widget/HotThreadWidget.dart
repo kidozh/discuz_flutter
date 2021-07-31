@@ -85,7 +85,7 @@ class HotThreadWidget extends StatelessWidget{
             children: <TextSpan>[
               //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
               TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
-              TextSpan(text: TimeAgo.getTimeAgo(_hotThread.publishAt,locale: locale.scriptCode)),
+              TextSpan(text: GetTimeAgo.parse(_hotThread.publishAt,locale: locale.scriptCode)),
             ],
           ),
         ),

@@ -264,6 +264,24 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     return PlatformScaffold(
       iosContentBottomPadding: true,
       iosContentPadding: true,
+      appBar: PlatformAppBar(
+        //middle: Text(S.of(context).forumDisplayTitle),
+        trailingActions: [
+          IconButton(
+              icon: Icon(Icons.filter_alt_outlined),
+              onPressed: () {
+                _showForumFilterBottomSheet(context);
+              }),
+          IconButton(
+              icon: Icon(PlatformIcons(context).helpOutline),
+              onPressed: () {
+                _showInformationBottomSheet(context);
+              })
+        ],
+        title: _displayForumResult == null
+            ? Text(S.of(context).forumDisplayTitle)
+            : Text(_displayForumResult!.discuzIndexVariables.forum.name),
+      ),
       body: EasyRefresh.custom(
         enableControlFinishRefresh: true,
         enableControlFinishLoad: true,
@@ -356,24 +374,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
           )),
         ),
         slivers: <Widget>[
-          PlatformSliverAppBar(
-            middle: Text(S.of(context).forumDisplayTitle),
-            trailingList: [
-              IconButton(
-                  icon: Icon(Icons.filter_alt_outlined),
-                  onPressed: () {
-                    _showForumFilterBottomSheet(context);
-                  }),
-              IconButton(
-                  icon: Icon(PlatformIcons(context).helpOutline),
-                  onPressed: () {
-                    _showInformationBottomSheet(context);
-                  })
-            ],
-            largeTitle: _displayForumResult == null
-                ? Text("")
-                : Text(_displayForumResult!.discuzIndexVariables.forum.name),
-          ),
+
           if (_error != null)
             SliverList(
 

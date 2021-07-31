@@ -223,7 +223,7 @@ class PollState extends State<PollStatefulWidget>{
                             SizedBox(
                               width: 8.0,
                             ),
-                            Text(S.of(context).pollExpireAt(TimeAgo.getTimeAgo(poll.expiredAt)), style: TextStyle(fontSize: 12))
+                            Text(S.of(context).pollExpireAt(GetTimeAgo.parse(poll.expiredAt)), style: TextStyle(fontSize: 12))
                           ],
                         ),
                         Row(

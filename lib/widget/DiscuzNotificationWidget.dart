@@ -76,7 +76,7 @@ class DiscuzNotificationWidget extends StatelessWidget {
                             if(_notification.author.isEmpty)
                               TextSpan(text: _notification.type, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo.shade400, fontSize: 12)),
                             TextSpan(text: ' · '),
-                            TextSpan(text: TimeAgo.getTimeAgo(_notification.dateline, locale: locale.scriptCode), style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
+                            TextSpan(text: GetTimeAgo.parse(_notification.dateline, locale: locale.scriptCode), style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
 
                           ],
                         ),

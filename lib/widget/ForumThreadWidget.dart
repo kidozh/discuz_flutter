@@ -90,7 +90,7 @@ class ForumThreadWidget extends StatelessWidget{
             children: <TextSpan>[
               //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
               TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
-              TextSpan(text: TimeAgo.getTimeAgo(_forumThread.dbdatelineMinutes,locale: locale.scriptCode)),
+              TextSpan(text: GetTimeAgo.parse(_forumThread.dbdatelineMinutes,locale: locale.scriptCode)),
               if(threadCategory.isNotEmpty)
                 TextSpan(text: " / ",style: TextStyle(fontWeight: FontWeight.w300)),
               if(threadCategory.isNotEmpty)

@@ -163,7 +163,7 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Icon(Icons.access_time, size: 12,),
-                                    Text(TimeAgo.getTimeAgo(viewHistory.updateTime), style: TextStyle(fontSize: 12),)
+                                    Text(GetTimeAgo.parse(viewHistory.updateTime), style: TextStyle(fontSize: 12),)
                                   ],
                                 ),
 

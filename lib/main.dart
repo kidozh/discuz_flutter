@@ -206,7 +206,7 @@ class MyApp extends StatelessWidget {
                   localeResolutionCallback: (locale, _){
                     if(locale!=null){
                       print("Locale ${locale.languageCode},${locale.scriptCode}, ${locale.countryCode}");
-                      TimeAgo.setDefaultLocale(locale.languageCode);
+                      GetTimeAgo.setDefaultLocale(locale.languageCode);
                     }
                   },
                   builder: EasyLoading.init(),

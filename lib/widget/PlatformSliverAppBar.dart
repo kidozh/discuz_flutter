@@ -66,7 +66,7 @@ class PlatformSliverAppBar extends PlatformWidgetBase<CupertinoSliverNavigationB
       //title: this.middle,
       automaticallyImplyLeading: true,
       floating: false,
-      pinned: false,
+      pinned: true,
       snap: false,
       //expandedHeight: 140,
       flexibleSpace: new FlexibleSpaceBar(
