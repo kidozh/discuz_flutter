@@ -13,7 +13,7 @@ import 'package:discuz_flutter/entity/HotThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/UserProfilePage.dart';
-import 'package:discuz_flutter/page/ViewThreadPage.dart';
+import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyScreen.dart';
@@ -347,7 +347,7 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
                   onTap: () async {
                     await Navigator.push(
                         context,
-                        platformPageRoute(context:context,builder: (context) => ViewThreadPage( discuz,  user, favoriteThread.id,))
+                        platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( discuz,  user, favoriteThread.id,))
                     );
                   },
 

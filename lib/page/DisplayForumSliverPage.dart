@@ -20,7 +20,6 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
-import 'package:discuz_flutter/widget/GoogleBannerAdWidget.dart';
 import 'package:discuz_flutter/widget/PlatformSliverAppBar.dart';
 import 'package:floor/floor.dart';
 import 'package:flutter/cupertino.dart';
@@ -405,8 +404,6 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                                 .discuzIndexVariables.threadType);
                       }),
                       Divider(),
-                      GoogleBannerAdWidget(),
-                      Divider()
                     ],
                   );
                 } else {

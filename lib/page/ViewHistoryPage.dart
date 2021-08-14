@@ -24,8 +24,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_time_ago/get_time_ago.dart';
 import 'package:provider/provider.dart';
 
-import 'DisplayForumPage.dart';
-import 'ViewThreadPage.dart';
+import 'DisplayForumSliverPage.dart';
+import 'ViewThreadSliverPage.dart';
 
 class ViewHistoryPage extends StatelessWidget{
   Discuz discuz;
@@ -178,13 +178,13 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
                           if(viewHistory.type == "thread"){
                             await Navigator.push(
                                 context,
-                                platformPageRoute(context:context,builder: (context) => ViewThreadPage(discuz,user, viewHistory.identification))
+                                platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz,user, viewHistory.identification))
                             );
                           }
                           else if(viewHistory.type == "forum"){
                             await Navigator.push(
                                 context,
-                                platformPageRoute(context:context,builder: (context) => DisplayForumPage(discuz, user, viewHistory.identification))
+                                platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(discuz, user, viewHistory.identification))
                             );
                           }
                         },

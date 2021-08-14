@@ -9,9 +9,8 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/HotThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
-import 'package:discuz_flutter/page/DisplayForumPage.dart';
 import 'package:discuz_flutter/page/UserProfilePage.dart';
-import 'package:discuz_flutter/page/ViewThreadPage.dart';
+import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
@@ -94,7 +93,7 @@ class HotThreadWidget extends StatelessWidget{
         onTap: () async {
           await Navigator.push(
               context,
-              platformPageRoute(context:context,builder: (context) => ViewThreadPage( _discuz,  _user, _hotThread.tid,))
+              platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( _discuz,  _user, _hotThread.tid,))
           );
         },
 
