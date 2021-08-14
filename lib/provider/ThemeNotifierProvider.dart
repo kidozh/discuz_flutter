@@ -101,7 +101,7 @@ class ThemeNotifierProvider with ChangeNotifier{
     Map<String, String> platformMap = {
       "":S.of(context).followSystem,
       "ios":S.of(context).ios,
-      "android":S.of(context).android,
+      "android":S.of(context).materialDesign,
       "fuchsia":S.of(context).fuchsia
     };
     if (platformMap.containsKey(_platformName)){

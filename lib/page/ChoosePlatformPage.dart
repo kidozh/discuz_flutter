@@ -38,7 +38,7 @@ class _ChoosePlatformState extends State<ChoosePlatformPage> {
               },
             ),
             SettingsTile(
-              title: S.of(context).android,
+              title: S.of(context).materialDesign,
               trailing: trailingWidget("android"),
               onPressed: (BuildContext context) {
                 changePlatform("android");

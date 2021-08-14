@@ -66,16 +66,12 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "about": MessageLookupByLibrary.simpleMessage("About"),
         "account": MessageLookupByLibrary.simpleMessage("Account"),
         "addDiscuzSuccessfully": m0,
         "addDiscuzTitle":
             MessageLookupByLibrary.simpleMessage("Add a discuz! BBS"),
         "addNewDiscuz":
             MessageLookupByLibrary.simpleMessage("Add a new Discuz! forum"),
-        "aliPay": MessageLookupByLibrary.simpleMessage("AliPay"),
-        "android": MessageLookupByLibrary.simpleMessage(
-            "Android / Harmony OS(compatible)"),
         "anonymous": MessageLookupByLibrary.simpleMessage("A"),
         "appName": MessageLookupByLibrary.simpleMessage("Discuzhao"),
         "appearanceOptimizedPlatform":
@@ -83,18 +79,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "appearanceOptimizedPlatformSubtitle":
             MessageLookupByLibrary.simpleMessage(
                 "Choose the app appearance on preferred platform."),
-        "autoLoad": MessageLookupByLibrary.simpleMessage("Auto load"),
-        "autoLoadDescribe": MessageLookupByLibrary.simpleMessage(
-            "Automatically refresh the slide to the bottom"),
-        "ballPulseDescribe":
-            MessageLookupByLibrary.simpleMessage("Ball pulse style"),
         "basicUse": MessageLookupByLibrary.simpleMessage("Basic"),
         "basicUseDescribe":
             MessageLookupByLibrary.simpleMessage("Basic use of EasyRefresh"),
-        "bezierCircleDescribe":
-            MessageLookupByLibrary.simpleMessage("Popup circle style"),
-        "bezierHourGlassDescribe":
-            MessageLookupByLibrary.simpleMessage("Popup HourGlass style"),
         "bio": MessageLookupByLibrary.simpleMessage("Bio"),
         "birthPlace": MessageLookupByLibrary.simpleMessage("Birth place"),
         "blockedPost":
@@ -102,10 +89,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "bobMinion": MessageLookupByLibrary.simpleMessage("Bob minion"),
         "bobMinionDescribe":
             MessageLookupByLibrary.simpleMessage("Cute yellow Minions"),
-        "bottomBouncing":
-            MessageLookupByLibrary.simpleMessage("Bottom bouncing"),
-        "bottomBouncingDescribe":
-            MessageLookupByLibrary.simpleMessage("Bottom can be crossed"),
         "buildDescription": MessageLookupByLibrary.simpleMessage(
             "Built with flutter, made with ♥, run on multiple platforms."),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
@@ -113,16 +96,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "captchaRequired":
             MessageLookupByLibrary.simpleMessage("Captcha required."),
         "chatMessage": MessageLookupByLibrary.simpleMessage("Chat"),
-        "chatPage": MessageLookupByLibrary.simpleMessage("Chat page"),
-        "chatPageDescribe":
-            MessageLookupByLibrary.simpleMessage("Chat page example"),
-        "chengdu": MessageLookupByLibrary.simpleMessage("China - ChengDu"),
         "chooseDiscuz": MessageLookupByLibrary.simpleMessage("Choose a BBS"),
         "chooseThemeTitle": MessageLookupByLibrary.simpleMessage("Theme color"),
-        "city": MessageLookupByLibrary.simpleMessage("City"),
-        "classic": MessageLookupByLibrary.simpleMessage("Classic"),
-        "classicDescribe":
-            MessageLookupByLibrary.simpleMessage("Classic and default"),
         "clearAllViewHistories":
             MessageLookupByLibrary.simpleMessage("Clear all histories"),
         "colorAmber": MessageLookupByLibrary.simpleMessage("Amber"),
@@ -156,13 +131,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "connectServerWhenAdding": MessageLookupByLibrary.simpleMessage(
             "Connect to BBS server for verification."),
         "continueAdding": MessageLookupByLibrary.simpleMessage("Continue"),
-        "controlFinish": MessageLookupByLibrary.simpleMessage("Control finish"),
-        "controlFinishDescribe": MessageLookupByLibrary.simpleMessage(
-            "Using Controller to End Asynchronous Tasks"),
         "credit": MessageLookupByLibrary.simpleMessage("Credit"),
-        "cupertinoDescribe": MessageLookupByLibrary.simpleMessage("ios style"),
-        "customScrollViewDescribe": MessageLookupByLibrary.simpleMessage(
-            "List with AppBar Folding, listener example"),
         "customStatusTitle":
             MessageLookupByLibrary.simpleMessage("Custom title"),
         "dashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
@@ -171,9 +140,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "deleteDiscuzSuccessfully": m2,
         "deleteViewHistoryWarnContent": MessageLookupByLibrary.simpleMessage(
             "Clearing operation is irrecoverable, please take care."),
-        "deliveryDescribe":
-            MessageLookupByLibrary.simpleMessage("Express balloon"),
-        "direction": MessageLookupByLibrary.simpleMessage("Direction"),
         "discuzServerAddress":
             MessageLookupByLibrary.simpleMessage("The Discuz\'s address"),
         "discuzServerAddressHelperText": MessageLookupByLibrary.simpleMessage(
@@ -183,22 +149,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "displaySettingTitle": MessageLookupByLibrary.simpleMessage("Display"),
         "downloadAttachment": MessageLookupByLibrary.simpleMessage("Download"),
         "downloadingFiles": m3,
-        "email": MessageLookupByLibrary.simpleMessage("E-Mail"),
         "emptyListDescription":
             MessageLookupByLibrary.simpleMessage("The content is empty"),
         "emptyScreenTitle":
             MessageLookupByLibrary.simpleMessage("The content here is empty."),
-        "emptyWidget": MessageLookupByLibrary.simpleMessage("Empty widget"),
-        "emptyWidgetDescribe": MessageLookupByLibrary.simpleMessage(
-            "Show empty widget when there is no data"),
         "error": MessageLookupByLibrary.simpleMessage("Error"),
         "favorites": MessageLookupByLibrary.simpleMessage("Favorites"),
-        "firstRefresh": MessageLookupByLibrary.simpleMessage("First refresh"),
-        "firstRefreshDescribe":
-            MessageLookupByLibrary.simpleMessage("First refresh widget"),
-        "floatView": MessageLookupByLibrary.simpleMessage("Floating view"),
-        "floatViewDescribe": MessageLookupByLibrary.simpleMessage(
-            "At the top or bottom view floating on the list"),
         "followSystem": MessageLookupByLibrary.simpleMessage("Follow system"),
         "fontSizeInParagraph":
             MessageLookupByLibrary.simpleMessage("Font size in paragraph"),
@@ -247,18 +203,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Category"),
         "friendNumber": MessageLookupByLibrary.simpleMessage("Friends"),
         "fuchsia": MessageLookupByLibrary.simpleMessage("Fuchsia"),
-        "github": MessageLookupByLibrary.simpleMessage("Github"),
         "googleAdSubTitle": MessageLookupByLibrary.simpleMessage(
             "Advertisement provided by Google"),
         "googleAdTitle": MessageLookupByLibrary.simpleMessage("AD"),
         "groupInfoDescription": m6,
         "habit": MessageLookupByLibrary.simpleMessage("Habits"),
-        "hangzhou": MessageLookupByLibrary.simpleMessage("China - HangZhou"),
-        "headerFloat": MessageLookupByLibrary.simpleMessage("Header float"),
-        "headerFloatDescribe": MessageLookupByLibrary.simpleMessage(
-            "Header is displayed on the list"),
         "homepage": MessageLookupByLibrary.simpleMessage("Homepage"),
-        "horizontal": MessageLookupByLibrary.simpleMessage("Horizontal"),
         "httpBrowseWarn":
             MessageLookupByLibrary.simpleMessage("HTTP protocol warning"),
         "incognitoSubtitle": MessageLookupByLibrary.simpleMessage(
@@ -268,14 +218,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "incorrectDiscuzAddress":
             MessageLookupByLibrary.simpleMessage("Invalid discuz address."),
         "index": MessageLookupByLibrary.simpleMessage("Index"),
-        "infiniteLoad": MessageLookupByLibrary.simpleMessage("Infinite load"),
-        "infiniteLoadDescribe": MessageLookupByLibrary.simpleMessage(
-            "Slide to bottom trigger loading"),
         "ios": MessageLookupByLibrary.simpleMessage("iOS"),
-        "joinDiscussion":
-            MessageLookupByLibrary.simpleMessage("Join the discussion"),
-        "joinDiscussionDescribe":
-            MessageLookupByLibrary.simpleMessage("Join the QQ group 554981921"),
         "largeRichText": MessageLookupByLibrary.simpleMessage(
             "Welcome to Discuzhub<br/>Thanks for using our products and <a href=\"https://discuzhub.kidozh.com/en/term_of_use/\">services</a> (“Services”).<br/>By using our Services, you are agreeing to these terms. Please read them <b>carefully</b>.<br/>Our Services are very diverse, so sometimes additional terms or product requirements (including age requirements) may apply. Additional terms will be available with the relevant Services, and those additional terms become part of your agreement with us if you use those Services"),
         "largeRichTextDescription": MessageLookupByLibrary.simpleMessage(
@@ -286,21 +229,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "lastVisitTime": MessageLookupByLibrary.simpleMessage("Last visit at"),
         "legalInformation":
             MessageLookupByLibrary.simpleMessage("Legal information"),
-        "linkHeader": MessageLookupByLibrary.simpleMessage("Header linker"),
-        "linkHeaderDescribeDescribe": MessageLookupByLibrary.simpleMessage(
-            "Customize Header with linker"),
         "linkUnableToOpen": m7,
-        "listDirection": MessageLookupByLibrary.simpleMessage("List direction"),
-        "listEmbed": MessageLookupByLibrary.simpleMessage("List embed"),
-        "listEmbedDescribe": MessageLookupByLibrary.simpleMessage(
-            "Use the connector to set the Header and Footer positions"),
-        "listReverse": MessageLookupByLibrary.simpleMessage("List reverse"),
         "loadFailed": MessageLookupByLibrary.simpleMessage("Load failed"),
         "loadFinish": MessageLookupByLibrary.simpleMessage("Load completed"),
         "loadMore": MessageLookupByLibrary.simpleMessage("LoadMore"),
-        "loadSwitch": MessageLookupByLibrary.simpleMessage("Load switch"),
-        "loadSwitchDescribe":
-            MessageLookupByLibrary.simpleMessage("Whether to turn on load"),
         "loaded": MessageLookupByLibrary.simpleMessage("Load completed"),
         "loading": MessageLookupByLibrary.simpleMessage("Loading..."),
         "loginByWebHttpWarn": MessageLookupByLibrary.simpleMessage(
@@ -320,18 +252,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "manualControl": MessageLookupByLibrary.simpleMessage("Manual control"),
         "manualControlDescribe": MessageLookupByLibrary.simpleMessage(
             "Control the timing of completion of refresh and load"),
-        "materialDescribe": MessageLookupByLibrary.simpleMessage(
-            "Material design, Android style"),
+        "materialDesign":
+            MessageLookupByLibrary.simpleMessage("Material Design"),
         "me": MessageLookupByLibrary.simpleMessage("Me"),
         "more": MessageLookupByLibrary.simpleMessage("More"),
-        "moreStyle": MessageLookupByLibrary.simpleMessage("More style"),
-        "moreStyleDescribe": MessageLookupByLibrary.simpleMessage(
-            "Come soon! You can also refer to the source code customization"),
-        "name": MessageLookupByLibrary.simpleMessage("Name"),
-        "nestedScrollViewDescribe":
-            MessageLookupByLibrary.simpleMessage("NestedScrollView example"),
-        "noBald": MessageLookupByLibrary.simpleMessage("Has not the bald"),
-        "noData": MessageLookupByLibrary.simpleMessage("No data"),
         "noMore": MessageLookupByLibrary.simpleMessage("No more"),
         "notification": MessageLookupByLibrary.simpleMessage("Notification"),
         "nullDiscuzSubTitle": MessageLookupByLibrary.simpleMessage(
@@ -339,7 +263,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "nullDiscuzTitle":
             MessageLookupByLibrary.simpleMessage("No Discuz! BBS is selected"),
         "ok": MessageLookupByLibrary.simpleMessage("ok"),
-        "old": MessageLookupByLibrary.simpleMessage("Old"),
         "onlineHours": m8,
         "onlineHoursTitle": MessageLookupByLibrary.simpleMessage("Online Time"),
         "openFileInExternalAppActionText":
@@ -356,10 +279,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "outerlinkOpenTitle": MessageLookupByLibrary.simpleMessage(
             "The link doesn\'t belong to the BBS"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
-        "payPal": MessageLookupByLibrary.simpleMessage("PayPal"),
-        "phoenixDescribe":
-            MessageLookupByLibrary.simpleMessage("Golden campus"),
-        "phone": MessageLookupByLibrary.simpleMessage("Phone"),
         "pictureTagInMessage": MessageLookupByLibrary.simpleMessage("[Pic]"),
         "policy": MessageLookupByLibrary.simpleMessage("Our policy"),
         "pollExpireAt": m9,
@@ -383,15 +302,11 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Sending"),
         "progressButtonReplySuccess":
             MessageLookupByLibrary.simpleMessage("Success"),
-        "projectAddress":
-            MessageLookupByLibrary.simpleMessage("Project address"),
         "publicMessage": MessageLookupByLibrary.simpleMessage("Public"),
         "publishAt": MessageLookupByLibrary.simpleMessage(" published at "),
         "pullToRefresh":
             MessageLookupByLibrary.simpleMessage("Pull to refresh"),
         "pushToLoad": MessageLookupByLibrary.simpleMessage("Push to load"),
-        "qqGroup": MessageLookupByLibrary.simpleMessage("QQ group"),
-        "qqPay": MessageLookupByLibrary.simpleMessage("QQ Pay"),
         "recentNote": MessageLookupByLibrary.simpleMessage("Recent note"),
         "recordHistoryOffDescription": MessageLookupByLibrary.simpleMessage(
             "App Won\'t record your browser history"),
@@ -403,9 +318,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "refreshFailed": MessageLookupByLibrary.simpleMessage("Refresh failed"),
         "refreshFinish":
             MessageLookupByLibrary.simpleMessage("Refresh completed"),
-        "refreshSwitch": MessageLookupByLibrary.simpleMessage("Refresh switch"),
-        "refreshSwitchDescribe":
-            MessageLookupByLibrary.simpleMessage("Whether to turn on refresh"),
         "refreshed": MessageLookupByLibrary.simpleMessage("Refresh completed"),
         "refreshing": MessageLookupByLibrary.simpleMessage("Refreshing..."),
         "registerAccountTime":
@@ -419,19 +331,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "replyPostTrimMessage": m12,
         "residentPlace": MessageLookupByLibrary.simpleMessage("Resident place"),
         "retry": MessageLookupByLibrary.simpleMessage("retry"),
-        "reverse": MessageLookupByLibrary.simpleMessage("reverse"),
         "revisedPost": MessageLookupByLibrary.simpleMessage(
             "The post is revised to prevent duplicated scoring."),
         "sample": MessageLookupByLibrary.simpleMessage("Sample"),
         "saveImageSuccessfully": MessageLookupByLibrary.simpleMessage(
             "Save Image to device successfully."),
         "savePictureToDevice": MessageLookupByLibrary.simpleMessage("Save"),
-        "scrollBar": MessageLookupByLibrary.simpleMessage("ScrollBar"),
-        "scrollBarDescribe": MessageLookupByLibrary.simpleMessage(
-            "Add a scroll bar to the list"),
-        "secondFloor": MessageLookupByLibrary.simpleMessage("Second floor"),
-        "secondFloorDescribe": MessageLookupByLibrary.simpleMessage(
-            "Imitate the second floor of Taobao"),
         "selectUserNull": MessageLookupByLibrary.simpleMessage(
             "No user is currently activated"),
         "send": MessageLookupByLibrary.simpleMessage("Send"),
@@ -443,32 +348,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "signInViaBrowser":
             MessageLookupByLibrary.simpleMessage("Sign in by web"),
         "signUp": MessageLookupByLibrary.simpleMessage("Sign up"),
-        "spaceDescribe":
-            MessageLookupByLibrary.simpleMessage("Flare animation - Space"),
-        "star": MessageLookupByLibrary.simpleMessage("Star project"),
         "style": MessageLookupByLibrary.simpleMessage("Style"),
         "submitPoll": m15,
         "successfullyDeleteViewHistoryContent": m16,
         "successfullyDownloadFiles": m17,
-        "supportAuthor":
-            MessageLookupByLibrary.simpleMessage("Support the author"),
-        "supportAuthorDescribe": MessageLookupByLibrary.simpleMessage(
-            "Your support is my biggest motivation"),
-        "swiperDescribe": MessageLookupByLibrary.simpleMessage(
-            "Swiper example, resolve sliding conflicts"),
-        "tabViewWidgetDescribe": MessageLookupByLibrary.simpleMessage(
-            "List and Grid consist of TabBarView"),
-        "taskIndependence":
-            MessageLookupByLibrary.simpleMessage("Task independence"),
-        "taskIndependenceDescribe": MessageLookupByLibrary.simpleMessage(
-            "Refresh and load tasks are not affected by each other"),
-        "taurusDescribe":
-            MessageLookupByLibrary.simpleMessage("Rushing into the sky"),
         "termsOfService":
             MessageLookupByLibrary.simpleMessage("Terms of Service"),
-        "topBouncing": MessageLookupByLibrary.simpleMessage("Top bouncing"),
-        "topBouncingDescribe":
-            MessageLookupByLibrary.simpleMessage("Top can be crossed"),
         "trustHostActionText":
             MessageLookupByLibrary.simpleMessage("Trust this host"),
         "trustHostTitle": MessageLookupByLibrary.simpleMessage("Trusted host"),
@@ -481,14 +366,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "userExpiredTitle": m18,
         "userIdTitle": m19,
         "userProfile": MessageLookupByLibrary.simpleMessage("User Profile"),
-        "userProfileDescribe": MessageLookupByLibrary.simpleMessage(
-            "User Profile with the springback effect"),
         "userProfileTitle":
             MessageLookupByLibrary.simpleMessage("User Profiles"),
-        "vertical": MessageLookupByLibrary.simpleMessage("Vertical"),
-        "vibration": MessageLookupByLibrary.simpleMessage("vibration"),
-        "vibrationDescribe": MessageLookupByLibrary.simpleMessage(
-            "Triggered vibration feedback"),
         "viewAuthorInfo":
             MessageLookupByLibrary.simpleMessage("View author\'s profile"),
         "viewHistory": MessageLookupByLibrary.simpleMessage("View History"),
@@ -499,9 +378,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("The post is warned."),
         "watchPictureInFullScreen":
             MessageLookupByLibrary.simpleMessage("Full display"),
-        "weiXinPay": MessageLookupByLibrary.simpleMessage("WeiXin Pay"),
-        "welcomeToSecondFloor":
-            MessageLookupByLibrary.simpleMessage("Welcome to second floor"),
         "writeStorageDenied": MessageLookupByLibrary.simpleMessage(
             "Write storage permission denied.")
       };

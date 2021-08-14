@@ -387,10 +387,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       iosContentBottomPadding: true,
       appBar: PlatformAppBar(
         //middle: Text(S.of(context).forumDisplayTitle),
-
-        title: _viewThreadResult.threadVariables.threadInfo.subject.isEmpty
-            ? Text(S.of(context).viewThreadTitle)
-            : Text(_viewThreadResult.threadVariables.threadInfo.subject),
+        title: Text(S.of(context).viewThreadTitle),
+        // title: _viewThreadResult.threadVariables.threadInfo.subject.isEmpty
+        //     ? Text(S.of(context).viewThreadTitle)
+        //     : Text(_viewThreadResult.threadVariables.threadInfo.subject),
       ),
       body: Column(
         children: [
