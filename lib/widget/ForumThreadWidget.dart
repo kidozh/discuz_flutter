@@ -14,6 +14,7 @@ import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get_time_ago/get_time_ago.dart';
@@ -53,7 +54,7 @@ class ForumThreadWidget extends StatelessWidget{
       threadCategory = threadType!.idNameMap[_forumThread.typeId]!;
     }
 
-    return Container(
+    return Card(
       child: ListTile(
         leading: InkWell(
           child: ClipRRect(
@@ -75,10 +76,12 @@ class ForumThreadWidget extends StatelessWidget{
           ),
           onTap: () async{
             User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+            VibrationUtils.vibrateWithClickIfPossible();
             await Navigator.push(
                 context,
                 platformPageRoute(context:context,builder: (context) => UserProfilePage(_discuz,user, int.parse(_forumThread.authorId))));
-          },
+
+            },
         ),
         title: Text(_forumThread.subject,style: TextStyle(fontWeight: FontWeight.bold)),
         subtitle: RichText(
@@ -98,6 +101,7 @@ class ForumThreadWidget extends StatelessWidget{
         ),
         trailing: getTailingWidget(),
         onTap: () async {
+          VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(
               context,
               platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(_discuz,_user, _forumThread.getTid()))

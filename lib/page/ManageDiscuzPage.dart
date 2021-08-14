@@ -9,6 +9,7 @@ import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -26,6 +27,7 @@ class ManageDiscuzPage extends StatelessWidget{
       body: ManageDiscuzStateWidget(),
       floatingActionButton: FloatingActionButton(
         onPressed: () async{
+          VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(context,
               platformPageRoute(context:context,builder: (context) => AddDiscuzPage()));
         },

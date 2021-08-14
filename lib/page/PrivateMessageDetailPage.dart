@@ -18,6 +18,7 @@ import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/screen/SmileyListScreen.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumPartitionWidget.dart';
 import 'package:discuz_flutter/widget/HotThreadWidget.dart';
@@ -154,11 +155,12 @@ class _PrivateMessageDetailState
           _invalidateHotThreadContent(discuz);
         });
       } else {
-
+        VibrationUtils.vibrateErrorIfPossible();
         EasyLoading.showError(
             '${value.errorResult!.content}(${value.errorResult!.key})');
       }
     }).catchError((onError) {
+      VibrationUtils.vibrateErrorIfPossible();
       EasyLoading.showError('${onError}');
     });
   }
@@ -219,6 +221,7 @@ class _PrivateMessageDetailState
         });
       }
     }).catchError((onError) {
+      VibrationUtils.vibrateErrorIfPossible();
       EasyLoading.showError('${onError}');
       if (!_enableControlFinish) {
         _controller.resetLoadState();
@@ -436,6 +439,7 @@ class _PrivateMessageDetailState
                           style: TextStyle(color: Colors.black),
                           onSubmitted: (value) {
                             if (_textEditingController.text.isNotEmpty) {
+                              VibrationUtils.vibrateWithClickIfPossible();
                               _sendMessage( _textEditingController.text);
                               //_sendMsg(_textEditingController.text);
 
@@ -446,6 +450,7 @@ class _PrivateMessageDetailState
                     ),
                     InkWell(
                       onTap: (){
+                        VibrationUtils.vibrateWithClickIfPossible();
                         setState((){
                           showSmiley = !showSmiley;
                         });
@@ -461,6 +466,7 @@ class _PrivateMessageDetailState
                     InkWell(
                       onTap: () {
                         if (_textEditingController.text.isNotEmpty) {
+                          VibrationUtils.vibrateWithClickIfPossible();
                           _sendMessage( _textEditingController.text);
                         }
                       },

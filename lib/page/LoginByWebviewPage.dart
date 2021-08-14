@@ -8,6 +8,7 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -68,6 +69,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           PlatformIconButton(
             icon: Icon(PlatformIcons(context).add),
             onPressed: (){
+              VibrationUtils.vibrateWithClickIfPossible();
               _checkUserLogined();
             },
           )
@@ -222,6 +224,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           Navigator.pop(context);
         }
         catch(e,s){
+          VibrationUtils.vibrateErrorIfPossible();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
         }
       }
@@ -232,6 +235,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
       }
     })
     .catchError((e,s){
+      VibrationUtils.vibrateErrorIfPossible();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
     });
 

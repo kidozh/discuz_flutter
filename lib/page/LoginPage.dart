@@ -11,6 +11,7 @@ import 'package:discuz_flutter/page/LoginByWebviewPage.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:flutter/cupertino.dart';
@@ -161,6 +162,7 @@ class _LoginFormFieldState
           Navigator.pop(context);
         }
         catch(e,s){
+          VibrationUtils.vibrateErrorIfPossible();
           log("${e},${s}");
         }
       }
@@ -173,6 +175,7 @@ class _LoginFormFieldState
       }
 
     }).catchError((onError) {
+      VibrationUtils.vibrateErrorIfPossible();
       _captchaController.reloadCaptcha();
       setState(() {
         error = onError.toString();
@@ -295,6 +298,7 @@ class _LoginFormFieldState
                                   color: Colors.green.shade400)
                             },
                             onPressed: (){
+                              VibrationUtils.vibrateWithClickIfPossible();
                               _verifyAccountAndPassword();
                             },
                             state: _loginState
@@ -334,6 +338,7 @@ class _LoginFormFieldState
                           icon: Icon(Icons.open_in_browser),
                           label: Text(S.of(context).signInViaBrowser),
                             onPressed: (){
+                              VibrationUtils.vibrateWithClickIfPossible();
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) => LoginByWebviewPage(discuz)));
                             }, ),
@@ -344,7 +349,7 @@ class _LoginFormFieldState
                             icon: Icon(Icons.app_registration),
                             label: Text(S.of(context).signUp),
                             onPressed: (){
-
+                              VibrationUtils.vibrateWithClickIfPossible();
                             }),
                       )
 

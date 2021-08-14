@@ -13,6 +13,7 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumPartitionWidget.dart';
 import 'package:flutter/material.dart';
@@ -127,6 +128,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       }
 
     }).catchError((onError) {
+      VibrationUtils.vibrateErrorIfPossible();
       EasyLoading.showError('${onError}');
       if (!_enableControlFinish) {
         _controller.resetLoadState();

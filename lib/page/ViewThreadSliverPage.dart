@@ -17,6 +17,7 @@ import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
@@ -256,6 +257,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             '${value.errorResult!.content}(${value.errorResult!.key})');
       }
     }).catchError((onError) {
+      VibrationUtils.vibrateErrorIfPossible();
       EasyLoading.showError('${onError}');
       setState(() {
         _sendReplyStatus = ButtonState.fail;
@@ -354,6 +356,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         }
       }
     }).catchError((onError) {
+      VibrationUtils.vibrateErrorIfPossible();
       EasyLoading.showError('${onError}');
       if (!_enableControlFinish) {
         _controller.resetLoadState();
@@ -554,6 +557,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                 avatar: Icon(
                                     PlatformIcons(context).clearThickCircled),
                                 onPressed: () {
+                                  VibrationUtils.vibrateWithClickIfPossible();
                                   // removing it
                                   Provider.of<ReplyPostNotifierProvider>(
                                           context,
@@ -618,6 +622,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                 decoration: InputDecoration(
                                     hintText: S.of(context).sendReplyHint),
                                 onSubmitted: (text) {
+                                  VibrationUtils.vibrateWithClickIfPossible();
                                   _sendReply();
                                 },
                               ),
@@ -654,6 +659,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                       color: Colors.green.shade400)
                                 },
                                 onPressed: () {
+                                  VibrationUtils.vibrateWithClickIfPossible();
                                   _sendReply();
                                 },
                                 state: _sendReplyStatus)

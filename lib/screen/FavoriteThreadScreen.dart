@@ -23,6 +23,7 @@ import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumPartitionWidget.dart';
 import 'package:discuz_flutter/widget/HotThreadWidget.dart';
@@ -166,7 +167,7 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
 
     })
     .catchError((onError,stacktrace){
-
+      VibrationUtils.vibrateErrorIfPossible();
       EasyLoading.showError('${onError}');
       if (!_enableControlFinish) {
         _controller.resetLoadState();
@@ -323,6 +324,7 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
                       ),
                     ),
                     onTap: () async{
+                      VibrationUtils.vibrateWithClickIfPossible();
                       User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
                       await Navigator.push(
                           context,
@@ -345,6 +347,7 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
                   ),
 
                   onTap: () async {
+                    VibrationUtils.vibrateWithClickIfPossible();
                     await Navigator.push(
                         context,
                         platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( discuz,  user, favoriteThread.id,))

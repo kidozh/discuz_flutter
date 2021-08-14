@@ -4,6 +4,7 @@ import 'package:discuz_flutter/page/ChooseTypeSettingScalePage.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -66,6 +67,7 @@ class _SettingPageState extends State<SettingPage> {
                   leading: Icon(Icons.history),
                   switchValue: recordHistory,
                   onToggle: (bool value) {
+                    VibrationUtils.vibrateWithSwitchIfPossible();
                     print("set record history ${value} ");
                     UserPreferencesUtils.putRecordHistoryEnabled(value);
                     setState(() {
@@ -83,6 +85,7 @@ class _SettingPageState extends State<SettingPage> {
                   subtitle: themeEntity.getColorName(context),
                   leading: Icon(Icons.color_lens_outlined),
                   onPressed: (context) {
+                    VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
                       builder: (_) => ChooseThemeColorPage(),
                       context: context,
@@ -94,6 +97,7 @@ class _SettingPageState extends State<SettingPage> {
                   subtitle: themeEntity.getPlatformLocaleName(context),
                   leading: Icon(PlatformIcons(context).home),
                   onPressed: (context) {
+                    VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
                       builder: (_) => ChoosePlatformPage(),
                       context: context,
@@ -105,6 +109,7 @@ class _SettingPageState extends State<SettingPage> {
                   subtitle: S.of(context).fontSizeScaleParameterUnit(typeSetting.scalingParameter.toStringAsFixed(3)),
                   leading: Icon(Icons.format_size),
                   onPressed: (context) {
+                    VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
                       builder: (_) => ChooseTypeSettingScalePage(),
                       context: context,
@@ -148,6 +153,7 @@ class _SettingPageState extends State<SettingPage> {
                   title: S.of(context).termsOfService,
                   leading: Icon(Icons.description),
                   onPressed: (_) {
+                    VibrationUtils.vibrateWithClickIfPossible();
                     _launchURL("https://discuzhub.kidozh.com/term_of_use/");
                   },
                 ),
@@ -155,6 +161,7 @@ class _SettingPageState extends State<SettingPage> {
                   title: S.of(context).privacyPolicy,
                   leading: Icon(Icons.privacy_tip),
                   onPressed: (_) {
+                    VibrationUtils.vibrateWithClickIfPossible();
                     _launchURL("https://discuzhub.kidozh.com/privacy_policy/");
                   },
                 ),
@@ -162,6 +169,7 @@ class _SettingPageState extends State<SettingPage> {
                   title: S.of(context).openSourceLicence,
                   leading: Icon(Icons.collections_bookmark),
                   onPressed: (_) {
+                    VibrationUtils.vibrateWithClickIfPossible();
                     _launchURL(
                         "https://discuzhub.kidozh.com/open_source_licence/");
                   },

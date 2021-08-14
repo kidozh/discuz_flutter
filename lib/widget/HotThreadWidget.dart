@@ -14,6 +14,7 @@ import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get_time_ago/get_time_ago.dart';
@@ -71,6 +72,7 @@ class HotThreadWidget extends StatelessWidget{
             ),
           ),
           onTap: () async{
+            VibrationUtils.vibrateWithClickIfPossible();
             User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
             await Navigator.push(
                 context,
@@ -91,6 +93,7 @@ class HotThreadWidget extends StatelessWidget{
         ),
         trailing: getTailingWidget(),
         onTap: () async {
+          VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(
               context,
               platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( _discuz,  _user, _hotThread.tid,))

@@ -17,6 +17,7 @@ import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
@@ -231,7 +232,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
       log("set successful result ${_displayForumResult} ${_forumThreadList.length}");
     }).catchError((onError) {
-      throw(onError);
+      VibrationUtils.vibrateErrorIfPossible();
       log(onError);
       EasyLoading.showError('${onError}');
       if (!_enableControlFinish) {
@@ -253,6 +254,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
             });
           }
       }
+      throw(onError);
     });
   }
 
@@ -269,11 +271,13 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
           IconButton(
               icon: Icon(Icons.filter_alt_outlined),
               onPressed: () {
+                VibrationUtils.vibrateWithClickIfPossible();
                 _showForumFilterBottomSheet(context);
               }),
           IconButton(
               icon: Icon(PlatformIcons(context).helpOutline),
               onPressed: () {
+                VibrationUtils.vibrateWithClickIfPossible();
                 _showInformationBottomSheet(context);
               })
         ],
@@ -403,7 +407,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                             _displayForumResult!
                                 .discuzIndexVariables.threadType);
                       }),
-                      Divider(),
+
                     ],
                   );
                 } else {
@@ -411,7 +415,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                     children: [
                       ForumThreadWidget(discuz, user, _forumThreadList[index],
                           _displayForumResult!.discuzIndexVariables.threadType),
-                      Divider(),
+
                     ],
                   );
                 }
@@ -521,6 +525,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                                 selected: _displayForumQuery.typeId ==
                                     threadTypeInfo.typeId,
                                 onSelected: (bool selected) {
+                                  VibrationUtils.vibrateWithClickIfPossible();
                                   setState(() {
                                     _displayForumQuery.setTypeId(
                                         threadTypeInfo.typeId, selected);
@@ -556,6 +561,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                               selected:
                                   _displayForumQuery.orderBy == "lastpost",
                               onSelected: (bool selected) {
+                                VibrationUtils.vibrateWithClickIfPossible();
                                 setState(() {
                                   _displayForumQuery.setOrderBy(
                                       "lastpost", true);
@@ -568,6 +574,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                               selected:
                                   _displayForumQuery.orderBy == "dateline",
                               onSelected: (bool selected) {
+                                VibrationUtils.vibrateWithClickIfPossible();
                                 setState(() {
                                   _displayForumQuery.setOrderBy(
                                       "dateline", selected);
@@ -578,6 +585,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                               label: Text(S.of(context).forumFilterSortByView),
                               selected: _displayForumQuery.orderBy == "views",
                               onSelected: (bool selected) {
+                                VibrationUtils.vibrateWithClickIfPossible();
                                 setState(() {
                                   _displayForumQuery.setOrderBy(
                                       "views", selected);
@@ -588,6 +596,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                               label: Text(S.of(context).forumFilterSortByHeat),
                               selected: _displayForumQuery.orderBy == "heats",
                               onSelected: (bool selected) {
+                                VibrationUtils.vibrateWithClickIfPossible();
                                 setState(() {
                                   _displayForumQuery.setOrderBy(
                                       "heats", selected);
@@ -623,6 +632,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                               selected:
                                   _displayForumQuery.specialType == "poll",
                               onSelected: (bool selected) {
+                                VibrationUtils.vibrateWithClickIfPossible();
                                 setState(() {
                                   _displayForumQuery.setSpecialType(
                                       "poll", selected);
@@ -635,6 +645,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                               selected:
                                   _displayForumQuery.specialType == "debate",
                               onSelected: (bool selected) {
+                                VibrationUtils.vibrateWithClickIfPossible();
                                 setState(() {
                                   _displayForumQuery.setSpecialType(
                                       "debate", selected);
@@ -647,6 +658,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                               selected:
                                   _displayForumQuery.specialType == "activity",
                               onSelected: (bool selected) {
+                                VibrationUtils.vibrateWithClickIfPossible();
                                 setState(() {
                                   _displayForumQuery.setSpecialType(
                                       "activity", selected);
@@ -679,6 +691,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                               label: Text(S.of(context).forumFilterTimeToday),
                               selected: _displayForumQuery.dateline == 86400,
                               onSelected: (bool selected) {
+                                VibrationUtils.vibrateWithClickIfPossible();
                                 setState(() {
                                   _displayForumQuery.setDateline(
                                       86400, selected);
@@ -690,6 +703,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                                   Text(S.of(context).forumFilterTimeThisWeek),
                               selected: _displayForumQuery.dateline == 604800,
                               onSelected: (bool selected) {
+                                VibrationUtils.vibrateWithClickIfPossible();
                                 setState(() {
                                   _displayForumQuery.setDateline(
                                       604800, selected);
@@ -701,6 +715,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                                   Text(S.of(context).forumFilterTimeThisMonth),
                               selected: _displayForumQuery.dateline == 2592000,
                               onSelected: (bool selected) {
+                                VibrationUtils.vibrateWithClickIfPossible();
                                 setState(() {
                                   _displayForumQuery.setDateline(
                                       2592000, selected);
@@ -712,6 +727,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                                   S.of(context).forumFilterTimeThisQuarter),
                               selected: _displayForumQuery.dateline == 7948800,
                               onSelected: (bool selected) {
+                                VibrationUtils.vibrateWithClickIfPossible();
                                 setState(() {
                                   _displayForumQuery.setDateline(
                                       7948800, selected);
@@ -723,6 +739,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                                   Text(S.of(context).forumFilterTimeThisYear),
                               selected: _displayForumQuery.dateline == 31536000,
                               onSelected: (bool selected) {
+                                VibrationUtils.vibrateWithClickIfPossible();
                                 _displayForumQuery.setDateline(
                                     31536000, selected);
                               },
@@ -755,13 +772,17 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                               label:
                                   Text(S.of(context).forumFilterStatusDigest),
                               selected: false,
-                              onSelected: (bool selected) {},
+                              onSelected: (bool selected) {
+                                VibrationUtils.vibrateWithClickIfPossible();
+                              },
                             ),
                             ChoiceChip(
                               avatar: Icon(Icons.whatshot_rounded),
                               label: Text(S.of(context).forumFilterStatusHot),
                               selected: false,
-                              onSelected: (bool selected) {},
+                              onSelected: (bool selected) {
+                                VibrationUtils.vibrateWithClickIfPossible();
+                              },
                             ),
                           ],
                         )

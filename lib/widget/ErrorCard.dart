@@ -1,6 +1,7 @@
 
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 
 class ErrorCard extends StatelessWidget{
@@ -28,6 +29,7 @@ class ErrorCard extends StatelessWidget{
         TextButton(
           child: Text(S.of(context).retry),
           onPressed: () {
+            VibrationUtils.vibrateWithClickIfPossible();
             onRefreshCallback();
           },
         ),

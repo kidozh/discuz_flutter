@@ -5,6 +5,7 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -179,6 +180,7 @@ class PollState extends State<PollStatefulWidget>{
                       ),
                       onTap: (){
                         // check whether it's simple choice
+                        VibrationUtils.vibrateWithClickIfPossible();
                         if(!poll.allowVote){
                           return;
                         }
@@ -242,6 +244,7 @@ class PollState extends State<PollStatefulWidget>{
                 if(poll.allowVote && poll.maxChoice > 1)
                 ElevatedButton(
                     onPressed: checkedOption.length > poll.maxChoice || checkedOption.isEmpty? null :() {
+                      VibrationUtils.vibrateWithClickIfPossible();
                       _vote();
                     },
                     child: Text(S.of(context).submitPoll(checkedOption.length, poll.maxChoice)))

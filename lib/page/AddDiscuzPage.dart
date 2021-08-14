@@ -6,6 +6,7 @@ import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -78,6 +79,7 @@ class _AddDiscuzFormFieldState
       });
       _saveDiscuzInDb(checkResult.toDiscuz(discuzUrl));
     }).catchError((onError) {
+      VibrationUtils.vibrateErrorIfPossible();
       setState(() {
         _isLoading = false;
       });
@@ -162,6 +164,7 @@ class _AddDiscuzFormFieldState
                   child: PlatformElevatedButton(
                     child: Text(S.of(context).continueAdding),
                     onPressed: (){
+                      VibrationUtils.vibrateWithClickIfPossible();
                       if (_formKey.currentState!.validate()) {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(SnackBar(content: Text(S.of(context).connectServerWhenAdding)));

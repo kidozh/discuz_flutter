@@ -16,6 +16,7 @@ import 'package:discuz_flutter/screen/HotThreadScreen.dart';
 import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -295,6 +296,7 @@ class _MyHomePageState extends State<MyHomePage> {
         text: discuz.siteName,
         onPressed: () {
           setState(() {
+            VibrationUtils.vibrateWithClickIfPossible();
             Provider.of<DiscuzAndUserNotifier>(context, listen: false)
                 .initDiscuz(discuz);
             _setFirstUserInDiscuz(discuz.id!);
@@ -310,6 +312,7 @@ class _MyHomePageState extends State<MyHomePage> {
         color: Colors.blueAccent,
         text: S.of(context).addNewDiscuz,
         onPressed: () {
+          VibrationUtils.vibrateWithClickIfPossible();
           Navigator.of(context).pop();
           Navigator.push(
               context,
@@ -341,6 +344,7 @@ class _MyHomePageState extends State<MyHomePage> {
           subtitle: Text(S.of(context).loginSubtitle),
           leading: Icon(PlatformIcons(context).personAdd),
           onTap: () async {
+            VibrationUtils.vibrateWithClickIfPossible();
             Discuz? discuz =
                 Provider.of<DiscuzAndUserNotifier>(context, listen: false)
                     .discuz;
@@ -353,6 +357,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(S.of(context).manageAccount),
           leading: Icon(PlatformIcons(context).personOutline),
           onTap: () async {
+            VibrationUtils.vibrateWithClickIfPossible();
             Discuz? discuz =
                 Provider.of<DiscuzAndUserNotifier>(context, listen: false)
                     .discuz;
@@ -371,6 +376,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(S.of(context).manageDiscuz),
           leading: Icon(Icons.forum_outlined),
           onTap: () async {
+            VibrationUtils.vibrateWithClickIfPossible();
             await Navigator.push(
                 context,
                 platformPageRoute(
@@ -385,6 +391,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Discuz? discuz =
                 Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
             if(discuz != null){
+              VibrationUtils.vibrateWithClickIfPossible();
               await Navigator.push(
                   context,
                   platformPageRoute(
@@ -398,6 +405,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(S.of(context).trustHostTitle),
           leading: Icon(PlatformIcons(context).checkMarkCircledOutline),
           onTap: () async {
+            VibrationUtils.vibrateWithClickIfPossible();
             await Navigator.push(context,platformPageRoute(context:context,builder: (context) => ManageTrustHostPage()));
           },
         ),
@@ -405,6 +413,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(S.of(context).settingTitle),
           leading: Icon(PlatformIcons(context).settingsSolid),
           onTap: () async {
+            VibrationUtils.vibrateWithClickIfPossible();
             Discuz? discuz =
                 Provider.of<DiscuzAndUserNotifier>(context, listen: false)
                     .discuz;
@@ -437,6 +446,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 ListTile(
                     onTap: () {
+                      VibrationUtils.vibrateWithClickIfPossible();
                       Provider.of<DiscuzAndUserNotifier>(context, listen: false)
                           .setUser(null);
                       _toggleNavigationStatus();
@@ -456,6 +466,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     User user = userList[position];
                     return ListTile(
                       onTap: (){
+                        VibrationUtils.vibrateWithClickIfPossible();
                         Provider.of<DiscuzAndUserNotifier>(context,
                             listen: false)
                             .setUser(user);
@@ -480,6 +491,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   } else {
                     return ListTile(
                         onTap: () {
+                          VibrationUtils.vibrateWithClickIfPossible();
                           Provider.of<DiscuzAndUserNotifier>(context,
                                   listen: false)
                               .setUser(null);
@@ -604,6 +616,7 @@ class _MyHomePageState extends State<MyHomePage> {
               label: S.of(context).chatMessage),
         ],
         onTap: (index) {
+          VibrationUtils.vibrateWithClickIfPossible();
           setState(() {
             _bottomNavigationbarIndex = index;
           });

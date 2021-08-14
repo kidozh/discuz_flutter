@@ -12,6 +12,7 @@ import 'package:discuz_flutter/page/FullImagePage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:discuz_flutter/entity/Post.dart';
 import 'package:flutter/material.dart';
@@ -70,6 +71,7 @@ class AttachmentWidget extends StatelessWidget{
             actions: [
               TextButton(
                 onPressed: () {
+                  VibrationUtils.vibrateWithClickIfPossible();
                   Navigator.pop(context);
                 },
                 child: Text(S.of(context).cancel),
@@ -77,6 +79,7 @@ class AttachmentWidget extends StatelessWidget{
               ),
               TextButton(
                 onPressed: () async{
+                  VibrationUtils.vibrateWithClickIfPossible();
                   final result = await OpenFile.open(savePath);
                   if(result.type != ResultType.done){
                     EasyLoading.showError("${result.message}(${result.type})");
@@ -131,6 +134,7 @@ class AttachmentWidget extends StatelessWidget{
               TextButton.icon(
                   icon: Icon(Icons.fullscreen),
                   onPressed: (){
+                    VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => FullImagePage(URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode)))

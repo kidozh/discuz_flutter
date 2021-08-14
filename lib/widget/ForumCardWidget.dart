@@ -5,6 +5,7 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/page/DisplayForumSliverPage.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
@@ -33,6 +34,7 @@ class ForumCardWidget extends StatelessWidget{
           child: Text(_forum.description, maxLines: 2,),
         ),
         onTap: () async{
+          VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(
               context,
               platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(_discuz, _user, _forum.getFid()))

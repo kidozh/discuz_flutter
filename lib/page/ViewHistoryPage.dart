@@ -15,6 +15,7 @@ import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -174,6 +175,7 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
 
                         ),
                         onTap: () async{
+                          VibrationUtils.vibrateWithClickIfPossible();
                           User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
                           if(viewHistory.type == "thread"){
                             await Navigator.push(
@@ -202,6 +204,7 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
+            VibrationUtils.vibrateWithClickIfPossible();
             _showDeleteAllDialog(context);
           },
           tooltip: S.of(context).clearAllViewHistories,

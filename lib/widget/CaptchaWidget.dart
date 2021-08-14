@@ -10,6 +10,7 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -166,6 +167,7 @@ class CaptchaState extends State<CaptchaStatefulWidget>{
           GestureDetector(
             child: Image.memory(imageByte!),
             onTap: (){
+              VibrationUtils.vibrateWithClickIfPossible();
               _loadCaptchaInfo();
             },
           )

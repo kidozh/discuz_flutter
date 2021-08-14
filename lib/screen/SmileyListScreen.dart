@@ -7,6 +7,7 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -102,6 +103,7 @@ class SmileyListState extends State<SmileyListStatefulWidget>{
             smileyImageList.add(
               InkWell(
                 onTap: (){
+                  VibrationUtils.vibrateWithClickIfPossible();
                   smileyValueGetter(currentSmiley[j]);
                 },
                 child: CachedNetworkImage(

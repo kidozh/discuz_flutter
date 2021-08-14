@@ -15,6 +15,7 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/page/PrivateMessageDetailPage.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:get_time_ago/get_time_ago.dart';
@@ -60,6 +61,7 @@ class PrivateMessagePortalWidget extends StatelessWidget{
           ),
           onTap: () async{
             User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+            VibrationUtils.vibrateWithClickIfPossible();
             await Navigator.push(
                 context,
                 platformPageRoute(context:context,builder: (context) => UserProfilePage(_discuz,user, _privateMessagePortal.msgFromId)));
@@ -79,6 +81,7 @@ class PrivateMessagePortalWidget extends StatelessWidget{
         ),
         trailing: _privateMessagePortal.isNew ? Icon(Icons.new_releases_outlined, color: Theme.of(context).primaryColor,) :null,
         onTap: () async {
+          VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(
               context,
               platformPageRoute(context:context,builder: (context) => PrivateMessageDetailScreen(_privateMessagePortal.toUid, _privateMessagePortal.toUserName))

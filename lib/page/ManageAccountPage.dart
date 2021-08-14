@@ -9,6 +9,7 @@ import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -29,6 +30,7 @@ class ManageAccountPage extends StatelessWidget{
       body: ManageAccountStateWidget(discuz),
       floatingActionButton: FloatingActionButton(
         onPressed: () async{
+          VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(context,
               platformPageRoute(context:context,builder: (context) => LoginPage(discuz, null)));
         },
@@ -109,6 +111,7 @@ class ManageAccountState extends State<ManageAccountStateWidget>{
               color: Colors.redAccent,
               icon: Icons.delete,
               onTap: () {
+                VibrationUtils.vibrateWithClickIfPossible();
                 _deleteAccount(user);
               },
             ),
@@ -117,6 +120,7 @@ class ManageAccountState extends State<ManageAccountStateWidget>{
               color: Colors.teal,
               icon: Icons.refresh,
               onTap: () {
+                VibrationUtils.vibrateWithClickIfPossible();
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => LoginPage(discuz, user.username)));
               },

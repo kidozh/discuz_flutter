@@ -1,6 +1,7 @@
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
@@ -32,6 +33,7 @@ class _ChoosePlatformState extends State<ChoosePlatformPage> {
               title: S.of(context).followSystem,
               trailing: trailingWidget(""),
               onPressed: (BuildContext context) {
+
                 changePlatform("");
               },
             ),
@@ -94,5 +96,6 @@ class _ChoosePlatformState extends State<ChoosePlatformPage> {
         }
       }
     }
+    VibrationUtils.vibrateSuccessfullyIfPossible();
   }
 }

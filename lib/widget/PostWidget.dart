@@ -11,6 +11,7 @@ import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/AttachmentWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:flutter/cupertino.dart';
@@ -94,6 +95,7 @@ class PostWidget extends StatelessWidget {
                                     context,
                                     listen: false)
                                 .user;
+                            VibrationUtils.vibrateWithClickIfPossible();
                             await Navigator.push(
                                 context,
                                 platformPageRoute(
@@ -168,10 +170,12 @@ class PostWidget extends StatelessWidget {
                             ),
                           ],
                           onSelected: (int pos) {
+                            VibrationUtils.vibrateWithClickIfPossible();
                             switch (pos) {
                               case 0:
                                 {
                                   // set provider to
+
                                   Provider.of<ReplyPostNotifierProvider>(
                                           context,
                                           listen: false)
@@ -231,7 +235,7 @@ class PostWidget extends StatelessWidget {
           : Colors.red.shade700,
       child: ListTile(
         leading: Icon(Icons.block),
-        title: Text(S.of(context).blockedPost),
+        title: Text(S.of(context).blockedPost, style: TextStyle(color: Colors.red),),
         dense: true,
       ),
     );
@@ -244,7 +248,7 @@ class PostWidget extends StatelessWidget {
           : Colors.amber.shade700,
       child: ListTile(
         leading: Icon(Icons.warning_amber_outlined),
-        title: Text(S.of(context).warnedPost),
+        title: Text(S.of(context).warnedPost,style: TextStyle(color: Colors.amber)),
         dense: true,
       ),
     );
@@ -257,7 +261,7 @@ class PostWidget extends StatelessWidget {
           : Colors.blue.shade700,
       child: ListTile(
         leading: Icon(Icons.edit_outlined),
-        title: Text(S.of(context).revisedPost),
+        title: Text(S.of(context).revisedPost,style: TextStyle(color: Colors.blue)),
         dense: true,
       ),
     );
