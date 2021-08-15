@@ -1,6 +1,7 @@
 
 
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -145,6 +146,36 @@ class UserPreferencesUtils{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var scale =  prefs.getDouble(typesettingScalePreferenceKey);
     return scale == null ? 1.0 : scale;
+  }
+
+  static final String interfaceBrightnessPreferenceKey = "interfaceBrightnessPreferenceKey";
+
+  static Future<void> putInterfaceBrightnessPreference(String brightness) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(typesettingScalePreferenceKey, brightness);
+  }
+
+  static Future<String?> getInterfaceBrightnessStringPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var brightness =  prefs.getString(interfaceBrightnessPreferenceKey);
+    return brightness;
+  }
+
+  static Future<Brightness?> getInterfaceBrightnessPreference() async {
+    String? brightnessString = await getInterfaceBrightnessStringPreference();
+    if(brightnessString == null){
+      return null;
+    }
+    else if(brightnessString == "light"){
+      return Brightness.light;
+    }
+    else if(brightnessString == "dark"){
+      return Brightness.dark;
+    }
+    else{
+      return null;
+    }
+
   }
 
 

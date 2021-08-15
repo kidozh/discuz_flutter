@@ -101,6 +101,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "bobMinion": MessageLookupByLibrary.simpleMessage("Bob minion"),
         "bobMinionDescribe":
             MessageLookupByLibrary.simpleMessage("Cute yellow Minions"),
+        "brightnessDark": MessageLookupByLibrary.simpleMessage("Dark"),
+        "brightnessLight": MessageLookupByLibrary.simpleMessage("Light"),
         "buildDescription": MessageLookupByLibrary.simpleMessage(
             "Built with flutter, made with ♥, run on multiple platforms."),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
@@ -234,6 +236,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "incorrectDiscuzAddress":
             MessageLookupByLibrary.simpleMessage("Invalid discuz address."),
         "index": MessageLookupByLibrary.simpleMessage("Index"),
+        "interfaceBrightness":
+            MessageLookupByLibrary.simpleMessage("Interface Brightness"),
         "ios": MessageLookupByLibrary.simpleMessage("iOS"),
         "justNow": MessageLookupByLibrary.simpleMessage("Just Now"),
         "largeRichText": MessageLookupByLibrary.simpleMessage(

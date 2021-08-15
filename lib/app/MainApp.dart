@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/app/ExclusiveApp.dart';
 import 'package:discuz_flutter/dialog/SwitchDiscuzDialog.dart';
 import 'package:discuz_flutter/page/ManageAccountPage.dart';
@@ -8,7 +7,6 @@ import 'package:discuz_flutter/page/ManageDiscuzPage.dart';
 import 'package:discuz_flutter/page/ManageTrustHostPage.dart';
 import 'package:discuz_flutter/page/ViewHistoryPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
@@ -35,7 +33,6 @@ import 'package:provider/provider.dart';
 import 'package:discuz_flutter/dao/DiscuzDao.dart';
 import 'package:discuz_flutter/dao/UserDao.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/SettingPage.dart';
 
@@ -54,10 +51,12 @@ class MyApp extends StatelessWidget {
     String colorName = await UserPreferencesUtils.getThemeColor();
     platformName = await UserPreferencesUtils.getPlatformPreference();
     double scale = await UserPreferencesUtils.getTypesettingScalePreference();
+    Brightness? brightness = await UserPreferencesUtils.getInterfaceBrightnessPreference();
 
     Provider.of<ThemeNotifierProvider>(context,listen: false).setTheme(colorName);
     Provider.of<ThemeNotifierProvider>(context,listen: false).setPlatformName(platformName);
     Provider.of<TypeSettingNotifierProvider>(context,listen: false).setScalingParameter(scale);
+    Provider.of<ThemeNotifierProvider>(context,listen: false).setBrightness(brightness);
 
   }
 
@@ -75,9 +74,10 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeNotifierProvider>(
       builder: (context, themeColorEntity, _){
         final materialTheme = ThemeData(
-          //brightness: MediaQuery.platformBrightnessOf(context),
+          brightness: themeColorEntity.brightness,
           cupertinoOverrideTheme: CupertinoThemeData(
             primaryColor: themeColorEntity.themeColor,
+            brightness: themeColorEntity.brightness
           ),
           primarySwatch: themeColorEntity.themeColor,
           outlinedButtonTheme: OutlinedButtonThemeData(
@@ -112,18 +112,9 @@ class MyApp extends StatelessWidget {
               builder: (context){
                 return  PlatformApp(
                   title: 'Flutter Demo',
-                  // theme: ThemeData(
-                  //     primaryColor: themeColorEntity.themeColor,
-                  //     floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
-                  //     brightness: Brightness.light
-                  // ),
-                  // darkTheme: ThemeData(
-                  //     primaryColor: themeColorEntity.themeColor,
-                  //     floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
-                  //     brightness: Brightness.dark
-                  // ),
 
                   material: (_,__)=> MaterialAppData(
+
                       theme: materialTheme,
                       darkTheme: ThemeData(
                         primaryColor: themeColorEntity.themeColor,
@@ -182,7 +173,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   bool _showUserDetail = false;
   int _bottomNavigationbarIndex = 0;
   late List<Widget> bodies = [];

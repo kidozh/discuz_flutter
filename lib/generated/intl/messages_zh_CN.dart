@@ -95,6 +95,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "blockedPost": MessageLookupByLibrary.simpleMessage("此贴被屏蔽。"),
         "bobMinion": MessageLookupByLibrary.simpleMessage("Bob小黄人"),
         "bobMinionDescribe": MessageLookupByLibrary.simpleMessage("可爱的小黄人"),
+        "brightnessDark": MessageLookupByLibrary.simpleMessage("深色"),
+        "brightnessLight": MessageLookupByLibrary.simpleMessage("浅色"),
         "buildDescription":
             MessageLookupByLibrary.simpleMessage("由flutter驱动, 能够兼容多种平台。"),
         "cancel": MessageLookupByLibrary.simpleMessage("取消"),
@@ -206,6 +208,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "incorrectDiscuzAddress":
             MessageLookupByLibrary.simpleMessage("无效的论坛地址."),
         "index": MessageLookupByLibrary.simpleMessage("索引"),
+        "interfaceBrightness": MessageLookupByLibrary.simpleMessage("显示模式"),
         "ios": MessageLookupByLibrary.simpleMessage("iOS"),
         "justNow": MessageLookupByLibrary.simpleMessage("刚刚"),
         "largeRichText": MessageLookupByLibrary.simpleMessage(

@@ -34,7 +34,6 @@ class AddDiscuzForumFieldStatefulWidget extends StatefulWidget {
   AddDiscuzForumFieldStatefulWidget({Key? key}):super(key: key);
   @override
   _AddDiscuzFormFieldState createState() {
-    // TODO: implement createState
     return _AddDiscuzFormFieldState();
   }
 }
@@ -103,8 +102,6 @@ class _AddDiscuzFormFieldState
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-
     return Container(
         padding: const EdgeInsets.all(4.0),
         child: SingleChildScrollView(

@@ -33,6 +33,17 @@ class ThemeNotifierProvider with ChangeNotifier{
 
   String get themeColorName => _themeColor;
 
+  Brightness? _brightness;
+
+  setBrightness(Brightness? brightness){
+    _brightness = brightness;
+    notifyListeners();
+  }
+
+  Brightness? get brightness => _brightness;
+
+
+
   setTheme(String themeColorName){
     _themeColor = themeColorName;
     notifyListeners();
@@ -49,7 +60,7 @@ class ThemeNotifierProvider with ChangeNotifier{
 
 
 
-  Brightness get brightness {
+  Brightness get colorBrightness {
     if (["amber","grey","cyan","deepOrange","yellow","lime","orange","lightBlue","lightGreen"].contains(_themeColor)){
       return Brightness.light;
     }
@@ -59,7 +70,7 @@ class ThemeNotifierProvider with ChangeNotifier{
   }
 
   Brightness get iconBrightness{
-    if(brightness == Brightness.light){
+    if(colorBrightness == Brightness.light){
       return Brightness.dark;
     }
     else{
@@ -106,6 +117,21 @@ class ThemeNotifierProvider with ChangeNotifier{
     };
     if (platformMap.containsKey(_platformName)){
       return platformMap[_platformName]!;
+    }
+    else{
+      return S.of(context).followSystem;
+    }
+  }
+
+  String getBrightnessName(BuildContext context){
+    if(brightness == null){
+      return S.of(context).followSystem;
+    }
+    else if(brightness == Brightness.light){
+      return S.of(context).brightnessLight;
+    }
+    else if(brightness == Brightness.dark){
+      return S.of(context).brightnessDark;
     }
     else{
       return S.of(context).followSystem;

@@ -1,4 +1,5 @@
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/page/ChooseInterfaceBrightnessPage.dart';
 import 'package:discuz_flutter/page/ChoosePlatformPage.dart';
 import 'package:discuz_flutter/page/ChooseTypeSettingScalePage.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
@@ -49,8 +50,6 @@ class _SettingPageState extends State<SettingPage> {
 
   Widget buildSettingsList() {
 
-    double scale = Provider.of<TypeSettingNotifierProvider>(context,listen: false).scalingParameter;
-
     return Consumer<ThemeNotifierProvider>(builder: (context, themeEntity, _) {
 
       return Consumer<TypeSettingNotifierProvider>(builder: (context, typeSetting, _) {
@@ -100,6 +99,18 @@ class _SettingPageState extends State<SettingPage> {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
                       builder: (_) => ChoosePlatformPage(),
+                      context: context,
+                    ));
+                  },
+                ),
+                SettingsTile(
+                  title: S.of(context).interfaceBrightness,
+                  subtitle: themeEntity.getBrightnessName(context),
+                  leading: Icon(Icons.exposure),
+                  onPressed: (context) {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    Navigator.of(context).push(platformPageRoute(
+                      builder: (_) => ChooseInterfaceBrightnessPage(),
                       context: context,
                     ));
                   },

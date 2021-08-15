@@ -368,5 +368,8 @@
     "placeholders": {
       "day": {}
     }
-  }
+  },
+  "interfaceBrightness": "显示模式",
+  "brightnessLight": "浅色",
+  "brightnessDark": "深色"
 }

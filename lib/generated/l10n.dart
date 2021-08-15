@@ -2330,6 +2330,36 @@ class S {
       args: [day],
     );
   }
+
+  /// `Interface Brightness`
+  String get interfaceBrightness {
+    return Intl.message(
+      'Interface Brightness',
+      name: 'interfaceBrightness',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Light`
+  String get brightnessLight {
+    return Intl.message(
+      'Light',
+      name: 'brightnessLight',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dark`
+  String get brightnessDark {
+    return Intl.message(
+      'Dark',
+      name: 'brightnessDark',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

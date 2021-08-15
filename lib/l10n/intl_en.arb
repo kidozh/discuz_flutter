@@ -368,5 +368,8 @@
     "placeholders": {
       "day": {}
     }
-  }
+  },
+  "interfaceBrightness": "Interface Brightness",
+  "brightnessLight": "Light",
+  "brightnessDark": "Dark"
 }
