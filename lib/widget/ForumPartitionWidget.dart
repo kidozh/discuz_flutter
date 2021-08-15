@@ -1,12 +1,9 @@
 
 import 'dart:developer';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
-import 'package:discuz_flutter/utility/CustomizeColor.dart';
-import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/widget/ForumCardWidget.dart';
 import 'package:flutter/material.dart';
 

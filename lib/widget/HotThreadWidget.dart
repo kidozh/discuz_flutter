@@ -3,8 +3,6 @@ import 'dart:developer';
 
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
-import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/HotThread.dart';
@@ -16,11 +14,11 @@ import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
+import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:get_time_ago/get_time_ago.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -34,7 +32,6 @@ class HotThreadWidget extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return HotThreadStatefulWidget(this._discuz,this._user,this._hotThread);
   }
 
@@ -104,11 +101,7 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
   }
 
   Widget getUnViewedHotThread(){
-    Locale locale = Localizations.localeOf(context);
-    log("languages ${locale} ${locale.toLanguageTag()} ${locale.scriptCode} ${locale.languageCode}");
     // retrieve threadtype
-
-
     return Card(
       elevation: 2.0,
       child: ListTile(
@@ -146,7 +139,7 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
             children: <TextSpan>[
               //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
               TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
-              TextSpan(text: GetTimeAgo.parse(_hotThread.publishAt,locale: locale.scriptCode)),
+              TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_hotThread.publishAt)),
             ],
           ),
         ),
@@ -166,11 +159,6 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
   }
 
   Widget getViewedHotThread(){
-    Locale locale = Localizations.localeOf(context);
-    log("languages ${locale} ${locale.toLanguageTag()} ${locale.scriptCode} ${locale.languageCode}");
-    // retrieve threadtype
-
-
     return Card(
       elevation: 2.0,
       child: ListTile(
@@ -209,7 +197,7 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
             children: <TextSpan>[
               TextSpan(text: _hotThread.author, style: TextStyle(fontWeight: FontWeight.w300, color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)),
               TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300, color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)),
-              TextSpan(text: GetTimeAgo.parse(_hotThread.publishAt,locale: locale.scriptCode),style: TextStyle(color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)),
+              TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_hotThread.publishAt),style: TextStyle(color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)),
             ],
           ),
         ),
@@ -230,7 +218,6 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     if(read == true){
       return getViewedHotThread();
     }

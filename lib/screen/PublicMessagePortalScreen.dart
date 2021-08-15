@@ -18,6 +18,7 @@ import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumPartitionWidget.dart';
 import 'package:discuz_flutter/widget/HotThreadWidget.dart';
@@ -26,7 +27,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:get_time_ago/get_time_ago.dart';
 import 'package:provider/provider.dart';
 
 class PublicMessagePortalScreen extends StatelessWidget {
@@ -298,7 +298,7 @@ class _PublicMessagePortalState extends State<PublicMessagePortalStatefulWidget>
                   return ListTile(
                     leading: Icon(PlatformIcons(context).mail),
                     title: Text(_pmList[index].message),
-                    subtitle: Text(GetTimeAgo.parse(_pmList[index].publishAt)),
+                    subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context,_pmList[index].publishAt)),
                   );
             },
             childCount: _pmList.length

@@ -5,11 +5,11 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:get_time_ago/get_time_ago.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
@@ -225,7 +225,7 @@ class PollState extends State<PollStatefulWidget>{
                             SizedBox(
                               width: 8.0,
                             ),
-                            Text(S.of(context).pollExpireAt(GetTimeAgo.parse(poll.expiredAt)), style: TextStyle(fontSize: 12))
+                            Text(S.of(context).pollExpireAt(TimeDisplayUtils.getLocaledTimeDisplay(context,poll.expiredAt)), style: TextStyle(fontSize: 12))
                           ],
                         ),
                         Row(

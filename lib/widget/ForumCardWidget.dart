@@ -4,7 +4,6 @@ import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/page/DisplayForumSliverPage.dart';
-import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -20,7 +19,6 @@ class ForumCardWidget extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Card(
       elevation: 2.0,
       child: ListTile(

@@ -1,38 +1,31 @@
 
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
-import 'package:discuz_flutter/JsonResult/HotThreadResult.dart';
 import 'package:discuz_flutter/JsonResult/FavoriteThreadResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
-import 'package:discuz_flutter/entity/HotThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
-import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
-import 'package:discuz_flutter/widget/ForumPartitionWidget.dart';
-import 'package:discuz_flutter/widget/HotThreadWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:get_time_ago/get_time_ago.dart';
 import 'package:provider/provider.dart';
 
 class FavoriteThreadScreen extends StatelessWidget {
@@ -341,7 +334,7 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
                         TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
                         TextSpan(text: favoriteThread.description),
                         TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
-                        TextSpan(text: GetTimeAgo.parse(favoriteThread.publishAt,locale: locale.scriptCode)),
+                        TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,favoriteThread.publishAt)),
                       ],
                     ),
                   ),

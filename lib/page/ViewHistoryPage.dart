@@ -1,32 +1,23 @@
 
 
-import 'dart:math' hide log;
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:discuz_flutter/dao/UserDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
-import 'package:discuz_flutter/page/LoginPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
-import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
-import 'package:discuz_flutter/utility/GlobalTheme.dart';
+import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
-import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
-import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:get_time_ago/get_time_ago.dart';
 import 'package:provider/provider.dart';
 
 import 'DisplayForumSliverPage.dart';
@@ -199,10 +190,10 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Icon(PlatformIcons(context).person, size: 12,),
-                                    Text(GetTimeAgo.parse(viewHistory.updateTime), style: TextStyle(fontSize: 12),),
+                                    Text(TimeDisplayUtils.getLocaledTimeDisplay(context,viewHistory.updateTime), style: TextStyle(fontSize: 12),),
                                     SizedBox(width: 4,),
                                     Icon(Icons.access_time, size: 12,),
-                                    Text(GetTimeAgo.parse(viewHistory.updateTime), style: TextStyle(fontSize: 12),)
+                                    Text(TimeDisplayUtils.getLocaledTimeDisplay(context,viewHistory.updateTime), style: TextStyle(fontSize: 12),)
                                   ],
                                 ),
                               ),

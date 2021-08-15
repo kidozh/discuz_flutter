@@ -30,7 +30,6 @@ import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:get_time_ago/get_time_ago.dart';
 import 'package:provider/provider.dart';
 
 import 'package:discuz_flutter/dao/DiscuzDao.dart';
@@ -149,7 +148,6 @@ class MyApp extends StatelessWidget {
                   localeResolutionCallback: (locale, _){
                     if(locale!=null){
                       print("Locale ${locale.languageCode},${locale.scriptCode}, ${locale.countryCode}");
-                      GetTimeAgo.setDefaultLocale(locale.languageCode);
                     }
                   },
                   builder: EasyLoading.init(),

@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/entity/User.dart';
@@ -9,19 +8,15 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
-import 'package:discuz_flutter/utility/GlobalTheme.dart';
+import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/AttachmentWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/style.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:get_time_ago/get_time_ago.dart';
 import 'package:provider/provider.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 int POST_BLOCKED = 1;
 int POST_WARNED = 2;
@@ -38,9 +33,6 @@ class PostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    Locale locale = Localizations.localeOf(context);
-    final orientation = MediaQuery.of(context).orientation;
     return Consumer<TypeSettingNotifierProvider>(
         builder: (context, typesetting, _) {
       return Container(
@@ -130,8 +122,7 @@ class PostWidget extends StatelessWidget {
                                             12 * typesetting.scalingParameter)),
                               TextSpan(text: ' · '),
                               TextSpan(
-                                  text: GetTimeAgo.parse(_post.publishAt,
-                                      locale: locale.scriptCode),
+                                  text: TimeDisplayUtils.getLocaledTimeDisplay(context,_post.publishAt,),
                                   style: TextStyle(
                                       fontWeight: FontWeight.w400,
                                       fontSize:

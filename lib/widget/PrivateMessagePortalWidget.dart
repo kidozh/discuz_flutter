@@ -1,13 +1,9 @@
 
 import 'dart:developer';
 
-import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
-import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/JsonResult/PrivateMessagePortalResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:discuz_flutter/entity/HotThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/UserProfilePage.dart';
@@ -18,7 +14,6 @@ import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:get_time_ago/get_time_ago.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -33,11 +28,6 @@ class PrivateMessagePortalWidget extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    Locale locale = Localizations.localeOf(context);
-    log("languages ${locale} ${locale.toLanguageTag()} ${locale.scriptCode} ${locale.languageCode}");
-    // retrieve threadtype
-
 
     return Container(
       child: ListTile(

@@ -2260,6 +2260,76 @@ class S {
       args: [],
     );
   }
+
+  /// `Just Now`
+  String get justNow {
+    return Intl.message(
+      'Just Now',
+      name: 'justNow',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{min} minutes ago`
+  String minuteAgo(Object min) {
+    return Intl.message(
+      '$min minutes ago',
+      name: 'minuteAgo',
+      desc: '',
+      args: [min],
+    );
+  }
+
+  /// `{hour} hours ago`
+  String hourAgo(Object hour) {
+    return Intl.message(
+      '$hour hours ago',
+      name: 'hourAgo',
+      desc: '',
+      args: [hour],
+    );
+  }
+
+  /// `{day} days ago`
+  String dayAgo(Object day) {
+    return Intl.message(
+      '$day days ago',
+      name: 'dayAgo',
+      desc: '',
+      args: [day],
+    );
+  }
+
+  /// `{min} minutes later`
+  String minuteLater(Object min) {
+    return Intl.message(
+      '$min minutes later',
+      name: 'minuteLater',
+      desc: '',
+      args: [min],
+    );
+  }
+
+  /// `{hour} hours later`
+  String hourLater(Object hour) {
+    return Intl.message(
+      '$hour hours later',
+      name: 'hourLater',
+      desc: '',
+      args: [hour],
+    );
+  }
+
+  /// `{day} days later`
+  String dayLater(Object day) {
+    return Intl.message(
+      '$day days later',
+      name: 'dayLater',
+      desc: '',
+      args: [day],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

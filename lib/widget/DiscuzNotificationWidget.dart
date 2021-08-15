@@ -1,19 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzNotification.dart';
-import 'package:discuz_flutter/entity/Post.dart';
-import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
-import 'package:discuz_flutter/utility/GlobalTheme.dart';
+import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/style.dart';
-import 'package:get_time_ago/get_time_ago.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 // ignore: must_be_immutable
 class DiscuzNotificationWidget extends StatelessWidget {
@@ -24,8 +17,6 @@ class DiscuzNotificationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    Locale locale = Localizations.localeOf(context);
     return Container(
         child: Card(
       child: Column(
@@ -75,7 +66,7 @@ class DiscuzNotificationWidget extends StatelessWidget {
                             if(_notification.author.isEmpty)
                               TextSpan(text: _notification.type, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo.shade400, fontSize: 12)),
                             TextSpan(text: ' · '),
-                            TextSpan(text: GetTimeAgo.parse(_notification.dateline, locale: locale.scriptCode), style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
+                            TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_notification.dateline), style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12)),
 
                           ],
                         ),
