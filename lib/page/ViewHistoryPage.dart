@@ -2,6 +2,7 @@
 
 import 'dart:math' hide log;
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/dao/UserDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -15,8 +16,11 @@ import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
+import 'package:discuz_flutter/utility/GlobalTheme.dart';
+import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
+import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -124,6 +128,35 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
     );
   }
 
+  Widget getUserAvatar(int uid, String username){
+    return CachedNetworkImage(
+      imageUrl: URLUtils.getAvatarURL(discuz, uid.toString()),
+      progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+      errorWidget: (context, url, error) => Container(
+        // width: 16.0,
+        // height: 16.0,
+        child: CircleAvatar(
+          backgroundColor: CustomizeColor.getColorBackgroundById(uid),
+          child: Text(
+            username.length != 0
+                ? username[0].toUpperCase()
+                : S.of(context).anonymous,
+            style: TextStyle(color: Colors.white,fontSize: 18),
+          ),
+        ),
+      ),
+      imageBuilder: (context, imageProvider) => Container(
+        // width: 16.0,
+        // height: 16.0,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(
+              image: imageProvider, fit: BoxFit.cover),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -152,22 +185,26 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
                             children: [
                               ListTile(
                                 leading: Container(
-                                  width: 12,
-                                  child: viewHistory.type == "thread" ? Icon(Icons.message_outlined, color: Colors.teal,) : Icon(Icons.forum_outlined, color: Colors.blue),
+                                  width: 32,
+                                  child: viewHistory.type == "thread" ?
+                                  getUserAvatar(viewHistory.authorId, viewHistory.author) :
+                                      CircleAvatar(
+                                        backgroundColor: Theme.of(context).primaryColor,
+                                        child: Icon(Icons.forum_outlined, color: Colors.white, size: 16,),
+                                      )
+                                  ,
                                 ),
                                 title: Text(viewHistory.title),
-                                subtitle: DiscuzHtmlWidget(discuz,viewHistory.subject.substring(0,min(800,viewHistory.subject.length))),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 2.0,horizontal: 8.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
+                                subtitle: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
+                                    Icon(PlatformIcons(context).person, size: 12,),
+                                    Text(GetTimeAgo.parse(viewHistory.updateTime), style: TextStyle(fontSize: 12),),
+                                    SizedBox(width: 4,),
                                     Icon(Icons.access_time, size: 12,),
                                     Text(GetTimeAgo.parse(viewHistory.updateTime), style: TextStyle(fontSize: 12),)
                                   ],
                                 ),
-
                               ),
                             ],
                           ),

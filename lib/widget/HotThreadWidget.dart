@@ -5,14 +5,17 @@ import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
+import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/HotThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
+import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
+import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +32,64 @@ class HotThreadWidget extends StatelessWidget{
 
   HotThreadWidget(this._discuz,this._user,this._hotThread);
 
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return HotThreadStatefulWidget(this._discuz,this._user,this._hotThread);
+  }
+
+
+
+
+}
+
+
+class HotThreadStatefulWidget extends StatefulWidget{
+  HotThread _hotThread;
+  Discuz _discuz;
+  User? _user;
+
+  HotThreadStatefulWidget(this._discuz,this._user,this._hotThread);
+
+  @override
+  HotThreadState createState() {
+    return HotThreadState(this._discuz,this._user,this._hotThread);
+  }
+
+}
+
+class HotThreadState extends State<HotThreadStatefulWidget>{
+
+  HotThread _hotThread;
+  Discuz _discuz;
+  User? _user;
+
+  HotThreadState(this._discuz,this._user,this._hotThread);
+
+  @override
+  void initState() {
+    loadDatabase();
+    super.initState();
+  }
+
+  ViewHistoryDao? dao;
+
+  void loadDatabase() async{
+    final db = await DBHelper.getAppDb();
+    setState(() {
+      dao = db.viewHistoryDao;
+    });
+
+  }
+
+  bool read = false;
+
+  void markThreadAsRead(){
+    setState(() {
+      read = true;
+    });
+  }
+
   Widget getTailingWidget(){
     if(_hotThread.displayOrder > 0){
       return Icon(Icons.vertical_align_top, color: Colors.redAccent,);
@@ -42,9 +103,7 @@ class HotThreadWidget extends StatelessWidget{
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
+  Widget getUnViewedHotThread(){
     Locale locale = Localizations.localeOf(context);
     log("languages ${locale} ${locale.toLanguageTag()} ${locale.scriptCode} ${locale.languageCode}");
     // retrieve threadtype
@@ -94,6 +153,7 @@ class HotThreadWidget extends StatelessWidget{
         trailing: getTailingWidget(),
         onTap: () async {
           VibrationUtils.vibrateWithClickIfPossible();
+          markThreadAsRead();
           await Navigator.push(
               context,
               platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( _discuz,  _user, _hotThread.tid,))
@@ -105,5 +165,92 @@ class HotThreadWidget extends StatelessWidget{
     );
   }
 
+  Widget getViewedHotThread(){
+    Locale locale = Localizations.localeOf(context);
+    log("languages ${locale} ${locale.toLanguageTag()} ${locale.scriptCode} ${locale.languageCode}");
+    // retrieve threadtype
+
+
+    return Card(
+      elevation: 2.0,
+      child: ListTile(
+        leading: InkWell(
+          child: ClipRRect(
+
+            borderRadius: BorderRadius.circular(10000.0),
+            child: CachedNetworkImage(
+              imageUrl: URLUtils.getAvatarURL(_discuz, _hotThread.authorId.toString()),
+              progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+              errorWidget: (context, url, error) =>
+                  CircleAvatar(
+
+                    backgroundColor: CustomizeColor.getColorBackgroundById(_hotThread.authorId),
+                    child: Text(_hotThread.author.length !=0 ? _hotThread.author[0].toUpperCase()
+                        : S.of(context).anonymous,
+                        style: TextStyle(color: Colors.white)),
+                  )
+              ,
+            ),
+          ),
+          onTap: () async{
+            VibrationUtils.vibrateWithClickIfPossible();
+            User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+            await Navigator.push(
+                context,
+                platformPageRoute(context:context,builder: (context) => UserProfilePage(_discuz,user, _hotThread.authorId)));
+          },
+        ),
+        title: Text(_hotThread.subject,style: TextStyle(fontWeight: FontWeight.bold,
+            color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)),
+        subtitle: RichText(
+          text: TextSpan(
+            text: "",
+            style: DefaultTextStyle.of(context).style,
+            children: <TextSpan>[
+              TextSpan(text: _hotThread.author, style: TextStyle(fontWeight: FontWeight.w300, color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)),
+              TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300, color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)),
+              TextSpan(text: GetTimeAgo.parse(_hotThread.publishAt,locale: locale.scriptCode),style: TextStyle(color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)),
+            ],
+          ),
+        ),
+        trailing: getTailingWidget(),
+        onTap: () async {
+          VibrationUtils.vibrateWithClickIfPossible();
+          markThreadAsRead();
+          await Navigator.push(
+              context,
+              platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( _discuz,  _user, _hotThread.tid,))
+          );
+        },
+
+
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    if(read == true){
+      return getViewedHotThread();
+    }
+    if(dao == null|| _discuz.id == null){
+      return getUnViewedHotThread();
+    }
+    else{
+      return StreamBuilder(
+        stream: dao!.threadHistoryExistInDatabase(_discuz.id!, _hotThread.tid),
+        builder: (BuildContext context, AsyncSnapshot<ViewHistory?> snapshot) {
+          print("Get view history in db ${snapshot.data} ${_hotThread.subject}");
+          if(snapshot.data == null){
+            return getUnViewedHotThread();
+          }
+          else{
+            return getViewedHotThread();
+          }
+        },
+      );
+    }
+  }
 
 }

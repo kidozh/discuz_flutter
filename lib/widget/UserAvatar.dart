@@ -11,6 +11,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class UserAvatar extends StatelessWidget{
   User user;
+  int uid = 0;
   Discuz discuz;
 
 

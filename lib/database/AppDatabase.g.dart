@@ -463,6 +463,26 @@ class _$ViewHistoryDao extends ViewHistoryDao {
   }
 
   @override
+  Stream<ViewHistory?> threadHistoryExistInDatabase(int discuzId, int tid) {
+    return _queryAdapter.queryStream(
+        'SELECT * FROM ViewHistory WHERE discuz_id=?1 AND identification=?2 LIMIT 1',
+        mapper: (Map<String, Object?> row) => ViewHistory(
+            row['id'] as int?,
+            row['title'] as String,
+            row['subject'] as String,
+            row['description'] as String,
+            row['type'] as String,
+            row['identification'] as int,
+            row['author'] as String,
+            row['authorId'] as int,
+            row['discuz_id'] as int,
+            _floorDateTimeConverter.decode(row['updateTime'] as int)),
+        arguments: [discuzId, tid],
+        queryableName: 'ViewHistory',
+        isView: false);
+  }
+
+  @override
   Future<int> insertViewHistory(ViewHistory viewHistory) {
     return _viewHistoryInsertionAdapter.insertAndReturnId(
         viewHistory, OnConflictStrategy.abort);

@@ -740,8 +740,11 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                               selected: _displayForumQuery.dateline == 31536000,
                               onSelected: (bool selected) {
                                 VibrationUtils.vibrateWithClickIfPossible();
-                                _displayForumQuery.setDateline(
-                                    31536000, selected);
+                                setState((){
+                                  _displayForumQuery.setDateline(
+                                      31536000, selected);
+                                });
+
                               },
                             ),
                           ],
@@ -771,17 +774,27 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                               avatar: Icon(Icons.verified_outlined),
                               label:
                                   Text(S.of(context).forumFilterStatusDigest),
-                              selected: false,
+                              selected: _displayForumQuery.filter == "digest",
                               onSelected: (bool selected) {
                                 VibrationUtils.vibrateWithClickIfPossible();
+                                print("Digest ${selected}");
+                                setState((){
+                                  _displayForumQuery.setDigest(selected);
+                                });
+
+
                               },
                             ),
                             ChoiceChip(
                               avatar: Icon(Icons.whatshot_rounded),
                               label: Text(S.of(context).forumFilterStatusHot),
-                              selected: false,
+                              selected: _displayForumQuery.filter == "hot",
                               onSelected: (bool selected) {
                                 VibrationUtils.vibrateWithClickIfPossible();
+                                setState((){
+                                  _displayForumQuery.setHot(selected);
+                                });
+
                               },
                             ),
                           ],
@@ -881,6 +894,22 @@ class DisplayForumQuery {
     }
   }
 
+  void setHot(bool selected) {
+    if (selected) {
+      this.filter = "hot";
+    } else {
+      this.filter = "";
+    }
+  }
+  void setDigest(bool selected) {
+    if (selected) {
+      this.filter = "digest";
+    } else {
+      this.filter = "";
+    }
+  }
+
+
   Map<String, String> generateForumQueriesMap() {
     Map<String, String> forumQueriesMap = {};
     if (typeId != 0) {
@@ -904,6 +933,9 @@ class DisplayForumQuery {
 
     if (filter != "") {
       forumQueriesMap["filter"] = filter;
+      if(filter == "digest"){
+        forumQueriesMap["digest"] = "1";
+      }
     }
 
     return forumQueriesMap;

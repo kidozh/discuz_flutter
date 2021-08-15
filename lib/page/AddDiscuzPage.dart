@@ -21,6 +21,8 @@ class AddDiscuzPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
+        iosContentBottomPadding: true,
+        iosContentPadding: true,
         appBar: PlatformAppBar(
           title: Text(S.of(context).addDiscuzTitle),
         ),

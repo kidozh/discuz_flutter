@@ -14,10 +14,11 @@ class DiscuzDialogItem extends StatelessWidget {
   Discuz discuz;
 
   DiscuzDialogItem(
-      {required Key key, required this.discuz, required this.onPressed})
+      {required Key key, required this.discuz, required this.onPressed, this.onLongPressed})
       : super(key: key);
 
   final VoidCallback onPressed;
+  final VoidCallback? onLongPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -29,19 +30,21 @@ class DiscuzDialogItem extends StatelessWidget {
           onTap: onPressed,
           title: Text(discuz.siteName),
           subtitle: Text(discuz.baseURL),
+          onLongPress: onLongPressed,
         )
     );
   }
 }
 
 class SimpleDialogItem extends StatelessWidget {
-  const SimpleDialogItem({required Key key, required this.icon, required this.color, required this.text, required this.onPressed})
+  const SimpleDialogItem({required Key key, required this.icon, required this.color, required this.text, required this.onPressed, this.onLongPressed})
       : super(key: key);
 
   final IconData icon;
   final Color color;
   final String text;
   final VoidCallback onPressed;
+  final VoidCallback? onLongPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +61,7 @@ class SimpleDialogItem extends StatelessWidget {
           ),
         ],
       ),
+
     );
   }
 }

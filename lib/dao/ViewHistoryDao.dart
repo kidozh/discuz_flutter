@@ -36,4 +36,7 @@ abstract class ViewHistoryDao {
     await deleteViewHistory(ViewHistory(0, "", "", "", "", 0, "", 0, 0, DateTime.now()));
   }
 
+  @Query('SELECT * FROM ViewHistory WHERE discuz_id=:discuzId AND identification=:tid LIMIT 1')
+  Stream<ViewHistory?> threadHistoryExistInDatabase(int discuzId, int tid);
+
 }
