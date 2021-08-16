@@ -1,15 +1,12 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
-import 'package:discuz_flutter/JsonResult/LoginResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/LoginByWebviewPage.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
-import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/CaptchaWidget.dart';
@@ -17,7 +14,6 @@ import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
@@ -204,8 +200,6 @@ class _LoginFormFieldState
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-
     return SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal: 8.0),
         child: Form(
@@ -237,6 +231,7 @@ class _LoginFormFieldState
                   )),
               // input fields
               new TextFormField(
+                autofillHints: [AutofillHints.username, AutofillHints.email],
                 controller: _accountController,
                 decoration: new InputDecoration(
 
@@ -247,6 +242,7 @@ class _LoginFormFieldState
                 validator: ValidationBuilder().required().build()
               ),
               new TextFormField(
+                autofillHints: [AutofillHints.password],
                 controller: _passwdController,
                 decoration: new InputDecoration(
 

@@ -67,9 +67,7 @@ class SmileyListState extends State<SmileyListStatefulWidget>{
     print("load smiley");
     client.smileyResult().then((value){
       print("load result ${value}");
-      if(value.variables!=null){
-        print("load smiley ${value.variables.smilies}");
-      }
+      print("load smiley ${value.variables.smilies}");
       setState(() {
         result = value;
       });
