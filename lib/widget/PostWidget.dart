@@ -220,41 +220,63 @@ class PostWidget extends StatelessWidget {
   }
 
   Widget getPostBlockedBlock(BuildContext context) {
-    return Card(
-      color: Theme.of(context).brightness == Brightness.light
-          ? Colors.red.shade200
-          : Colors.red.shade700,
-      child: ListTile(
-        leading: Icon(Icons.block),
-        title: Text(S.of(context).blockedPost, style: TextStyle(color: Colors.red),),
-        dense: true,
+    return Container(
+      color:  Colors.red.withOpacity(0.25),
+      child: Padding(
+        padding: EdgeInsets.all(6.0),
+        child: Row(
+          children: [
+            Icon(Icons.block, color: Colors.red,),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 2.0),
+                child: Text(S.of(context).blockedPost, style: TextStyle(color: Colors.red),),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
 
   Widget getPostWarnBlock(BuildContext context) {
-    return Card(
-      color: Theme.of(context).brightness == Brightness.light
-          ? Colors.amber.shade200
-          : Colors.amber.shade700,
-      child: ListTile(
-        leading: Icon(Icons.warning_amber_outlined),
-        title: Text(S.of(context).warnedPost,style: TextStyle(color: Colors.amber)),
-        dense: true,
+    return Container(
+      color:  Colors.deepOrange.withOpacity(0.25),
+      child: Padding(
+        padding: EdgeInsets.all(6.0),
+        child: Row(
+          children: [
+            Icon(Icons.warning_amber_outlined, color: Colors.deepOrange,),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 2.0),
+                child: Text(S.of(context).warnedPost, style: TextStyle(color: Colors.deepOrange),),
+              ),
+            )
+          ],
+        ),
       ),
     );
+
   }
 
   Widget getPostRevisedBlock(BuildContext context) {
-    return Card(
-      color: Theme.of(context).brightness == Brightness.light
-          ? Colors.blue.shade200
-          : Colors.blue.shade700,
-      child: ListTile(
-        leading: Icon(Icons.edit_outlined),
-        title: Text(S.of(context).revisedPost,style: TextStyle(color: Colors.blue)),
-        dense: true,
-      ),
+    return Container(
+        color:  Colors.blue.withOpacity(0.25),
+        child: Padding(
+          padding: EdgeInsets.all(6.0),
+          child: Row(
+            children: [
+              Icon(Icons.edit_outlined, color: Colors.blue,),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 2.0),
+                  child: Text(S.of(context).revisedPost, style: TextStyle(color: Colors.blue),),
+                ),
+              )
+            ],
+          ),
+        ),
     );
   }
 }
