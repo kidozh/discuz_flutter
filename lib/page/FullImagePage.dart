@@ -51,23 +51,38 @@ class FullImagePage extends StatelessWidget{
 
   }
 
+  Future<void> _saveFigureInDevice() async{
+    var response = await Dio().get(imageUrl,
+        options: Options(responseType: ResponseType.bytes)
+    );
+    final _ = await ImageGallerySaver.saveImage(
+        Uint8List.fromList(response.data),
+        quality: 100,
+        name: imageUrl.split("/").last);
+    EasyLoading.showSuccess(S.of(_context).saveImageSuccessfully);
+  }
+
   _save() async {
     if(Platform.isIOS || Platform.isAndroid){
       print(imageUrl);
       var status = await Permission.storage.status;
       print(status);
       if(status.isGranted){
-        var response = await Dio().get(imageUrl,
-            options: Options(responseType: ResponseType.bytes)
-        );
-        final result = await ImageGallerySaver.saveImage(
-            Uint8List.fromList(response.data),
-            quality: 100,
-            name: imageUrl.split("/").last);
-        EasyLoading.showSuccess(S.of(_context).saveImageSuccessfully);
+        await _saveFigureInDevice();
       }
-      if(status.isDenied){
+      else if(status.isPermanentlyDenied){
         EasyLoading.showError(S.of(_context).writeStorageDenied);
+      }
+      else if(status.isDenied){
+        PermissionStatus statusResult = await Permission.storage.request();
+        if(statusResult.isGranted){
+          // save it
+          await _saveFigureInDevice();
+        }
+        else{
+          EasyLoading.showError(S.of(_context).writeStorageDenied);
+        }
+
       }
 
 

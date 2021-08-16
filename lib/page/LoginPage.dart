@@ -231,7 +231,7 @@ class _LoginFormFieldState
                   )),
               // input fields
               new TextFormField(
-                autofillHints: [AutofillHints.username, AutofillHints.email],
+                autofillHints: [AutofillHints.username],
                 controller: _accountController,
                 decoration: new InputDecoration(
 
