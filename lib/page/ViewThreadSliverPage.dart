@@ -627,42 +627,40 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                 },
                               ),
                             )),
-                            ProgressButton.icon(
-                                maxWidth: 90.0,
-                                height: 25.0,
-                                iconedButtons: {
-                                  ButtonState.idle: IconedButton(
-                                      text: S.of(context).sendReply,
-                                      icon:
-                                          Icon(Icons.send, color: Colors.white),
-                                      color: Theme.of(context).accentColor),
-                                  ButtonState.loading: IconedButton(
-                                      text: S
-                                          .of(context)
-                                          .progressButtonReplySending,
-                                      color: Theme.of(context).accentColor),
-                                  ButtonState.fail: IconedButton(
-                                      text: S
-                                          .of(context)
-                                          .progressButtonReplyFailed,
-                                      icon: Icon(Icons.cancel,
-                                          color: Colors.white),
-                                      color: Colors.red.shade300),
-                                  ButtonState.success: IconedButton(
-                                      text: S
-                                          .of(context)
-                                          .progressButtonReplySuccess,
-                                      icon: Icon(
-                                        Icons.check_circle,
-                                        color: Colors.white,
-                                      ),
-                                      color: Colors.green.shade400)
-                                },
-                                onPressed: () {
-                                  VibrationUtils.vibrateWithClickIfPossible();
-                                  _sendReply();
-                                },
-                                state: _sendReplyStatus)
+                            Padding(
+                              padding: EdgeInsets.all(0.0),
+                              child: ProgressButton.icon(
+                                  maxWidth: 60.0,
+
+                                  iconedButtons: {
+                                    ButtonState.idle: IconedButton(
+                                      //text: S.of(context).sendReply,
+                                        icon:
+                                        Icon(Icons.send, color: Colors.white),
+                                        color: Theme.of(context).primaryColor),
+                                    ButtonState.loading: IconedButton(
+                                      //text: S.of(context).progressButtonReplySending,
+                                        color: Theme.of(context).accentColor),
+                                    ButtonState.fail: IconedButton(
+                                      //text: S.of(context).progressButtonReplyFailed,
+                                        icon: Icon(Icons.cancel,
+                                            color: Colors.white),
+                                        color: Colors.red.shade300),
+                                    ButtonState.success: IconedButton(
+                                      //text: S.of(context).progressButtonReplySuccess,
+                                        icon: Icon(
+                                          Icons.check_circle,
+                                          color: Colors.white,
+                                        ),
+                                        color: Colors.green.shade400)
+                                  },
+                                  onPressed: () {
+                                    VibrationUtils.vibrateWithClickIfPossible();
+                                    _sendReply();
+                                  },
+                                  state: _sendReplyStatus),
+                            )
+
                           ],
                         ),
                         CaptchaWidget(

@@ -152,7 +152,7 @@ class UserPreferencesUtils{
 
   static Future<void> putInterfaceBrightnessPreference(String brightness) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(typesettingScalePreferenceKey, brightness);
+    await prefs.setString(interfaceBrightnessPreferenceKey, brightness);
   }
 
   static Future<String?> getInterfaceBrightnessStringPreference() async {

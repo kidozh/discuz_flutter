@@ -189,8 +189,10 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
                                 subtitle: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
+                                    if(viewHistory.type == "thread")
                                     Icon(PlatformIcons(context).person, size: 12,),
-                                    Text(TimeDisplayUtils.getLocaledTimeDisplay(context,viewHistory.updateTime), style: TextStyle(fontSize: 12),),
+                                    if(viewHistory.type == "thread")
+                                    Text(viewHistory.author, style: TextStyle(fontSize: 12),),
                                     SizedBox(width: 4,),
                                     Icon(Icons.access_time, size: 12,),
                                     Text(TimeDisplayUtils.getLocaledTimeDisplay(context,viewHistory.updateTime), style: TextStyle(fontSize: 12),)

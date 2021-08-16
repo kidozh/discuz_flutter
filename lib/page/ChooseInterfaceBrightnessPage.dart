@@ -102,7 +102,6 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
 
     Provider.of<ThemeNotifierProvider>(context,listen: false).setBrightness(brightness);
     UserPreferencesUtils.putInterfaceBrightnessPreference(brightnessName);
-
     VibrationUtils.vibrateSuccessfullyIfPossible();
   }
 }

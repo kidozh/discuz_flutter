@@ -123,6 +123,8 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     _loadForumContent();
   }
 
+
+
   void _saveViewHistory(ForumDetail forumDetail) async {
     // check if needed
     bool allowViewHistory =
@@ -130,6 +132,16 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     if (!allowViewHistory) {
       historySaved = true;
       return;
+    }
+    else{
+      final db = await DBHelper.getAppDb();
+      final dao = db.viewHistoryDao;
+      ViewHistory? viewHistory = await dao.forumExistInDatabase(discuz.id!, fid);
+      print("Found forum $viewHistory");
+      if(viewHistory == null){
+        // show rule
+        _showInformationBottomSheet(context);
+      }
     }
 
     // prepare database

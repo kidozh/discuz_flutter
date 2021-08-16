@@ -53,6 +53,8 @@ class MyApp extends StatelessWidget {
     double scale = await UserPreferencesUtils.getTypesettingScalePreference();
     Brightness? brightness = await UserPreferencesUtils.getInterfaceBrightnessPreference();
 
+    print("Get brightness ${brightness}");
+
     Provider.of<ThemeNotifierProvider>(context,listen: false).setTheme(colorName);
     Provider.of<ThemeNotifierProvider>(context,listen: false).setPlatformName(platformName);
     Provider.of<TypeSettingNotifierProvider>(context,listen: false).setScalingParameter(scale);
@@ -71,15 +73,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _loadPreference(context);
+
     return Consumer<ThemeNotifierProvider>(
       builder: (context, themeColorEntity, _){
+        print("Change brightness ${themeColorEntity.brightness}");
         final materialTheme = ThemeData(
           brightness: themeColorEntity.brightness,
           cupertinoOverrideTheme: CupertinoThemeData(
             primaryColor: themeColorEntity.themeColor,
             brightness: themeColorEntity.brightness
           ),
+
           primarySwatch: themeColorEntity.themeColor,
+          primaryColor: themeColorEntity.themeColor,
           outlinedButtonTheme: OutlinedButtonThemeData(
             style: ButtonStyle(
               padding: MaterialStateProperty.all(EdgeInsets.all(16.0)),
