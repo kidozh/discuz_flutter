@@ -2360,6 +2360,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Open Website in webview`
+  String get openViaInternalBrowser {
+    return Intl.message(
+      'Open Website in webview',
+      name: 'openViaInternalBrowser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Smiley #{index}`
+  String smileyLabel(Object index) {
+    return Intl.message(
+      'Smiley #$index',
+      name: 'smileyLabel',
+      desc: '',
+      args: [index],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

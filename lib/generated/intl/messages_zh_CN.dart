@@ -63,17 +63,19 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m20(discuzName) => "登录至 ${discuzName}";
 
-  static String m21(checked, allowed) => "投票 (${checked} / ${allowed})";
+  static String m21(index) => "表情 ${index}";
 
-  static String m22(title) => "成功删除历史记录 ${title}.";
+  static String m22(checked, allowed) => "投票 (${checked} / ${allowed})";
 
-  static String m23(filename) => "成功下载文件： ${filename}。";
+  static String m23(title) => "成功删除历史记录 ${title}.";
 
-  static String m24(username) => "用户 ${username} 已失效";
+  static String m24(filename) => "成功下载文件： ${filename}。";
 
-  static String m25(uid) => "用户编号： ${uid}";
+  static String m25(username) => "用户 ${username} 已失效";
 
-  static String m26(user) => "查看${user}详情";
+  static String m26(uid) => "用户编号： ${uid}";
+
+  static String m27(user) => "查看${user}详情";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -259,6 +261,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("您成功下载了文件，您想现在打开它吗？"),
         "openInBrowser": MessageLookupByLibrary.simpleMessage("在浏览器中打开"),
         "openSourceLicence": MessageLookupByLibrary.simpleMessage("开源软件许可"),
+        "openViaInternalBrowser":
+            MessageLookupByLibrary.simpleMessage("在内置浏览器打开"),
         "or": MessageLookupByLibrary.simpleMessage("或者"),
         "outerlinkOpenMessage": MessageLookupByLibrary.simpleMessage(
             "链接使用的域名与此论坛不一致，其很有可能不是论坛所有的。谨防钓鱼、木马和诈骗。"),
@@ -323,10 +327,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "signInTitle": m20,
         "signInViaBrowser": MessageLookupByLibrary.simpleMessage("使用网页登录"),
         "signUp": MessageLookupByLibrary.simpleMessage("注册"),
+        "smileyLabel": m21,
         "style": MessageLookupByLibrary.simpleMessage("样式"),
-        "submitPoll": m21,
-        "successfullyDeleteViewHistoryContent": m22,
-        "successfullyDownloadFiles": m23,
+        "submitPoll": m22,
+        "successfullyDeleteViewHistoryContent": m23,
+        "successfullyDownloadFiles": m24,
         "termsOfService": MessageLookupByLibrary.simpleMessage("使用条款"),
         "trustHostActionText": MessageLookupByLibrary.simpleMessage("信任此域名"),
         "trustHostTitle": MessageLookupByLibrary.simpleMessage("主机域名白名单"),
@@ -336,14 +341,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "updateAt": MessageLookupByLibrary.simpleMessage("更新于 %T"),
         "userExpiredSubtitle":
             MessageLookupByLibrary.simpleMessage("当前用户授权已过期，你需要重新登录以重新激活此用户。"),
-        "userExpiredTitle": m24,
-        "userIdTitle": m25,
+        "userExpiredTitle": m25,
+        "userIdTitle": m26,
         "userProfile": MessageLookupByLibrary.simpleMessage("用户中心"),
         "userProfileTitle": MessageLookupByLibrary.simpleMessage("用户信息"),
         "viewAuthorInfo": MessageLookupByLibrary.simpleMessage("查看用户详情"),
         "viewHistory": MessageLookupByLibrary.simpleMessage("浏览历史"),
         "viewThreadTitle": MessageLookupByLibrary.simpleMessage("查看帖子"),
-        "viewUserInfo": m26,
+        "viewUserInfo": m27,
         "warnedPost": MessageLookupByLibrary.simpleMessage("此贴被警告。"),
         "watchPictureInFullScreen":
             MessageLookupByLibrary.simpleMessage("查看大图"),

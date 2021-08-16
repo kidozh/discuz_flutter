@@ -16,6 +16,7 @@ import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
+import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/CaptchaWidget.dart';
@@ -41,6 +42,8 @@ import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:provider/provider.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
+
+import 'InternalWebviewBrowserPage.dart';
 
 class ViewThreadSliverPage extends StatelessWidget {
   late final Discuz discuz;
@@ -387,10 +390,36 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       iosContentBottomPadding: true,
       appBar: PlatformAppBar(
         //middle: Text(S.of(context).forumDisplayTitle),
-        title: Text(S.of(context).viewThreadTitle),
-        // title: _viewThreadResult.threadVariables.threadInfo.subject.isEmpty
-        //     ? Text(S.of(context).viewThreadTitle)
-        //     : Text(_viewThreadResult.threadVariables.threadInfo.subject),
+        // title: Text(S.of(context).viewThreadTitle),
+        title: _viewThreadResult.threadVariables.threadInfo.subject.isEmpty
+            ? Text(S.of(context).viewThreadTitle,overflow: TextOverflow.ellipsis)
+            : Text(_viewThreadResult.threadVariables.threadInfo.subject,overflow: TextOverflow.ellipsis),
+        trailingActions: [
+          PopupMenuButton(
+            itemBuilder: (context) => [
+              PopupMenuItem<int>(
+                child: Text(S.of(context).openViaInternalBrowser),
+                value: 0,
+              )
+            ],
+            onSelected: (int pos) {
+              VibrationUtils.vibrateWithClickIfPossible();
+              switch (pos) {
+                case 0:
+                  {
+                    Navigator.push(
+                        context,
+                        platformPageRoute(
+                            context: context,
+                            builder: (context) => InternalWebviewBrowserPage(
+                                discuz,
+                                user,
+                                URLUtils.getViewThreadURL(discuz, tid))));
+                  }
+              }
+            },
+          )
+        ],
       ),
       body: Column(
         children: [

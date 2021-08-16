@@ -3,6 +3,7 @@ import 'package:discuz_flutter/JsonResult/SmileyResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
+import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
@@ -92,7 +93,7 @@ class SmileyListState extends State<SmileyListStatefulWidget>{
         List<List<Smiley>> smileyList = result!.variables.smilies;
         print("Smiley ${smileyList.length}");
         for (int i=0; i< smileyList.length; i++){
-          smileyTab.add(Tab(text: (i+1).toString(),));
+          smileyTab.add(Tab(text: S.of(context).smileyLabel(i+1),));
         }
         List<Widget> tabBarViewList = [];
         for(int i =0;i <smileyList.length;i++){
@@ -125,12 +126,17 @@ class SmileyListState extends State<SmileyListStatefulWidget>{
               )
               );
         }
-        print("SMiley ${smileyList.length}");
+        // print("SMiley ${smileyList.length}");
         return DefaultTabController(
             length: smileyTab.length,
             child: Column(
               children: [
-                TabBar(tabs: smileyTab),
+                TabBar(
+                  tabs: smileyTab,
+                  isScrollable: true,
+                  labelColor: Theme.of(context).primaryColor,
+                  unselectedLabelColor: Colors.grey,
+                ),
                 SizedBox(
                     height: 100,
                     child: TabBarView(children: tabBarViewList))

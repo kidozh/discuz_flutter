@@ -64,17 +64,19 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m20(discuzName) => "Sign in at ${discuzName}";
 
-  static String m21(checked, allowed) => "Submit (${checked} / ${allowed})";
+  static String m21(index) => "Smiley #${index}";
 
-  static String m22(title) => "Successfully remove view history ${title}.";
+  static String m22(checked, allowed) => "Submit (${checked} / ${allowed})";
 
-  static String m23(filename) => "Successfully download file: ${filename}.";
+  static String m23(title) => "Successfully remove view history ${title}.";
 
-  static String m24(username) => "User ${username} expired";
+  static String m24(filename) => "Successfully download file: ${filename}.";
 
-  static String m25(uid) => "UserId ${uid}";
+  static String m25(username) => "User ${username} expired";
 
-  static String m26(user) => "View ${user}\'s profile.";
+  static String m26(uid) => "UserId ${uid}";
+
+  static String m27(user) => "View ${user}\'s profile.";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -296,6 +298,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Open in browser"),
         "openSourceLicence":
             MessageLookupByLibrary.simpleMessage("Open source licence"),
+        "openViaInternalBrowser":
+            MessageLookupByLibrary.simpleMessage("Open Website in webview"),
         "or": MessageLookupByLibrary.simpleMessage("or"),
         "outerlinkOpenMessage": MessageLookupByLibrary.simpleMessage(
             "Host of the link is not the same as the BBS. It would be dangerous to browse."),
@@ -371,10 +375,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "signInViaBrowser":
             MessageLookupByLibrary.simpleMessage("Sign in by web"),
         "signUp": MessageLookupByLibrary.simpleMessage("Sign up"),
+        "smileyLabel": m21,
         "style": MessageLookupByLibrary.simpleMessage("Style"),
-        "submitPoll": m21,
-        "successfullyDeleteViewHistoryContent": m22,
-        "successfullyDownloadFiles": m23,
+        "submitPoll": m22,
+        "successfullyDeleteViewHistoryContent": m23,
+        "successfullyDownloadFiles": m24,
         "termsOfService":
             MessageLookupByLibrary.simpleMessage("Terms of Service"),
         "trustHostActionText":
@@ -386,8 +391,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "updateAt": MessageLookupByLibrary.simpleMessage("Update at %T"),
         "userExpiredSubtitle": MessageLookupByLibrary.simpleMessage(
             "The current user is expired, some function may not work."),
-        "userExpiredTitle": m24,
-        "userIdTitle": m25,
+        "userExpiredTitle": m25,
+        "userIdTitle": m26,
         "userProfile": MessageLookupByLibrary.simpleMessage("User Profile"),
         "userProfileTitle":
             MessageLookupByLibrary.simpleMessage("User Profiles"),
@@ -396,7 +401,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewHistory": MessageLookupByLibrary.simpleMessage("View History"),
         "viewThreadTitle":
             MessageLookupByLibrary.simpleMessage("View a thread"),
-        "viewUserInfo": m26,
+        "viewUserInfo": m27,
         "warnedPost":
             MessageLookupByLibrary.simpleMessage("The post is warned."),
         "watchPictureInFullScreen":

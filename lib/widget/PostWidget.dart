@@ -102,6 +102,7 @@ class PostWidget extends StatelessWidget {
                         child: Row(
                       children: [
                         RichText(
+                          overflow: TextOverflow.ellipsis,
                           text: TextSpan(
                             text: "",
                             style: DefaultTextStyle.of(context).style,
@@ -123,6 +124,7 @@ class PostWidget extends StatelessWidget {
                               TextSpan(text: ' · '),
                               TextSpan(
                                   text: TimeDisplayUtils.getLocaledTimeDisplay(context,_post.publishAt,),
+
                                   style: TextStyle(
                                       fontWeight: FontWeight.w400,
                                       fontSize:

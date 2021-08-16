@@ -7,10 +7,12 @@ import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
+import 'package:discuz_flutter/page/InternalWebviewBrowserPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/EmptyScreen.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
@@ -123,8 +125,6 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     _loadForumContent();
   }
 
-
-
   void _saveViewHistory(ForumDetail forumDetail) async {
     // check if needed
     bool allowViewHistory =
@@ -132,13 +132,13 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     if (!allowViewHistory) {
       historySaved = true;
       return;
-    }
-    else{
+    } else {
       final db = await DBHelper.getAppDb();
       final dao = db.viewHistoryDao;
-      ViewHistory? viewHistory = await dao.forumExistInDatabase(discuz.id!, fid);
+      ViewHistory? viewHistory =
+          await dao.forumExistInDatabase(discuz.id!, fid);
       print("Found forum $viewHistory");
-      if(viewHistory == null){
+      if (viewHistory == null) {
         // show rule
         _showInformationBottomSheet(context);
       }
@@ -255,7 +255,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
             });
           }
       }
-      throw(onError);
+      throw (onError);
     });
   }
 
@@ -278,11 +278,35 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
               onPressed: () {
                 VibrationUtils.vibrateWithClickIfPossible();
                 _showInformationBottomSheet(context);
-              })
+              }),
+          PopupMenuButton(
+            itemBuilder: (context) => [
+              PopupMenuItem<int>(
+                child: Text(S.of(context).openViaInternalBrowser),
+                value: 0,
+              )
+            ],
+            onSelected: (int pos) {
+              VibrationUtils.vibrateWithClickIfPossible();
+              switch (pos) {
+                case 0:
+                  {
+                    Navigator.push(
+                        context,
+                        platformPageRoute(
+                            context: context,
+                            builder: (context) => InternalWebviewBrowserPage(
+                                discuz,
+                                user,
+                                URLUtils.getForumDisplayURL(discuz, fid))));
+                  }
+              }
+            },
+          )
         ],
         title: _displayForumResult == null
-            ? Text(S.of(context).forumDisplayTitle)
-            : Text(_displayForumResult!.discuzIndexVariables.forum.name),
+            ? Text(S.of(context).forumDisplayTitle,overflow: TextOverflow.ellipsis)
+            : Text(_displayForumResult!.discuzIndexVariables.forum.name,overflow: TextOverflow.ellipsis),
       ),
       body: EasyRefresh.custom(
         enableControlFinishRefresh: true,
@@ -376,20 +400,16 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
           )),
         ),
         slivers: <Widget>[
-
           if (_error != null)
             SliverList(
-
                 delegate: SliverChildBuilderDelegate(
-
-                    (context, _){
-                      return ErrorCard(_error!.key, _error!.content, () {
-                        _controller.callRefresh();
-                      });
-                    },
-                    childCount : 1,
+              (context, _) {
+                return ErrorCard(_error!.key, _error!.content, () {
+                  _controller.callRefresh();
+                });
+              },
+              childCount: 1,
             )),
-
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
@@ -406,7 +426,6 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                             _displayForumResult!
                                 .discuzIndexVariables.threadType);
                       }),
-
                     ],
                   );
                 } else {
@@ -414,7 +433,6 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                     children: [
                       ForumThreadWidget(discuz, user, _forumThreadList[index],
                           _displayForumResult!.discuzIndexVariables.threadType),
-
                     ],
                   );
                 }
@@ -739,11 +757,10 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                               selected: _displayForumQuery.dateline == 31536000,
                               onSelected: (bool selected) {
                                 VibrationUtils.vibrateWithClickIfPossible();
-                                setState((){
+                                setState(() {
                                   _displayForumQuery.setDateline(
                                       31536000, selected);
                                 });
-
                               },
                             ),
                           ],
@@ -776,11 +793,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                               selected: _displayForumQuery.filter == "digest",
                               onSelected: (bool selected) {
                                 VibrationUtils.vibrateWithClickIfPossible();
-                                setState((){
+                                setState(() {
                                   _displayForumQuery.setDigest(selected);
                                 });
-
-
                               },
                             ),
                             ChoiceChip(
@@ -789,10 +804,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                               selected: _displayForumQuery.filter == "hot",
                               onSelected: (bool selected) {
                                 VibrationUtils.vibrateWithClickIfPossible();
-                                setState((){
+                                setState(() {
                                   _displayForumQuery.setHot(selected);
                                 });
-
                               },
                             ),
                           ],
@@ -899,6 +913,7 @@ class DisplayForumQuery {
       this.filter = "";
     }
   }
+
   void setDigest(bool selected) {
     if (selected) {
       this.filter = "digest";
@@ -906,7 +921,6 @@ class DisplayForumQuery {
       this.filter = "";
     }
   }
-
 
   Map<String, String> generateForumQueriesMap() {
     Map<String, String> forumQueriesMap = {};
@@ -931,7 +945,7 @@ class DisplayForumQuery {
 
     if (filter != "") {
       forumQueriesMap["filter"] = filter;
-      if(filter == "digest"){
+      if (filter == "digest") {
         forumQueriesMap["digest"] = "1";
       }
     }

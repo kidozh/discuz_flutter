@@ -371,5 +371,12 @@
   },
   "interfaceBrightness": "显示模式",
   "brightnessLight": "浅色",
-  "brightnessDark": "深色"
+  "brightnessDark": "深色",
+  "openViaInternalBrowser": "在内置浏览器打开",
+  "smileyLabel": "表情 {index}",
+  "@smileyLabel": {
+    "placeholders": {
+      "index": {}
+    }
+  }
 }

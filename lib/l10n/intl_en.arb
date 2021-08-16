@@ -371,5 +371,12 @@
   },
   "interfaceBrightness": "Interface Brightness",
   "brightnessLight": "Light",
-  "brightnessDark": "Dark"
+  "brightnessDark": "Dark",
+  "openViaInternalBrowser": "Open Website in webview",
+  "smileyLabel": "Smiley #{index}",
+  "@smileyLabel": {
+    "placeholders": {
+      "index": {}
+    }
+  }
 }
