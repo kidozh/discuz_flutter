@@ -15,6 +15,7 @@ import 'package:discuz_flutter/widget/AttachmentWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/shims/dart_ui.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
@@ -28,8 +29,9 @@ class PostWidget extends StatelessWidget {
   Post _post;
   Discuz _discuz;
   int _authorId;
+  VoidCallback? onAuthorSelectedCallback;
 
-  PostWidget(this._discuz, this._post, this._authorId);
+  PostWidget(this._discuz, this._post, this._authorId, {this.onAuthorSelectedCallback});
 
   @override
   Widget build(BuildContext context) {
@@ -161,6 +163,10 @@ class PostWidget extends StatelessWidget {
                                   S.of(context).viewUserInfo(_post.author)),
                               value: 1,
                             ),
+                            PopupMenuItem<int>(
+                              child: Text(S.of(context).onlyViewAuthor),
+                              value: 2,
+                            ),
                           ],
                           onSelected: (int pos) {
                             VibrationUtils.vibrateWithClickIfPossible();
@@ -188,6 +194,16 @@ class PostWidget extends StatelessWidget {
                                           context: context,
                                           builder: (context) => UserProfilePage(
                                               _discuz, user, _post.authorId)));
+                                  break;
+                                }
+                              case 2:
+                                {
+                                  // set provider to
+
+                                  if(onAuthorSelectedCallback!=null){
+                                    VibrationUtils.vibrateWithClickIfPossible();
+                                    onAuthorSelectedCallback!();
+                                  }
                                   break;
                                 }
                             }

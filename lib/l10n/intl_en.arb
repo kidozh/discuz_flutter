@@ -378,5 +378,7 @@
     "placeholders": {
       "index": {}
     }
-  }
+  },
+  "onlyViewAuthor": "OP mode",
+  "seeAllReplies": "View all replies"
 }

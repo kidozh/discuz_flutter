@@ -93,6 +93,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   late ScrollController _scrollController;
   ButtonState _sendReplyStatus = ButtonState.idle;
   bool showSmiley = false;
+  ViewThreadQuery viewThreadQuery = ViewThreadQuery();
 
   // 反向
   bool _reverse = false;
@@ -168,6 +169,15 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   void _invalidateContent() {
     setState(() {
       _page = 1;
+    });
+    _loadForumContent();
+  }
+
+  void setNewViewThreadQuery(ViewThreadQuery viewThreadQuery){
+    setState(() {
+      this.viewThreadQuery = viewThreadQuery;
+      _page = 1;
+      _postList = [];
     });
     _loadForumContent();
   }
@@ -285,7 +295,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     //   log("Poll ${result.threadVariables.poll}");
     // });
 
-    client.viewThreadResult(tid, _page).then((value) {
+    client.viewThreadResult(tid, _page, viewThreadQuery.generateForumQueriesMap()).then((value) {
       if (!historySaved &&
           _page == 1 &&
           value.threadVariables.postList.length > 0) {
@@ -395,6 +405,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             ? Text(S.of(context).viewThreadTitle,overflow: TextOverflow.ellipsis)
             : Text(_viewThreadResult.threadVariables.threadInfo.subject,overflow: TextOverflow.ellipsis),
         trailingActions: [
+          IconButton(
+              icon: Icon(viewThreadQuery.timeAscend? Icons.arrow_upward: Icons.arrow_downward),
+              onPressed: (){
+                viewThreadQuery.timeAscend = !viewThreadQuery.timeAscend;
+                setNewViewThreadQuery(viewThreadQuery);
+              },
+              ),
           PopupMenuButton(
             itemBuilder: (context) => [
               PopupMenuItem<int>(
@@ -559,8 +576,17 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                         PostWidget(
                             discuz,
                             _postList[index],
-                            _viewThreadResult
-                                .threadVariables.threadInfo.authorId),
+                            _viewThreadResult.threadVariables.threadInfo.authorId,
+                            onAuthorSelectedCallback: (){
+                              if(viewThreadQuery.authorId == 0){
+                                viewThreadQuery.authorId = _postList[index].authorId;
+                              }
+                              else{
+                                viewThreadQuery.authorId = 0;
+                              }
+                              setNewViewThreadQuery(viewThreadQuery);
+                            },
+                        ),
                       ],
                     );
                   },
@@ -753,5 +779,21 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         ],
       ),
     );
+  }
+}
+
+class ViewThreadQuery{
+  int authorId = 0;
+  bool timeAscend = true;
+
+  Map<String, String> generateForumQueriesMap() {
+    Map<String, String> queriesMap = {};
+    if (authorId != 0) {
+      queriesMap["authorid"] = authorId.toString();
+    }
+    if (!timeAscend){
+      queriesMap["ordertype"] = "1";
+    }
+    return queriesMap;
   }
 }

@@ -2380,6 +2380,26 @@ class S {
       args: [index],
     );
   }
+
+  /// `OP mode`
+  String get onlyViewAuthor {
+    return Intl.message(
+      'OP mode',
+      name: 'onlyViewAuthor',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View all replies`
+  String get seeAllReplies {
+    return Intl.message(
+      'View all replies',
+      name: 'seeAllReplies',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

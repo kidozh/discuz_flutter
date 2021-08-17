@@ -121,6 +121,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   void _invalidateContent() {
     setState(() {
       _page = 1;
+
     });
     _loadForumContent();
   }
@@ -177,6 +178,8 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     //   DisplayForumResult result = DisplayForumResult.fromJson(jsonDecode(value));
     // });
 
+    print("Request display forum map ${_displayForumQuery.generateForumQueriesMap()}");
+
     client
         .displayForumResult(
             fid.toString(), _page, _displayForumQuery.generateForumQueriesMap())
@@ -188,14 +191,29 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       setState(() {
         _displayForumResult = value;
         _error = null;
-        if (_page == 1) {
-          _forumThreadList = value.discuzIndexVariables.forumThreadList;
-        } else {
-          _forumThreadList.addAll(value.discuzIndexVariables.forumThreadList);
-          _forumThreadList = _forumThreadList;
-        }
-        _page += 1;
+        print("GET page ${_page} results");
+
       });
+
+      if (_page == 1) {
+        print("Clearing list since page ${_page} results");
+        setState(() {
+          _forumThreadList = [];
+        });
+
+        setState(() {
+          _forumThreadList = value.discuzIndexVariables.forumThreadList;
+        });
+
+
+      } else {
+        setState(() {
+          _forumThreadList.addAll(value.discuzIndexVariables.forumThreadList);
+        });
+
+        //_forumThreadList = _forumThreadList;
+      }
+      _page += 1;
 
       if (!_enableControlFinish) {
         _controller.resetLoadState();
@@ -231,10 +249,10 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         });
       }
 
-      log("set successful result ${_displayForumResult} ${_forumThreadList.length}");
+      //log("set successful result ${_displayForumResult} ${_forumThreadList.length}");
     }).catchError((onError) {
       VibrationUtils.vibrateErrorIfPossible();
-      log(onError);
+      //log(onError);
       EasyLoading.showError('${onError}');
       if (!_enableControlFinish) {
         _controller.resetLoadState();
@@ -414,28 +432,12 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 log("${_forumThreadList[index].subject} ${_forumThreadList}");
-                if (index != 0 && index % 10 == 0) {
-                  return Column(
-                    children: [
-                      Consumer<DiscuzAndUserNotifier>(
-                          builder: (context, discuzAndUser, child) {
-                        return ForumThreadWidget(
-                            discuz,
-                            discuzAndUser.user,
-                            _forumThreadList[index],
-                            _displayForumResult!
-                                .discuzIndexVariables.threadType);
-                      }),
-                    ],
-                  );
-                } else {
-                  return Column(
-                    children: [
-                      ForumThreadWidget(discuz, user, _forumThreadList[index],
-                          _displayForumResult!.discuzIndexVariables.threadType),
-                    ],
-                  );
-                }
+                return Column(
+                  children: [
+                    ForumThreadWidget(discuz, user, _forumThreadList[index],
+                        _displayForumResult!.discuzIndexVariables.threadType),
+                  ],
+                );
               },
               childCount: _forumThreadList.length,
             ),
@@ -819,8 +821,11 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
             );
           });
         }).whenComplete(() {
-      print("Closing the dialog");
-      _controller.callRefresh();
+          setState(() {
+            _forumThreadList = [];
+          });
+          //print("Closing the dialog");
+        _controller.callRefresh();
     });
   }
 }

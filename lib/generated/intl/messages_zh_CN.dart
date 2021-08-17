@@ -255,6 +255,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "ok": MessageLookupByLibrary.simpleMessage("好"),
         "onlineHours": m14,
         "onlineHoursTitle": MessageLookupByLibrary.simpleMessage("在线时间"),
+        "onlyViewAuthor": MessageLookupByLibrary.simpleMessage("只看作者"),
         "openFileInExternalAppActionText":
             MessageLookupByLibrary.simpleMessage("打开"),
         "openFileInExternalAppContent":
@@ -318,6 +319,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "saveImageSuccessfully":
             MessageLookupByLibrary.simpleMessage("成功保存图片至此设备中."),
         "savePictureToDevice": MessageLookupByLibrary.simpleMessage("保存图片至此设备"),
+        "seeAllReplies": MessageLookupByLibrary.simpleMessage("查看所有"),
         "selectUserNull": MessageLookupByLibrary.simpleMessage("未选中一个用户"),
         "send": MessageLookupByLibrary.simpleMessage("发送"),
         "sendReply": MessageLookupByLibrary.simpleMessage("回帖"),

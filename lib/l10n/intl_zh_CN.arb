@@ -378,5 +378,7 @@
     "placeholders": {
       "index": {}
     }
-  }
+  },
+  "onlyViewAuthor": "只看作者",
+  "seeAllReplies": "查看所有"
 }

@@ -167,15 +167,16 @@ class _MobileApiClient implements MobileApiClient {
   }
 
   @override
-  Future<ViewThreadResult> viewThreadResult(tid, page) async {
+  Future<ViewThreadResult> viewThreadResult(tid, page, queries) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'tid': tid, r'page': page};
+    queryParameters.addAll(queries);
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<ViewThreadResult>(
             Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
                 .compose(_dio.options,
-                    '/api/mobile/index.php?version=4&module=viewthread&ppp=10',
+                    '/api/mobile/index.php?version=4&module=viewthread',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ViewThreadResult.fromJson(_result.data!);
@@ -183,16 +184,17 @@ class _MobileApiClient implements MobileApiClient {
   }
 
   @override
-  Future<String> viewThreadRaw(tid, page) async {
+  Future<String> viewThreadRaw(tid, page, queries) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'tid': tid, r'page': page};
+    queryParameters.addAll(queries);
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options,
-                '/api/mobile/index.php?version=4&module=viewthread&ppp=10',
-                queryParameters: queryParameters, data: _data)
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
+            method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+        .compose(
+            _dio.options, '/api/mobile/index.php?version=4&module=viewthread',
+            queryParameters: queryParameters, data: _data)
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }

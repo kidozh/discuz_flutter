@@ -290,6 +290,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "ok": MessageLookupByLibrary.simpleMessage("ok"),
         "onlineHours": m14,
         "onlineHoursTitle": MessageLookupByLibrary.simpleMessage("Online Time"),
+        "onlyViewAuthor": MessageLookupByLibrary.simpleMessage("OP mode"),
         "openFileInExternalAppActionText":
             MessageLookupByLibrary.simpleMessage("Open"),
         "openFileInExternalAppContent": MessageLookupByLibrary.simpleMessage(
@@ -364,6 +365,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "saveImageSuccessfully": MessageLookupByLibrary.simpleMessage(
             "Save Image to device successfully."),
         "savePictureToDevice": MessageLookupByLibrary.simpleMessage("Save"),
+        "seeAllReplies":
+            MessageLookupByLibrary.simpleMessage("View all replies"),
         "selectUserNull": MessageLookupByLibrary.simpleMessage(
             "No user is currently activated"),
         "send": MessageLookupByLibrary.simpleMessage("Send"),

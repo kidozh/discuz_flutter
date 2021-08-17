@@ -98,9 +98,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
   }
 
   Widget getUnViewedThreadCard(){
-    Locale locale = Localizations.localeOf(context);
-    log("languages ${locale} ${locale.toLanguageTag()} ${locale.scriptCode} ${locale.languageCode}");
-    // retrieve threadtype
+
     String threadCategory = "";
     if(threadType!=null && threadType!.idNameMap.isNotEmpty && threadType!.idNameMap.containsKey(_forumThread.typeId)){
       threadCategory = threadType!.idNameMap[_forumThread.typeId]!;
@@ -176,8 +174,6 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
   }
 
   Widget getViewedThreadCard(){
-    Locale locale = Localizations.localeOf(context);
-    log("languages ${locale} ${locale.toLanguageTag()} ${locale.scriptCode} ${locale.languageCode}");
     // retrieve threadtype
     String threadCategory = "";
     if(threadType!=null && threadType!.idNameMap.isNotEmpty && threadType!.idNameMap.containsKey(_forumThread.typeId)){
@@ -268,7 +264,6 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
       return StreamBuilder(
         stream: dao!.threadHistoryExistInDatabase(_discuz.id!, _forumThread.getTid()),
         builder: (BuildContext context, AsyncSnapshot<ViewHistory?> snapshot) {
-          print("Get view history in db ${snapshot.data} ${_forumThread.subject}");
           if(snapshot.data == null){
             return getUnViewedThreadCard();
           }
