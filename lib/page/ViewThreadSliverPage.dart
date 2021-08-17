@@ -663,6 +663,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                     : Icon(Icons.emoji_emotions),
                               ),
                               onTap: () {
+                                if(!showSmiley){
+                                  FocusScope.of(context).requestFocus(new FocusNode());
+                                }
+                                else{
+
+                                }
                                 setState(() {
                                   showSmiley = !showSmiley;
                                 });

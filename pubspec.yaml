@@ -68,6 +68,7 @@ dependencies:
   hive: ^2.0.4
   hive_flutter: ^1.1.0
   flutter_vibrate: ^1.1.0
+  flutter_launcher_icons: ^0.9.1
 
 
 
@@ -124,3 +125,8 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
 flutter_intl:
   enabled: true
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/icon.png"

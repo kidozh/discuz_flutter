@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:discuz_flutter/app/ExclusiveApp.dart';
 import 'package:discuz_flutter/dialog/SwitchDiscuzDialog.dart';
+import 'package:discuz_flutter/page/ExploreWebsitePage.dart';
 import 'package:discuz_flutter/page/ManageAccountPage.dart';
 import 'package:discuz_flutter/page/ManageDiscuzPage.dart';
 import 'package:discuz_flutter/page/ManageTrustHostPage.dart';
@@ -535,8 +536,12 @@ class _MyHomePageState extends State<MyHomePage> {
         currentIndex: _bottomNavigationbarIndex,
         items: [
           BottomNavigationBarItem(
-              icon: new Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
+              icon: new Icon(CupertinoIcons.today),
+              //activeIcon: Icon(CupertinoIcons.today),
+              label: S.of(context).sitePage),
+          BottomNavigationBarItem(
+              icon: new Icon(Icons.amp_stories_outlined),
+              activeIcon: Icon(Icons.amp_stories),
               label: S.of(context).index),
           BottomNavigationBarItem(
               icon: new Icon(Icons.explore_outlined),
@@ -546,10 +551,10 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: new Icon(Icons.notifications_outlined),
               activeIcon: Icon(Icons.notifications),
               label: S.of(context).notification),
-          BottomNavigationBarItem(
-              icon: new Icon(Icons.stars_outlined),
-              activeIcon: Icon(Icons.stars),
-              label: S.of(context).favorites),
+          // BottomNavigationBarItem(
+          //     icon: new Icon(Icons.stars_outlined),
+          //     activeIcon: Icon(Icons.stars),
+          //     label: S.of(context).favorites),
           BottomNavigationBarItem(
               icon: new Icon(Icons.message_outlined),
               activeIcon: Icon(Icons.message_rounded),
@@ -562,8 +567,14 @@ class _MyHomePageState extends State<MyHomePage> {
           });
         },
       ),
-      body: [DiscuzPortalScreen(),HotThreadScreen(),NotificationScreen(),
-        FavoriteThreadScreen(),DiscuzMessageScreen()
+      body: [
+
+        ExploreWebsitePage(),
+        DiscuzPortalScreen(),
+        HotThreadScreen(),
+        NotificationScreen(),
+        // FavoriteThreadScreen(),
+        DiscuzMessageScreen()
       ][_bottomNavigationbarIndex],
       floatingActionButton: FloatingActionButton(
         onPressed: _triggerSwitchDiscuzDialog,

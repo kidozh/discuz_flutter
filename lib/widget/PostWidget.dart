@@ -239,7 +239,7 @@ class PostWidget extends StatelessWidget {
 
   Widget getPostBlockedBlock(BuildContext context) {
     return Container(
-      color:  Colors.red.withOpacity(0.25),
+      color:  Colors.red.withOpacity(0.15),
       child: Padding(
         padding: EdgeInsets.all(6.0),
         child: Row(
@@ -247,7 +247,7 @@ class PostWidget extends StatelessWidget {
             Icon(Icons.block, color: Colors.red,),
             Expanded(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 2.0),
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(S.of(context).blockedPost, style: TextStyle(color: Colors.red),),
               ),
             )
@@ -259,7 +259,7 @@ class PostWidget extends StatelessWidget {
 
   Widget getPostWarnBlock(BuildContext context) {
     return Container(
-      color:  Colors.deepOrange.withOpacity(0.25),
+      color:  Colors.deepOrange.withOpacity(0.15),
       child: Padding(
         padding: EdgeInsets.all(6.0),
         child: Row(
@@ -267,7 +267,7 @@ class PostWidget extends StatelessWidget {
             Icon(Icons.warning_amber_outlined, color: Colors.deepOrange,),
             Expanded(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 2.0),
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(S.of(context).warnedPost, style: TextStyle(color: Colors.deepOrange),),
               ),
             )
@@ -280,7 +280,7 @@ class PostWidget extends StatelessWidget {
 
   Widget getPostRevisedBlock(BuildContext context) {
     return Container(
-        color:  Colors.blue.withOpacity(0.25),
+        color:  Colors.blue.withOpacity(0.15),
         child: Padding(
           padding: EdgeInsets.all(6.0),
           child: Row(
@@ -288,7 +288,7 @@ class PostWidget extends StatelessWidget {
               Icon(Icons.edit_outlined, color: Colors.blue,),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 2.0),
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(S.of(context).revisedPost, style: TextStyle(color: Colors.blue),),
                 ),
               )

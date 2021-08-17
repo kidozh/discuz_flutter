@@ -329,6 +329,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "signInTitle": m20,
         "signInViaBrowser": MessageLookupByLibrary.simpleMessage("使用网页登录"),
         "signUp": MessageLookupByLibrary.simpleMessage("注册"),
+        "sitePage": MessageLookupByLibrary.simpleMessage("主页"),
         "smileyLabel": m21,
         "style": MessageLookupByLibrary.simpleMessage("样式"),
         "submitPoll": m22,

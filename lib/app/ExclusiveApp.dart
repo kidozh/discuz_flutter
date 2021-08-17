@@ -2,14 +2,18 @@
 
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/page/ExploreWebsitePage.dart';
+import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
 import 'package:discuz_flutter/screen/DiscuzPortalScreen.dart';
 import 'package:discuz_flutter/screen/FavoriteThreadScreen.dart';
 import 'package:discuz_flutter/screen/HotThreadScreen.dart';
 import 'package:discuz_flutter/screen/NotificationScreen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:provider/provider.dart';
 
 class ExclusiveApp extends StatelessWidget{
   Discuz _discuz;
@@ -55,9 +59,15 @@ class ExclusiveAppState extends State<ExclusiveAppStatefulWidget>{
       initialIndex: 0,
     );
 
+    Provider.of<DiscuzAndUserNotifier>(context, listen: false).setDiscuz(_discuz);
+
     tabs = [
-      DiscuzPortalScreen(),HotThreadScreen(),NotificationScreen(),
-      FavoriteThreadScreen(),DiscuzMessageScreen()
+      ExploreWebsitePage(),
+      DiscuzPortalScreen(),
+      HotThreadScreen(),
+      NotificationScreen(),
+      // FavoriteThreadScreen(),
+      DiscuzMessageScreen()
     ];
   }
 
@@ -65,17 +75,22 @@ class ExclusiveAppState extends State<ExclusiveAppStatefulWidget>{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return PlatformTabScaffold(
       iosContentBottomPadding: true,
       iosContentPadding: true,
       tabController: tabController,
-
+      materialTabs: (_,__) => MaterialNavBarData(
+        selectedItemColor: Theme.of(context).primaryColor,
+        unselectedItemColor: Colors.grey,
+      ),
       appBarBuilder: (_,index) => PlatformAppBar(
         title: Text(_discuz.siteName),
         automaticallyImplyLeading: false,
       ),
       items: [
+        BottomNavigationBarItem(
+            icon: new Icon(CupertinoIcons.today),
+            label: S.of(context).sitePage),
         BottomNavigationBarItem(
             icon: new Icon(PlatformIcons(context).home),
             label: S.of(context).index),
@@ -85,10 +100,10 @@ class ExclusiveAppState extends State<ExclusiveAppStatefulWidget>{
         BottomNavigationBarItem(
             icon: new Icon(PlatformIcons(context).info),
             label: S.of(context).notification),
-        BottomNavigationBarItem(
-            icon: new Icon(PlatformIcons(context).star),
-
-            label: S.of(context).favorites),
+        // BottomNavigationBarItem(
+        //     icon: new Icon(PlatformIcons(context).star),
+        //
+        //     label: S.of(context).favorites),
         BottomNavigationBarItem(
             icon: new Icon(PlatformIcons(context).mailSolid),
 

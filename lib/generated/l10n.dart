@@ -2400,6 +2400,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Homepage`
+  String get sitePage {
+    return Intl.message(
+      'Homepage',
+      name: 'sitePage',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

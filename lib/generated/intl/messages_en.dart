@@ -378,6 +378,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "signInViaBrowser":
             MessageLookupByLibrary.simpleMessage("Sign in by web"),
         "signUp": MessageLookupByLibrary.simpleMessage("Sign up"),
+        "sitePage": MessageLookupByLibrary.simpleMessage("Homepage"),
         "smileyLabel": m21,
         "style": MessageLookupByLibrary.simpleMessage("Style"),
         "submitPoll": m22,

@@ -380,5 +380,6 @@
     }
   },
   "onlyViewAuthor": "OP mode",
-  "seeAllReplies": "View all replies"
+  "seeAllReplies": "View all replies",
+  "sitePage": "Homepage"
 }
