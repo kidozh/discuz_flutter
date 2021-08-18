@@ -2410,6 +2410,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Disable custom font`
+  String get disableFontCustomization {
+    return Intl.message(
+      'Disable custom font',
+      name: 'disableFontCustomization',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ignore all customized font information`
+  String get disableFontCustomizationTitle {
+    return Intl.message(
+      'Ignore all customized font information',
+      name: 'disableFontCustomizationTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Typesetting`
+  String get typeSetting {
+    return Intl.message(
+      'Typesetting',
+      name: 'typeSetting',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

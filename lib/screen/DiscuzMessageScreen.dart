@@ -52,6 +52,7 @@ class DiscuzMessageState extends State<DiscuzMessageStatefulWidget> {
                   ),
                 ],
                   labelColor: Theme.of(context).primaryColor,
+                  indicatorColor: Theme.of(context).primaryColor,
                   unselectedLabelColor: Theme.of(context).brightness == Brightness.light?  Colors.black54 : Colors.white54,
                   unselectedLabelStyle: Theme.of(context).brightness == Brightness.light? Theme.of(context).textTheme.bodyText2: Theme.of(context).textTheme.subtitle1,
 

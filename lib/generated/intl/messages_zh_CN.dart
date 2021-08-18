@@ -147,6 +147,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "deleteDiscuzSuccessfully": m4,
         "deleteViewHistoryWarnContent":
             MessageLookupByLibrary.simpleMessage("清除历史记录是不可恢复的，确认要继续？"),
+        "disableFontCustomization":
+            MessageLookupByLibrary.simpleMessage("停用自定义字体"),
+        "disableFontCustomizationTitle":
+            MessageLookupByLibrary.simpleMessage("不再解析自定义字体的颜色，大小等信息"),
         "discuzServerAddress": MessageLookupByLibrary.simpleMessage("论坛地址"),
         "discuzServerAddressHelperText":
             MessageLookupByLibrary.simpleMessage("其通常就是论坛的地址"),
@@ -338,6 +342,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "termsOfService": MessageLookupByLibrary.simpleMessage("使用条款"),
         "trustHostActionText": MessageLookupByLibrary.simpleMessage("信任此域名"),
         "trustHostTitle": MessageLookupByLibrary.simpleMessage("主机域名白名单"),
+        "typeSetting": MessageLookupByLibrary.simpleMessage("文本排版"),
         "unableToVerifyAuthStatus":
             MessageLookupByLibrary.simpleMessage("无法验证登陆状态"),
         "undo": MessageLookupByLibrary.simpleMessage("撤销"),

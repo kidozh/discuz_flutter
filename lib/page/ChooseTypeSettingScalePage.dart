@@ -4,6 +4,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/PostWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -34,6 +35,24 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
     return mockedPost;
   }
 
+  bool ignoreCustomFontStyle = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getPreference();
+  }
+
+  void getPreference() async {
+    bool ignoreCustomFontStyleSetting = await UserPreferencesUtils.getDisableFontCustomizationPreference();
+    setState(() {
+      ignoreCustomFontStyle = ignoreCustomFontStyleSetting;
+    });
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     _scalingParamter =
@@ -58,12 +77,32 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
 
     return PlatformScaffold(
       appBar: PlatformAppBar(
-        title: Text(S.of(context).fontSizeScaleParameter),
+        title: Text(S.of(context).typeSetting),
       ),
       body: Consumer<TypeSettingNotifierProvider>(
           builder: (context, typesetting, _) {
         return SettingsList(
           sections: [
+            SettingsSection(
+              tiles: [
+                SettingsTile.switchTile(
+                  title: S.of(context).disableFontCustomization,
+                  subtitle: ignoreCustomFontStyle
+                      ? S.of(context).disableFontCustomizationTitle
+                      : null,
+                  leading: Icon(PlatformIcons(context).edit),
+                  switchValue: ignoreCustomFontStyle,
+                  onToggle: (bool value) {
+                    VibrationUtils.vibrateWithSwitchIfPossible();
+                    print("set record history ${value} ");
+                    UserPreferencesUtils.putDisableFontCustomizationPreference(value);
+                    setState(() {
+                      ignoreCustomFontStyle = value;
+                    });
+                  },
+                ),
+              ],
+            ),
             CustomSection(
                 child: Column(
               mainAxisSize: MainAxisSize.max,

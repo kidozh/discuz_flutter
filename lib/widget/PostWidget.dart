@@ -13,6 +13,7 @@ import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
+import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/AttachmentWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
@@ -35,6 +36,16 @@ class PostWidget extends StatelessWidget {
   int _authorId;
   VoidCallback? onAuthorSelectedCallback;
   Map<String, List<Comment>>? postCommentList;
+  bool? ignoreFontCustomization = false;
+
+  bool isFontStyleIgnored(){
+    if(ignoreFontCustomization == null || ignoreFontCustomization == false){
+      return false;
+    }
+    else{
+      return true;
+    }
+  }
 
   List<Comment> getCommentList(){
     if(postCommentList == null){
@@ -49,10 +60,18 @@ class PostWidget extends StatelessWidget {
     }
   }
 
-  PostWidget(this._discuz, this._post, this._authorId, {this.onAuthorSelectedCallback, this.postCommentList});
+  PostWidget(this._discuz, this._post, this._authorId, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization});
+
 
   @override
   Widget build(BuildContext context) {
+    String _html = _post.message;
+    if(this.isFontStyleIgnored()){
+      // regex
+      _html = _html.replaceAll(RegExp(r'<font.*?>',multiLine: true), "").replaceAll(RegExp(r'<\font.*?>'), "");
+    }
+
+
     return Consumer<TypeSettingNotifierProvider>(
         builder: (context, typesetting, _) {
       return Container(
@@ -151,6 +170,7 @@ class PostWidget extends StatelessWidget {
                               ),
                             ),
                             Text(TimeDisplayUtils.getLocaledTimeDisplay(context,_post.publishAt,),
+                              overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                     fontWeight: FontWeight.w400,
                                     fontSize:
@@ -160,14 +180,14 @@ class PostWidget extends StatelessWidget {
                         Spacer(),
                         if (_post.status & POST_MOBILE != 0)
                           Padding(
-                            padding: EdgeInsets.only(right: 8.0),
+                            padding: EdgeInsets.only(right: 4.0),
                             child: Icon(
                               Icons.smartphone,
                               size: 16 * typesetting.scalingParameter,
                             ),
                           ),
                         Padding(
-                          padding: EdgeInsets.only(right: 8.0),
+                          padding: EdgeInsets.only(right: 4.0),
                           child: Text(
                             S.of(context).postPosition(_post.position),
                             style: TextStyle(
@@ -243,7 +263,7 @@ class PostWidget extends StatelessWidget {
                 if (_post.status & POST_REVISED != 0)
                   getPostRevisedBlock(context),
                 // rich text rendering
-                DiscuzHtmlWidget(_discuz, _post.message),
+                DiscuzHtmlWidget(_discuz, _html),
                 if (_post.attachmentMapper.isNotEmpty)
                   ListView.builder(
                     itemBuilder: (context, index) {
@@ -255,15 +275,21 @@ class PostWidget extends StatelessWidget {
                     shrinkWrap: true,
                   ),
                 if(getCommentList().length != 0)
-                  ListView.builder(
-                    itemBuilder: (context, index){
-                      Comment comment = getCommentList()[index];
-                      return PostCommentWidget(comment);
-                  },
-                  itemCount: getCommentList().length,
-                    physics: new NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                  )
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListView.builder(
+                        itemBuilder: (context, index){
+                          Comment comment = getCommentList()[index];
+                          return PostCommentWidget(comment);
+                        },
+                        itemCount: getCommentList().length,
+                        physics: new NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                      )
+                    ],
+                  ),
+
               ],
             )),
       ));

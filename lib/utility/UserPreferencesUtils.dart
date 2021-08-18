@@ -178,5 +178,19 @@ class UserPreferencesUtils{
 
   }
 
+  static final String disableFontCustomizationKey = "disableFontCustomizatioKey";
+
+  static Future<void> putDisableFontCustomizationPreference(bool value) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(disableFontCustomizationKey, value);
+  }
+
+  static Future<bool> getDisableFontCustomizationPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    var boolValue =  prefs.getBool(disableFontCustomizationKey);
+    return boolValue == null ? false : boolValue;
+  }
+
 
 }

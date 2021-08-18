@@ -116,7 +116,7 @@ class _SettingPageState extends State<SettingPage> {
                   },
                 ),
                 SettingsTile(
-                  title: S.of(context).fontSizeScaleParameter,
+                  title: S.of(context).typeSetting,
                   subtitle: S.of(context).fontSizeScaleParameterUnit(typeSetting.scalingParameter.toStringAsFixed(3)),
                   leading: Icon(Icons.format_size),
                   onPressed: (context) {

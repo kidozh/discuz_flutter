@@ -135,8 +135,17 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     super.initState();
     _controller = EasyRefreshController();
     _scrollController = ScrollController();
+    _loadPreference();
     //_invalidateContent();
   }
+
+  bool ignoreFontCustomization = false;
+
+  void _loadPreference() async {
+    ignoreFontCustomization = await UserPreferencesUtils.getDisableFontCustomizationPreference();
+  }
+
+
 
   void _saveViewHistory(DetailedThreadInfo threadInfo, String contents) async {
     // check if needed
@@ -591,6 +600,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                               setNewViewThreadQuery(viewThreadQuery);
                             },
                             postCommentList: postCommentList,
+                            ignoreFontCustomization: ignoreFontCustomization,
                         ),
                       ],
                     );

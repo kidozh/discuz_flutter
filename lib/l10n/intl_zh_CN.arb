@@ -381,5 +381,8 @@
   },
   "onlyViewAuthor": "只看作者",
   "seeAllReplies": "查看所有",
-  "sitePage": "主页"
+  "sitePage": "主页",
+  "disableFontCustomization": "停用自定义字体",
+  "disableFontCustomizationTitle": "不再解析自定义字体的颜色，大小等信息",
+  "typeSetting": "文本排版"
 }

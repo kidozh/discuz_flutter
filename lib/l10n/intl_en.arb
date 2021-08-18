@@ -381,5 +381,8 @@
   },
   "onlyViewAuthor": "OP mode",
   "seeAllReplies": "View all replies",
-  "sitePage": "Homepage"
+  "sitePage": "Homepage",
+  "disableFontCustomization": "Disable custom font",
+  "disableFontCustomizationTitle": "Ignore all customized font information",
+  "typeSetting": "Typesetting"
 }

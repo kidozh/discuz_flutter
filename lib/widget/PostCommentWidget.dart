@@ -23,6 +23,7 @@ class PostCommentWidget extends StatelessWidget {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
         children: [
           SizedBox(width: 16,),
           CachedNetworkImage(
@@ -43,7 +44,7 @@ class PostCommentWidget extends StatelessWidget {
                       ),
                     ),
                   )),
-          SizedBox(width: 4.0,),
+          SizedBox(width: 8.0,),
           Expanded(
             child: RichText(
               textAlign: TextAlign.start,

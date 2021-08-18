@@ -158,6 +158,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "deleteDiscuzSuccessfully": m4,
         "deleteViewHistoryWarnContent": MessageLookupByLibrary.simpleMessage(
             "Clearing operation is irrecoverable, please take care."),
+        "disableFontCustomization":
+            MessageLookupByLibrary.simpleMessage("Disable custom font"),
+        "disableFontCustomizationTitle": MessageLookupByLibrary.simpleMessage(
+            "Ignore all customized font information"),
         "discuzServerAddress":
             MessageLookupByLibrary.simpleMessage("The Discuz\'s address"),
         "discuzServerAddressHelperText": MessageLookupByLibrary.simpleMessage(
@@ -389,6 +393,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "trustHostActionText":
             MessageLookupByLibrary.simpleMessage("Trust this host"),
         "trustHostTitle": MessageLookupByLibrary.simpleMessage("Trusted host"),
+        "typeSetting": MessageLookupByLibrary.simpleMessage("Typesetting"),
         "unableToVerifyAuthStatus": MessageLookupByLibrary.simpleMessage(
             "Unable to verify your auth status"),
         "undo": MessageLookupByLibrary.simpleMessage("Undo"),
