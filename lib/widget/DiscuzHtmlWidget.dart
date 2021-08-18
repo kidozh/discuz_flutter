@@ -51,7 +51,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
         // print("font scaling parameters ${scalingParameter} and font size ${12*scalingParameter}");
         return Html(
 
-          data: "$html",
+          data: "<p>$html</p>",
           navigationDelegateForIframe: (NavigationRequest request) {
             return NavigationDecision.navigate;
           },

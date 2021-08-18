@@ -94,6 +94,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   ButtonState _sendReplyStatus = ButtonState.idle;
   bool showSmiley = false;
   ViewThreadQuery viewThreadQuery = ViewThreadQuery();
+  Map<String, List<Comment>> postCommentList = {};
 
   // 反向
   bool _reverse = false;
@@ -286,7 +287,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
-    // client.viewThreadRaw(tid, _page).then((value) {
+    // client.viewThreadRaw(tid, _page,viewThreadQuery.generateForumQueriesMap()).then((value) {
     //   log(value.toString());
     //   // convert string to json
     //   Map<String, dynamic> resultJson = jsonDecode(value);
@@ -312,6 +313,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
           _postList.addAll(value.threadVariables.postList);
           _postList = _postList;
         }
+        postCommentList.addAll(value.threadVariables.commentList);
       });
       _page += 1;
 
@@ -572,7 +574,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                               _viewThreadResult.threadVariables.poll!,
                               _viewThreadResult.threadVariables.formHash,
                               tid,
-                              _viewThreadResult.threadVariables.fid),
+                              _viewThreadResult.threadVariables.fid,
+
+                          ),
                         PostWidget(
                             discuz,
                             _postList[index],
@@ -586,6 +590,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                               }
                               setNewViewThreadQuery(viewThreadQuery);
                             },
+                            postCommentList: postCommentList,
                         ),
                       ],
                     );

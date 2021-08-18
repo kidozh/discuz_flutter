@@ -1,5 +1,6 @@
 import 'package:discuz_flutter/converter/SecondToDateTimeConverter.dart';
 import 'package:discuz_flutter/converter/StringToBoolConverter.dart';
+import 'package:discuz_flutter/converter/ViewThreadCommentConverter.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:discuz_flutter/converter/StringToIntConverter.dart';
@@ -39,9 +40,9 @@ class ThreadVariables extends BaseVariableResult{
 
   // @JsonKey(name:"allowpostcomment",defaultValue: [])
   // List<String>? allowPostCommentList = [];
-
-  // @JsonKey(name: "comments",defaultValue: {})
-  // Map<String, List<Comment>> commentList = {};
+  @ViewThreadCommentConverter()
+  @JsonKey(name: "comments",defaultValue: {})
+  Map<String, List<Comment>> commentList = {};
 
   @JsonKey(name: "setting_rewriterule",required: false)
   RewriteRule? rewriteRule = RewriteRule();
@@ -184,19 +185,20 @@ class ReplyCreditRule{
   Map<String, dynamic> toJson() => _$ReplyCreditRuleToJson(this);
 }
 
-@JsonSerializable(ignoreUnannotated: true)
-@StringToIntConverter()
+@JsonSerializable()
 class Comment{
+  @StringToIntConverter()
   int id = 0;
+  @StringToIntConverter()
   int tid = 0;
 
-
+  @StringToIntConverter()
   int pid = 0;
   String author = "";
   String dateline = "";
   String comment = "";
   String avatar = "";
-
+  @StringToIntConverter()
   @JsonKey(name:"authorid")
   int authorId = 0;
 

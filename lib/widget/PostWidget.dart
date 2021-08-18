@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/entity/User.dart';
@@ -13,6 +16,7 @@ import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/AttachmentWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
+import 'package:discuz_flutter/widget/PostCommentWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/shims/dart_ui.dart';
@@ -30,8 +34,22 @@ class PostWidget extends StatelessWidget {
   Discuz _discuz;
   int _authorId;
   VoidCallback? onAuthorSelectedCallback;
+  Map<String, List<Comment>>? postCommentList;
 
-  PostWidget(this._discuz, this._post, this._authorId, {this.onAuthorSelectedCallback});
+  List<Comment> getCommentList(){
+    if(postCommentList == null){
+      return [];
+    }
+    String pid = _post.pid.toString();
+    if(postCommentList!.containsKey(pid)){
+      return postCommentList![pid]!;
+    }
+    else{
+      return [];
+    }
+  }
+
+  PostWidget(this._discuz, this._post, this._authorId, {this.onAuthorSelectedCallback, this.postCommentList});
 
   @override
   Widget build(BuildContext context) {
@@ -46,12 +64,13 @@ class PostWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Padding(
                       padding: EdgeInsets.all(4.0),
                       child: Container(
-                        width: 20.0 * typesetting.scalingParameter,
-                        height: 20.0 * typesetting.scalingParameter,
+                        width: 30.0 * typesetting.scalingParameter,
+                        height: 30.0 * typesetting.scalingParameter,
                         child: InkWell(
                           child: CachedNetworkImage(
                             imageUrl: URLUtils.getAvatarURL(
@@ -72,7 +91,7 @@ class PostWidget extends StatelessWidget {
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize:
-                                          14 * typesetting.scalingParameter),
+                                          20 * typesetting.scalingParameter),
                                 ),
                               ),
                             ),
@@ -103,36 +122,40 @@ class PostWidget extends StatelessWidget {
                     Expanded(
                         child: Row(
                       children: [
-                        RichText(
-                          overflow: TextOverflow.ellipsis,
-                          text: TextSpan(
-                            text: "",
-                            style: DefaultTextStyle.of(context).style,
-                            children: [
-                              TextSpan(
-                                  text: _post.author,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize:
-                                          12 * typesetting.scalingParameter)),
-                              if (_authorId == _post.authorId)
-                                TextSpan(
-                                    text: ' ' + S.of(context).postAuthorLabel,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(context).primaryColor,
-                                        fontSize:
-                                            12 * typesetting.scalingParameter)),
-                              TextSpan(text: ' · '),
-                              TextSpan(
-                                  text: TimeDisplayUtils.getLocaledTimeDisplay(context,_post.publishAt,),
-
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize:
-                                          12 * typesetting.scalingParameter)),
-                            ],
-                          ),
+                        SizedBox(width: 4.0,),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // username and OP come first
+                            RichText(
+                              overflow: TextOverflow.ellipsis,
+                              text: TextSpan(
+                                text: "",
+                                style: DefaultTextStyle.of(context).style,
+                                children: [
+                                  TextSpan(
+                                      text: _post.author,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize:
+                                          14 * typesetting.scalingParameter)),
+                                  if (_authorId == _post.authorId)
+                                    TextSpan(
+                                        text: ' ' + S.of(context).postAuthorLabel,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(context).primaryColor,
+                                            fontSize:
+                                            14 * typesetting.scalingParameter)),
+                                ],
+                              ),
+                            ),
+                            Text(TimeDisplayUtils.getLocaledTimeDisplay(context,_post.publishAt,),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize:
+                                    12 * typesetting.scalingParameter),)
+                          ],
                         ),
                         Spacer(),
                         if (_post.status & POST_MOBILE != 0)
@@ -228,6 +251,16 @@ class PostWidget extends StatelessWidget {
                       return AttachmentWidget(_discuz, attachment);
                     },
                     itemCount: _post.getAttachmentList().length,
+                    physics: new NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                  ),
+                if(getCommentList().length != 0)
+                  ListView.builder(
+                    itemBuilder: (context, index){
+                      Comment comment = getCommentList()[index];
+                      return PostCommentWidget(comment);
+                  },
+                  itemCount: getCommentList().length,
                     physics: new NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                   )

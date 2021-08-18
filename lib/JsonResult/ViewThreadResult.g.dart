@@ -50,6 +50,8 @@ ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) {
             ?.map((e) => Post.fromJson(e as Map<String, dynamic>))
             .toList() ??
         []
+    ..commentList =
+        const ViewThreadCommentConverter().fromJson(json['comments']) ?? {}
     ..rewriteRule = json['setting_rewriterule'] == null
         ? null
         : RewriteRule.fromJson(
@@ -77,6 +79,8 @@ Map<String, dynamic> _$ThreadVariablesToJson(ThreadVariables instance) =>
       'thread': instance.threadInfo,
       'fid': const StringToIntConverter().toJson(instance.fid),
       'postlist': instance.postList,
+      'comments':
+          const ViewThreadCommentConverter().toJson(instance.commentList),
       'setting_rewriterule': instance.rewriteRule,
       'ppp': instance.ppp,
       'page': instance.page,
@@ -144,11 +148,25 @@ Map<String, dynamic> _$ReplyCreditRuleToJson(ReplyCreditRule instance) =>
 
 Comment _$CommentFromJson(Map<String, dynamic> json) {
   return Comment()
+    ..id = const StringToIntConverter().fromJson(json['id'] as String?)
+    ..tid = const StringToIntConverter().fromJson(json['tid'] as String?)
+    ..pid = const StringToIntConverter().fromJson(json['pid'] as String?)
+    ..author = json['author'] as String
+    ..dateline = json['dateline'] as String
+    ..comment = json['comment'] as String
+    ..avatar = json['avatar'] as String
     ..authorId =
         const StringToIntConverter().fromJson(json['authorid'] as String?);
 }
 
 Map<String, dynamic> _$CommentToJson(Comment instance) => <String, dynamic>{
+      'id': const StringToIntConverter().toJson(instance.id),
+      'tid': const StringToIntConverter().toJson(instance.tid),
+      'pid': const StringToIntConverter().toJson(instance.pid),
+      'author': instance.author,
+      'dateline': instance.dateline,
+      'comment': instance.comment,
+      'avatar': instance.avatar,
       'authorid': const StringToIntConverter().toJson(instance.authorId),
     };
 
