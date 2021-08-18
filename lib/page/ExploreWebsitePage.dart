@@ -72,8 +72,14 @@ class ExploreWebsiteState extends State<ExploreWebsitePage> {
     super.initState();
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
     DiscuzAndUserNotifier discuzAndUser = Provider.of<DiscuzAndUserNotifier>(context,listen: false);
-    loadCookieByUser(discuzAndUser.discuz!, discuzAndUser.user);
-    initialURL = discuzAndUser.discuz!.baseURL;
+    if(discuzAndUser.discuz != null){
+      loadCookieByUser(discuzAndUser.discuz!, discuzAndUser.user);
+      initialURL = discuzAndUser.discuz!.baseURL;
+    }
+    else{
+      initialURL = "https://discuzhub.kidozh.com";
+    }
+
   }
 
   int progress = 0;
@@ -87,7 +93,8 @@ class ExploreWebsiteState extends State<ExploreWebsitePage> {
         return NullDiscuzScreen();
       }
       else{
-
+        loadCookieByUser(discuzAndUser.discuz!, discuzAndUser.user);
+        initialURL = discuzAndUser.discuz!.baseURL;
         if (!cookieLoaded) {
           return BlankScreen();
         } else {

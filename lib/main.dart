@@ -8,6 +8,7 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 
 import 'app/MainApp.dart';
 
@@ -20,7 +21,7 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   log("languages initialization");
   initialPlatform = await UserPreferencesUtils.getPlatformPreference();
-
+  await FlutterDisplayMode.setHighRefreshRate();
 
   runApp(
       MultiProvider(

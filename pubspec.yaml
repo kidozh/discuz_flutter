@@ -69,6 +69,7 @@ dependencies:
   hive_flutter: ^1.1.0
   flutter_vibrate: ^1.1.0
   flutter_launcher_icons: ^0.9.1
+  flutter_displaymode: ^0.3.2
 
 
 
@@ -80,6 +81,7 @@ dev_dependencies:
   retrofit_generator: any
   floor_generator: ^1.0.1
   hive_generator: ^1.1.0
+
 
 
 
