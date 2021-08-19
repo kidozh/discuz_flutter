@@ -41,7 +41,7 @@ class ThreadVariables extends BaseVariableResult{
   // @JsonKey(name:"allowpostcomment",defaultValue: [])
   // List<String>? allowPostCommentList = [];
   @ViewThreadCommentConverter()
-  @JsonKey(name: "comments",defaultValue: {})
+  @JsonKey(name: "comments")
   Map<String, List<Comment>> commentList = {};
 
   @JsonKey(name: "setting_rewriterule",required: false)

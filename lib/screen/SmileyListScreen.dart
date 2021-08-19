@@ -125,6 +125,12 @@ class SmileyListState extends State<SmileyListStatefulWidget>{
               );
         }
         // print("SMiley ${smileyList.length}");
+        if(smileyTab.length == 0){
+          return Container(
+            width: double.infinity,
+            height: 100,
+          );
+        }
         return DefaultTabController(
             length: smileyTab.length,
             child: Column(
