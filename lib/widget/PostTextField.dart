@@ -12,33 +12,35 @@ import 'package:flutter/material.dart';
 class PostTextField extends StatefulWidget{
 
   Discuz _discuz;
+  TextEditingController _controller;
 
-  PostTextField(this._discuz);
+  PostTextField(this._discuz,this._controller);
+
+
 
   @override
   PostTextFieldState createState() {
-    return PostTextFieldState(this._discuz);
+    return PostTextFieldState(this._discuz,this._controller);
   }
 }
 
 class PostTextFieldState extends State<PostTextField>{
-  TextEditingController _controller = TextEditingController();
+  TextEditingController _controller;
 
   Discuz _discuz;
 
-  PostTextFieldState(this._discuz);
+  PostTextFieldState(this._discuz, this._controller);
 
   @override
   Widget build(BuildContext context) {
     return ExtendedTextField(
       controller: _controller,
-      
+      specialTextSpanBuilder: PostSpecialTextSpanBuilder(_discuz),
+      selectionControls: MaterialTextSelectionControls(),
     );
   }
 
-  void insertSmiley(Smiley smiley){
 
-  }
 
 }
 
@@ -46,19 +48,25 @@ class SmileyText extends SpecialText{
   Discuz _discuz;
   static String smileyStartFlag = "[smiley]";
   static String smileyEndFlag = "[/smiley]";
+  int start;
   
-  SmileyText(this._discuz,TextStyle textStyle) : super(SmileyText.smileyStartFlag, SmileyText.smileyEndFlag, textStyle);
+  SmileyText(this._discuz, TextStyle textStyle,{required this.start}) : super(SmileyText.smileyStartFlag, SmileyText.smileyEndFlag, textStyle);
 
-  get smiley => Smiley.fromJson(jsonDecode(getContent()));
+  get  smiley => Smiley.fromJson(jsonDecode(getContent()));
+
+  get smileyCode {
+    Smiley smileyObj = smiley;
+    return smileyObj.code.replaceAll(r"\:", ":").replaceAll(r"\{", "{").replaceAll(r"\}", "}");
+  }
   
   @override
   InlineSpan finishText() {
-
     return ImageSpan(
         CachedNetworkImageProvider(_discuz.baseURL+"/static/image/smiley/"+smiley.relativePath),
         imageWidth: 16,
         imageHeight: 16,
-        actualText: smiley.code
+        start: this.start,
+
     );
   }
   
@@ -72,16 +80,21 @@ class PostSpecialTextSpanBuilder extends SpecialTextSpanBuilder{
 
   @override
   SpecialText? createSpecialText(String flag, {TextStyle? textStyle, SpecialTextGestureTapCallback? onTap, required int index}) {
-    if(flag == null || flag == ""){
+    if(flag == ""){
       return null;
     }
     else{
       if(isStart(flag, SmileyText.smileyStartFlag)){
-        return SmileyText(_discuz, textStyle!);
+        return SmileyText(_discuz, textStyle!,start: index-(SmileyText.smileyStartFlag.length-1));
       }
 
     }
 
+  }
+
+  @override
+  TextSpan build(String data, {TextStyle? textStyle, SpecialTextGestureTapCallback? onTap}) {
+    return super.build(data, textStyle: textStyle, onTap: onTap);
   }
 
 }

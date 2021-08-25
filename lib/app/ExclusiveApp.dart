@@ -4,6 +4,7 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/ExploreWebsitePage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/screen/ConfigurationScreen.dart';
 import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
 import 'package:discuz_flutter/screen/DiscuzPortalScreen.dart';
 import 'package:discuz_flutter/screen/FavoriteThreadScreen.dart';
@@ -33,7 +34,6 @@ class ExclusiveAppStatefulWidget extends StatefulWidget{
 
   @override
   ExclusiveAppState createState() {
-    // TODO: implement createState
     return ExclusiveAppState(this._discuz);
   }
 
@@ -65,9 +65,10 @@ class ExclusiveAppState extends State<ExclusiveAppStatefulWidget>{
       ExploreWebsitePage(),
       DiscuzPortalScreen(),
       HotThreadScreen(),
-      NotificationScreen(),
+      ConfigurationScreen(),
+      // NotificationScreen(),
       // FavoriteThreadScreen(),
-      DiscuzMessageScreen()
+      // DiscuzMessageScreen()
     ];
   }
 
@@ -92,20 +93,24 @@ class ExclusiveAppState extends State<ExclusiveAppStatefulWidget>{
             icon: new Icon(CupertinoIcons.today),
             label: S.of(context).sitePage),
         BottomNavigationBarItem(
-            icon: new Icon(PlatformIcons(context).home),
+            icon: new Icon(Icons.home),
             label: S.of(context).index),
         BottomNavigationBarItem(
-            icon: new Icon(PlatformIcons(context).flag),
+            icon: new Icon(Icons.dashboard),
             label: S.of(context).dashboard),
-        BottomNavigationBarItem(
-            icon: new Icon(PlatformIcons(context).info),
-            label: S.of(context).notification),
+        // BottomNavigationBarItem(
+        //     icon: new Icon(PlatformIcons(context).info),
+        //     label: S.of(context).notification),
         // BottomNavigationBarItem(
         //     icon: new Icon(PlatformIcons(context).star),
         //
         //     label: S.of(context).favorites),
+        // BottomNavigationBarItem(
+        //     icon: new Icon(PlatformIcons(context).mailSolid),
+        //
+        //     label: S.of(context).chatMessage),
         BottomNavigationBarItem(
-            icon: new Icon(PlatformIcons(context).mailSolid),
+            icon: new Icon(Icons.supervised_user_circle_sharp),
 
             label: S.of(context).chatMessage),
       ],

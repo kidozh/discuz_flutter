@@ -118,7 +118,7 @@ class MyApp extends StatelessWidget {
               ),
               builder: (context){
                 return  PlatformApp(
-                  title: 'Flutter Demo',
+                  //title: S.of(context).appName,
 
                   material: (_,__)=> MaterialAppData(
 

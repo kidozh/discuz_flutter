@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:discuz_flutter/converter/StringToIntConverter.dart';
@@ -37,6 +39,9 @@ class Smiley{
   Smiley(){}
 
   factory Smiley.fromJson(Map<String, dynamic> json) => _$SmileyFromJson(json);
+  String toJsonString(){
+    return jsonEncode(_$SmileyToJson(this)).toString();
+  }
 
 }
 

@@ -202,7 +202,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                         child: CircleAvatar(
                           child: CachedNetworkImage(
                             imageUrl:
-                                URLUtils.getAvatarURL(discuz, uid.toString()),
+                                URLUtils.getLargeAvatarURL(discuz, uid.toString()),
                             progressIndicatorBuilder:
                                 (context, url, downloadProgress) =>
                                     CircularProgressIndicator(

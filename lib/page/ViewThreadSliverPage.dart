@@ -1,30 +1,25 @@
-import 'dart:convert';
 import 'dart:developer';
 
-import 'package:discuz_flutter/JsonResult/CheckResult.dart';
+import 'package:discuz_flutter/JsonResult/SmileyResult.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
-import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/SmileyListScreen.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
-import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/CaptchaWidget.dart';
-import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
-import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
-import 'package:discuz_flutter/widget/PlatformSliverAppBar.dart';
 import 'package:discuz_flutter/widget/PollWidget.dart';
+import 'package:discuz_flutter/widget/PostTextField.dart';
 import 'package:discuz_flutter/widget/PostWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -32,17 +27,15 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:form_validator/form_validator.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:intl/intl.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:provider/provider.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
-
+import 'package:extended_text_field/extended_text_field.dart';
 import 'InternalWebviewBrowserPage.dart';
 
 class ViewThreadSliverPage extends StatelessWidget {
@@ -135,6 +128,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     super.initState();
     _controller = EasyRefreshController();
     _scrollController = ScrollController();
+
     _loadPreference();
     //_invalidateContent();
   }
@@ -142,16 +136,16 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   bool ignoreFontCustomization = false;
 
   void _loadPreference() async {
-    ignoreFontCustomization = await UserPreferencesUtils.getDisableFontCustomizationPreference();
+    ignoreFontCustomization =
+        await UserPreferencesUtils.getDisableFontCustomizationPreference();
   }
-
-
 
   void _saveViewHistory(DetailedThreadInfo threadInfo, String contents) async {
     // check if needed
     bool allowViewHistory =
         await UserPreferencesUtils.getRecordHistoryEnabled();
     if (!allowViewHistory) {
+      historySaved = true;
       historySaved = true;
       return;
     }
@@ -183,7 +177,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     _loadForumContent();
   }
 
-  void setNewViewThreadQuery(ViewThreadQuery viewThreadQuery){
+  void setNewViewThreadQuery(ViewThreadQuery viewThreadQuery) {
     setState(() {
       this.viewThreadQuery = viewThreadQuery;
       _page = 1;
@@ -305,7 +299,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     //   log("Poll ${result.threadVariables.poll}");
     // });
 
-    client.viewThreadResult(tid, _page, viewThreadQuery.generateForumQueriesMap()).then((value) {
+    client
+        .viewThreadResult(tid, _page, viewThreadQuery.generateForumQueriesMap())
+        .then((value) {
       if (!historySaved &&
           _page == 1 &&
           value.threadVariables.postList.length > 0) {
@@ -413,16 +409,20 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         //middle: Text(S.of(context).forumDisplayTitle),
         // title: Text(S.of(context).viewThreadTitle),
         title: _viewThreadResult.threadVariables.threadInfo.subject.isEmpty
-            ? Text(S.of(context).viewThreadTitle,overflow: TextOverflow.ellipsis)
-            : Text(_viewThreadResult.threadVariables.threadInfo.subject,overflow: TextOverflow.ellipsis),
+            ? Text(S.of(context).viewThreadTitle,
+                overflow: TextOverflow.ellipsis)
+            : Text(_viewThreadResult.threadVariables.threadInfo.subject,
+                overflow: TextOverflow.ellipsis),
         trailingActions: [
           IconButton(
-              icon: Icon(viewThreadQuery.timeAscend? Icons.arrow_upward: Icons.arrow_downward),
-              onPressed: (){
-                viewThreadQuery.timeAscend = !viewThreadQuery.timeAscend;
-                setNewViewThreadQuery(viewThreadQuery);
-              },
-              ),
+            icon: Icon(viewThreadQuery.timeAscend
+                ? Icons.arrow_upward
+                : Icons.arrow_downward),
+            onPressed: () {
+              viewThreadQuery.timeAscend = !viewThreadQuery.timeAscend;
+              setNewViewThreadQuery(viewThreadQuery);
+            },
+          ),
           PopupMenuButton(
             itemBuilder: (context) => [
               PopupMenuItem<int>(
@@ -548,13 +548,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
               if (_error != null)
                 SliverList(
                     delegate: SliverChildBuilderDelegate(
-                          (context, _) {
-                        return ErrorCard(_error!.key, _error!.content, () {
-                          _controller.callRefresh();
-                        });
-                      },
-                      childCount: 1,
-                    )),
+                  (context, _) {
+                    return ErrorCard(_error!.key, _error!.content, () {
+                      _controller.callRefresh();
+                    });
+                  },
+                  childCount: 1,
+                )),
               if (_viewThreadResult
                   .threadVariables.threadInfo.subject.isNotEmpty)
                 SliverList(
@@ -564,13 +564,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                       padding: EdgeInsets.symmetric(horizontal: 8.0),
                       child: Text(
                         _viewThreadResult.threadVariables.threadInfo.subject,
-                        style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                     );
                   },
                   childCount: 1,
                 )),
-
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
@@ -580,27 +580,26 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                         if (index == 0 &&
                             _viewThreadResult.threadVariables.poll != null)
                           PollWidget(
-                              _viewThreadResult.threadVariables.poll!,
-                              _viewThreadResult.threadVariables.formHash,
-                              tid,
-                              _viewThreadResult.threadVariables.fid,
-
+                            _viewThreadResult.threadVariables.poll!,
+                            _viewThreadResult.threadVariables.formHash,
+                            tid,
+                            _viewThreadResult.threadVariables.fid,
                           ),
                         PostWidget(
-                            discuz,
-                            _postList[index],
-                            _viewThreadResult.threadVariables.threadInfo.authorId,
-                            onAuthorSelectedCallback: (){
-                              if(viewThreadQuery.authorId == 0){
-                                viewThreadQuery.authorId = _postList[index].authorId;
-                              }
-                              else{
-                                viewThreadQuery.authorId = 0;
-                              }
-                              setNewViewThreadQuery(viewThreadQuery);
-                            },
-                            postCommentList: postCommentList,
-                            ignoreFontCustomization: ignoreFontCustomization,
+                          discuz,
+                          _postList[index],
+                          _viewThreadResult.threadVariables.threadInfo.authorId,
+                          onAuthorSelectedCallback: () {
+                            if (viewThreadQuery.authorId == 0) {
+                              viewThreadQuery.authorId =
+                                  _postList[index].authorId;
+                            } else {
+                              viewThreadQuery.authorId = 0;
+                            }
+                            setNewViewThreadQuery(viewThreadQuery);
+                          },
+                          postCommentList: postCommentList,
+                          ignoreFontCustomization: ignoreFontCustomization,
                         ),
                       ],
                     );
@@ -678,12 +677,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                     : Icon(Icons.emoji_emotions),
                               ),
                               onTap: () {
-                                if(!showSmiley){
-                                  FocusScope.of(context).requestFocus(new FocusNode());
-                                }
-                                else{
-
-                                }
+                                if (!showSmiley) {
+                                  FocusScope.of(context)
+                                      .requestFocus(new FocusNode());
+                                } else {}
                                 setState(() {
                                   showSmiley = !showSmiley;
                                 });
@@ -691,39 +688,40 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                             ),
                             Expanded(
                                 child: Padding(
-                              padding: EdgeInsets.all(6.0),
-                              child: PlatformTextField(
-                                minLines: 1,
-                                maxLines: 3,
-                                controller: _replyController,
-                                hintText: S.of(context).sendReplyHint,
-                                onSubmitted: (text) {
-                                  VibrationUtils.vibrateWithClickIfPossible();
-                                  _sendReply();
-                                },
-                              ),
-                            )),
+                                    padding: EdgeInsets.all(6.0),
+                                    child:
+                                        PostTextField(discuz, _replyController)
+                                    // child: PlatformTextField(
+                                    //   minLines: 1,
+                                    //   maxLines: 3,
+                                    //   controller: _replyController,
+                                    //   hintText: S.of(context).sendReplyHint,
+                                    //   onSubmitted: (text) {
+                                    //     VibrationUtils.vibrateWithClickIfPossible();
+                                    //     _sendReply();
+                                    //   },
+                                    // ),
+                                    )),
                             Padding(
                               padding: EdgeInsets.all(0.0),
                               child: ProgressButton.icon(
                                   maxWidth: 60.0,
-
                                   iconedButtons: {
                                     ButtonState.idle: IconedButton(
-                                      //text: S.of(context).sendReply,
-                                        icon:
-                                        Icon(Icons.send, color: Colors.white),
+                                        //text: S.of(context).sendReply,
+                                        icon: Icon(Icons.send,
+                                            color: Colors.white),
                                         color: Theme.of(context).primaryColor),
                                     ButtonState.loading: IconedButton(
-                                      //text: S.of(context).progressButtonReplySending,
+                                        //text: S.of(context).progressButtonReplySending,
                                         color: Theme.of(context).accentColor),
                                     ButtonState.fail: IconedButton(
-                                      //text: S.of(context).progressButtonReplyFailed,
+                                        //text: S.of(context).progressButtonReplyFailed,
                                         icon: Icon(Icons.cancel,
                                             color: Colors.white),
                                         color: Colors.red.shade300),
                                     ButtonState.success: IconedButton(
-                                      //text: S.of(context).progressButtonReplySuccess,
+                                        //text: S.of(context).progressButtonReplySuccess,
                                         icon: Icon(
                                           Icons.check_circle,
                                           color: Colors.white,
@@ -736,7 +734,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                   },
                                   state: _sendReplyStatus),
                             )
-
                           ],
                         ),
                         CaptchaWidget(
@@ -751,37 +748,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               SmileyListScreen((smiley) {
-                                print(
-                                    "Smiley is pressed ${smiley.code} ${smiley.relativePath}");
-                                final text = _replyController.text;
-                                String smileyCode = smiley.code
-                                    .substring(1, smiley.code.length - 1);
-                                smileyCode = smileyCode
-                                    .replaceAll(r"\:", ":")
-                                    .replaceAll(r"\{", "{")
-                                    .replaceAll(r"\}", "}");
-                                final selection = _replyController.selection;
-                                print(
-                                    "replacing ${selection.start} ${selection.end} ${selection.isCollapsed} ${_replyController.selection.isDirectional}");
-                                if (selection.start == -1 ||
-                                    selection.end == -1) {
-                                  final newText = text + smileyCode;
-                                  _replyController.value = TextEditingValue(
-                                      text: newText,
-                                      selection: TextSelection.collapsed(
-                                          offset:
-                                              text.length + smileyCode.length));
-                                } else {
-                                  final newText = text.replaceRange(
-                                      selection.start,
-                                      selection.end,
-                                      smileyCode);
-                                  _replyController.value = TextEditingValue(
-                                      text: newText,
-                                      selection: TextSelection.collapsed(
-                                          offset: selection.baseOffset +
-                                              smileyCode.length));
-                                }
+                                insertSmiley(smiley);
                               })
                             ],
                           )
@@ -801,9 +768,47 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       ),
     );
   }
+
+  void insertSmiley(Smiley smiley) {
+    print("Smiley is pressed ${smiley.code} ${smiley.relativePath}");
+
+    final TextSelection selection = _replyController.selection.copyWith();
+    final int start = selection.baseOffset;
+    int end = selection.extentOffset;
+
+    final TextEditingValue value = _replyController.value;
+
+    String smileyCode =
+        "${SmileyText.smileyStartFlag}${smiley.toJsonString()}${SmileyText.smileyEndFlag}";
+    final text = smileyCode;
+    if (selection.isValid) {
+      String newText = "";
+      if (value.selection.isCollapsed) {
+        if (end > 0) {
+          newText += value.text.substring(0, end);
+        }
+        newText += text;
+        if (value.text.length > end) {
+          newText += value.text.substring(end, value.text.length);
+        }
+      } else {
+        newText = value.text.replaceRange(start, end, text);
+        end = start;
+      }
+      _replyController.value = value.copyWith(
+          text: newText,
+          selection: selection.copyWith(
+              baseOffset: end + text.length, extentOffset: end + text.length));
+    } else {
+      _replyController.value = TextEditingValue(
+          text: text,
+          selection:
+              TextSelection.fromPosition(TextPosition(offset: text.length)));
+    }
+  }
 }
 
-class ViewThreadQuery{
+class ViewThreadQuery {
   int authorId = 0;
   bool timeAscend = true;
 
@@ -812,7 +817,7 @@ class ViewThreadQuery{
     if (authorId != 0) {
       queriesMap["authorid"] = authorId.toString();
     }
-    if (!timeAscend){
+    if (!timeAscend) {
       queriesMap["ordertype"] = "1";
     }
     return queriesMap;

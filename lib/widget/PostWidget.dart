@@ -92,7 +92,7 @@ class PostWidget extends StatelessWidget {
                         height: 30.0 * typesetting.scalingParameter,
                         child: InkWell(
                           child: CachedNetworkImage(
-                            imageUrl: URLUtils.getAvatarURL(
+                            imageUrl: URLUtils.getSmallAvatarURL(
                                 _discuz, _post.authorId.toString()),
                             progressIndicatorBuilder:
                                 (context, url, downloadProgress) =>

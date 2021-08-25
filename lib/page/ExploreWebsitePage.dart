@@ -39,15 +39,135 @@ class ExploreWebsitePage extends StatefulWidget {
 }
 
 class ExploreWebsiteState extends State<ExploreWebsitePage> {
-  final Completer<WebViewController> _controller =
-      Completer<WebViewController>();
-  final webviewCookieManager = WebviewCookieManager();
 
   String? initialURL;
 
   ExploreWebsiteState({this.initialURL});
 
+
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<DiscuzAndUserNotifier>(builder: (context,discuzAndUser, child){
+      if(discuzAndUser.discuz == null){
+        return NullDiscuzScreen();
+      }
+      else{
+        return InnerWebviewScreen(discuzAndUser.discuz!, discuzAndUser.user, initialURL: initialURL,);
+      }
+    });
+
+
+  }
+}
+
+class NavigationControls extends StatelessWidget {
+  const NavigationControls(this._webViewControllerFuture)
+      : assert(_webViewControllerFuture != null);
+
+  final Future<WebViewController> _webViewControllerFuture;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<WebViewController>(
+      future: _webViewControllerFuture,
+      builder:
+          (BuildContext context, AsyncSnapshot<WebViewController> snapshot) {
+        final bool webViewReady =
+            snapshot.connectionState == ConnectionState.done;
+        if(snapshot.data == null){
+          return Row(
+            children: [],
+          );
+        }
+        final WebViewController controller = snapshot.data!;
+
+        return Row(
+          children: <Widget>[
+            // IconButton(
+            //   icon: const Icon(Icons.arrow_back),
+            //   onPressed: !webViewReady
+            //       ? null
+            //       : () async {
+            //     VibrationUtils.vibrateWithClickIfPossible();
+            //     if (await controller.canGoBack()) {
+            //       await controller.goBack();
+            //     } else {
+            //       // ignore: deprecated_member_use
+            //       Scaffold.of(context).showSnackBar(
+            //         const SnackBar(content: Text("No back history item")),
+            //       );
+            //       return;
+            //     }
+            //   },
+            // ),
+            // IconButton(
+            //   icon: const Icon(Icons.arrow_forward),
+            //   onPressed: !webViewReady
+            //       ? null
+            //       : () async {
+            //     VibrationUtils.vibrateWithClickIfPossible();
+            //     if (await controller.canGoForward()) {
+            //       await controller.goForward();
+            //     } else {
+            //       // ignore: deprecated_member_use
+            //       Scaffold.of(context).showSnackBar(
+            //         const SnackBar(
+            //             content: Text("No forward history item")),
+            //       );
+            //       return;
+            //     }
+            //   },
+            // ),
+            IconButton(
+              icon: const Icon(Icons.replay),
+              onPressed: !webViewReady
+                  ? null
+                  : () {
+                VibrationUtils.vibrateWithClickIfPossible();
+                controller.reload();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class InnerWebviewScreen extends StatefulWidget{
+  Discuz _discuz;
+  User? _user;
+  String? initialURL;
+
+  InnerWebviewScreen(this._discuz,this._user, {this.initialURL});
+
+  @override
+  InnerWebviewState createState() {
+    return InnerWebviewState(this._discuz,this._user,initialURL: this.initialURL);
+  }
+
+}
+
+class InnerWebviewState extends State<InnerWebviewScreen>{
+  Discuz _discuz;
+  User? _user;
+
+  final Completer<WebViewController> _controller =
+  Completer<WebViewController>();
+  final webviewCookieManager = WebviewCookieManager();
+
+  String? initialURL;
+
+  int progress = 0;
+
+  String? webTitle;
+
   bool cookieLoaded = false;
+
+  InnerWebviewState(this._discuz,this._user,{this.initialURL});
 
   void loadCookieByUser(Discuz _discuz,User? _user) async {
     if(_user!=null){
@@ -79,85 +199,70 @@ class ExploreWebsiteState extends State<ExploreWebsitePage> {
     else{
       initialURL = "https://discuzhub.kidozh.com";
     }
-
   }
-
-  int progress = 0;
-
-  String? webTitle;
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<DiscuzAndUserNotifier>(builder: (context,discuzAndUser, child){
-      if(discuzAndUser.discuz == null){
-        return NullDiscuzScreen();
-      }
-      else{
-        loadCookieByUser(discuzAndUser.discuz!, discuzAndUser.user);
-        initialURL = discuzAndUser.discuz!.baseURL;
-        if (!cookieLoaded) {
-          return BlankScreen();
-        } else {
-          return Column(
-            children: [
-              if(progress!=0 && progress!= 100)
-                LinearProgressIndicator(
-                  value: progress/100,
-                ),
-              Expanded(
-                  child: WebView(
-                    initialUrl: initialURL,
-                    javascriptMode: JavascriptMode.unrestricted,
-                    onWebViewCreated: (WebViewController webViewController) async {
-                      _controller.complete(webViewController);
-                    },
-                    onProgress: (int progress) {
-                      setState(() {
-                        this.progress = progress;
-                      });
-                      print("WebView is loading (progress : $progress%)");
-                    },
-                    javascriptChannels: <JavascriptChannel>{
-                      _toasterJavascriptChannel(context),
-                    },
-                    navigationDelegate: (NavigationRequest request) {
-                      // if (request.url.startsWith('https://www.youtube.com/')) {
-                      //   print('blocking navigation to $request}');
-                      //   return NavigationDecision.prevent;
-                      // }
-                      print('allowing navigation to $request');
-                      return NavigationDecision.navigate;
-                    },
-                    onPageStarted: (String url) {
+    if(!cookieLoaded){
+      return BlankScreen();
+    }
+    else{
+      return Column(
+        children: [
+          if(progress!=0 && progress!= 100)
+            LinearProgressIndicator(
+              value: progress/100,
+            ),
+          Expanded(
+              child: WebView(
+                initialUrl: initialURL,
+                javascriptMode: JavascriptMode.unrestricted,
+                onWebViewCreated: (WebViewController webViewController) async {
+                  _controller.complete(webViewController);
+                },
+                onProgress: (int progress) {
+                  setState(() {
+                    this.progress = progress;
+                  });
+                  print("WebView is loading (progress : $progress%)");
+                },
+                javascriptChannels: <JavascriptChannel>{
+                  _toasterJavascriptChannel(context),
+                },
+                navigationDelegate: (NavigationRequest request) {
+                  // if (request.url.startsWith('https://www.youtube.com/')) {
+                  //   print('blocking navigation to $request}');
+                  //   return NavigationDecision.prevent;
+                  // }
+                  print('allowing navigation to $request');
+                  return NavigationDecision.navigate;
+                },
+                onPageStarted: (String url) {
 
-                      print('Page started loading: $url');
+                  print('Page started loading: $url');
 
 
 
-                    },
-                    onPageFinished: (String url) async {
-                      setState(() {
-                        progress = 0;
-                      });
-                      var controller = await _controller.future;
-                      String? title = await controller.getTitle();
-                      setState(() {
-                        webTitle = title;
-                      });
-                      print('Page finished loading: $url');
-                      // check for if link is parsable
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      checkIfLinkIsParsable(context, url);
-                    },
-                    gestureNavigationEnabled: true,
-                  ))
-            ],
-          );
-        }
-
-      }
-    });
-
+                },
+                onPageFinished: (String url) async {
+                  setState(() {
+                    progress = 0;
+                  });
+                  var controller = await _controller.future;
+                  String? title = await controller.getTitle();
+                  setState(() {
+                    webTitle = title;
+                  });
+                  print('Page finished loading: $url');
+                  // check for if link is parsable
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  checkIfLinkIsParsable(context, url);
+                },
+                gestureNavigationEnabled: true,
+              ))
+        ],
+      );
+    }
 
   }
 
@@ -304,79 +409,5 @@ class ExploreWebsiteState extends State<ExploreWebsitePage> {
         // EasyLoading.showError(S.of(context).linkUnableToOpen(urlString));
       }
     }
-  }
-}
-
-class NavigationControls extends StatelessWidget {
-  const NavigationControls(this._webViewControllerFuture)
-      : assert(_webViewControllerFuture != null);
-
-  final Future<WebViewController> _webViewControllerFuture;
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<WebViewController>(
-      future: _webViewControllerFuture,
-      builder:
-          (BuildContext context, AsyncSnapshot<WebViewController> snapshot) {
-        final bool webViewReady =
-            snapshot.connectionState == ConnectionState.done;
-        if(snapshot.data == null){
-          return Row(
-            children: [],
-          );
-        }
-        final WebViewController controller = snapshot.data!;
-
-        return Row(
-          children: <Widget>[
-            // IconButton(
-            //   icon: const Icon(Icons.arrow_back),
-            //   onPressed: !webViewReady
-            //       ? null
-            //       : () async {
-            //     VibrationUtils.vibrateWithClickIfPossible();
-            //     if (await controller.canGoBack()) {
-            //       await controller.goBack();
-            //     } else {
-            //       // ignore: deprecated_member_use
-            //       Scaffold.of(context).showSnackBar(
-            //         const SnackBar(content: Text("No back history item")),
-            //       );
-            //       return;
-            //     }
-            //   },
-            // ),
-            // IconButton(
-            //   icon: const Icon(Icons.arrow_forward),
-            //   onPressed: !webViewReady
-            //       ? null
-            //       : () async {
-            //     VibrationUtils.vibrateWithClickIfPossible();
-            //     if (await controller.canGoForward()) {
-            //       await controller.goForward();
-            //     } else {
-            //       // ignore: deprecated_member_use
-            //       Scaffold.of(context).showSnackBar(
-            //         const SnackBar(
-            //             content: Text("No forward history item")),
-            //       );
-            //       return;
-            //     }
-            //   },
-            // ),
-            IconButton(
-              icon: const Icon(Icons.replay),
-              onPressed: !webViewReady
-                  ? null
-                  : () {
-                VibrationUtils.vibrateWithClickIfPossible();
-                controller.reload();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 }

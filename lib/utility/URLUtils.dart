@@ -3,7 +3,15 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 
 class URLUtils{
   static String getAvatarURL(Discuz discuz, String uid){
+    return "${discuz.uCenterURL}/avatar.php?uid=${uid}";
+  }
+
+  static String getLargeAvatarURL(Discuz discuz, String uid){
     return "${discuz.uCenterURL}/avatar.php?uid=${uid}&size=large";
+  }
+
+  static String getSmallAvatarURL(Discuz discuz, String uid){
+    return "${discuz.uCenterURL}/avatar.php?uid=${uid}&size=small";
   }
 
   static String getAttachmentURLWithAidEncode(Discuz discuz, String aid){

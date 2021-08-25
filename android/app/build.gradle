@@ -66,6 +66,9 @@ android {
     buildTypes {
         debug{
             signingConfig signingConfigs.debug
+            debuggable true
+            pseudoLocalesEnabled true
+            applicationIdSuffix ".debug"
         }
         release {
             // Signing with the debug keys for now, so `flutter run --release` works.

@@ -22,7 +22,6 @@ class SmileyListScreen extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return SmileyListStatefulWidget(onSmileyPressed);
   }
 
@@ -84,7 +83,9 @@ class SmileyListState extends State<SmileyListStatefulWidget>{
     }
     else{
       if(result == null || result!.variables == null){
-        return BlankScreen();
+        return Container(
+          height: 100,
+        );
       }
       else{
         List<Tab> smileyTab = [];

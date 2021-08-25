@@ -1,0 +1,143 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/page/LoginPage.dart';
+import 'package:discuz_flutter/page/ManageTrustHostPage.dart';
+import 'package:discuz_flutter/page/SettingPage.dart';
+import 'package:discuz_flutter/page/ViewHistoryPage.dart';
+import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
+import 'package:discuz_flutter/utility/CustomizeColor.dart';
+import 'package:discuz_flutter/utility/URLUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:discuz_flutter/widget/UserAvatar.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:provider/provider.dart';
+
+class ConfigurationScreen extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: [
+        // user interface
+        Consumer<DiscuzAndUserNotifier>(
+          builder: (context, discuzAndUser, _){
+            if(discuzAndUser.discuz == null){
+              return NullDiscuzScreen();
+            }
+            else if(discuzAndUser.user == null){
+              return PlatformButton(
+                child: PlatformText(S.of(context).loginTitle),
+                onPressed: (){
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  Discuz? discuz =
+                      Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                          .discuz;
+                  if (discuz != null) {
+                    Navigator.push(context, platformPageRoute(context:context,builder: (context) => LoginPage(discuz, null)));
+                  }
+                },
+              );
+            }
+            else{
+              return Card(
+                child: ListTile(
+                  title: Text(discuzAndUser.user!.username),
+                  leading: CircleAvatar(
+                    child: CachedNetworkImage(
+                      imageUrl:
+                      URLUtils.getLargeAvatarURL(discuzAndUser.discuz!, discuzAndUser.user!.uid.toString()),
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) =>
+                          CircularProgressIndicator(
+                              value: downloadProgress.progress),
+                      errorWidget: (context, url, error) => Container(
+                        width: 100.0,
+                        height: 100.0,
+                        child: CircleAvatar(
+                          backgroundColor:
+                          CustomizeColor.getColorBackgroundById(discuzAndUser.user!.uid),
+                          child: Text(
+                            discuzAndUser.user!.username
+                                .length !=
+                                0
+                                ? discuzAndUser.user!.username[0]
+                                .toUpperCase()
+                                : S.of(context).anonymous,
+                            style: TextStyle(
+                                color: Colors.white, fontSize: 45),
+                          ),
+                        ),
+                      ),
+                      imageBuilder: (context, imageProvider) => Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              image: imageProvider, fit: BoxFit.cover),
+                        ),
+                      ),
+                    ),
+                  ),
+                  onTap: (){
+                    VibrationUtils.vibrateWithClickIfPossible();
+                  },
+                ),
+
+              );
+
+            }
+          },
+        ),
+        Card(
+          child: ListTile(
+            title: Text(S.of(context).viewHistory),
+            leading: Icon(Icons.history),
+            onTap: (){
+              Discuz? discuz =
+                  Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+              if(discuz != null){
+                VibrationUtils.vibrateWithClickIfPossible();
+                Navigator.push(
+                    context,
+                    platformPageRoute(
+                        context: context,
+                        builder: (context) => ViewHistoryPage(discuz)));
+              }
+            },
+          ),
+
+        ),
+        Card(
+          child: ListTile(
+            title: Text(S.of(context).trustHostTitle),
+            leading: Icon(Icons.check_circle_outline),
+            onTap: (){
+              VibrationUtils.vibrateWithClickIfPossible();
+              Navigator.push(context,platformPageRoute(context:context,builder: (context) => ManageTrustHostPage()));
+            },
+          ),
+
+        ),
+        Card(
+          child: ListTile(
+            title: Text(S.of(context).settingTitle),
+            leading: Icon(PlatformIcons(context).settings),
+            onTap: (){
+              VibrationUtils.vibrateWithClickIfPossible();
+              Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+              if (discuz != null) {
+                Navigator.push(context,
+                    platformPageRoute(context:context,builder: (context) => SettingPage()));
+              }
+            },
+          ),
+
+        ),
+
+      ],
+    );
+  }
+
+}
+
