@@ -35,7 +35,6 @@ import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:provider/provider.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
-import 'package:extended_text_field/extended_text_field.dart';
 import 'InternalWebviewBrowserPage.dart';
 
 class ViewThreadSliverPage extends StatelessWidget {
@@ -800,10 +799,17 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
           selection: selection.copyWith(
               baseOffset: end + text.length, extentOffset: end + text.length));
     } else {
+      String newText = "";
+      newText = _replyController.text + text;
+      // if (end > 0) {
+      //   newText += value.text.substring(0, end);
+      // }
+      // newText += text;
+
       _replyController.value = TextEditingValue(
-          text: text,
+          text: newText,
           selection:
-              TextSelection.fromPosition(TextPosition(offset: text.length)));
+              TextSelection.fromPosition(TextPosition(offset: newText.length)));
     }
   }
 }

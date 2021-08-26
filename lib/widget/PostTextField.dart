@@ -7,6 +7,7 @@ import 'package:discuz_flutter/JsonResult/SmileyResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:extended_text_field/extended_text_field.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class PostTextField extends StatefulWidget{
@@ -66,6 +67,8 @@ class SmileyText extends SpecialText{
         imageWidth: 16,
         imageHeight: 16,
         start: this.start,
+        actualText: toString(),
+
 
     );
   }
@@ -94,7 +97,13 @@ class PostSpecialTextSpanBuilder extends SpecialTextSpanBuilder{
 
   @override
   TextSpan build(String data, {TextStyle? textStyle, SpecialTextGestureTapCallback? onTap}) {
+    if(kIsWeb){
+      return TextSpan(text: data,style: textStyle);
+    }
     return super.build(data, textStyle: textStyle, onTap: onTap);
   }
 
 }
+
+
+
