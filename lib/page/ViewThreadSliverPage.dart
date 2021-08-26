@@ -12,6 +12,7 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/SmileyListScreen.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -199,7 +200,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     });
     final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
-    String message = _replyController.text;
+    // need to be filtered
+    String message = PostTextFieldUtils.getPostMessage(_replyController.text);
 
     // check for captcha information
     CaptchaFields? captchaFields = _captchaController.value;
