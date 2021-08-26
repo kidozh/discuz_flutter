@@ -5,7 +5,6 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -125,7 +124,6 @@ class SmileyListState extends State<SmileyListStatefulWidget>{
               )
               );
         }
-        // print("SMiley ${smileyList.length}");
         if(smileyTab.length == 0){
           return Container(
             width: double.infinity,
