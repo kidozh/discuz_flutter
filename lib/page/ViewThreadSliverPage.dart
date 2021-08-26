@@ -87,6 +87,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   bool showSmiley = false;
   ViewThreadQuery viewThreadQuery = ViewThreadQuery();
   Map<String, List<Comment>> postCommentList = {};
+  final FocusNode _focusNode = FocusNode();
 
   // 反向
   bool _reverse = false;
@@ -679,7 +680,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                 if (!showSmiley) {
                                   FocusScope.of(context)
                                       .requestFocus(new FocusNode());
-                                } else {}
+                                } else {
+                                  FocusScope.of(context).requestFocus(_focusNode);
+                                }
                                 setState(() {
                                   showSmiley = !showSmiley;
                                 });
@@ -689,7 +692,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                 child: Padding(
                                     padding: EdgeInsets.all(6.0),
                                     child:
-                                        PostTextField(discuz, _replyController)
+                                        PostTextField(discuz, _replyController,focusNode: _focusNode,)
                                     // child: PlatformTextField(
                                     //   minLines: 1,
                                     //   maxLines: 3,

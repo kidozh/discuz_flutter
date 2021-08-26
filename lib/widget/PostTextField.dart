@@ -14,14 +14,15 @@ class PostTextField extends StatefulWidget{
 
   Discuz _discuz;
   TextEditingController _controller;
+  FocusNode focusNode;
 
-  PostTextField(this._discuz,this._controller);
+  PostTextField(this._discuz,this._controller,{required this.focusNode});
 
 
 
   @override
   PostTextFieldState createState() {
-    return PostTextFieldState(this._discuz,this._controller);
+    return PostTextFieldState(this._discuz,this._controller,focusNode: focusNode);
   }
 }
 
@@ -29,8 +30,9 @@ class PostTextFieldState extends State<PostTextField>{
   TextEditingController _controller;
 
   Discuz _discuz;
+  FocusNode focusNode;
 
-  PostTextFieldState(this._discuz, this._controller);
+  PostTextFieldState(this._discuz, this._controller,{required this.focusNode});
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +40,7 @@ class PostTextFieldState extends State<PostTextField>{
       controller: _controller,
       specialTextSpanBuilder: PostSpecialTextSpanBuilder(_discuz),
       selectionControls: MaterialTextSelectionControls(),
+      focusNode: focusNode,
     );
   }
 
