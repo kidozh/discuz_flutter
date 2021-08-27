@@ -21,7 +21,7 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   log("languages initialization");
   initialPlatform = await UserPreferencesUtils.getPlatformPreference();
-  await FlutterDisplayMode.setHighRefreshRate();
+
 
   runApp(
       MultiProvider(
