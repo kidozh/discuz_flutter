@@ -134,16 +134,22 @@ class DiscuzHtmlWidget extends StatelessWidget{
                               onPressed: () async{
                                 String host = uri.host;
                                 await _trustHost(host);
+
                                 launch(urlString!);
+                                Navigator.pop(context);
                               },
                               child: Text(S.of(context).trustHostActionText)
                           ),
                           TextButton(
                               onPressed: (){
                                 launch(urlString!);
+                                Navigator.pop(context);
                               },
                               child: Text(S.of(context).openInBrowser)
-                          )
+                          ),
+                          TextButton(onPressed: (){
+                            Navigator.pop(context);
+                          }, child: Text(S.of(context).cancel))
                         ],
                       );
                     });

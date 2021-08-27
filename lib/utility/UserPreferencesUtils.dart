@@ -192,5 +192,19 @@ class UserPreferencesUtils{
     return boolValue == null ? false : boolValue;
   }
 
+  static final String testFlightNotificationFlag = "testFlightNotificationFlag";
+
+  static Future<void> putTestFlightNotificationFlag(int value) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(testFlightNotificationFlag, value);
+  }
+
+  static Future<int> getTestFlightNotificationFlag() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    var intValue =  prefs.getInt(testFlightNotificationFlag);
+    return intValue == null ? 0 : intValue;
+  }
+
 
 }
