@@ -329,6 +329,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "sendReply": MessageLookupByLibrary.simpleMessage("回帖"),
         "sendReplyHint": MessageLookupByLibrary.simpleMessage("说些什么吧。"),
         "settingTitle": MessageLookupByLibrary.simpleMessage("设置"),
+        "settings": MessageLookupByLibrary.simpleMessage("设置"),
         "signInSuccessTitle": m19,
         "signInTitle": m20,
         "signInViaBrowser": MessageLookupByLibrary.simpleMessage("使用网页登录"),
@@ -339,6 +340,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "submitPoll": m22,
         "successfullyDeleteViewHistoryContent": m23,
         "successfullyDownloadFiles": m24,
+        "tapToWipeAndRelogin":
+            MessageLookupByLibrary.simpleMessage("点击以移除此用户并重新登陆"),
         "termsOfService": MessageLookupByLibrary.simpleMessage("使用条款"),
         "trustHostActionText": MessageLookupByLibrary.simpleMessage("信任此域名"),
         "trustHostTitle": MessageLookupByLibrary.simpleMessage("主机域名白名单"),

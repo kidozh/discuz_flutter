@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
-import 'package:discuz_flutter/app/ExclusiveApp.dart';
+import 'package:discuz_flutter/page/ExclusiveDiscuzPortalPage.dart';
 import 'package:discuz_flutter/dialog/SwitchDiscuzDialog.dart';
 import 'package:discuz_flutter/page/ExploreWebsitePage.dart';
 import 'package:discuz_flutter/page/ManageAccountPage.dart';
@@ -241,10 +241,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Navigator.of(context).pop();
           });
         },
-        onLongPressed: (){
-          VibrationUtils.vibrateSuccessfullyIfPossible();
-          Navigator.push(context, platformPageRoute(context:context,builder: (context) => ExclusiveApp(discuz)));
-        },
+
       ));
     }
 

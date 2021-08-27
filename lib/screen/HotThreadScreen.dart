@@ -163,7 +163,13 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       EasyLoading.showError('${onError}');
       if (!_enableControlFinish) {
         _controller.resetLoadState();
-        _controller.finishRefresh();
+        try{
+          _controller.finishRefresh();
+        }
+        catch(e){
+
+        }
+
       }
       setState(() {
         _error = DiscuzError(

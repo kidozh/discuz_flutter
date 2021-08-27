@@ -8,6 +8,7 @@ import 'package:discuz_flutter/page/ViewHistoryPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
+import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
@@ -27,23 +28,27 @@ class ConfigurationScreen extends StatelessWidget{
               return NullDiscuzScreen();
             }
             else if(discuzAndUser.user == null){
-              return PlatformButton(
-                child: PlatformText(S.of(context).loginTitle),
-                onPressed: (){
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  Discuz? discuz =
-                      Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-                          .discuz;
-                  if (discuz != null) {
-                    Navigator.push(context, platformPageRoute(context:context,builder: (context) => LoginPage(discuz, null)));
-                  }
-                },
+              return Card(
+                child: ListTile(
+                  title: Text(S.of(context).loginTitle),
+                  leading: Icon(Icons.login),
+                  onTap: (){
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    Discuz? discuz =
+                        Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                            .discuz;
+                    if (discuz != null) {
+                      Navigator.push(context, platformPageRoute(context:context,builder: (context) => LoginPage(discuz, null)));
+                    }
+                  },
+                ),
               );
             }
             else{
               return Card(
                 child: ListTile(
                   title: Text(discuzAndUser.user!.username),
+                  subtitle: Text(S.of(context).tapToWipeAndRelogin),
                   leading: CircleAvatar(
                     child: CachedNetworkImage(
                       imageUrl:
@@ -79,8 +84,16 @@ class ConfigurationScreen extends StatelessWidget{
                       ),
                     ),
                   ),
-                  onTap: (){
+                  onTap: () async{
                     VibrationUtils.vibrateWithClickIfPossible();
+                    // wipe out first
+                    if(discuzAndUser.user != null){
+                      final db = await DBHelper.getAppDb();
+                      var _userDao = db.userDao;
+                      await _userDao.deleteUser(discuzAndUser.user!);
+                      Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(null);
+                    }
+                    await Navigator.push(context, platformPageRoute(context:context,builder: (context) => LoginPage(discuzAndUser.discuz!, null)));
                   },
                 ),
 

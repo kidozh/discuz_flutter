@@ -384,5 +384,7 @@
   "sitePage": "Homepage",
   "disableFontCustomization": "Disable custom font",
   "disableFontCustomizationTitle": "Ignore all customized font information",
-  "typeSetting": "Typesetting"
+  "typeSetting": "Typesetting",
+  "tapToWipeAndRelogin": "Tap to wipe out and re-login user",
+  "settings": "Settings"
 }

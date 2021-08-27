@@ -384,5 +384,7 @@
   "sitePage": "主页",
   "disableFontCustomization": "停用自定义字体",
   "disableFontCustomizationTitle": "不再解析自定义字体的颜色，大小等信息",
-  "typeSetting": "文本排版"
+  "typeSetting": "文本排版",
+  "tapToWipeAndRelogin": "点击以移除此用户并重新登陆",
+  "settings": "设置"
 }

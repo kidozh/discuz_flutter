@@ -2440,6 +2440,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Tap to wipe out and re-login user`
+  String get tapToWipeAndRelogin {
+    return Intl.message(
+      'Tap to wipe out and re-login user',
+      name: 'tapToWipeAndRelogin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Settings`
+  String get settings {
+    return Intl.message(
+      'Settings',
+      name: 'settings',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -6,6 +6,7 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/LoginByWebviewPage.dart';
+import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -13,6 +14,7 @@ import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -20,6 +22,7 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatelessWidget {
   late final Discuz discuz;
@@ -146,6 +149,7 @@ class _LoginFormFieldState
           }
 
           int primaryKey = await dao.insert(user);
+          user.id = primaryKey;
 
           // save it in cookiejar
           List<Cookie> cookies = await cookieJar.loadForRequest(Uri.parse(discuz.baseURL));
@@ -153,8 +157,9 @@ class _LoginFormFieldState
           log("cookies ${cookies}");
           savedCookieJar.saveFromResponse(Uri.parse(discuz.baseURL), cookies);
           // pop the activity
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(S.of(context).signInSuccessTitle(user.username, discuz.siteName))));
+          // set it
+          Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(user);
+          EasyLoading.showSuccess(S.of(context).signInSuccessTitle(user.username, discuz.siteName));
           Navigator.pop(context);
         }
         catch(e,s){

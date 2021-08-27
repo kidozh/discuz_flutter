@@ -1,6 +1,6 @@
 
 
-import 'package:discuz_flutter/app/ExclusiveApp.dart';
+import 'package:discuz_flutter/page/ExclusiveDiscuzPortalPage.dart';
 import 'package:discuz_flutter/dao/DiscuzDao.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
@@ -121,7 +121,7 @@ class ManageDiscuzState extends State<ManageDiscuzStateWidget>{
                       onTap: (){
                         VibrationUtils.vibrateWithClickIfPossible();
                         Navigator.push(context,
-                            platformPageRoute(context:context,builder: (context) => ExclusiveApp(discuz)));
+                            platformPageRoute(context:context,builder: (context) => ExclusiveDiscuzPortalPage(discuz)));
                       },
                     ),
                     

@@ -10,6 +10,7 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:dio/dio.dart';
@@ -51,8 +52,7 @@ class _AddDiscuzFormFieldState
     final dao = db.discuzDao;
     await dao.insertDiscuz(discuz);
     // pop the activity
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(S.of(context).addDiscuzSuccessfully(discuz.siteName))));
+    EasyLoading.showToast(S.of(context).addDiscuzSuccessfully(discuz.siteName));
     Navigator.pop(context);
   }
 
@@ -131,12 +131,10 @@ class _AddDiscuzFormFieldState
                   controller: _urlController,
                   onFieldSubmitted: (text){
                     if (_formKey.currentState!.validate()) {
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text(S.of(context).connectServerWhenAdding)));
+                      EasyLoading.showToast(S.of(context).connectServerWhenAdding);
                       _checkApiAvailable();
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(S.of(context).incorrectDiscuzAddress)));
+                      EasyLoading.showError(S.of(context).incorrectDiscuzAddress);
                     }
                   },
                   decoration: new InputDecoration(
@@ -165,41 +163,14 @@ class _AddDiscuzFormFieldState
                     onPressed: (){
                       VibrationUtils.vibrateWithClickIfPossible();
                       if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(SnackBar(content: Text(S.of(context).connectServerWhenAdding)));
+                        EasyLoading.showToast(S.of(context).connectServerWhenAdding);
                         _checkApiAvailable();
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(S.of(context).incorrectDiscuzAddress)));
+                        EasyLoading.showError(S.of(context).incorrectDiscuzAddress);
                       }
                     },
                   ),
                 ),
-
-                // ButtonBar(
-                //   children: [
-                //     TextButton(
-                //       child: Text(S.of(context).cancel),
-                //       onPressed: () {
-                //         Navigator.pop(context);
-                //       },
-                //     ),
-                //     ElevatedButton(
-                //       child: Text(S.of(context).continueAdding),
-                //       onPressed: () {
-                //         log("Press the elevated button");
-                //         if (_formKey.currentState!.validate()) {
-                //           ScaffoldMessenger.of(context)
-                //               .showSnackBar(SnackBar(content: Text(S.of(context).connectServerWhenAdding)));
-                //           _checkApiAvailable();
-                //         } else {
-                //           ScaffoldMessenger.of(context).showSnackBar(
-                //               SnackBar(content: Text(S.of(context).incorrectDiscuzAddress)));
-                //         }
-                //       },
-                //     )
-                //   ],
-                // )
               ],
             ),
           )),

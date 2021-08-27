@@ -1,59 +1,76 @@
 
 
+import 'package:discuz_flutter/dao/UserDao.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/ExploreWebsitePage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/ConfigurationScreen.dart';
-import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
 import 'package:discuz_flutter/screen/DiscuzPortalScreen.dart';
-import 'package:discuz_flutter/screen/FavoriteThreadScreen.dart';
 import 'package:discuz_flutter/screen/HotThreadScreen.dart';
-import 'package:discuz_flutter/screen/NotificationScreen.dart';
+import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
-class ExclusiveApp extends StatelessWidget{
+class ExclusiveDiscuzPortalPage extends StatelessWidget{
   Discuz _discuz;
 
-  ExclusiveApp(this._discuz);
+  ExclusiveDiscuzPortalPage(this._discuz);
 
   @override
   Widget build(BuildContext context) {
-    return ExclusiveAppStatefulWidget(this._discuz);
+    return ExclusiveDiscuzPortalStatefulWidget(this._discuz);
   }
 }
 
-class ExclusiveAppStatefulWidget extends StatefulWidget{
+class ExclusiveDiscuzPortalStatefulWidget extends StatefulWidget{
   Discuz _discuz;
 
-  ExclusiveAppStatefulWidget(this._discuz);
+  ExclusiveDiscuzPortalStatefulWidget(this._discuz);
 
   @override
-  ExclusiveAppState createState() {
-    return ExclusiveAppState(this._discuz);
+  ExclusiveDiscuzPortalState createState() {
+    return ExclusiveDiscuzPortalState(this._discuz);
   }
 
 }
 
-class ExclusiveAppState extends State<ExclusiveAppStatefulWidget>{
+class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidget>{
 
   Discuz _discuz;
-  ExclusiveAppState(this._discuz);
+  ExclusiveDiscuzPortalState(this._discuz);
 
   late PlatformTabController tabController;
 
   late List<Widget> tabs;
 
+  late UserDao _userDao;
+
+  void _initDb() async {
+    final db = await DBHelper.getAppDb();
+    _userDao = db.userDao;
+    await _setFirstUserInDiscuz(_discuz.id!);
+  }
+
+  Future<void> _setFirstUserInDiscuz(int discuzId) async{
+    List<User> userList = await _userDao.findAllUsersByDiscuzId(discuzId);
+    if(userList.isNotEmpty && userList.length > 0){
+      Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(userList.first);
+    }
+
+  }
+
 
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+
+    _initDb();
 
     tabController = PlatformTabController(
       initialIndex: 0,
@@ -66,9 +83,6 @@ class ExclusiveAppState extends State<ExclusiveAppStatefulWidget>{
       DiscuzPortalScreen(),
       HotThreadScreen(),
       ConfigurationScreen(),
-      // NotificationScreen(),
-      // FavoriteThreadScreen(),
-      // DiscuzMessageScreen()
     ];
   }
 
@@ -98,21 +112,9 @@ class ExclusiveAppState extends State<ExclusiveAppStatefulWidget>{
         BottomNavigationBarItem(
             icon: new Icon(Icons.dashboard),
             label: S.of(context).dashboard),
-        // BottomNavigationBarItem(
-        //     icon: new Icon(PlatformIcons(context).info),
-        //     label: S.of(context).notification),
-        // BottomNavigationBarItem(
-        //     icon: new Icon(PlatformIcons(context).star),
-        //
-        //     label: S.of(context).favorites),
-        // BottomNavigationBarItem(
-        //     icon: new Icon(PlatformIcons(context).mailSolid),
-        //
-        //     label: S.of(context).chatMessage),
         BottomNavigationBarItem(
-            icon: new Icon(Icons.supervised_user_circle_sharp),
-
-            label: S.of(context).chatMessage),
+            icon: new Icon(PlatformIcons(context).settings),
+            label: S.of(context).settings),
       ],
       bodyBuilder: (context, index) => IndexedStack(
         index: index,

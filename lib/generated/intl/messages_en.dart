@@ -377,6 +377,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "sendReply": MessageLookupByLibrary.simpleMessage("Send"),
         "sendReplyHint": MessageLookupByLibrary.simpleMessage("Say something"),
         "settingTitle": MessageLookupByLibrary.simpleMessage("Settings"),
+        "settings": MessageLookupByLibrary.simpleMessage("Settings"),
         "signInSuccessTitle": m19,
         "signInTitle": m20,
         "signInViaBrowser":
@@ -388,6 +389,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "submitPoll": m22,
         "successfullyDeleteViewHistoryContent": m23,
         "successfullyDownloadFiles": m24,
+        "tapToWipeAndRelogin": MessageLookupByLibrary.simpleMessage(
+            "Tap to wipe out and re-login user"),
         "termsOfService":
             MessageLookupByLibrary.simpleMessage("Terms of Service"),
         "trustHostActionText":
