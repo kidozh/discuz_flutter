@@ -113,7 +113,8 @@ class MyApp extends StatelessWidget {
             child: PlatformProvider(
               initialPlatform: getTargetPlatformByName(initialPlatform),
               settings: PlatformSettingsData(
-                iosUsesMaterialWidgets: false,
+                iosUsesMaterialWidgets: true,
+
 
               ),
               builder: (context){
@@ -355,13 +356,8 @@ class _MyHomePageState extends State<MyHomePage> {
           leading: Icon(PlatformIcons(context).settingsSolid),
           onTap: () async {
             VibrationUtils.vibrateWithClickIfPossible();
-            Discuz? discuz =
-                Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-                    .discuz;
-            if (discuz != null) {
-              await Navigator.push(context,
-                  platformPageRoute(context:context,builder: (context) => SettingPage()));
-            }
+            await Navigator.push(context,
+                platformPageRoute(context:context,builder: (context) => SettingPage()));
           },
         )
       ],

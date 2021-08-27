@@ -8,7 +8,6 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_displaymode/flutter_displaymode.dart';
 
 import 'app/MainApp.dart';
 
