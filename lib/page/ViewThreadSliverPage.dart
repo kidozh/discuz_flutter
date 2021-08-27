@@ -67,7 +67,7 @@ class ViewThreadStatefulSliverWidget extends StatefulWidget {
 
 class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   ViewThreadResult _viewThreadResult = ViewThreadResult();
-  DiscuzError? _error = null;
+  DiscuzError? _error;
   List<Post> _postList = [];
   int _page = 1;
   final TextEditingController _replyController = new TextEditingController();
@@ -85,10 +85,18 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   late EasyRefreshController _controller;
   late ScrollController _scrollController;
   ButtonState _sendReplyStatus = ButtonState.idle;
-  bool showSmiley = false;
   ViewThreadQuery viewThreadQuery = ViewThreadQuery();
   Map<String, List<Comment>> postCommentList = {};
   final FocusNode _focusNode = FocusNode();
+
+  // smiley=1, extra=2 or none = 0
+  int dialogStatus = 0;
+
+  ValueNotifier<bool> showExtraButton = ValueNotifier(true);
+
+  final int SHOW_SMILEY_DIALOG = 1;
+  final int SHOW_EXTRA_DIALOG = 2;
+  final int SHOW_NONE_DIALOG = 2;
 
   // 反向
   bool _reverse = false;
@@ -132,6 +140,37 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
     _loadPreference();
     //_invalidateContent();
+    bindFocusNode();
+  }
+
+  void bindFocusNode(){
+    _focusNode.addListener(() {
+      if(_focusNode.hasFocus){
+        setState(() {
+          dialogStatus = SHOW_NONE_DIALOG;
+        });
+      }
+    });
+
+    _replyController.addListener(() {
+      //print("Get reply text ${_replyController.text} ${_replyController.text.isNotEmpty}");
+      if(_replyController.text.isNotEmpty){
+        if(showExtraButton.value == true){
+          showExtraButton.value = false;
+        }
+
+      }
+      else{
+        showExtraButton.value = true;
+      }
+    });
+  }
+
+  @override
+  void dispose(){
+    _focusNode.dispose();
+    _replyController.dispose();
+    super.dispose();
   }
 
   bool ignoreFontCustomization = false;
@@ -217,10 +256,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
           "Captcha hash: ${captchaFields.captchaFormHash} verification: ${captchaFields.verification}");
     }
 
-    // client.sendReplyRaw(fid, tid, formhash, message, captchaHash, captchaMod, verification).then((value){
-    //   log(value);
-    // });
-
     Post? replyPost =
         Provider.of<ReplyPostNotifierProvider>(context, listen: false).post;
     print("reply post ${replyPost}");
@@ -291,15 +326,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
-
-    // client.viewThreadRaw(tid, _page,viewThreadQuery.generateForumQueriesMap()).then((value) {
-    //   log(value.toString());
-    //   // convert string to json
-    //   Map<String, dynamic> resultJson = jsonDecode(value);
-    //   ViewThreadResult result = ViewThreadResult.fromJson(resultJson);
-    //   log(result.threadVariables.member_username);
-    //   log("Poll ${result.threadVariables.poll}");
-    // });
 
     client
         .viewThreadResult(tid, _page, viewThreadQuery.generateForumQueriesMap())
@@ -401,6 +427,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       }
     });
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -615,151 +643,145 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
           Consumer<DiscuzAndUserNotifier>(
             builder: (context, discuzAndUser, child) {
               if (discuzAndUser.user != null) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Consumer<ReplyPostNotifierProvider>(
-                      builder: (context, replyPost, child) {
-                        if (replyPost.post != null) {
-                          return Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              ActionChip(
-                                label: Text(replyPost.post!.author),
-                                avatar: Icon(
-                                    PlatformIcons(context).clearThickCircled),
-                                onPressed: () {
-                                  VibrationUtils.vibrateWithClickIfPossible();
-                                  // removing it
-                                  Provider.of<ReplyPostNotifierProvider>(
+                return
+                  Container(
+
+                    padding: EdgeInsets.all(4.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Consumer<ReplyPostNotifierProvider>(
+                          builder: (context, replyPost, child) {
+                            if (replyPost.post != null) {
+                              return Row(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  ActionChip(
+                                    label: Text(replyPost.post!.author),
+                                    avatar: Icon(
+                                        PlatformIcons(context).clearThickCircled),
+                                    onPressed: () {
+                                      VibrationUtils.vibrateWithClickIfPossible();
+                                      // removing it
+                                      Provider.of<ReplyPostNotifierProvider>(
                                           context,
                                           listen: false)
-                                      .setPost(null);
-                                },
-                              ),
-                              Expanded(
-                                  child: Padding(
-                                      padding: EdgeInsets.only(
-                                          left: 8.0, right: 8.0),
-                                      child: Text(
-                                        replyPost.post!.message
-                                            .replaceAll(
-                                                RegExp(r"<img*?>"),
-                                                S
-                                                    .of(context)
-                                                    .pictureTagInMessage)
-                                            .replaceAll(
+                                          .setPost(null);
+                                    },
+                                  ),
+                                  Expanded(
+                                      child: Padding(
+                                          padding: EdgeInsets.only(
+                                              left: 8.0, right: 8.0),
+                                          child: Text(
+                                            replyPost.post!.message
+                                                .replaceAll(RegExp(r"<img*?>"),
+                                                S.of(context).pictureTagInMessage)
+                                                .replaceAll(
                                                 RegExp(r"<div.*?>.*?</div>"),
                                                 "")
-                                            .replaceAll(RegExp(r"<.*?>"), ""),
-                                        style: TextStyle(fontSize: 14),
-                                        overflow: TextOverflow.ellipsis,
-                                      )))
-                            ],
-                          );
-                        } else {
-                          return Container(height: 0);
-                        }
-                      },
-                    ),
+                                                .replaceAll(RegExp(r"<.*?>"), ""),
+                                            style: TextStyle(fontSize: 14),
+                                            overflow: TextOverflow.ellipsis,
+                                          )))
+                                ],
+                              );
+                            } else {
+                              return Container(height: 0);
+                            }
+                          },
+                        ),
 
-                    // input fields
-                    Column(
-                      children: [
-                        Row(
+                        // input fields
+                        Column(
                           children: [
-                            InkWell(
-                              child: Padding(
-                                padding: EdgeInsets.all(4.0),
-                                child: !showSmiley
-                                    ? Icon(
-                                        Icons.emoji_emotions_outlined,
-                                        color: Theme.of(context).primaryColor,
-                                      )
-                                    : Icon(Icons.emoji_emotions),
-                              ),
-                              onTap: () {
-                                if (!showSmiley) {
-                                  FocusScope.of(context)
-                                      .requestFocus(new FocusNode());
-                                } else {
-                                  FocusScope.of(context).requestFocus(_focusNode);
-                                }
-                                setState(() {
-                                  showSmiley = !showSmiley;
-                                });
-                              },
-                            ),
-                            Expanded(
-                                child: Padding(
-                                    padding: EdgeInsets.all(6.0),
-                                    child:
-                                        PostTextField(discuz, _replyController,focusNode: _focusNode,)
-                                    // child: PlatformTextField(
-                                    //   minLines: 1,
-                                    //   maxLines: 3,
-                                    //   controller: _replyController,
-                                    //   hintText: S.of(context).sendReplyHint,
-                                    //   onSubmitted: (text) {
-                                    //     VibrationUtils.vibrateWithClickIfPossible();
-                                    //     _sendReply();
-                                    //   },
-                                    // ),
-                                    )),
-                            Padding(
-                              padding: EdgeInsets.all(0.0),
-                              child: ProgressButton.icon(
-                                  maxWidth: 60.0,
-                                  iconedButtons: {
-                                    ButtonState.idle: IconedButton(
-                                        //text: S.of(context).sendReply,
-                                        icon: Icon(Icons.send,
-                                            color: Colors.white),
-                                        color: Theme.of(context).primaryColor),
-                                    ButtonState.loading: IconedButton(
-                                        //text: S.of(context).progressButtonReplySending,
-                                        color: Theme.of(context).accentColor),
-                                    ButtonState.fail: IconedButton(
-                                        //text: S.of(context).progressButtonReplyFailed,
-                                        icon: Icon(Icons.cancel,
-                                            color: Colors.white),
-                                        color: Colors.red.shade300),
-                                    ButtonState.success: IconedButton(
-                                        //text: S.of(context).progressButtonReplySuccess,
-                                        icon: Icon(
-                                          Icons.check_circle,
-                                          color: Colors.white,
+                            Row(
+                              children: [
+
+                                Expanded(
+                                    child: Padding(
+                                        padding: EdgeInsets.all(12.0),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            //color: Colors.white,
+                                            borderRadius: BorderRadius.all(Radius.circular(4.0,)),
+                                          ),
+                                          child: PostTextField(discuz, _replyController,focusNode: _focusNode,),
                                         ),
-                                        color: Colors.green.shade400)
+                                        // child: PostTextField(discuz, _replyController,focusNode: _focusNode,)
+                                      // child: PlatformTextField(
+                                      //   minLines: 1,
+                                      //   maxLines: 3,
+                                      //   controller: _replyController,
+                                      //   hintText: S.of(context).sendReplyHint,
+                                      //   onSubmitted: (text) {
+                                      //     VibrationUtils.vibrateWithClickIfPossible();
+                                      //     _sendReply();
+                                      //   },
+                                      // ),
+                                    )),
+                                PlatformIconButton(
+
+                                  icon: dialogStatus != SHOW_SMILEY_DIALOG ?
+                                  Icon(Icons.emoji_emotions_outlined,color: Theme.of(context).brightness == Brightness.light? Colors.black87: Colors.white70,) :
+                                  Icon(Icons.keyboard_outlined,color: Theme.of(context).brightness == Brightness.light? Colors.black87: Colors.white70,),
+                                  onPressed: (){
+                                    if (dialogStatus!=SHOW_SMILEY_DIALOG) {
+                                      FocusScope.of(context).requestFocus(new FocusNode());
+                                      setState(() {
+                                        dialogStatus = SHOW_SMILEY_DIALOG;
+                                      });
+                                    } else {
+                                      FocusScope.of(context).requestFocus(_focusNode);
+                                      setState(() {
+                                        dialogStatus = SHOW_NONE_DIALOG;
+                                      });
+                                    }
                                   },
-                                  onPressed: () {
-                                    VibrationUtils.vibrateWithClickIfPossible();
-                                    _sendReply();
-                                  },
-                                  state: _sendReplyStatus),
-                            )
+
+                                ),
+                                ValueListenableBuilder(
+                                    valueListenable: showExtraButton,
+                                    builder: (context, value, _){
+                                      if(value == false){
+                                        return MaterialButton(
+                                          color: Theme.of(context).primaryColor,
+                                          child: Text(S.of(context).send),
+                                          onPressed: (){
+                                            VibrationUtils.vibrateWithClickIfPossible();
+                                            _sendReply();
+                                          },
+                                        );
+                                      }
+                                      else{
+                                        return PlatformIconButton(icon: Icon(Icons.add_circle_outline));
+                                      }
+                                    }
+                                )
+
+                              ],
+                            ),
+                            CaptchaWidget(
+                              null,
+                              discuz,
+                              user,
+                              "post",
+                              captchaController: _captchaController,
+                            ),
+                            if (dialogStatus == SHOW_SMILEY_DIALOG)
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SmileyListScreen((smiley) {
+                                    insertSmiley(smiley);
+                                  })
+                                ],
+                              )
                           ],
-                        ),
-                        CaptchaWidget(
-                          null,
-                          discuz,
-                          user,
-                          "post",
-                          captchaController: _captchaController,
-                        ),
-                        if (showSmiley)
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SmileyListScreen((smiley) {
-                                insertSmiley(smiley);
-                              })
-                            ],
-                          )
+                        )
                       ],
-                    )
-                  ],
-                );
+                    ),
+                  );
               } else {
                 return Container(
                   width: 0,

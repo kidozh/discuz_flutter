@@ -1,27 +1,20 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:discuz_flutter/JsonResult/HotThreadResult.dart';
 import 'package:discuz_flutter/JsonResult/PrivateMessageDetailResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
-import 'package:discuz_flutter/entity/HotThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/screen/SmileyListScreen.dart';
-import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
-import 'package:discuz_flutter/widget/ForumPartitionWidget.dart';
-import 'package:discuz_flutter/widget/HotThreadWidget.dart';
 import 'package:discuz_flutter/widget/PrivateMessageDetailWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -236,8 +229,6 @@ class _PrivateMessageDetailState
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-
     return Consumer<DiscuzAndUserNotifier>(
         builder: (context, discuzAndUser, child) {
       if (discuzAndUser.discuz == null) {

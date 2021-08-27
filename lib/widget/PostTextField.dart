@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/SmileyResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:extended_text_field/extended_text_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -41,6 +42,12 @@ class PostTextFieldState extends State<PostTextField>{
       specialTextSpanBuilder: PostSpecialTextSpanBuilder(_discuz),
       selectionControls: MaterialTextSelectionControls(),
       focusNode: focusNode,
+      minLines: 1,
+      maxLines: 3,
+      decoration: InputDecoration(
+        hintText: S.of(context).sendReplyHint,
+      ),
+
     );
   }
 
