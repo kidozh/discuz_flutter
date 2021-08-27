@@ -386,5 +386,17 @@
   "disableFontCustomizationTitle": "Ignore all customized font information",
   "typeSetting": "Typesetting",
   "tapToWipeAndRelogin": "Tap to wipe out and re-login user",
-  "settings": "Settings"
+  "settings": "Settings",
+  "testVersionNotificationTitle": "Take a bite on beta test",
+  "testVersion": "Beta Test",
+  "testVersionDescription": "The final product will be changed according to latest development.",
+  "bugTestTitle": "Sometimes bug exists",
+  "bugTestSubtitle": "You can directly email us via kidozh@gmail.com. Thank you for your help!",
+  "privacyProtectTitle": "Privacy protection",
+  "privacyProtectSubtitle": "Nothing is collected by us",
+  "openSoftwareTitle": "Open software",
+  "openSoftwareSubtitle": "Our service is open sourced with MIT license",
+  "continueToTest": "Continue to take a bite",
+  "dataBackupInTestTitle": "Data backup",
+  "dataBackupInTestSubtitle": "The test version is not permanent and your data may get lost in upgrading process."
 }

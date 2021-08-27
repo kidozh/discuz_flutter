@@ -386,5 +386,17 @@
   "disableFontCustomizationTitle": "不再解析自定义字体的颜色，大小等信息",
   "typeSetting": "文本排版",
   "tapToWipeAndRelogin": "点击以移除此用户并重新登陆",
-  "settings": "设置"
+  "settings": "设置",
+  "testVersionNotificationTitle": "欢迎参与测试版本",
+  "testVersion": "公测版本",
+  "testVersionDescription": "此版本具有最新的开发进展，同时也伴有一定的错误。当您使用时，请做好数据备份，以防数据丢失。",
+  "bugTestTitle": "可能包含一些BUG",
+  "bugTestSubtitle": "你可以通过邮箱kidozh@gmail.com向我们报告错误，我们非常感谢您的报告",
+  "privacyProtectTitle": "隐私安全",
+  "privacyProtectSubtitle": "轻轻的来正如我轻轻的走，我们不会搜集任何有关您的信息",
+  "openSoftwareTitle": "开源软件",
+  "openSoftwareSubtitle": "我们的软件以MIT开源协议服务",
+  "continueToTest": "开始测试此版本",
+  "dataBackupInTestTitle": "数据备份",
+  "dataBackupInTestSubtitle": "通常测试版本变更有可能会引发数据的丢失，因此请务必做好数据备份工作。"
 }

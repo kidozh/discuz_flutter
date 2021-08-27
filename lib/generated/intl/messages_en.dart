@@ -105,6 +105,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Cute yellow Minions"),
         "brightnessDark": MessageLookupByLibrary.simpleMessage("Dark"),
         "brightnessLight": MessageLookupByLibrary.simpleMessage("Light"),
+        "bugTestSubtitle": MessageLookupByLibrary.simpleMessage(
+            "You can directly email us via kidozh@gmail.com. Thank you for your help!"),
+        "bugTestTitle":
+            MessageLookupByLibrary.simpleMessage("Sometimes bug exists"),
         "buildDescription": MessageLookupByLibrary.simpleMessage(
             "Built with flutter, made with ♥, run on multiple platforms."),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
@@ -147,10 +151,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "connectServerWhenAdding": MessageLookupByLibrary.simpleMessage(
             "Connect to BBS server for verification."),
         "continueAdding": MessageLookupByLibrary.simpleMessage("Continue"),
+        "continueToTest":
+            MessageLookupByLibrary.simpleMessage("Continue to take a bite"),
         "credit": MessageLookupByLibrary.simpleMessage("Credit"),
         "customStatusTitle":
             MessageLookupByLibrary.simpleMessage("Custom title"),
         "dashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
+        "dataBackupInTestSubtitle": MessageLookupByLibrary.simpleMessage(
+            "The test version is not permanent and your data may get lost in upgrading process."),
+        "dataBackupInTestTitle":
+            MessageLookupByLibrary.simpleMessage("Data backup"),
         "dayAgo": m1,
         "dayLater": m2,
         "deleteAccount": MessageLookupByLibrary.simpleMessage("Delete"),
@@ -301,6 +311,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "File downloads successfully. Do you want to open it now?"),
         "openInBrowser":
             MessageLookupByLibrary.simpleMessage("Open in browser"),
+        "openSoftwareSubtitle": MessageLookupByLibrary.simpleMessage(
+            "Our service is open sourced with MIT license"),
+        "openSoftwareTitle":
+            MessageLookupByLibrary.simpleMessage("Open software"),
         "openSourceLicence":
             MessageLookupByLibrary.simpleMessage("Open source licence"),
         "openViaInternalBrowser":
@@ -321,6 +335,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "preparingPage":
             MessageLookupByLibrary.simpleMessage("Preparing the page."),
         "privacyPolicy": MessageLookupByLibrary.simpleMessage("Privacy policy"),
+        "privacyProtectSubtitle":
+            MessageLookupByLibrary.simpleMessage("Nothing is collected by us"),
+        "privacyProtectTitle":
+            MessageLookupByLibrary.simpleMessage("Privacy protection"),
         "privateMessage": MessageLookupByLibrary.simpleMessage("Private"),
         "progressButtonLoginFailed":
             MessageLookupByLibrary.simpleMessage("Login Failed"),
@@ -393,6 +411,11 @@ class MessageLookup extends MessageLookupByLibrary {
             "Tap to wipe out and re-login user"),
         "termsOfService":
             MessageLookupByLibrary.simpleMessage("Terms of Service"),
+        "testVersion": MessageLookupByLibrary.simpleMessage("Beta Test"),
+        "testVersionDescription": MessageLookupByLibrary.simpleMessage(
+            "The final product will be changed according to latest development."),
+        "testVersionNotificationTitle":
+            MessageLookupByLibrary.simpleMessage("Take a bite on beta test"),
         "trustHostActionText":
             MessageLookupByLibrary.simpleMessage("Trust this host"),
         "trustHostTitle": MessageLookupByLibrary.simpleMessage("Trusted host"),

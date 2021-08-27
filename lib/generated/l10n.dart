@@ -2460,6 +2460,126 @@ class S {
       args: [],
     );
   }
+
+  /// `Take a bite on beta test`
+  String get testVersionNotificationTitle {
+    return Intl.message(
+      'Take a bite on beta test',
+      name: 'testVersionNotificationTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Beta Test`
+  String get testVersion {
+    return Intl.message(
+      'Beta Test',
+      name: 'testVersion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The final product will be changed according to latest development.`
+  String get testVersionDescription {
+    return Intl.message(
+      'The final product will be changed according to latest development.',
+      name: 'testVersionDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sometimes bug exists`
+  String get bugTestTitle {
+    return Intl.message(
+      'Sometimes bug exists',
+      name: 'bugTestTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You can directly email us via kidozh@gmail.com. Thank you for your help!`
+  String get bugTestSubtitle {
+    return Intl.message(
+      'You can directly email us via kidozh@gmail.com. Thank you for your help!',
+      name: 'bugTestSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Privacy protection`
+  String get privacyProtectTitle {
+    return Intl.message(
+      'Privacy protection',
+      name: 'privacyProtectTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Nothing is collected by us`
+  String get privacyProtectSubtitle {
+    return Intl.message(
+      'Nothing is collected by us',
+      name: 'privacyProtectSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open software`
+  String get openSoftwareTitle {
+    return Intl.message(
+      'Open software',
+      name: 'openSoftwareTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Our service is open sourced with MIT license`
+  String get openSoftwareSubtitle {
+    return Intl.message(
+      'Our service is open sourced with MIT license',
+      name: 'openSoftwareSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Continue to take a bite`
+  String get continueToTest {
+    return Intl.message(
+      'Continue to take a bite',
+      name: 'continueToTest',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Data backup`
+  String get dataBackupInTestTitle {
+    return Intl.message(
+      'Data backup',
+      name: 'dataBackupInTestTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The test version is not permanent and your data may get lost in upgrading process.`
+  String get dataBackupInTestSubtitle {
+    return Intl.message(
+      'The test version is not permanent and your data may get lost in upgrading process.',
+      name: 'dataBackupInTestSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

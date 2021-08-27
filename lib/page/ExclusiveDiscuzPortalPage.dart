@@ -5,11 +5,14 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/ExploreWebsitePage.dart';
+import 'package:discuz_flutter/page/TestFlightBannerPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/ConfigurationScreen.dart';
 import 'package:discuz_flutter/screen/DiscuzPortalScreen.dart';
 import 'package:discuz_flutter/screen/HotThreadScreen.dart';
+import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
+import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -64,6 +67,18 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
 
   }
 
+  _showNotificationIfFirstlyShown() async{
+    int flag = await UserPreferencesUtils.getTestFlightNotificationFlag();
+    if(flag == 0){
+      // shown
+      Navigator.push(
+          context,
+          platformPageRoute(
+              context: context,
+              builder: (context) => TestFlightBannerPage()));
+    }
+  }
+
 
 
   @override
@@ -82,8 +97,11 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
       ExploreWebsitePage(),
       DiscuzPortalScreen(),
       HotThreadScreen(),
+      NotificationScreen(),
       ConfigurationScreen(),
     ];
+
+    _showNotificationIfFirstlyShown();
   }
 
 
@@ -112,6 +130,9 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
         BottomNavigationBarItem(
             icon: new Icon(Icons.dashboard),
             label: S.of(context).dashboard),
+        BottomNavigationBarItem(
+            icon: new Icon(Icons.notifications),
+            label: S.of(context).notification),
         BottomNavigationBarItem(
             icon: new Icon(PlatformIcons(context).settings),
             label: S.of(context).settings),

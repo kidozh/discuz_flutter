@@ -99,6 +99,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "bobMinionDescribe": MessageLookupByLibrary.simpleMessage("可爱的小黄人"),
         "brightnessDark": MessageLookupByLibrary.simpleMessage("深色"),
         "brightnessLight": MessageLookupByLibrary.simpleMessage("浅色"),
+        "bugTestSubtitle": MessageLookupByLibrary.simpleMessage(
+            "你可以通过邮箱kidozh@gmail.com向我们报告错误，我们非常感谢您的报告"),
+        "bugTestTitle": MessageLookupByLibrary.simpleMessage("可能包含一些BUG"),
         "buildDescription":
             MessageLookupByLibrary.simpleMessage("由flutter驱动, 能够兼容多种平台。"),
         "cancel": MessageLookupByLibrary.simpleMessage("取消"),
@@ -137,9 +140,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "connectServerWhenAdding":
             MessageLookupByLibrary.simpleMessage("正在连接论坛地址以验证兼容性。"),
         "continueAdding": MessageLookupByLibrary.simpleMessage("继续"),
+        "continueToTest": MessageLookupByLibrary.simpleMessage("开始测试此版本"),
         "credit": MessageLookupByLibrary.simpleMessage("积分"),
         "customStatusTitle": MessageLookupByLibrary.simpleMessage("自定义头衔"),
         "dashboard": MessageLookupByLibrary.simpleMessage("看板"),
+        "dataBackupInTestSubtitle": MessageLookupByLibrary.simpleMessage(
+            "通常测试版本变更有可能会引发数据的丢失，因此请务必做好数据备份工作。"),
+        "dataBackupInTestTitle": MessageLookupByLibrary.simpleMessage("数据备份"),
         "dayAgo": m1,
         "dayLater": m2,
         "deleteAccount": MessageLookupByLibrary.simpleMessage("删除"),
@@ -265,6 +272,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "openFileInExternalAppContent":
             MessageLookupByLibrary.simpleMessage("您成功下载了文件，您想现在打开它吗？"),
         "openInBrowser": MessageLookupByLibrary.simpleMessage("在浏览器中打开"),
+        "openSoftwareSubtitle":
+            MessageLookupByLibrary.simpleMessage("我们的软件以MIT开源协议服务"),
+        "openSoftwareTitle": MessageLookupByLibrary.simpleMessage("开源软件"),
         "openSourceLicence": MessageLookupByLibrary.simpleMessage("开源软件许可"),
         "openViaInternalBrowser":
             MessageLookupByLibrary.simpleMessage("在内置浏览器打开"),
@@ -282,6 +292,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "postPosition": m17,
         "preparingPage": MessageLookupByLibrary.simpleMessage("正在准备此界面。"),
         "privacyPolicy": MessageLookupByLibrary.simpleMessage("隐私政策"),
+        "privacyProtectSubtitle":
+            MessageLookupByLibrary.simpleMessage("轻轻的来正如我轻轻的走，我们不会搜集任何有关您的信息"),
+        "privacyProtectTitle": MessageLookupByLibrary.simpleMessage("隐私安全"),
         "privateMessage": MessageLookupByLibrary.simpleMessage("私信"),
         "progressButtonLoginFailed":
             MessageLookupByLibrary.simpleMessage("登陆失败"),
@@ -343,6 +356,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "tapToWipeAndRelogin":
             MessageLookupByLibrary.simpleMessage("点击以移除此用户并重新登陆"),
         "termsOfService": MessageLookupByLibrary.simpleMessage("使用条款"),
+        "testVersion": MessageLookupByLibrary.simpleMessage("公测版本"),
+        "testVersionDescription": MessageLookupByLibrary.simpleMessage(
+            "此版本具有最新的开发进展，同时也伴有一定的错误。当您使用时，请做好数据备份，以防数据丢失。"),
+        "testVersionNotificationTitle":
+            MessageLookupByLibrary.simpleMessage("欢迎参与测试版本"),
         "trustHostActionText": MessageLookupByLibrary.simpleMessage("信任此域名"),
         "trustHostTitle": MessageLookupByLibrary.simpleMessage("主机域名白名单"),
         "typeSetting": MessageLookupByLibrary.simpleMessage("文本排版"),
