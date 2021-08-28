@@ -22,86 +22,7 @@ class ConfigurationScreen extends StatelessWidget{
     return ListView(
       children: [
         // user interface
-        Consumer<DiscuzAndUserNotifier>(
-          builder: (context, discuzAndUser, _){
-            if(discuzAndUser.discuz == null){
-              return NullDiscuzScreen();
-            }
-            else if(discuzAndUser.user == null){
-              return Card(
-                child: ListTile(
-                  title: Text(S.of(context).loginTitle),
-                  leading: Icon(Icons.login),
-                  onTap: (){
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Discuz? discuz =
-                        Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-                            .discuz;
-                    if (discuz != null) {
-                      Navigator.push(context, platformPageRoute(context:context,builder: (context) => LoginPage(discuz, null)));
-                    }
-                  },
-                ),
-              );
-            }
-            else{
-              return Card(
-                child: ListTile(
-                  title: Text(discuzAndUser.user!.username),
-                  subtitle: Text(S.of(context).tapToWipeAndRelogin),
-                  leading: CircleAvatar(
-                    child: CachedNetworkImage(
-                      imageUrl:
-                      URLUtils.getLargeAvatarURL(discuzAndUser.discuz!, discuzAndUser.user!.uid.toString()),
-                      progressIndicatorBuilder:
-                          (context, url, downloadProgress) =>
-                          CircularProgressIndicator(
-                              value: downloadProgress.progress),
-                      errorWidget: (context, url, error) => Container(
-                        width: 100.0,
-                        height: 100.0,
-                        child: CircleAvatar(
-                          backgroundColor:
-                          CustomizeColor.getColorBackgroundById(discuzAndUser.user!.uid),
-                          child: Text(
-                            discuzAndUser.user!.username
-                                .length !=
-                                0
-                                ? discuzAndUser.user!.username[0]
-                                .toUpperCase()
-                                : S.of(context).anonymous,
-                            style: TextStyle(
-                                color: Colors.white, fontSize: 45),
-                          ),
-                        ),
-                      ),
-                      imageBuilder: (context, imageProvider) => Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                              image: imageProvider, fit: BoxFit.cover),
-                        ),
-                      ),
-                    ),
-                  ),
-                  onTap: () async{
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    // wipe out first
-                    if(discuzAndUser.user != null){
-                      final db = await DBHelper.getAppDb();
-                      var _userDao = db.userDao;
-                      await _userDao.deleteUser(discuzAndUser.user!);
-                      Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(null);
-                    }
-                    await Navigator.push(context, platformPageRoute(context:context,builder: (context) => LoginPage(discuzAndUser.discuz!, null)));
-                  },
-                ),
-
-              );
-
-            }
-          },
-        ),
+        ConfigurationUserStatefulWidget(),
         Card(
           child: ListTile(
             title: Text(S.of(context).viewHistory),
@@ -154,3 +75,98 @@ class ConfigurationScreen extends StatelessWidget{
 
 }
 
+class ConfigurationUserStatefulWidget extends StatefulWidget{
+  @override
+  ConfigurationUserState createState() {
+    return ConfigurationUserState();
+  }
+
+
+}
+
+class ConfigurationUserState extends State<ConfigurationUserStatefulWidget>{
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<DiscuzAndUserNotifier>(
+      builder: (context, discuzAndUser, _){
+        if(discuzAndUser.discuz == null){
+          return NullDiscuzScreen();
+        }
+        else if(discuzAndUser.user == null){
+          return Card(
+            child: ListTile(
+              title: Text(S.of(context).loginTitle),
+              leading: Icon(Icons.login),
+              onTap: (){
+                VibrationUtils.vibrateWithClickIfPossible();
+                Discuz? discuz =
+                    Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                        .discuz;
+                if (discuz != null) {
+                  Navigator.push(context, platformPageRoute(context:context,builder: (context) => LoginPage(discuz, null)));
+                }
+              },
+            ),
+          );
+        }
+        else{
+          return Card(
+            child: ListTile(
+              title: Text(discuzAndUser.user!.username),
+              subtitle: Text(S.of(context).tapToWipeAndRelogin),
+              leading: CircleAvatar(
+                child: CachedNetworkImage(
+                  imageUrl:
+                  URLUtils.getLargeAvatarURL(discuzAndUser.discuz!, discuzAndUser.user!.uid.toString()),
+                  progressIndicatorBuilder:
+                      (context, url, downloadProgress) =>
+                      CircularProgressIndicator(
+                          value: downloadProgress.progress),
+                  errorWidget: (context, url, error) => Container(
+                    width: 100.0,
+                    height: 100.0,
+                    child: CircleAvatar(
+                      backgroundColor:
+                      CustomizeColor.getColorBackgroundById(discuzAndUser.user!.uid),
+                      child: Text(
+                        discuzAndUser.user!.username
+                            .length !=
+                            0
+                            ? discuzAndUser.user!.username[0]
+                            .toUpperCase()
+                            : S.of(context).anonymous,
+                        style: TextStyle(
+                            color: Colors.white, fontSize: 45),
+                      ),
+                    ),
+                  ),
+                  imageBuilder: (context, imageProvider) => Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                          image: imageProvider, fit: BoxFit.cover),
+                    ),
+                  ),
+                ),
+              ),
+              onTap: () async{
+                VibrationUtils.vibrateWithClickIfPossible();
+                // wipe out first
+                if(discuzAndUser.user != null){
+                  final db = await DBHelper.getAppDb();
+                  var _userDao = db.userDao;
+                  await _userDao.deleteUser(discuzAndUser.user!);
+                  Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(null);
+                }
+                await Navigator.push(context, platformPageRoute(context:context,builder: (context) => LoginPage(discuzAndUser.discuz!, null)));
+              },
+            ),
+
+          );
+
+        }
+      },
+    );
+  }
+
+}
