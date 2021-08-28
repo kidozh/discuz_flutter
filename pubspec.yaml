@@ -49,7 +49,6 @@ dependencies:
   json_serializable: ^4.1.0
   webview_flutter: ^2.0.4
   badges: ^2.0.0-nullsafety.1
-  google_mobile_ads: ^0.13.3
   cookie_jar: ^3.0.1
   dio_cookie_manager: ^2.0.0
   path_provider: ^2.0.1
