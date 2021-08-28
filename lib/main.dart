@@ -33,7 +33,7 @@ void main() async{
     final db = await DBHelper.getAppDb();
     DiscuzDao discuzDao = db.discuzDao;
     Discuz exclusiveDiscuz = Discuz(1, "https://keylol.com", "X3.2", "utf-8", 4, "1.4.8", "register", true, "true", "true", "其乐 Keylol", "0", "https://keylol.com/uc_server", "161");
-    discuzDao.insertDiscuz(exclusiveDiscuz);
+    await discuzDao.insertDiscuz(exclusiveDiscuz);
   }
 
   runApp(
