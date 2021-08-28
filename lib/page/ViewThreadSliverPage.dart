@@ -754,6 +754,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                         );
                                       }
                                       else{
+                                        return Container();
                                         return PlatformIconButton(icon: Icon(Icons.add_circle_outline));
                                       }
                                     }
