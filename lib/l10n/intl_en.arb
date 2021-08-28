@@ -398,5 +398,8 @@
   "openSoftwareSubtitle": "Our service is open sourced with MIT license",
   "continueToTest": "Continue to take a bite",
   "dataBackupInTestTitle": "Data backup",
-  "dataBackupInTestSubtitle": "The test version is not permanent and your data may get lost in upgrading process."
+  "dataBackupInTestSubtitle": "The version is not permanent and your data may get lost in upgrading process.",
+  "welcomeTitle": "Welcome",
+  "welcomeSubtitle": "Welcome to use our Services.",
+  "continueToDo": "Continue"
 }

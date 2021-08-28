@@ -398,5 +398,8 @@
   "openSoftwareSubtitle": "我们的软件以MIT开源协议服务",
   "continueToTest": "开始测试此版本",
   "dataBackupInTestTitle": "数据备份",
-  "dataBackupInTestSubtitle": "通常测试版本变更有可能会引发数据的丢失，因此请务必做好数据备份工作。"
+  "dataBackupInTestSubtitle": "版本变更有可能会引发数据的丢失，因此请务必做好数据备份工作。",
+  "welcomeTitle": "你好",
+  "welcomeSubtitle": "欢迎使用我们的服务，我们基于Discuz！移动插件为您服务。",
+  "continueToDo": "继续"
 }

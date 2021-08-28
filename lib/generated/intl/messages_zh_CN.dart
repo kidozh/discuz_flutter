@@ -140,12 +140,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "connectServerWhenAdding":
             MessageLookupByLibrary.simpleMessage("正在连接论坛地址以验证兼容性。"),
         "continueAdding": MessageLookupByLibrary.simpleMessage("继续"),
+        "continueToDo": MessageLookupByLibrary.simpleMessage("继续"),
         "continueToTest": MessageLookupByLibrary.simpleMessage("开始测试此版本"),
         "credit": MessageLookupByLibrary.simpleMessage("积分"),
         "customStatusTitle": MessageLookupByLibrary.simpleMessage("自定义头衔"),
         "dashboard": MessageLookupByLibrary.simpleMessage("看板"),
         "dataBackupInTestSubtitle": MessageLookupByLibrary.simpleMessage(
-            "通常测试版本变更有可能会引发数据的丢失，因此请务必做好数据备份工作。"),
+            "版本变更有可能会引发数据的丢失，因此请务必做好数据备份工作。"),
         "dataBackupInTestTitle": MessageLookupByLibrary.simpleMessage("数据备份"),
         "dayAgo": m1,
         "dayLater": m2,
@@ -381,6 +382,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "warnedPost": MessageLookupByLibrary.simpleMessage("此贴被警告。"),
         "watchPictureInFullScreen":
             MessageLookupByLibrary.simpleMessage("查看大图"),
+        "welcomeSubtitle": MessageLookupByLibrary.simpleMessage(
+            "欢迎使用我们的服务，我们基于Discuz！移动插件为您服务。"),
+        "welcomeTitle": MessageLookupByLibrary.simpleMessage("你好"),
         "writeStorageDenied": MessageLookupByLibrary.simpleMessage("无法获得写入权限。")
       };
 }

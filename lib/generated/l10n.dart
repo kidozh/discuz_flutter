@@ -2571,11 +2571,41 @@ class S {
     );
   }
 
-  /// `The test version is not permanent and your data may get lost in upgrading process.`
+  /// `The version is not permanent and your data may get lost in upgrading process.`
   String get dataBackupInTestSubtitle {
     return Intl.message(
-      'The test version is not permanent and your data may get lost in upgrading process.',
+      'The version is not permanent and your data may get lost in upgrading process.',
       name: 'dataBackupInTestSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Welcome`
+  String get welcomeTitle {
+    return Intl.message(
+      'Welcome',
+      name: 'welcomeTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Welcome to use our Services.`
+  String get welcomeSubtitle {
+    return Intl.message(
+      'Welcome to use our Services.',
+      name: 'welcomeSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Continue`
+  String get continueToDo {
+    return Intl.message(
+      'Continue',
+      name: 'continueToDo',
       desc: '',
       args: [],
     );

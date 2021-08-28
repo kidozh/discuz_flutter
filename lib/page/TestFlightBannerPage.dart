@@ -12,7 +12,7 @@ class TestFlightBannerPage extends StatelessWidget{
         iosContentBottomPadding: true,
         iosContentPadding: true,
         appBar: PlatformAppBar(
-          title: Text(S.of(context).testVersionNotificationTitle),
+          title: Text(S.of(context).welcomeTitle),
         ),
         body: TestFlightBannerContent()
     );
@@ -40,11 +40,11 @@ class TestFlightBannerContent extends StatelessWidget{
                 ),
               ),
               SizedBox(height: 16,),
-              Text(S.of(context).testVersion, style: Theme.of(context).textTheme.headline6!.copyWith(
+              Text(S.of(context).welcomeTitle, style: Theme.of(context).textTheme.headline6!.copyWith(
                 fontSize: 30
               ),),
               SizedBox(height: 6,),
-              Text(S.of(context).testVersionDescription,style: Theme.of(context).textTheme.bodyText2!.copyWith(
+              Text(S.of(context).welcomeSubtitle,style: Theme.of(context).textTheme.bodyText2!.copyWith(
                   fontSize: 18,
 
               ),textAlign: TextAlign.center,),
@@ -82,7 +82,7 @@ class TestFlightBannerContent extends StatelessWidget{
                 subtitle: Text(S.of(context).openSoftwareSubtitle),
               ),
               SizedBox(height: 24,),
-              CupertinoButton.filled(child: Text(S.of(context).continueToTest), onPressed: () async {
+              CupertinoButton.filled(child: Text(S.of(context).continueToDo), onPressed: () async {
                 await UserPreferencesUtils.putTestFlightNotificationFlag(1);
                 Navigator.pop(context);
               })

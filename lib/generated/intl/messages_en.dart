@@ -151,6 +151,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "connectServerWhenAdding": MessageLookupByLibrary.simpleMessage(
             "Connect to BBS server for verification."),
         "continueAdding": MessageLookupByLibrary.simpleMessage("Continue"),
+        "continueToDo": MessageLookupByLibrary.simpleMessage("Continue"),
         "continueToTest":
             MessageLookupByLibrary.simpleMessage("Continue to take a bite"),
         "credit": MessageLookupByLibrary.simpleMessage("Credit"),
@@ -158,7 +159,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Custom title"),
         "dashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
         "dataBackupInTestSubtitle": MessageLookupByLibrary.simpleMessage(
-            "The test version is not permanent and your data may get lost in upgrading process."),
+            "The version is not permanent and your data may get lost in upgrading process."),
         "dataBackupInTestTitle":
             MessageLookupByLibrary.simpleMessage("Data backup"),
         "dayAgo": m1,
@@ -441,6 +442,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("The post is warned."),
         "watchPictureInFullScreen":
             MessageLookupByLibrary.simpleMessage("Full display"),
+        "welcomeSubtitle": MessageLookupByLibrary.simpleMessage(
+            "Welcome to use our Services."),
+        "welcomeTitle": MessageLookupByLibrary.simpleMessage("Welcome"),
         "writeStorageDenied": MessageLookupByLibrary.simpleMessage(
             "Write storage permission denied.")
       };
