@@ -305,33 +305,23 @@ class _LoginFormFieldState
                             state: _loginState
                         ),
                       ),
-
-                      SizedBox(
-                        width: double.infinity,
-                        child: TextButton(
-                          
-                            onPressed: (){
-
-                        }, 
-                            child: Text(S.of(context).forgetPassword,style: Theme.of(context).textTheme.bodyText2),
-                        ),
-                      ),
-                      Row(
-                          children: <Widget>[
-                            Expanded(
-                                child: Divider()
-                            ),
-
-                            Text(S.of(context).or,style: Theme.of(context).textTheme.bodyText2),
-
-                            Expanded(
-                                child: Divider()
-                            ),
-                          ]
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 8,horizontal: 0),
-                      ),
+                      // Row(
+                      //     children: <Widget>[
+                      //       Expanded(
+                      //           child: Divider()
+                      //       ),
+                      //
+                      //       Text(S.of(context).or,style: Theme.of(context).textTheme.bodyText2),
+                      //
+                      //       Expanded(
+                      //           child: Divider()
+                      //       ),
+                      //     ]
+                      // ),
+                      // Container(
+                      //   padding: EdgeInsets.symmetric(vertical: 8,horizontal: 0),
+                      // ),
+                      SizedBox(height: 12,),
                       if(Platform.isAndroid || Platform.isIOS)
                       SizedBox(
                         width: double.infinity,
@@ -344,15 +334,6 @@ class _LoginFormFieldState
                                   MaterialPageRoute(builder: (context) => LoginByWebviewPage(discuz)));
                             }, ),
                       ),
-                      SizedBox(
-                        width: double.infinity,
-                        child: TextButton.icon(
-                            icon: Icon(Icons.app_registration),
-                            label: Text(S.of(context).signUp),
-                            onPressed: (){
-                              VibrationUtils.vibrateWithClickIfPossible();
-                            }),
-                      )
 
                     ],
                   ),
