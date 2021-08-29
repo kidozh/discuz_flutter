@@ -242,7 +242,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginByWebHttpWarn": MessageLookupByLibrary.simpleMessage(
             "您正在使用不安全的HTTP连接，此界面有可能被第三方所劫持。您在此界面输入的信息有可能泄露。强烈建议您使用HTTPS协议访问此界面。"),
         "loginByWebMessage": MessageLookupByLibrary.simpleMessage(
-            "请在网页中完成登录，当您在网页中完成了登录过程后，请轻触右下方的浮动按钮完成账号录入操作。有时存在延迟情况，可能需要点击两次才能录入账号。"),
+            "请在网页中完成登录，当您在网页中完成了登录过程后，请轻触左上方的加号按钮完成账号录入操作。有时存在延迟情况，可能需要点击两次才能录入账号。"),
         "loginByWebNotSupported":
             MessageLookupByLibrary.simpleMessage("当前系统并不支持Webview登录"),
         "loginByWebTitle": MessageLookupByLibrary.simpleMessage("使用网页登录提醒"),
