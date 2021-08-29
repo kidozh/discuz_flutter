@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:discuz_flutter/page/ExclusiveDiscuzPortalPage.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
@@ -6,7 +7,6 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -20,8 +20,9 @@ import 'package:discuz_flutter/generated/l10n.dart';
 class ExclusiveDiscuzApp extends StatelessWidget{
 
   String platformName = "";
+  Discuz _discuz;
 
-  ExclusiveDiscuzApp(this.platformName);
+  ExclusiveDiscuzApp(this.platformName, this._discuz);
 
   _loadPreference(context) async{
 
@@ -29,8 +30,6 @@ class ExclusiveDiscuzApp extends StatelessWidget{
     platformName = await UserPreferencesUtils.getPlatformPreference();
     double scale = await UserPreferencesUtils.getTypesettingScalePreference();
     Brightness? brightness = await UserPreferencesUtils.getInterfaceBrightnessPreference();
-
-    print("Get brightness ${brightness}");
 
     Provider.of<ThemeNotifierProvider>(context,listen: false).setTheme(colorName);
     Provider.of<ThemeNotifierProvider>(context,listen: false).setPlatformName(platformName);
@@ -46,8 +45,6 @@ class ExclusiveDiscuzApp extends StatelessWidget{
     }
     return null;
   }
-  // our testflight discuz is keylol
-  Discuz exclusiveDiscuz = Discuz(1, "https://keylol.com", "X3.2", "utf-8", 4, "1.4.8", "register", true, "true", "true", "其乐 Keylol", "0", "https://keylol.com/uc_server", "161");
 
   @override
   Widget build(BuildContext context) {
@@ -55,12 +52,26 @@ class ExclusiveDiscuzApp extends StatelessWidget{
 
     return Consumer<ThemeNotifierProvider>(
       builder: (context, themeColorEntity, _){
-        print("Change brightness ${themeColorEntity.brightness}");
+        Brightness? selectedBrightness = themeColorEntity.brightness;
+        print("is cupertino ${isCupertino(context)}");
+        // judge it will be cupertino?
+        // 1. user set it to be ios
+        // 2. follow the system and the system is ios
+        if(getTargetPlatformByName(platformName) == TargetPlatform.iOS || (getTargetPlatformByName(platformName) == null && Platform.isIOS) ){
+          // if in cupertino environment we need to automatically adjust the environment
+          // get system first
+          Brightness sysBrightness = MediaQueryData.fromWindow(WidgetsBinding.instance!.window).platformBrightness;
+          log("current system brightness ${sysBrightness}");
+          selectedBrightness = sysBrightness;
+
+
+        }
+
         final materialTheme = ThemeData(
-          brightness: themeColorEntity.brightness,
+          brightness: selectedBrightness,
           cupertinoOverrideTheme: CupertinoThemeData(
               primaryColor: themeColorEntity.themeColor,
-              brightness: themeColorEntity.brightness
+              brightness: selectedBrightness
           ),
 
           primarySwatch: themeColorEntity.themeColor,
@@ -78,8 +89,8 @@ class ExclusiveDiscuzApp extends StatelessWidget{
 
           SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
-            statusBarIconBrightness: themeColorEntity.iconBrightness,
-            statusBarBrightness: themeColorEntity.brightness,
+            statusBarIconBrightness: selectedBrightness,
+            statusBarBrightness: selectedBrightness,
             // systemNavigationBarColor: Color(themeColorEntity.themeColor.value),
             // systemNavigationBarIconBrightness: themeColorEntity.brightness
           );
@@ -128,7 +139,7 @@ class ExclusiveDiscuzApp extends StatelessWidget{
                     }
                   },
                   builder: EasyLoading.init(),
-                  home: ExclusiveDiscuzPortalPage(exclusiveDiscuz),
+                  home: ExclusiveDiscuzPortalPage(_discuz),
                 );
               },
             )
@@ -138,6 +149,8 @@ class ExclusiveDiscuzApp extends StatelessWidget{
     );
 
   }
+
+
 
 
 

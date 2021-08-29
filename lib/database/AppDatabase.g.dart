@@ -353,8 +353,31 @@ class _$DiscuzDao extends DiscuzDao {
   }
 
   @override
-  Future<void> insertDiscuz(Discuz discuz) async {
-    await _discuzInsertionAdapter.insert(discuz, OnConflictStrategy.replace);
+  Future<Discuz?> findDiscuzByBaseURL(String baseURL) async {
+    return _queryAdapter.query(
+        'SELECT * FROM Discuz WHERE baseURL = ?1 LIMIT 1',
+        mapper: (Map<String, Object?> row) => Discuz(
+            row['id'] as int?,
+            row['baseURL'] as String,
+            row['discuzVersion'] as String,
+            row['charset'] as String,
+            row['apiVersion'] as int,
+            row['pluginVersion'] as String,
+            row['regname'] as String,
+            (row['qqconnect'] as int) != 0,
+            row['wsqqqconnect'] as String,
+            row['wsqhideregister'] as String,
+            row['siteName'] as String,
+            row['siteId'] as String,
+            row['uCenterURL'] as String,
+            row['defaultFid'] as String),
+        arguments: [baseURL]);
+  }
+
+  @override
+  Future<int> insertDiscuz(Discuz discuz) {
+    return _discuzInsertionAdapter.insertAndReturnId(
+        discuz, OnConflictStrategy.replace);
   }
 
   @override

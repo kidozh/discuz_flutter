@@ -228,7 +228,6 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
       return StreamBuilder(
         stream: dao!.threadHistoryExistInDatabase(_discuz.id!, _hotThread.tid),
         builder: (BuildContext context, AsyncSnapshot<ViewHistory?> snapshot) {
-          print("Get view history in db ${snapshot.data} ${_hotThread.subject}");
           if(snapshot.data == null){
             return getUnViewedHotThread();
           }

@@ -148,8 +148,10 @@ class _LoginFormFieldState
             user.id = userInDataBase.id;
           }
 
+
           int primaryKey = await dao.insert(user);
           user.id = primaryKey;
+          print("Inserted id ${user.id}, ${user.discuzId} ${discuz.id}");
 
           // save it in cookiejar
           List<Cookie> cookies = await cookieJar.loadForRequest(Uri.parse(discuz.baseURL));
@@ -158,9 +160,10 @@ class _LoginFormFieldState
           savedCookieJar.saveFromResponse(Uri.parse(discuz.baseURL), cookies);
           // pop the activity
           // set it
-          Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(user);
           EasyLoading.showSuccess(S.of(context).signInSuccessTitle(user.username, discuz.siteName));
+          Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(user);
           Navigator.pop(context);
+
         }
         catch(e,s){
           VibrationUtils.vibrateErrorIfPossible();

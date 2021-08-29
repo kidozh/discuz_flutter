@@ -51,7 +51,7 @@ ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) {
             .toList() ??
         []
     ..commentList =
-        const ViewThreadCommentConverter().fromJson(json['comments']) ?? {}
+        const ViewThreadCommentConverter().fromJson(json['comments'])
     ..rewriteRule = json['setting_rewriterule'] == null
         ? null
         : RewriteRule.fromJson(

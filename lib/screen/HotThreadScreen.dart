@@ -165,16 +165,17 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
         _controller.resetLoadState();
         try{
           _controller.finishRefresh();
+          setState(() {
+            _error = DiscuzError(
+                onError.runtimeType.toString(), onError.toString());
+          });
         }
         catch(e){
 
         }
 
       }
-      setState(() {
-        _error = DiscuzError(
-            onError.runtimeType.toString(), onError.toString());
-      });
+
     });
   }
 
@@ -302,5 +303,12 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
         ),
       ],
     );
+  }
+
+  @override
+  void setState(fn) {
+    if(this.mounted) {
+      super.setState(fn);
+    }
   }
 }

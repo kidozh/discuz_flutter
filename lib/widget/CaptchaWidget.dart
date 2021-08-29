@@ -77,8 +77,14 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
 
   _initNetwork() async {
     if (_dio == null) {
-      print("load cookie for user ${_user!.username}");
-      _dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
+      if(_user == null){
+        _dio = Dio();
+      }
+      else{
+        print("load cookie for user ${_user!.username}");
+        _dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
+      }
+
     }
 
     _client = MobileApiClient(_dio!, baseUrl: _discuz.baseURL);

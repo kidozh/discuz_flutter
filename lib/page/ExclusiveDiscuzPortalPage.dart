@@ -49,11 +49,10 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
 
   late PlatformTabController tabController;
 
-  late List<Widget> tabs;
-
   late UserDao _userDao;
 
   void _initDb() async {
+    Provider.of<DiscuzAndUserNotifier>(context, listen: false).setDiscuz(_discuz);
     final db = await DBHelper.getAppDb();
     _userDao = db.userDao;
     await _setFirstUserInDiscuz(_discuz.id!);
@@ -62,7 +61,9 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
   Future<void> _setFirstUserInDiscuz(int discuzId) async{
     List<User> userList = await _userDao.findAllUsersByDiscuzId(discuzId);
     if(userList.isNotEmpty && userList.length > 0){
-      Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(userList.first);
+      print("find a user in the database ${userList.length}");
+      Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(userList.last);
+      // might need to refresh the layout
     }
 
   }
@@ -87,19 +88,14 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
 
     _initDb();
 
+
+
     tabController = PlatformTabController(
       initialIndex: 0,
     );
 
-    Provider.of<DiscuzAndUserNotifier>(context, listen: false).setDiscuz(_discuz);
 
-    tabs = [
-      ExploreWebsitePage(),
-      DiscuzPortalScreen(),
-      HotThreadScreen(),
-      NotificationScreen(),
-      ConfigurationScreen(),
-    ];
+
 
     _showNotificationIfFirstlyShown();
   }
@@ -108,6 +104,8 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
 
   @override
   Widget build(BuildContext context) {
+
+
     return PlatformTabScaffold(
       iosContentBottomPadding: true,
       iosContentPadding: true,
@@ -139,10 +137,25 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
       ],
       bodyBuilder: (context, index) => IndexedStack(
         index: index,
-        children: tabs,
+        children: [
+          ExploreWebsitePage(),
+          DiscuzPortalScreen(),
+          HotThreadScreen(),
+          NotificationScreen(),
+          ConfigurationScreen(),
+        ],
       ),
 
     );
+
+
+  }
+
+  @override
+  void setState(fn) {
+    if(this.mounted) {
+      super.setState(fn);
+    }
   }
 
 }

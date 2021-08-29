@@ -132,12 +132,24 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       EasyLoading.showError('${onError}');
       if (!_enableControlFinish) {
         _controller.resetLoadState();
-        _controller.finishRefresh();
+        try{
+          _controller.finishRefresh();
+        }
+        catch (e){
+
+        }
+
       }
-      setState(() {
-        _error =
-            DiscuzError(onError.runtimeType.toString(), onError.toString());
-      });
+      try{
+        setState(() {
+          _error =
+              DiscuzError(onError.runtimeType.toString(), onError.toString());
+        });
+      }
+      catch (e){
+
+      }
+
     });
   }
 
@@ -270,5 +282,12 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
         ),
       ],
     );
+  }
+
+  @override
+  void setState(fn) {
+    if(this.mounted) {
+      super.setState(fn);
+    }
   }
 }

@@ -87,6 +87,8 @@ class ConfigurationUserStatefulWidget extends StatefulWidget{
 class ConfigurationUserState extends State<ConfigurationUserStatefulWidget>{
   @override
   Widget build(BuildContext context) {
+
+
     return Consumer<DiscuzAndUserNotifier>(
       builder: (context, discuzAndUser, _){
         if(discuzAndUser.discuz == null){
@@ -167,6 +169,13 @@ class ConfigurationUserState extends State<ConfigurationUserStatefulWidget>{
         }
       },
     );
+  }
+
+  @override
+  void setState(fn) {
+    if(this.mounted) {
+      super.setState(fn);
+    }
   }
 
 }

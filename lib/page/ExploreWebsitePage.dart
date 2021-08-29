@@ -410,4 +410,11 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
       }
     }
   }
+
+  @override
+  void setState(fn) {
+    if(this.mounted) {
+      super.setState(fn);
+    }
+  }
 }
