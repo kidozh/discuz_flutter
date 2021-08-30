@@ -1,5 +1,4 @@
 
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -11,15 +10,11 @@ import 'package:discuz_flutter/entity/HotThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
-import 'package:discuz_flutter/screen/NullUserScreen.dart';
-import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
-import 'package:discuz_flutter/widget/ForumPartitionWidget.dart';
 import 'package:discuz_flutter/widget/HotThreadWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -34,7 +29,6 @@ class HotThreadScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return HotThreadStatefulWidget(key: UniqueKey());
   }
 }
@@ -159,22 +153,22 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
 
     })
     .catchError((onError){
-      VibrationUtils.vibrateErrorIfPossible();
-      EasyLoading.showError('${onError}');
-      if (!_enableControlFinish) {
-        _controller.resetLoadState();
-        try{
-          _controller.finishRefresh();
-          setState(() {
-            _error = DiscuzError(
-                onError.runtimeType.toString(), onError.toString());
-          });
-        }
-        catch(e){
-
-        }
-
-      }
+      // VibrationUtils.vibrateErrorIfPossible();
+      // // EasyLoading.showError('${onError}');
+      // if (!_enableControlFinish) {
+      //   _controller.resetLoadState();
+      //   try{
+      //     _controller.finishRefresh();
+      //     setState(() {
+      //       _error = DiscuzError(
+      //           onError.runtimeType.toString(), onError.toString());
+      //     });
+      //   }
+      //   catch(e){
+      //
+      //   }
+      //
+      // }
 
     });
   }

@@ -128,27 +128,26 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       }
 
     }).catchError((onError) {
-      VibrationUtils.vibrateErrorIfPossible();
-      EasyLoading.showError('${onError}');
-      if (!_enableControlFinish) {
-        _controller.resetLoadState();
-        try{
-          _controller.finishRefresh();
-        }
-        catch (e){
-
-        }
-
-      }
-      try{
-        setState(() {
-          _error =
-              DiscuzError(onError.runtimeType.toString(), onError.toString());
-        });
-      }
-      catch (e){
-
-      }
+      // VibrationUtils.vibrateErrorIfPossible();
+      // if (!_enableControlFinish) {
+      //   _controller.resetLoadState();
+      //   try{
+      //     _controller.finishRefresh();
+      //   }
+      //   catch (e){
+      //
+      //   }
+      //
+      // }
+      // try{
+      //   setState(() {
+      //     _error =
+      //         DiscuzError(onError.runtimeType.toString(), onError.toString());
+      //   });
+      // }
+      // catch (e){
+      //
+      // }
 
     });
   }

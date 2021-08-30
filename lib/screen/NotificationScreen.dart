@@ -1,9 +1,7 @@
 
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/JsonResult/UserDiscuzNotificationResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -14,19 +12,16 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
-import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzNotificationWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
-import 'package:discuz_flutter/widget/ForumPartitionWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
-import 'BlankScreen.dart';
 import 'EmptyScreen.dart';
 
 class NotificationScreen extends StatelessWidget {
@@ -36,7 +31,6 @@ class NotificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return NotificationStatefulWidget(key: UniqueKey());
   }
 }
@@ -161,27 +155,26 @@ class _NotificationState extends State<NotificationStatefulWidget> {
 
     })
     .catchError((onError){
-      VibrationUtils.vibrateErrorIfPossible();
-      EasyLoading.showError('${onError}');
-      if (!_enableControlFinish) {
-        _controller.resetLoadState();
-        try{
-          _controller.finishRefresh();
-        }
-        catch(e){
-
-        }
-
-      }
-      try{
-        setState(() {
-          _error = DiscuzError(
-              onError.runtimeType.toString(), onError.toString());
-        });
-      }
-      catch (e){
-
-      }
+      // VibrationUtils.vibrateErrorIfPossible();
+      // if (!_enableControlFinish) {
+      //   _controller.resetLoadState();
+      //   try{
+      //     _controller.finishRefresh();
+      //   }
+      //   catch(e){
+      //
+      //   }
+      //
+      // }
+      // try{
+      //   setState(() {
+      //     _error = DiscuzError(
+      //         onError.runtimeType.toString(), onError.toString());
+      //   });
+      // }
+      // catch (e){
+      //
+      // }
 
     });
   }

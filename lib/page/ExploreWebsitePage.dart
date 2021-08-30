@@ -15,7 +15,6 @@ import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -191,10 +190,10 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
   void initState() {
     super.initState();
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
-    DiscuzAndUserNotifier discuzAndUser = Provider.of<DiscuzAndUserNotifier>(context,listen: false);
-    if(discuzAndUser.discuz != null){
-      loadCookieByUser(discuzAndUser.discuz!, discuzAndUser.user);
-      initialURL = discuzAndUser.discuz!.baseURL;
+
+    if(_discuz != null){
+      loadCookieByUser(_discuz, _user);
+      initialURL = _discuz.baseURL;
     }
     else{
       initialURL = "https://discuzhub.kidozh.com";
