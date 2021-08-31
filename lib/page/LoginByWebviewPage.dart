@@ -69,10 +69,13 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         trailingActions: <Widget>[
           //NavigationControls(_controller.future),
-          TextButton(onPressed: (){
+          TextButton.icon(onPressed: (){
             VibrationUtils.vibrateWithClickIfPossible();
             _checkUserLogined();
-          }, child: Text(S.of(context).finishLoginInWeb))
+           },
+            label: Text(S.of(context).finishLoginInWeb),
+            icon: Icon(Icons.check),
+          )
         ],
       ),
       body: Builder(builder: (BuildContext context) {
