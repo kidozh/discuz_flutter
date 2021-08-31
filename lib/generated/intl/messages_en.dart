@@ -188,6 +188,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("The content here is empty."),
         "error": MessageLookupByLibrary.simpleMessage("Error"),
         "favorites": MessageLookupByLibrary.simpleMessage("Favorites"),
+        "finishLoginInWeb": MessageLookupByLibrary.simpleMessage("Finish"),
         "followSystem": MessageLookupByLibrary.simpleMessage("Follow system"),
         "fontSizeInParagraph":
             MessageLookupByLibrary.simpleMessage("Font size in paragraph"),
@@ -255,6 +256,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "index": MessageLookupByLibrary.simpleMessage("Index"),
         "interfaceBrightness":
             MessageLookupByLibrary.simpleMessage("Interface Brightness"),
+        "invalidCookie": MessageLookupByLibrary.simpleMessage(
+            "Invalid cookie from response."),
         "ios": MessageLookupByLibrary.simpleMessage("iOS"),
         "justNow": MessageLookupByLibrary.simpleMessage("Just Now"),
         "largeRichText": MessageLookupByLibrary.simpleMessage(

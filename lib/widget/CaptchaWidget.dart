@@ -66,7 +66,6 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _initNetwork();
   }
@@ -192,11 +191,12 @@ class CaptchaController extends ValueNotifier<CaptchaFields?> {
 
   @override
   set value(CaptchaFields? newValue) {
-    // TODO: implement value
     super.value = newValue;
   }
 
   void reloadCaptcha() {
+    print("reload captcha ");
     super.value = null;
+    notifyListeners();
   }
 }

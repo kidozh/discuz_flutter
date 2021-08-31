@@ -152,6 +152,20 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       }
     });
 
+    _scrollController.addListener(() {
+      // remove focus when
+      if(_focusNode.hasFocus){
+        _focusNode.unfocus();
+      }
+      if(dialogStatus != SHOW_NONE_DIALOG){
+        setState(() {
+          dialogStatus = SHOW_NONE_DIALOG;
+        });
+      }
+    });
+
+
+
     _replyController.addListener(() {
       //print("Get reply text ${_replyController.text} ${_replyController.text.isNotEmpty}");
       if(_replyController.text.isNotEmpty){

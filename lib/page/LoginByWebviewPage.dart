@@ -7,14 +7,16 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
+import 'package:discuz_flutter/utility/DiscuzWebviewCookieManager.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart' as DioCookieManager;
 import 'package:discuz_flutter/client/MobileApiClient.dart';
-import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
 
 class LoginByWebviewPage extends StatelessWidget{
@@ -44,6 +46,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
   final Completer<WebViewController> _controller = Completer<WebViewController>();
   final webviewCookieManager = WebviewCookieManager();
 
+
   final Discuz discuz;
 
   _LoginByWebviewState(this.discuz);
@@ -66,18 +69,12 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         trailingActions: <Widget>[
           //NavigationControls(_controller.future),
-          PlatformIconButton(
-            icon: Icon(PlatformIcons(context).add),
-            onPressed: (){
-              VibrationUtils.vibrateWithClickIfPossible();
-              _checkUserLogined();
-            },
-          )
-          // SampleMenu(_controller.future),
+          TextButton(onPressed: (){
+            VibrationUtils.vibrateWithClickIfPossible();
+            _checkUserLogined();
+          }, child: Text(S.of(context).finishLoginInWeb))
         ],
       ),
-      // We're using a Builder here so we have a context that is below the Scaffold
-      // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
         return WebView(
           initialUrl: discuz.baseURL+"/member.php?mod=logging&action=login",
@@ -106,9 +103,9 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           onPageFinished: (String url) async{
             print('Page finished loading: $url');
             final gotCookies = await webviewCookieManager.getCookies(url);
-            for (var item in gotCookies) {
-              print(item);
-            }
+            // for (var item in gotCookies) {
+            //   print(item);
+            // }
           },
           gestureNavigationEnabled: true,
         );
@@ -148,20 +145,6 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
   }
 
   void _triggerNotificationDialog() async{
-    // if(discuz.baseURL.startsWith("http://")){
-    //   await showPlatformDialog(context: context, builder: (context){
-    //     return PlatformAlertDialog(
-    //       title: Text(S.of(context).httpBrowseWarn),
-    //       content: Text(S.of(context).loginByWebHttpWarn),
-    //       actions: [
-    //         TextButton(onPressed: (){
-    //           Navigator.of(context).pop(false);
-    //         }, child: Text(S.of(context).ok))
-    //       ],
-    //     );
-    //   });
-    // }
-
 
     print("show dialog");
     await Future.delayed(Duration(seconds: 1));
@@ -188,7 +171,15 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
     var controller = await _controller.future;
     // transfer from webview to cookiejar
     // split by ;
-    List<Cookie> webviewCookie = await webviewCookieManager.getCookies(discuz.baseURL);
+    List<Cookie> webviewCookie = [];
+    try{
+       webviewCookie = await webviewCookieManager.getCookies(discuz.baseURL);
+    }
+    catch (e){
+      EasyLoading.showError(S.of(context).invalidCookie);
+      return;
+    }
+
 
     PersistCookieJar cookieJar = await NetworkUtils.getTemporaryCookieJar();
     // transfer from cookie string
@@ -220,23 +211,24 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           print("cookies ${cookies}");
           savedCookieJar.saveFromResponse(Uri.parse(discuz.baseURL), cookies);
           // pop the activity
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(S.of(context).signInSuccessTitle(user.username, discuz.siteName))));
+          EasyLoading.showSuccess(S.of(context).signInSuccessTitle(user.username, discuz.siteName));
           Navigator.pop(context);
         }
         catch(e,s){
           VibrationUtils.vibrateErrorIfPossible();
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+          EasyLoading.showError(e.toString());
         }
       }
       else{
         print("Get auth ${value.variables.auth} ${value.variables.formHash}");
         // trigger a alert
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(S.of(context).unableToVerifyAuthStatus)));
+        EasyLoading.showError(S.of(context).unableToVerifyAuthStatus);
       }
     })
     .catchError((e,s){
       VibrationUtils.vibrateErrorIfPossible();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      EasyLoading.showError(e.toString());
+
     });
 
   }

@@ -171,6 +171,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "emptyScreenTitle": MessageLookupByLibrary.simpleMessage("当前列表为空。"),
         "error": MessageLookupByLibrary.simpleMessage("出错了"),
         "favorites": MessageLookupByLibrary.simpleMessage("收藏"),
+        "finishLoginInWeb": MessageLookupByLibrary.simpleMessage("完成登录"),
         "followSystem": MessageLookupByLibrary.simpleMessage("跟随系统"),
         "fontSizeInParagraph": MessageLookupByLibrary.simpleMessage("正文字体大小"),
         "fontSizeInParagraphUnit": m6,
@@ -223,6 +224,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("无效的论坛地址."),
         "index": MessageLookupByLibrary.simpleMessage("索引"),
         "interfaceBrightness": MessageLookupByLibrary.simpleMessage("显示模式"),
+        "invalidCookie": MessageLookupByLibrary.simpleMessage(
+            "服务器的响应中包含一个或多个含有错误字符的Cookie,无法解析Cookie,无法登录."),
         "ios": MessageLookupByLibrary.simpleMessage("iOS"),
         "justNow": MessageLookupByLibrary.simpleMessage("刚刚"),
         "largeRichText": MessageLookupByLibrary.simpleMessage(
@@ -242,7 +245,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginByWebHttpWarn": MessageLookupByLibrary.simpleMessage(
             "您正在使用不安全的HTTP连接，此界面有可能被第三方所劫持。您在此界面输入的信息有可能泄露。强烈建议您使用HTTPS协议访问此界面。"),
         "loginByWebMessage": MessageLookupByLibrary.simpleMessage(
-            "请在网页中完成登录，当您在网页中完成了登录过程后，请轻触左上方的加号按钮完成账号录入操作。有时存在延迟情况，可能需要点击两次才能录入账号。"),
+            "请在网页中完成登录，当您在网页中完成了登录过程后，请轻触左上方的完成登录按钮完成账号录入操作。有时存在延迟情况，可能需要点击两次才能录入账号。"),
         "loginByWebNotSupported":
             MessageLookupByLibrary.simpleMessage("当前系统并不支持Webview登录"),
         "loginByWebTitle": MessageLookupByLibrary.simpleMessage("使用网页登录提醒"),

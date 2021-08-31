@@ -401,5 +401,7 @@
   "dataBackupInTestSubtitle": "The version is not permanent and your data may get lost in upgrading process.",
   "welcomeTitle": "Welcome",
   "welcomeSubtitle": "Welcome to use our Services.",
-  "continueToDo": "Continue"
+  "continueToDo": "Continue",
+  "finishLoginInWeb": "Finish",
+  "invalidCookie": "Invalid cookie from response."
 }

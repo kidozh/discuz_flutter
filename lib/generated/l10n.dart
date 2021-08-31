@@ -2610,6 +2610,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Finish`
+  String get finishLoginInWeb {
+    return Intl.message(
+      'Finish',
+      name: 'finishLoginInWeb',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invalid cookie from response.`
+  String get invalidCookie {
+    return Intl.message(
+      'Invalid cookie from response.',
+      name: 'invalidCookie',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
