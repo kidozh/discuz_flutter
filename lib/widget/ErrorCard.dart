@@ -8,7 +8,7 @@ class ErrorCard extends StatelessWidget{
   String errorTitle = "";
   String errorDescription = "";
 
-  final VoidCallback onRefreshCallback;
+  final VoidCallback? onRefreshCallback;
 
 
   @override
@@ -28,11 +28,12 @@ class ErrorCard extends StatelessWidget{
           ],
       ),
       actions: [
+        if(onRefreshCallback!=null)
         TextButton(
           child: Text(S.of(context).retry),
           onPressed: () {
             VibrationUtils.vibrateWithClickIfPossible();
-            onRefreshCallback();
+            onRefreshCallback!();
           },
         ),
       ],

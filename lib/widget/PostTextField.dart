@@ -74,8 +74,8 @@ class SmileyText extends SpecialText{
   InlineSpan finishText() {
     return ImageSpan(
         CachedNetworkImageProvider(_discuz.baseURL+"/static/image/smiley/"+smiley.relativePath),
-        imageWidth: 16,
-        imageHeight: 16,
+        imageWidth: 20,
+        imageHeight: 20,
         start: this.start,
         actualText: toString(),
 
@@ -84,6 +84,34 @@ class SmileyText extends SpecialText{
   }
   
   
+}
+
+class AttachImageText extends SpecialText{
+  Discuz _discuz;
+  static String attachStartFlag = "[attachimg]";
+  static String attachEndFlag = "[/attachimg]";
+  int start;
+
+  AttachImageText(this._discuz, TextStyle textStyle,{required this.start}) : super(AttachImageText.attachStartFlag, AttachImageText.attachEndFlag, textStyle);
+
+
+  get aid => getContent();
+
+
+  @override
+  InlineSpan finishText() {
+    return BackgroundTextSpan(
+      text: " 📃 ${aid} ",
+      background: Paint()..color = Colors.blue.withOpacity(0.15),
+      actualText: toString(),
+      deleteAll: true,
+      start: start,
+      style: TextStyle(color: Colors.blue)
+    );
+
+  }
+
+
 }
 
 class PostSpecialTextSpanBuilder extends SpecialTextSpanBuilder{
@@ -99,6 +127,9 @@ class PostSpecialTextSpanBuilder extends SpecialTextSpanBuilder{
     else{
       if(isStart(flag, SmileyText.smileyStartFlag)){
         return SmileyText(_discuz, textStyle!,start: index-(SmileyText.smileyStartFlag.length-1));
+      }
+      if(isStart(flag, AttachImageText.attachStartFlag)){
+        return AttachImageText(_discuz, textStyle!,start: index-(AttachImageText.attachStartFlag.length-1));
       }
 
     }

@@ -2630,6 +2630,206 @@ class S {
       args: [],
     );
   }
+
+  /// `Photo`
+  String get addAPhoto {
+    return Intl.message(
+      'Photo',
+      name: 'addAPhoto',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Shot`
+  String get takeAPicture {
+    return Intl.message(
+      'Shot',
+      name: 'takeAPicture',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error in connecting with the server.`
+  String get networkFail {
+    return Intl.message(
+      'Error in connecting with the server.',
+      name: 'networkFail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Image picked`
+  String get noImagePicked {
+    return Intl.message(
+      'No Image picked',
+      name: 'noImagePicked',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Encounter a unresolved issue when uploading the file`
+  String get uploadImageUnknownError {
+    return Intl.message(
+      'Encounter a unresolved issue when uploading the file',
+      name: 'uploadImageUnknownError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Internal Server Error`
+  String get uploadImageErrorNegative1 {
+    return Intl.message(
+      'Internal Server Error',
+      name: 'uploadImageErrorNegative1',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The file extension is not supported.`
+  String get uploadImageError1 {
+    return Intl.message(
+      'The file extension is not supported.',
+      name: 'uploadImageError1',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your file size excesses the server limit.`
+  String get uploadImageError2 {
+    return Intl.message(
+      'Your file size excesses the server limit.',
+      name: 'uploadImageError2',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The file size excesses your group limit.`
+  String get uploadImageError3 {
+    return Intl.message(
+      'The file size excesses your group limit.',
+      name: 'uploadImageError3',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your file type is not supported.`
+  String get uploadImageError4 {
+    return Intl.message(
+      'Your file type is not supported.',
+      name: 'uploadImageError4',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The file size excesses file type limit.`
+  String get uploadImageError5 {
+    return Intl.message(
+      'The file size excesses file type limit.',
+      name: 'uploadImageError5',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You can not upload any files today.`
+  String get uploadImageError6 {
+    return Intl.message(
+      'You can not upload any files today.',
+      name: 'uploadImageError6',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The file is not an image.`
+  String get uploadImageError7 {
+    return Intl.message(
+      'The file is not an image.',
+      name: 'uploadImageError7',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The file can not be stored in the server.`
+  String get uploadImageError8 {
+    return Intl.message(
+      'The file can not be stored in the server.',
+      name: 'uploadImageError8',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invalid upload method.`
+  String get uploadImageError9 {
+    return Intl.message(
+      'Invalid upload method.',
+      name: 'uploadImageError9',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invalid operation.`
+  String get uploadImageError10 {
+    return Intl.message(
+      'Invalid operation.',
+      name: 'uploadImageError10',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You can not upload any large files like this today.`
+  String get uploadImageError11 {
+    return Intl.message(
+      'You can not upload any large files like this today.',
+      name: 'uploadImageError11',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload file to server sucessfully.`
+  String get uploadImageSuccessfully {
+    return Intl.message(
+      'Upload file to server sucessfully.',
+      name: 'uploadImageSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload #{index}`
+  String attachFile(Object index) {
+    return Intl.message(
+      'Upload #$index',
+      name: 'attachFile',
+      desc: '',
+      args: [index],
+    );
+  }
+
+  /// `Captcha required in reply. Please fill the captcha then send it by pushing the button.`
+  String get sendImageWithVerificationNotice {
+    return Intl.message(
+      'Captcha required in reply. Please fill the captcha then send it by pushing the button.',
+      name: 'sendImageWithVerificationNotice',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

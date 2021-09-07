@@ -201,9 +201,10 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<String> sendReplyRaw(fid, tid, formhash, message, captchaHash,
-      captchaType, verification) async {
+      captchaType, verification, queries) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.addAll(queries);
     final _data = {
       'fid': fid,
       'tid': tid,
@@ -236,9 +237,11 @@ class _MobileApiClient implements MobileApiClient {
       message,
       captchaHash,
       captchaType,
-      verification) async {
+      verification,
+      queries) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.addAll(queries);
     queryParameters.removeWhere((k, v) => v == null);
     final _data = {
       'fid': fid,
@@ -525,6 +528,44 @@ class _MobileApiClient implements MobileApiClient {
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = FavoriteThreadResult.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<String> uploadImage(uid, uploadHash, file) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry('uid', uid.toString()));
+    _data.fields.add(MapEntry('hash', uploadHash));
+    _data.files.add(MapEntry(
+        'Filedata',
+        MultipartFile.fromFileSync(file.path,
+            filename: file.path.split(Platform.pathSeparator).last)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
+        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+            .compose(_dio.options,
+                '/api/mobile/index.php?version=4&module=forumupload&type=image',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<CheckPostResult> checkPost(fid, tid) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'fid': fid, r'tid': tid};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<CheckPostResult>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options,
+                    '/api/mobile/index.php?version=4&module=checkpost',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CheckPostResult.fromJson(_result.data!);
     return value;
   }
 

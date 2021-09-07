@@ -15,7 +15,7 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="discuz_flutter"
+        android:label="discuzFlutter"
         android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/launcher_icon">
         <activity

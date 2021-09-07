@@ -21,65 +21,68 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m0(discuz) => "成功添加 ${discuz} 论坛。";
 
-  static String m1(day) => "${day}天前";
+  static String m1(index) => "上传文件 No. ${index}";
 
-  static String m2(day) => "${day}天后";
+  static String m2(day) => "${day}天前";
 
-  static String m3(account) => "成功移除账号 ${account}。";
+  static String m3(day) => "${day}天后";
 
-  static String m4(account) => "成功删除论坛 ${account}。";
+  static String m4(account) => "成功移除账号 ${account}。";
 
-  static String m5(filename) => "后台下载文件 ${filename} 中。";
+  static String m5(account) => "成功删除论坛 ${account}。";
 
-  static String m6(size) => "${size}逻辑像素";
+  static String m6(filename) => "后台下载文件 ${filename} 中。";
 
-  static String m7(size) => "${size}倍";
+  static String m7(size) => "${size}逻辑像素";
 
-  static String m8(readAccess, star) => "阅读权限： ${readAccess}， 等级： ${star}";
+  static String m8(size) => "${size}倍";
 
-  static String m9(hour) => "${hour}小时前";
+  static String m9(readAccess, star) => "阅读权限： ${readAccess}， 等级： ${star}";
 
-  static String m10(hour) => "${hour}小时后";
+  static String m10(hour) => "${hour}小时前";
 
-  static String m11(uri) => "无法打开此链接 : ${uri}.";
+  static String m11(hour) => "${hour}小时后";
 
-  static String m12(min) => "${min}分钟前";
+  static String m12(uri) => "无法打开此链接 : ${uri}.";
 
-  static String m13(min) => "${min}分钟后";
+  static String m13(min) => "${min}分钟前";
 
-  static String m14(hour) => "${hour}小时";
+  static String m14(min) => "${min}分钟后";
 
-  static String m15(time) => "该投票将于${time}过期.";
+  static String m15(hour) => "${hour}小时";
 
-  static String m16(people) => "共有${people}人已投票.";
+  static String m16(time) => "该投票将于${time}过期.";
 
-  static String m17(pos) => "第${pos}层";
+  static String m17(people) => "共有${people}人已投票.";
 
-  static String m18(pid, ptid, author, fullTimeString, trimMessage) =>
+  static String m18(pos) => "第${pos}层";
+
+  static String m19(pid, ptid, author, fullTimeString, trimMessage) =>
       "[quote][size=2][url=forum.php?mod=redirect&goto=findpost&pid=${pid}&ptid=${ptid}]${author} 发表于 ${fullTimeString}[/url][/size]\n${trimMessage}[/quote]";
 
-  static String m19(username, discuzName) =>
+  static String m20(username, discuzName) =>
       "用户 ${username} 已成功登录到 ${discuzName}。";
 
-  static String m20(discuzName) => "登录至 ${discuzName}";
+  static String m21(discuzName) => "登录至 ${discuzName}";
 
-  static String m21(index) => "表情 ${index}";
+  static String m22(index) => "表情 ${index}";
 
-  static String m22(checked, allowed) => "投票 (${checked} / ${allowed})";
+  static String m23(checked, allowed) => "投票 (${checked} / ${allowed})";
 
-  static String m23(title) => "成功删除历史记录 ${title}.";
+  static String m24(title) => "成功删除历史记录 ${title}.";
 
-  static String m24(filename) => "成功下载文件： ${filename}。";
+  static String m25(filename) => "成功下载文件： ${filename}。";
 
-  static String m25(username) => "用户 ${username} 已失效";
+  static String m26(username) => "用户 ${username} 已失效";
 
-  static String m26(uid) => "用户编号： ${uid}";
+  static String m27(uid) => "用户编号： ${uid}";
 
-  static String m27(user) => "查看${user}详情";
+  static String m28(user) => "查看${user}详情";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("账号"),
+        "addAPhoto": MessageLookupByLibrary.simpleMessage("照片"),
         "addDiscuzSuccessfully": m0,
         "addDiscuzTitle": MessageLookupByLibrary.simpleMessage("添加Discuz! 论坛"),
         "addNewDiscuz": MessageLookupByLibrary.simpleMessage("添加一个论坛"),
@@ -89,6 +92,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("运行平台样式偏好"),
         "appearanceOptimizedPlatformSubtitle":
             MessageLookupByLibrary.simpleMessage("你可以选择对应平台下应用的显示样式"),
+        "attachFile": m1,
         "basicUse": MessageLookupByLibrary.simpleMessage("基本使用"),
         "basicUseDescribe":
             MessageLookupByLibrary.simpleMessage("EasyRefresh的基本使用"),
@@ -148,11 +152,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "dataBackupInTestSubtitle": MessageLookupByLibrary.simpleMessage(
             "版本变更有可能会引发数据的丢失，因此请务必做好数据备份工作。"),
         "dataBackupInTestTitle": MessageLookupByLibrary.simpleMessage("数据备份"),
-        "dayAgo": m1,
-        "dayLater": m2,
+        "dayAgo": m2,
+        "dayLater": m3,
         "deleteAccount": MessageLookupByLibrary.simpleMessage("删除"),
-        "deleteAccountSuccessfully": m3,
-        "deleteDiscuzSuccessfully": m4,
+        "deleteAccountSuccessfully": m4,
+        "deleteDiscuzSuccessfully": m5,
         "deleteViewHistoryWarnContent":
             MessageLookupByLibrary.simpleMessage("清除历史记录是不可恢复的，确认要继续？"),
         "disableFontCustomization":
@@ -166,7 +170,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("例如： https://bbs.nwpu.edu.cn"),
         "displaySettingTitle": MessageLookupByLibrary.simpleMessage("显示"),
         "downloadAttachment": MessageLookupByLibrary.simpleMessage("下载附件"),
-        "downloadingFiles": m5,
+        "downloadingFiles": m6,
         "emptyListDescription": MessageLookupByLibrary.simpleMessage("当前列表为空。"),
         "emptyScreenTitle": MessageLookupByLibrary.simpleMessage("当前列表为空。"),
         "error": MessageLookupByLibrary.simpleMessage("出错了"),
@@ -174,10 +178,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "finishLoginInWeb": MessageLookupByLibrary.simpleMessage("完成登录"),
         "followSystem": MessageLookupByLibrary.simpleMessage("跟随系统"),
         "fontSizeInParagraph": MessageLookupByLibrary.simpleMessage("正文字体大小"),
-        "fontSizeInParagraphUnit": m6,
+        "fontSizeInParagraphUnit": m7,
         "fontSizeScaleParameter":
             MessageLookupByLibrary.simpleMessage("文本缩放比例"),
-        "fontSizeScaleParameterUnit": m7,
+        "fontSizeScaleParameterUnit": m8,
         "forgetPassword": MessageLookupByLibrary.simpleMessage("忘记密码?"),
         "forumDisplayTitle": MessageLookupByLibrary.simpleMessage("显示板块"),
         "forumFilterSortByHeat": MessageLookupByLibrary.simpleMessage("最火人气"),
@@ -212,11 +216,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "googleAdSubTitle":
             MessageLookupByLibrary.simpleMessage("由Google提供的广告"),
         "googleAdTitle": MessageLookupByLibrary.simpleMessage("广告"),
-        "groupInfoDescription": m8,
+        "groupInfoDescription": m9,
         "habit": MessageLookupByLibrary.simpleMessage("爱好"),
         "homepage": MessageLookupByLibrary.simpleMessage("个人主页"),
-        "hourAgo": m9,
-        "hourLater": m10,
+        "hourAgo": m10,
+        "hourLater": m11,
         "httpBrowseWarn": MessageLookupByLibrary.simpleMessage("不安全的HTTP协议"),
         "incognitoSubtitle": MessageLookupByLibrary.simpleMessage("某些功能可能不可用"),
         "incognitoTitle": MessageLookupByLibrary.simpleMessage("匿名模式"),
@@ -236,7 +240,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "lastPostTime": MessageLookupByLibrary.simpleMessage("上次发帖时间"),
         "lastVisitTime": MessageLookupByLibrary.simpleMessage("上次访问时间"),
         "legalInformation": MessageLookupByLibrary.simpleMessage("法律信息"),
-        "linkUnableToOpen": m11,
+        "linkUnableToOpen": m12,
         "loadFailed": MessageLookupByLibrary.simpleMessage("加载失败"),
         "loadFinish": MessageLookupByLibrary.simpleMessage("加载完成"),
         "loadMore": MessageLookupByLibrary.simpleMessage("加载"),
@@ -259,16 +263,18 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("控制刷新和加载的完成时机"),
         "materialDesign": MessageLookupByLibrary.simpleMessage("质感设计"),
         "me": MessageLookupByLibrary.simpleMessage("我"),
-        "minuteAgo": m12,
-        "minuteLater": m13,
+        "minuteAgo": m13,
+        "minuteLater": m14,
         "more": MessageLookupByLibrary.simpleMessage("更多"),
+        "networkFail": MessageLookupByLibrary.simpleMessage("连接服务器时出错。"),
+        "noImagePicked": MessageLookupByLibrary.simpleMessage("您可能没有选择任何一张图片。"),
         "noMore": MessageLookupByLibrary.simpleMessage("没有更多数据"),
         "notification": MessageLookupByLibrary.simpleMessage("通知"),
         "nullDiscuzSubTitle":
             MessageLookupByLibrary.simpleMessage("现在就添加一个论坛吗？"),
         "nullDiscuzTitle": MessageLookupByLibrary.simpleMessage("还没有指定一个论坛"),
         "ok": MessageLookupByLibrary.simpleMessage("好"),
-        "onlineHours": m14,
+        "onlineHours": m15,
         "onlineHoursTitle": MessageLookupByLibrary.simpleMessage("在线时间"),
         "onlyViewAuthor": MessageLookupByLibrary.simpleMessage("只看作者"),
         "openFileInExternalAppActionText":
@@ -289,11 +295,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "password": MessageLookupByLibrary.simpleMessage("密码"),
         "pictureTagInMessage": MessageLookupByLibrary.simpleMessage("[图片]"),
         "policy": MessageLookupByLibrary.simpleMessage("条款"),
-        "pollExpireAt": m15,
-        "pollVoterNumber": m16,
+        "pollExpireAt": m16,
+        "pollVoterNumber": m17,
         "postAuthorLabel": MessageLookupByLibrary.simpleMessage("楼主"),
         "postNumber": MessageLookupByLibrary.simpleMessage("回帖数"),
-        "postPosition": m17,
+        "postPosition": m18,
         "preparingPage": MessageLookupByLibrary.simpleMessage("正在准备此界面。"),
         "privacyPolicy": MessageLookupByLibrary.simpleMessage("隐私政策"),
         "privacyProtectSubtitle":
@@ -332,7 +338,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "releaseToRefresh": MessageLookupByLibrary.simpleMessage("释放刷新"),
         "relogin": MessageLookupByLibrary.simpleMessage("重新登陆"),
         "replyPost": MessageLookupByLibrary.simpleMessage("回复"),
-        "replyPostTrimMessage": m18,
+        "replyPostTrimMessage": m19,
         "residentPlace": MessageLookupByLibrary.simpleMessage("居住地"),
         "retry": MessageLookupByLibrary.simpleMessage("重试"),
         "revisedPost": MessageLookupByLibrary.simpleMessage("帖子审核后再编辑，以防重复加分。"),
@@ -343,20 +349,23 @@ class MessageLookup extends MessageLookupByLibrary {
         "seeAllReplies": MessageLookupByLibrary.simpleMessage("查看所有"),
         "selectUserNull": MessageLookupByLibrary.simpleMessage("未选中一个用户"),
         "send": MessageLookupByLibrary.simpleMessage("发送"),
+        "sendImageWithVerificationNotice": MessageLookupByLibrary.simpleMessage(
+            "需要手动填写验证码，填写完成后，最右侧发送按钮完成发送。"),
         "sendReply": MessageLookupByLibrary.simpleMessage("回帖"),
         "sendReplyHint": MessageLookupByLibrary.simpleMessage("说些什么吧。"),
         "settingTitle": MessageLookupByLibrary.simpleMessage("设置"),
         "settings": MessageLookupByLibrary.simpleMessage("设置"),
-        "signInSuccessTitle": m19,
-        "signInTitle": m20,
+        "signInSuccessTitle": m20,
+        "signInTitle": m21,
         "signInViaBrowser": MessageLookupByLibrary.simpleMessage("使用网页登录"),
         "signUp": MessageLookupByLibrary.simpleMessage("注册"),
         "sitePage": MessageLookupByLibrary.simpleMessage("主页"),
-        "smileyLabel": m21,
+        "smileyLabel": m22,
         "style": MessageLookupByLibrary.simpleMessage("样式"),
-        "submitPoll": m22,
-        "successfullyDeleteViewHistoryContent": m23,
-        "successfullyDownloadFiles": m24,
+        "submitPoll": m23,
+        "successfullyDeleteViewHistoryContent": m24,
+        "successfullyDownloadFiles": m25,
+        "takeAPicture": MessageLookupByLibrary.simpleMessage("照相"),
         "tapToWipeAndRelogin":
             MessageLookupByLibrary.simpleMessage("点击以移除此用户并重新登陆"),
         "termsOfService": MessageLookupByLibrary.simpleMessage("使用条款"),
@@ -372,16 +381,38 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("无法验证登陆状态"),
         "undo": MessageLookupByLibrary.simpleMessage("撤销"),
         "updateAt": MessageLookupByLibrary.simpleMessage("更新于 %T"),
+        "uploadImageError1": MessageLookupByLibrary.simpleMessage("不支持此类扩展名."),
+        "uploadImageError10": MessageLookupByLibrary.simpleMessage("非法操作"),
+        "uploadImageError11":
+            MessageLookupByLibrary.simpleMessage("今日您已无法上传那么大的附件"),
+        "uploadImageError2":
+            MessageLookupByLibrary.simpleMessage("服务器限制无法上传那么大的附件"),
+        "uploadImageError3":
+            MessageLookupByLibrary.simpleMessage("用户组限制无法上传那么大的附件"),
+        "uploadImageError4": MessageLookupByLibrary.simpleMessage("不支持此类扩展名"),
+        "uploadImageError5":
+            MessageLookupByLibrary.simpleMessage("文件类型限制无法上传那么大的附件"),
+        "uploadImageError6":
+            MessageLookupByLibrary.simpleMessage("今日您已无法上传更多的附件"),
+        "uploadImageError7": MessageLookupByLibrary.simpleMessage("请选择图片文件"),
+        "uploadImageError8": MessageLookupByLibrary.simpleMessage("附件文件无法保存"),
+        "uploadImageError9": MessageLookupByLibrary.simpleMessage("没有合法的文件被上传"),
+        "uploadImageErrorNegative1":
+            MessageLookupByLibrary.simpleMessage("内部服务器错误"),
+        "uploadImageSuccessfully":
+            MessageLookupByLibrary.simpleMessage("文件已经成功上传至服务器"),
+        "uploadImageUnknownError":
+            MessageLookupByLibrary.simpleMessage("上传文件时遇到了一个未知错误。"),
         "userExpiredSubtitle":
             MessageLookupByLibrary.simpleMessage("当前用户授权已过期，你需要重新登录以重新激活此用户。"),
-        "userExpiredTitle": m25,
-        "userIdTitle": m26,
+        "userExpiredTitle": m26,
+        "userIdTitle": m27,
         "userProfile": MessageLookupByLibrary.simpleMessage("用户中心"),
         "userProfileTitle": MessageLookupByLibrary.simpleMessage("用户信息"),
         "viewAuthorInfo": MessageLookupByLibrary.simpleMessage("查看用户详情"),
         "viewHistory": MessageLookupByLibrary.simpleMessage("浏览历史"),
         "viewThreadTitle": MessageLookupByLibrary.simpleMessage("查看帖子"),
-        "viewUserInfo": m27,
+        "viewUserInfo": m28,
         "warnedPost": MessageLookupByLibrary.simpleMessage("此贴被警告。"),
         "watchPictureInFullScreen":
             MessageLookupByLibrary.simpleMessage("查看大图"),

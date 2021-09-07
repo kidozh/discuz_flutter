@@ -18,7 +18,7 @@ import 'entity/Discuz.dart';
 
 String initialPlatform = "";
 
-bool isExclusiveDiscuz = true;
+bool isExclusiveDiscuz = false;
 
 Discuz exclusiveDiscuz = Discuz(null, "https://keylol.com", "X3.2", "utf-8", 4, "1.4.8", "register", true, "true", "true", "其乐 Keylol", "0", "https://keylol.com/uc_server", "161");
 

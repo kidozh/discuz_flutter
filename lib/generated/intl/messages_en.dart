@@ -21,66 +21,69 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m0(discuz) => "Add ${discuz} to your device successfully.";
 
-  static String m1(day) => "${day} days ago";
+  static String m1(index) => "Upload #${index}";
 
-  static String m2(day) => "${day} days later";
+  static String m2(day) => "${day} days ago";
 
-  static String m3(account) => "Delete account ${account} successfully.";
+  static String m3(day) => "${day} days later";
 
-  static String m4(account) => "Delete discuz ${account} successfully.";
+  static String m4(account) => "Delete account ${account} successfully.";
 
-  static String m5(filename) => "Downloading file: ${filename} in background.";
+  static String m5(account) => "Delete discuz ${account} successfully.";
 
-  static String m6(size) => "${size} pt";
+  static String m6(filename) => "Downloading file: ${filename} in background.";
 
-  static String m7(size) => "x ${size}";
+  static String m7(size) => "${size} pt";
 
-  static String m8(readAccess, star) =>
+  static String m8(size) => "x ${size}";
+
+  static String m9(readAccess, star) =>
       "Read Access: ${readAccess} and Star: ${star}";
 
-  static String m9(hour) => "${hour} hours ago";
+  static String m10(hour) => "${hour} hours ago";
 
-  static String m10(hour) => "${hour} hours later";
+  static String m11(hour) => "${hour} hours later";
 
-  static String m11(uri) => "Unable to open the uri: ${uri}.";
+  static String m12(uri) => "Unable to open the uri: ${uri}.";
 
-  static String m12(min) => "${min} minutes ago";
+  static String m13(min) => "${min} minutes ago";
 
-  static String m13(min) => "${min} minutes later";
+  static String m14(min) => "${min} minutes later";
 
-  static String m14(hour) => "${hour} hour(s).";
+  static String m15(hour) => "${hour} hour(s).";
 
-  static String m15(time) => "Poll will expire at ${time}.";
+  static String m16(time) => "Poll will expire at ${time}.";
 
-  static String m16(people) => "${people} have voted.";
+  static String m17(people) => "${people} have voted.";
 
-  static String m17(pos) => "# ${pos}";
+  static String m18(pos) => "# ${pos}";
 
-  static String m18(pid, ptid, author, fullTimeString, trimMessage) =>
+  static String m19(pid, ptid, author, fullTimeString, trimMessage) =>
       "[quote][size=2][url=forum.php?mod=redirect&goto=findpost&pid=${pid}&ptid=${ptid}]${author} posted at ${fullTimeString}[/url][/size]\n${trimMessage}[/quote]";
 
-  static String m19(username, discuzName) =>
+  static String m20(username, discuzName) =>
       "User ${username} sign in at ${discuzName} successfully.";
 
-  static String m20(discuzName) => "Sign in at ${discuzName}";
+  static String m21(discuzName) => "Sign in at ${discuzName}";
 
-  static String m21(index) => "Smiley #${index}";
+  static String m22(index) => "Smiley #${index}";
 
-  static String m22(checked, allowed) => "Submit (${checked} / ${allowed})";
+  static String m23(checked, allowed) => "Submit (${checked} / ${allowed})";
 
-  static String m23(title) => "Successfully remove view history ${title}.";
+  static String m24(title) => "Successfully remove view history ${title}.";
 
-  static String m24(filename) => "Successfully download file: ${filename}.";
+  static String m25(filename) => "Successfully download file: ${filename}.";
 
-  static String m25(username) => "User ${username} expired";
+  static String m26(username) => "User ${username} expired";
 
-  static String m26(uid) => "UserId ${uid}";
+  static String m27(uid) => "UserId ${uid}";
 
-  static String m27(user) => "View ${user}\'s profile.";
+  static String m28(user) => "View ${user}\'s profile.";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("Account"),
+        "addAPhoto": MessageLookupByLibrary.simpleMessage("Photo"),
         "addDiscuzSuccessfully": m0,
         "addDiscuzTitle":
             MessageLookupByLibrary.simpleMessage("Add a discuz! BBS"),
@@ -93,6 +96,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "appearanceOptimizedPlatformSubtitle":
             MessageLookupByLibrary.simpleMessage(
                 "Choose the app appearance on preferred platform."),
+        "attachFile": m1,
         "basicUse": MessageLookupByLibrary.simpleMessage("Basic"),
         "basicUseDescribe":
             MessageLookupByLibrary.simpleMessage("Basic use of EasyRefresh"),
@@ -162,11 +166,11 @@ class MessageLookup extends MessageLookupByLibrary {
             "The version is not permanent and your data may get lost in upgrading process."),
         "dataBackupInTestTitle":
             MessageLookupByLibrary.simpleMessage("Data backup"),
-        "dayAgo": m1,
-        "dayLater": m2,
+        "dayAgo": m2,
+        "dayLater": m3,
         "deleteAccount": MessageLookupByLibrary.simpleMessage("Delete"),
-        "deleteAccountSuccessfully": m3,
-        "deleteDiscuzSuccessfully": m4,
+        "deleteAccountSuccessfully": m4,
+        "deleteDiscuzSuccessfully": m5,
         "deleteViewHistoryWarnContent": MessageLookupByLibrary.simpleMessage(
             "Clearing operation is irrecoverable, please take care."),
         "disableFontCustomization":
@@ -181,7 +185,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("eg. https://bbs.nwpu.edu.cn"),
         "displaySettingTitle": MessageLookupByLibrary.simpleMessage("Display"),
         "downloadAttachment": MessageLookupByLibrary.simpleMessage("Download"),
-        "downloadingFiles": m5,
+        "downloadingFiles": m6,
         "emptyListDescription":
             MessageLookupByLibrary.simpleMessage("The content is empty"),
         "emptyScreenTitle":
@@ -192,10 +196,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "followSystem": MessageLookupByLibrary.simpleMessage("Follow system"),
         "fontSizeInParagraph":
             MessageLookupByLibrary.simpleMessage("Font size in paragraph"),
-        "fontSizeInParagraphUnit": m6,
+        "fontSizeInParagraphUnit": m7,
         "fontSizeScaleParameter": MessageLookupByLibrary.simpleMessage(
             "Scale parameter in typesetting"),
-        "fontSizeScaleParameterUnit": m7,
+        "fontSizeScaleParameterUnit": m8,
         "forgetPassword":
             MessageLookupByLibrary.simpleMessage("Forget password?"),
         "forumDisplayTitle":
@@ -240,11 +244,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "googleAdSubTitle": MessageLookupByLibrary.simpleMessage(
             "Advertisement provided by Google"),
         "googleAdTitle": MessageLookupByLibrary.simpleMessage("AD"),
-        "groupInfoDescription": m8,
+        "groupInfoDescription": m9,
         "habit": MessageLookupByLibrary.simpleMessage("Habits"),
         "homepage": MessageLookupByLibrary.simpleMessage("Homepage"),
-        "hourAgo": m9,
-        "hourLater": m10,
+        "hourAgo": m10,
+        "hourLater": m11,
         "httpBrowseWarn":
             MessageLookupByLibrary.simpleMessage("HTTP protocol warning"),
         "incognitoSubtitle": MessageLookupByLibrary.simpleMessage(
@@ -270,7 +274,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "lastVisitTime": MessageLookupByLibrary.simpleMessage("Last visit at"),
         "legalInformation":
             MessageLookupByLibrary.simpleMessage("Legal information"),
-        "linkUnableToOpen": m11,
+        "linkUnableToOpen": m12,
         "loadFailed": MessageLookupByLibrary.simpleMessage("Load failed"),
         "loadFinish": MessageLookupByLibrary.simpleMessage("Load completed"),
         "loadMore": MessageLookupByLibrary.simpleMessage("LoadMore"),
@@ -296,9 +300,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "materialDesign":
             MessageLookupByLibrary.simpleMessage("Material Design"),
         "me": MessageLookupByLibrary.simpleMessage("Me"),
-        "minuteAgo": m12,
-        "minuteLater": m13,
+        "minuteAgo": m13,
+        "minuteLater": m14,
         "more": MessageLookupByLibrary.simpleMessage("More"),
+        "networkFail": MessageLookupByLibrary.simpleMessage(
+            "Error in connecting with the server."),
+        "noImagePicked":
+            MessageLookupByLibrary.simpleMessage("No Image picked"),
         "noMore": MessageLookupByLibrary.simpleMessage("No more"),
         "notification": MessageLookupByLibrary.simpleMessage("Notification"),
         "nullDiscuzSubTitle": MessageLookupByLibrary.simpleMessage(
@@ -306,7 +314,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "nullDiscuzTitle":
             MessageLookupByLibrary.simpleMessage("No Discuz! BBS is selected"),
         "ok": MessageLookupByLibrary.simpleMessage("ok"),
-        "onlineHours": m14,
+        "onlineHours": m15,
         "onlineHoursTitle": MessageLookupByLibrary.simpleMessage("Online Time"),
         "onlyViewAuthor": MessageLookupByLibrary.simpleMessage("OP mode"),
         "openFileInExternalAppActionText":
@@ -331,11 +339,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "pictureTagInMessage": MessageLookupByLibrary.simpleMessage("[Pic]"),
         "policy": MessageLookupByLibrary.simpleMessage("Our policy"),
-        "pollExpireAt": m15,
-        "pollVoterNumber": m16,
+        "pollExpireAt": m16,
+        "pollVoterNumber": m17,
         "postAuthorLabel": MessageLookupByLibrary.simpleMessage("OP"),
         "postNumber": MessageLookupByLibrary.simpleMessage("Post number"),
-        "postPosition": m17,
+        "postPosition": m18,
         "preparingPage":
             MessageLookupByLibrary.simpleMessage("Preparing the page."),
         "privacyPolicy": MessageLookupByLibrary.simpleMessage("Privacy policy"),
@@ -382,7 +390,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Release to refresh"),
         "relogin": MessageLookupByLibrary.simpleMessage("relogin"),
         "replyPost": MessageLookupByLibrary.simpleMessage("Reply"),
-        "replyPostTrimMessage": m18,
+        "replyPostTrimMessage": m19,
         "residentPlace": MessageLookupByLibrary.simpleMessage("Resident place"),
         "retry": MessageLookupByLibrary.simpleMessage("retry"),
         "revisedPost": MessageLookupByLibrary.simpleMessage(
@@ -396,21 +404,24 @@ class MessageLookup extends MessageLookupByLibrary {
         "selectUserNull": MessageLookupByLibrary.simpleMessage(
             "No user is currently activated"),
         "send": MessageLookupByLibrary.simpleMessage("Send"),
+        "sendImageWithVerificationNotice": MessageLookupByLibrary.simpleMessage(
+            "Captcha required in reply. Please fill the captcha then send it by pushing the button."),
         "sendReply": MessageLookupByLibrary.simpleMessage("Send"),
         "sendReplyHint": MessageLookupByLibrary.simpleMessage("Say something"),
         "settingTitle": MessageLookupByLibrary.simpleMessage("Settings"),
         "settings": MessageLookupByLibrary.simpleMessage("Settings"),
-        "signInSuccessTitle": m19,
-        "signInTitle": m20,
+        "signInSuccessTitle": m20,
+        "signInTitle": m21,
         "signInViaBrowser":
             MessageLookupByLibrary.simpleMessage("Sign in by web"),
         "signUp": MessageLookupByLibrary.simpleMessage("Sign up"),
         "sitePage": MessageLookupByLibrary.simpleMessage("Homepage"),
-        "smileyLabel": m21,
+        "smileyLabel": m22,
         "style": MessageLookupByLibrary.simpleMessage("Style"),
-        "submitPoll": m22,
-        "successfullyDeleteViewHistoryContent": m23,
-        "successfullyDownloadFiles": m24,
+        "submitPoll": m23,
+        "successfullyDeleteViewHistoryContent": m24,
+        "successfullyDownloadFiles": m25,
+        "takeAPicture": MessageLookupByLibrary.simpleMessage("Shot"),
         "tapToWipeAndRelogin": MessageLookupByLibrary.simpleMessage(
             "Tap to wipe out and re-login user"),
         "termsOfService":
@@ -428,10 +439,38 @@ class MessageLookup extends MessageLookupByLibrary {
             "Unable to verify your auth status"),
         "undo": MessageLookupByLibrary.simpleMessage("Undo"),
         "updateAt": MessageLookupByLibrary.simpleMessage("Update at %T"),
+        "uploadImageError1": MessageLookupByLibrary.simpleMessage(
+            "The file extension is not supported."),
+        "uploadImageError10":
+            MessageLookupByLibrary.simpleMessage("Invalid operation."),
+        "uploadImageError11": MessageLookupByLibrary.simpleMessage(
+            "You can not upload any large files like this today."),
+        "uploadImageError2": MessageLookupByLibrary.simpleMessage(
+            "Your file size excesses the server limit."),
+        "uploadImageError3": MessageLookupByLibrary.simpleMessage(
+            "The file size excesses your group limit."),
+        "uploadImageError4": MessageLookupByLibrary.simpleMessage(
+            "Your file type is not supported."),
+        "uploadImageError5": MessageLookupByLibrary.simpleMessage(
+            "The file size excesses file type limit."),
+        "uploadImageError6": MessageLookupByLibrary.simpleMessage(
+            "You can not upload any files today."),
+        "uploadImageError7":
+            MessageLookupByLibrary.simpleMessage("The file is not an image."),
+        "uploadImageError8": MessageLookupByLibrary.simpleMessage(
+            "The file can not be stored in the server."),
+        "uploadImageError9":
+            MessageLookupByLibrary.simpleMessage("Invalid upload method."),
+        "uploadImageErrorNegative1":
+            MessageLookupByLibrary.simpleMessage("Internal Server Error"),
+        "uploadImageSuccessfully": MessageLookupByLibrary.simpleMessage(
+            "Upload file to server sucessfully."),
+        "uploadImageUnknownError": MessageLookupByLibrary.simpleMessage(
+            "Encounter a unresolved issue when uploading the file"),
         "userExpiredSubtitle": MessageLookupByLibrary.simpleMessage(
             "The current user is expired, some function may not work."),
-        "userExpiredTitle": m25,
-        "userIdTitle": m26,
+        "userExpiredTitle": m26,
+        "userIdTitle": m27,
         "userProfile": MessageLookupByLibrary.simpleMessage("User Profile"),
         "userProfileTitle":
             MessageLookupByLibrary.simpleMessage("User Profiles"),
@@ -440,7 +479,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewHistory": MessageLookupByLibrary.simpleMessage("View History"),
         "viewThreadTitle":
             MessageLookupByLibrary.simpleMessage("View a thread"),
-        "viewUserInfo": m27,
+        "viewUserInfo": m28,
         "warnedPost":
             MessageLookupByLibrary.simpleMessage("The post is warned."),
         "watchPictureInFullScreen":

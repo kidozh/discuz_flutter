@@ -403,5 +403,30 @@
   "welcomeSubtitle": "Welcome to use our Services.",
   "continueToDo": "Continue",
   "finishLoginInWeb": "Finish",
-  "invalidCookie": "Invalid cookie from response."
+  "invalidCookie": "Invalid cookie from response.",
+  "addAPhoto": "Photo",
+  "takeAPicture": "Shot",
+  "networkFail": "Error in connecting with the server.",
+  "noImagePicked": "No Image picked",
+  "uploadImageUnknownError": "Encounter a unresolved issue when uploading the file",
+  "uploadImageErrorNegative1": "Internal Server Error",
+  "uploadImageError1": "The file extension is not supported.",
+  "uploadImageError2": "Your file size excesses the server limit.",
+  "uploadImageError3": "The file size excesses your group limit.",
+  "uploadImageError4": "Your file type is not supported.",
+  "uploadImageError5": "The file size excesses file type limit.",
+  "uploadImageError6": "You can not upload any files today.",
+  "uploadImageError7": "The file is not an image.",
+  "uploadImageError8": "The file can not be stored in the server.",
+  "uploadImageError9": "Invalid upload method.",
+  "uploadImageError10": "Invalid operation.",
+  "uploadImageError11": "You can not upload any large files like this today.",
+  "uploadImageSuccessfully": "Upload file to server sucessfully.",
+  "attachFile": "Upload #{index}",
+  "@attachFile": {
+    "placeholders": {
+      "index": {}
+    }
+  },
+  "sendImageWithVerificationNotice": "Captcha required in reply. Please fill the captcha then send it by pushing the button."
 }

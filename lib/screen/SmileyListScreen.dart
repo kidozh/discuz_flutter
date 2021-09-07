@@ -33,7 +33,6 @@ class SmileyListStatefulWidget extends StatefulWidget{
 
   @override
   State<SmileyListStatefulWidget> createState() {
-    // TODO: implement createState
     return SmileyListState(this.smileyValueGetter);
   }
 
@@ -48,7 +47,6 @@ class SmileyListState extends State<SmileyListStatefulWidget>{
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _loadSmilesInfo();
   }
@@ -75,13 +73,12 @@ class SmileyListState extends State<SmileyListStatefulWidget>{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
     if(discuz == null){
       return NullDiscuzScreen();
     }
     else{
-      if(result == null || result!.variables == null){
+      if(result == null){
         return Container(
           height: 100,
         );

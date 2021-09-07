@@ -403,5 +403,30 @@
   "welcomeSubtitle": "欢迎使用我们的服务，我们基于Discuz！移动插件为您服务。",
   "continueToDo": "继续",
   "finishLoginInWeb": "完成登录",
-  "invalidCookie": "服务器的响应中包含一个或多个含有错误字符的Cookie,无法解析Cookie,无法登录."
+  "invalidCookie": "服务器的响应中包含一个或多个含有错误字符的Cookie,无法解析Cookie,无法登录.",
+  "addAPhoto": "照片",
+  "takeAPicture": "照相",
+  "networkFail": "连接服务器时出错。",
+  "noImagePicked": "您可能没有选择任何一张图片。",
+  "uploadImageUnknownError": "上传文件时遇到了一个未知错误。",
+  "uploadImageErrorNegative1": "内部服务器错误",
+  "uploadImageError1": "不支持此类扩展名.",
+  "uploadImageError2": "服务器限制无法上传那么大的附件",
+  "uploadImageError3": "用户组限制无法上传那么大的附件",
+  "uploadImageError4": "不支持此类扩展名",
+  "uploadImageError5": "文件类型限制无法上传那么大的附件",
+  "uploadImageError6": "今日您已无法上传更多的附件",
+  "uploadImageError7": "请选择图片文件",
+  "uploadImageError8": "附件文件无法保存",
+  "uploadImageError9": "没有合法的文件被上传",
+  "uploadImageError10": "非法操作",
+  "uploadImageError11": "今日您已无法上传那么大的附件",
+  "uploadImageSuccessfully": "文件已经成功上传至服务器",
+  "attachFile": "上传文件 No. {index}",
+  "@attachFile": {
+    "placeholders": {
+      "index": {}
+    }
+  },
+  "sendImageWithVerificationNotice": "需要手动填写验证码，填写完成后，最右侧发送按钮完成发送。"
 }

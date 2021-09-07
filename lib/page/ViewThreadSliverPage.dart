@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:developer';
 
 import 'package:discuz_flutter/JsonResult/SmileyResult.dart';
@@ -9,6 +10,7 @@ import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/screen/ExtraFuncInThreadScreen.dart';
 import 'package:discuz_flutter/screen/SmileyListScreen.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
@@ -91,12 +93,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
   // smiley=1, extra=2 or none = 0
   int dialogStatus = 0;
+  List<String> insertedAidList = [];
 
   ValueNotifier<bool> showExtraButton = ValueNotifier(true);
 
   final int SHOW_SMILEY_DIALOG = 1;
   final int SHOW_EXTRA_DIALOG = 2;
-  final int SHOW_NONE_DIALOG = 2;
+  final int SHOW_NONE_DIALOG = 0;
 
   // 反向
   bool _reverse = false;
@@ -133,7 +136,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _controller = EasyRefreshController();
     _scrollController = ScrollController();
@@ -286,6 +288,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       notifyAuthorMessage = S.of(context).replyPostTrimMessage(replyPost.pid,
           replyPost.tid, replyPost.author, fullTimeString, trimMessage);
     }
+
+    HashMap<String,String> attachImgMap = HashMap();
+    for(var aid in insertedAidList){
+      String key = "attachnew[${aid}][description]";
+      attachImgMap[key] = "${aid}";
+    }
+
     client
         .sendReplyResult(
             fid,
@@ -296,7 +305,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             message,
             captchaHash,
             captchaMod,
-            verification)
+            verification,attachImgMap)
         .then((value) {
       if (value.errorResult!.key == "post_reply_succeed") {
         EasyLoading.showSuccess(
@@ -722,23 +731,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                           ),
                                           child: PostTextField(discuz, _replyController,focusNode: _focusNode,),
                                         ),
-                                        // child: PostTextField(discuz, _replyController,focusNode: _focusNode,)
-                                      // child: PlatformTextField(
-                                      //   minLines: 1,
-                                      //   maxLines: 3,
-                                      //   controller: _replyController,
-                                      //   hintText: S.of(context).sendReplyHint,
-                                      //   onSubmitted: (text) {
-                                      //     VibrationUtils.vibrateWithClickIfPossible();
-                                      //     _sendReply();
-                                      //   },
-                                      // ),
                                     )),
-                                PlatformIconButton(
+                                IconButton(
 
                                   icon: dialogStatus != SHOW_SMILEY_DIALOG ?
-                                  Icon(Icons.emoji_emotions_outlined,color: Theme.of(context).brightness == Brightness.light? Colors.black87: Colors.white70,) :
-                                  Icon(Icons.keyboard_outlined,color: Theme.of(context).brightness == Brightness.light? Colors.black87: Colors.white70,),
+                                  Icon(Icons.emoji_emotions_outlined) :
+                                  Icon(Icons.keyboard_outlined),
                                   onPressed: (){
                                     if (dialogStatus!=SHOW_SMILEY_DIALOG) {
                                       FocusScope.of(context).requestFocus(new FocusNode());
@@ -758,18 +756,55 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                     valueListenable: showExtraButton,
                                     builder: (context, value, _){
                                       if(value == false){
-                                        return MaterialButton(
-                                          color: Theme.of(context).primaryColor,
-                                          child: Text(S.of(context).send),
-                                          onPressed: (){
-                                            VibrationUtils.vibrateWithClickIfPossible();
-                                            _sendReply();
-                                          },
-                                        );
+                                        return ProgressButton.icon(
+                                            maxWidth: 60.0,
+
+                                            iconedButtons: {
+                                              ButtonState.idle: IconedButton(
+                                                //text: S.of(context).sendReply,
+                                                  icon: Icon(Icons.send,
+                                                      color: Colors.white),
+                                                  color: Theme.of(context).primaryColor),
+                                              ButtonState.loading: IconedButton(
+                                                //text: S.of(context).progressButtonReplySending,
+                                                  color: Theme.of(context).accentColor),
+                                              ButtonState.fail: IconedButton(
+                                                //text: S.of(context).progressButtonReplyFailed,
+                                                  icon: Icon(Icons.cancel,
+                                                      color: Colors.white),
+                                                  color: Colors.red.shade300),
+                                              ButtonState.success: IconedButton(
+                                                //text: S.of(context).progressButtonReplySuccess,
+                                                  icon: Icon(
+                                                    Icons.check_circle,
+                                                    color: Colors.white,
+                                                  ),
+                                                  color: Colors.green.shade400)
+                                            },
+                                            onPressed: () {
+                                              VibrationUtils.vibrateWithClickIfPossible();
+                                              _sendReply();
+                                            },
+                                            state: _sendReplyStatus);
                                       }
                                       else{
-                                        return Container();
-                                        return PlatformIconButton(icon: Icon(Icons.add_circle_outline));
+                                        //return Container();
+                                        return IconButton(
+                                            icon: Icon(dialogStatus == SHOW_EXTRA_DIALOG ? Icons.close :Icons.add_circle_outline),
+                                            onPressed: (){
+                                              if (dialogStatus!=SHOW_EXTRA_DIALOG) {
+                                                FocusScope.of(context).requestFocus(new FocusNode());
+                                                setState(() {
+                                                  dialogStatus = SHOW_EXTRA_DIALOG;
+                                                });
+                                              } else {
+                                                FocusScope.of(context).requestFocus(_focusNode);
+                                                setState(() {
+                                                  dialogStatus = SHOW_NONE_DIALOG;
+                                                });
+                                              }
+                                            },
+                                        );
                                       }
                                     }
                                 )
@@ -790,6 +825,30 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                   SmileyListScreen((smiley) {
                                     insertSmiley(smiley);
                                   })
+                                ],
+                              ),
+                            if (dialogStatus == SHOW_EXTRA_DIALOG)
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ExtraFuncInThreadScreen(tid,_viewThreadResult.threadVariables.fid,
+                                    onReplyWithImage: (aid){
+                                      // fill with text first
+                                      _replyController.text = "[attachimg]${aid}[/attachimg]";
+                                      // add aid to list
+                                      insertedAidList.add(aid);
+                                      // check whether need seccode
+                                      CaptchaFields? captchaFields = _captchaController.value;
+                                      if(captchaFields != null && captchaFields.captchaFormHash.isNotEmpty){
+                                        EasyLoading.showInfo(S.of(context).sendImageWithVerificationNotice);
+                                      }
+                                      else{
+                                        _sendReply();
+                                      }
+
+
+                                    },
+                                  ),
                                 ],
                               )
                           ],

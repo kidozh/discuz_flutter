@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:discuz_flutter/JsonResult/ApiResult.dart';
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:discuz_flutter/JsonResult/CaptchaResult.dart';
 import 'package:discuz_flutter/JsonResult/CheckLoginResult.dart';
+import 'package:discuz_flutter/JsonResult/CheckPostResult.dart';
 import 'package:discuz_flutter/JsonResult/CheckResult.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
@@ -101,8 +104,8 @@ abstract class MobileApiClient {
       // for captcha services
       @Field("seccodehash") String captchaHash,
       @Field("seccodemodid") String captchaType,
-      @Field("seccodeverify") String verification
-
+      @Field("seccodeverify") String verification,
+      @Queries() Map<String, dynamic> queries
       // @Body() Map<String, dynamic> map
       );
 
@@ -118,7 +121,8 @@ abstract class MobileApiClient {
       // for captcha services
       @Field("seccodehash") String captchaHash,
       @Field("seccodemodid") String captchaType,
-      @Field("seccodeverify") String verification
+      @Field("seccodeverify") String verification,
+      @Queries() Map<String, dynamic> queries
       );
 
   @GET("/api/mobile/index.php?version=4&module=mynotelist")
@@ -174,4 +178,12 @@ abstract class MobileApiClient {
 
   @GET("/api/mobile/index.php?version=4&module=myfavthread")
   Future<FavoriteThreadResult> favoriteThreadResult(@Query("page") int page);
+
+  @MultiPart()
+  @POST("/api/mobile/index.php?version=4&module=forumupload&type=image")
+  Future<String> uploadImage(@Part(name:"uid") int uid, @Part(name:"hash") String uploadHash, @Part(name:"Filedata") File file);
+
+  @GET("/api/mobile/index.php?version=4&module=checkpost")
+  Future<CheckPostResult> checkPost(@Query("fid") int? fid, @Query("tid") int? tid);
+
 }
