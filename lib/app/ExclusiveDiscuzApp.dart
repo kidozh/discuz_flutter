@@ -101,6 +101,7 @@ class ExclusiveDiscuzApp extends StatelessWidget{
             data: materialTheme,
             child: PlatformProvider(
               initialPlatform: getTargetPlatformByName(platformName),
+
               settings: PlatformSettingsData(
                 iosUsesMaterialWidgets: true,
 
@@ -108,6 +109,7 @@ class ExclusiveDiscuzApp extends StatelessWidget{
               ),
               builder: (context){
                 return  PlatformApp(
+                  debugShowCheckedModeBanner: false,
                   //title: S.of(context).appName,
 
                   material: (_,__)=> MaterialAppData(
