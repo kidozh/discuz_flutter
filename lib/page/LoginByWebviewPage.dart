@@ -59,6 +59,8 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
     _triggerNotificationDialog();
   }
 
+  bool websiteLoaded = false;
+
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
@@ -69,13 +71,16 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         trailingActions: <Widget>[
           //NavigationControls(_controller.future),
-          IconButton(
-            icon: Icon(PlatformIcons(context).checkMark),
-            onPressed: () {
-              VibrationUtils.vibrateWithClickIfPossible();
-              _checkUserLogined();
-            },
-          ),
+          if(websiteLoaded)
+            IconButton(
+              icon: Icon(PlatformIcons(context).checkMark),
+              onPressed: () {
+                VibrationUtils.vibrateWithClickIfPossible();
+                _checkUserLogined();
+              },
+            ),
+          if(!websiteLoaded)
+            PlatformCircularProgressIndicator(),
         ],
       ),
       body: Builder(builder: (BuildContext context) {
@@ -102,10 +107,17 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           },
           onPageStarted: (String url) {
             print('Page started loading: $url');
+            setState(() {
+              websiteLoaded = false;
+            });
           },
           onPageFinished: (String url) async{
             print('Page finished loading: $url');
+            setState(() {
+              websiteLoaded = true;
+            });
             final gotCookies = await webviewCookieManager.getCookies(url);
+
             // for (var item in gotCookies) {
             //   print(item);
             // }
@@ -172,6 +184,8 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
   void _checkUserLogined() async{
     Dio _dio = Dio();
     var controller = await _controller.future;
+    // trigger an alert
+    EasyLoading.showInfo(S.of(context).checkUserLoginStatus);
     // transfer from webview to cookiejar
     // split by ;
     List<Cookie> webviewCookie = [];
@@ -225,12 +239,13 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
       else{
         print("Get auth ${value.variables.auth} ${value.variables.formHash}");
         // trigger a alert
-        EasyLoading.showError(S.of(context).unableToVerifyAuthStatus);
+        EasyLoading.showToast(S.of(context).websiteNotLogined);
       }
     })
     .catchError((e,s){
+      print("${e}");
       VibrationUtils.vibrateErrorIfPossible();
-      EasyLoading.showError(e.toString());
+      EasyLoading.showError(S.of(context).networkFailed);
 
     });
 

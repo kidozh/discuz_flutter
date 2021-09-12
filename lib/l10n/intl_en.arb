@@ -428,5 +428,8 @@
       "index": {}
     }
   },
-  "sendImageWithVerificationNotice": "Captcha required in reply. Please fill the captcha then send it by pushing the button."
+  "sendImageWithVerificationNotice": "Captcha required in reply. Please fill the captcha then send it by pushing the button.",
+  "websiteNotLogined": "You haven't login in the website, please try after you actually login.",
+  "networkFailed": "Network failed.",
+  "checkUserLoginStatus": "Check user status..."
 }

@@ -2830,6 +2830,36 @@ class S {
       args: [],
     );
   }
+
+  /// `You haven't login in the website, please try after you actually login.`
+  String get websiteNotLogined {
+    return Intl.message(
+      'You haven\'t login in the website, please try after you actually login.',
+      name: 'websiteNotLogined',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Network failed.`
+  String get networkFailed {
+    return Intl.message(
+      'Network failed.',
+      name: 'networkFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check user status...`
+  String get checkUserLoginStatus {
+    return Intl.message(
+      'Check user status...',
+      name: 'checkUserLoginStatus',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

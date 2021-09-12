@@ -5,6 +5,7 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -76,7 +77,7 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
   Widget build(BuildContext context) {
     if (!cookieLoaded) {
       return Container(
-
+        child: BlankScreen(),
       );
     } else {
       return PlatformScaffold(
@@ -101,11 +102,11 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
                   }
                   else{
                     VibrationUtils.vibrateErrorIfPossible();
-                    EasyLoading.showError(S.of(context).linkUnableToOpen(url));
+                    EasyLoading.showToast(S.of(context).linkUnableToOpen(url));
                   }
                 }
               },
-            )
+            ),
             // SampleMenu(_controller.future),
           ],
         ),
@@ -128,6 +129,7 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
                 onProgress: (int progress) {
                   setState(() {
                     this.progress = progress;
+
                   });
                   print("WebView is loading (progress : $progress%)");
                 },
@@ -135,10 +137,6 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
                   _toasterJavascriptChannel(context),
                 },
                 navigationDelegate: (NavigationRequest request) {
-                  // if (request.url.startsWith('https://www.youtube.com/')) {
-                  //   print('blocking navigation to $request}');
-                  //   return NavigationDecision.prevent;
-                  // }
                   print('allowing navigation to $request');
                   return NavigationDecision.navigate;
                 },

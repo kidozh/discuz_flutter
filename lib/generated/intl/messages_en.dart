@@ -120,6 +120,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "captchaRequired":
             MessageLookupByLibrary.simpleMessage("Captcha required."),
         "chatMessage": MessageLookupByLibrary.simpleMessage("Chat"),
+        "checkUserLoginStatus":
+            MessageLookupByLibrary.simpleMessage("Check user status..."),
         "chooseDiscuz": MessageLookupByLibrary.simpleMessage("Choose a BBS"),
         "chooseThemeTitle": MessageLookupByLibrary.simpleMessage("Theme color"),
         "clearAllViewHistories":
@@ -305,6 +307,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "more": MessageLookupByLibrary.simpleMessage("More"),
         "networkFail": MessageLookupByLibrary.simpleMessage(
             "Error in connecting with the server."),
+        "networkFailed":
+            MessageLookupByLibrary.simpleMessage("Network failed."),
         "noImagePicked":
             MessageLookupByLibrary.simpleMessage("No Image picked"),
         "noMore": MessageLookupByLibrary.simpleMessage("No more"),
@@ -484,6 +488,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("The post is warned."),
         "watchPictureInFullScreen":
             MessageLookupByLibrary.simpleMessage("Full display"),
+        "websiteNotLogined": MessageLookupByLibrary.simpleMessage(
+            "You haven\'t login in the website, please try after you actually login."),
         "welcomeSubtitle": MessageLookupByLibrary.simpleMessage(
             "Welcome to use our Services."),
         "welcomeTitle": MessageLookupByLibrary.simpleMessage("Welcome"),

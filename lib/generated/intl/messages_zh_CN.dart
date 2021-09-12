@@ -112,6 +112,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "cancelAdding": MessageLookupByLibrary.simpleMessage("取消"),
         "captchaRequired": MessageLookupByLibrary.simpleMessage("需要验证码"),
         "chatMessage": MessageLookupByLibrary.simpleMessage("信息"),
+        "checkUserLoginStatus":
+            MessageLookupByLibrary.simpleMessage("正在检查用户登录状态。。。"),
         "chooseDiscuz": MessageLookupByLibrary.simpleMessage("选择一个论坛"),
         "chooseThemeTitle": MessageLookupByLibrary.simpleMessage("主题颜色"),
         "clearAllViewHistories": MessageLookupByLibrary.simpleMessage("清除历史记录"),
@@ -249,7 +251,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginByWebHttpWarn": MessageLookupByLibrary.simpleMessage(
             "您正在使用不安全的HTTP连接，此界面有可能被第三方所劫持。您在此界面输入的信息有可能泄露。强烈建议您使用HTTPS协议访问此界面。"),
         "loginByWebMessage": MessageLookupByLibrary.simpleMessage(
-            "请在网页中完成登录，当您在网页中完成了登录过程后，请轻触左上方的完成登录按钮完成账号录入操作。有时存在延迟情况，可能需要点击两次才能录入账号。"),
+            "请在网页中完成登录，当您在网页中完成了登录过程后，请轻触右上方的完成登录按钮完成账号录入操作。有时存在延迟情况，可能需要点击两次才能录入账号。"),
         "loginByWebNotSupported":
             MessageLookupByLibrary.simpleMessage("当前系统并不支持Webview登录"),
         "loginByWebTitle": MessageLookupByLibrary.simpleMessage("使用网页登录提醒"),
@@ -267,6 +269,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "minuteLater": m14,
         "more": MessageLookupByLibrary.simpleMessage("更多"),
         "networkFail": MessageLookupByLibrary.simpleMessage("连接服务器时出错。"),
+        "networkFailed": MessageLookupByLibrary.simpleMessage("网络访问失败。"),
         "noImagePicked": MessageLookupByLibrary.simpleMessage("您可能没有选择任何一张图片。"),
         "noMore": MessageLookupByLibrary.simpleMessage("没有更多数据"),
         "notification": MessageLookupByLibrary.simpleMessage("通知"),
@@ -416,6 +419,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "warnedPost": MessageLookupByLibrary.simpleMessage("此贴被警告。"),
         "watchPictureInFullScreen":
             MessageLookupByLibrary.simpleMessage("查看大图"),
+        "websiteNotLogined": MessageLookupByLibrary.simpleMessage(
+            "在网页中没有完成登录，请登陆后点击右上方登录按钮完成录入。"),
         "welcomeSubtitle": MessageLookupByLibrary.simpleMessage(
             "欢迎使用我们的服务，我们基于Discuz！移动插件为您服务。"),
         "welcomeTitle": MessageLookupByLibrary.simpleMessage("你好"),

@@ -163,8 +163,14 @@ class _PrivateMessagePortalState extends State<PrivateMessagePortalStatefulWidge
 
       EasyLoading.showError('${onError}');
       if (!_enableControlFinish) {
-        _controller.resetLoadState();
-        _controller.finishRefresh();
+        try{
+          _controller.resetLoadState();
+          _controller.finishRefresh();
+        }
+        catch (e,s){
+
+        }
+
       }
       setState(() {
         _error = DiscuzError(
