@@ -104,28 +104,30 @@ class ManageAccountState extends State<ManageAccountStateWidget>{
               ),
             ),
           ),
-          actionPane: SlidableDrawerActionPane(),
-          actions: [
-            IconSlideAction(
-              caption: S.of(context).deleteAccount,
-              color: Colors.redAccent,
-              icon: Icons.delete,
-              onTap: () {
-                VibrationUtils.vibrateWithClickIfPossible();
-                _deleteAccount(user);
-              },
-            ),
-            IconSlideAction(
-              caption: S.of(context).relogin,
-              color: Colors.teal,
-              icon: Icons.refresh,
-              onTap: () {
-                VibrationUtils.vibrateWithClickIfPossible();
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => LoginPage(discuz, user.username)));
-              },
-            ),
-          ],
+          endActionPane: ActionPane(
+            motion: DrawerMotion(),
+            extentRatio: 0.25,
+            children: [
+              SlidableAction(
+                  label: S.of(context).deleteAccount,
+                  backgroundColor: Colors.redAccent,
+                  icon: Icons.delete,
+                  onPressed: (context) {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    _deleteAccount(user);
+                  }
+              ),
+              SlidableAction(
+                  label: S.of(context).relogin,
+                  backgroundColor: Colors.teal,
+                  icon: Icons.refresh,
+                  onPressed: (context) {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => LoginPage(discuz, user.username)));
+                  },)
+            ],
+          ),
         );
       },
       itemCount: userList.length,

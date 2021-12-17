@@ -124,18 +124,21 @@ class ManageDiscuzState extends State<ManageDiscuzStateWidget>{
                             platformPageRoute(context:context,builder: (context) => ExclusiveDiscuzPortalPage(discuz)));
                       },
                     ),
-                    
-                    actionPane: SlidableDrawerActionPane(),
-                    actions: [
-                      IconSlideAction(
-                        caption: S.of(context).deleteAccount,
-                        color: Colors.redAccent,
-                        icon: Icons.delete,
-                        onTap: () {
-                          _deleteDiscuz(discuz);
-                        },
-                      ),
-                    ],
+                    endActionPane: ActionPane(
+                      motion: DrawerMotion(),
+                      extentRatio: 0.25,
+                      children: [
+                        SlidableAction(
+                            label: S.of(context).deleteAccount,
+                            backgroundColor: Colors.redAccent,
+                            icon: Icons.delete,
+                            onPressed: (context) {
+                              _deleteDiscuz(discuz);
+                            },
+
+                        )
+                      ],
+                    ),
                   );
                 },
                 itemCount: discuzList.length,

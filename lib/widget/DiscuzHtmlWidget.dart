@@ -81,7 +81,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
               User? user = Provider.of<DiscuzAndUserNotifier>(context.buildContext, listen: false).user;
               // judge if it is a path
               Uri? tryUri = Uri.tryParse(urlString);
-              log("${Uri.parse(urlString).isAbsolute}");
+              log("${Uri.parse(urlString).isAbsolute} can launch ${urlLauchable} ${urlString}");
               if(!Uri.parse(urlString).isAbsolute){
                 // add a prefix to test if it's a url
                 urlString = discuz.baseURL+ "/" + urlString;
