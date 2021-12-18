@@ -53,7 +53,11 @@ ForumVariables _$ForumVariablesFromJson(Map<String, dynamic> json) {
     ..rewardUnit = json['reward_unit'] as String? ?? ''
     ..threadType = json['threadtypes'] == null
         ? null
-        : ThreadType.fromJson(json['threadtypes'] as Map<String, dynamic>);
+        : ThreadType.fromJson(json['threadtypes'] as Map<String, dynamic>)
+    ..subForumList = (json['sublist'] as List<dynamic>?)
+            ?.map((e) => SubForum.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
 }
 
 Map<String, dynamic> _$ForumVariablesToJson(ForumVariables instance) =>
@@ -76,6 +80,7 @@ Map<String, dynamic> _$ForumVariablesToJson(ForumVariables instance) =>
       'page': instance.page,
       'reward_unit': instance.rewardUnit,
       'threadtypes': instance.threadType,
+      'sublist': instance.subForumList,
     };
 
 ForumDetail _$ForumDetailFromJson(Map<String, dynamic> json) {
@@ -153,4 +158,23 @@ Map<String, dynamic> _$ThreadTypeToJson(ThreadType instance) =>
       'types': instance.idNameMap,
       'icons': instance.idIconMap,
       'moderators': instance.idModeratorMap,
+    };
+
+SubForum _$SubForumFromJson(Map<String, dynamic> json) {
+  return SubForum()
+    ..fid = const StringToIntConverter().fromJson(json['fid'] as String?)
+    ..threads =
+        const StringToIntConverter().fromJson(json['threads'] as String?)
+    ..posts = const StringToIntConverter().fromJson(json['posts'] as String?)
+    ..todayposts =
+        const StringToIntConverter().fromJson(json['todayposts'] as String?)
+    ..name = json['name'] as String;
+}
+
+Map<String, dynamic> _$SubForumToJson(SubForum instance) => <String, dynamic>{
+      'fid': const StringToIntConverter().toJson(instance.fid),
+      'threads': const StringToIntConverter().toJson(instance.threads),
+      'posts': const StringToIntConverter().toJson(instance.posts),
+      'todayposts': const StringToIntConverter().toJson(instance.todayposts),
+      'name': instance.name,
     };

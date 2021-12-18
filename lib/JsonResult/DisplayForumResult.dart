@@ -53,6 +53,8 @@ class ForumVariables extends BaseVariableResult{
 
   @JsonKey(name: "threadtypes")
   ThreadType? threadType = ThreadType();
+  @JsonKey(name:"sublist",defaultValue: [])
+  List<SubForum> subForumList = [];
 
   ThreadType getThreadType(){
     if(threadType == null){
@@ -162,4 +164,17 @@ class ThreadTypeInfo{
   String typeName;
 
   ThreadTypeInfo(this.typeId, this.typeName);
+}
+
+@JsonSerializable()
+class SubForum{
+  @StringToIntConverter()
+  int fid = 0, threads = 0, posts = 0, todayposts = 0;
+  String name = "";
+
+  SubForum();
+
+  factory SubForum.fromJson(Map<String, dynamic> json) => _$SubForumFromJson(json);
+  Map<String, dynamic> toJson() => _$SubForumToJson(this);
+
 }

@@ -10,6 +10,7 @@ import 'package:discuz_flutter/page/ViewHistoryPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
+import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
 import 'package:discuz_flutter/screen/FavoriteThreadScreen.dart';
 import 'package:discuz_flutter/screen/HotThreadScreen.dart';
@@ -447,8 +448,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void _queryDiscuzList() async {
     final db = await DBHelper.getAppDb();
     final dao = db.discuzDao;
+    setState(() {
+      this._discuzListStream = dao.findAllDiscuzStream();
+    });
 
-    this._discuzListStream = dao.findAllDiscuzStream();
     _allDiscuzs = await dao.findAllDiscuzs();
     log("recv discuz list ${_allDiscuzs.length}");
     if(_allDiscuzs.isNotEmpty){
@@ -464,6 +467,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // need to check whether discuz exists in dataset
     return Scaffold(
       appBar: AppBar(
         title: Consumer<DiscuzAndUserNotifier>(
