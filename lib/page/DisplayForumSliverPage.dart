@@ -428,6 +428,30 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
               },
               childCount: 1,
             )),
+          // check with sub forum
+          if(_displayForumResult!= null && _displayForumResult!.discuzIndexVariables.subForumList.isNotEmpty)
+            SliverList(delegate: SliverChildBuilderDelegate(
+                (context, index){
+                    var subForum = _displayForumResult!.discuzIndexVariables.subForumList[index];
+                    return Card(
+                      color: Theme.of(context).primaryColor,
+                      child: ListTile(
+                        title: Text(subForum.name, style: TextStyle(color: Colors.white),),
+                        leading: Icon(Icons.forum,color: Colors.white),
+                        trailing: Icon(Icons.arrow_forward, color: Colors.white,),
+                        onTap: () async {
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          await Navigator.push(
+                              context,
+                              platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(discuz, user, subForum.fid))
+                          );
+                        },
+                      ),
+                    );
+                },
+                childCount: _displayForumResult!.discuzIndexVariables.subForumList.length
+              )
+            ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {

@@ -525,7 +525,8 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                         ],
                       ),
                     ),
-                  )),
+                  )
+              ),
               // birthplace
               Container(
                   width: double.infinity,
@@ -618,7 +619,8 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                         ],
                       ),
                     ),
-                  )),
+                  )
+              ),
 
               // credit
               Container(
@@ -637,6 +639,45 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                   ),
                 ),
               ),
+              // medal list
+                  if (_userProfileResult!.variables
+                      .getSpace()
+                      .medalList
+                      .isNotEmpty)
+                  Container(
+                      width: double.infinity,
+                      color: Theme.of(context).brightness == Brightness.light
+                          ? Colors.white
+                          : Colors.grey.shade900,
+                      padding: EdgeInsets.all(4),
+                      child: Card(
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.white
+                            : Colors.grey.shade900,
+                        child: Container(
+                          padding: EdgeInsets.all(4.0),
+                          child: Column(
+                            children: [
+                              for(var medal in _userProfileResult!.variables.getSpace().medalList)
+                                UserProfileListItem(
+                                  icon: CachedNetworkImage(
+                                    imageUrl: discuz.baseURL+'/static/image/common/${medal.image}',
+
+                                  ),
+                                  title: medal.name,
+                                  titleColor: Theme.of(context).primaryColor,
+                                  describe: medal.description,
+                                  describeColor: Theme.of(context).brightness == Brightness.light
+                                      ? Colors.black45
+                                      : Colors.white60,
+                                )
+                            ],
+                          ),
+                        ),
+                      )
+                  ),
+
+
             ]))
           ])
         ],
