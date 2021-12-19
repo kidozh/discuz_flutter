@@ -24,7 +24,7 @@ import 'package:flutter_html/style.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter/webview_flutter.dart' hide NavigationRequest,NavigationDecision;
 
 
 // ignore: must_be_immutable

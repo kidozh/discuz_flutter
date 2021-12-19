@@ -138,10 +138,10 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
       bodyBuilder: (context, index) => IndexedStack(
         index: index,
         children: [
-          ExploreWebsitePage(),
-          DiscuzPortalScreen(),
-          HotThreadScreen(),
-          NotificationScreen(),
+          ExploreWebsitePage(key: ValueKey(0),),
+          DiscuzPortalScreen(key: ValueKey(1),),
+          HotThreadScreen(key: ValueKey(2),),
+          NotificationScreen(key: ValueKey(3),),
           ConfigurationScreen(),
         ],
       ),

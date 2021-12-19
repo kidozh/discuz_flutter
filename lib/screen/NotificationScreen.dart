@@ -27,7 +27,7 @@ import 'EmptyScreen.dart';
 class NotificationScreen extends StatelessWidget {
 
 
-  NotificationScreen();
+  NotificationScreen({required Key key}): super(key: key);
 
   @override
   Widget build(BuildContext context) {

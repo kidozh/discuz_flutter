@@ -152,9 +152,20 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
   Widget build(BuildContext context) {
     // TODO: implement build
     if(_viewHistoryDao != null){
-      return Scaffold(
-        appBar: AppBar(
+      return PlatformScaffold(
+        appBar: PlatformAppBar(
           title: Text(S.of(context).viewHistory),
+          automaticallyImplyLeading: true,
+          trailingActions: [
+            PlatformButton(
+              onPressed: () {
+                VibrationUtils.vibrateWithClickIfPossible();
+                _showDeleteAllDialog(context);
+              },
+              //label: S.of(context).clearAllViewHistories,
+              child: Icon(Icons.delete_sweep),
+            )
+          ],
         ),
         body: StreamBuilder(
             stream: _viewHistoryDao!.findAllViewHistoriesStreamByDiscuzId(discuz.id!),
@@ -232,14 +243,14 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
 
             }
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            VibrationUtils.vibrateWithClickIfPossible();
-            _showDeleteAllDialog(context);
-          },
-          tooltip: S.of(context).clearAllViewHistories,
-          child: Icon(Icons.delete_sweep),
-        ),
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: () {
+        //     VibrationUtils.vibrateWithClickIfPossible();
+        //     _showDeleteAllDialog(context);
+        //   },
+        //   tooltip: S.of(context).clearAllViewHistories,
+        //   child: Icon(Icons.delete_sweep),
+        // ),
       );
     }
     else{

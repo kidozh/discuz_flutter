@@ -303,40 +303,12 @@ class _MyHomePageState extends State<MyHomePage> {
     initialIndex: 0,
   );
 
-  var items = (BuildContext context) => [
-    BottomNavigationBarItem(
-        icon: new Icon(CupertinoIcons.today),
-        //activeIcon: Icon(CupertinoIcons.today),
-        label: S.of(context).sitePage),
-    BottomNavigationBarItem(
-        icon: new Icon(Icons.amp_stories_outlined),
-        activeIcon: Icon(Icons.amp_stories),
-        label: S.of(context).index),
-    BottomNavigationBarItem(
-        icon: new Icon(Icons.explore_outlined),
-        activeIcon: Icon(Icons.explore),
-        label: S.of(context).dashboard),
-    BottomNavigationBarItem(
-        icon: new Icon(Icons.notifications_outlined),
-        activeIcon: Icon(Icons.notifications),
-        label: S.of(context).notification),
-    // BottomNavigationBarItem(
-    //     icon: new Icon(Icons.stars_outlined),
-    //     activeIcon: Icon(Icons.stars),
-    //     label: S.of(context).favorites),
-    BottomNavigationBarItem(
-        icon: new Icon(Icons.message_outlined),
-        activeIcon: Icon(Icons.message_rounded),
-        label: S.of(context).chatMessage),
-  ];
-
   @override
   Widget build(BuildContext context) {
     // need to check whether discuz exists in dataset
-    return PlatformTabScaffold(
+    return PlatformScaffold(
       iosContentPadding: true,
-
-      appBarBuilder: (_, index) => PlatformAppBar(
+      appBar: PlatformAppBar(
         title: Consumer<DiscuzAndUserNotifier>(
           builder: (context, value, child){
             if(value.discuz == null){
@@ -363,43 +335,60 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
         leading: PlatformIconButton(
-          onPressed: () async{
-            // open drawer
-            VibrationUtils.vibrateWithClickIfPossible();
-            await Navigator.push(context, platformPageRoute(context:context,builder: (context) => DrawerPage()));
-          },
-          icon: Icon(Icons.menu)
+            onPressed: () async{
+              // open drawer
+              VibrationUtils.vibrateWithClickIfPossible();
+              await Navigator.push(context, platformPageRoute(context:context,builder: (context) => DrawerPage()));
+            },
+            icon: Icon(Icons.menu)
         ),
       ),
-      items: items(context),
-      tabController: tabController,
-      bodyBuilder: (context, index) => IndexedStack(
-        index: index,
-        children: [
-          ExploreWebsitePage(),
-          DiscuzPortalScreen(),
-          HotThreadScreen(),
-          NotificationScreen(),
-          // FavoriteThreadScreen(),
-          DiscuzMessageScreen()
+      body: [
+        ExploreWebsitePage(key: ValueKey(0),),
+        DiscuzPortalScreen(key: ValueKey(1),),
+        HotThreadScreen(key: ValueKey(2),),
+        NotificationScreen(key: ValueKey(3),),
+        // FavoriteThreadScreen(),
+        DiscuzMessageScreen(key: ValueKey(4),)
+      ][_bottomNavigationbarIndex],
+      bottomNavBar: PlatformNavBar(
+        currentIndex: _bottomNavigationbarIndex,
+        itemChanged: (index){
+          setState(() {
+            VibrationUtils.vibrateWithClickIfPossible();
+            _bottomNavigationbarIndex = index;
+          });
+        },
+        items: [
+          BottomNavigationBarItem(
+              icon: new Icon(CupertinoIcons.today),
+              //activeIcon: Icon(CupertinoIcons.today),
+              label: S.of(context).sitePage),
+          BottomNavigationBarItem(
+              icon: new Icon(Icons.amp_stories_outlined),
+              activeIcon: Icon(Icons.amp_stories),
+              label: S.of(context).index),
+          BottomNavigationBarItem(
+              icon: new Icon(Icons.explore_outlined),
+              activeIcon: Icon(Icons.explore),
+              label: S.of(context).dashboard),
+          BottomNavigationBarItem(
+              icon: new Icon(Icons.notifications_outlined),
+              activeIcon: Icon(Icons.notifications),
+              label: S.of(context).notification),
+          // BottomNavigationBarItem(
+          //     icon: new Icon(Icons.stars_outlined),
+          //     activeIcon: Icon(Icons.stars),
+          //     label: S.of(context).favorites),
+          BottomNavigationBarItem(
+              icon: new Icon(Icons.message_outlined),
+              activeIcon: Icon(Icons.message_rounded),
+              label: S.of(context).chatMessage),
         ],
+
       ),
-      // bodyBuilder: (context, index) => [ExploreWebsitePage(),
-      //   DiscuzPortalScreen(),
-      //   HotThreadScreen(),
-      //   NotificationScreen(),
-      //   // FavoriteThreadScreen(),
-      //   DiscuzMessageScreen()
-      // ][index],
-      materialTabs: (_,__) => MaterialNavBarData(
-        items: items(context),
-        selectedItemColor: Theme.of(context).primaryColor,
-        unselectedItemColor: Theme.of(context).disabledColor
-      ),
-      cupertino: (_,__) => CupertinoTabScaffoldData(
-        resizeToAvoidBottomInset: true,
-        resizeToAvoidBottomInsetTab: true,
-      ),
+
+
     );
   }
 }

@@ -29,7 +29,7 @@ class ExploreWebsitePage extends StatefulWidget {
 
   final String? initialURL;
 
-  ExploreWebsitePage({this.initialURL});
+  ExploreWebsitePage({this.initialURL, required Key key}): super(key: key);
 
   @override
   ExploreWebsiteState createState() {

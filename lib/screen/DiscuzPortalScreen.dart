@@ -27,7 +27,7 @@ import 'EmptyScreen.dart';
 class DiscuzPortalScreen extends StatelessWidget {
 
 
-  DiscuzPortalScreen();
+  DiscuzPortalScreen({required Key key}): super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -25,7 +25,7 @@ import 'package:provider/provider.dart';
 class HotThreadScreen extends StatelessWidget {
 
 
-  HotThreadScreen();
+  HotThreadScreen({required Key key}): super(key: key);
 
   @override
   Widget build(BuildContext context) {

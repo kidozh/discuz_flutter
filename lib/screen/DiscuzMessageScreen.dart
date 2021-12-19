@@ -10,6 +10,8 @@ import 'package:provider/provider.dart';
 import 'NullDiscuzScreen.dart';
 
 class DiscuzMessageScreen extends StatelessWidget {
+  DiscuzMessageScreen({required Key key}): super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return DiscuzMessageStatefulWidget();
