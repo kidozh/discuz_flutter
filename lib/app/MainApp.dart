@@ -70,7 +70,7 @@ class MyApp extends StatelessWidget {
       case "android": return TargetPlatform.android;
       case "ios": return TargetPlatform.iOS;
     }
-    return null;
+    return TargetPlatform.android;
   }
 
   @override
@@ -200,7 +200,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _initDb();
 
@@ -221,7 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _triggerSwitchDiscuzDialog() async {
-    _getDiscuzList();
+    await _getDiscuzList();
     List<Widget> widgetList = [];
     for (int i = 0; i < _allDiscuzs.length; i++) {
       Discuz discuz = _allDiscuzs[i];
@@ -270,11 +269,12 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
-  void _getDiscuzList() async {
+  Future<void> _getDiscuzList() async {
     final db = await DBHelper.getAppDb();
     final dao = db.discuzDao;
 
     _allDiscuzs = await dao.findAllDiscuzs();
+
   }
 
 
@@ -334,13 +334,22 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.account_tree),
           )
         ],
-        leading: PlatformIconButton(
-            onPressed: () async{
-              // open drawer
-              VibrationUtils.vibrateWithClickIfPossible();
-              await Navigator.push(context, platformPageRoute(context:context,builder: (context) => DrawerPage()));
-            },
-            icon: Icon(Icons.menu)
+        leading: Consumer<DiscuzAndUserNotifier>(
+          builder: (context, value, child){
+            if(value.discuz == null){
+              return Container();
+            }
+            else{
+              return PlatformIconButton(
+                  onPressed: () async{
+                    // open drawer
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    await Navigator.push(context, platformPageRoute(context:context,builder: (context) => DrawerPage()));
+                  },
+                  icon: Icon(Icons.menu)
+              );
+            }
+          },
         ),
       ),
       body: [
@@ -353,6 +362,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ][_bottomNavigationbarIndex],
       bottomNavBar: PlatformNavBar(
         currentIndex: _bottomNavigationbarIndex,
+        material: (context,_) => MaterialNavBarData(
+          selectedItemColor: Theme.of(context).primaryColor,
+          unselectedItemColor: Theme.of(context).unselectedWidgetColor
+        ),
         itemChanged: (index){
           setState(() {
             VibrationUtils.vibrateWithClickIfPossible();
@@ -387,7 +400,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
 
       ),
+      material: (_,__) => MaterialScaffoldData(
 
+      ),
 
     );
   }

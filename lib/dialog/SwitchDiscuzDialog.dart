@@ -23,13 +23,13 @@ class DiscuzDialogItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Discuz _selecteddiscuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
-    log(_selecteddiscuz.siteName);
+    log(_selecteddiscuz.siteName.toString());
     return Card(
         child: ListTile(
           leading: _selecteddiscuz == discuz? Icon(Icons.check, color: Colors.green,): Icon(Icons.forum),
           onTap: onPressed,
-          title: Text(discuz.siteName),
-          subtitle: Text(discuz.baseURL),
+          title: Text(discuz.siteName.toString()),
+          subtitle: Text(discuz.baseURL.toString()),
           onLongPress: onLongPressed,
         )
     );

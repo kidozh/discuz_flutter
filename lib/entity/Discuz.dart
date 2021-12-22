@@ -4,6 +4,7 @@ import 'package:floor/floor.dart';
 class Discuz {
   @PrimaryKey(autoGenerate: true)
   final int? id;
+
   String discuzVersion = "";
   String charset="utf-8";
   int apiVersion = 4;

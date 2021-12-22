@@ -157,13 +157,13 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
           title: Text(S.of(context).viewHistory),
           automaticallyImplyLeading: true,
           trailingActions: [
-            PlatformButton(
+            PlatformIconButton(
               onPressed: () {
                 VibrationUtils.vibrateWithClickIfPossible();
                 _showDeleteAllDialog(context);
               },
               //label: S.of(context).clearAllViewHistories,
-              child: Icon(Icons.delete_sweep),
+              icon: Icon(Icons.delete_sweep),
             )
           ],
         ),

@@ -7,6 +7,7 @@ import 'package:discuz_flutter/dao/DiscuzDao.dart';
 import 'package:discuz_flutter/dao/UserDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:floor/floor.dart';
@@ -16,7 +17,7 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 
 part 'AppDatabase.g.dart'; // the generated code will be there
 
-@Database(version: 1, entities: [User, Discuz, ViewHistory])
+@Database(version: 1, entities: [User, Discuz, ViewHistory, FavoriteThreadInDatabase])
 abstract class AppDatabase extends FloorDatabase {
   UserDao get userDao;
   DiscuzDao get discuzDao;

@@ -1,6 +1,8 @@
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:discuz_flutter/converter/SecondToDateTimeConverter.dart';
 import 'package:discuz_flutter/converter/StringToBoolConverter.dart';
+import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 
@@ -62,5 +64,9 @@ class FavoriteThread{
   FavoriteThread();
 
   factory FavoriteThread.fromJson(Map<String, dynamic> json) => _$FavoriteThreadFromJson(json);
+
+  FavoriteThreadInDatabase toDb(Discuz discuz){
+    return FavoriteThreadInDatabase(null, favId, uid, id, idType, uid, title, description, author, replies, publishAt, discuz.id!);
+  }
 }
 

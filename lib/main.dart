@@ -9,6 +9,7 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'app/MainApp.dart';
@@ -50,6 +51,8 @@ void main() async{
       print("Can't find the saved discuz in dataset");
     }
   }
+
+  await Hive.initFlutter();
 
   runApp(
       MultiProvider(

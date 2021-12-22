@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:discuz_flutter/JsonResult/CheckResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:form_validator/form_validator.dart';
+import 'package:provider/provider.dart';
 
 class AddDiscuzPage extends StatelessWidget {
 
@@ -50,7 +52,24 @@ class _AddDiscuzFormFieldState
   Future<void> _saveDiscuzInDb(Discuz discuz) async {
     final db = await DBHelper.getAppDb();
     final dao = db.discuzDao;
-    await dao.insertDiscuz(discuz);
+    int insertId = await dao.insertDiscuz(discuz);
+    Discuz selectedDiscuz = Discuz(
+      insertId,
+      discuz.baseURL,
+      discuz.discuzVersion,
+      discuz.charset,
+      discuz.apiVersion,
+      discuz.pluginVersion,
+      discuz.regname,
+      discuz.qqconnect,
+      discuz.wsqqqconnect,
+      discuz.wsqhideregister,
+      discuz.siteName,
+      discuz.siteId,
+      discuz.uCenterURL,
+      discuz.defaultFid
+    );
+    Provider.of<DiscuzAndUserNotifier>(context, listen: false).setDiscuz(discuz);
     // pop the activity
     EasyLoading.showToast(S.of(context).addDiscuzSuccessfully(discuz.siteName));
     Navigator.pop(context);

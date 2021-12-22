@@ -128,7 +128,7 @@ class Attachment{
       return url + attachmentPathName;
     }
     else{
-      return discuz.baseURL + "/" + url + attachmentPathName;
+      return discuz.baseURL.toString() + "/" + url + attachmentPathName;
     }
 
   }
