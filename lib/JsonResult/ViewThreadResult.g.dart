@@ -6,17 +6,16 @@ part of 'ViewThreadResult.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ViewThreadResult _$ViewThreadResultFromJson(Map<String, dynamic> json) {
-  return ViewThreadResult()
-    ..version = json['Version'] as String
-    ..charset = json['Charset'] as String
-    ..errorResult = json['Message'] == null
-        ? null
-        : ErrorResult.fromJson(json['Message'] as Map<String, dynamic>)
-    ..error = json['error'] as String?
-    ..threadVariables =
-        ThreadVariables.fromJson(json['Variables'] as Map<String, dynamic>);
-}
+ViewThreadResult _$ViewThreadResultFromJson(Map<String, dynamic> json) =>
+    ViewThreadResult()
+      ..version = json['Version'] as String
+      ..charset = json['Charset'] as String
+      ..errorResult = json['Message'] == null
+          ? null
+          : ErrorResult.fromJson(json['Message'] as Map<String, dynamic>)
+      ..error = json['error'] as String?
+      ..threadVariables =
+          ThreadVariables.fromJson(json['Variables'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$ViewThreadResultToJson(ViewThreadResult instance) =>
     <String, dynamic>{
@@ -27,41 +26,41 @@ Map<String, dynamic> _$ViewThreadResultToJson(ViewThreadResult instance) =>
       'Variables': instance.threadVariables,
     };
 
-ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) {
-  return ThreadVariables()
-    ..cookiepre = json['cookiepre'] as String
-    ..auth = json['auth'] as String?
-    ..saltkey = json['saltkey'] as String
-    ..member_username = json['member_username'] as String
-    ..member_avatar = json['member_avatar'] as String
-    ..member_uid =
-        const StringToIntConverter().fromJson(json['member_uid'] as String?)
-    ..groupId =
-        const StringToIntConverter().fromJson(json['groupid'] as String?)
-    ..readAccess =
-        const StringToIntConverter().fromJson(json['readaccess'] as String?)
-    ..formHash = json['formhash'] as String
-    ..ismoderator = json['ismoderator'] as String?
-    ..noticeCount = NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
-    ..threadInfo =
-        DetailedThreadInfo.fromJson(json['thread'] as Map<String, dynamic>)
-    ..fid = const StringToIntConverter().fromJson(json['fid'] as String?)
-    ..postList = (json['postlist'] as List<dynamic>?)
-            ?.map((e) => Post.fromJson(e as Map<String, dynamic>))
-            .toList() ??
-        []
-    ..commentList =
-        const ViewThreadCommentConverter().fromJson(json['comments'])
-    ..rewriteRule = json['setting_rewriterule'] == null
-        ? null
-        : RewriteRule.fromJson(
-            json['setting_rewriterule'] as Map<String, dynamic>)
-    ..ppp = json['ppp'] as String
-    ..page = json['page'] as String? ?? '1'
-    ..poll = json['special_poll'] == null
-        ? null
-        : Poll.fromJson(json['special_poll'] as Map<String, dynamic>);
-}
+ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) =>
+    ThreadVariables()
+      ..cookiepre = json['cookiepre'] as String
+      ..auth = json['auth'] as String?
+      ..saltkey = json['saltkey'] as String
+      ..member_username = json['member_username'] as String
+      ..member_avatar = json['member_avatar'] as String
+      ..member_uid =
+          const StringToIntConverter().fromJson(json['member_uid'] as String?)
+      ..groupId =
+          const StringToIntConverter().fromJson(json['groupid'] as String?)
+      ..readAccess =
+          const StringToIntConverter().fromJson(json['readaccess'] as String?)
+      ..formHash = json['formhash'] as String
+      ..ismoderator = json['ismoderator'] as String?
+      ..noticeCount =
+          NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
+      ..threadInfo =
+          DetailedThreadInfo.fromJson(json['thread'] as Map<String, dynamic>)
+      ..fid = const StringToIntConverter().fromJson(json['fid'] as String?)
+      ..postList = (json['postlist'] as List<dynamic>?)
+              ?.map((e) => Post.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          []
+      ..commentList =
+          const ViewThreadCommentConverter().fromJson(json['comments'])
+      ..rewriteRule = json['setting_rewriterule'] == null
+          ? null
+          : RewriteRule.fromJson(
+              json['setting_rewriterule'] as Map<String, dynamic>)
+      ..ppp = json['ppp'] as String
+      ..page = json['page'] as String? ?? '1'
+      ..poll = json['special_poll'] == null
+          ? null
+          : Poll.fromJson(json['special_poll'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$ThreadVariablesToJson(ThreadVariables instance) =>
     <String, dynamic>{
@@ -87,33 +86,32 @@ Map<String, dynamic> _$ThreadVariablesToJson(ThreadVariables instance) =>
       'special_poll': instance.poll,
     };
 
-DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) {
-  return DetailedThreadInfo()
-    ..tid = const StringToIntConverter().fromJson(json['tid'] as String?)
-    ..fid = const StringToIntConverter().fromJson(json['fid'] as String?)
-    ..author = json['author'] as String
-    ..subject = json['subject'] as String
-    ..readPerm =
-        const StringToIntConverter().fromJson(json['readperm'] as String?)
-    ..price = const StringToIntConverter().fromJson(json['price'] as String?)
-    ..authorId =
-        const StringToIntConverter().fromJson(json['authorid'] as String?)
-    ..sortId = json['sortid'] as String? ?? '0'
-    ..lastPostTimeString = json['lastpost'] as String? ?? ''
-    ..lastposter = json['lastposter'] as String? ?? ''
-    ..displayOrder = json['displayorder'] as String
-    ..views = json['views'] as String
-    ..replies =
-        const StringToIntConverter().fromJson(json['replies'] as String?)
-    ..highlight = json['highlight'] as String? ?? ''
-    ..rate = json['rate'] as String? ?? '0'
-    ..status = json['status'] as String? ?? '0'
-    ..digest = json['digest'] as String? ?? '0'
-    ..closed = json['closed'] as String? ?? '0'
-    ..allreplies =
-        const StringToIntConverter().fromJson(json['allreplies'] as String?)
-    ..freeMessage = json['freemessage'] as String? ?? '';
-}
+DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) =>
+    DetailedThreadInfo()
+      ..tid = const StringToIntConverter().fromJson(json['tid'] as String?)
+      ..fid = const StringToIntConverter().fromJson(json['fid'] as String?)
+      ..author = json['author'] as String
+      ..subject = json['subject'] as String
+      ..readPerm =
+          const StringToIntConverter().fromJson(json['readperm'] as String?)
+      ..price = const StringToIntConverter().fromJson(json['price'] as String?)
+      ..authorId =
+          const StringToIntConverter().fromJson(json['authorid'] as String?)
+      ..sortId = json['sortid'] as String? ?? '0'
+      ..lastPostTimeString = json['lastpost'] as String? ?? ''
+      ..lastposter = json['lastposter'] as String? ?? ''
+      ..displayOrder = json['displayorder'] as String
+      ..views = json['views'] as String
+      ..replies =
+          const StringToIntConverter().fromJson(json['replies'] as String?)
+      ..highlight = json['highlight'] as String? ?? ''
+      ..rate = json['rate'] as String? ?? '0'
+      ..status = json['status'] as String? ?? '0'
+      ..digest = json['digest'] as String? ?? '0'
+      ..closed = json['closed'] as String? ?? '0'
+      ..allreplies =
+          const StringToIntConverter().fromJson(json['allreplies'] as String?)
+      ..freeMessage = json['freemessage'] as String? ?? '';
 
 Map<String, dynamic> _$DetailedThreadInfoToJson(DetailedThreadInfo instance) =>
     <String, dynamic>{
@@ -139,25 +137,22 @@ Map<String, dynamic> _$DetailedThreadInfoToJson(DetailedThreadInfo instance) =>
       'freemessage': instance.freeMessage,
     };
 
-ReplyCreditRule _$ReplyCreditRuleFromJson(Map<String, dynamic> json) {
-  return ReplyCreditRule();
-}
+ReplyCreditRule _$ReplyCreditRuleFromJson(Map<String, dynamic> json) =>
+    ReplyCreditRule();
 
 Map<String, dynamic> _$ReplyCreditRuleToJson(ReplyCreditRule instance) =>
     <String, dynamic>{};
 
-Comment _$CommentFromJson(Map<String, dynamic> json) {
-  return Comment()
-    ..id = const StringToIntConverter().fromJson(json['id'] as String?)
-    ..tid = const StringToIntConverter().fromJson(json['tid'] as String?)
-    ..pid = const StringToIntConverter().fromJson(json['pid'] as String?)
-    ..author = json['author'] as String
-    ..dateline = json['dateline'] as String
-    ..comment = json['comment'] as String
-    ..avatar = json['avatar'] as String
-    ..authorId =
-        const StringToIntConverter().fromJson(json['authorid'] as String?);
-}
+Comment _$CommentFromJson(Map<String, dynamic> json) => Comment()
+  ..id = const StringToIntConverter().fromJson(json['id'] as String?)
+  ..tid = const StringToIntConverter().fromJson(json['tid'] as String?)
+  ..pid = const StringToIntConverter().fromJson(json['pid'] as String?)
+  ..author = json['author'] as String
+  ..dateline = json['dateline'] as String
+  ..comment = json['comment'] as String
+  ..avatar = json['avatar'] as String
+  ..authorId =
+      const StringToIntConverter().fromJson(json['authorid'] as String?);
 
 Map<String, dynamic> _$CommentToJson(Comment instance) => <String, dynamic>{
       'id': const StringToIntConverter().toJson(instance.id),
@@ -170,18 +165,16 @@ Map<String, dynamic> _$CommentToJson(Comment instance) => <String, dynamic>{
       'authorid': const StringToIntConverter().toJson(instance.authorId),
     };
 
-RewriteRule _$RewriteRuleFromJson(Map<String, dynamic> json) {
-  return RewriteRule()
-    ..portalTopic = json['portal_topic'] as String? ?? ''
-    ..portalArticle = json['portal_article'] as String? ?? ''
-    ..forumDisplay = json['forum_forumdisplay'] as String? ?? ''
-    ..viewThread = json['forum_viewthread'] as String? ?? ''
-    ..group = json['group_group'] as String? ?? ''
-    ..userSpace = json['home_space'] as String? ?? ''
-    ..homeBlog = json['home_blog'] as String? ?? ''
-    ..forumArchiver = json['forum_archiver'] as String? ?? ''
-    ..plugin = json['plugin'] as String? ?? '';
-}
+RewriteRule _$RewriteRuleFromJson(Map<String, dynamic> json) => RewriteRule()
+  ..portalTopic = json['portal_topic'] as String? ?? ''
+  ..portalArticle = json['portal_article'] as String? ?? ''
+  ..forumDisplay = json['forum_forumdisplay'] as String? ?? ''
+  ..viewThread = json['forum_viewthread'] as String? ?? ''
+  ..group = json['group_group'] as String? ?? ''
+  ..userSpace = json['home_space'] as String? ?? ''
+  ..homeBlog = json['home_blog'] as String? ?? ''
+  ..forumArchiver = json['forum_archiver'] as String? ?? ''
+  ..plugin = json['plugin'] as String? ?? '';
 
 Map<String, dynamic> _$RewriteRuleToJson(RewriteRule instance) =>
     <String, dynamic>{
@@ -196,25 +189,23 @@ Map<String, dynamic> _$RewriteRuleToJson(RewriteRule instance) =>
       'plugin': instance.plugin,
     };
 
-Poll _$PollFromJson(Map<String, dynamic> json) {
-  return Poll()
-    ..expiredAt = const SecondToDateTimeConverter()
-        .fromJson(json['expirations'] as String?)
-    ..multipleChoice =
-        const StringToBoolConverter().fromJson(json['multiple'] as String?)
-    ..maxChoice =
-        const StringToIntConverter().fromJson(json['maxchoices'] as String?)
-    ..isResultVisible =
-        const StringToBoolConverter().fromJson(json['visiblepoll'] as String?)
-    ..allowVote =
-        const StringToBoolConverter().fromJson(json['allowvote'] as String?)
-    ..votersCount =
-        const StringToIntConverter().fromJson(json['voterscount'] as String?)
-    ..pollOptionsMap = (json['polloptions'] as Map<String, dynamic>?)?.map(
-          (k, e) => MapEntry(k, PollOption.fromJson(e as Map<String, dynamic>)),
-        ) ??
-        {};
-}
+Poll _$PollFromJson(Map<String, dynamic> json) => Poll()
+  ..expiredAt =
+      const SecondToDateTimeConverter().fromJson(json['expirations'] as String?)
+  ..multipleChoice =
+      const StringToBoolConverter().fromJson(json['multiple'] as String?)
+  ..maxChoice =
+      const StringToIntConverter().fromJson(json['maxchoices'] as String?)
+  ..isResultVisible =
+      const StringToBoolConverter().fromJson(json['visiblepoll'] as String?)
+  ..allowVote =
+      const StringToBoolConverter().fromJson(json['allowvote'] as String?)
+  ..votersCount =
+      const StringToIntConverter().fromJson(json['voterscount'] as String?)
+  ..pollOptionsMap = (json['polloptions'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, PollOption.fromJson(e as Map<String, dynamic>)),
+      ) ??
+      {};
 
 Map<String, dynamic> _$PollToJson(Poll instance) => <String, dynamic>{
       'expirations':
@@ -228,15 +219,11 @@ Map<String, dynamic> _$PollToJson(Poll instance) => <String, dynamic>{
       'polloptions': instance.pollOptionsMap,
     };
 
-PollOption _$PollOptionFromJson(Map<String, dynamic> json) {
-  return PollOption()
-    ..id =
-        const StringToIntConverter().fromJson(json['polloptionid'] as String?)
-    ..name = json['polloption'] as String? ?? ''
-    ..voteNumber =
-        const StringToIntConverter().fromJson(json['votes'] as String?)
-    ..color = json['color'] as String? ?? 'EEEEEE';
-}
+PollOption _$PollOptionFromJson(Map<String, dynamic> json) => PollOption()
+  ..id = const StringToIntConverter().fromJson(json['polloptionid'] as String?)
+  ..name = json['polloption'] as String? ?? ''
+  ..voteNumber = const StringToIntConverter().fromJson(json['votes'] as String?)
+  ..color = json['color'] as String? ?? 'EEEEEE';
 
 Map<String, dynamic> _$PollOptionToJson(PollOption instance) =>
     <String, dynamic>{

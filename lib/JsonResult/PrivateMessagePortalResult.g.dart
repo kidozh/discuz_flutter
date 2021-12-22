@@ -7,17 +7,16 @@ part of 'PrivateMessagePortalResult.dart';
 // **************************************************************************
 
 PrivateMessagePortalResult _$PrivateMessagePortalResultFromJson(
-    Map<String, dynamic> json) {
-  return PrivateMessagePortalResult()
-    ..version = json['Version'] as String
-    ..charset = json['Charset'] as String
-    ..errorResult = json['Message'] == null
-        ? null
-        : ErrorResult.fromJson(json['Message'] as Map<String, dynamic>)
-    ..error = json['error'] as String?
-    ..variables = PrivateMessagePortalVariables.fromJson(
-        json['Variables'] as Map<String, dynamic>);
-}
+        Map<String, dynamic> json) =>
+    PrivateMessagePortalResult()
+      ..version = json['Version'] as String
+      ..charset = json['Charset'] as String
+      ..errorResult = json['Message'] == null
+          ? null
+          : ErrorResult.fromJson(json['Message'] as Map<String, dynamic>)
+      ..error = json['error'] as String?
+      ..variables = PrivateMessagePortalVariables.fromJson(
+          json['Variables'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$PrivateMessagePortalResultToJson(
         PrivateMessagePortalResult instance) =>
@@ -30,30 +29,30 @@ Map<String, dynamic> _$PrivateMessagePortalResultToJson(
     };
 
 PrivateMessagePortalVariables _$PrivateMessagePortalVariablesFromJson(
-    Map<String, dynamic> json) {
-  return PrivateMessagePortalVariables()
-    ..cookiepre = json['cookiepre'] as String
-    ..auth = json['auth'] as String?
-    ..saltkey = json['saltkey'] as String
-    ..member_username = json['member_username'] as String
-    ..member_avatar = json['member_avatar'] as String
-    ..member_uid =
-        const StringToIntConverter().fromJson(json['member_uid'] as String?)
-    ..groupId =
-        const StringToIntConverter().fromJson(json['groupid'] as String?)
-    ..readAccess =
-        const StringToIntConverter().fromJson(json['readaccess'] as String?)
-    ..formHash = json['formhash'] as String
-    ..ismoderator = json['ismoderator'] as String?
-    ..noticeCount = NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
-    ..pmList = (json['list'] as List<dynamic>)
-        .map((e) => PrivateMessagePortal.fromJson(e as Map<String, dynamic>))
-        .toList()
-    ..count = const StringToIntConverter().fromJson(json['count'] as String?)
-    ..perPage =
-        const StringToIntConverter().fromJson(json['perpage'] as String?)
-    ..page = const StringToIntConverter().fromJson(json['page'] as String?);
-}
+        Map<String, dynamic> json) =>
+    PrivateMessagePortalVariables()
+      ..cookiepre = json['cookiepre'] as String
+      ..auth = json['auth'] as String?
+      ..saltkey = json['saltkey'] as String
+      ..member_username = json['member_username'] as String
+      ..member_avatar = json['member_avatar'] as String
+      ..member_uid =
+          const StringToIntConverter().fromJson(json['member_uid'] as String?)
+      ..groupId =
+          const StringToIntConverter().fromJson(json['groupid'] as String?)
+      ..readAccess =
+          const StringToIntConverter().fromJson(json['readaccess'] as String?)
+      ..formHash = json['formhash'] as String
+      ..ismoderator = json['ismoderator'] as String?
+      ..noticeCount =
+          NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
+      ..pmList = (json['list'] as List<dynamic>)
+          .map((e) => PrivateMessagePortal.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..count = const StringToIntConverter().fromJson(json['count'] as String?)
+      ..perPage =
+          const StringToIntConverter().fromJson(json['perpage'] as String?)
+      ..page = const StringToIntConverter().fromJson(json['page'] as String?);
 
 Map<String, dynamic> _$PrivateMessagePortalVariablesToJson(
         PrivateMessagePortalVariables instance) =>
@@ -75,20 +74,20 @@ Map<String, dynamic> _$PrivateMessagePortalVariablesToJson(
       'page': const StringToIntConverter().toJson(instance.page),
     };
 
-PrivateMessagePortal _$PrivateMessagePortalFromJson(Map<String, dynamic> json) {
-  return PrivateMessagePortal()
-    ..plid = const StringToIntConverter().fromJson(json['plid'] as String?)
-    ..isNew = const StringToBoolConverter().fromJson(json['isnew'] as String?)
-    ..subject = json['subject'] as String
-    ..toUid = const StringToIntConverter().fromJson(json['touid'] as String?)
-    ..pmId = const StringToIntConverter().fromJson(json['pmid'] as String?)
-    ..msgFromId =
-        const StringToIntConverter().fromJson(json['msgfromid'] as String?)
-    ..msgFromName = json['msgfrom'] as String
-    ..message = json['message'] as String? ?? ''
-    ..toUserName = json['tousername'] as String
-    ..dateTimeString = json['vdateline'] as String;
-}
+PrivateMessagePortal _$PrivateMessagePortalFromJson(
+        Map<String, dynamic> json) =>
+    PrivateMessagePortal()
+      ..plid = const StringToIntConverter().fromJson(json['plid'] as String?)
+      ..isNew = const StringToBoolConverter().fromJson(json['isnew'] as String?)
+      ..subject = json['subject'] as String
+      ..toUid = const StringToIntConverter().fromJson(json['touid'] as String?)
+      ..pmId = const StringToIntConverter().fromJson(json['pmid'] as String?)
+      ..msgFromId =
+          const StringToIntConverter().fromJson(json['msgfromid'] as String?)
+      ..msgFromName = json['msgfrom'] as String
+      ..message = json['message'] as String? ?? ''
+      ..toUserName = json['tousername'] as String
+      ..dateTimeString = json['vdateline'] as String;
 
 Map<String, dynamic> _$PrivateMessagePortalToJson(
         PrivateMessagePortal instance) =>

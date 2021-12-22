@@ -7,17 +7,16 @@ part of 'UserDiscuzNotificationResult.dart';
 // **************************************************************************
 
 UserDiscuzNotificationResult _$UserDiscuzNotificationResultFromJson(
-    Map<String, dynamic> json) {
-  return UserDiscuzNotificationResult()
-    ..version = json['Version'] as String
-    ..charset = json['Charset'] as String
-    ..errorResult = json['Message'] == null
-        ? null
-        : ErrorResult.fromJson(json['Message'] as Map<String, dynamic>)
-    ..error = json['error'] as String?
-    ..variables = DiscuzNotificationVariables.fromJson(
-        json['Variables'] as Map<String, dynamic>);
-}
+        Map<String, dynamic> json) =>
+    UserDiscuzNotificationResult()
+      ..version = json['Version'] as String
+      ..charset = json['Charset'] as String
+      ..errorResult = json['Message'] == null
+          ? null
+          : ErrorResult.fromJson(json['Message'] as Map<String, dynamic>)
+      ..error = json['error'] as String?
+      ..variables = DiscuzNotificationVariables.fromJson(
+          json['Variables'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$UserDiscuzNotificationResultToJson(
         UserDiscuzNotificationResult instance) =>
@@ -30,31 +29,32 @@ Map<String, dynamic> _$UserDiscuzNotificationResultToJson(
     };
 
 DiscuzNotificationVariables _$DiscuzNotificationVariablesFromJson(
-    Map<String, dynamic> json) {
-  return DiscuzNotificationVariables()
-    ..cookiepre = json['cookiepre'] as String
-    ..auth = json['auth'] as String?
-    ..saltkey = json['saltkey'] as String
-    ..member_username = json['member_username'] as String
-    ..member_avatar = json['member_avatar'] as String
-    ..member_uid =
-        const StringToIntConverter().fromJson(json['member_uid'] as String?)
-    ..groupId =
-        const StringToIntConverter().fromJson(json['groupid'] as String?)
-    ..readAccess =
-        const StringToIntConverter().fromJson(json['readaccess'] as String?)
-    ..formHash = json['formhash'] as String
-    ..ismoderator = json['ismoderator'] as String?
-    ..noticeCount = NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
-    ..notificationList = (json['list'] as List<dynamic>?)
-            ?.map((e) => DiscuzNotification.fromJson(e as Map<String, dynamic>))
-            .toList() ??
-        []
-    ..count = const StringToIntConverter().fromJson(json['count'] as String?)
-    ..perPage =
-        const StringToIntConverter().fromJson(json['perpage'] as String?)
-    ..page = const StringToIntConverter().fromJson(json['page'] as String?);
-}
+        Map<String, dynamic> json) =>
+    DiscuzNotificationVariables()
+      ..cookiepre = json['cookiepre'] as String
+      ..auth = json['auth'] as String?
+      ..saltkey = json['saltkey'] as String
+      ..member_username = json['member_username'] as String
+      ..member_avatar = json['member_avatar'] as String
+      ..member_uid =
+          const StringToIntConverter().fromJson(json['member_uid'] as String?)
+      ..groupId =
+          const StringToIntConverter().fromJson(json['groupid'] as String?)
+      ..readAccess =
+          const StringToIntConverter().fromJson(json['readaccess'] as String?)
+      ..formHash = json['formhash'] as String
+      ..ismoderator = json['ismoderator'] as String?
+      ..noticeCount =
+          NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
+      ..notificationList = (json['list'] as List<dynamic>?)
+              ?.map(
+                  (e) => DiscuzNotification.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          []
+      ..count = const StringToIntConverter().fromJson(json['count'] as String?)
+      ..perPage =
+          const StringToIntConverter().fromJson(json['perpage'] as String?)
+      ..page = const StringToIntConverter().fromJson(json['page'] as String?);
 
 Map<String, dynamic> _$DiscuzNotificationVariablesToJson(
         DiscuzNotificationVariables instance) =>

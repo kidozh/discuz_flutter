@@ -19,11 +19,13 @@ class _MobileApiClient implements MobileApiClient {
   Future<CheckResult> getCheckResult() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Content-Type': 'application/json'};
+    _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<CheckResult>(Options(
                 method: 'GET',
-                headers: <String, dynamic>{r'Content-Type': 'application/json'},
+                headers: _headers,
                 extra: _extra,
                 contentType: 'application/json')
             .compose(
@@ -38,10 +40,12 @@ class _MobileApiClient implements MobileApiClient {
   Future<String> getCheckResultInString() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Content-Type': 'application/json'};
+    _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
             method: 'GET',
-            headers: <String, dynamic>{r'Content-Type': 'application/json'},
+            headers: _headers,
             extra: _extra,
             contentType: 'application/json')
         .compose(_dio.options, '/api/mobile/index.php?version=4&module=check',
@@ -56,6 +60,7 @@ class _MobileApiClient implements MobileApiClient {
       username, password, captchaHash, captchaType, verification) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = {
       'username': username,
       'password': password,
@@ -66,7 +71,7 @@ class _MobileApiClient implements MobileApiClient {
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
         LoginResult>(Options(
             method: 'POST',
-            headers: <String, dynamic>{},
+            headers: _headers,
             extra: _extra,
             contentType: 'application/x-www-form-urlencoded')
         .compose(_dio.options,
@@ -82,6 +87,7 @@ class _MobileApiClient implements MobileApiClient {
       username, password, captchaHash, captchaType, verification) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = {
       'username': username,
       'password': password,
@@ -91,7 +97,7 @@ class _MobileApiClient implements MobileApiClient {
     };
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
             method: 'POST',
-            headers: <String, dynamic>{},
+            headers: _headers,
             extra: _extra,
             contentType: 'application/x-www-form-urlencoded')
         .compose(_dio.options,
@@ -106,10 +112,11 @@ class _MobileApiClient implements MobileApiClient {
   Future<DiscuzIndexResult> getDiscuzPortalResult() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<DiscuzIndexResult>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'GET', headers: _headers, extra: _extra)
                 .compose(_dio.options,
                     '/api/mobile/index.php?version=4&module=forumindex',
                     queryParameters: queryParameters, data: _data)
@@ -122,9 +129,10 @@ class _MobileApiClient implements MobileApiClient {
   Future<String> getDiscuzPortalRaw() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            method: 'GET', headers: _headers, extra: _extra)
         .compose(
             _dio.options, '/api/mobile/index.php?version=4&module=forumindex',
             queryParameters: queryParameters, data: _data)
@@ -138,10 +146,11 @@ class _MobileApiClient implements MobileApiClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'fid': fid, r'page': page};
     queryParameters.addAll(queries);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<DisplayForumResult>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'GET', headers: _headers, extra: _extra)
                 .compose(_dio.options,
                     '/api/mobile/index.php?version=4&module=forumdisplay',
                     queryParameters: queryParameters, data: _data)
@@ -155,9 +164,10 @@ class _MobileApiClient implements MobileApiClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'fid': fid, r'page': page};
     queryParameters.addAll(queries);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            method: 'GET', headers: _headers, extra: _extra)
         .compose(
             _dio.options, '/api/mobile/index.php?version=4&module=forumdisplay',
             queryParameters: queryParameters, data: _data)
@@ -171,10 +181,11 @@ class _MobileApiClient implements MobileApiClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'tid': tid, r'page': page};
     queryParameters.addAll(queries);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<ViewThreadResult>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'GET', headers: _headers, extra: _extra)
                 .compose(_dio.options,
                     '/api/mobile/index.php?version=4&module=viewthread',
                     queryParameters: queryParameters, data: _data)
@@ -188,9 +199,10 @@ class _MobileApiClient implements MobileApiClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'tid': tid, r'page': page};
     queryParameters.addAll(queries);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            method: 'GET', headers: _headers, extra: _extra)
         .compose(
             _dio.options, '/api/mobile/index.php?version=4&module=viewthread',
             queryParameters: queryParameters, data: _data)
@@ -205,6 +217,7 @@ class _MobileApiClient implements MobileApiClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.addAll(queries);
+    final _headers = <String, dynamic>{};
     final _data = {
       'fid': fid,
       'tid': tid,
@@ -216,7 +229,7 @@ class _MobileApiClient implements MobileApiClient {
     };
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
             method: 'POST',
-            headers: <String, dynamic>{},
+            headers: _headers,
             extra: _extra,
             contentType: 'application/x-www-form-urlencoded')
         .compose(_dio.options,
@@ -243,6 +256,7 @@ class _MobileApiClient implements MobileApiClient {
     final queryParameters = <String, dynamic>{};
     queryParameters.addAll(queries);
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = {
       'fid': fid,
       'tid': tid,
@@ -258,7 +272,7 @@ class _MobileApiClient implements MobileApiClient {
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
         ApiResult>(Options(
             method: 'POST',
-            headers: <String, dynamic>{},
+            headers: _headers,
             extra: _extra,
             contentType: 'application/x-www-form-urlencoded')
         .compose(_dio.options,
@@ -273,9 +287,10 @@ class _MobileApiClient implements MobileApiClient {
   Future<String> userNotificationRaw(page) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            method: 'GET', headers: _headers, extra: _extra)
         .compose(
             _dio.options, '/api/mobile/index.php?version=4&module=mynotelist',
             queryParameters: queryParameters, data: _data)
@@ -288,10 +303,11 @@ class _MobileApiClient implements MobileApiClient {
   Future<UserDiscuzNotificationResult> userNotificationResult(page) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<UserDiscuzNotificationResult>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'GET', headers: _headers, extra: _extra)
                 .compose(_dio.options,
                     '/api/mobile/index.php?version=4&module=mynotelist',
                     queryParameters: queryParameters, data: _data)
@@ -304,9 +320,10 @@ class _MobileApiClient implements MobileApiClient {
   Future<String> hotThreadRaw(page) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            method: 'GET', headers: _headers, extra: _extra)
         .compose(
             _dio.options, '/api/mobile/index.php?version=4&module=hotthread',
             queryParameters: queryParameters, data: _data)
@@ -319,10 +336,11 @@ class _MobileApiClient implements MobileApiClient {
   Future<HotThreadResult> hotThreadResult(page) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<HotThreadResult>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'GET', headers: _headers, extra: _extra)
                 .compose(_dio.options,
                     '/api/mobile/index.php?version=4&module=hotthread',
                     queryParameters: queryParameters, data: _data)
@@ -335,10 +353,11 @@ class _MobileApiClient implements MobileApiClient {
   Future<CaptchaResult> captchaResult(type) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'type': type};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<CaptchaResult>(Options(
-                method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                method: 'GET', headers: _headers, extra: _extra)
             .compose(
                 _dio.options, '/api/mobile/index.php?version=4&module=secure',
                 queryParameters: queryParameters, data: _data)
@@ -351,11 +370,12 @@ class _MobileApiClient implements MobileApiClient {
   Future<ApiResult> votePoll(fid, tid, formHash, checkedOptionId) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'fid': fid, r'tid': tid};
+    final _headers = <String, dynamic>{};
     final _data = {'formhash': formHash, 'pollanswers[]': checkedOptionId};
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
         ApiResult>(Options(
             method: 'POST',
-            headers: <String, dynamic>{},
+            headers: _headers,
             extra: _extra,
             contentType: 'application/x-www-form-urlencoded')
         .compose(_dio.options,
@@ -370,10 +390,11 @@ class _MobileApiClient implements MobileApiClient {
   Future<String> votePollRaw(fid, tid, formHash, checkedOptionId) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'fid': fid, r'tid': tid};
+    final _headers = <String, dynamic>{};
     final _data = {'formhash': formHash, 'pollanswers[]': checkedOptionId};
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
             method: 'POST',
-            headers: <String, dynamic>{},
+            headers: _headers,
             extra: _extra,
             contentType: 'application/x-www-form-urlencoded')
         .compose(_dio.options,
@@ -388,10 +409,11 @@ class _MobileApiClient implements MobileApiClient {
   Future<CheckLoginResult> checkLoginResult() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<CheckLoginResult>(Options(
-                method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                method: 'GET', headers: _headers, extra: _extra)
             .compose(
                 _dio.options, '/api/mobile/index.php?version=4&module=login',
                 queryParameters: queryParameters, data: _data)
@@ -404,10 +426,11 @@ class _MobileApiClient implements MobileApiClient {
   Future<UserProfileResult> userProfileResult(uid) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'uid': uid};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<UserProfileResult>(Options(
-                method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                method: 'GET', headers: _headers, extra: _extra)
             .compose(
                 _dio.options, '/api/mobile/index.php?version=4&module=profile',
                 queryParameters: queryParameters, data: _data)
@@ -420,9 +443,10 @@ class _MobileApiClient implements MobileApiClient {
   Future<String> userProfileResultRaw(uid) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'uid': uid};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'GET', headers: _headers, extra: _extra)
             .compose(
                 _dio.options, '/api/mobile/index.php?version=4&module=profile',
                 queryParameters: queryParameters, data: _data)
@@ -435,10 +459,11 @@ class _MobileApiClient implements MobileApiClient {
   Future<SmileyResult> smileyResult() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<SmileyResult>(Options(
-                method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                method: 'GET', headers: _headers, extra: _extra)
             .compose(
                 _dio.options, '/api/mobile/index.php?version=4&module=smiley',
                 queryParameters: queryParameters, data: _data)
@@ -451,10 +476,11 @@ class _MobileApiClient implements MobileApiClient {
   Future<PrivateMessagePortalResult> privateMessagePortalResult(page) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<PrivateMessagePortalResult>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'GET', headers: _headers, extra: _extra)
                 .compose(
                     _dio.options, '/api/mobile/index.php?version=4&module=mypm',
                     queryParameters: queryParameters, data: _data)
@@ -468,10 +494,11 @@ class _MobileApiClient implements MobileApiClient {
       toUid, page) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'touid': toUid, r'page': page};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<PrivateMessageDetailResult>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'GET', headers: _headers, extra: _extra)
                 .compose(_dio.options,
                     '/api/mobile/index.php?version=4&module=mypm&subop=view',
                     queryParameters: queryParameters, data: _data)
@@ -484,11 +511,12 @@ class _MobileApiClient implements MobileApiClient {
   Future<ApiResult> sendPrivateMessageResult(formHash, message, toUid) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = {'formhash': formHash, 'message': message, 'touid': toUid};
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
         ApiResult>(Options(
             method: 'POST',
-            headers: <String, dynamic>{},
+            headers: _headers,
             extra: _extra,
             contentType: 'application/x-www-form-urlencoded')
         .compose(_dio.options,
@@ -503,10 +531,11 @@ class _MobileApiClient implements MobileApiClient {
   Future<PublicMessagePortalResult> publicMessagePortalResult(page) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<PublicMessagePortalResult>(Options(
-                method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                method: 'GET', headers: _headers, extra: _extra)
             .compose(
                 _dio.options, '/api/mobile/index.php?version=4&module=publicpm',
                 queryParameters: queryParameters, data: _data)
@@ -519,10 +548,11 @@ class _MobileApiClient implements MobileApiClient {
   Future<FavoriteThreadResult> favoriteThreadResult(page) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<FavoriteThreadResult>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'GET', headers: _headers, extra: _extra)
                 .compose(_dio.options,
                     '/api/mobile/index.php?version=4&module=myfavthread',
                     queryParameters: queryParameters, data: _data)
@@ -535,6 +565,7 @@ class _MobileApiClient implements MobileApiClient {
   Future<String> uploadImage(uid, uploadHash, file) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
     final _data = FormData();
     _data.fields.add(MapEntry('uid', uid.toString()));
     _data.fields.add(MapEntry('hash', uploadHash));
@@ -543,7 +574,7 @@ class _MobileApiClient implements MobileApiClient {
         MultipartFile.fromFileSync(file.path,
             filename: file.path.split(Platform.pathSeparator).last)));
     final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+        Options(method: 'POST', headers: _headers, extra: _extra)
             .compose(_dio.options,
                 '/api/mobile/index.php?version=4&module=forumupload&type=image',
                 queryParameters: queryParameters, data: _data)
@@ -557,10 +588,11 @@ class _MobileApiClient implements MobileApiClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'fid': fid, r'tid': tid};
     queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<CheckPostResult>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'GET', headers: _headers, extra: _extra)
                 .compose(_dio.options,
                     '/api/mobile/index.php?version=4&module=checkpost',
                     queryParameters: queryParameters, data: _data)

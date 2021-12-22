@@ -6,17 +6,16 @@ part of 'HotThreadResult.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-HotThreadResult _$HotThreadResultFromJson(Map<String, dynamic> json) {
-  return HotThreadResult()
-    ..version = json['Version'] as String
-    ..charset = json['Charset'] as String
-    ..errorResult = json['Message'] == null
-        ? null
-        : ErrorResult.fromJson(json['Message'] as Map<String, dynamic>)
-    ..error = json['error'] as String?
-    ..variables =
-        HotThreadVariables.fromJson(json['Variables'] as Map<String, dynamic>);
-}
+HotThreadResult _$HotThreadResultFromJson(Map<String, dynamic> json) =>
+    HotThreadResult()
+      ..version = json['Version'] as String
+      ..charset = json['Charset'] as String
+      ..errorResult = json['Message'] == null
+          ? null
+          : ErrorResult.fromJson(json['Message'] as Map<String, dynamic>)
+      ..error = json['error'] as String?
+      ..variables = HotThreadVariables.fromJson(
+          json['Variables'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$HotThreadResultToJson(HotThreadResult instance) =>
     <String, dynamic>{
@@ -27,29 +26,29 @@ Map<String, dynamic> _$HotThreadResultToJson(HotThreadResult instance) =>
       'Variables': instance.variables,
     };
 
-HotThreadVariables _$HotThreadVariablesFromJson(Map<String, dynamic> json) {
-  return HotThreadVariables()
-    ..cookiepre = json['cookiepre'] as String
-    ..auth = json['auth'] as String?
-    ..saltkey = json['saltkey'] as String
-    ..member_username = json['member_username'] as String
-    ..member_avatar = json['member_avatar'] as String
-    ..member_uid =
-        const StringToIntConverter().fromJson(json['member_uid'] as String?)
-    ..groupId =
-        const StringToIntConverter().fromJson(json['groupid'] as String?)
-    ..readAccess =
-        const StringToIntConverter().fromJson(json['readaccess'] as String?)
-    ..formHash = json['formhash'] as String
-    ..ismoderator = json['ismoderator'] as String?
-    ..noticeCount = NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
-    ..perPage =
-        const StringToIntConverter().fromJson(json['perpage'] as String?)
-    ..hotThreadList = (json['data'] as List<dynamic>?)
-            ?.map((e) => HotThread.fromJson(e as Map<String, dynamic>))
-            .toList() ??
-        [];
-}
+HotThreadVariables _$HotThreadVariablesFromJson(Map<String, dynamic> json) =>
+    HotThreadVariables()
+      ..cookiepre = json['cookiepre'] as String
+      ..auth = json['auth'] as String?
+      ..saltkey = json['saltkey'] as String
+      ..member_username = json['member_username'] as String
+      ..member_avatar = json['member_avatar'] as String
+      ..member_uid =
+          const StringToIntConverter().fromJson(json['member_uid'] as String?)
+      ..groupId =
+          const StringToIntConverter().fromJson(json['groupid'] as String?)
+      ..readAccess =
+          const StringToIntConverter().fromJson(json['readaccess'] as String?)
+      ..formHash = json['formhash'] as String
+      ..ismoderator = json['ismoderator'] as String?
+      ..noticeCount =
+          NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
+      ..perPage =
+          const StringToIntConverter().fromJson(json['perpage'] as String?)
+      ..hotThreadList = (json['data'] as List<dynamic>?)
+              ?.map((e) => HotThread.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [];
 
 Map<String, dynamic> _$HotThreadVariablesToJson(HotThreadVariables instance) =>
     <String, dynamic>{

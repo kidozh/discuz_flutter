@@ -6,44 +6,40 @@ part of 'Post.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Post _$PostFromJson(Map<String, dynamic> json) {
-  return Post()
-    ..pid = const StringToIntConverter().fromJson(json['pid'] as String?)
-    ..tid = const StringToIntConverter().fromJson(json['tid'] as String?)
-    ..first = const StringToBoolConverter().fromJson(json['first'] as String?)
-    ..anonymous =
-        const StringToBoolConverter().fromJson(json['anonymous'] as String?)
-    ..author = json['author'] as String
-    ..dateline = json['dateline'] as String
-    ..message = json['message'] as String
-    ..authorId =
-        const StringToIntConverter().fromJson(json['authorid'] as String?)
-    ..attachment =
-        const StringToIntConverter().fromJson(json['attachment'] as String?)
-    ..status = const StringToIntConverter().fromJson(json['status'] as String?)
-    ..replycredit =
-        const StringToIntConverter().fromJson(json['replycredit'] as String?)
-    ..number = const StringToIntConverter().fromJson(json['number'] as String?)
-    ..position =
-        const StringToIntConverter().fromJson(json['position'] as String?)
-    ..groupId =
-        const StringToIntConverter().fromJson(json['groupid'] as String?)
-    ..memberStatus =
-        const StringToIntConverter().fromJson(json['memberstatus'] as String?)
-    ..publishAt = const SecondToDateTimeConverter()
-        .fromJson(json['dbdateline'] as String?)
-    ..attachmentIdList = (json['attachlist'] as List<dynamic>?)
-            ?.map((e) => e as String)
-            .toList() ??
-        []
-    ..imageIdList = (json['imagelist'] as List<dynamic>?)
-            ?.map((e) => e as String)
-            .toList() ??
-        []
-    ..groupIconId = json['groupiconid'] as String? ?? '0'
-    ..attachmentMapper =
-        const AttachmentConverter().fromJson(json['attachments']);
-}
+Post _$PostFromJson(Map<String, dynamic> json) => Post()
+  ..pid = const StringToIntConverter().fromJson(json['pid'] as String?)
+  ..tid = const StringToIntConverter().fromJson(json['tid'] as String?)
+  ..first = const StringToBoolConverter().fromJson(json['first'] as String?)
+  ..anonymous =
+      const StringToBoolConverter().fromJson(json['anonymous'] as String?)
+  ..author = json['author'] as String
+  ..dateline = json['dateline'] as String
+  ..message = json['message'] as String
+  ..authorId =
+      const StringToIntConverter().fromJson(json['authorid'] as String?)
+  ..attachment =
+      const StringToIntConverter().fromJson(json['attachment'] as String?)
+  ..status = const StringToIntConverter().fromJson(json['status'] as String?)
+  ..replycredit =
+      const StringToIntConverter().fromJson(json['replycredit'] as String?)
+  ..number = const StringToIntConverter().fromJson(json['number'] as String?)
+  ..position =
+      const StringToIntConverter().fromJson(json['position'] as String?)
+  ..groupId = const StringToIntConverter().fromJson(json['groupid'] as String?)
+  ..memberStatus =
+      const StringToIntConverter().fromJson(json['memberstatus'] as String?)
+  ..publishAt =
+      const SecondToDateTimeConverter().fromJson(json['dbdateline'] as String?)
+  ..attachmentIdList = (json['attachlist'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      []
+  ..imageIdList =
+      (json['imagelist'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+          []
+  ..groupIconId = json['groupiconid'] as String? ?? '0'
+  ..attachmentMapper =
+      const AttachmentConverter().fromJson(json['attachments']);
 
 Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
       'pid': const StringToIntConverter().toJson(instance.pid),
@@ -71,24 +67,22 @@ Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
           const AttachmentConverter().toJson(instance.attachmentMapper),
     };
 
-Attachment _$AttachmentFromJson(Map<String, dynamic> json) {
-  return Attachment()
-    ..dateline = json['dateline'] as String? ?? ''
-    ..filename = json['filename'] as String? ?? ''
-    ..fileSize =
-        const StringToIntConverter().fromJson(json['filesize'] as String?)
-    ..readPerm =
-        const StringToIntConverter().fromJson(json['readperm'] as String?)
-    ..aidEncode = json['aidencode'] as String? ?? ''
-    ..url = json['url'] as String? ?? ''
-    ..downloads =
-        const StringToIntConverter().fromJson(json['downloads'] as String?)
-    ..updateAt = const SecondToDateTimeConverter()
-        .fromJson(json['dbdateline'] as String?)
-    ..attachmentSizeString = json['attachsize'] as String
-    ..attachmentPathName = json['attachment'] as String? ?? ''
-    ..ext = json['ext'] as String? ?? '';
-}
+Attachment _$AttachmentFromJson(Map<String, dynamic> json) => Attachment()
+  ..dateline = json['dateline'] as String? ?? ''
+  ..filename = json['filename'] as String? ?? ''
+  ..fileSize =
+      const StringToIntConverter().fromJson(json['filesize'] as String?)
+  ..readPerm =
+      const StringToIntConverter().fromJson(json['readperm'] as String?)
+  ..aidEncode = json['aidencode'] as String? ?? ''
+  ..url = json['url'] as String? ?? ''
+  ..downloads =
+      const StringToIntConverter().fromJson(json['downloads'] as String?)
+  ..updateAt =
+      const SecondToDateTimeConverter().fromJson(json['dbdateline'] as String?)
+  ..attachmentSizeString = json['attachsize'] as String
+  ..attachmentPathName = json['attachment'] as String? ?? ''
+  ..ext = json['ext'] as String? ?? '';
 
 Map<String, dynamic> _$AttachmentToJson(Attachment instance) =>
     <String, dynamic>{

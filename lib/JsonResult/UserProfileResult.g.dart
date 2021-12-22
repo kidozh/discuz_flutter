@@ -6,17 +6,16 @@ part of 'UserProfileResult.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-UserProfileResult _$UserProfileResultFromJson(Map<String, dynamic> json) {
-  return UserProfileResult()
-    ..version = json['Version'] as String
-    ..charset = json['Charset'] as String
-    ..errorResult = json['Message'] == null
-        ? null
-        : ErrorResult.fromJson(json['Message'] as Map<String, dynamic>)
-    ..error = json['error'] as String?
-    ..variables = UserProfileVariables.fromJson(
-        json['Variables'] as Map<String, dynamic>);
-}
+UserProfileResult _$UserProfileResultFromJson(Map<String, dynamic> json) =>
+    UserProfileResult()
+      ..version = json['Version'] as String
+      ..charset = json['Charset'] as String
+      ..errorResult = json['Message'] == null
+          ? null
+          : ErrorResult.fromJson(json['Message'] as Map<String, dynamic>)
+      ..error = json['error'] as String?
+      ..variables = UserProfileVariables.fromJson(
+          json['Variables'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$UserProfileResultToJson(UserProfileResult instance) =>
     <String, dynamic>{
@@ -27,132 +26,119 @@ Map<String, dynamic> _$UserProfileResultToJson(UserProfileResult instance) =>
       'Variables': instance.variables,
     };
 
-UserProfileVariables _$UserProfileVariablesFromJson(Map<String, dynamic> json) {
-  return UserProfileVariables()
-    ..cookiepre = json['cookiepre'] as String
-    ..auth = json['auth'] as String?
-    ..saltkey = json['saltkey'] as String
-    ..member_username = json['member_username'] as String
-    ..member_avatar = json['member_avatar'] as String
-    ..member_uid =
-        const StringToIntConverter().fromJson(json['member_uid'] as String?)
-    ..groupId =
-        const StringToIntConverter().fromJson(json['groupid'] as String?)
-    ..readAccess =
-        const StringToIntConverter().fromJson(json['readaccess'] as String?)
-    ..formHash = json['formhash'] as String
-    ..ismoderator = json['ismoderator'] as String?
-    ..noticeCount = NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
-    ..space = json['space'] == null
-        ? null
-        : SpaceVariables.fromJson(json['space'] as Map<String, dynamic>)
-    ..extendCreditMap = (json['extcredits'] as Map<String, dynamic>?)?.map(
-          (k, e) =>
-              MapEntry(k, ExtendCredit.fromJson(e as Map<String, dynamic>)),
-        ) ??
-        {};
-}
+UserProfileVariables _$UserProfileVariablesFromJson(
+        Map<String, dynamic> json) =>
+    UserProfileVariables()
+      ..groupId =
+          const StringToIntConverter().fromJson(json['groupid'] as String?)
+      ..readAccess =
+          const StringToIntConverter().fromJson(json['readaccess'] as String?)
+      ..formHash = json['formhash'] as String
+      ..noticeCount =
+          NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
+      ..space = json['space'] == null
+          ? null
+          : SpaceVariables.fromJson(json['space'] as Map<String, dynamic>)
+      ..extendCreditMap = (json['extcredits'] as Map<String, dynamic>?)?.map(
+            (k, e) =>
+                MapEntry(k, ExtendCredit.fromJson(e as Map<String, dynamic>)),
+          ) ??
+          {};
 
 Map<String, dynamic> _$UserProfileVariablesToJson(
         UserProfileVariables instance) =>
     <String, dynamic>{
-      'cookiepre': instance.cookiepre,
-      'auth': instance.auth,
-      'saltkey': instance.saltkey,
-      'member_username': instance.member_username,
-      'member_avatar': instance.member_avatar,
-      'member_uid': const StringToIntConverter().toJson(instance.member_uid),
       'groupid': const StringToIntConverter().toJson(instance.groupId),
       'readaccess': const StringToIntConverter().toJson(instance.readAccess),
       'formhash': instance.formHash,
-      'ismoderator': instance.ismoderator,
       'notice': instance.noticeCount,
       'space': instance.space,
       'extcredits': instance.extendCreditMap,
     };
 
-SpaceVariables _$SpaceVariablesFromJson(Map<String, dynamic> json) {
-  return SpaceVariables()
-    ..uid = const StringToIntConverter().fromJson(json['uid'] as String?)
-    ..username = json['username'] as String
-    ..status = const StringToIntConverter().fromJson(json['status'] as String?)
-    ..registerDateString = json['regdate'] as String? ?? ''
-    ..credits =
-        const StringToIntConverter().fromJson(json['credits'] as String?)
-    ..extcredits1 =
-        const StringToIntConverter().fromJson(json['extcredits1'] as String?)
-    ..extcredits2 =
-        const StringToIntConverter().fromJson(json['extcredits2'] as String?)
-    ..extcredits3 =
-        const StringToIntConverter().fromJson(json['extcredits3'] as String?)
-    ..extcredits4 =
-        const StringToIntConverter().fromJson(json['extcredits4'] as String?)
-    ..extcredits5 =
-        const StringToIntConverter().fromJson(json['extcredits5'] as String?)
-    ..extcredits6 =
-        const StringToIntConverter().fromJson(json['extcredits6'] as String?)
-    ..extcredits7 =
-        const StringToIntConverter().fromJson(json['extcredits7'] as String?)
-    ..extcredits8 =
-        const StringToIntConverter().fromJson(json['extcredits8'] as String?)
-    ..friends =
-        const StringToIntConverter().fromJson(json['friends'] as String?)
-    ..posts = const StringToIntConverter().fromJson(json['posts'] as String?)
-    ..threads =
-        const StringToIntConverter().fromJson(json['threads'] as String?)
-    ..digestposts =
-        const StringToIntConverter().fromJson(json['digestposts'] as String?)
-    ..oltime = const StringToIntConverter().fromJson(json['oltime'] as String?)
-    ..recentNote = json['recentnote'] as String? ?? ''
-    ..customStatus = json['customstatus'] as String? ?? ''
-    ..medalList = const MedalListConverter().fromJson(json['medals'])
-    ..signatureHtml = json['sightml'] as String? ?? ''
-    ..male = const StringToBoolConverter().fromJson(json['gender'] as String?)
-    ..birthYear =
-        const StringToIntConverter().fromJson(json['birthyear'] as String?)
-    ..birthMonth =
-        const StringToIntConverter().fromJson(json['birthmonth'] as String?)
-    ..birthDay =
-        const StringToIntConverter().fromJson(json['birthday'] as String?)
-    ..constellation = json['constellation'] as String? ?? ''
-    ..zodiac = json['zodiac'] as String? ?? ''
-    ..nationality = json['nationality'] as String? ?? ''
-    ..birthprovince = json['birthprovince'] as String? ?? ''
-    ..birthcity = json['birthcity'] as String? ?? ''
-    ..birthdist = json['birthdist'] as String? ?? ''
-    ..birthcommunity = json['birthcommunity'] as String? ?? ''
-    ..resideprovince = json['resideprovince'] as String? ?? ''
-    ..residecity = json['residecity'] as String? ?? ''
-    ..residedist = json['residedist'] as String? ?? ''
-    ..residecommunity = json['residecommunity'] as String? ?? ''
-    ..residesuite = json['residesuite'] as String? ?? ''
-    ..graduateschool = json['graduateschool'] as String? ?? ''
-    ..education = json['education'] as String? ?? ''
-    ..company = json['company'] as String? ?? ''
-    ..occupation = json['occupation'] as String? ?? ''
-    ..position = json['position'] as String? ?? ''
-    ..revenue = json['revenue'] as String? ?? ''
-    ..lookingfor = json['lookingfor'] as String? ?? ''
-    ..bloodtype = json['bloodtype'] as String? ?? ''
-    ..height = json['height'] as String? ?? ''
-    ..weight = json['weight'] as String? ?? ''
-    ..site = json['site'] as String? ?? ''
-    ..lastvisit = json['lastvisit'] as String? ?? ''
-    ..lastactivity = json['lastactivity'] as String? ?? ''
-    ..lastpost = json['lastpost'] as String? ?? ''
-    ..lastsendmail = json['lastsendmail'] as String? ?? ''
-    ..favtimes =
-        const StringToIntConverter().fromJson(json['favtimes'] as String?)
-    ..sharetimes =
-        const StringToIntConverter().fromJson(json['sharetimes'] as String?)
-    ..profileprogress = const StringToIntConverter()
-        .fromJson(json['profileprogress'] as String?)
-    ..adminGroupInfo =
-        AdminGroupInfo.fromJson(json['admingroup'] as Map<String, dynamic>)
-    ..groupInfo = GroupInfo.fromJson(json['group'] as Map<String, dynamic>)
-    ..bio = json['bio'] as String
-    ..interest = json['interest'] as String;
-}
+SpaceVariables _$SpaceVariablesFromJson(Map<String, dynamic> json) =>
+    SpaceVariables()
+      ..uid = const StringToIntConverter().fromJson(json['uid'] as String?)
+      ..username = json['username'] as String
+      ..status =
+          const StringToIntConverter().fromJson(json['status'] as String?)
+      ..registerDateString = json['regdate'] as String? ?? ''
+      ..credits =
+          const StringToIntConverter().fromJson(json['credits'] as String?)
+      ..extcredits1 =
+          const StringToIntConverter().fromJson(json['extcredits1'] as String?)
+      ..extcredits2 =
+          const StringToIntConverter().fromJson(json['extcredits2'] as String?)
+      ..extcredits3 =
+          const StringToIntConverter().fromJson(json['extcredits3'] as String?)
+      ..extcredits4 =
+          const StringToIntConverter().fromJson(json['extcredits4'] as String?)
+      ..extcredits5 =
+          const StringToIntConverter().fromJson(json['extcredits5'] as String?)
+      ..extcredits6 =
+          const StringToIntConverter().fromJson(json['extcredits6'] as String?)
+      ..extcredits7 =
+          const StringToIntConverter().fromJson(json['extcredits7'] as String?)
+      ..extcredits8 =
+          const StringToIntConverter().fromJson(json['extcredits8'] as String?)
+      ..friends =
+          const StringToIntConverter().fromJson(json['friends'] as String?)
+      ..posts = const StringToIntConverter().fromJson(json['posts'] as String?)
+      ..threads =
+          const StringToIntConverter().fromJson(json['threads'] as String?)
+      ..digestposts =
+          const StringToIntConverter().fromJson(json['digestposts'] as String?)
+      ..oltime =
+          const StringToIntConverter().fromJson(json['oltime'] as String?)
+      ..recentNote = json['recentnote'] as String? ?? ''
+      ..customStatus = json['customstatus'] as String? ?? ''
+      ..medalList = const MedalListConverter().fromJson(json['medals'])
+      ..signatureHtml = json['sightml'] as String? ?? ''
+      ..male = const StringToBoolConverter().fromJson(json['gender'] as String?)
+      ..birthYear =
+          const StringToIntConverter().fromJson(json['birthyear'] as String?)
+      ..birthMonth =
+          const StringToIntConverter().fromJson(json['birthmonth'] as String?)
+      ..birthDay =
+          const StringToIntConverter().fromJson(json['birthday'] as String?)
+      ..constellation = json['constellation'] as String? ?? ''
+      ..zodiac = json['zodiac'] as String? ?? ''
+      ..nationality = json['nationality'] as String? ?? ''
+      ..birthprovince = json['birthprovince'] as String? ?? ''
+      ..birthcity = json['birthcity'] as String? ?? ''
+      ..birthdist = json['birthdist'] as String? ?? ''
+      ..birthcommunity = json['birthcommunity'] as String? ?? ''
+      ..resideprovince = json['resideprovince'] as String? ?? ''
+      ..residecity = json['residecity'] as String? ?? ''
+      ..residedist = json['residedist'] as String? ?? ''
+      ..residecommunity = json['residecommunity'] as String? ?? ''
+      ..residesuite = json['residesuite'] as String? ?? ''
+      ..graduateschool = json['graduateschool'] as String? ?? ''
+      ..education = json['education'] as String? ?? ''
+      ..company = json['company'] as String? ?? ''
+      ..occupation = json['occupation'] as String? ?? ''
+      ..position = json['position'] as String? ?? ''
+      ..revenue = json['revenue'] as String? ?? ''
+      ..lookingfor = json['lookingfor'] as String? ?? ''
+      ..bloodtype = json['bloodtype'] as String? ?? ''
+      ..height = json['height'] as String? ?? ''
+      ..weight = json['weight'] as String? ?? ''
+      ..site = json['site'] as String? ?? ''
+      ..lastvisit = json['lastvisit'] as String? ?? ''
+      ..lastactivity = json['lastactivity'] as String? ?? ''
+      ..lastpost = json['lastpost'] as String? ?? ''
+      ..lastsendmail = json['lastsendmail'] as String? ?? ''
+      ..favtimes =
+          const StringToIntConverter().fromJson(json['favtimes'] as String?)
+      ..sharetimes =
+          const StringToIntConverter().fromJson(json['sharetimes'] as String?)
+      ..profileprogress = const StringToIntConverter()
+          .fromJson(json['profileprogress'] as String?)
+      ..adminGroupInfo =
+          AdminGroupInfo.fromJson(json['admingroup'] as Map<String, dynamic>)
+      ..groupInfo = GroupInfo.fromJson(json['group'] as Map<String, dynamic>)
+      ..bio = json['bio'] as String
+      ..interest = json['interest'] as String;
 
 Map<String, dynamic> _$SpaceVariablesToJson(SpaceVariables instance) =>
     <String, dynamic>{
@@ -219,14 +205,11 @@ Map<String, dynamic> _$SpaceVariablesToJson(SpaceVariables instance) =>
       'interest': instance.interest,
     };
 
-Medal _$MedalFromJson(Map<String, dynamic> json) {
-  return Medal()
-    ..name = json['name'] as String
-    ..image = json['image'] as String
-    ..description = json['description'] as String
-    ..medalId =
-        const StringToIntConverter().fromJson(json['medalid'] as String?);
-}
+Medal _$MedalFromJson(Map<String, dynamic> json) => Medal()
+  ..name = json['name'] as String
+  ..image = json['image'] as String
+  ..description = json['description'] as String
+  ..medalId = const StringToIntConverter().fromJson(json['medalid'] as String?);
 
 Map<String, dynamic> _$MedalToJson(Medal instance) => <String, dynamic>{
       'name': instance.name,
@@ -235,16 +218,15 @@ Map<String, dynamic> _$MedalToJson(Medal instance) => <String, dynamic>{
       'medalid': const StringToIntConverter().toJson(instance.medalId),
     };
 
-AdminGroupInfo _$AdminGroupInfoFromJson(Map<String, dynamic> json) {
-  return AdminGroupInfo()
-    ..type = json['type'] as String? ?? ''
-    ..groupTitle = json['grouptitle'] as String? ?? ''
-    ..stars = const StringToIntConverter().fromJson(json['stars'] as String?)
-    ..icon = json['icon'] as String? ?? ''
-    ..color = json['color'] as String? ?? ''
-    ..readAccess =
-        const StringToIntConverter().fromJson(json['readaccess'] as String?);
-}
+AdminGroupInfo _$AdminGroupInfoFromJson(Map<String, dynamic> json) =>
+    AdminGroupInfo()
+      ..type = json['type'] as String? ?? ''
+      ..groupTitle = json['grouptitle'] as String? ?? ''
+      ..stars = const StringToIntConverter().fromJson(json['stars'] as String?)
+      ..icon = json['icon'] as String? ?? ''
+      ..color = json['color'] as String? ?? ''
+      ..readAccess =
+          const StringToIntConverter().fromJson(json['readaccess'] as String?);
 
 Map<String, dynamic> _$AdminGroupInfoToJson(AdminGroupInfo instance) =>
     <String, dynamic>{
@@ -256,16 +238,14 @@ Map<String, dynamic> _$AdminGroupInfoToJson(AdminGroupInfo instance) =>
       'readaccess': const StringToIntConverter().toJson(instance.readAccess),
     };
 
-GroupInfo _$GroupInfoFromJson(Map<String, dynamic> json) {
-  return GroupInfo()
-    ..type = json['type'] as String? ?? ''
-    ..groupTitle = json['grouptitle'] as String
-    ..stars = const StringToIntConverter().fromJson(json['stars'] as String?)
-    ..icon = json['icon'] as String? ?? ''
-    ..color = json['color'] as String? ?? ''
-    ..readAccess =
-        const StringToIntConverter().fromJson(json['readaccess'] as String?);
-}
+GroupInfo _$GroupInfoFromJson(Map<String, dynamic> json) => GroupInfo()
+  ..type = json['type'] as String? ?? ''
+  ..groupTitle = json['grouptitle'] as String
+  ..stars = const StringToIntConverter().fromJson(json['stars'] as String?)
+  ..icon = json['icon'] as String? ?? ''
+  ..color = json['color'] as String? ?? ''
+  ..readAccess =
+      const StringToIntConverter().fromJson(json['readaccess'] as String?);
 
 Map<String, dynamic> _$GroupInfoToJson(GroupInfo instance) => <String, dynamic>{
       'type': instance.type,
@@ -276,16 +256,14 @@ Map<String, dynamic> _$GroupInfoToJson(GroupInfo instance) => <String, dynamic>{
       'readaccess': const StringToIntConverter().toJson(instance.readAccess),
     };
 
-ExtendCredit _$ExtendCreditFromJson(Map<String, dynamic> json) {
-  return ExtendCredit()
-    ..img = json['img'] as String? ?? ''
-    ..title = json['title'] as String? ?? ''
-    ..unit = json['unit'] as String? ?? ''
-    ..ratio = json['ratio'] as String? ?? ''
-    ..showInThread = json['showinthread'] as String? ?? ''
-    ..allowExchangeIn = json['allowexchangein'] as String? ?? ''
-    ..allowExchangeOut = json['allowexchangeout'] as String? ?? '';
-}
+ExtendCredit _$ExtendCreditFromJson(Map<String, dynamic> json) => ExtendCredit()
+  ..img = json['img'] as String? ?? ''
+  ..title = json['title'] as String? ?? ''
+  ..unit = json['unit'] as String? ?? ''
+  ..ratio = json['ratio'] as String? ?? ''
+  ..showInThread = json['showinthread'] as String? ?? ''
+  ..allowExchangeIn = json['allowexchangein'] as String? ?? ''
+  ..allowExchangeOut = json['allowexchangeout'] as String? ?? '';
 
 Map<String, dynamic> _$ExtendCreditToJson(ExtendCredit instance) =>
     <String, dynamic>{
