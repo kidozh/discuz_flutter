@@ -91,7 +91,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "addNewDiscuz":
             MessageLookupByLibrary.simpleMessage("Add a new Discuz! forum"),
         "anonymous": MessageLookupByLibrary.simpleMessage("A"),
-        "appName": MessageLookupByLibrary.simpleMessage("Discuzhao"),
+        "appName": MessageLookupByLibrary.simpleMessage("DisFly"),
         "appearanceOptimizedPlatform":
             MessageLookupByLibrary.simpleMessage("Platform preference"),
         "appearanceOptimizedPlatformSubtitle":
