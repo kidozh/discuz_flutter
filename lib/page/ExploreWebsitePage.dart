@@ -55,7 +55,7 @@ class ExploreWebsiteState extends State<ExploreWebsitePage> {
       }
       else{
 
-        return InnerWebviewScreen(discuzAndUser.discuz!, discuzAndUser.user, initialURL: initialURL,);
+        return InnerWebviewScreen(ValueKey(discuzAndUser.discuz!.id!),discuzAndUser.discuz!, discuzAndUser.user, initialURL: initialURL,);
       }
     });
 
@@ -142,7 +142,7 @@ class InnerWebviewScreen extends StatefulWidget{
   User? _user;
   String? initialURL;
 
-  InnerWebviewScreen(this._discuz,this._user, {this.initialURL});
+  InnerWebviewScreen(Key key,this._discuz,this._user, {this.initialURL}):super(key: key);
 
   @override
   InnerWebviewState createState() {

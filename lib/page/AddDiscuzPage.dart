@@ -69,7 +69,7 @@ class _AddDiscuzFormFieldState
       discuz.uCenterURL,
       discuz.defaultFid
     );
-    Provider.of<DiscuzAndUserNotifier>(context, listen: false).setDiscuz(discuz);
+    Provider.of<DiscuzAndUserNotifier>(context, listen: false).setDiscuz(selectedDiscuz);
     // pop the activity
     EasyLoading.showToast(S.of(context).addDiscuzSuccessfully(discuz.siteName));
     Navigator.pop(context);
