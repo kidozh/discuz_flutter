@@ -23,20 +23,21 @@ class ManageAccountPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      appBar: AppBar(
+    return PlatformScaffold(
+      appBar: PlatformAppBar(
         title: Text(S.of(context).manageAccount),
+        trailingActions: [
+          PlatformIconButton(
+            icon: Icon(Icons.add),
+            onPressed: () async{
+              VibrationUtils.vibrateWithClickIfPossible();
+              await Navigator.push(context,
+                  platformPageRoute(context:context,builder: (context) => LoginPage(discuz, null)));
+            },
+          )
+        ],
       ),
       body: ManageAccountStateWidget(discuz),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async{
-          VibrationUtils.vibrateWithClickIfPossible();
-          await Navigator.push(context,
-              platformPageRoute(context:context,builder: (context) => LoginPage(discuz, null)));
-        },
-        tooltip: S.of(context).addNewDiscuz,
-        child: Icon(Icons.add),
-      ),
     );
   }
 
