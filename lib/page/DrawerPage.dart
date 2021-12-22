@@ -229,40 +229,45 @@ class DrawerState extends State<DrawerStatefulWidget>{
   @override
   Widget build(BuildContext context) {
 
-    return Column(
-      children: [
-        Consumer<DiscuzAndUserNotifier>(builder: (context, value, child) {
-          if (value.discuz == null || value.user == null) {
-            return UserAccountsDrawerHeader(
-              margin: EdgeInsets.zero,
-              accountEmail: Text(S.of(context).incognitoSubtitle),
-              accountName: Text(S.of(context).incognitoTitle),
-              currentAccountPicture: Icon(Icons.person_pin,color: Colors.white,),
-              onDetailsPressed: () {
-                setState(() {
-                  _showUserDetail = !_showUserDetail;
-                });
-              },
-            );
-          } else {
-            return UserAccountsDrawerHeader(
-              margin: EdgeInsets.zero,
-              accountEmail: Text(value.user!.uid.toString()),
-              accountName: Text(value.user!.username),
-              currentAccountPicture: UserAvatar(value.discuz!,value.user!),
-              onDetailsPressed: () {
-                setState(() {
-                  _showUserDetail = !_showUserDetail;
-                });
-              },
-            );
-          }
-        }),
-        Expanded(
-            child: _showUserDetail
-                ? _buildUserNavigationWidgetList()
-                : _buildFunctionNavWidgetList())
-      ],
+    return PlatformScaffold(
+      appBar: PlatformAppBar(
+        automaticallyImplyLeading: true,
+      ),
+      body: Column(
+        children: [
+          Consumer<DiscuzAndUserNotifier>(builder: (context, value, child) {
+            if (value.discuz == null || value.user == null) {
+              return UserAccountsDrawerHeader(
+                margin: EdgeInsets.zero,
+                accountEmail: Text(S.of(context).incognitoSubtitle),
+                accountName: Text(S.of(context).incognitoTitle),
+                currentAccountPicture: Icon(Icons.person_pin,color: Colors.white,),
+                onDetailsPressed: () {
+                  setState(() {
+                    _showUserDetail = !_showUserDetail;
+                  });
+                },
+              );
+            } else {
+              return UserAccountsDrawerHeader(
+                margin: EdgeInsets.zero,
+                accountEmail: Text(value.user!.uid.toString()),
+                accountName: Text(value.user!.username),
+                currentAccountPicture: UserAvatar(value.discuz!,value.user!),
+                onDetailsPressed: () {
+                  setState(() {
+                    _showUserDetail = !_showUserDetail;
+                  });
+                },
+              );
+            }
+          }),
+          Expanded(
+              child: _showUserDetail
+                  ? _buildUserNavigationWidgetList()
+                  : _buildFunctionNavWidgetList())
+        ],
+      ),
     );
   }
 

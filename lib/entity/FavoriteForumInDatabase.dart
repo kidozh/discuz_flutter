@@ -22,7 +22,6 @@ class FavoriteForumInDatabase{
   int idKey = 0;
 
   String idType = "";
-  int spaceUid = 0;
 
   String title = "";
   String description = "";
@@ -38,7 +37,6 @@ class FavoriteForumInDatabase{
       this.uid,
       this.idKey,
       this.idType,
-      this.spaceUid,
       this.title,
       this.description,
       this.date,
