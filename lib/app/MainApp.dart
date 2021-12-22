@@ -122,7 +122,7 @@ class MyApp extends StatelessWidget {
               builder: (context){
                 return  PlatformApp(
                   //title: S.of(context).appName,
-
+                  debugShowCheckedModeBanner: false,
                   material: (_,__)=> MaterialAppData(
 
                       theme: materialTheme,
