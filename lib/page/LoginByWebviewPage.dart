@@ -201,7 +201,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
     PersistCookieJar cookieJar = await NetworkUtils.getTemporaryCookieJar();
     // transfer from cookie string
     print("webcookie list ${webviewCookie}");
-    cookieJar.saveFromResponse(Uri.parse(discuz.baseURL), webviewCookie);
+    await cookieJar.saveFromResponse(Uri.parse(discuz.baseURL), webviewCookie);
 
     _dio.interceptors.add(DioCookieManager.CookieManager(cookieJar));
 
