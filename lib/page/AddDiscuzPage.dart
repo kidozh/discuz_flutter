@@ -70,6 +70,7 @@ class _AddDiscuzFormFieldState
       discuz.defaultFid
     );
     Provider.of<DiscuzAndUserNotifier>(context, listen: false).setDiscuz(selectedDiscuz);
+    Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(null);
     // pop the activity
     EasyLoading.showToast(S.of(context).addDiscuzSuccessfully(discuz.siteName));
     Navigator.pop(context);

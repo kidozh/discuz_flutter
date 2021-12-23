@@ -1,5 +1,6 @@
 import 'dart:core';
 import 'dart:core';
+import 'dart:developer';
 import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
@@ -8,10 +9,11 @@ import 'package:discuz_flutter/JsonResult/ErrorResult.dart';
 
 part 'BaseVariableResult.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(ignoreUnannotated: true)
 class BaseVariableResult{
-
+  @JsonKey(name:"cookiepre")
   String cookiepre = "";
+  @JsonKey(name:"auth")
   String? auth = null;
   String getAuth(){
     if(this.auth == null){
@@ -21,10 +23,13 @@ class BaseVariableResult{
       return this.auth!;
     }
   }
+  @JsonKey(name:"saltkey")
   String saltkey = "";
-
+  @JsonKey(name:"member_username")
   String member_username = "";
+  @JsonKey(name:"member_avatar")
   String member_avatar = "";
+  @JsonKey(name:"member_uid")
   @StringToIntConverter()
   int member_uid = 0;
   @JsonKey(name:"groupid")
@@ -43,6 +48,7 @@ class BaseVariableResult{
   NoticeCount noticeCount = NoticeCount();
 
   User getUser(Discuz discuz){
+    log("User ${this.member_uid} ${this.member_username}");
     return User(null, this.getAuth(), saltkey,
         this.member_username, this.member_avatar,
         this.groupId, this.member_uid, this.readAccess,
@@ -52,6 +58,9 @@ class BaseVariableResult{
   BaseVariableResult();
 
   factory BaseVariableResult.fromJson(Map<String, dynamic> json) => _$BaseVariableResultFromJson(json);
+  Map<String, dynamic> toJson() => _$BaseVariableResultToJson(this);
+
+
 
 }
 
@@ -82,4 +91,10 @@ class NoticeCount{
   NoticeCount(){}
 
   factory NoticeCount.fromJson(Map<String, dynamic> json) => _$NoticeCountFromJson(json);
+  Map<String, dynamic> toJson() => _$NoticeCountToJson(this);
+
+  @override
+  String toString() {
+    return super.toString().toString();
+  }
 }

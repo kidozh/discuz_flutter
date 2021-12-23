@@ -131,7 +131,7 @@ class _LoginFormFieldState
         error = "";
       });
       // check if the
-      log("Recv a result ${value}");
+      log("Recv a result ${value} ${value.toJson().toString()}");
       // if user is validated
       User user = value.loginVariables.getUser(discuz);
       if(value.errorResult!.key == "login_succeed"){
@@ -151,7 +151,7 @@ class _LoginFormFieldState
 
           int primaryKey = await dao.insert(user);
           user.id = primaryKey;
-          print("Inserted id ${user.id}, ${user.discuzId} ${discuz.id}");
+          print("Inserted id ${user.id}, ${user.discuzId} ${discuz.id} ${user.username} ${user.uid}");
 
           // save it in cookiejar
           List<Cookie> cookies = await cookieJar.loadForRequest(Uri.parse(discuz.baseURL));

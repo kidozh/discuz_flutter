@@ -13,5 +13,10 @@ class ErrorResult{
   ErrorResult(){}
 
   factory ErrorResult.fromJson(Map<String, dynamic> json) => _$ErrorResultFromJson(json);
+  Map<String, dynamic> toJson() => _$ErrorResultToJson(this);
 
+  @override
+  String toString() {
+    return this.toJson().toString();
+  }
 }

@@ -17,6 +17,12 @@ class LoginResult extends BaseResult{
   LoginResult(){}
 
   factory LoginResult.fromJson(Map<String, dynamic> json) => _$LoginResultFromJson(json);
+  Map<String, dynamic> toJson() => _$LoginResultToJson(this);
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 }
 
 @JsonSerializable(ignoreUnannotated: true)
@@ -24,5 +30,11 @@ class LoginVariables extends BaseVariableResult{
   String loginUrl = "";
   LoginVariables(){}
   factory LoginVariables.fromJson(Map<String, dynamic> json) => _$LoginVariablesFromJson(json);
+  Map<String, dynamic> toJson() => _$LoginVariablesToJson(this);
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 
 }

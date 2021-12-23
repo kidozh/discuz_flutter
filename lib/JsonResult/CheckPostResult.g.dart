@@ -28,6 +28,13 @@ Map<String, dynamic> _$CheckPostResultToJson(CheckPostResult instance) =>
 
 CheckPostVariables _$CheckPostVariablesFromJson(Map<String, dynamic> json) =>
     CheckPostVariables()
+      ..cookiepre = json['cookiepre'] as String
+      ..auth = json['auth'] as String?
+      ..saltkey = json['saltkey'] as String
+      ..member_username = json['member_username'] as String
+      ..member_avatar = json['member_avatar'] as String
+      ..member_uid =
+          const StringToIntConverter().fromJson(json['member_uid'] as String?)
       ..groupId =
           const StringToIntConverter().fromJson(json['groupid'] as String?)
       ..readAccess =
@@ -40,6 +47,12 @@ CheckPostVariables _$CheckPostVariablesFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$CheckPostVariablesToJson(CheckPostVariables instance) =>
     <String, dynamic>{
+      'cookiepre': instance.cookiepre,
+      'auth': instance.auth,
+      'saltkey': instance.saltkey,
+      'member_username': instance.member_username,
+      'member_avatar': instance.member_avatar,
+      'member_uid': const StringToIntConverter().toJson(instance.member_uid),
       'groupid': const StringToIntConverter().toJson(instance.groupId),
       'readaccess': const StringToIntConverter().toJson(instance.readAccess),
       'formhash': instance.formHash,
