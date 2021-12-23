@@ -21,20 +21,21 @@ class ManageDiscuzPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      appBar: AppBar(
+    return PlatformScaffold(
+      appBar: PlatformAppBar(
         title: Text(S.of(context).manageAccount),
+        trailingActions: [
+          PlatformIconButton(
+            onPressed: () async{
+              VibrationUtils.vibrateWithClickIfPossible();
+              await Navigator.push(context,
+                  platformPageRoute(context:context,builder: (context) => AddDiscuzPage()));
+            },
+            icon: Icon(Icons.add),
+          )
+        ],
       ),
       body: ManageDiscuzStateWidget(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async{
-          VibrationUtils.vibrateWithClickIfPossible();
-          await Navigator.push(context,
-              platformPageRoute(context:context,builder: (context) => AddDiscuzPage()));
-        },
-        tooltip: S.of(context).addNewDiscuz,
-        child: Icon(Icons.add),
-      ),
     );
   }
 
