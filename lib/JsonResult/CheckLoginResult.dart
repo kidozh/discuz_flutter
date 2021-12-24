@@ -17,11 +17,23 @@ class CheckLoginResult extends BaseResult{
   CheckLoginResult();
 
   factory CheckLoginResult.fromJson(Map<String, dynamic> json) => _$CheckLoginResultFromJson(json);
+  Map<String, dynamic> toJson() => _$CheckLoginResultToJson(this);
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 }
 
 @JsonSerializable(ignoreUnannotated: true)
 class CheckLoginVariables extends BaseVariableResult{
   CheckLoginVariables();
   factory CheckLoginVariables.fromJson(Map<String, dynamic> json) => _$CheckLoginVariablesFromJson(json);
+  Map<String, dynamic> toJson() => _$CheckLoginVariablesToJson(this);
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 
 }
