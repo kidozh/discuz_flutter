@@ -1,5 +1,7 @@
 # 谈坛
 
+![ICON](./assets/icon/icon.png)
+
 [English](./README.md) | [中文](./README_zh.md)
 
 由Flutter驱动的轻量级Discuz X客户端
