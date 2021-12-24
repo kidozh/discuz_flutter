@@ -26,13 +26,15 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart' hide NavigationRequest,NavigationDecision;
 
+typedef void JumpToPidCallback(int pid);
 
 // ignore: must_be_immutable
 class DiscuzHtmlWidget extends StatelessWidget{
   String html;
   Discuz discuz;
+  JumpToPidCallback? callback;
 
-  DiscuzHtmlWidget(this.discuz,this.html);
+  DiscuzHtmlWidget(this.discuz,this.html,{this.callback});
 
   _trustHost(String host) async{
     TrustHostDatabase trustHostDatabase = await DBHelper.getTrustHostDb();

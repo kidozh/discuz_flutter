@@ -33,14 +33,18 @@ class ThemeNotifierProvider with ChangeNotifier{
 
   String get themeColorName => _themeColor;
 
-  Brightness? _brightness;
+  Brightness? _brightnessPreference;
 
   setBrightness(Brightness? brightness){
-    _brightness = brightness;
+    _brightnessPreference = brightness;
     notifyListeners();
   }
 
-  Brightness? get brightness => _brightness;
+  Brightness? get brightness => _brightnessPreference;
+
+
+
+
 
 
 

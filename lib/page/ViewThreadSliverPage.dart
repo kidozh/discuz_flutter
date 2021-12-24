@@ -451,6 +451,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     });
   }
 
+  void scrollToPid(int pid){
+    for(var post in _postList){
+      if(post.pid == pid){
+        
+      }
+    }
+  }
 
 
   @override
@@ -653,6 +660,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                           },
                           postCommentList: postCommentList,
                           ignoreFontCustomization: ignoreFontCustomization,
+                          jumpToPidCallback: (pid){
+                            // need to find the pid and scroll to it
+
+                          },
                         ),
                       ],
                     );

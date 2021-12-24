@@ -76,7 +76,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _loadPreference(context);
-
     return Consumer<ThemeNotifierProvider>(
       builder: (context, themeColorEntity, _){
         print("Change brightness ${themeColorEntity.brightness}");
@@ -182,7 +181,7 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   bool _showUserDetail = false;
   int _bottomNavigationbarIndex = 0;
   late List<Widget> bodies = [];
@@ -202,7 +201,24 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _initDb();
+    WidgetsBinding.instance?.addObserver(this);
 
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
+    super.dispose();
+
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    super.didChangePlatformBrightness();
+    final Brightness? brightness = WidgetsBinding.instance?.window.platformBrightness;
+    if (brightness != null && Provider.of<ThemeNotifierProvider>(context).brightness == null){
+      Provider.of<ThemeNotifierProvider>(context).setBrightness(brightness);
+    }
   }
 
   void _initDb() async {
@@ -306,6 +322,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     // need to check whether discuz exists in dataset
+
     return PlatformScaffold(
       iosContentPadding: true,
       appBar: PlatformAppBar(

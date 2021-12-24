@@ -26,7 +26,6 @@ class ForumPartitionWidget extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     final orientation = MediaQuery.of(context).orientation;
     return Container(
       child: Column(

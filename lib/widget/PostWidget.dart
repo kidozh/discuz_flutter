@@ -35,6 +35,7 @@ class PostWidget extends StatelessWidget {
   Discuz _discuz;
   int _authorId;
   VoidCallback? onAuthorSelectedCallback;
+  JumpToPidCallback? jumpToPidCallback;
   Map<String, List<Comment>>? postCommentList;
   bool? ignoreFontCustomization = false;
 
@@ -60,7 +61,7 @@ class PostWidget extends StatelessWidget {
     }
   }
 
-  PostWidget(this._discuz, this._post, this._authorId, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization});
+  PostWidget(this._discuz, this._post, this._authorId, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback});
 
 
   @override
