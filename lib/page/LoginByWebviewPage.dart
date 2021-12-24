@@ -237,7 +237,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
         }
       }
       else{
-        print("Get auth ${value.variables.auth} ${value.variables.formHash}");
+        print("Get auth ${value.variables.auth} ${value.variables.formHash} ${value}");
         // trigger a alert
         EasyLoading.showToast(S.of(context).websiteNotLogined);
       }
