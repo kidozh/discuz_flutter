@@ -1,16 +1,21 @@
-# discuz_flutter
+# DisFly
 
-A new Flutter application.
+A lightweight Discuz X client built by Flutter
 
-## Getting Started
+# Distribution
 
-This project is a starting point for a Flutter application.
+|---|---|
+| Google Play | [https://play.google.com/store/apps/details?id=com.kidozh.discuz_flutter](https://play.google.com/store/apps/details?id=com.kidozh.discuz_flutter) |
+| App Store | [https://apps.apple.com/us/app/%E8%B0%88%E5%9D%9B/id1601703772](https://apps.apple.com/us/app/%E8%B0%88%E5%9D%9B/id1601703772) |
 
-A few resources to get you started if this is your first Flutter project:0
+# Terms of service
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Follow Discuz Hub [https://discuzhub.kidozh.com/zh/term_of_use/](https://discuzhub.kidozh.com/zh/term_of_use/)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# Privacy policy
+
+Follow Discuz Hub [https://discuzhub.kidozh.com/zh/privacy_policy/](https://discuzhub.kidozh.com/zh/privacy_policy/)
+
+# Screenshot
+
+See our distribution
