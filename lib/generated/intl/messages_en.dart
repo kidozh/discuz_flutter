@@ -266,6 +266,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "invalidCookie": MessageLookupByLibrary.simpleMessage(
             "Invalid cookie from response."),
         "ios": MessageLookupByLibrary.simpleMessage("iOS"),
+        "iosDarkModeDisabledText": MessageLookupByLibrary.simpleMessage(
+            "Dark mode will not be enabled running on iOS platform mode."),
         "justNow": MessageLookupByLibrary.simpleMessage("Just Now"),
         "largeRichText": MessageLookupByLibrary.simpleMessage(
             "Welcome to Discuzhub<br/>Thanks for using our products and <a href=\"https://discuzhub.kidozh.com/en/term_of_use/\">services</a> (“Services”).<br/>By using our Services, you are agreeing to these terms. Please read them <b>carefully</b>.<br/>Our Services are very diverse, so sometimes additional terms or product requirements (including age requirements) may apply. Additional terms will be available with the relevant Services, and those additional terms become part of your agreement with us if you use those Services"),

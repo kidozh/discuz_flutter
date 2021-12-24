@@ -2860,6 +2860,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Dark mode will not be enabled running on iOS platform mode.`
+  String get iosDarkModeDisabledText {
+    return Intl.message(
+      'Dark mode will not be enabled running on iOS platform mode.',
+      name: 'iosDarkModeDisabledText',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

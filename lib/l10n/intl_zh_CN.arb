@@ -431,5 +431,6 @@
   "sendImageWithVerificationNotice": "需要手动填写验证码，填写完成后，最右侧发送按钮完成发送。",
   "websiteNotLogined": "在网页中没有完成登录，请登陆后点击右上方登录按钮完成录入。",
   "networkFailed": "网络访问失败。",
-  "checkUserLoginStatus": "正在检查用户登录状态。。。"
+  "checkUserLoginStatus": "正在检查用户登录状态。。。",
+  "iosDarkModeDisabledText": "处于iOS运行平台偏好下，深色显示模式将被禁用。"
 }

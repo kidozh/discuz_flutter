@@ -79,12 +79,22 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeNotifierProvider>(
       builder: (context, themeColorEntity, _){
         print("Change brightness ${themeColorEntity.brightness}");
+        // check whether ios
+        if(themeColorEntity.platformName == "ios"){
+          themeColorEntity.setBrightness(Brightness.light);
+        }
+        else if(themeColorEntity.platformName == "" && Platform.isIOS){
+          themeColorEntity.setBrightness(Brightness.light);
+        }
+
+
         final materialTheme = ThemeData(
           brightness: themeColorEntity.brightness,
           cupertinoOverrideTheme: CupertinoThemeData(
             primaryColor: themeColorEntity.themeColor,
             brightness: themeColorEntity.brightness
           ),
+
 
           primarySwatch: themeColorEntity.themeColor,
           primaryColor: themeColorEntity.themeColor,
@@ -117,6 +127,7 @@ class MyApp extends StatelessWidget {
                 iosUsesMaterialWidgets: true,
 
 
+
               ),
               builder: (context){
                 return  PlatformApp(
@@ -134,6 +145,7 @@ class MyApp extends StatelessWidget {
                   cupertino: (_,__) => CupertinoAppData(
                     theme: CupertinoThemeData(
                       primaryColor: themeColorEntity.themeColor,
+                      brightness: Brightness.light
                     ),
 
                   ),

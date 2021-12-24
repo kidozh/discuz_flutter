@@ -70,6 +70,16 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
             ),
             
           ]),
+          CustomSection(child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+                child: Text(S.of(context).iosDarkModeDisabledText, style: Theme.of(context).textTheme.bodyText2),
+
+              )
+
+            ],
+          ))
         ],
       ),
     );
