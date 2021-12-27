@@ -851,9 +851,15 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                       // fill with text first
                                       // refresh the layout
                                       // insertedAidList.clear();
-                                      _replyController.text = _replyController.text + "[attachimg]${aid}[/attachimg]";
-                                      // add aid to list
-                                      insertedAidList.add(aid);
+                                      if(aid.isNotEmpty){
+                                        _replyController.text = _replyController.text + "[attachimg]${aid}[/attachimg]";
+                                        // add aid to list
+                                        insertedAidList.add(aid);
+                                      }
+                                      else{
+
+                                      }
+
                                       // not to send it automatically
                                       // check whether need seccode
                                       // CaptchaFields? captchaFields = _captchaController.value;

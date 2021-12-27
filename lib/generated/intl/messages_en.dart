@@ -474,6 +474,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Invalid upload method."),
         "uploadImageErrorNegative1":
             MessageLookupByLibrary.simpleMessage("Internal Server Error"),
+        "uploadImageFailed":
+            MessageLookupByLibrary.simpleMessage("Upload image failed"),
         "uploadImageSuccessfully": MessageLookupByLibrary.simpleMessage(
             "Upload file to server sucessfully."),
         "uploadImageToServerDialogTitle": MessageLookupByLibrary.simpleMessage(

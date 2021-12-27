@@ -407,6 +407,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "uploadImageError9": MessageLookupByLibrary.simpleMessage("没有合法的文件被上传"),
         "uploadImageErrorNegative1":
             MessageLookupByLibrary.simpleMessage("内部服务器错误"),
+        "uploadImageFailed": MessageLookupByLibrary.simpleMessage("上传图片失败"),
         "uploadImageSuccessfully":
             MessageLookupByLibrary.simpleMessage("文件已经成功上传至服务器"),
         "uploadImageToServerDialogTitle":

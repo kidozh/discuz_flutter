@@ -2900,6 +2900,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Upload image failed`
+  String get uploadImageFailed {
+    return Intl.message(
+      'Upload image failed',
+      name: 'uploadImageFailed',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

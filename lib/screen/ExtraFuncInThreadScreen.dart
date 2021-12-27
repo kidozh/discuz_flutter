@@ -206,8 +206,61 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
     // or DISCUZUPLOAD|0|10|1|0
     // or in keylol DISCUZUPLOAD|0|1475238|1|0
     try{
-      int.parse(respString);
-      return respString;
+      int code = int.parse(respString);
+      switch (code){
+        case -1:{
+          EasyLoading.showError(S.of(context).uploadImageError1);
+          return "";
+        }
+        case -2:{
+          EasyLoading.showError(S.of(context).uploadImageError2);
+          return "";
+        }
+        case -3:{
+          EasyLoading.showError(S.of(context).uploadImageError3);
+          return "";
+        }
+        case -4:{
+          EasyLoading.showError(S.of(context).uploadImageError4);
+          return "";
+        }
+        case -5:{
+          EasyLoading.showError(S.of(context).uploadImageError5);
+          return "";
+        }
+        case -6:{
+          EasyLoading.showError(S.of(context).uploadImageError6);
+          return "";
+        }
+        case -7:{
+          EasyLoading.showError(S.of(context).uploadImageError7);
+          return "";
+        }
+        case -8:{
+          EasyLoading.showError(S.of(context).uploadImageError8);
+          return "";
+        }
+        case -9:{
+          EasyLoading.showError(S.of(context).uploadImageError9);
+          return "";
+        }
+        case -10:{
+          EasyLoading.showError(S.of(context).uploadImageError10);
+          return "";
+        }
+        case -11:{
+          EasyLoading.showError(S.of(context).uploadImageError11);
+          return "";
+        }
+
+      }
+      if(code > 0){
+        return respString;
+      }
+      else{
+        return "";
+      }
+
     }
     catch(e,s){
       print("response ${respString} is not a integer");
