@@ -20,9 +20,11 @@ class Post{
   @StringToBoolConverter()
   bool anonymous = false;
 
-
+  @JsonKey(defaultValue: "")
   String author = "";
+  @JsonKey(defaultValue: "")
   String dateline = "";
+  @JsonKey(defaultValue: "")
   String message = "";
 
   @JsonKey(name:"authorid")
