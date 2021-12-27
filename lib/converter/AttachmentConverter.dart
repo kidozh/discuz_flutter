@@ -18,8 +18,14 @@ class AttachmentConverter implements JsonConverter<Map<String,Attachment>, Objec
       for(var entry in attachmentMap.entries){
         if(entry.value!=null){
           // log("Get ${entry.key} value ${entry.value.runtimeType} ${entry.value}");
-          Attachment attachment = Attachment.fromJson(entry.value);
-          returnedMap[entry.key] = attachment;
+          try{
+            Attachment attachment = Attachment.fromJson(entry.value);
+            returnedMap[entry.key] = attachment;
+          }
+          catch(e){
+            log("parse attachment error ${e}");
+          }
+
         }
 
       }

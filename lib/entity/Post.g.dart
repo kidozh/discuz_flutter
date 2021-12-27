@@ -12,9 +12,9 @@ Post _$PostFromJson(Map<String, dynamic> json) => Post()
   ..first = const StringToBoolConverter().fromJson(json['first'] as String?)
   ..anonymous =
       const StringToBoolConverter().fromJson(json['anonymous'] as String?)
-  ..author = json['author'] as String
-  ..dateline = json['dateline'] as String
-  ..message = json['message'] as String
+  ..author = json['author'] as String? ?? ''
+  ..dateline = json['dateline'] as String? ?? ''
+  ..message = json['message'] as String? ?? ''
   ..authorId =
       const StringToIntConverter().fromJson(json['authorid'] as String?)
   ..attachment =
@@ -70,17 +70,19 @@ Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
 Attachment _$AttachmentFromJson(Map<String, dynamic> json) => Attachment()
   ..dateline = json['dateline'] as String? ?? ''
   ..filename = json['filename'] as String? ?? ''
-  ..fileSize =
-      const StringToIntConverter().fromJson(json['filesize'] as String?)
+  ..fileSize = json['filesize'] == null
+      ? 0
+      : const StringToIntConverter().fromJson(json['filesize'] as String?)
   ..readPerm =
       const StringToIntConverter().fromJson(json['readperm'] as String?)
   ..aidEncode = json['aidencode'] as String? ?? ''
   ..url = json['url'] as String? ?? ''
-  ..downloads =
-      const StringToIntConverter().fromJson(json['downloads'] as String?)
+  ..downloads = json['downloads'] == null
+      ? 0
+      : const StringToIntConverter().fromJson(json['downloads'] as String?)
   ..updateAt =
       const SecondToDateTimeConverter().fromJson(json['dbdateline'] as String?)
-  ..attachmentSizeString = json['attachsize'] as String
+  ..attachmentSizeString = json['attachsize'] as String? ?? ''
   ..attachmentPathName = json['attachment'] as String? ?? ''
   ..ext = json['ext'] as String? ?? '';
 

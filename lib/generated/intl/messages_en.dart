@@ -472,6 +472,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Internal Server Error"),
         "uploadImageSuccessfully": MessageLookupByLibrary.simpleMessage(
             "Upload file to server sucessfully."),
+        "uploadImageToServerDialogTitle": MessageLookupByLibrary.simpleMessage(
+            "Upload the file to Discuz server."),
         "uploadImageUnknownError": MessageLookupByLibrary.simpleMessage(
             "Encounter a unresolved issue when uploading the file"),
         "userExpiredSubtitle": MessageLookupByLibrary.simpleMessage(

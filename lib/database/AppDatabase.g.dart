@@ -67,10 +67,12 @@ class _$AppDatabase extends AppDatabase {
 
   ViewHistoryDao? _viewHistoryDaoInstance;
 
+  SmileyDao? _smileyDaoInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 1,
+      version: 2,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -93,6 +95,8 @@ class _$AppDatabase extends AppDatabase {
             'CREATE TABLE IF NOT EXISTS `ViewHistory` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `subject` TEXT NOT NULL, `description` TEXT NOT NULL, `type` TEXT NOT NULL, `identification` INTEGER NOT NULL, `author` TEXT NOT NULL, `authorId` INTEGER NOT NULL, `insertTime` INTEGER NOT NULL, `updateTime` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `FavoriteThreadInDatabase` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `favid` INTEGER NOT NULL, `uid` INTEGER NOT NULL, `idInServer` INTEGER NOT NULL, `idType` TEXT NOT NULL, `spaceUid` INTEGER NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `author` TEXT NOT NULL, `replies` INTEGER NOT NULL, `date` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `Smiley` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `code` TEXT NOT NULL, `relativePath` TEXT NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -114,6 +118,11 @@ class _$AppDatabase extends AppDatabase {
   ViewHistoryDao get viewHistoryDao {
     return _viewHistoryDaoInstance ??=
         _$ViewHistoryDao(database, changeListener);
+  }
+
+  @override
+  SmileyDao get smileyDao {
+    return _smileyDaoInstance ??= _$SmileyDao(database, changeListener);
   }
 }
 
@@ -565,6 +574,71 @@ class _$ViewHistoryDao extends ViewHistoryDao {
         await transactionDatabase.viewHistoryDao.deleteAllHistories();
       });
     }
+  }
+}
+
+class _$SmileyDao extends SmileyDao {
+  _$SmileyDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database, changeListener),
+        _smileyInsertionAdapter = InsertionAdapter(
+            database,
+            'Smiley',
+            (Smiley item) => <String, Object?>{
+                  'id': item.id,
+                  'code': item.code,
+                  'relativePath': item.relativePath,
+                  'discuz_id': item.discuzId
+                },
+            changeListener),
+        _smileyDeletionAdapter = DeletionAdapter(
+            database,
+            'Smiley',
+            ['id'],
+            (Smiley item) => <String, Object?>{
+                  'id': item.id,
+                  'code': item.code,
+                  'relativePath': item.relativePath,
+                  'discuz_id': item.discuzId
+                },
+            changeListener);
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<Smiley> _smileyInsertionAdapter;
+
+  final DeletionAdapter<Smiley> _smileyDeletionAdapter;
+
+  @override
+  Future<List<Smiley>> findAllSmileyByDiscuzId(int discuzId) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM SMILEY WHERE discuz_id=?1 ORDER BY id DESC LIMIT 20',
+        mapper: (Map<String, Object?> row) => Smiley(),
+        arguments: [discuzId]);
+  }
+
+  @override
+  Stream<List<Smiley>> findAllSmileyStreamByDiscuzId(int discuzId) {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM SMILEY WHERE discuz_id=?1 ORDER BY id DESC LIMIT 20',
+        mapper: (Map<String, Object?> row) => Smiley(),
+        arguments: [discuzId],
+        queryableName: 'Smiley',
+        isView: false);
+  }
+
+  @override
+  Future<int> insertSmiley(Smiley smiley) {
+    return _smileyInsertionAdapter.insertAndReturnId(
+        smiley, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<int> deleteSmiley(Smiley smiley) {
+    return _smileyDeletionAdapter.deleteAndReturnChangedRows(smiley);
   }
 }
 

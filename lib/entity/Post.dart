@@ -43,7 +43,7 @@ class Post{
   @JsonKey(name:"memberstatus")
   @StringToIntConverter()
   int memberStatus = 0;
-  @JsonKey(name: "dbdateline")
+  @JsonKey(name: "dbdateline",defaultValue: null)
   @SecondToDateTimeConverter()
   DateTime publishAt = DateTime.now();
 
@@ -75,8 +75,7 @@ class Post{
 
   @override
   String toString() {
-    // TODO: implement toString
-    return "Pos";
+    return toJson().toString();
   }
 }
 
@@ -88,7 +87,7 @@ class Attachment{
   @JsonKey(defaultValue: "")
   String dateline = "", filename = "";
   @StringToIntConverter()
-  @JsonKey(name:"filesize")
+  @JsonKey(name:"filesize",defaultValue: 0)
   int fileSize = 0;
   @StringToBoolConverter()
   bool remote = false, thumb = false, payed = false;
@@ -105,12 +104,12 @@ class Attachment{
   @JsonKey(defaultValue: "")
   String url = "";
   @StringToIntConverter()
-  @JsonKey(name:"downloads")
+  @JsonKey(name:"downloads",defaultValue: 0)
   int downloads = 0;
   @JsonKey(name: "dbdateline")
   @SecondToDateTimeConverter()
   DateTime updateAt = DateTime.now();
-  @JsonKey(name: "attachsize")
+  @JsonKey(name: "attachsize",defaultValue: "")
   String attachmentSizeString = "";
   @JsonKey(name: "attachment",defaultValue: "")
   String attachmentPathName = "";

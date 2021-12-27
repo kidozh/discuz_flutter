@@ -407,6 +407,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("内部服务器错误"),
         "uploadImageSuccessfully":
             MessageLookupByLibrary.simpleMessage("文件已经成功上传至服务器"),
+        "uploadImageToServerDialogTitle":
+            MessageLookupByLibrary.simpleMessage("向论坛上传图片"),
         "uploadImageUnknownError":
             MessageLookupByLibrary.simpleMessage("上传文件时遇到了一个未知错误。"),
         "userExpiredSubtitle":

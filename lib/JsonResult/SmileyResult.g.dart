@@ -63,12 +63,3 @@ Map<String, dynamic> _$SmileyVariablesToJson(SmileyVariables instance) =>
       'notice': instance.noticeCount,
       'smilies': instance.smilies,
     };
-
-Smiley _$SmileyFromJson(Map<String, dynamic> json) => Smiley()
-  ..code = json['code'] as String
-  ..relativePath = json['image'] as String;
-
-Map<String, dynamic> _$SmileyToJson(Smiley instance) => <String, dynamic>{
-      'code': instance.code,
-      'image': instance.relativePath,
-    };

@@ -92,17 +92,42 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
               // recv the photo from gallery
               VibrationUtils.vibrateWithClickIfPossible();
               final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
               // then upload to the server
               if(image != null){
                 File file = File(image.path);
-                String respString = await uploadPhotoToDiscuzServer(context, file);
-                print("Successful upload image string ${respString}");
-                String aid = getAidFromDiscuzUploadResponse(context, respString);
-                if(aid.isNotEmpty){
-                  // send it with aid
-                  onReplyWithImage(aid);
+                // confirm with user
+                showPlatformDialog(
+                    context: context,
+                    builder: (_) => PlatformAlertDialog(
+                      title: Text(S.of(context).uploadImageToServerDialogTitle),
+                      content: Image.file(file),
+                      actions: [
+                        PlatformDialogAction(
+                          child: Text(S.of(context).ok),
+                          onPressed: () async{
+                            String respString = await uploadPhotoToDiscuzServer(context, file);
+                            print("Successful upload image string ${respString}");
+                            String aid = getAidFromDiscuzUploadResponse(context, respString);
+                            if(aid.isNotEmpty){
+                              // send it with aid
+                              onReplyWithImage(aid);
+                            }
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        PlatformDialogAction(
+                          child: Text(S.of(context).cancel),
+                          onPressed: () async{
+                            // cancel it
+                            Navigator.of(context).pop();
+                          },
+                        )
+                      ],
+                    )
+                );
 
-                }
+
               }
               else{
                 EasyLoading.showToast(S.of(context).noImagePicked);
@@ -114,14 +139,38 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
               final XFile? image = await _picker.pickImage(source: ImageSource.camera);
               if(image != null){
                 File file = File(image.path);
-                String respString = await uploadPhotoToDiscuzServer(context, file);
-                print("Successful upload image string ${respString}");
-                String aid = getAidFromDiscuzUploadResponse(context, respString);
-                if(aid.isNotEmpty){
-                  // send it with aid
-                  onReplyWithImage(aid);
 
-                }
+                showPlatformDialog(
+                    context: context,
+                    builder: (_) => PlatformAlertDialog(
+                      title: Text(S.of(context).uploadImageToServerDialogTitle),
+                      content: Image.file(file),
+                      actions: [
+                        PlatformDialogAction(
+                          child: Text(S.of(context).ok),
+                          onPressed: () async{
+                            String respString = await uploadPhotoToDiscuzServer(context, file);
+                            print("Successful upload image string ${respString}");
+                            String aid = getAidFromDiscuzUploadResponse(context, respString);
+                            if(aid.isNotEmpty){
+                              // send it with aid
+                              onReplyWithImage(aid);
+
+                            }
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        PlatformDialogAction(
+                          child: Text(S.of(context).cancel),
+                          onPressed: () async{
+                            // cancel it
+                            Navigator.of(context).pop();
+                          },
+                        )
+                      ],
+                    )
+                );
+
               }
               else{
                 EasyLoading.showToast(S.of(context).noImagePicked);

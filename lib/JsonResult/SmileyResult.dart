@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
+import 'package:discuz_flutter/entity/Smiley.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 
@@ -30,18 +31,5 @@ class SmileyVariables extends BaseVariableResult{
 
 }
 
-@JsonSerializable()
-class Smiley{
-  String code = "";
-  @JsonKey(name: "image")
-  String relativePath = "";
 
-  Smiley(){}
-
-  factory Smiley.fromJson(Map<String, dynamic> json) => _$SmileyFromJson(json);
-  String toJsonString(){
-    return jsonEncode(_$SmileyToJson(this)).toString();
-  }
-
-}
 

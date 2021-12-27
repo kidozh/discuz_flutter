@@ -2870,6 +2870,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Upload the file to Discuz server.`
+  String get uploadImageToServerDialogTitle {
+    return Intl.message(
+      'Upload the file to Discuz server.',
+      name: 'uploadImageToServerDialogTitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

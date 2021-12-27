@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:discuz_flutter/JsonResult/SmileyResult.dart';
+import 'package:discuz_flutter/entity/Smiley.dart';
 import 'package:discuz_flutter/widget/PostTextField.dart';
 
 class PostTextFieldUtils{

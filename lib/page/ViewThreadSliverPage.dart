@@ -7,6 +7,7 @@ import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/Post.dart';
+import 'package:discuz_flutter/entity/Smiley.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
@@ -426,9 +427,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
           RewriteRuleUtils.putUserProfileRule(discuz, rewriteRule.userSpace);
         }
       }
-    }).catchError((onError) {
+    }).catchError((onError, stack) {
       VibrationUtils.vibrateErrorIfPossible();
       EasyLoading.showError('${onError}');
+      log("${onError} ${stack}");
       if (!_enableControlFinish) {
         _controller.resetLoadState();
         _controller.finishRefresh();
@@ -845,17 +847,20 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                   ExtraFuncInThreadScreen(tid,_viewThreadResult.threadVariables.fid,
                                     onReplyWithImage: (aid){
                                       // fill with text first
+                                      // refresh the layout
+                                      insertedAidList.clear();
                                       _replyController.text = "[attachimg]${aid}[/attachimg]";
                                       // add aid to list
                                       insertedAidList.add(aid);
+                                      // not to send it automatically
                                       // check whether need seccode
-                                      CaptchaFields? captchaFields = _captchaController.value;
-                                      if(captchaFields != null && captchaFields.captchaFormHash.isNotEmpty){
-                                        EasyLoading.showInfo(S.of(context).sendImageWithVerificationNotice);
-                                      }
-                                      else{
-                                        _sendReply();
-                                      }
+                                      // CaptchaFields? captchaFields = _captchaController.value;
+                                      // if(captchaFields != null && captchaFields.captchaFormHash.isNotEmpty){
+                                      //   EasyLoading.showInfo(S.of(context).sendImageWithVerificationNotice);
+                                      // }
+                                      // else{
+                                      //   _sendReply();
+                                      // }
 
 
                                     },
@@ -890,7 +895,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     final TextEditingValue value = _replyController.value;
 
     String smileyCode =
-        "${SmileyText.smileyStartFlag}${smiley.toJsonString()}${SmileyText.smileyEndFlag}";
+        "${SmileyText.smileyStartFlag}${smiley.toString()}${SmileyText.smileyEndFlag}";
     final text = smileyCode;
     if (selection.isValid) {
       String newText = "";
