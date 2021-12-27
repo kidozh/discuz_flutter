@@ -2880,6 +2880,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Recently used`
+  String get savedSmileyTabTitle {
+    return Intl.message(
+      'Recently used',
+      name: 'savedSmileyTabTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Try to use the first smiley?`
+  String get noSmileyFoundInDB {
+    return Intl.message(
+      'Try to use the first smiley?',
+      name: 'noSmileyFoundInDB',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

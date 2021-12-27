@@ -315,6 +315,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "noImagePicked":
             MessageLookupByLibrary.simpleMessage("No Image picked"),
         "noMore": MessageLookupByLibrary.simpleMessage("No more"),
+        "noSmileyFoundInDB": MessageLookupByLibrary.simpleMessage(
+            "Try to use the first smiley?"),
         "notification": MessageLookupByLibrary.simpleMessage("Notification"),
         "nullDiscuzSubTitle": MessageLookupByLibrary.simpleMessage(
             "Why not consider add a discuz forum?"),
@@ -406,6 +408,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "saveImageSuccessfully": MessageLookupByLibrary.simpleMessage(
             "Save Image to device successfully."),
         "savePictureToDevice": MessageLookupByLibrary.simpleMessage("Save"),
+        "savedSmileyTabTitle":
+            MessageLookupByLibrary.simpleMessage("Recently used"),
         "seeAllReplies":
             MessageLookupByLibrary.simpleMessage("View all replies"),
         "selectUserNull": MessageLookupByLibrary.simpleMessage(

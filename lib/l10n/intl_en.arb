@@ -433,5 +433,7 @@
   "networkFailed": "Network failed.",
   "checkUserLoginStatus": "Check user status...",
   "iosDarkModeDisabledText": "Dark mode will not be enabled running on iOS platform mode.",
-  "uploadImageToServerDialogTitle": "Upload the file to Discuz server."
+  "uploadImageToServerDialogTitle": "Upload the file to Discuz server.",
+  "savedSmileyTabTitle": "Recently used",
+  "noSmileyFoundInDB": "Try to use the first smiley?"
 }

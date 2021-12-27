@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:discuz_flutter/converter/FloorDateTimeConverter.dart';
 import 'package:floor/floor.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -15,6 +18,7 @@ part 'Smiley.g.dart';
           onDelete: ForeignKeyAction.cascade)
     ]
 )
+@TypeConverters([FloorDateTimeConverter])
 class Smiley{
   @JsonKey(ignore: true)
   @PrimaryKey(autoGenerate: true)
@@ -25,11 +29,16 @@ class Smiley{
   String relativePath = "";
 
   @JsonKey(ignore: true)
+  DateTime dateTime = DateTime.now();
+
+  @JsonKey(ignore: true)
   @ColumnInfo(name: "discuz_id")
   int discuzId = 0;
 
-  Smiley();
+  //Smiley();
 
+
+  Smiley(this.code, this.relativePath);
 
   factory Smiley.fromJson(Map<String, dynamic> json) => _$SmileyFromJson(json);
   // Map<String, dynamic> toJson => $_SmileyToJson(this);
@@ -37,6 +46,6 @@ class Smiley{
 
   @override
   String toString() {
-    return toJson().toString();
+    return jsonEncode(toJson()).toString();
   }
 }

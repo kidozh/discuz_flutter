@@ -433,5 +433,7 @@
   "networkFailed": "网络访问失败。",
   "checkUserLoginStatus": "正在检查用户登录状态。。。",
   "iosDarkModeDisabledText": "处于iOS运行平台偏好下，深色显示模式将被禁用。",
-  "uploadImageToServerDialogTitle": "向论坛上传图片"
+  "uploadImageToServerDialogTitle": "向论坛上传图片",
+  "savedSmileyTabTitle": "最近使用",
+  "noSmileyFoundInDB": "要不使用一个表情包？"
 }

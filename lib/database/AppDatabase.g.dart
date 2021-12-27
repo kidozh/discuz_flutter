@@ -72,7 +72,7 @@ class _$AppDatabase extends AppDatabase {
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 2,
+      version: 3,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -96,7 +96,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `FavoriteThreadInDatabase` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `favid` INTEGER NOT NULL, `uid` INTEGER NOT NULL, `idInServer` INTEGER NOT NULL, `idType` TEXT NOT NULL, `spaceUid` INTEGER NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `author` TEXT NOT NULL, `replies` INTEGER NOT NULL, `date` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Smiley` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `code` TEXT NOT NULL, `relativePath` TEXT NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
+            'CREATE TABLE IF NOT EXISTS `Smiley` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `code` TEXT NOT NULL, `relativePath` TEXT NOT NULL, `dateTime` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -587,6 +587,7 @@ class _$SmileyDao extends SmileyDao {
                   'id': item.id,
                   'code': item.code,
                   'relativePath': item.relativePath,
+                  'dateTime': _floorDateTimeConverter.encode(item.dateTime),
                   'discuz_id': item.discuzId
                 },
             changeListener),
@@ -598,6 +599,7 @@ class _$SmileyDao extends SmileyDao {
                   'id': item.id,
                   'code': item.code,
                   'relativePath': item.relativePath,
+                  'dateTime': _floorDateTimeConverter.encode(item.dateTime),
                   'discuz_id': item.discuzId
                 },
             changeListener);
@@ -615,25 +617,35 @@ class _$SmileyDao extends SmileyDao {
   @override
   Future<List<Smiley>> findAllSmileyByDiscuzId(int discuzId) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM SMILEY WHERE discuz_id=?1 ORDER BY id DESC LIMIT 20',
-        mapper: (Map<String, Object?> row) => Smiley(),
+        'SELECT * FROM SMILEY WHERE discuz_id=?1 ORDER BY dateTime DESC LIMIT 20',
+        mapper: (Map<String, Object?> row) => Smiley(row['code'] as String, row['relativePath'] as String),
         arguments: [discuzId]);
   }
 
   @override
   Stream<List<Smiley>> findAllSmileyStreamByDiscuzId(int discuzId) {
     return _queryAdapter.queryListStream(
-        'SELECT * FROM SMILEY WHERE discuz_id=?1 ORDER BY id DESC LIMIT 20',
-        mapper: (Map<String, Object?> row) => Smiley(),
+        'SELECT * FROM SMILEY WHERE discuz_id=?1 ORDER BY dateTime DESC LIMIT 20',
+        mapper: (Map<String, Object?> row) =>
+            Smiley(row['code'] as String, row['relativePath'] as String),
         arguments: [discuzId],
         queryableName: 'Smiley',
         isView: false);
   }
 
   @override
+  Future<Smiley?> findSmileyByDiscuzIdAndCode(int discuzId, String code) async {
+    return _queryAdapter.query(
+        'SELECT * FROM SMILEY WHERE discuz_id=?1 AND code=?2 LIMIT 1',
+        mapper: (Map<String, Object?> row) =>
+            Smiley(row['code'] as String, row['relativePath'] as String),
+        arguments: [discuzId, code]);
+  }
+
+  @override
   Future<int> insertSmiley(Smiley smiley) {
     return _smileyInsertionAdapter.insertAndReturnId(
-        smiley, OnConflictStrategy.abort);
+        smiley, OnConflictStrategy.replace);
   }
 
   @override

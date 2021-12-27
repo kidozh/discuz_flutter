@@ -19,7 +19,7 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 
 part 'AppDatabase.g.dart'; // the generated code will be there
 
-@Database(version: 2, entities: [User, Discuz, ViewHistory, FavoriteThreadInDatabase, Smiley])
+@Database(version: 3, entities: [User, Discuz, ViewHistory, FavoriteThreadInDatabase, Smiley])
 abstract class AppDatabase extends FloorDatabase {
   UserDao get userDao;
   DiscuzDao get discuzDao;
@@ -31,7 +31,10 @@ abstract class AppDatabase extends FloorDatabase {
   });
 
   static final migration2to3 = Migration(2, 3, (database) async {
-    await database.execute('CREATE TABLE IF NOT EXISTS `ViewHistory` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `subject` TEXT NOT NULL, `description` TEXT NOT NULL, `type` TEXT NOT NULL, `identification` INTEGER NOT NULL, `author` TEXT NOT NULL, `authorId` INTEGER NOT NULL, `insertTime` INTEGER NOT NULL, `updateTime` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
+    // add favorite thread
+    await database.execute('CREATE TABLE IF NOT EXISTS `FavoriteThreadInDatabase` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `favid` INTEGER NOT NULL, `uid` INTEGER NOT NULL, `idInServer` INTEGER NOT NULL, `idType` TEXT NOT NULL, `spaceUid` INTEGER NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `author` TEXT NOT NULL, `replies` INTEGER NOT NULL, `date` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
+    // add a updateTime
+    await database.execute('ALTER TABLE SMILEY ADD COLUMN dateTime INTEGER NOT NULL DEFAULT 0');
   });
 
 }

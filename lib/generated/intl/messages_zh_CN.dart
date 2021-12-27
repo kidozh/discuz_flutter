@@ -275,6 +275,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "networkFailed": MessageLookupByLibrary.simpleMessage("网络访问失败。"),
         "noImagePicked": MessageLookupByLibrary.simpleMessage("您可能没有选择任何一张图片。"),
         "noMore": MessageLookupByLibrary.simpleMessage("没有更多数据"),
+        "noSmileyFoundInDB": MessageLookupByLibrary.simpleMessage("要不使用一个表情包？"),
         "notification": MessageLookupByLibrary.simpleMessage("通知"),
         "nullDiscuzSubTitle":
             MessageLookupByLibrary.simpleMessage("现在就添加一个论坛吗？"),
@@ -352,6 +353,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "saveImageSuccessfully":
             MessageLookupByLibrary.simpleMessage("成功保存图片至此设备中."),
         "savePictureToDevice": MessageLookupByLibrary.simpleMessage("保存图片至此设备"),
+        "savedSmileyTabTitle": MessageLookupByLibrary.simpleMessage("最近使用"),
         "seeAllReplies": MessageLookupByLibrary.simpleMessage("查看所有"),
         "selectUserNull": MessageLookupByLibrary.simpleMessage("未选中一个用户"),
         "send": MessageLookupByLibrary.simpleMessage("发送"),
