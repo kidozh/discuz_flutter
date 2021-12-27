@@ -313,6 +313,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             '${value.errorResult!.content}(${value.errorResult!.key})');
         setState(() {
           _sendReplyStatus = ButtonState.success;
+          // just to clear the pic
+          insertedAidList.clear();
         });
         // delay
         Future.delayed(Duration(seconds: 1), () {
@@ -848,8 +850,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                     onReplyWithImage: (aid){
                                       // fill with text first
                                       // refresh the layout
-                                      insertedAidList.clear();
-                                      _replyController.text = "[attachimg]${aid}[/attachimg]";
+                                      // insertedAidList.clear();
+                                      _replyController.text = _replyController.text + "[attachimg]${aid}[/attachimg]";
                                       // add aid to list
                                       insertedAidList.add(aid);
                                       // not to send it automatically
