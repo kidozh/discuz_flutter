@@ -248,6 +248,7 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
                   setState(() {
                     progress = 0;
                   });
+
                   var controller = await _controller.future;
                   String? title = await controller.getTitle();
                   setState(() {
@@ -257,6 +258,7 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
                   // check for if link is parsable
                   VibrationUtils.vibrateWithClickIfPossible();
                   checkIfLinkIsParsable(context, url);
+
                 },
                 gestureNavigationEnabled: true,
               ))
@@ -278,136 +280,137 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
   }
 
   void checkIfLinkIsParsable(BuildContext context,String urlString) async{
-    if(urlString != null){
-      urlString = urlString.replaceAll("&amp;", "&");
-      bool urlLauchable = await canLaunch(urlString);
-      User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-      Discuz discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
-      // judge if it is a path
-      Uri? tryUri = Uri.tryParse(urlString);
-      log("${Uri.parse(urlString).isAbsolute}");
-      if(!Uri.parse(urlString).isAbsolute){
-        // add a prefix to test if it's a url
-        urlString = discuz.baseURL+ "/" + urlString;
-        log("Press after link ${urlString} ");
-        urlLauchable = await canLaunch(urlString);
+    urlString = urlString.replaceAll("&amp;", "&");
+    bool urlLauchable = await canLaunch(urlString);
+    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    Discuz discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
+    // judge if it is a path
+    Uri? tryUri = Uri.tryParse(urlString);
+    log("${Uri.parse(urlString).isAbsolute}");
+    if(!Uri.parse(urlString).isAbsolute){
+      // add a prefix to test if it's a url
+      urlString = discuz.baseURL+ "/" + urlString;
+      log("Press after link ${urlString} ");
+      urlLauchable = await canLaunch(urlString);
+    }
+
+
+    if(urlLauchable){
+      // parse url
+      Uri uri = Uri.parse(urlString);
+      // check host
+      log("Pressed url ${urlString} host ${uri.host}");
+      if(uri.host != Uri.parse(discuz.baseURL).host){
+        // not website
+        return ;
       }
 
-
-      if(urlLauchable){
-        // parse url
-        Uri uri = Uri.parse(urlString);
-        // check host
-        if(uri.host != Uri.parse(discuz.baseURL).host){
-          // not website
-          return ;
-        }
-
-        // check query parameters for full url
-        if(uri.queryParameters.containsKey("mod")){
-          String modParamter = uri.queryParameters["mod"]!;
-          log("recv modParamter ${modParamter}");
-          // check forum display
-          switch (modParamter){
-            case "redirect":{
-              if(uri.queryParameters.containsKey("ptid")){
-                String tidString = uri.queryParameters["ptid"]!;
-                // trigger tid
-                if(int.tryParse(tidString) != null){
-                  int tid = int.tryParse(tidString)!;
-                  await Navigator.push(
-                      context,
-                      platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( discuz,user, tid))
-                  );
-                  return;
-                }
+      // check query parameters for full url
+      if(uri.queryParameters.containsKey("mod")){
+        String modParamter = uri.queryParameters["mod"]!;
+        log("recv modParamter ${modParamter}");
+        // check forum display
+        switch (modParamter){
+          case "redirect":{
+            if(uri.queryParameters.containsKey("ptid")){
+              String tidString = uri.queryParameters["ptid"]!;
+              // trigger tid
+              if(int.tryParse(tidString) != null){
+                int tid = int.tryParse(tidString)!;
+                await Navigator.push(
+                    context,
+                    platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( discuz,user, tid))
+                );
+                return;
               }
-              break;
             }
-            case "viewthread":{
-              // check for forum, query fid
-              if(uri.queryParameters.containsKey("tid")){
-                String tidString = uri.queryParameters["tid"]!;
-                // trigger tid
-                if(int.tryParse(tidString) != null){
-                  int tid = int.tryParse(tidString)!;
-                  await Navigator.push(
-                      context,
-                      platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz,user,tid))
-                  );
-                  return;
-                }
-              }
-              break;
-            }
-            case "forumdisplay":{
-              // check for forum, query fid
-              if(uri.queryParameters.containsKey("fid")){
-                String fidString = uri.queryParameters["fid"]!;
-                // trigger fid
-                if(int.tryParse(fidString) != null){
-                  int fid = int.tryParse(fidString)!;
-                  await Navigator.push(
-                      context,
-                      platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(discuz,user, fid))
-                  );
-                  return;
-                }
-              }
-              break;
-            }
-            case "space":{
-              // check for forum, query fid
-              if(uri.queryParameters.containsKey("uid")){
-                String uidString = uri.queryParameters["uid"]!;
-                // trigger tid
-                if(int.tryParse(uidString) != null){
-                  int uid = int.tryParse(uidString)!;
-                  await Navigator.push(
-                      context,
-                      platformPageRoute(context:context,builder: (context) => UserProfilePage(discuz,user,uid))
-                  );
-                  return;
-                }
-              }
-              break;
-            }
+            break;
           }
+          case "viewthread":{
+            // check for forum, query fid
+            if(uri.queryParameters.containsKey("tid")){
+              String tidString = uri.queryParameters["tid"]!;
+              // trigger tid
+              if(int.tryParse(tidString) != null){
+                int tid = int.tryParse(tidString)!;
+                await Navigator.push(
+                    context,
+                    platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz,user,tid))
+                );
+                return;
+              }
+            }
+            break;
+          }
+          case "forumdisplay":{
+            // check for forum, query fid
+            if(uri.queryParameters.containsKey("fid")){
+              String fidString = uri.queryParameters["fid"]!;
+              // trigger fid
+              if(int.tryParse(fidString) != null){
+                int fid = int.tryParse(fidString)!;
+                await Navigator.push(
+                    context,
+                    platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(discuz,user, fid))
+                );
+                return;
+              }
+            }
+            break;
+          }
+          case "space":{
+            // check for forum, query fid
+            if(uri.queryParameters.containsKey("uid")){
+              String uidString = uri.queryParameters["uid"]!;
+              // trigger tid
+              if(int.tryParse(uidString) != null){
+                int uid = int.tryParse(uidString)!;
+                await Navigator.push(
+                    context,
+                    platformPageRoute(context:context,builder: (context) => UserProfilePage(discuz,user,uid))
+                );
+                return;
+              }
+            }
+            break;
+          }
+        }
 
-        }
-        // check short
-        String? fid = await RewriteRuleUtils.findFidInURL(discuz, urlString);
-        if(fid!=null && int.tryParse(fid) != null){
-          await Navigator.push(
-              context,
-              platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(discuz, user, int.tryParse(fid)!))
-          );
-          return;
-        }
-
-        // check short
-        String? tid = await RewriteRuleUtils.findTidInURL(discuz, urlString);
-        if(tid!=null && int.tryParse(tid) != null){
-          await Navigator.push(
-              context,
-              platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz, user, int.tryParse(tid)!))
-          );
-          return;
-        }
-
-        String? uid = await RewriteRuleUtils.findUidInURL(discuz, urlString);
-        if(uid!=null && int.tryParse(uid) != null){
-          await Navigator.push(
-              context,
-              platformPageRoute(context:context,builder: (context) => UserProfilePage(discuz, user, int.tryParse(uid)!))
-          );
-          return;
-        }
       }
-      else{
-        // show the link
-        // EasyLoading.showError(S.of(context).linkUnableToOpen(urlString));
+      // check short
+      String? fid = await RewriteRuleUtils.findFidInURL(discuz, urlString);
+      log("read fid: ${fid} from url");
+      if(fid!=null && int.tryParse(fid) != null){
+        await Navigator.push(
+            context,
+            platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(discuz, user, int.tryParse(fid)!))
+        );
+        return;
       }
+
+      // check short
+      String? tid = await RewriteRuleUtils.findTidInURL(discuz, urlString);
+      log("read tid: ${fid} from url");
+      if(tid!=null && int.tryParse(tid) != null){
+        await Navigator.push(
+            context,
+            platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz, user, int.tryParse(tid)!))
+        );
+        return;
+      }
+
+      String? uid = await RewriteRuleUtils.findUidInURL(discuz, urlString);
+      if(uid!=null && int.tryParse(uid) != null){
+        await Navigator.push(
+            context,
+            platformPageRoute(context:context,builder: (context) => UserProfilePage(discuz, user, int.tryParse(uid)!))
+        );
+        return;
+      }
+    }
+    else{
+      // show the link
+      // EasyLoading.showError(S.of(context).linkUnableToOpen(urlString));
     }
   }
 
