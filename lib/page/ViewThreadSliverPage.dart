@@ -275,7 +275,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
     Post? replyPost =
         Provider.of<ReplyPostNotifierProvider>(context, listen: false).post;
-    print("reply post ${replyPost}");
+    //print("reply post ${replyPost}");
     String? notifyAuthorMessage = null;
     if (replyPost != null) {
       DateFormat dateFormat = DateFormat.yMEd().add_jms();
