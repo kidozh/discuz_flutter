@@ -116,7 +116,9 @@ class DetailedThreadInfo {
   @JsonKey(defaultValue: "0")
   // String special="0", moderated="0", is_archived="0";
   @JsonKey(defaultValue: "0")
-  String rate = "0", status = "0", digest= "0", closed= "0";
+  String rate = "0", status = "0", digest= "0";
+  @StringToBoolConverter()
+  bool closed = false;
 
   // @JsonKey(defaultValue: "0")
   // String attachment = "0";

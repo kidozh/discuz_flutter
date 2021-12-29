@@ -108,7 +108,8 @@ DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) =>
       ..rate = json['rate'] as String? ?? '0'
       ..status = json['status'] as String? ?? '0'
       ..digest = json['digest'] as String? ?? '0'
-      ..closed = json['closed'] as String? ?? '0'
+      ..closed =
+          const StringToBoolConverter().fromJson(json['closed'] as String?)
       ..allreplies =
           const StringToIntConverter().fromJson(json['allreplies'] as String?)
       ..freeMessage = json['freemessage'] as String? ?? '';
@@ -132,7 +133,7 @@ Map<String, dynamic> _$DetailedThreadInfoToJson(DetailedThreadInfo instance) =>
       'rate': instance.rate,
       'status': instance.status,
       'digest': instance.digest,
-      'closed': instance.closed,
+      'closed': const StringToBoolConverter().toJson(instance.closed),
       'allreplies': const StringToIntConverter().toJson(instance.allreplies),
       'freemessage': instance.freeMessage,
     };

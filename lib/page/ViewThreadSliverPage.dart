@@ -13,6 +13,7 @@ import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/ExtraFuncInThreadScreen.dart';
 import 'package:discuz_flutter/screen/SmileyListScreen.dart';
+import 'package:discuz_flutter/utility/ConstUtils.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
@@ -45,12 +46,13 @@ class ViewThreadSliverPage extends StatelessWidget {
   late final Discuz discuz;
   late final User? user;
   int tid = 0;
+  String? passedSubject;
 
-  ViewThreadSliverPage(this.discuz, this.user, this.tid);
+  ViewThreadSliverPage(this.discuz, this.user, this.tid,{this.passedSubject});
 
   @override
   Widget build(BuildContext context) {
-    return ViewThreadStatefulSliverWidget(discuz, user, tid);
+    return ViewThreadStatefulSliverWidget(discuz, user, tid, passedSubject: passedSubject,);
   }
 }
 
@@ -58,13 +60,13 @@ class ViewThreadStatefulSliverWidget extends StatefulWidget {
   late final Discuz discuz;
   late final User? user;
   int tid = 0;
+  String? passedSubject;
 
-  ViewThreadStatefulSliverWidget(this.discuz, this.user, this.tid);
+  ViewThreadStatefulSliverWidget(this.discuz, this.user, this.tid,{this.passedSubject});
 
   @override
   _ViewThreadSliverState createState() {
-    // TODO: implement createState
-    return _ViewThreadSliverState(this.discuz, this.user, this.tid);
+    return _ViewThreadSliverState(this.discuz, this.user, this.tid, passedSubject: passedSubject);
   }
 }
 
@@ -73,6 +75,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   DiscuzError? _error;
   List<Post> _postList = [];
   int _page = 1;
+  String? passedSubject;
   final TextEditingController _replyController = new TextEditingController();
   final CaptchaController _captchaController =
       new CaptchaController(new CaptchaFields("", "post", ""));
@@ -83,7 +86,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
   bool historySaved = false;
 
-  _ViewThreadSliverState(this.discuz, this.user, this.tid);
+  _ViewThreadSliverState(this.discuz, this.user, this.tid,{this.passedSubject});
 
   late EasyRefreshController _controller;
   late ScrollController _scrollController;
@@ -610,6 +613,41 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
               )),
             ),
             slivers: <Widget>[
+              if (_viewThreadResult
+                  .threadVariables.threadInfo.subject.isEmpty && passedSubject!=null && passedSubject!.isNotEmpty)
+                SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                          (context, _) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Hero(
+                            tag: ConstUtils.HERO_TAG_THREAD_SUBJECT,
+                            child: Text(
+                              passedSubject!,
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        );
+                      },
+                      childCount: 1,
+                    )),
+              if (_viewThreadResult
+                  .threadVariables.threadInfo.subject.isNotEmpty)
+                SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                          (context, _) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            _viewThreadResult.threadVariables.threadInfo.subject,
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold),
+                          ),
+                        );
+                      },
+                      childCount: 1,
+                    )),
               if (_error != null)
                 SliverList(
                     delegate: SliverChildBuilderDelegate(
@@ -620,22 +658,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                   },
                   childCount: 1,
                 )),
-              if (_viewThreadResult
-                  .threadVariables.threadInfo.subject.isNotEmpty)
-                SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                  (context, _) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text(
-                        _viewThreadResult.threadVariables.threadInfo.subject,
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold),
-                      ),
-                    );
-                  },
-                  childCount: 1,
-                )),
+
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
@@ -679,6 +702,25 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             ],
           )),
           // comment parts
+          if(_viewThreadResult.threadVariables.threadInfo.closed)
+            Container(
+              color: Theme.of(context).errorColor.withOpacity(0.1),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 4.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+
+                    Text(S.of(context).threadIsClosed,style: Theme.of(context).textTheme.headline5?.copyWith(
+                        color: Theme.of(context).errorColor
+                    ),)
+                  ],
+                ),
+
+                ),
+            )
+            ,
+          if(!_viewThreadResult.threadVariables.threadInfo.closed && _viewThreadResult.errorResult==null)
           Consumer<DiscuzAndUserNotifier>(
             builder: (context, discuzAndUser, child) {
               if (discuzAndUser.user != null) {

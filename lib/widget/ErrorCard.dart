@@ -2,6 +2,7 @@
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class ErrorCard extends StatelessWidget{
 
@@ -13,31 +14,34 @@ class ErrorCard extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-
-    return MaterialBanner(
-      leading: CircleAvatar(
-        child: Icon(Icons.error_outline,color: Colors.white,),
-        backgroundColor: Colors.redAccent,
-      ),
-      content: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Padding(padding: EdgeInsets.symmetric(vertical: 64),
+      child: Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(errorTitle, style: Theme.of(context).textTheme.subtitle1,),
-            Text(errorDescription, style: Theme.of(context).textTheme.caption)
-          ],
-      ),
-      actions: [
-        if(onRefreshCallback!=null)
-        TextButton(
-          child: Text(S.of(context).retry),
-          onPressed: () {
-            VibrationUtils.vibrateWithClickIfPossible();
-            onRefreshCallback!();
-          },
-        ),
-      ],
+            Icon(Icons.error_outline,color: Theme.of(context).errorColor,size: 64,),
+            SizedBox(height: 6.0,),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(errorDescription, style: Theme.of(context).textTheme.headline5),
+                Text(errorTitle, style: Theme.of(context).textTheme.bodyText2,),
 
+              ],
+            ),
+            SizedBox(height: 6.0,),
+            if(onRefreshCallback!=null)
+              PlatformElevatedButton(
+                child: Text(S.of(context).retry),
+                onPressed: () {
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  onRefreshCallback!();
+                },
+              ),
+          ],
+        ),
+      ),
     );
   }
 

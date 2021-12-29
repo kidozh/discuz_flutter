@@ -2940,6 +2940,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Thread is closed.`
+  String get threadIsClosed {
+    return Intl.message(
+      'Thread is closed.',
+      name: 'threadIsClosed',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

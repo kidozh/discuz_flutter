@@ -51,7 +51,8 @@ class DiscuzHtmlWidget extends StatelessWidget{
       child: Consumer<TypeSettingNotifierProvider>(builder: (context, typesetting, _) {
         double scalingParameter = typesetting.scalingParameter;
         // print("font scaling parameters ${scalingParameter} and font size ${12*scalingParameter}");
-
+        double? themeFontSize = Theme.of(context).textTheme.bodyText2?.fontSize == null? 14 : Theme.of(context).textTheme.bodyText2?.fontSize!;
+        double paragraphFontSize = themeFontSize == null ? 14 : themeFontSize;
         return Html(
 
           data: "<p>$html</p>",
@@ -68,11 +69,14 @@ class DiscuzHtmlWidget extends StatelessWidget{
               width: double.infinity
             ),
             "p":Style(
-              fontSize: scalingParameter <= 1.0? null: FontSize(14*scalingParameter),
+              fontStyle: Theme.of(context).textTheme.bodyText2?.fontStyle,
+              fontSize: FontSize(paragraphFontSize*scalingParameter),
+              //fontSize: scalingParameter <= 1.0? FontSize(Theme.of(context).textTheme.bodyText2?.fontSize): FontSize(14*scalingParameter),
+
             ),
             "a":Style(
               color: Theme.of(context).primaryColor,
-              fontSize: scalingParameter <= 1.0? null: FontSize(14*scalingParameter),
+              fontSize: FontSize(paragraphFontSize*scalingParameter),
             )
 
           },

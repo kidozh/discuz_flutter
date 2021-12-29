@@ -12,6 +12,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/utility/ConstUtils.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
@@ -131,7 +132,10 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
                 platformPageRoute(context:context,builder: (context) => UserProfilePage(_discuz,user, _hotThread.authorId)));
           },
         ),
-        title: Text(_hotThread.subject,style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Hero(
+          tag: ConstUtils.HERO_TAG_THREAD_SUBJECT,
+          child: Text(_hotThread.subject,style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
         subtitle: RichText(
           text: TextSpan(
             text: _hotThread.author,
@@ -149,7 +153,9 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
           markThreadAsRead();
           await Navigator.push(
               context,
-              platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( _discuz,  _user, _hotThread.tid,))
+              platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( _discuz,  _user, _hotThread.tid,
+                passedSubject: _hotThread.subject,
+              ))
           );
         },
 
