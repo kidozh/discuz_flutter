@@ -389,6 +389,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("无法验证登陆状态"),
         "undo": MessageLookupByLibrary.simpleMessage("撤销"),
         "updateAt": MessageLookupByLibrary.simpleMessage("更新于 %T"),
+        "uploadCompressedImageToServer":
+            MessageLookupByLibrary.simpleMessage("适当压缩的图片（推荐）"),
         "uploadImageError1": MessageLookupByLibrary.simpleMessage("不支持此类扩展名."),
         "uploadImageError10": MessageLookupByLibrary.simpleMessage("非法操作"),
         "uploadImageError11":
@@ -414,6 +416,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("向论坛上传图片"),
         "uploadImageUnknownError":
             MessageLookupByLibrary.simpleMessage("上传文件时遇到了一个未知错误。"),
+        "uploadRawImageToServer":
+            MessageLookupByLibrary.simpleMessage("原始图片（可能因为太大被服务器拒绝）"),
+        "uploadingImageToServer":
+            MessageLookupByLibrary.simpleMessage("向服务器传输数据中。。。"),
         "userExpiredSubtitle":
             MessageLookupByLibrary.simpleMessage("当前用户授权已过期，你需要重新登录以重新激活此用户。"),
         "userExpiredTitle": m26,

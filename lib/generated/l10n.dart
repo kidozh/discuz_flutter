@@ -2910,6 +2910,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Upload the file to the server...`
+  String get uploadingImageToServer {
+    return Intl.message(
+      'Upload the file to the server...',
+      name: 'uploadingImageToServer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Send compressed image(Recommended)`
+  String get uploadCompressedImageToServer {
+    return Intl.message(
+      'Send compressed image(Recommended)',
+      name: 'uploadCompressedImageToServer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Send raw image`
+  String get uploadRawImageToServer {
+    return Intl.message(
+      'Send raw image',
+      name: 'uploadRawImageToServer',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

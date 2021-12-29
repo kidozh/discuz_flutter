@@ -187,6 +187,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   void dispose(){
     _focusNode.dispose();
     _replyController.dispose();
+
     super.dispose();
   }
 

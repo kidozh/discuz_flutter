@@ -51,6 +51,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
       child: Consumer<TypeSettingNotifierProvider>(builder: (context, typesetting, _) {
         double scalingParameter = typesetting.scalingParameter;
         // print("font scaling parameters ${scalingParameter} and font size ${12*scalingParameter}");
+
         return Html(
 
           data: "<p>$html</p>",
@@ -59,10 +60,11 @@ class DiscuzHtmlWidget extends StatelessWidget{
           },
           style: {
             ".reply_wrap" :Style(
-              backgroundColor: MediaQuery.of(context).platformBrightness == Brightness.light ? Colors.grey.shade200: Colors.grey.shade600,
+              //backgroundColor: MediaQuery.of(context).platformBrightness == Brightness.light ? Colors.grey.shade200: Colors.grey.shade600,
+              backgroundColor: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade200: Colors.grey.shade600,
               padding: const EdgeInsets.all(8),
               margin: const EdgeInsets.only(bottom: 8.0),
-              border: Border(left: BorderSide(color: Theme.of(context).accentColor, width: 4)),
+              border: Border(left: BorderSide(color: Theme.of(context).primaryColor, width: 4)),
               width: double.infinity
             ),
             "p":Style(

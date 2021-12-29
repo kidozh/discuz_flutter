@@ -450,6 +450,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Unable to verify your auth status"),
         "undo": MessageLookupByLibrary.simpleMessage("Undo"),
         "updateAt": MessageLookupByLibrary.simpleMessage("Update at %T"),
+        "uploadCompressedImageToServer": MessageLookupByLibrary.simpleMessage(
+            "Send compressed image(Recommended)"),
         "uploadImageError1": MessageLookupByLibrary.simpleMessage(
             "The file extension is not supported."),
         "uploadImageError10":
@@ -482,6 +484,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "Upload the file to Discuz server."),
         "uploadImageUnknownError": MessageLookupByLibrary.simpleMessage(
             "Encounter a unresolved issue when uploading the file"),
+        "uploadRawImageToServer":
+            MessageLookupByLibrary.simpleMessage("Send raw image"),
+        "uploadingImageToServer": MessageLookupByLibrary.simpleMessage(
+            "Upload the file to the server..."),
         "userExpiredSubtitle": MessageLookupByLibrary.simpleMessage(
             "The current user is expired, some function may not work."),
         "userExpiredTitle": m26,

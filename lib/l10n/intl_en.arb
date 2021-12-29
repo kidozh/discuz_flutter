@@ -436,5 +436,9 @@
   "uploadImageToServerDialogTitle": "Upload the file to Discuz server.",
   "savedSmileyTabTitle": "Recently used",
   "noSmileyFoundInDB": "Try to use the first smiley?",
-  "uploadImageFailed": "Upload image failed"
+  "uploadImageFailed": "Upload image failed",
+  "uploadingImageToServer": "Upload the file to the server...",
+  "uploadCompressedImageToServer": "Send compressed image(Recommended)",
+  "uploadRawImageToServer": "Send raw image",
+
 }

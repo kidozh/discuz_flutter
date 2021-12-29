@@ -436,5 +436,8 @@
   "uploadImageToServerDialogTitle": "向论坛上传图片",
   "savedSmileyTabTitle": "最近使用",
   "noSmileyFoundInDB": "要不使用一个表情包？",
-  "uploadImageFailed": "上传图片失败"
+  "uploadImageFailed": "上传图片失败",
+  "uploadingImageToServer": "向服务器传输数据中。。。",
+  "uploadCompressedImageToServer": "适当压缩的图片（推荐）",
+  "uploadRawImageToServer": "原始图片（可能因为太大被服务器拒绝）"
 }
