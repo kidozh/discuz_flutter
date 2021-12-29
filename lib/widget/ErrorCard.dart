@@ -14,7 +14,7 @@ class ErrorCard extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: EdgeInsets.symmetric(vertical: 64),
+    return Padding(padding: EdgeInsets.symmetric(vertical: 64, horizontal: 16),
       child: Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
