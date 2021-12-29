@@ -439,6 +439,6 @@
   "uploadImageFailed": "Upload image failed",
   "uploadingImageToServer": "Upload the file to the server...",
   "uploadCompressedImageToServer": "Send compressed image(Recommended)",
-  "uploadRawImageToServer": "Send raw image",
+  "uploadRawImageToServer": "Send raw image"
 
 }
