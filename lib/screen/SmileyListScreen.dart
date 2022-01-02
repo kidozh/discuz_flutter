@@ -143,6 +143,7 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
                     Smiley? smileyInDb = await _smileyDao.findSmileyByDiscuzIdAndCode(discuz.id!, smiley.code);
                     if(smileyInDb != null){
                       smileyInDb.dateTime = DateTime.now();
+                      smiley.discuzId = discuz.id!;
                       _smileyDao.insertSmiley(smileyInDb);
                     }
                     else{
@@ -290,6 +291,7 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget>{
                       // add to smiley
                       // check whether exist
                       Smiley smileyInDb = smiley;
+                      smileyInDb.discuzId = discuz.id!;
                       smileyInDb.dateTime = DateTime.now();
                       _smileyDao!.insertSmiley(smileyInDb);
 
