@@ -74,7 +74,7 @@ class MyApp extends StatelessWidget {
       case "android": return TargetPlatform.android;
       case "ios": return TargetPlatform.iOS;
     }
-    return TargetPlatform.android;
+    return null;
   }
 
   @override
