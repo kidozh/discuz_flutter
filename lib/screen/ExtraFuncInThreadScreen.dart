@@ -87,7 +87,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
           padding: EdgeInsets.all(4.0),
           shrinkWrap: true,
           children: [
-            ExtraFuncBlockButton(Icons.add_photo_alternate, S.of(context).addAPhoto, onPressed: () async{
+            ExtraFuncBlockButton(PlatformIcons(context).collectionsSolid, S.of(context).addAPhoto, onPressed: () async{
               // recv the photo from gallery
               VibrationUtils.vibrateWithClickIfPossible();
               final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -186,7 +186,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
 
 
             }),
-            ExtraFuncBlockButton(Icons.photo_camera, S.of(context).takeAPicture, onPressed: () async{
+            ExtraFuncBlockButton(PlatformIcons(context).photoCameraSolid, S.of(context).takeAPicture, onPressed: () async{
               final XFile? image = await _picker.pickImage(source: ImageSource.camera);
               if(image != null){
                 File file = File(image.path);
@@ -483,7 +483,7 @@ class ExtraFuncBlockButton extends StatelessWidget{
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icons, size: 24,),
+            Icon(icons, size: 24, color: Theme.of(context).unselectedWidgetColor,),
             SizedBox(height: 6,),
             Text(text, style: Theme.of(context).textTheme.subtitle1,)
           ],

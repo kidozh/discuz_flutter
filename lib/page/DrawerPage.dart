@@ -60,7 +60,7 @@ class DrawerState extends State<DrawerStatefulWidget>{
         ListTile(
           title: Text(S.of(context).loginTitle),
           subtitle: Text(S.of(context).loginSubtitle),
-          leading: Icon(PlatformIcons(context).personAdd),
+          leading: Icon(PlatformIcons(context).personAddSolid),
           onTap: () async {
             VibrationUtils.vibrateWithClickIfPossible();
             Discuz? discuz =
@@ -73,7 +73,7 @@ class DrawerState extends State<DrawerStatefulWidget>{
         ),
         ListTile(
           title: Text(S.of(context).manageAccount),
-          leading: Icon(PlatformIcons(context).personOutline),
+          leading: Icon(PlatformIcons(context).groupSolid),
           onTap: () async {
             VibrationUtils.vibrateWithClickIfPossible();
             Discuz? discuz =
@@ -92,7 +92,7 @@ class DrawerState extends State<DrawerStatefulWidget>{
         ),
         ListTile(
           title: Text(S.of(context).manageDiscuz),
-          leading: Icon(Icons.forum_outlined),
+          leading: Icon(PlatformIcons(context).folderSolid),
           onTap: () async {
             VibrationUtils.vibrateWithClickIfPossible();
             await Navigator.push(
@@ -104,7 +104,7 @@ class DrawerState extends State<DrawerStatefulWidget>{
         ),
         ListTile(
           title: Text(S.of(context).viewHistory),
-          leading: Icon(PlatformIcons(context).time),
+          leading: Icon(PlatformIcons(context).timeSolid),
           onTap: () async {
             Discuz? discuz =
                 Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
@@ -121,7 +121,7 @@ class DrawerState extends State<DrawerStatefulWidget>{
         ),
         ListTile(
           title: Text(S.of(context).trustHostTitle),
-          leading: Icon(PlatformIcons(context).checkMarkCircledOutline),
+          leading: Icon(PlatformIcons(context).checkMarkCircledSolid),
           onTap: () async {
             VibrationUtils.vibrateWithClickIfPossible();
             await Navigator.push(context,platformPageRoute(context:context,builder: (context) => ManageTrustHostPage()));
