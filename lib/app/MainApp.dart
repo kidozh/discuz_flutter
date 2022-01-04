@@ -258,8 +258,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       widgetList.add(SimpleDialogItem(
         key: UniqueKey(),
         icon:
-        (_selecteddiscuz != null && _selecteddiscuz.id == discuz.id) ? Icons.check_circle : Icons.amp_stories,
-        color: (_selecteddiscuz != null && _selecteddiscuz.id == discuz.id) ? Colors.green : Colors.grey,
+        (_selecteddiscuz != null && _selecteddiscuz.id == discuz.id) ? PlatformIcons(context).checkMarkCircledSolid : Icons.amp_stories,
+        color: (_selecteddiscuz != null && _selecteddiscuz.id == discuz.id) ? Theme.of(context).primaryColor : Theme.of(context).unselectedWidgetColor,
         text: discuz.siteName,
         onPressed: () {
           setState(() {
@@ -276,7 +276,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     widgetList.add(SimpleDialogItem(
         key: UniqueKey(),
-        icon: Icons.add_box_outlined,
+        icon: PlatformIcons(context).addCircled,
         color: Theme.of(context).primaryColor,
         text: S.of(context).addNewDiscuz,
         onPressed: () {
@@ -375,7 +375,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     VibrationUtils.vibrateWithClickIfPossible();
                     await Navigator.push(context, platformPageRoute(context:context,builder: (context) => DrawerPage()));
                   },
-                  icon: Icon(Icons.menu)
+                  icon: Icon(PlatformIcons(context).dehaze)
               );
             }
           },
@@ -415,8 +415,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               activeIcon: Icon(Icons.explore),
               label: S.of(context).dashboard),
           BottomNavigationBarItem(
-              icon: new Icon(Icons.notifications_outlined),
-              activeIcon: Icon(Icons.notifications),
+              icon: new Icon(CupertinoIcons.bell),
+              activeIcon: Icon(CupertinoIcons.bell_fill),
               label: S.of(context).notification),
           // BottomNavigationBarItem(
           //     icon: new Icon(Icons.stars_outlined),

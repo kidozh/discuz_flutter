@@ -163,7 +163,7 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
                 _showDeleteAllDialog(context);
               },
               //label: S.of(context).clearAllViewHistories,
-              icon: Icon(Icons.delete_sweep),
+              icon: Icon(PlatformIcons(context).delete),
             )
           ],
         ),

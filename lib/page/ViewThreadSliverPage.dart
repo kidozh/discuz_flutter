@@ -484,8 +484,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         trailingActions: [
           IconButton(
             icon: Icon(viewThreadQuery.timeAscend
-                ? Icons.arrow_upward
-                : Icons.arrow_downward),
+                ? PlatformIcons(context).upArrow
+                : PlatformIcons(context).downArrow),
             onPressed: () {
               viewThreadQuery.timeAscend = !viewThreadQuery.timeAscend;
               setNewViewThreadQuery(viewThreadQuery);
