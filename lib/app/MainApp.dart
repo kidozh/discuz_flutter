@@ -7,6 +7,7 @@ import 'package:discuz_flutter/page/ExploreWebsitePage.dart';
 import 'package:discuz_flutter/page/ManageAccountPage.dart';
 import 'package:discuz_flutter/page/ManageDiscuzPage.dart';
 import 'package:discuz_flutter/page/ManageTrustHostPage.dart';
+import 'package:discuz_flutter/page/TestFlightBannerPage.dart';
 import 'package:discuz_flutter/page/ViewHistoryPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
@@ -31,6 +32,7 @@ import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 import 'package:discuz_flutter/dao/DiscuzDao.dart';
@@ -49,7 +51,7 @@ class MyApp extends StatelessWidget {
 
   MyApp(this.platformName);
 
-  _loadPreference(context) async{
+  _loadPreference(BuildContext context) async{
 
     String colorName = await UserPreferencesUtils.getThemeColor();
     platformName = await UserPreferencesUtils.getPlatformPreference();
@@ -64,6 +66,8 @@ class MyApp extends StatelessWidget {
     Provider.of<ThemeNotifierProvider>(context,listen: false).setBrightness(brightness);
 
   }
+
+
 
   TargetPlatform? getTargetPlatformByName(String name){
     switch (name){
@@ -214,7 +218,22 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     super.initState();
     _initDb();
     WidgetsBinding.instance?.addObserver(this);
+    _checkAcceptVersionFlag(context);
+  }
 
+  _checkAcceptVersionFlag(BuildContext context) async{
+    String flag = await UserPreferencesUtils.getAcceptVersionCodeFlag();
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String version = packageInfo.version;
+    log("get version ${version} and flag: ${flag}");
+    if(flag != version){
+      // shown
+      Navigator.push(
+          context,
+          platformPageRoute(
+              context: context,
+              builder: (context) => TestFlightBannerPage()));
+    }
   }
 
   @override

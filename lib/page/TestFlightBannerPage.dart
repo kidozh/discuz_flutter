@@ -1,9 +1,12 @@
 
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TestFlightBannerPage extends StatelessWidget{
   @override
@@ -64,6 +67,10 @@ class TestFlightBannerContent extends StatelessWidget{
                 ),
                 title: Text(S.of(context).privacyProtectTitle),
                 subtitle: Text(S.of(context).privacyProtectSubtitle),
+                onTap: (){
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  _launchURL("https://discuzhub.kidozh.com/privacy_policy/");
+                },
               ),
               ListTile(
                 leading: CircleAvatar(
@@ -80,10 +87,16 @@ class TestFlightBannerContent extends StatelessWidget{
                 ),
                 title: Text(S.of(context).openSoftwareTitle),
                 subtitle: Text(S.of(context).openSoftwareSubtitle),
+                onTap: (){
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  _launchURL("https://github.com/kidozh/discuz_flutter");
+                },
               ),
               SizedBox(height: 24,),
               CupertinoButton.filled(child: Text(S.of(context).continueToDo), onPressed: () async {
-                await UserPreferencesUtils.putTestFlightNotificationFlag(1);
+                PackageInfo packageInfo = await PackageInfo.fromPlatform();
+                String version = packageInfo.version;
+                await UserPreferencesUtils.putAcceptVersionCodeFlag(version);
                 Navigator.pop(context);
               })
             ],
@@ -91,5 +104,8 @@ class TestFlightBannerContent extends StatelessWidget{
       )
     );
   }
+
+  void _launchURL(String url) async =>
+      await canLaunch(url) ? await launch(url) : throw 'Could not launch $url';
 
 }

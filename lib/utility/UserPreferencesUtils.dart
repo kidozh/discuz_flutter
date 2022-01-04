@@ -206,5 +206,19 @@ class UserPreferencesUtils{
     return intValue == null ? 0 : intValue;
   }
 
+  static final String acceptVersionCodeFlag = "acceptVersionCodeFlag";
+
+  static Future<void> putAcceptVersionCodeFlag(String value) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(acceptVersionCodeFlag, value);
+  }
+
+  static Future<String> getAcceptVersionCodeFlag() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    var value =  prefs.getString(acceptVersionCodeFlag);
+    return value == null ? "" : value;
+  }
+
 
 }

@@ -17,6 +17,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 class ExclusiveDiscuzPortalPage extends StatelessWidget{
@@ -69,8 +70,10 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
   }
 
   _showNotificationIfFirstlyShown() async{
-    int flag = await UserPreferencesUtils.getTestFlightNotificationFlag();
-    if(flag == 0){
+    String flag = await UserPreferencesUtils.getAcceptVersionCodeFlag();
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String version = packageInfo.version;
+    if(flag != version){
       // shown
       Navigator.push(
           context,
