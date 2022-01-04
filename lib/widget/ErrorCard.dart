@@ -14,10 +14,13 @@ class ErrorCard extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: EdgeInsets.symmetric(vertical: 64, horizontal: 16),
+    return Padding(padding: EdgeInsets.symmetric(vertical: 32.0, horizontal: 8.0),
       child: Container(
+        alignment: Alignment.center,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.error_outline,color: Theme.of(context).errorColor,size: 64,),
             SizedBox(height: 6.0,),
@@ -30,7 +33,7 @@ class ErrorCard extends StatelessWidget{
 
               ],
             ),
-            SizedBox(height: 6.0,),
+            SizedBox(height: 16.0,),
             if(onRefreshCallback!=null)
               PlatformElevatedButton(
                 child: Text(S.of(context).retry),
