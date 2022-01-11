@@ -137,10 +137,11 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
                   onTap: () async{
                     VibrationUtils.vibrateWithClickIfPossible();
                     smileyValueGetter(smiley);
-                    log("on tap smiley $smiley");
+
                     // add to smiley
                     // check whether exist
                     Smiley? smileyInDb = await _smileyDao.findSmileyByDiscuzIdAndCode(discuz.id!, smiley.code);
+                    log("on tap smiley $smiley ${smileyInDb}");
                     if(smileyInDb != null){
                       smileyInDb.dateTime = DateTime.now();
                       smiley.discuzId = discuz.id!;
@@ -282,7 +283,7 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget>{
             List<Widget> smileyImageList = [];
             for (int j = 0; j < smileyData.length; j++) {
               Smiley smiley = smileyData[j];
-              log("on Database smiley $smiley");
+              // log("on Database smiley $smiley");
               smileyImageList.add(
                 InkWell(
                     onTap: () async{
@@ -290,10 +291,25 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget>{
                       smileyValueGetter(smiley);
                       // add to smiley
                       // check whether exist
-                      Smiley smileyInDb = smiley;
-                      smileyInDb.discuzId = discuz.id!;
-                      smileyInDb.dateTime = DateTime.now();
-                      _smileyDao!.insertSmiley(smileyInDb);
+                      Smiley? smileyInDb = await _smileyDao!.findSmileyByDiscuzIdAndCode(discuz.id!, smiley.code);
+                      log("on tap smiley $smiley ${smileyInDb?.id} ${discuz.id}");
+                      if(smileyInDb != null){
+                        smiley.dateTime = DateTime.now();
+                        smiley.discuzId = discuz.id!;
+                        smiley.id = smileyInDb.id;
+                        _smileyDao!.insertSmiley(smiley);
+                      }
+                      else{
+                        smiley.discuzId = discuz.id!;
+                        _smileyDao!.insertSmiley(smiley);
+                      }
+
+                      log("pressed smiley ${smiley} ${smiley.id} ");
+                      // Smiley smileyInDb = smiley;
+                      // smileyInDb.id = smiley.id;
+                      // smileyInDb.discuzId = discuz.id!;
+                      // smileyInDb.dateTime = DateTime.now();
+                      // _smileyDao!.insertSmiley(smileyInDb);
 
                     },
                     child: CachedNetworkImage(
