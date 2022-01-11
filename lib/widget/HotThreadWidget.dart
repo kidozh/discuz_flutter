@@ -3,7 +3,9 @@ import 'dart:developer';
 
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
+import 'package:discuz_flutter/entity/BlockUser.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/HotThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
@@ -71,12 +73,30 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
   }
 
   ViewHistoryDao? dao;
+  late BlockUserDao blockUserDao;
+  bool isUserBlocked = false;
 
   void loadDatabase() async{
     final db = await DBHelper.getAppDb();
     setState(() {
       dao = db.viewHistoryDao;
+
     });
+    blockUserDao = db.blockUserDao;
+    // check with block information
+    List<BlockUser> userBlockedInDB = await blockUserDao.isUserBlocked(_hotThread.authorId, _discuz.id!);
+    log("get blocked info ${userBlockedInDB} In DB");
+    if (userBlockedInDB.isEmpty){
+      setState(() {
+        this.isUserBlocked = false;
+      });
+    }
+    else{
+      setState(() {
+        this.isUserBlocked = true;
+      });
+    }
+
 
   }
 
@@ -224,10 +244,50 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
 
   @override
   Widget build(BuildContext context) {
-    if(read == true){
+    if (isUserBlocked){
+      return Container(
+        child: Card(
+          elevation: 4.0,
+          child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Text(S.of(context).contentPostByBlockUserTitle(_hotThread.author),style:Theme.of(context).textTheme.headline6),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextButton(
+                        child: Text(S.of(context).unblockContent),
+                        onPressed: () async{
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          setState(() {
+                            this.isUserBlocked = false;
+                          });
+                        },
+                      ),
+                      TextButton(
+                        child: Text(S.of(context).unblockUser),
+                        onPressed: () async{
+                          // unblock user
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          setState(() {
+                            this.isUserBlocked = false;
+                          });
+                          await blockUserDao.deleteBlockUserByUid(_hotThread.authorId,  _discuz.id!);
+                        },
+                      )
+                    ],
+                  )
+                ],
+              )
+          ),
+        ),
+      );
+    }
+    else if(read == true){
       return getViewedHotThread();
     }
-    if(dao == null|| _discuz.id == null){
+    else if(dao == null|| _discuz.id == null){
       return getUnViewedHotThread();
     }
     else{

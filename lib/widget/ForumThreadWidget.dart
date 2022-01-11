@@ -4,7 +4,9 @@ import 'dart:developer';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
+import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
+import 'package:discuz_flutter/entity/BlockUser.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
@@ -53,7 +55,7 @@ class ForumThreadStatefulWidget extends StatefulWidget{
 
   @override
   ForumThreadState createState() {
-    // TODO: implement createState
+
     return ForumThreadState(this._discuz,this._user,this._forumThread, this.threadType);
   }
 
@@ -75,12 +77,28 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
   }
 
   ViewHistoryDao? dao;
+  late BlockUserDao blockUserDao;
+  bool isUserBlocked = false;
 
   void loadDatabase() async{
     final db = await DBHelper.getAppDb();
     setState(() {
       dao = db.viewHistoryDao;
     });
+    blockUserDao = db.blockUserDao;
+    // check with block information
+    List<BlockUser> userBlockedInDB = await blockUserDao.isUserBlocked(_forumThread.getAuthorId(), _discuz.id!);
+    log("get blocked info ${userBlockedInDB} In DB");
+    if (userBlockedInDB.isEmpty){
+      setState(() {
+        this.isUserBlocked = false;
+      });
+    }
+    else{
+      setState(() {
+        this.isUserBlocked = true;
+      });
+    }
 
   }
 
@@ -254,6 +272,46 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    if (isUserBlocked){
+      return Container(
+        child: Card(
+          elevation: 4.0,
+          child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Text(S.of(context).contentPostByBlockUserTitle(_forumThread.author),style:Theme.of(context).textTheme.headline6),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextButton(
+                        child: Text(S.of(context).unblockContent),
+                        onPressed: () async{
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          setState(() {
+                            this.isUserBlocked = false;
+                          });
+                        },
+                      ),
+                      TextButton(
+                        child: Text(S.of(context).unblockUser),
+                        onPressed: () async{
+                          // unblock user
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          setState(() {
+                            this.isUserBlocked = false;
+                          });
+                          await blockUserDao.deleteBlockUserByUid(_forumThread.getAuthorId(),  _discuz.id!);
+                        },
+                      )
+                    ],
+                  )
+                ],
+              )
+          ),
+        ),
+      );
+    }
     if(read == true){
       return getViewedThreadCard();
     }

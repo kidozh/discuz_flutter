@@ -154,10 +154,11 @@ class PostState extends State<PostStatefulWidget> {
           child: Padding(
             padding: EdgeInsets.all(8.0),
             child: Column(
-              mainAxisSize: MainAxisSize.max,
+
               children: [
-                Text(S.of(context).contentPostByBlockUserTitle(_post.author)),
+                Text(S.of(context).contentPostByBlockUserTitle(_post.author), style:Theme.of(context).textTheme.headline6),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     TextButton(
                       child: Text(S.of(context).unblockContent),
