@@ -2950,6 +2950,56 @@ class S {
       args: [],
     );
   }
+
+  /// `Block user`
+  String get blockUser {
+    return Intl.message(
+      'Block user',
+      name: 'blockUser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unblock user`
+  String get unblockUser {
+    return Intl.message(
+      'Unblock user',
+      name: 'unblockUser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This content is posted from block user {username}`
+  String contentPostByBlockUserTitle(Object username) {
+    return Intl.message(
+      'This content is posted from block user $username',
+      name: 'contentPostByBlockUserTitle',
+      desc: '',
+      args: [username],
+    );
+  }
+
+  /// `Unblock content`
+  String get unblockContent {
+    return Intl.message(
+      'Unblock content',
+      name: 'unblockContent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Blocked user list`
+  String get blockedUserList {
+    return Intl.message(
+      'Blocked user list',
+      name: 'blockedUserList',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

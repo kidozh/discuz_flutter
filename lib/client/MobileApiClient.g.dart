@@ -573,12 +573,15 @@ class _MobileApiClient implements MobileApiClient {
         'Filedata',
         MultipartFile.fromFileSync(file.path,
             filename: file.path.split(Platform.pathSeparator).last)));
-    final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'POST', headers: _headers, extra: _extra)
-            .compose(_dio.options,
-                '/api/mobile/index.php?version=4&module=forumupload&type=image',
-                queryParameters: queryParameters, data: _data)
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'multipart/form-data')
+        .compose(_dio.options,
+            '/api/mobile/index.php?version=4&module=forumupload&type=image',
+            queryParameters: queryParameters, data: _data)
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }

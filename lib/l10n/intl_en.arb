@@ -440,6 +440,15 @@
   "uploadingImageToServer": "Upload the file to the server...",
   "uploadCompressedImageToServer": "Send compressed image(Recommended)",
   "uploadRawImageToServer": "Send raw image",
-  "threadIsClosed": "Thread is closed."
-
+  "threadIsClosed": "Thread is closed.",
+  "blockUser": "Block user",
+  "unblockUser": "Unblock user",
+  "contentPostByBlockUserTitle": "This content is posted from block user {username}",
+  "@contentPostByBlockUserTitle": {
+    "placeholders": {
+      "username": {}
+    }
+  },
+  "unblockContent": "Unblock content",
+  "blockedUserList": "Blocked user list"
 }

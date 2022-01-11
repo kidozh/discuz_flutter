@@ -440,5 +440,15 @@
   "uploadingImageToServer": "向服务器传输数据中。。。",
   "uploadCompressedImageToServer": "适当压缩的图片（推荐）",
   "uploadRawImageToServer": "原始图片（可能因为太大被服务器拒绝）",
-  "threadIsClosed": "此贴已关闭发帖。"
+  "threadIsClosed": "此贴已关闭发帖。",
+  "blockUser": "屏蔽此用户",
+  "unblockUser": "解除屏蔽",
+  "contentPostByBlockUserTitle": "此内容由一个屏蔽用户{username}发送",
+  "@contentPostByBlockUserTitle": {
+    "placeholders": {
+      "username": {}
+    }
+  },
+  "unblockContent": "恢复显示内容",
+  "blockedUserList": "屏蔽用户列表"
 }

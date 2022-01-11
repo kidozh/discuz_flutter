@@ -2,6 +2,9 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
+import 'package:discuz_flutter/dao/BlockUserDao.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
+import 'package:discuz_flutter/entity/BlockUser.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/entity/User.dart';
@@ -11,6 +14,7 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
+import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -29,8 +33,54 @@ int POST_WARNED = 2;
 int POST_REVISED = 4;
 int POST_MOBILE = 8;
 
+class PostWidget extends StatelessWidget{
+  Post _post;
+  Discuz _discuz;
+  int _authorId;
+  VoidCallback? onAuthorSelectedCallback;
+  JumpToPidCallback? jumpToPidCallback;
+  Map<String, List<Comment>>? postCommentList;
+  bool? ignoreFontCustomization = false;
+
+  PostWidget(this._discuz, this._post, this._authorId, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback});
+
+  @override
+  Widget build(BuildContext context) {
+    return PostStatefulWidget(this._discuz, this._post, this._authorId,
+      onAuthorSelectedCallback: this.onAuthorSelectedCallback,
+      postCommentList: this.postCommentList,
+      ignoreFontCustomization: this.ignoreFontCustomization,
+      jumpToPidCallback: this.jumpToPidCallback);
+  }
+
+
+}
+
+class PostStatefulWidget extends StatefulWidget{
+  Post _post;
+  Discuz _discuz;
+  int _authorId;
+  VoidCallback? onAuthorSelectedCallback;
+  JumpToPidCallback? jumpToPidCallback;
+  Map<String, List<Comment>>? postCommentList;
+  bool? ignoreFontCustomization = false;
+
+  PostStatefulWidget(this._discuz, this._post, this._authorId, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback});
+
+  @override
+  PostState createState() {
+    return PostState(this._discuz, this._post, this._authorId,
+        onAuthorSelectedCallback: this.onAuthorSelectedCallback,
+        postCommentList: this.postCommentList,
+        ignoreFontCustomization: this.ignoreFontCustomization,
+        jumpToPidCallback: this.jumpToPidCallback);
+  }
+
+
+}
+
 // ignore: must_be_immutable
-class PostWidget extends StatelessWidget {
+class PostState extends State<PostStatefulWidget> {
   Post _post;
   Discuz _discuz;
   int _authorId;
@@ -61,11 +111,82 @@ class PostWidget extends StatelessWidget {
     }
   }
 
-  PostWidget(this._discuz, this._post, this._authorId, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback});
+  PostState(this._discuz, this._post, this._authorId, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback});
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadDB();
+  }
+
+  late BlockUserDao _blockUserDao;
+  bool isUserBlocked = false;
+
+  _loadDB() async{
+    AppDatabase appDatabase = await DBHelper.getAppDb();
+    _blockUserDao = appDatabase.blockUserDao;
+    // query whether use get blocked
+    Discuz discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
+    List<BlockUser> userBlockedInDB = await _blockUserDao.isUserBlocked(_post.authorId, discuz.id!);
+    log("get blocked info ${userBlockedInDB} In DB");
+    if (userBlockedInDB.isEmpty){
+      setState(() {
+        this.isUserBlocked = false;
+      });
+    }
+    else{
+      setState(() {
+        this.isUserBlocked = true;
+      });
+    }
+
+  }
 
   @override
   Widget build(BuildContext context) {
+
+    if(this.isUserBlocked){
+      // show blocked user interface
+      return Container(
+        child: Card(
+          elevation: 4.0,
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Text(S.of(context).contentPostByBlockUserTitle(_post.author)),
+                Row(
+                  children: [
+                    TextButton(
+                      child: Text(S.of(context).unblockContent),
+                      onPressed: () async{
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        setState(() {
+                          this.isUserBlocked = false;
+                        });
+                      },
+                    ),
+                    TextButton(
+                      child: Text(S.of(context).unblockUser),
+                      onPressed: () async{
+                        // unblock user
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        setState(() {
+                          this.isUserBlocked = false;
+                        });
+                        await _blockUserDao.deleteBlockUserByUid(_post.authorId,  _discuz.id!);
+                      },
+                    )
+                  ],
+                )
+              ],
+            )
+          ),
+        ),
+      );
+    }
     String _html = _post.message;
     if(this.isFontStyleIgnored()){
       // regex
@@ -211,8 +332,18 @@ class PostWidget extends StatelessWidget {
                               child: Text(S.of(context).onlyViewAuthor),
                               value: 2,
                             ),
+                            if(!this.isUserBlocked)
+                            PopupMenuItem<int>(
+                              child: Text(S.of(context).blockUser),
+                              value: 3,
+                            ),
+                            if(this.isUserBlocked)
+                              PopupMenuItem<int>(
+                                child: Text(S.of(context).unblockUser),
+                                value: 4,
+                              ),
                           ],
-                          onSelected: (int pos) {
+                          onSelected: (int pos) async{
                             VibrationUtils.vibrateWithClickIfPossible();
                             switch (pos) {
                               case 0:
@@ -248,6 +379,26 @@ class PostWidget extends StatelessWidget {
                                     VibrationUtils.vibrateWithClickIfPossible();
                                     onAuthorSelectedCallback!();
                                   }
+                                  break;
+                                }
+                              case 3:
+                                {
+                                  // block user
+                                  setState(() {
+                                    this.isUserBlocked = true;
+                                  });
+                                  BlockUser blockUser = BlockUser(null, _post.authorId, _post.author, _discuz.id!, DateTime.now());
+                                  int insertId = await _blockUserDao.insertBlockUser(blockUser);
+                                  log("insert id into block user ${insertId}");
+                                  break;
+                                }
+                              case 4:
+                                {
+                                  // unblock user
+                                  setState(() {
+                                    this.isUserBlocked = false;
+                                  });
+                                  _blockUserDao.deleteBlockUserByUid(_post.authorId,  _discuz.id!);
                                   break;
                                 }
                             }

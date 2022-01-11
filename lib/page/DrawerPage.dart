@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
+import 'BlockUserPage.dart';
 import 'LoginPage.dart';
 import 'ManageAccountPage.dart';
 import 'ManageDiscuzPage.dart';
@@ -115,6 +116,20 @@ class DrawerState extends State<DrawerStatefulWidget>{
                   platformPageRoute(
                       context: context,
                       builder: (context) => ViewHistoryPage(discuz)));
+            }
+
+          },
+        ),
+        ListTile(
+          title: Text(S.of(context).blockedUserList),
+          leading: Icon(PlatformIcons(context).removeCircledSolid),
+          onTap: () async {
+            Discuz? discuz =
+                Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+
+            if(discuz != null){
+              VibrationUtils.vibrateWithClickIfPossible();
+              await Navigator.push(context,platformPageRoute(context:context,builder: (context) => BlockUserPage(discuz)));
             }
 
           },

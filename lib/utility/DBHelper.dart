@@ -15,7 +15,7 @@ class DBHelper {
 
     final appDb = await $FloorAppDatabase.databaseBuilder(path)
 
-        .addMigrations([AppDatabase.migration1to2, AppDatabase.migration2to3])
+        .addMigrations([AppDatabase.migration1to2, AppDatabase.migration2to3, AppDatabase.migration3to4])
         .build();
 
     return appDb;

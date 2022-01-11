@@ -69,10 +69,12 @@ class _$AppDatabase extends AppDatabase {
 
   SmileyDao? _smileyDaoInstance;
 
+  BlockUserDao? _blockUserDaoInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 3,
+      version: 4,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -97,6 +99,8 @@ class _$AppDatabase extends AppDatabase {
             'CREATE TABLE IF NOT EXISTS `FavoriteThreadInDatabase` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `favid` INTEGER NOT NULL, `uid` INTEGER NOT NULL, `idInServer` INTEGER NOT NULL, `idType` TEXT NOT NULL, `spaceUid` INTEGER NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `author` TEXT NOT NULL, `replies` INTEGER NOT NULL, `date` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Smiley` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `code` TEXT NOT NULL, `relativePath` TEXT NOT NULL, `dateTime` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `BlockUser` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `uid` INTEGER NOT NULL, `name` TEXT NOT NULL, `insertTime` INTEGER NOT NULL, `updateTime` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -123,6 +127,11 @@ class _$AppDatabase extends AppDatabase {
   @override
   SmileyDao get smileyDao {
     return _smileyDaoInstance ??= _$SmileyDao(database, changeListener);
+  }
+
+  @override
+  BlockUserDao get blockUserDao {
+    return _blockUserDaoInstance ??= _$BlockUserDao(database, changeListener);
   }
 }
 
@@ -651,6 +660,92 @@ class _$SmileyDao extends SmileyDao {
   @override
   Future<int> deleteSmiley(Smiley smiley) {
     return _smileyDeletionAdapter.deleteAndReturnChangedRows(smiley);
+  }
+}
+
+class _$BlockUserDao extends BlockUserDao {
+  _$BlockUserDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database, changeListener),
+        _blockUserInsertionAdapter = InsertionAdapter(
+            database,
+            'BlockUser',
+            (BlockUser item) => <String, Object?>{
+                  'id': item.id,
+                  'uid': item.uid,
+                  'name': item.name,
+                  'insertTime': _floorDateTimeConverter.encode(item.insertTime),
+                  'updateTime': _floorDateTimeConverter.encode(item.updateTime),
+                  'discuz_id': item.discuzId
+                },
+            changeListener),
+        _blockUserDeletionAdapter = DeletionAdapter(
+            database,
+            'BlockUser',
+            ['id'],
+            (BlockUser item) => <String, Object?>{
+                  'id': item.id,
+                  'uid': item.uid,
+                  'name': item.name,
+                  'insertTime': _floorDateTimeConverter.encode(item.insertTime),
+                  'updateTime': _floorDateTimeConverter.encode(item.updateTime),
+                  'discuz_id': item.discuzId
+                },
+            changeListener);
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<BlockUser> _blockUserInsertionAdapter;
+
+  final DeletionAdapter<BlockUser> _blockUserDeletionAdapter;
+
+  @override
+  Future<List<BlockUser>> isUserBlocked(int uid, int discuzId) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM BlockUser WHERE uid =?1 AND discuz_id=?2 LIMIT 2',
+        mapper: (Map<String, Object?> row) => BlockUser(
+            row['id'] as int?,
+            row['uid'] as int,
+            row['name'] as String,
+            row['discuz_id'] as int,
+            _floorDateTimeConverter.decode(row['updateTime'] as int)),
+        arguments: [uid, discuzId]);
+  }
+
+  @override
+  Future<void> deleteBlockUserByUid(int uid, int discuzId) async {
+    await _queryAdapter.queryNoReturn(
+        'DELETE FROM BlockUser WHERE uid = ?1 AND discuz_id = ?2',
+        arguments: [uid, discuzId]);
+  }
+
+  @override
+  Stream<List<BlockUser>> getBlockUserListStream(int discuzId) {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM BlockUser WHERE discuz_id=?1',
+        mapper: (Map<String, Object?> row) => BlockUser(
+            row['id'] as int?,
+            row['uid'] as int,
+            row['name'] as String,
+            row['discuz_id'] as int,
+            _floorDateTimeConverter.decode(row['updateTime'] as int)),
+        arguments: [discuzId],
+        queryableName: 'BlockUser',
+        isView: false);
+  }
+
+  @override
+  Future<int> insertBlockUser(BlockUser blockUser) {
+    return _blockUserInsertionAdapter.insertAndReturnId(
+        blockUser, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<int> deleteBlockUser(BlockUser blockUser) {
+    return _blockUserDeletionAdapter.deleteAndReturnChangedRows(blockUser);
   }
 }
 
