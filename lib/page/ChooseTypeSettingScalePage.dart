@@ -161,11 +161,11 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000)),
-                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000)),
-                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000)),
-                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000)),
-                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000))
+                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000),""),
+                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000),""),
+                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000),""),
+                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000),""),
+                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000),"")
                   ],
                 ),
               ),

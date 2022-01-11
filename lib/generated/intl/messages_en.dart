@@ -65,24 +65,28 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m20(pid, ptid, author, fullTimeString, trimMessage) =>
       "[quote][size=2][url=forum.php?mod=redirect&goto=findpost&pid=${pid}&ptid=${ptid}]${author} posted at ${fullTimeString}[/url][/size]\n${trimMessage}[/quote]";
 
-  static String m21(username, discuzName) =>
+  static String m21(name) => "Report ${name}";
+
+  static String m22(discuzName) => "Report to the ${discuzName} Successfully";
+
+  static String m23(username, discuzName) =>
       "User ${username} sign in at ${discuzName} successfully.";
 
-  static String m22(discuzName) => "Sign in at ${discuzName}";
+  static String m24(discuzName) => "Sign in at ${discuzName}";
 
-  static String m23(index) => "Smiley #${index}";
+  static String m25(index) => "Smiley #${index}";
 
-  static String m24(checked, allowed) => "Submit (${checked} / ${allowed})";
+  static String m26(checked, allowed) => "Submit (${checked} / ${allowed})";
 
-  static String m25(title) => "Successfully remove view history ${title}.";
+  static String m27(title) => "Successfully remove view history ${title}.";
 
-  static String m26(filename) => "Successfully download file: ${filename}.";
+  static String m28(filename) => "Successfully download file: ${filename}.";
 
-  static String m27(username) => "User ${username} expired";
+  static String m29(username) => "User ${username} expired";
 
-  static String m28(uid) => "UserId ${uid}";
+  static String m30(uid) => "UserId ${uid}";
 
-  static String m29(user) => "View ${user}\'s profile.";
+  static String m31(user) => "View ${user}\'s profile.";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -196,6 +200,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "displaySettingTitle": MessageLookupByLibrary.simpleMessage("Display"),
         "downloadAttachment": MessageLookupByLibrary.simpleMessage("Download"),
         "downloadingFiles": m7,
+        "duplicatedPost":
+            MessageLookupByLibrary.simpleMessage("Duplicated Posts"),
         "emptyListDescription":
             MessageLookupByLibrary.simpleMessage("The content is empty"),
         "emptyScreenTitle":
@@ -261,6 +267,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "hourLater": m12,
         "httpBrowseWarn":
             MessageLookupByLibrary.simpleMessage("HTTP protocol warning"),
+        "illegalContent":
+            MessageLookupByLibrary.simpleMessage("Illegal Content"),
         "incognitoSubtitle": MessageLookupByLibrary.simpleMessage(
             "You will browse the forum in incognito mode"),
         "incognitoTitle":
@@ -348,6 +356,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "openViaInternalBrowser":
             MessageLookupByLibrary.simpleMessage("Open Website in webview"),
         "or": MessageLookupByLibrary.simpleMessage("or"),
+        "other": MessageLookupByLibrary.simpleMessage("Other"),
         "outerlinkOpenMessage": MessageLookupByLibrary.simpleMessage(
             "Host of the link is not the same as the BBS. It would be dangerous to browse."),
         "outerlinkOpenTitle": MessageLookupByLibrary.simpleMessage(
@@ -407,6 +416,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "relogin": MessageLookupByLibrary.simpleMessage("relogin"),
         "replyPost": MessageLookupByLibrary.simpleMessage("Reply"),
         "replyPostTrimMessage": m20,
+        "reportContentTitle": m21,
+        "reportOtherReasonHint":
+            MessageLookupByLibrary.simpleMessage("Type to report other reason"),
+        "reportSuccessfully": m22,
         "residentPlace": MessageLookupByLibrary.simpleMessage("Resident place"),
         "retry": MessageLookupByLibrary.simpleMessage("retry"),
         "revisedPost": MessageLookupByLibrary.simpleMessage(
@@ -428,17 +441,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "sendReplyHint": MessageLookupByLibrary.simpleMessage("Say something"),
         "settingTitle": MessageLookupByLibrary.simpleMessage("Settings"),
         "settings": MessageLookupByLibrary.simpleMessage("Settings"),
-        "signInSuccessTitle": m21,
-        "signInTitle": m22,
+        "signInSuccessTitle": m23,
+        "signInTitle": m24,
         "signInViaBrowser":
             MessageLookupByLibrary.simpleMessage("Sign in by web"),
         "signUp": MessageLookupByLibrary.simpleMessage("Sign up"),
         "sitePage": MessageLookupByLibrary.simpleMessage("Homepage"),
-        "smileyLabel": m23,
+        "smileyLabel": m25,
+        "spam": MessageLookupByLibrary.simpleMessage("Spam"),
         "style": MessageLookupByLibrary.simpleMessage("Style"),
-        "submitPoll": m24,
-        "successfullyDeleteViewHistoryContent": m25,
-        "successfullyDownloadFiles": m26,
+        "submitPoll": m26,
+        "successfullyDeleteViewHistoryContent": m27,
+        "successfullyDownloadFiles": m28,
         "takeAPicture": MessageLookupByLibrary.simpleMessage("Shot"),
         "tapToWipeAndRelogin": MessageLookupByLibrary.simpleMessage(
             "Tap to wipe out and re-login user"),
@@ -451,6 +465,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Take a bite on beta test"),
         "threadIsClosed":
             MessageLookupByLibrary.simpleMessage("Thread is closed."),
+        "trashAd": MessageLookupByLibrary.simpleMessage("Trash Advertisement"),
         "trustHostActionText":
             MessageLookupByLibrary.simpleMessage("Trust this host"),
         "trustHostTitle": MessageLookupByLibrary.simpleMessage("Trusted host"),
@@ -502,8 +517,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Upload the file to the server..."),
         "userExpiredSubtitle": MessageLookupByLibrary.simpleMessage(
             "The current user is expired, some function may not work."),
-        "userExpiredTitle": m27,
-        "userIdTitle": m28,
+        "userExpiredTitle": m29,
+        "userIdTitle": m30,
         "userProfile": MessageLookupByLibrary.simpleMessage("User Profile"),
         "userProfileTitle":
             MessageLookupByLibrary.simpleMessage("User Profiles"),
@@ -512,7 +527,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewHistory": MessageLookupByLibrary.simpleMessage("View History"),
         "viewThreadTitle":
             MessageLookupByLibrary.simpleMessage("View a thread"),
-        "viewUserInfo": m29,
+        "viewUserInfo": m31,
         "warnedPost":
             MessageLookupByLibrary.simpleMessage("The post is warned."),
         "watchPictureInFullScreen":

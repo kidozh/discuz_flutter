@@ -9,6 +9,7 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/page/ReportContentPage.dart';
 import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
@@ -37,16 +38,17 @@ class PostWidget extends StatelessWidget{
   Post _post;
   Discuz _discuz;
   int _authorId;
+  String formhash;
   VoidCallback? onAuthorSelectedCallback;
   JumpToPidCallback? jumpToPidCallback;
   Map<String, List<Comment>>? postCommentList;
   bool? ignoreFontCustomization = false;
 
-  PostWidget(this._discuz, this._post, this._authorId, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback});
+  PostWidget(this._discuz, this._post, this._authorId, this.formhash, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback});
 
   @override
   Widget build(BuildContext context) {
-    return PostStatefulWidget(this._discuz, this._post, this._authorId,
+    return PostStatefulWidget(this._discuz, this._post, this._authorId,this.formhash,
       onAuthorSelectedCallback: this.onAuthorSelectedCallback,
       postCommentList: this.postCommentList,
       ignoreFontCustomization: this.ignoreFontCustomization,
@@ -60,16 +62,17 @@ class PostStatefulWidget extends StatefulWidget{
   Post _post;
   Discuz _discuz;
   int _authorId;
+  String formhash;
   VoidCallback? onAuthorSelectedCallback;
   JumpToPidCallback? jumpToPidCallback;
   Map<String, List<Comment>>? postCommentList;
   bool? ignoreFontCustomization = false;
 
-  PostStatefulWidget(this._discuz, this._post, this._authorId, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback});
+  PostStatefulWidget(this._discuz, this._post, this._authorId,this.formhash, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback});
 
   @override
   PostState createState() {
-    return PostState(this._discuz, this._post, this._authorId,
+    return PostState(this._discuz, this._post, this._authorId,this.formhash,
         onAuthorSelectedCallback: this.onAuthorSelectedCallback,
         postCommentList: this.postCommentList,
         ignoreFontCustomization: this.ignoreFontCustomization,
@@ -83,11 +86,13 @@ class PostStatefulWidget extends StatefulWidget{
 class PostState extends State<PostStatefulWidget> {
   Post _post;
   Discuz _discuz;
+  User? _user;
   int _authorId;
   VoidCallback? onAuthorSelectedCallback;
   JumpToPidCallback? jumpToPidCallback;
   Map<String, List<Comment>>? postCommentList;
   bool? ignoreFontCustomization = false;
+  String formhash;
 
   bool isFontStyleIgnored(){
     if(ignoreFontCustomization == null || ignoreFontCustomization == false){
@@ -111,7 +116,7 @@ class PostState extends State<PostStatefulWidget> {
     }
   }
 
-  PostState(this._discuz, this._post, this._authorId, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback});
+  PostState(this._discuz, this._post, this._authorId,this.formhash, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback});
 
   @override
   void initState() {
@@ -128,6 +133,7 @@ class PostState extends State<PostStatefulWidget> {
     _blockUserDao = appDatabase.blockUserDao;
     // query whether use get blocked
     Discuz discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
+    _user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     List<BlockUser> userBlockedInDB = await _blockUserDao.isUserBlocked(_post.authorId, discuz.id!);
     log("get blocked info ${userBlockedInDB} In DB");
     if (userBlockedInDB.isEmpty){
@@ -317,6 +323,19 @@ class PostState extends State<PostStatefulWidget> {
                                 fontWeight: FontWeight.w400,
                                 fontSize: 12 * typesetting.scalingParameter),
                           ),
+                        ),
+                        if(_user !=  null)
+                        IconButton(
+                          icon: Icon(Icons.flag,),
+                          onPressed: () {
+                            VibrationUtils.vibrateWithClickIfPossible();
+                            Navigator.push(
+                                context,
+                                platformPageRoute(
+                                    context: context,
+                                    builder: (context) => ReportContentPage(_post.author,_post.pid, 0, formhash)));
+                          },
+
                         ),
                         PopupMenuButton(
                           itemBuilder: (context) => [
@@ -510,3 +529,4 @@ class PostState extends State<PostStatefulWidget> {
     );
   }
 }
+

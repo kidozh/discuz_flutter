@@ -450,5 +450,23 @@
     }
   },
   "unblockContent": "Unblock content",
-  "blockedUserList": "Blocked user list"
+  "blockedUserList": "Blocked user list",
+  "reportContentTitle": "Report {name}",
+  "@reportContentTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "trashAd": "Trash Advertisement",
+  "illegalContent": "Illegal Content",
+  "spam": "Spam",
+  "duplicatedPost": "Duplicated Posts",
+  "other": "Other",
+  "reportOtherReasonHint": "Type to report other reason",
+  "reportSuccessfully": "Report to the {discuzName} Successfully",
+  "@reportSuccessfully": {
+    "placeholders": {
+      "discuzName": {}
+    }
+  }
 }

@@ -19,6 +19,7 @@ import 'package:discuz_flutter/JsonResult/UserDiscuzNotificationResult.dart';
 import 'package:discuz_flutter/JsonResult/UserProfileResult.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/entity/HotThread.dart';
+import 'package:discuz_flutter/entity/Post.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:dio/dio.dart' hide Headers;
 import 'package:retrofit/retrofit.dart';
@@ -186,4 +187,14 @@ abstract class MobileApiClient {
   @GET("/api/mobile/index.php?version=4&module=checkpost")
   Future<CheckPostResult> checkPost(@Query("fid") int? fid, @Query("tid") int? tid);
 
+
+  @POST("/misc.php?mod=report&inajax=1&handlekey=miscreport120&reportsubmit=true")
+  @FormUrlEncoded()
+  Future<String> reportContent(@Field("formhash") String formHash,
+      @Field("report_select") String report_select,
+      @Field("message") String message,
+      @Field("rtype") String rtype,
+      @Field("rid") int rid,
+
+      );
 }

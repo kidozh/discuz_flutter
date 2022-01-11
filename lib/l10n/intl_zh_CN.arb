@@ -450,5 +450,23 @@
     }
   },
   "unblockContent": "恢复显示内容",
-  "blockedUserList": "屏蔽用户列表"
+  "blockedUserList": "屏蔽用户列表",
+  "reportContentTitle": "举报{name}的内容",
+  "@reportContentTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "trashAd": "垃圾广告",
+  "illegalContent": "违法内容",
+  "spam": "恶意灌水",
+  "duplicatedPost": "重复发帖",
+  "other": "其他",
+  "reportOtherReasonHint": "提供举报原因",
+  "reportSuccessfully": "成功向{discuzName}发送了举报信息，请等待管理员回应。",
+  "@reportSuccessfully": {
+    "placeholders": {
+      "discuzName": {}
+    }
+  }
 }

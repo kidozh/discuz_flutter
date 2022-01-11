@@ -677,6 +677,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                           discuz,
                           _postList[index],
                           _viewThreadResult.threadVariables.threadInfo.authorId,
+                          _viewThreadResult.threadVariables.formHash,
                           onAuthorSelectedCallback: () {
                             if (viewThreadQuery.authorId == 0) {
                               viewThreadQuery.authorId =

@@ -3000,6 +3000,86 @@ class S {
       args: [],
     );
   }
+
+  /// `Report {name}`
+  String reportContentTitle(Object name) {
+    return Intl.message(
+      'Report $name',
+      name: 'reportContentTitle',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Trash Advertisement`
+  String get trashAd {
+    return Intl.message(
+      'Trash Advertisement',
+      name: 'trashAd',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Illegal Content`
+  String get illegalContent {
+    return Intl.message(
+      'Illegal Content',
+      name: 'illegalContent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Spam`
+  String get spam {
+    return Intl.message(
+      'Spam',
+      name: 'spam',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Duplicated Posts`
+  String get duplicatedPost {
+    return Intl.message(
+      'Duplicated Posts',
+      name: 'duplicatedPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Other`
+  String get other {
+    return Intl.message(
+      'Other',
+      name: 'other',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Type to report other reason`
+  String get reportOtherReasonHint {
+    return Intl.message(
+      'Type to report other reason',
+      name: 'reportOtherReasonHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Report to the {discuzName} Successfully`
+  String reportSuccessfully(Object discuzName) {
+    return Intl.message(
+      'Report to the $discuzName Successfully',
+      name: 'reportSuccessfully',
+      desc: '',
+      args: [discuzName],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
