@@ -164,6 +164,8 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
               //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
               TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
               TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_hotThread.publishAt)),
+              if((_user == null && _hotThread.readPerm > 0)||(_user!= null && _hotThread.readPerm>_user!.readPerm))
+                TextSpan(text: " / " + S.of(context).threadReadAccess(_hotThread.readPerm),style: TextStyle(color: Theme.of(context).errorColor)),
             ],
           ),
         ),
@@ -215,15 +217,17 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
           },
         ),
         title: Text(_hotThread.subject,style: TextStyle(fontWeight: FontWeight.bold,
-            color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)),
+            color: Theme.of(context).unselectedWidgetColor)),
         subtitle: RichText(
           text: TextSpan(
             text: "",
             style: DefaultTextStyle.of(context).style,
             children: <TextSpan>[
-              TextSpan(text: _hotThread.author, style: TextStyle(fontWeight: FontWeight.w300, color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)),
-              TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300, color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)),
-              TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_hotThread.publishAt),style: TextStyle(color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)),
+              TextSpan(text: _hotThread.author, style: TextStyle(fontWeight: FontWeight.w300, color: Theme.of(context).unselectedWidgetColor)),
+              TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300, color: Theme.of(context).unselectedWidgetColor)),
+              TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_hotThread.publishAt),style: TextStyle(color: Theme.of(context).unselectedWidgetColor)),
+              if((_user == null && _hotThread.readPerm > 0)||(_user!= null && _hotThread.readPerm>_user!.readPerm))
+                TextSpan(text: " / " + S.of(context).threadReadAccess(_hotThread.readPerm),style: TextStyle(color: Theme.of(context).unselectedWidgetColor)),
             ],
           ),
         ),

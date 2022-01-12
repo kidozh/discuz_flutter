@@ -1,4 +1,5 @@
 import 'package:discuz_flutter/converter/SecondToDateTimeConverter.dart';
+import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'ForumThread.g.dart';
@@ -25,7 +26,8 @@ class ForumThread{
   }
 
   @JsonKey(name:"readperm")
-  String readPerm = "0";
+  @StringToIntConverter()
+  int readPerm = 0;
   String author = "";
   @JsonKey(name:"authorid")
   String authorId = "0";

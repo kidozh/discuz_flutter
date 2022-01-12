@@ -194,7 +194,10 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
 
     if(_discuz != null){
       loadCookieByUser(_discuz, _user);
-      initialURL = _discuz.baseURL;
+      if(initialURL == null){
+        initialURL = _discuz.baseURL;
+      }
+
     }
     else{
       initialURL = "https://discuzhub.kidozh.com";
@@ -360,7 +363,7 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
           }
           case "space":{
             // check for forum, query fid
-            if(uri.queryParameters.containsKey("uid")){
+            if(uri.queryParameters.containsKey("uid") && !uri.queryParameters.containsKey("do")){
               String uidString = uri.queryParameters["uid"]!;
               // trigger tid
               if(int.tryParse(uidString) != null){

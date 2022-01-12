@@ -82,11 +82,13 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m28(filename) => "Successfully download file: ${filename}.";
 
-  static String m29(username) => "User ${username} expired";
+  static String m29(num) => "RP ${num}";
 
-  static String m30(uid) => "UserId ${uid}";
+  static String m30(username) => "User ${username} expired";
 
-  static String m31(user) => "View ${user}\'s profile.";
+  static String m31(uid) => "UserId ${uid}";
+
+  static String m32(user) => "View ${user}\'s profile.";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -465,6 +467,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Take a bite on beta test"),
         "threadIsClosed":
             MessageLookupByLibrary.simpleMessage("Thread is closed."),
+        "threadReadAccess": m29,
         "trashAd": MessageLookupByLibrary.simpleMessage("Trash Advertisement"),
         "trustHostActionText":
             MessageLookupByLibrary.simpleMessage("Trust this host"),
@@ -515,19 +518,22 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Send raw image"),
         "uploadingImageToServer": MessageLookupByLibrary.simpleMessage(
             "Upload the file to the server..."),
+        "userCredit": MessageLookupByLibrary.simpleMessage("Credits"),
         "userExpiredSubtitle": MessageLookupByLibrary.simpleMessage(
             "The current user is expired, some function may not work."),
-        "userExpiredTitle": m29,
-        "userIdTitle": m30,
+        "userExpiredTitle": m30,
+        "userIdTitle": m31,
+        "userPost": MessageLookupByLibrary.simpleMessage("Posts"),
         "userProfile": MessageLookupByLibrary.simpleMessage("User Profile"),
         "userProfileTitle":
             MessageLookupByLibrary.simpleMessage("User Profiles"),
+        "userThread": MessageLookupByLibrary.simpleMessage("Threads"),
         "viewAuthorInfo":
             MessageLookupByLibrary.simpleMessage("View author\'s profile"),
         "viewHistory": MessageLookupByLibrary.simpleMessage("View History"),
         "viewThreadTitle":
             MessageLookupByLibrary.simpleMessage("View a thread"),
-        "viewUserInfo": m31,
+        "viewUserInfo": m32,
         "warnedPost":
             MessageLookupByLibrary.simpleMessage("The post is warned."),
         "watchPictureInFullScreen":

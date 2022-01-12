@@ -712,7 +712,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
 
-                    Text(S.of(context).threadIsClosed,style: Theme.of(context).textTheme.headline5?.copyWith(
+                    Text(S.of(context).threadIsClosed,style: Theme.of(context).textTheme.bodyText1?.copyWith(
                         color: Theme.of(context).errorColor
                     ),)
                   ],

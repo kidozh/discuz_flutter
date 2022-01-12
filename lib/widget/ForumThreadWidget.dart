@@ -167,6 +167,9 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                 TextSpan(text: " / ",style: TextStyle(fontWeight: FontWeight.w300)),
               if(threadCategory.isNotEmpty)
                 TextSpan(text: threadCategory,style: TextStyle(color: Theme.of(context).accentColor)),
+              if((_user == null && _forumThread.readPerm > 0)||(_user!= null && _forumThread.readPerm >_user!.readPerm))
+                TextSpan(text: " / " + S.of(context).threadReadAccess(_forumThread.readPerm),style: TextStyle(color: Theme.of(context).errorColor)),
+
             ],
           ),
         ),
@@ -251,6 +254,8 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                 TextSpan(text: " / ",style: TextStyle(fontWeight: FontWeight.w300, color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)),
               if(threadCategory.isNotEmpty)
                 TextSpan(text: threadCategory,style: TextStyle(color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)),
+              if((_user == null && _forumThread.readPerm > 0)||(_user!= null && _forumThread.readPerm >_user!.readPerm))
+                TextSpan(text: " / " + S.of(context).threadReadAccess(_forumThread.readPerm),style: TextStyle(color: Theme.of(context).unselectedWidgetColor)),
             ],
           ),
         ),

@@ -3080,6 +3080,46 @@ class S {
       args: [discuzName],
     );
   }
+
+  /// `Posts`
+  String get userPost {
+    return Intl.message(
+      'Posts',
+      name: 'userPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Threads`
+  String get userThread {
+    return Intl.message(
+      'Threads',
+      name: 'userThread',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Credits`
+  String get userCredit {
+    return Intl.message(
+      'Credits',
+      name: 'userCredit',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `RP {num}`
+  String threadReadAccess(Object num) {
+    return Intl.message(
+      'RP $num',
+      name: 'threadReadAccess',
+      desc: '',
+      args: [num],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

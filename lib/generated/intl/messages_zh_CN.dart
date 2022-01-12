@@ -80,11 +80,13 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m28(filename) => "成功下载文件： ${filename}。";
 
-  static String m29(username) => "用户 ${username} 已失效";
+  static String m29(num) => "阅读权限 ${num}";
 
-  static String m30(uid) => "用户编号： ${uid}";
+  static String m30(username) => "用户 ${username} 已失效";
 
-  static String m31(user) => "查看${user}详情";
+  static String m31(uid) => "用户编号： ${uid}";
+
+  static String m32(user) => "查看${user}详情";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -399,6 +401,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "testVersionNotificationTitle":
             MessageLookupByLibrary.simpleMessage("欢迎参与测试版本"),
         "threadIsClosed": MessageLookupByLibrary.simpleMessage("此贴已关闭发帖。"),
+        "threadReadAccess": m29,
         "trashAd": MessageLookupByLibrary.simpleMessage("垃圾广告"),
         "trustHostActionText": MessageLookupByLibrary.simpleMessage("信任此域名"),
         "trustHostTitle": MessageLookupByLibrary.simpleMessage("主机域名白名单"),
@@ -440,16 +443,19 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("原始图片（可能因为太大被服务器拒绝）"),
         "uploadingImageToServer":
             MessageLookupByLibrary.simpleMessage("向服务器传输数据中。。。"),
+        "userCredit": MessageLookupByLibrary.simpleMessage("积分"),
         "userExpiredSubtitle":
             MessageLookupByLibrary.simpleMessage("当前用户授权已过期，你需要重新登录以重新激活此用户。"),
-        "userExpiredTitle": m29,
-        "userIdTitle": m30,
+        "userExpiredTitle": m30,
+        "userIdTitle": m31,
+        "userPost": MessageLookupByLibrary.simpleMessage("回复"),
         "userProfile": MessageLookupByLibrary.simpleMessage("用户中心"),
         "userProfileTitle": MessageLookupByLibrary.simpleMessage("用户信息"),
+        "userThread": MessageLookupByLibrary.simpleMessage("发帖"),
         "viewAuthorInfo": MessageLookupByLibrary.simpleMessage("查看用户详情"),
         "viewHistory": MessageLookupByLibrary.simpleMessage("浏览历史"),
         "viewThreadTitle": MessageLookupByLibrary.simpleMessage("查看帖子"),
-        "viewUserInfo": m31,
+        "viewUserInfo": m32,
         "warnedPost": MessageLookupByLibrary.simpleMessage("此贴被警告。"),
         "watchPictureInFullScreen":
             MessageLookupByLibrary.simpleMessage("查看大图"),

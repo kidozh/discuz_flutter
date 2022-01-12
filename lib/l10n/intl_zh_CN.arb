@@ -468,5 +468,14 @@
     "placeholders": {
       "discuzName": {}
     }
+  },
+  "userPost": "回复",
+  "userThread": "发帖",
+  "userCredit": "积分",
+  "threadReadAccess": "阅读权限 {num}",
+  "@threadReadAccess": {
+    "placeholders": {
+      "num": {}
+    }
   }
 }

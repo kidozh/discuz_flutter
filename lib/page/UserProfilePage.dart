@@ -7,11 +7,13 @@ import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/page/ExploreWebsitePage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/UserProfileListItem.dart';
@@ -20,6 +22,7 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
+import 'ExploreWebsiteScaffordPage.dart';
 import 'PrivateMessageDetailPage.dart';
 
 class UserProfilePage extends StatelessWidget {
@@ -86,7 +89,6 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     if (_userProfileResult == null) {
       return PlatformScaffold(
         iosContentPadding: true,
@@ -242,6 +244,78 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                     ),
                   ),
                 ],
+              ),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(10.0),
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.white
+                    : Colors.grey.shade900,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      child: Card(
+                        elevation: 0,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          child: Column(
+                            children: [
+                              Text(S.of(context).userThread, style: Theme.of(context).textTheme.caption,),
+                              Text(_userProfileResult!.variables.getSpace().threads.toString(),
+                                style: Theme.of(context).textTheme.headline4?.copyWith(color: Theme.of(context).primaryColor),)
+                            ],
+                          ),
+                        ),
+                      ),
+                      onTap: (){
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        Navigator.push(
+                            context,
+                            platformPageRoute(
+                                context: context,
+                                builder: (context) => ExploreWebsiteScaffordPage(initialURL: discuz.baseURL+"/home.php?mod=space&uid=${uid}&do=thread&view=me&type=thread&from=space")));
+                      },
+                    ),
+                    InkWell(
+                      child: Card(
+                        elevation: 0,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          child: Column(
+                            children: [
+                              Text(S.of(context).userPost, style: Theme.of(context).textTheme.caption,),
+                              Text(_userProfileResult!.variables.getSpace().posts.toString(),
+                                style: Theme.of(context).textTheme.headline4?.copyWith(color: Theme.of(context).primaryColor),)
+                            ],
+                          ),
+                        ),
+                      ),
+                      onTap: (){
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        Navigator.push(
+                            context,
+                            platformPageRoute(
+                                context: context,
+                                builder: (context) => ExploreWebsiteScaffordPage(initialURL: discuz.baseURL+"/home.php?mod=space&uid=${uid}&do=thread&view=me&type=reply&from=space")));
+                      },
+                    ),
+                    Card(
+                      elevation: 0,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        child: Column(
+                          children: [
+                            Text(S.of(context).userCredit, style: Theme.of(context).textTheme.caption,),
+                            Text(_userProfileResult!.variables.getSpace().credits.toString(),
+                              style: Theme.of(context).textTheme.headline4?.copyWith(color: Theme.of(context).primaryColor),)
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
               Container(
                 width: double.infinity,

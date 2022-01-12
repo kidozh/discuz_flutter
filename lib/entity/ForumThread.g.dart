@@ -10,7 +10,8 @@ ForumThread _$ForumThreadFromJson(Map<String, dynamic> json) => ForumThread()
   ..tid = json['tid'] as String
   ..typeId = json['typeid'] as String
   ..price = json['price'] as String? ?? '0'
-  ..readPerm = json['readperm'] as String
+  ..readPerm =
+      const StringToIntConverter().fromJson(json['readperm'] as String?)
   ..author = json['author'] as String
   ..authorId = json['authorid'] as String
   ..subject = json['subject'] as String
@@ -37,7 +38,7 @@ Map<String, dynamic> _$ForumThreadToJson(ForumThread instance) =>
       'tid': instance.tid,
       'typeid': instance.typeId,
       'price': instance.price,
-      'readperm': instance.readPerm,
+      'readperm': const StringToIntConverter().toJson(instance.readPerm),
       'author': instance.author,
       'authorid': instance.authorId,
       'subject': instance.subject,

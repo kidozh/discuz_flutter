@@ -468,5 +468,14 @@
     "placeholders": {
       "discuzName": {}
     }
+  },
+  "userPost": "Posts",
+  "userThread": "Threads",
+  "userCredit": "Credits",
+  "threadReadAccess": "RP {num}",
+  "@threadReadAccess": {
+    "placeholders": {
+      "num": {}
+    }
   }
 }
