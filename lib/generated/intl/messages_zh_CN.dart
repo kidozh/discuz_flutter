@@ -322,6 +322,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "postNumber": MessageLookupByLibrary.simpleMessage("回帖数"),
         "postPosition": m19,
         "preparingPage": MessageLookupByLibrary.simpleMessage("正在准备此界面。"),
+        "preventAbuseUser":
+            MessageLookupByLibrary.simpleMessage("请勿使用此应用发表令人反感的内容或其他滥用行为"),
+        "preventAbuseUserDescription": MessageLookupByLibrary.simpleMessage(
+            "我们对于令人反感的内容（包含并不限于咒骂内容（包含粗俗用语）、违禁药品、歧视性语言、针对人类的暴力行为、宣扬或美化恐怖主义或与性相关的脏话）和滥用行为都没有容忍。我们也强烈反对使用本应用发表任何涉政言论及以及做出相应的行为。该约束作为最终用户协议的一部分，您必须同意此约束后使用本应用。"),
         "privacyPolicy": MessageLookupByLibrary.simpleMessage("隐私政策"),
         "privacyProtectSubtitle":
             MessageLookupByLibrary.simpleMessage("轻轻的来正如我轻轻的走，我们不会搜集任何有关您的信息"),
@@ -395,6 +399,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "tapToWipeAndRelogin":
             MessageLookupByLibrary.simpleMessage("点击以移除此用户并重新登陆"),
         "termsOfService": MessageLookupByLibrary.simpleMessage("使用条款"),
+        "termsOfUseDescription":
+            MessageLookupByLibrary.simpleMessage("你需要同意我们的使用条款后使用本应用。"),
         "testVersion": MessageLookupByLibrary.simpleMessage("公测版本"),
         "testVersionDescription": MessageLookupByLibrary.simpleMessage(
             "此版本具有最新的开发进展，同时也伴有一定的错误。当您使用时，请做好数据备份，以防数据丢失。"),

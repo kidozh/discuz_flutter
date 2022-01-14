@@ -3120,6 +3120,36 @@ class S {
       args: [num],
     );
   }
+
+  /// `No objectionable content and abusive action`
+  String get preventAbuseUser {
+    return Intl.message(
+      'No objectionable content and abusive action',
+      name: 'preventAbuseUser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There is no tolerance for objectionable content and abusive users`
+  String get preventAbuseUserDescription {
+    return Intl.message(
+      'There is no tolerance for objectionable content and abusive users',
+      name: 'preventAbuseUserDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You should agree to terms of services before using the application.`
+  String get termsOfUseDescription {
+    return Intl.message(
+      'You should agree to terms of services before using the application.',
+      name: 'termsOfUseDescription',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

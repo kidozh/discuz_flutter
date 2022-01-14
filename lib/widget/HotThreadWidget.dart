@@ -180,6 +180,16 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
               ))
           );
         },
+        onLongPress: () async{
+          VibrationUtils.vibrateSuccessfullyIfPossible();
+          // block user
+          setState(() {
+            this.isUserBlocked = true;
+          });
+          BlockUser blockUser = BlockUser(null, _hotThread.authorId, _hotThread.author, _discuz.id!, DateTime.now());
+          int insertId = await blockUserDao.insertBlockUser(blockUser);
+          log("insert id into block user ${insertId}");
+        },
 
 
       ),
@@ -239,6 +249,16 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
               context,
               platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( _discuz,  _user, _hotThread.tid,))
           );
+        },
+        onLongPress: () async{
+          VibrationUtils.vibrateSuccessfullyIfPossible();
+          // block user
+          setState(() {
+            this.isUserBlocked = true;
+          });
+          BlockUser blockUser = BlockUser(null, _hotThread.authorId, _hotThread.author, _discuz.id!, DateTime.now());
+          int insertId = await blockUserDao.insertBlockUser(blockUser);
+          log("insert id into block user ${insertId}");
         },
 
 

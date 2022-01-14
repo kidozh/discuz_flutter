@@ -477,5 +477,8 @@
     "placeholders": {
       "num": {}
     }
-  }
+  },
+  "preventAbuseUser": "No objectionable content and abusive action",
+  "preventAbuseUserDescription": "There is no tolerance for objectionable content and abusive users",
+  "termsOfUseDescription": "You should agree to terms of services before using the application."
 }

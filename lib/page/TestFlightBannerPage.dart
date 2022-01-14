@@ -16,6 +16,8 @@ class TestFlightBannerPage extends StatelessWidget{
         iosContentPadding: true,
         appBar: PlatformAppBar(
           title: Text(S.of(context).welcomeTitle),
+          automaticallyImplyLeading: false,
+
         ),
         body: TestFlightBannerContent()
     );
@@ -55,10 +57,10 @@ class TestFlightBannerContent extends StatelessWidget{
               ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.redAccent,
-                  child: Icon(Icons.bug_report,color: Colors.white),
+                  child: Icon(CupertinoIcons.hand_raised_fill,color: Colors.white),
                 ),
-                title: Text(S.of(context).bugTestTitle),
-                subtitle: Text(S.of(context).bugTestSubtitle),
+                title: Text(S.of(context).preventAbuseUser),
+                subtitle: Text(S.of(context).preventAbuseUserDescription),
               ),
               ListTile(
                 leading: CircleAvatar(
@@ -75,10 +77,14 @@ class TestFlightBannerContent extends StatelessWidget{
               ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.indigo,
-                  child: Icon(Icons.settings_backup_restore_rounded,color: Colors.white,),
+                  child: Icon(Icons.check_outlined,color: Colors.white,),
                 ),
-                title: Text(S.of(context).dataBackupInTestTitle),
-                subtitle: Text(S.of(context).dataBackupInTestSubtitle),
+                title: Text(S.of(context).termsOfService),
+                subtitle: Text(S.of(context).termsOfUseDescription),
+                onTap: (){
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  _launchURL("https://discuzhub.kidozh.com/privacy_policy/");
+                },
               ),
               ListTile(
                 leading: CircleAvatar(

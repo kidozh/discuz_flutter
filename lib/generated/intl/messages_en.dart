@@ -373,6 +373,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "postPosition": m19,
         "preparingPage":
             MessageLookupByLibrary.simpleMessage("Preparing the page."),
+        "preventAbuseUser": MessageLookupByLibrary.simpleMessage(
+            "No objectionable content and abusive action"),
+        "preventAbuseUserDescription": MessageLookupByLibrary.simpleMessage(
+            "There is no tolerance for objectionable content and abusive users"),
         "privacyPolicy": MessageLookupByLibrary.simpleMessage("Privacy policy"),
         "privacyProtectSubtitle":
             MessageLookupByLibrary.simpleMessage("Nothing is collected by us"),
@@ -460,6 +464,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Tap to wipe out and re-login user"),
         "termsOfService":
             MessageLookupByLibrary.simpleMessage("Terms of Service"),
+        "termsOfUseDescription": MessageLookupByLibrary.simpleMessage(
+            "You should agree to terms of services before using the application."),
         "testVersion": MessageLookupByLibrary.simpleMessage("Beta Test"),
         "testVersionDescription": MessageLookupByLibrary.simpleMessage(
             "The final product will be changed according to latest development."),

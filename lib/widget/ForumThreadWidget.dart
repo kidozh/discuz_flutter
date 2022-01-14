@@ -182,6 +182,15 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
               platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(_discuz,_user, _forumThread.getTid()))
           );
         },
+        onLongPress: () async{
+          VibrationUtils.vibrateSuccessfullyIfPossible();
+          setState(() {
+            this.isUserBlocked = true;
+          });
+          BlockUser blockUser = BlockUser(null, _forumThread.getAuthorId(), _forumThread.author, _discuz.id!, DateTime.now());
+          int insertId = await blockUserDao.insertBlockUser(blockUser);
+          log("insert id into block user ${insertId}");
+        },
 
 
       ),
@@ -267,6 +276,15 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
               context,
               platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(_discuz,_user, _forumThread.getTid()))
           );
+        },
+        onLongPress: () async{
+          VibrationUtils.vibrateSuccessfullyIfPossible();
+          setState(() {
+            this.isUserBlocked = true;
+          });
+          BlockUser blockUser = BlockUser(null, _forumThread.getAuthorId(), _forumThread.author, _discuz.id!, DateTime.now());
+          int insertId = await blockUserDao.insertBlockUser(blockUser);
+          log("insert id into block user ${insertId}");
         },
 
 
