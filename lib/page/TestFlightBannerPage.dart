@@ -14,11 +14,11 @@ class TestFlightBannerPage extends StatelessWidget{
     return PlatformScaffold(
         iosContentBottomPadding: true,
         iosContentPadding: true,
-        appBar: PlatformAppBar(
-          title: Text(S.of(context).welcomeTitle),
-          automaticallyImplyLeading: false,
-
-        ),
+        // appBar: PlatformAppBar(
+        //   title: Text(S.of(context).welcomeTitle),
+        //   automaticallyImplyLeading: false,
+        //
+        // ),
         body: TestFlightBannerContent()
     );
   }
