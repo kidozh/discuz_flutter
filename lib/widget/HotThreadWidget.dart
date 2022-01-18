@@ -173,7 +173,7 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
         subtitle: RichText(
           text: TextSpan(
             text: _hotThread.author,
-            style: DefaultTextStyle.of(context).style,
+            style: textStyle,
             children: <TextSpan>[
               //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
               TextSpan(text: " · ",style: textStyle),
