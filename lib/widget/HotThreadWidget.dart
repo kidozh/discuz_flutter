@@ -121,8 +121,22 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
     }
   }
 
-  Widget getUnViewedHotThread(){
-    // retrieve threadtype
+  Widget getHotThreadCard(bool viewed){
+    TextStyle? textStyle;
+    if (viewed){
+      textStyle = TextStyle(
+          fontWeight: FontWeight.w300,
+          color: Theme.of(context).unselectedWidgetColor,
+      );
+    }
+    else{
+      textStyle = TextStyle(
+
+        fontWeight: FontWeight.normal,
+      );
+
+    }
+
     return Card(
       elevation: 2.0,
       child: ListTile(
@@ -154,7 +168,7 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
         ),
         title: Hero(
           tag: ConstUtils.HERO_TAG_THREAD_SUBJECT,
-          child: Text(_hotThread.subject,style: TextStyle(fontWeight: FontWeight.bold)),
+          child: Text(_hotThread.subject,style: textStyle),
         ),
         subtitle: RichText(
           text: TextSpan(
@@ -162,10 +176,10 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
             style: DefaultTextStyle.of(context).style,
             children: <TextSpan>[
               //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
-              TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
-              TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_hotThread.publishAt)),
+              TextSpan(text: " · ",style: textStyle),
+              TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_hotThread.publishAt), style: textStyle),
               if((_user == null && _hotThread.readPerm > 0)||(_user!= null && _hotThread.readPerm>_user!.readPerm))
-                TextSpan(text: " / " + S.of(context).threadReadAccess(_hotThread.readPerm),style: TextStyle(color: Theme.of(context).errorColor)),
+                TextSpan(text: " / " + S.of(context).threadReadAccess(_hotThread.readPerm),style: textStyle.copyWith(color: Theme.of(context).errorColor)),
             ],
           ),
         ),
@@ -178,76 +192,6 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
               platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( _discuz,  _user, _hotThread.tid,
                 passedSubject: _hotThread.subject,
               ))
-          );
-        },
-        onLongPress: () async{
-          VibrationUtils.vibrateSuccessfullyIfPossible();
-          // block user
-          setState(() {
-            this.isUserBlocked = true;
-          });
-          BlockUser blockUser = BlockUser(null, _hotThread.authorId, _hotThread.author, _discuz.id!, DateTime.now());
-          int insertId = await blockUserDao.insertBlockUser(blockUser);
-          log("insert id into block user ${insertId}");
-        },
-
-
-      ),
-    );
-  }
-
-  Widget getViewedHotThread(){
-    return Card(
-      elevation: 2.0,
-      child: ListTile(
-        leading: InkWell(
-          child: ClipRRect(
-
-            borderRadius: BorderRadius.circular(10000.0),
-            child: CachedNetworkImage(
-              imageUrl: URLUtils.getAvatarURL(_discuz, _hotThread.authorId.toString()),
-              progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-              errorWidget: (context, url, error) =>
-                  CircleAvatar(
-
-                    backgroundColor: CustomizeColor.getColorBackgroundById(_hotThread.authorId),
-                    child: Text(_hotThread.author.length !=0 ? _hotThread.author[0].toUpperCase()
-                        : S.of(context).anonymous,
-                        style: TextStyle(color: Colors.white)),
-                  )
-              ,
-            ),
-          ),
-          onTap: () async{
-            VibrationUtils.vibrateWithClickIfPossible();
-            User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-            await Navigator.push(
-                context,
-                platformPageRoute(context:context,builder: (context) => UserProfilePage(_discuz,user, _hotThread.authorId)));
-          },
-        ),
-        title: Text(_hotThread.subject,style: TextStyle(fontWeight: FontWeight.bold,
-            color: Theme.of(context).unselectedWidgetColor)),
-        subtitle: RichText(
-          text: TextSpan(
-            text: "",
-            style: DefaultTextStyle.of(context).style,
-            children: <TextSpan>[
-              TextSpan(text: _hotThread.author, style: TextStyle(fontWeight: FontWeight.w300, color: Theme.of(context).unselectedWidgetColor)),
-              TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300, color: Theme.of(context).unselectedWidgetColor)),
-              TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_hotThread.publishAt),style: TextStyle(color: Theme.of(context).unselectedWidgetColor)),
-              if((_user == null && _hotThread.readPerm > 0)||(_user!= null && _hotThread.readPerm>_user!.readPerm))
-                TextSpan(text: " / " + S.of(context).threadReadAccess(_hotThread.readPerm),style: TextStyle(color: Theme.of(context).unselectedWidgetColor)),
-            ],
-          ),
-        ),
-        trailing: getTailingWidget(),
-        onTap: () async {
-          VibrationUtils.vibrateWithClickIfPossible();
-          markThreadAsRead();
-          await Navigator.push(
-              context,
-              platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( _discuz,  _user, _hotThread.tid,))
           );
         },
         onLongPress: () async{
@@ -309,20 +253,20 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
       );
     }
     else if(read == true){
-      return getViewedHotThread();
+      return getHotThreadCard(read);
     }
     else if(dao == null|| _discuz.id == null){
-      return getUnViewedHotThread();
+      return getHotThreadCard(false);
     }
     else{
       return StreamBuilder(
         stream: dao!.threadHistoryExistInDatabase(_discuz.id!, _hotThread.tid),
         builder: (BuildContext context, AsyncSnapshot<ViewHistory?> snapshot) {
           if(snapshot.data == null){
-            return getUnViewedHotThread();
+            return getHotThreadCard(false);
           }
           else{
-            return getViewedHotThread();
+            return getHotThreadCard(true);
           }
         },
       );

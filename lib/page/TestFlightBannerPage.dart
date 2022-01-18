@@ -34,7 +34,7 @@ class TestFlightBannerContent extends StatelessWidget{
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(width: double.infinity,height: 24,),
+              SizedBox(width: double.infinity,height: 64,),
               Container(
                 width: 128,
                 height: 128,

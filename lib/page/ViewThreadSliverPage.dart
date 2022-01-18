@@ -613,41 +613,27 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
               )),
             ),
             slivers: <Widget>[
-              if (_viewThreadResult
-                  .threadVariables.threadInfo.subject.isEmpty && passedSubject!=null && passedSubject!.isNotEmpty)
-                SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                          (context, _) {
-                        return Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Hero(
-                            tag: ConstUtils.HERO_TAG_THREAD_SUBJECT,
-                            child: Text(
-                              passedSubject!,
-                              style: TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.bold),
+              SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                        (context, _) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Hero(
+                          tag: ConstUtils.HERO_TAG_THREAD_SUBJECT,
+                          child: Text(
+                            _viewThreadResult.threadVariables.threadInfo.subject.isEmpty && passedSubject!=null? passedSubject!: _viewThreadResult.threadVariables.threadInfo.subject,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+
                             ),
                           ),
-                        );
-                      },
-                      childCount: 1,
-                    )),
-              if (_viewThreadResult
-                  .threadVariables.threadInfo.subject.isNotEmpty)
-                SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                          (context, _) {
-                        return Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            _viewThreadResult.threadVariables.threadInfo.subject,
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold),
-                          ),
-                        );
-                      },
-                      childCount: 1,
-                    )),
+                        ),
+                      );
+                    },
+                    childCount: 1,
+                  )),
+
               if (_error != null)
                 SliverList(
                     delegate: SliverChildBuilderDelegate(

@@ -257,7 +257,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                   children: [
                     InkWell(
                       child: Card(
-                        elevation: 0,
+
                         child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           child: Column(
@@ -280,7 +280,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                     ),
                     InkWell(
                       child: Card(
-                        elevation: 0,
+
                         child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           child: Column(
@@ -302,7 +302,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                       },
                     ),
                     Card(
-                      elevation: 0,
+                      
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         child: Column(
