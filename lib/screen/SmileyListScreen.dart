@@ -291,25 +291,12 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget>{
                       smileyValueGetter(smiley);
                       // add to smiley
                       // check whether exist
-                      Smiley? smileyInDb = await _smileyDao!.findSmileyByDiscuzIdAndCode(discuz.id!, smiley.code);
-                      log("on tap smiley $smiley ${smileyInDb?.id} ${discuz.id}");
-                      if(smileyInDb != null){
+                      if(smiley.id!=null){
                         smiley.dateTime = DateTime.now();
-                        smiley.discuzId = discuz.id!;
-                        smiley.id = smileyInDb.id;
                         _smileyDao!.insertSmiley(smiley);
                       }
-                      else{
-                        smiley.discuzId = discuz.id!;
-                        _smileyDao!.insertSmiley(smiley);
-                      }
-
                       log("pressed smiley ${smiley} ${smiley.id} ");
-                      // Smiley smileyInDb = smiley;
-                      // smileyInDb.id = smiley.id;
-                      // smileyInDb.discuzId = discuz.id!;
-                      // smileyInDb.dateTime = DateTime.now();
-                      // _smileyDao!.insertSmiley(smileyInDb);
+
 
                     },
                     child: CachedNetworkImage(

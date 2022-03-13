@@ -923,6 +923,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     );
   }
 
+
+
   void insertSmiley(Smiley smiley) {
     print("Smiley is pressed ${smiley.code} ${smiley.relativePath}");
 
