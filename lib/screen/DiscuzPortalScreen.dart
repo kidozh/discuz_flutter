@@ -4,21 +4,30 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
+import 'package:discuz_flutter/JsonResult/FavoriteForumResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
+import 'package:discuz_flutter/dao/FavoriteForumDao.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
+import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/page/DisplayForumSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
+import 'package:discuz_flutter/utility/ConstUtils.dart';
+import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumPartitionWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
@@ -52,7 +61,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
   late MobileApiClient _client;
   DiscuzIndexResult? result = null;
   DiscuzError? _error;
-
+  late AppDatabase _db;
   late EasyRefreshController _controller;
   late ScrollController _scrollController;
 
@@ -87,6 +96,18 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
     super.initState();
     _controller = EasyRefreshController();
     _scrollController = ScrollController();
+    _loadFavoriteForum();
+  }
+
+  List<FavoriteForumInDatabase> favoriteForumInDbList = [];
+
+  void _loadFavoriteForum() async{
+    _db = await DBHelper.getAppDb();
+    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    if(discuz != null && discuz.id != null){
+      FavoriteForumDao favoriteForumDao = _db.favoriteForumDao;
+      favoriteForumInDbList = await favoriteForumDao.getFavoriteForumList(discuz.id!);
+    }
 
   }
 
@@ -94,14 +115,6 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
     User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
-
-    // _client.getDiscuzPortalRaw().then((value){
-    //   log(value);
-    //   var res = DiscuzIndexResult.fromJson(jsonDecode(value));
-    //
-    // });
-
-
 
     _client.getDiscuzPortalResult().then((value) {
       // render page
@@ -262,7 +275,14 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
             )),
       ),
       slivers: <Widget>[
+        SliverList(delegate: SliverChildBuilderDelegate(
+            (context, index){
+              return FavoriteForumCardWidget(discuz,user,favoriteForumInDbList[index]);
+            },
+            childCount: favoriteForumInDbList.length
+            ),
 
+        ),
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (context, index) {
@@ -289,4 +309,41 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       super.setState(fn);
     }
   }
+}
+
+class FavoriteForumCardWidget extends StatelessWidget{
+  FavoriteForumInDatabase favoriteForumInDatabase;
+  Discuz discuz;
+  User? user;
+  FavoriteForumCardWidget(this.discuz, this.user,this.favoriteForumInDatabase);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Theme.of(context).primaryColor,
+      elevation: 2.0,
+      child: ListTile(
+        leading: Icon(Icons.favorite, color: Theme.of(context).primaryTextTheme.bodyText1?.color?.withAlpha(200),),
+        title: Hero(
+          tag: ConstUtils.HERO_TAG_FORUM_TITLE,
+          child: Text(favoriteForumInDatabase.title, style: Theme.of(context).primaryTextTheme.headline6,),
+        ),
+        subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, favoriteForumInDatabase.date),
+          style: Theme.of(context).primaryTextTheme.bodyText2?.copyWith(
+            color: Theme.of(context).primaryTextTheme.bodyText2?.color?.withAlpha(150)
+          ),),
+        onTap: () async {
+          VibrationUtils.vibrateWithClickIfPossible();
+          await Navigator.push(
+              context,
+              platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(discuz, user, favoriteForumInDatabase.idKey))
+          );
+        },
+        trailing: Icon(Icons.arrow_forward, color: Theme.of(context).primaryTextTheme.bodyText1?.color,),
+
+
+      ),
+    );
+  }
+
 }

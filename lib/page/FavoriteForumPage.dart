@@ -58,7 +58,7 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget>{
 
   // database
   late AppDatabase db;
-  late FavoriteForumDao _FavoriteForumDao;
+  late FavoriteForumDao _favoriteForumDao;
   Stream<List<FavoriteForumInDatabase>> _streamInDb = Stream.fromIterable([]);
   int progress = 0;
   late MobileApiClient client;
@@ -77,9 +77,9 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget>{
 
   void _loadDb() async{
     db = await DBHelper.getAppDb();
-    _FavoriteForumDao = db.favoriteForumDao;
+    _favoriteForumDao = db.favoriteForumDao;
     setState(() {
-      _streamInDb = _FavoriteForumDao.getFavoriteForumListStream(_discuz.id!);
+      _streamInDb = _favoriteForumDao.getFavoriteForumListStream(_discuz.id!);
     });
 
     var dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
@@ -107,16 +107,16 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget>{
       for(var favoriteForum in FavoriteForumListInServer){
         // save them one by one
         FavoriteForumInDatabase? favoriteForumInDatabase =
-        await this._FavoriteForumDao.getFavoriteForumByTid(favoriteForum.id, _discuz.id!);
+        await this._favoriteForumDao.getFavoriteForumByTid(favoriteForum.id, _discuz.id!);
         print("Get FavoriteForum In DB ${FavoriteForumInDatabase}");
         if(favoriteForumInDatabase == null){
           // insert it
-          int insertId = await _FavoriteForumDao.insertFavoriteForum(favoriteForum.toDb(_discuz));
+          int insertId = await _favoriteForumDao.insertFavoriteForum(favoriteForum.toDb(_discuz));
           print("Inserted id ${insertId}");
         }
         else if(favoriteForumInDatabase.favid != favoriteForum.favId){
           favoriteForumInDatabase.favid = favoriteForum.favId;
-          int insertId = await _FavoriteForumDao.insertFavoriteForum(favoriteForumInDatabase);
+          int insertId = await _favoriteForumDao.insertFavoriteForum(favoriteForumInDatabase);
         }
       }
 
