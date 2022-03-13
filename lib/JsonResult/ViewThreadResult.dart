@@ -1,3 +1,4 @@
+import 'package:discuz_flutter/converter/RewriteRuleConverter.dart';
 import 'package:discuz_flutter/converter/SecondToDateTimeConverter.dart';
 import 'package:discuz_flutter/converter/StringToBoolConverter.dart';
 import 'package:discuz_flutter/converter/ViewThreadCommentConverter.dart';
@@ -44,8 +45,10 @@ class ThreadVariables extends BaseVariableResult{
   @JsonKey(name: "comments")
   Map<String, List<Comment>> commentList = {};
 
-  @JsonKey(name: "setting_rewriterule",required: false)
-  RewriteRule? rewriteRule = RewriteRule();
+
+  @RewriteRuleConverter()
+  @JsonKey(name: "setting_rewriterule")
+  RewriteRule rewriteRule = RewriteRule();
 
 
   String ppp = "0";

@@ -126,17 +126,18 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
             value.variables.secHash, captchaType, _textEditingController.text);
       }
 
-      Response<ResponseBody> rs;
-      rs = await _dio!.get<ResponseBody>(_getCaptchaUrl(),
+      Response<Uint8List> rs;
+      _dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
+      rs = await _dio!.get<Uint8List>(_getCaptchaUrl(),
           options: Options(
-              responseType: ResponseType.stream,
+              responseType: ResponseType.bytes,
               headers: {"Referer": value.variables.secCodeURL}));
       if (rs.data != null) {
-        rs.data!.stream.listen((event) {
-          setState(() {
-            imageByte = event;
-          });
+        print("Recv response data ${rs.data}");
+        setState(() {
+          imageByte = rs.data!;
         });
+
       }
     });
   }

@@ -52,10 +52,8 @@ ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) =>
           []
       ..commentList =
           const ViewThreadCommentConverter().fromJson(json['comments'])
-      ..rewriteRule = json['setting_rewriterule'] == null
-          ? null
-          : RewriteRule.fromJson(
-              json['setting_rewriterule'] as Map<String, dynamic>)
+      ..rewriteRule =
+          const RewriteRuleConverter().fromJson(json['setting_rewriterule'])
       ..ppp = json['ppp'] as String
       ..page = json['page'] as String? ?? '1'
       ..poll = json['special_poll'] == null
@@ -80,7 +78,8 @@ Map<String, dynamic> _$ThreadVariablesToJson(ThreadVariables instance) =>
       'postlist': instance.postList,
       'comments':
           const ViewThreadCommentConverter().toJson(instance.commentList),
-      'setting_rewriterule': instance.rewriteRule,
+      'setting_rewriterule':
+          const RewriteRuleConverter().toJson(instance.rewriteRule),
       'ppp': instance.ppp,
       'page': instance.page,
       'special_poll': instance.poll,

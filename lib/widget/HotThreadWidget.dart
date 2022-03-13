@@ -172,10 +172,11 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
         ),
         subtitle: RichText(
           text: TextSpan(
-            text: _hotThread.author,
-            style: textStyle,
+            text: "",
+            style: DefaultTextStyle.of(context).style,
             children: <TextSpan>[
               //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
+              TextSpan(text: _hotThread.author,style: textStyle),
               TextSpan(text: " · ",style: textStyle),
               TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_hotThread.publishAt), style: textStyle),
               if((_user == null && _hotThread.readPerm > 0)||(_user!= null && _hotThread.readPerm>_user!.readPerm))

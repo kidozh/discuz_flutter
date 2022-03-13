@@ -47,7 +47,7 @@ class _AddDiscuzFormFieldState
   CheckResult? _checkResult;
   String error = "";
   bool _isLoading = false;
-  final TextEditingController _urlController = new TextEditingController();
+  final TextEditingController _urlController = new TextEditingController(text: "https://");
 
   Future<void> _saveDiscuzInDb(Discuz discuz) async {
     final db = await DBHelper.getAppDb();

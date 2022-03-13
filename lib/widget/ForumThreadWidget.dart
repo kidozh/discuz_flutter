@@ -115,96 +115,28 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     }
   }
 
-  Widget getUnViewedThreadCard(){
-
-    String threadCategory = "";
-    if(threadType!=null && threadType!.idNameMap.isNotEmpty && threadType!.idNameMap.containsKey(_forumThread.typeId)){
-      threadCategory = threadType!.idNameMap[_forumThread.typeId]!;
-    }
-
-
-
-    return Card(
-      child: ListTile(
-        leading: InkWell(
-          child: ClipRRect(
-
-            borderRadius: BorderRadius.circular(10000.0),
-            child: CachedNetworkImage(
-              imageUrl: URLUtils.getAvatarURL(_discuz, _forumThread.authorId),
-              progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-              errorWidget: (context, url, error) =>
-                  CircleAvatar(
-
-                    backgroundColor: CustomizeColor.getColorBackgroundById(_forumThread.getAuthorId()),
-                    child: Text(_forumThread.author.length !=0 ? _forumThread.author[0].toUpperCase()
-                        : S.of(context).anonymous,
-                        style: TextStyle(color: Colors.white)),
-                  )
-              ,
-            ),
-          ),
-          onTap: () async{
-            User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-            VibrationUtils.vibrateWithClickIfPossible();
-
-            await Navigator.push(
-                context,
-                platformPageRoute(context:context,builder: (context) => UserProfilePage(_discuz,user, int.parse(_forumThread.authorId))));
-
-          },
-        ),
-        title: Text(_forumThread.subject,style: TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: RichText(
-          text: TextSpan(
-            text: _forumThread.author,
-            style: DefaultTextStyle.of(context).style,
-            children: <TextSpan>[
-              //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
-              TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
-              TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_forumThread.dbdatelineMinutes)),
-              if(threadCategory.isNotEmpty)
-                TextSpan(text: " / ",style: TextStyle(fontWeight: FontWeight.w300)),
-              if(threadCategory.isNotEmpty)
-                TextSpan(text: threadCategory,style: TextStyle(color: Theme.of(context).accentColor)),
-              if((_user == null && _forumThread.readPerm > 0)||(_user!= null && _forumThread.readPerm >_user!.readPerm))
-                TextSpan(text: " / " + S.of(context).threadReadAccess(_forumThread.readPerm),style: TextStyle(color: Theme.of(context).errorColor)),
-
-            ],
-          ),
-        ),
-        trailing: getTailingWidget(),
-        onTap: () async {
-          VibrationUtils.vibrateWithClickIfPossible();
-          markThreadAsRead();
-          await Navigator.push(
-              context,
-              platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(_discuz,_user, _forumThread.getTid()))
-          );
-        },
-        onLongPress: () async{
-          VibrationUtils.vibrateSuccessfullyIfPossible();
-          setState(() {
-            this.isUserBlocked = true;
-          });
-          BlockUser blockUser = BlockUser(null, _forumThread.getAuthorId(), _forumThread.author, _discuz.id!, DateTime.now());
-          int insertId = await blockUserDao.insertBlockUser(blockUser);
-          log("insert id into block user ${insertId}");
-        },
-
-
-      ),
-    );
-  }
-
   void markThreadAsRead(){
     setState(() {
       read = true;
     });
   }
 
-  Widget getViewedThreadCard(){
-    // retrieve threadtype
+  Widget getForumThreadCard(bool viewed){
+    TextStyle? textStyle;
+    if (viewed){
+      textStyle = TextStyle(
+        fontWeight: FontWeight.w300,
+        color: Theme.of(context).unselectedWidgetColor,
+      );
+    }
+    else{
+      textStyle = TextStyle(
+
+        fontWeight: FontWeight.normal,
+      );
+
+    }
+
     String threadCategory = "";
     if(threadType!=null && threadType!.idNameMap.isNotEmpty && threadType!.idNameMap.containsKey(_forumThread.typeId)){
       threadCategory = threadType!.idNameMap[_forumThread.typeId]!;
@@ -241,30 +173,24 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
           },
         ),
         title: Text(_forumThread.subject,
-            style: TextStyle(
-                fontWeight: FontWeight.normal,
-                color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38
-            )
+            style: textStyle
         ),
         subtitle: RichText(
           text: TextSpan(
             text: "",
             style: DefaultTextStyle.of(context).style,
             children: <TextSpan>[
-              TextSpan(text: _forumThread.author, style: TextStyle(fontWeight: FontWeight.w300,
-                  color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)
-              ),
-              TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300,
-                  color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)),
-              TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_forumThread.dbdatelineMinutes), style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38
-              )),
+              TextSpan(text: _forumThread.author, style: textStyle),
+              TextSpan(text: " · ", style: textStyle),
+              TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_forumThread.dbdatelineMinutes), style: textStyle),
               if(threadCategory.isNotEmpty)
-                TextSpan(text: " / ",style: TextStyle(fontWeight: FontWeight.w300, color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)),
+                TextSpan(text: " / ", style: textStyle),
               if(threadCategory.isNotEmpty)
-                TextSpan(text: threadCategory,style: TextStyle(color: Theme.of(context).brightness == Brightness.light ? Colors.black38: Colors.white38)),
+                TextSpan(text: threadCategory, style: textStyle),
               if((_user == null && _forumThread.readPerm > 0)||(_user!= null && _forumThread.readPerm >_user!.readPerm))
-                TextSpan(text: " / " + S.of(context).threadReadAccess(_forumThread.readPerm),style: TextStyle(color: Theme.of(context).unselectedWidgetColor)),
+                TextSpan(text: " / " + S.of(context).threadReadAccess(_forumThread.readPerm),
+                    style: viewed? textStyle: textStyle.copyWith(color: Theme.of(context).errorColor)
+                ),
             ],
           ),
         ),
@@ -274,7 +200,8 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
           markThreadAsRead();
           await Navigator.push(
               context,
-              platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(_discuz,_user, _forumThread.getTid()))
+              platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(_discuz,_user, _forumThread.getTid(),
+                passedSubject: _forumThread.subject,))
           );
         },
         onLongPress: () async{
@@ -336,20 +263,20 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
       );
     }
     if(read == true){
-      return getViewedThreadCard();
+      return getForumThreadCard(true);
     }
     if(dao == null|| _discuz.id == null){
-      return getUnViewedThreadCard();
+      return getForumThreadCard(false);
     }
     else{
       return StreamBuilder(
         stream: dao!.threadHistoryExistInDatabase(_discuz.id!, _forumThread.getTid()),
         builder: (BuildContext context, AsyncSnapshot<ViewHistory?> snapshot) {
           if(snapshot.data == null){
-            return getUnViewedThreadCard();
+            return getForumThreadCard(false);
           }
           else{
-            return getViewedThreadCard();
+            return getForumThreadCard(true);
           }
         },
       );
