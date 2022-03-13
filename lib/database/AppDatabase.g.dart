@@ -997,7 +997,7 @@ class _$FavoriteForumDao extends FavoriteForumDao {
   }
 
   @override
-  Future<FavoriteForumInDatabase?> getFavoriteForumByTid(
+  Future<FavoriteForumInDatabase?> getFavoriteForumByFid(
       int idInServer, int discuzId) async {
     return _queryAdapter.query(
         'SELECT * FROM FavoriteForumInDatabase WHERE idKey=?1 AND discuz_id=?2  LIMIT 1',
@@ -1006,7 +1006,7 @@ class _$FavoriteForumDao extends FavoriteForumDao {
   }
 
   @override
-  Stream<FavoriteForumInDatabase?> getFavoriteForumStreamByTid(
+  Stream<FavoriteForumInDatabase?> getFavoriteForumStreamByFid(
       int idInServer, int discuzId) {
     return _queryAdapter.queryStream(
         'SELECT * FROM FavoriteForumInDatabase WHERE idKey=?1 AND discuz_id=?2 LIMIT 1',

@@ -19,8 +19,8 @@ abstract class FavoriteForumDao{
   Future<void> removeFavoriteForum(FavoriteForumInDatabase favoriteThreadInDatabase);
 
   @Query("SELECT * FROM FavoriteForumInDatabase WHERE idKey=:idInServer AND discuz_id=:discuzId  LIMIT 1")
-  Future<FavoriteForumInDatabase?> getFavoriteForumByTid(int idInServer, int discuzId);
+  Future<FavoriteForumInDatabase?> getFavoriteForumByFid(int idInServer, int discuzId);
 
   @Query("SELECT * FROM FavoriteForumInDatabase WHERE idKey=:idInServer AND discuz_id=:discuzId LIMIT 1")
-  Stream<FavoriteForumInDatabase?> getFavoriteForumStreamByTid(int idInServer, int discuzId);
+  Stream<FavoriteForumInDatabase?> getFavoriteForumStreamByFid(int idInServer, int discuzId);
 }

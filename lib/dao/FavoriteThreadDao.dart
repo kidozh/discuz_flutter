@@ -1,5 +1,6 @@
 
 
+import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
 import 'package:floor/floor.dart';
 

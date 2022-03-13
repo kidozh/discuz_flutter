@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
+import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
@@ -59,7 +61,7 @@ class DisplayForumSliverStatefulWidget extends StatefulWidget {
 }
 
 class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
-  DisplayForumResult? _displayForumResult;
+  DisplayForumResult _displayForumResult = DisplayForumResult();
   DiscuzError? _error;
   DisplayForumQuery _displayForumQuery = DisplayForumQuery();
   List<ForumThread> _forumThreadList = [];
@@ -108,14 +110,30 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
   // 底部回弹
   bool _bottomBouncing = true;
+  AppDatabase? _db;
+  late Dio dio;
+  late MobileApiClient client;
 
   @override
   void initState() {
     super.initState();
     _controller = EasyRefreshController();
     _scrollController = ScrollController();
+    _loadClient();
     //_invalidateContent();
     // init ad
+  }
+
+  Future<void> _loadClient() async{
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    client = MobileApiClient(dio, baseUrl: discuz.baseURL);
+    setState(() async{
+      _db = await DBHelper.getAppDb();
+    });
+
+
   }
 
   void _invalidateContent() {
@@ -124,6 +142,42 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
     });
     _loadForumContent();
+  }
+
+  void favoriteForum() async{
+
+    _db!.favoriteForumDao.insertFavoriteForum(
+      FavoriteForumInDatabase(null, 0, _displayForumResult.discuzIndexVariables.member_uid,
+          fid, "fid", _displayForumResult.discuzIndexVariables.forum.name,
+          _displayForumResult.discuzIndexVariables.forum.description,
+          DateTime.now(),
+          discuz.id!)
+    );
+    client.favoriteForumActionResult(_displayForumResult.discuzIndexVariables.formHash, fid).then((value){
+      if(value.errorResult!= null && value.errorResult!.key == "do_success"){
+        EasyLoading.showSuccess(S.of(context).discuzOperationMessage(value.errorResult!.key, value.errorResult!.content));
+      }
+      else{
+        EasyLoading.showToast(S.of(context).discuzOperationMessage(value.errorResult!.key, value.errorResult!.content));
+      }
+    });
+  }
+
+  void unfavoriteForum() async{
+    FavoriteForumInDatabase? favoriteForumInDatabase = await _db!.favoriteForumDao.getFavoriteForumByFid(fid, discuz.id!);
+    if(favoriteForumInDatabase!= null){
+      _db!.favoriteForumDao.removeFavoriteForum(favoriteForumInDatabase);
+      client.unfavoriteThreadActionResult(_displayForumResult.discuzIndexVariables.formHash, favoriteForumInDatabase.favid).then((value){
+        if(value.errorResult!= null && value.errorResult!.key == "do_success"){
+          EasyLoading.showSuccess(S.of(context).discuzOperationMessage(value.errorResult!.key, value.errorResult!.content));
+        }
+        else{
+          EasyLoading.showToast(S.of(context).discuzOperationMessage(value.errorResult!.key, value.errorResult!.content));
+        }
+      });
+    }
+
+
   }
 
   void _saveViewHistory(ForumDetail forumDetail) async {
@@ -285,6 +339,30 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       appBar: PlatformAppBar(
         //middle: Text(S.of(context).forumDisplayTitle),
         trailingActions: [
+          if(_db != null)
+            StreamBuilder(
+              stream: _db!.favoriteForumDao.getFavoriteForumStreamByFid(fid,discuz.id!),
+              builder: (context, AsyncSnapshot<FavoriteForumInDatabase?> snapshot){
+                if(snapshot.data == null){
+                  return IconButton(
+                    icon: Icon(Icons.favorite_border),
+                    onPressed: () {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      favoriteForum();
+                    },
+                  );
+                }
+                else{
+                  return IconButton(
+                    icon: Icon(Icons.favorite),
+                    onPressed: () {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      unfavoriteForum();
+                    },
+                  );
+                }
+              },
+            ),
           IconButton(
               icon: Icon(Icons.filter_alt_outlined),
               onPressed: () {
@@ -493,7 +571,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                         Expanded(
                             child: DiscuzHtmlWidget(
                                 discuz,
-                                _displayForumResult!
+                                _displayForumResult
                                     .discuzIndexVariables.forum.description))
                       ],
                     ),

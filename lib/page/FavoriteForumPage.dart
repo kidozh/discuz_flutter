@@ -107,7 +107,7 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget>{
       for(var favoriteForum in FavoriteForumListInServer){
         // save them one by one
         FavoriteForumInDatabase? favoriteForumInDatabase =
-        await this._favoriteForumDao.getFavoriteForumByTid(favoriteForum.id, _discuz.id!);
+        await this._favoriteForumDao.getFavoriteForumByFid(favoriteForum.id, _discuz.id!);
         print("Get FavoriteForum In DB ${FavoriteForumInDatabase}");
         if(favoriteForumInDatabase == null){
           // insert it

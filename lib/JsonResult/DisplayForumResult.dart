@@ -17,7 +17,7 @@ part 'DisplayForumResult.g.dart';
 class DisplayForumResult extends BaseResult{
 
   @JsonKey(name: "Variables")
-  late ForumVariables discuzIndexVariables;
+  ForumVariables discuzIndexVariables = ForumVariables();
 
   DisplayForumResult(){}
 

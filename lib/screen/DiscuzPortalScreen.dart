@@ -106,7 +106,13 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
     Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
     if(discuz != null && discuz.id != null){
       FavoriteForumDao favoriteForumDao = _db.favoriteForumDao;
-      favoriteForumInDbList = await favoriteForumDao.getFavoriteForumList(discuz.id!);
+      favoriteForumDao.getFavoriteForumListStream(discuz.id!).listen((event) {
+        print("Get new event ${event}");
+        setState(() {
+          favoriteForumInDbList = event;
+        });
+      });
+
     }
 
   }
@@ -275,6 +281,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
             )),
       ),
       slivers: <Widget>[
+
         SliverList(delegate: SliverChildBuilderDelegate(
             (context, index){
               return FavoriteForumCardWidget(discuz,user,favoriteForumInDbList[index]);
@@ -309,6 +316,8 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       super.setState(fn);
     }
   }
+
+
 }
 
 class FavoriteForumCardWidget extends StatelessWidget{
@@ -345,5 +354,7 @@ class FavoriteForumCardWidget extends StatelessWidget{
       ),
     );
   }
+
+
 
 }

@@ -230,4 +230,20 @@ abstract class MobileApiClient {
 
   @GET("/api/mobile/index.php?version=4&module=myfavforum")
   Future<FavoriteForumResult> favoriteForumResult(@Query("page") int page);
+
+  @POST(
+      "/api/mobile/index.php?version=4&module=favforum&type=thread&ac=favorite&favoritesubmit=true")
+  @FormUrlEncoded()
+  Future<ApiResult> favoriteForumActionResult(
+      @Field("formhash") String formhash,
+      @Field("id") int fid,
+      );
+
+  @POST(
+      "/api/mobile/index.php?version=4&module=favforum&type=thread&ac=favorite&deletesubmit=true&op=delete")
+  @FormUrlEncoded()
+  Future<ApiResult> unfavoriteForumActionResult(
+      @Field("formhash") String formhash,
+      @Field("favid") int favid,
+      );
 }
