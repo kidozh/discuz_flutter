@@ -73,10 +73,12 @@ class _$AppDatabase extends AppDatabase {
 
   FavoriteThreadDao? _favoriteThreadDaoInstance;
 
+  FavoriteForumDao? _favoriteForumDaoInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 4,
+      version: 5,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -103,6 +105,8 @@ class _$AppDatabase extends AppDatabase {
             'CREATE TABLE IF NOT EXISTS `Smiley` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `code` TEXT NOT NULL, `relativePath` TEXT NOT NULL, `dateTime` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `BlockUser` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `uid` INTEGER NOT NULL, `name` TEXT NOT NULL, `insertTime` INTEGER NOT NULL, `updateTime` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `FavoriteForumInDatabase` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `favid` INTEGER NOT NULL, `uid` INTEGER NOT NULL, `idKey` INTEGER NOT NULL, `idType` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `date` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -140,6 +144,12 @@ class _$AppDatabase extends AppDatabase {
   FavoriteThreadDao get favoriteThreadDao {
     return _favoriteThreadDaoInstance ??=
         _$FavoriteThreadDao(database, changeListener);
+  }
+
+  @override
+  FavoriteForumDao get favoriteForumDao {
+    return _favoriteForumDaoInstance ??=
+        _$FavoriteForumDao(database, changeListener);
   }
 }
 
@@ -897,6 +907,135 @@ class _$FavoriteThreadDao extends FavoriteThreadDao {
   Future<void> removeFavoriteThread(
       FavoriteThreadInDatabase favoriteThreadInDatabase) async {
     await _favoriteThreadInDatabaseDeletionAdapter
+        .delete(favoriteThreadInDatabase);
+  }
+}
+
+class _$FavoriteForumDao extends FavoriteForumDao {
+  _$FavoriteForumDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database, changeListener),
+        _favoriteForumInDatabaseInsertionAdapter = InsertionAdapter(
+            database,
+            'FavoriteForumInDatabase',
+            (FavoriteForumInDatabase item) => <String, Object?>{
+                  'id': item.id,
+                  'favid': item.favid,
+                  'uid': item.uid,
+                  'idKey': item.idKey,
+                  'idType': item.idType,
+                  'title': item.title,
+                  'description': item.description,
+                  'date': _floorDateTimeConverter.encode(item.date),
+                  'discuz_id': item.discuzId
+                },
+            changeListener),
+        _favoriteForumInDatabaseDeletionAdapter = DeletionAdapter(
+            database,
+            'FavoriteForumInDatabase',
+            ['id'],
+            (FavoriteForumInDatabase item) => <String, Object?>{
+                  'id': item.id,
+                  'favid': item.favid,
+                  'uid': item.uid,
+                  'idKey': item.idKey,
+                  'idType': item.idType,
+                  'title': item.title,
+                  'description': item.description,
+                  'date': _floorDateTimeConverter.encode(item.date),
+                  'discuz_id': item.discuzId
+                },
+            changeListener);
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<FavoriteForumInDatabase>
+      _favoriteForumInDatabaseInsertionAdapter;
+
+  final DeletionAdapter<FavoriteForumInDatabase>
+      _favoriteForumInDatabaseDeletionAdapter;
+
+  @override
+  Future<List<FavoriteForumInDatabase>> getFavoriteForumList(
+      int discuzId) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM FavoriteForumInDatabase WHERE discuz_id=?1',
+        mapper: (Map<String, Object?> row) => FavoriteForumInDatabase(
+            row['id'] as int?,
+            row['favid'] as int,
+            row['uid'] as int,
+            row['idKey'] as int,
+            row['idType'] as String,
+            row['title'] as String,
+            row['description'] as String,
+            _floorDateTimeConverter.decode(row['date'] as int),
+            row['discuz_id'] as int),
+        arguments: [discuzId]);
+  }
+
+  @override
+  Stream<List<FavoriteForumInDatabase>> getFavoriteForumListStream(
+      int discuzId) {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM FavoriteForumInDatabase WHERE discuz_id=?1 ORDER BY date DESC',
+        mapper: (Map<String, Object?> row) => FavoriteForumInDatabase(
+            row['id'] as int?,
+            row['favid'] as int,
+            row['uid'] as int,
+            row['idKey'] as int,
+            row['idType'] as String,
+            row['title'] as String,
+            row['description'] as String,
+            _floorDateTimeConverter.decode(row['date'] as int),
+            row['discuz_id'] as int),
+        arguments: [discuzId],
+        queryableName: 'FavoriteForumInDatabase',
+        isView: false);
+  }
+
+  @override
+  Future<FavoriteForumInDatabase?> getFavoriteForumByTid(
+      int idInServer, int discuzId) async {
+    return _queryAdapter.query(
+        'SELECT * FROM FavoriteForumInDatabase WHERE idKey=?1 AND discuz_id=?2  LIMIT 1',
+        mapper: (Map<String, Object?> row) => FavoriteForumInDatabase(row['id'] as int?, row['favid'] as int, row['uid'] as int, row['idKey'] as int, row['idType'] as String, row['title'] as String, row['description'] as String, _floorDateTimeConverter.decode(row['date'] as int), row['discuz_id'] as int),
+        arguments: [idInServer, discuzId]);
+  }
+
+  @override
+  Stream<FavoriteForumInDatabase?> getFavoriteForumStreamByTid(
+      int idInServer, int discuzId) {
+    return _queryAdapter.queryStream(
+        'SELECT * FROM FavoriteForumInDatabase WHERE idKey=?1 AND discuz_id=?2 LIMIT 1',
+        mapper: (Map<String, Object?> row) => FavoriteForumInDatabase(
+            row['id'] as int?,
+            row['favid'] as int,
+            row['uid'] as int,
+            row['idKey'] as int,
+            row['idType'] as String,
+            row['title'] as String,
+            row['description'] as String,
+            _floorDateTimeConverter.decode(row['date'] as int),
+            row['discuz_id'] as int),
+        arguments: [idInServer, discuzId],
+        queryableName: 'FavoriteForumInDatabase',
+        isView: false);
+  }
+
+  @override
+  Future<int> insertFavoriteForum(
+      FavoriteForumInDatabase favoriteThreadInDatabase) {
+    return _favoriteForumInDatabaseInsertionAdapter.insertAndReturnId(
+        favoriteThreadInDatabase, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> removeFavoriteForum(
+      FavoriteForumInDatabase favoriteThreadInDatabase) async {
+    await _favoriteForumInDatabaseDeletionAdapter
         .delete(favoriteThreadInDatabase);
   }
 }

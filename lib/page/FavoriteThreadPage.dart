@@ -91,7 +91,10 @@ class FavoriteThreadState extends State<FavoriteThreadStatefulWidget>{
 
     var dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
     client = MobileApiClient(dio, baseUrl: _discuz.baseURL);
-    _loadDataFromServer();
+    if(_user!= null){
+      _loadDataFromServer();
+    }
+
   }
 
   void _loadDataFromServer() async{
@@ -178,6 +181,32 @@ class FavoriteThreadCardWidget extends StatelessWidget{
     return Card(
       elevation: 2.0,
       child: ListTile(
+        leading: InkWell(
+          child: ClipRRect(
+
+            borderRadius: BorderRadius.circular(10000.0),
+            child: CachedNetworkImage(
+              imageUrl: URLUtils.getAvatarURL(discuz, favoriteThreadInDatabase.spaceUid.toString()),
+              progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+              errorWidget: (context, url, error) =>
+                  CircleAvatar(
+
+                    backgroundColor: CustomizeColor.getColorBackgroundById(favoriteThreadInDatabase.spaceUid),
+                    child: Text(favoriteThreadInDatabase.author.length !=0 ? favoriteThreadInDatabase.author[0].toUpperCase()
+                        : S.of(context).anonymous,
+                        style: TextStyle(color: Colors.white)),
+                  )
+              ,
+            ),
+          ),
+          onTap: () async{
+            VibrationUtils.vibrateWithClickIfPossible();
+            User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+            await Navigator.push(
+                context,
+                platformPageRoute(context:context,builder: (context) => UserProfilePage(discuz,user, favoriteThreadInDatabase.spaceUid)));
+          },
+        ),
         title: Hero(
           tag: ConstUtils.HERO_TAG_THREAD_SUBJECT,
           child: Text(favoriteThreadInDatabase.title, style: Theme.of(context).textTheme.headline6,),

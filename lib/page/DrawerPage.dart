@@ -15,6 +15,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
 import 'BlockUserPage.dart';
+import 'FavoriteForumPage.dart';
 import 'LoginPage.dart';
 import 'ManageAccountPage.dart';
 import 'ManageDiscuzPage.dart';
@@ -133,6 +134,23 @@ class DrawerState extends State<DrawerStatefulWidget>{
                   platformPageRoute(
                       context: context,
                       builder: (context) => FavoriteThreadPage()));
+            }
+
+          },
+        ),
+        ListTile(
+          title: Text(S.of(context).favoriteForum),
+          leading: Icon(PlatformIcons(context).bookmark),
+          onTap: () async {
+            Discuz? discuz =
+                Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+            if(discuz != null){
+              VibrationUtils.vibrateWithClickIfPossible();
+              await Navigator.push(
+                  context,
+                  platformPageRoute(
+                      context: context,
+                      builder: (context) => FavoriteForumPage()));
             }
 
           },

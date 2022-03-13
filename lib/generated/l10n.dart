@@ -3190,6 +3190,16 @@ class S {
       args: [key, content],
     );
   }
+
+  /// `Favorite forums`
+  String get favoriteForum {
+    return Intl.message(
+      'Favorite forums',
+      name: 'favoriteForum',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

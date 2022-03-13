@@ -194,6 +194,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "emptyListDescription": MessageLookupByLibrary.simpleMessage("当前列表为空。"),
         "emptyScreenTitle": MessageLookupByLibrary.simpleMessage("当前列表为空。"),
         "error": MessageLookupByLibrary.simpleMessage("出错了"),
+        "favoriteForum": MessageLookupByLibrary.simpleMessage("收藏的板块"),
         "favoriteThread": MessageLookupByLibrary.simpleMessage("收藏的帖子"),
         "favorites": MessageLookupByLibrary.simpleMessage("收藏"),
         "finishLoginInWeb": MessageLookupByLibrary.simpleMessage("完成登录"),

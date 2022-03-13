@@ -215,6 +215,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "emptyScreenTitle":
             MessageLookupByLibrary.simpleMessage("The content here is empty."),
         "error": MessageLookupByLibrary.simpleMessage("Error"),
+        "favoriteForum":
+            MessageLookupByLibrary.simpleMessage("Favorite forums"),
         "favoriteThread":
             MessageLookupByLibrary.simpleMessage("Favorite threads"),
         "favorites": MessageLookupByLibrary.simpleMessage("Favorites"),

@@ -8,6 +8,7 @@ import 'package:discuz_flutter/JsonResult/CheckPostResult.dart';
 import 'package:discuz_flutter/JsonResult/CheckResult.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
+import 'package:discuz_flutter/JsonResult/FavoriteForumResult.dart';
 import 'package:discuz_flutter/JsonResult/FavoriteThreadResult.dart';
 import 'package:discuz_flutter/JsonResult/HotThreadResult.dart';
 import 'package:discuz_flutter/JsonResult/LoginResult.dart';
@@ -226,4 +227,7 @@ abstract class MobileApiClient {
     @Field("formhash") String formhash,
     @Field("favid") int favid,
   );
+
+  @GET("/api/mobile/index.php?version=4&module=myfavforum")
+  Future<FavoriteForumResult> favoriteForumResult(@Query("page") int page);
 }

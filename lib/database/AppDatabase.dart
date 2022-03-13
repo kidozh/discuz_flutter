@@ -5,12 +5,14 @@ import 'dart:async';
 import 'package:discuz_flutter/converter/FloorDateTimeConverter.dart';
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/dao/DiscuzDao.dart';
+import 'package:discuz_flutter/dao/FavoriteForumDao.dart';
 import 'package:discuz_flutter/dao/FavoriteThreadDao.dart';
 import 'package:discuz_flutter/dao/SmileyDao.dart';
 import 'package:discuz_flutter/dao/UserDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/entity/BlockUser.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
 import 'package:discuz_flutter/entity/Smiley.dart';
 import 'package:discuz_flutter/entity/User.dart';
@@ -22,7 +24,7 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 
 part 'AppDatabase.g.dart'; // the generated code will be there
 
-@Database(version: 4, entities: [User, Discuz, ViewHistory, FavoriteThreadInDatabase, Smiley, BlockUser])
+@Database(version: 5, entities: [User, Discuz, ViewHistory, FavoriteThreadInDatabase, Smiley, BlockUser, FavoriteForumInDatabase])
 abstract class AppDatabase extends FloorDatabase {
   UserDao get userDao;
   DiscuzDao get discuzDao;
@@ -30,6 +32,7 @@ abstract class AppDatabase extends FloorDatabase {
   SmileyDao get smileyDao;
   BlockUserDao get blockUserDao;
   FavoriteThreadDao get favoriteThreadDao;
+  FavoriteForumDao get favoriteForumDao;
 
   static final migration1to2 = Migration(1, 2, (database) async {
     await database.execute('CREATE TABLE IF NOT EXISTS `Smiley` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `code` TEXT NOT NULL, `relativePath` TEXT NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
@@ -45,6 +48,11 @@ abstract class AppDatabase extends FloorDatabase {
   static final migration3to4 = Migration(3, 4, (database) async {
     // add block user
     await database.execute('CREATE TABLE IF NOT EXISTS `BlockUser` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `uid` INTEGER NOT NULL, `name` TEXT NOT NULL, `insertTime` INTEGER NOT NULL, `updateTime` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
+  });
+
+  static final migration4to5 = Migration(4, 5, (database) async {
+    // add block user
+    await database.execute('CREATE TABLE IF NOT EXISTS `FavoriteForumInDatabase` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `favid` INTEGER NOT NULL, `uid` INTEGER NOT NULL, `idKey` INTEGER NOT NULL, `idType` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `date` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
   });
 
 }

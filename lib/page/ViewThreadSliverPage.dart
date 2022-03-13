@@ -479,7 +479,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       // save rewrite rule
       if (value.threadVariables.rewriteRule != null) {
         // save rewrite url in database
-        RewriteRule rewriteRule = value.threadVariables.rewriteRule!;
+        RewriteRule rewriteRule = value.threadVariables.rewriteRule;
         if (rewriteRule.forumDisplay.isNotEmpty) {
           RewriteRuleUtils.putForumDisplayRule(
               discuz, rewriteRule.forumDisplay);
