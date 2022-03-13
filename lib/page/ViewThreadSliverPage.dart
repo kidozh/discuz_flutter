@@ -548,7 +548,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
               builder: (context, AsyncSnapshot<FavoriteThreadInDatabase?> snapshot){
                 if(snapshot.data == null){
                   return IconButton(
-                    icon: Icon(Icons.star_border),
+                    icon: Icon(Icons.favorite_border),
                     onPressed: () {
                       VibrationUtils.vibrateWithClickIfPossible();
                       favoriteThread();
@@ -557,7 +557,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                 }
                 else{
                   return IconButton(
-                    icon: Icon(Icons.star),
+                    icon: Icon(Icons.favorite),
                     onPressed: () {
                       VibrationUtils.vibrateWithClickIfPossible();
                       unfavoriteThread();
