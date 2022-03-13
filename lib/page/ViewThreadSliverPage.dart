@@ -898,7 +898,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                                   color: Theme.of(context).primaryColor),
                                               ButtonState.loading: IconedButton(
                                                 //text: S.of(context).progressButtonReplySending,
-                                                  color: Theme.of(context).accentColor),
+                                                  color: Theme.of(context).colorScheme.secondary),
                                               ButtonState.fail: IconedButton(
                                                 //text: S.of(context).progressButtonReplyFailed,
                                                   icon: Icon(Icons.cancel,
