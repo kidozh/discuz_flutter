@@ -480,5 +480,20 @@
   },
   "preventAbuseUser": "No objectionable content and abusive action",
   "preventAbuseUserDescription": "There is no tolerance for objectionable content and abusive users",
-  "termsOfUseDescription": "You should agree to terms of services before using the application."
+  "termsOfUseDescription": "You should agree to terms of services before using the application.",
+  "noFavoriteThreadInDb": "No favorite thread is stored in your device",
+  "syncSuccessfullyWithServer": "All {num} favorite threads are synced from the server.",
+  "@syncSuccessfullyWithServer": {
+    "placeholders": {
+      "num": {}
+    }
+  },
+  "favoriteThread": "Favorite threads",
+  "discuzOperationMessage": "{content}({key})",
+  "@discuzOperationMessage": {
+    "placeholders": {
+      "key": {},
+      "content": {}
+    }
+  }
 }

@@ -3150,6 +3150,46 @@ class S {
       args: [],
     );
   }
+
+  /// `No favorite thread is stored in your device`
+  String get noFavoriteThreadInDb {
+    return Intl.message(
+      'No favorite thread is stored in your device',
+      name: 'noFavoriteThreadInDb',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All {num} favorite threads are synced from the server.`
+  String syncSuccessfullyWithServer(Object num) {
+    return Intl.message(
+      'All $num favorite threads are synced from the server.',
+      name: 'syncSuccessfullyWithServer',
+      desc: '',
+      args: [num],
+    );
+  }
+
+  /// `Favorite threads`
+  String get favoriteThread {
+    return Intl.message(
+      'Favorite threads',
+      name: 'favoriteThread',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{content}({key})`
+  String discuzOperationMessage(Object key, Object content) {
+    return Intl.message(
+      '$content($key)',
+      name: 'discuzOperationMessage',
+      desc: '',
+      args: [key, content],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

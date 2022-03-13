@@ -71,6 +71,8 @@ class _$AppDatabase extends AppDatabase {
 
   BlockUserDao? _blockUserDaoInstance;
 
+  FavoriteThreadDao? _favoriteThreadDaoInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
@@ -132,6 +134,12 @@ class _$AppDatabase extends AppDatabase {
   @override
   BlockUserDao get blockUserDao {
     return _blockUserDaoInstance ??= _$BlockUserDao(database, changeListener);
+  }
+
+  @override
+  FavoriteThreadDao get favoriteThreadDao {
+    return _favoriteThreadDaoInstance ??=
+        _$FavoriteThreadDao(database, changeListener);
   }
 }
 
@@ -746,6 +754,150 @@ class _$BlockUserDao extends BlockUserDao {
   @override
   Future<int> deleteBlockUser(BlockUser blockUser) {
     return _blockUserDeletionAdapter.deleteAndReturnChangedRows(blockUser);
+  }
+}
+
+class _$FavoriteThreadDao extends FavoriteThreadDao {
+  _$FavoriteThreadDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database, changeListener),
+        _favoriteThreadInDatabaseInsertionAdapter = InsertionAdapter(
+            database,
+            'FavoriteThreadInDatabase',
+            (FavoriteThreadInDatabase item) => <String, Object?>{
+                  'id': item.id,
+                  'favid': item.favid,
+                  'uid': item.uid,
+                  'idInServer': item.idInServer,
+                  'idType': item.idType,
+                  'spaceUid': item.spaceUid,
+                  'title': item.title,
+                  'description': item.description,
+                  'author': item.author,
+                  'replies': item.replies,
+                  'date': _floorDateTimeConverter.encode(item.date),
+                  'discuz_id': item.discuzId
+                },
+            changeListener),
+        _favoriteThreadInDatabaseDeletionAdapter = DeletionAdapter(
+            database,
+            'FavoriteThreadInDatabase',
+            ['id'],
+            (FavoriteThreadInDatabase item) => <String, Object?>{
+                  'id': item.id,
+                  'favid': item.favid,
+                  'uid': item.uid,
+                  'idInServer': item.idInServer,
+                  'idType': item.idType,
+                  'spaceUid': item.spaceUid,
+                  'title': item.title,
+                  'description': item.description,
+                  'author': item.author,
+                  'replies': item.replies,
+                  'date': _floorDateTimeConverter.encode(item.date),
+                  'discuz_id': item.discuzId
+                },
+            changeListener);
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<FavoriteThreadInDatabase>
+      _favoriteThreadInDatabaseInsertionAdapter;
+
+  final DeletionAdapter<FavoriteThreadInDatabase>
+      _favoriteThreadInDatabaseDeletionAdapter;
+
+  @override
+  Future<List<FavoriteThreadInDatabase>> getFavoriteThreadList(
+      int discuzId) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM FavoriteThreadInDatabase WHERE discuz_id=?1',
+        mapper: (Map<String, Object?> row) => FavoriteThreadInDatabase(
+            row['id'] as int?,
+            row['favid'] as int,
+            row['uid'] as int,
+            row['idInServer'] as int,
+            row['idType'] as String,
+            row['spaceUid'] as int,
+            row['title'] as String,
+            row['description'] as String,
+            row['author'] as String,
+            row['replies'] as int,
+            _floorDateTimeConverter.decode(row['date'] as int),
+            row['discuz_id'] as int),
+        arguments: [discuzId]);
+  }
+
+  @override
+  Stream<List<FavoriteThreadInDatabase>> getFavoriteThreadListStream(
+      int discuzId) {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM FavoriteThreadInDatabase WHERE discuz_id=?1 ORDER BY date DESC',
+        mapper: (Map<String, Object?> row) => FavoriteThreadInDatabase(
+            row['id'] as int?,
+            row['favid'] as int,
+            row['uid'] as int,
+            row['idInServer'] as int,
+            row['idType'] as String,
+            row['spaceUid'] as int,
+            row['title'] as String,
+            row['description'] as String,
+            row['author'] as String,
+            row['replies'] as int,
+            _floorDateTimeConverter.decode(row['date'] as int),
+            row['discuz_id'] as int),
+        arguments: [discuzId],
+        queryableName: 'FavoriteThreadInDatabase',
+        isView: false);
+  }
+
+  @override
+  Future<FavoriteThreadInDatabase?> getFavoriteThreadByTid(
+      int idInServer, int discuzId) async {
+    return _queryAdapter.query(
+        'SELECT * FROM FavoriteThreadInDatabase WHERE idInServer=?1 AND discuz_id=?2  LIMIT 1',
+        mapper: (Map<String, Object?> row) => FavoriteThreadInDatabase(row['id'] as int?, row['favid'] as int, row['uid'] as int, row['idInServer'] as int, row['idType'] as String, row['spaceUid'] as int, row['title'] as String, row['description'] as String, row['author'] as String, row['replies'] as int, _floorDateTimeConverter.decode(row['date'] as int), row['discuz_id'] as int),
+        arguments: [idInServer, discuzId]);
+  }
+
+  @override
+  Stream<FavoriteThreadInDatabase?> getFavoriteThreadStreamByTid(
+      int idInServer, int discuzId) {
+    return _queryAdapter.queryStream(
+        'SELECT * FROM FavoriteThreadInDatabase WHERE idInServer=?1 AND discuz_id=?2 LIMIT 1',
+        mapper: (Map<String, Object?> row) => FavoriteThreadInDatabase(
+            row['id'] as int?,
+            row['favid'] as int,
+            row['uid'] as int,
+            row['idInServer'] as int,
+            row['idType'] as String,
+            row['spaceUid'] as int,
+            row['title'] as String,
+            row['description'] as String,
+            row['author'] as String,
+            row['replies'] as int,
+            _floorDateTimeConverter.decode(row['date'] as int),
+            row['discuz_id'] as int),
+        arguments: [idInServer, discuzId],
+        queryableName: 'FavoriteThreadInDatabase',
+        isView: false);
+  }
+
+  @override
+  Future<int> insertFavoriteThread(
+      FavoriteThreadInDatabase favoriteThreadInDatabase) {
+    return _favoriteThreadInDatabaseInsertionAdapter.insertAndReturnId(
+        favoriteThreadInDatabase, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> removeFavoriteThread(
+      FavoriteThreadInDatabase favoriteThreadInDatabase) async {
+    await _favoriteThreadInDatabaseDeletionAdapter
+        .delete(favoriteThreadInDatabase);
   }
 }
 

@@ -4,12 +4,12 @@ import 'package:discuz_flutter/dao/UserDao.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/page/FavoriteThreadPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
@@ -116,6 +116,23 @@ class DrawerState extends State<DrawerStatefulWidget>{
                   platformPageRoute(
                       context: context,
                       builder: (context) => ViewHistoryPage(discuz)));
+            }
+
+          },
+        ),
+        ListTile(
+          title: Text(S.of(context).favoriteThread),
+          leading: Icon(PlatformIcons(context).favoriteSolid),
+          onTap: () async {
+            Discuz? discuz =
+                Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+            if(discuz != null){
+              VibrationUtils.vibrateWithClickIfPossible();
+              await Navigator.push(
+                  context,
+                  platformPageRoute(
+                      context: context,
+                      builder: (context) => FavoriteThreadPage()));
             }
 
           },

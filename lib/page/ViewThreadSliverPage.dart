@@ -5,7 +5,9 @@ import 'package:discuz_flutter/JsonResult/SmileyResult.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
+import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
 import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/entity/Smiley.dart';
 import 'package:discuz_flutter/entity/User.dart';
@@ -94,6 +96,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   ViewThreadQuery viewThreadQuery = ViewThreadQuery();
   Map<String, List<Comment>> postCommentList = {};
   final FocusNode _focusNode = FocusNode();
+  AppDatabase? _db;
 
   // smiley=1, extra=2 or none = 0
   int dialogStatus = 0;
@@ -143,6 +146,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     super.initState();
     _controller = EasyRefreshController();
     _scrollController = ScrollController();
+    _loadClient();
 
     _loadPreference();
     //_invalidateContent();
@@ -199,6 +203,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   void _loadPreference() async {
     ignoreFontCustomization =
         await UserPreferencesUtils.getDisableFontCustomizationPreference();
+    setState(() async {
+      _db = await DBHelper.getAppDb();
+    });
+
   }
 
   void _saveViewHistory(DetailedThreadInfo threadInfo, String contents) async {
@@ -212,8 +220,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     }
 
     // prepare database
-    final db = await DBHelper.getAppDb();
-    ViewHistoryDao viewHistoryDao = db.viewHistoryDao;
+
+    ViewHistoryDao viewHistoryDao = _db!.viewHistoryDao;
 
     ViewHistory insertViewHistory = ViewHistory(
         null,
@@ -349,6 +357,58 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     });
   }
 
+  late Dio dio;
+  late MobileApiClient client;
+
+  Future<void> _loadClient() async{
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    client = MobileApiClient(dio, baseUrl: discuz.baseURL);
+
+  }
+
+  void favoriteThread() async{
+
+    _db!.favoriteThreadDao.insertFavoriteThread(
+        FavoriteThreadInDatabase(null, 1, _viewThreadResult.threadVariables.member_uid,
+            tid,
+            "tid",
+            _viewThreadResult.threadVariables.threadInfo.authorId,
+            _viewThreadResult.threadVariables.threadInfo.subject,
+            "",
+            _viewThreadResult.threadVariables.threadInfo.author,
+            _viewThreadResult.threadVariables.threadInfo.replies,
+            DateTime.now(),
+            discuz.id!)
+    );
+    client.favoriteThreadActionResult(_viewThreadResult.threadVariables.formHash, tid).then((value){
+      if(value.errorResult!= null && value.errorResult!.key == "do_success"){
+        EasyLoading.showSuccess(S.of(context).discuzOperationMessage(value.errorResult!.key, value.errorResult!.content));
+      }
+      else{
+        EasyLoading.showToast(S.of(context).discuzOperationMessage(value.errorResult!.key, value.errorResult!.content));
+      }
+    });
+  }
+
+  void unfavoriteThread() async{
+    FavoriteThreadInDatabase? favoriteThreadInDatabase = await _db!.favoriteThreadDao.getFavoriteThreadByTid(tid, discuz.id!);
+    if(favoriteThreadInDatabase!= null){
+      _db!.favoriteThreadDao.removeFavoriteThread(favoriteThreadInDatabase);
+      client.unfavoriteThreadActionResult(_viewThreadResult.threadVariables.formHash, favoriteThreadInDatabase.favid).then((value){
+        if(value.errorResult!= null && value.errorResult!.key == "do_success"){
+          EasyLoading.showSuccess(S.of(context).discuzOperationMessage(value.errorResult!.key, value.errorResult!.content));
+        }
+        else{
+          EasyLoading.showToast(S.of(context).discuzOperationMessage(value.errorResult!.key, value.errorResult!.content));
+        }
+      });
+    }
+
+
+  }
+
   Future<void> _loadForumContent() async {
     // check the availability
     log("Base url ${discuz.baseURL} ${_page}");
@@ -482,11 +542,37 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             : Text(_viewThreadResult.threadVariables.threadInfo.subject,
                 overflow: TextOverflow.ellipsis),
         trailingActions: [
+          if(_db != null)
+            StreamBuilder(
+              stream: _db!.favoriteThreadDao.getFavoriteThreadStreamByTid(tid,discuz.id!),
+              builder: (context, AsyncSnapshot<FavoriteThreadInDatabase?> snapshot){
+                if(snapshot.data == null){
+                  return IconButton(
+                    icon: Icon(Icons.star_border),
+                    onPressed: () {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      favoriteThread();
+                    },
+                  );
+                }
+                else{
+                  return IconButton(
+                    icon: Icon(Icons.star),
+                    onPressed: () {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      unfavoriteThread();
+                    },
+                  );
+                }
+              },
+            ),
+
           IconButton(
             icon: Icon(viewThreadQuery.timeAscend
                 ? PlatformIcons(context).upArrow
                 : PlatformIcons(context).downArrow),
             onPressed: () {
+              VibrationUtils.vibrateWithClickIfPossible();
               viewThreadQuery.timeAscend = !viewThreadQuery.timeAscend;
               setNewViewThreadQuery(viewThreadQuery);
             },

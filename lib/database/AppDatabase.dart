@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:discuz_flutter/converter/FloorDateTimeConverter.dart';
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/dao/DiscuzDao.dart';
+import 'package:discuz_flutter/dao/FavoriteThreadDao.dart';
 import 'package:discuz_flutter/dao/SmileyDao.dart';
 import 'package:discuz_flutter/dao/UserDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
@@ -28,6 +29,7 @@ abstract class AppDatabase extends FloorDatabase {
   ViewHistoryDao get viewHistoryDao;
   SmileyDao get smileyDao;
   BlockUserDao get blockUserDao;
+  FavoriteThreadDao get favoriteThreadDao;
 
   static final migration1to2 = Migration(1, 2, (database) async {
     await database.execute('CREATE TABLE IF NOT EXISTS `Smiley` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `code` TEXT NOT NULL, `relativePath` TEXT NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');

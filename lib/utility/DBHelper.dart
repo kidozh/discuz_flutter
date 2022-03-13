@@ -14,7 +14,6 @@ class DBHelper {
     String path = p.join(directory.toString(),appDBName);
 
     final appDb = await $FloorAppDatabase.databaseBuilder(path)
-
         .addMigrations([AppDatabase.migration1to2, AppDatabase.migration2to3, AppDatabase.migration3to4])
         .build();
 

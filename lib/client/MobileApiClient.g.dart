@@ -187,7 +187,7 @@ class _MobileApiClient implements MobileApiClient {
         _setStreamType<ViewThreadResult>(
             Options(method: 'GET', headers: _headers, extra: _extra)
                 .compose(_dio.options,
-                    '/api/mobile/index.php?version=4&module=viewthread',
+                    '/api/mobile/index.php?version=4&module=viewthread&ppp=15',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ViewThreadResult.fromJson(_result.data!);
@@ -201,12 +201,12 @@ class _MobileApiClient implements MobileApiClient {
     queryParameters.addAll(queries);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'GET', headers: _headers, extra: _extra)
-        .compose(
-            _dio.options, '/api/mobile/index.php?version=4&module=viewthread',
-            queryParameters: queryParameters, data: _data)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(
+        Options(method: 'GET', headers: _headers, extra: _extra)
+            .compose(_dio.options,
+                '/api/mobile/index.php?version=4&module=viewthread&ppp=15',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }
@@ -627,6 +627,46 @@ class _MobileApiClient implements MobileApiClient {
             queryParameters: queryParameters, data: _data)
         .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
+    return value;
+  }
+
+  @override
+  Future<ApiResult> favoriteThreadActionResult(formhash, tid) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = {'formhash': formhash, 'id': tid};
+    final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
+        ApiResult>(Options(
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded')
+        .compose(_dio.options,
+            '/api/mobile/index.php?version=4&module=favthread&type=thread&ac=favorite&favoritesubmit=true',
+            queryParameters: queryParameters, data: _data)
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ApiResult.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<ApiResult> unfavoriteThreadActionResult(formhash, favid) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = {'formhash': formhash, 'favid': favid};
+    final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
+        ApiResult>(Options(
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded')
+        .compose(_dio.options,
+            '/api/mobile/index.php?version=4&module=favthread&type=thread&ac=favorite&deletesubmit=true&op=delete',
+            queryParameters: queryParameters, data: _data)
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ApiResult.fromJson(_result.data!);
     return value;
   }
 
