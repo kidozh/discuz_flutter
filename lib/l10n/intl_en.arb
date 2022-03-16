@@ -432,7 +432,7 @@
   "websiteNotLogined": "You haven't login in the website, please try after you actually login.",
   "networkFailed": "Network failed.",
   "checkUserLoginStatus": "Check user status...",
-  "iosDarkModeDisabledText": "Dark mode will not be enabled running on iOS platform mode.",
+  "iosDarkModeDisabledText": "Display mode can not be adjusted manually when running on iOS platform mode.",
   "uploadImageToServerDialogTitle": "Upload the file to Discuz server.",
   "savedSmileyTabTitle": "Recently used",
   "noSmileyFoundInDB": "Try to use the first smiley?",

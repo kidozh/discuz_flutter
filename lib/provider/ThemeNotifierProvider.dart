@@ -42,6 +42,8 @@ class ThemeNotifierProvider with ChangeNotifier{
 
   Brightness? get brightness => _brightnessPreference;
 
+  //Brightness? get brightness => null;
+
 
 
 

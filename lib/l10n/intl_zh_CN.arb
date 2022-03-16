@@ -432,7 +432,7 @@
   "websiteNotLogined": "在网页中没有完成登录，请登陆后点击右上方登录按钮完成录入。",
   "networkFailed": "网络访问失败。",
   "checkUserLoginStatus": "正在检查用户登录状态。。。",
-  "iosDarkModeDisabledText": "处于iOS运行平台偏好下，深色显示模式将被禁用。",
+  "iosDarkModeDisabledText": "处于iOS运行平台偏好下，您的颜色模式将会跟随系统，不可以手动调节。",
   "uploadImageToServerDialogTitle": "向论坛上传图片",
   "savedSmileyTabTitle": "最近使用",
   "noSmileyFoundInDB": "要不使用一个表情包？",

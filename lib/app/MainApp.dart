@@ -83,17 +83,26 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeNotifierProvider>(
       builder: (context, themeColorEntity, _){
         print("Change brightness ${themeColorEntity.brightness}");
+        Brightness? systemBrightness = null;
+        if(WidgetsBinding.instance!=null){
+          final brightness = MediaQueryData.fromWindow(WidgetsBinding.instance!.window).platformBrightness;
+          log("Get system brightness ${brightness}");
+          systemBrightness = brightness;
+        }
+
+
         // check whether ios
-        // if(themeColorEntity.platformName == "ios"){
-        //   themeColorEntity.setBrightness(Brightness.light);
-        // }
-        // else if(themeColorEntity.platformName == "" && Platform.isIOS){
-        //   themeColorEntity.setBrightness(Brightness.light);
-        // }
+        if(themeColorEntity.platformName == "ios"){
+          themeColorEntity.setBrightness(systemBrightness);
+        }
+        else if(themeColorEntity.platformName == "" && Platform.isIOS){
+          themeColorEntity.setBrightness(systemBrightness);
+        }
 
 
         final materialTheme = ThemeData(
           brightness: themeColorEntity.brightness,
+
           cupertinoOverrideTheme: CupertinoThemeData(
             primaryColor: themeColorEntity.themeColor,
             brightness: themeColorEntity.brightness
@@ -128,7 +137,7 @@ class MyApp extends StatelessWidget {
             child: PlatformProvider(
               initialPlatform: getTargetPlatformByName(initialPlatform),
               settings: PlatformSettingsData(
-                iosUsesMaterialWidgets: true,
+                iosUsesMaterialWidgets: false,
 
               ),
               builder: (context){
@@ -136,7 +145,6 @@ class MyApp extends StatelessWidget {
                   //title: S.of(context).appName,
                   debugShowCheckedModeBanner: false,
                   material: (_,__)=> MaterialAppData(
-
                       theme: materialTheme,
                       darkTheme: ThemeData(
                         primaryColor: themeColorEntity.themeColor,
@@ -145,9 +153,11 @@ class MyApp extends StatelessWidget {
                       )
                   ),
                   cupertino: (_,__) => CupertinoAppData(
+
                     theme: CupertinoThemeData(
+
                       primaryColor: themeColorEntity.themeColor,
-                      // brightness: Brightness.light
+                      brightness: systemBrightness == null? Brightness.light: systemBrightness
                     ),
 
                   ),

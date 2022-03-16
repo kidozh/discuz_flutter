@@ -2861,10 +2861,10 @@ class S {
     );
   }
 
-  /// `Dark mode will not be enabled running on iOS platform mode.`
+  /// `Display mode can not be adjusted manually when running on iOS platform mode.`
   String get iosDarkModeDisabledText {
     return Intl.message(
-      'Dark mode will not be enabled running on iOS platform mode.',
+      'Display mode can not be adjusted manually when running on iOS platform mode.',
       name: 'iosDarkModeDisabledText',
       desc: '',
       args: [],
