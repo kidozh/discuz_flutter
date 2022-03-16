@@ -132,6 +132,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "chooseDiscuz": MessageLookupByLibrary.simpleMessage("选择一个论坛"),
         "chooseThemeTitle": MessageLookupByLibrary.simpleMessage("主题颜色"),
         "clearAllViewHistories": MessageLookupByLibrary.simpleMessage("清除历史记录"),
+        "collapseItem": MessageLookupByLibrary.simpleMessage("已折叠内容"),
         "colorAmber": MessageLookupByLibrary.simpleMessage("琥珀色"),
         "colorBlack": MessageLookupByLibrary.simpleMessage("黑色"),
         "colorBlue": MessageLookupByLibrary.simpleMessage("蓝色"),

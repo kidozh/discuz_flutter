@@ -496,5 +496,6 @@
       "content": {}
     }
   },
-  "favoriteForum": "收藏的板块"
+  "favoriteForum": "收藏的板块",
+  "collapseItem": "已折叠内容"
 }

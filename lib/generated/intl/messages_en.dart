@@ -144,6 +144,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "chooseThemeTitle": MessageLookupByLibrary.simpleMessage("Theme color"),
         "clearAllViewHistories":
             MessageLookupByLibrary.simpleMessage("Clear all histories"),
+        "collapseItem":
+            MessageLookupByLibrary.simpleMessage("Collapse content"),
         "colorAmber": MessageLookupByLibrary.simpleMessage("Amber"),
         "colorBlack": MessageLookupByLibrary.simpleMessage("Black"),
         "colorBlue": MessageLookupByLibrary.simpleMessage("Blue"),

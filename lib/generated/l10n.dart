@@ -3200,6 +3200,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Collapse content`
+  String get collapseItem {
+    return Intl.message(
+      'Collapse content',
+      name: 'collapseItem',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -42,6 +42,32 @@ class DiscuzHtmlWidget extends StatelessWidget{
     await trustHostDao.insertTrustHost(TrustHost(null, host));
   }
 
+  String replaceCollapseTag(String string){
+    //log("Recv html $string");
+    string = string.replaceAllMapped(RegExp(r"\[collapse(|=(.*?))]"), (match){
+      log("Get match string ${match.groupCount} ${match.group(0)}");
+      if(match.groupCount == 2){
+        String title = match.group(1)!;
+        if(title.startsWith("=")){
+          title = title.replaceFirst("=", "");
+        }
+        log("Recv matched message ${match.group(1)} $title");
+        return '<collapse title="$title">';
+      }
+      else{
+        return "<collapse title="">";
+      }
+    });
+    string = string.replaceAll(RegExp(r"\[/collapse.*?\]"), r"</collapse>");
+
+    return string;
+  }
+
+  String getDecodedString(){
+    String decodedString = replaceCollapseTag(this.html);
+    return decodedString;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +81,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
         double paragraphFontSize = themeFontSize == null ? 14 : themeFontSize;
         return Html(
 
-          data: "<p>$html</p>",
+          data: "<p>${this.getDecodedString()}</p>",
           navigationDelegateForIframe: (NavigationRequest request) {
             return NavigationDecision.navigate;
           },
@@ -284,7 +310,6 @@ class DiscuzHtmlWidget extends StatelessWidget{
 
 
           },
-          shrinkWrap: true,
           onImageError: (e,s){
 
           },
@@ -297,6 +322,26 @@ class DiscuzHtmlWidget extends StatelessWidget{
               );
             }
           },
+          customRender: {
+            "collapse":(RenderContext context, Widget child){
+              String title = S.of(context.buildContext).collapseItem;
+              if(context.tree.element?.attributes["title"] != null){
+                title = context.tree.element!.attributes["title"]!;
+              }
+
+              return ExpansionTile(
+                  title: Text(title),
+                  controlAffinity: ListTileControlAffinity.platform,
+                  children: [
+                    child
+                  ],
+                  collapsedBackgroundColor: Theme.of(context.buildContext).colorScheme.primary,
+                  collapsedTextColor: Theme.of(context.buildContext).colorScheme.onPrimary,
+                  collapsedIconColor: Theme.of(context.buildContext).colorScheme.onPrimary,
+              );
+            }
+          },
+          tagsList: Html.tags..addAll(["collapse"]),
         );
       }),
 

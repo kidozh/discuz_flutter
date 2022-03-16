@@ -496,5 +496,6 @@
       "content": {}
     }
   },
-  "favoriteForum": "Favorite forums"
+  "favoriteForum": "Favorite forums",
+  "collapseItem": "Collapse content"
 }

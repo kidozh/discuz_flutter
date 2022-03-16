@@ -203,8 +203,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   void _loadPreference() async {
     ignoreFontCustomization =
         await UserPreferencesUtils.getDisableFontCustomizationPreference();
-    setState(() async {
-      _db = await DBHelper.getAppDb();
+    var db = await DBHelper.getAppDb();
+    setState(() {
+      _db = db;
     });
 
   }
