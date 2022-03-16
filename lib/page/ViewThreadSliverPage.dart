@@ -544,34 +544,34 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                 overflow: TextOverflow.ellipsis),
         trailingActions: [
           if(_db != null)
-            StreamBuilder(
-              stream: _db!.favoriteThreadDao.getFavoriteThreadStreamByTid(tid,discuz.id!),
-              builder: (context, AsyncSnapshot<FavoriteThreadInDatabase?> snapshot){
-                if(snapshot.data == null){
-                  return IconButton(
-                    icon: Icon(Icons.favorite_border),
-                    onPressed: () {
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      favoriteThread();
-                    },
-                  );
+          IconButton(
+              onPressed: () async{
+                VibrationUtils.vibrateWithClickIfPossible();
+                FavoriteThreadInDatabase? favoriteThreadInDatabase = await _db!.favoriteThreadDao.getFavoriteThreadByTid(tid, discuz.id!);
+                if(favoriteThreadInDatabase == null){
+                  favoriteThread();
                 }
                 else{
-                  return IconButton(
-                    icon: Icon(Icons.favorite),
-                    onPressed: () {
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      unfavoriteThread();
-                    },
-                  );
+                  unfavoriteThread();
                 }
               },
-            ),
+              icon: StreamBuilder(
+                stream: _db!.favoriteThreadDao.getFavoriteThreadStreamByTid(tid,discuz.id!),
+                builder: (context, AsyncSnapshot<FavoriteThreadInDatabase?> snapshot){
+                  if(snapshot.data == null){
+                    return Icon(Icons.favorite_border,size: 24,);
+                  }
+                  else{
+                    return Icon(Icons.favorite,size: 24);
+                  }
+                },
+              )),
+
 
           IconButton(
             icon: Icon(viewThreadQuery.timeAscend
                 ? PlatformIcons(context).upArrow
-                : PlatformIcons(context).downArrow),
+                : PlatformIcons(context).downArrow, size: 24,),
             onPressed: () {
               VibrationUtils.vibrateWithClickIfPossible();
               viewThreadQuery.timeAscend = !viewThreadQuery.timeAscend;
