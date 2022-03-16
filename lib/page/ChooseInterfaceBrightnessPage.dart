@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -15,6 +17,12 @@ class ChooseInterfaceBrightnessPage extends StatefulWidget {
 class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPage> {
 
   String _selectedBrightnessName = "";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
 
 
@@ -34,9 +42,6 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
     else{
       _selectedBrightnessName = "";
     }
-
-
-
 
     return PlatformScaffold(
       appBar: PlatformAppBar(
