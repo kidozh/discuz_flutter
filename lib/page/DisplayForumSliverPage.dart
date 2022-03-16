@@ -345,7 +345,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
               builder: (context, AsyncSnapshot<FavoriteForumInDatabase?> snapshot){
                 if(snapshot.data == null){
                   return IconButton(
-                    icon: Icon(Icons.favorite_border),
+                    icon: Icon(Icons.favorite_border,size: 24),
                     onPressed: () {
                       VibrationUtils.vibrateWithClickIfPossible();
                       favoriteForum();
@@ -354,7 +354,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 }
                 else{
                   return IconButton(
-                    icon: Icon(Icons.favorite),
+                    icon: Icon(Icons.favorite,size: 24),
                     onPressed: () {
                       VibrationUtils.vibrateWithClickIfPossible();
                       unfavoriteForum();
@@ -364,13 +364,13 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
               },
             ),
           IconButton(
-              icon: Icon(Icons.filter_alt_outlined),
+              icon: Icon(Icons.filter_alt_outlined,size: 24),
               onPressed: () {
                 VibrationUtils.vibrateWithClickIfPossible();
                 _showForumFilterBottomSheet(context);
               }),
           IconButton(
-              icon: Icon(PlatformIcons(context).helpOutline),
+              icon: Icon(PlatformIcons(context).helpOutline,size: 24),
               onPressed: () {
                 VibrationUtils.vibrateWithClickIfPossible();
                 _showInformationBottomSheet(context);

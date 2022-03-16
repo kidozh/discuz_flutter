@@ -84,12 +84,12 @@ class MyApp extends StatelessWidget {
       builder: (context, themeColorEntity, _){
         print("Change brightness ${themeColorEntity.brightness}");
         // check whether ios
-        if(themeColorEntity.platformName == "ios"){
-          themeColorEntity.setBrightness(Brightness.light);
-        }
-        else if(themeColorEntity.platformName == "" && Platform.isIOS){
-          themeColorEntity.setBrightness(Brightness.light);
-        }
+        // if(themeColorEntity.platformName == "ios"){
+        //   themeColorEntity.setBrightness(Brightness.light);
+        // }
+        // else if(themeColorEntity.platformName == "" && Platform.isIOS){
+        //   themeColorEntity.setBrightness(Brightness.light);
+        // }
 
 
         final materialTheme = ThemeData(
@@ -130,8 +130,6 @@ class MyApp extends StatelessWidget {
               settings: PlatformSettingsData(
                 iosUsesMaterialWidgets: true,
 
-
-
               ),
               builder: (context){
                 return  PlatformApp(
@@ -149,7 +147,7 @@ class MyApp extends StatelessWidget {
                   cupertino: (_,__) => CupertinoAppData(
                     theme: CupertinoThemeData(
                       primaryColor: themeColorEntity.themeColor,
-                      brightness: Brightness.light
+                      // brightness: Brightness.light
                     ),
 
                   ),
@@ -423,27 +421,27 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         items: [
           BottomNavigationBarItem(
               icon: new Icon(CupertinoIcons.today),
-              //activeIcon: Icon(CupertinoIcons.today),
+              activeIcon: Icon(CupertinoIcons.today_fill),
               label: S.of(context).sitePage),
           BottomNavigationBarItem(
-              icon: new Icon(Icons.amp_stories_outlined),
-              activeIcon: Icon(Icons.amp_stories),
+              icon: new Icon(CupertinoIcons.bubble_left_bubble_right),
+              activeIcon: Icon(CupertinoIcons.bubble_left_bubble_right_fill),
               label: S.of(context).index),
           BottomNavigationBarItem(
-              icon: new Icon(Icons.explore_outlined),
-              activeIcon: Icon(Icons.explore),
+              icon: new Icon(CupertinoIcons.compass),
+              activeIcon: Icon(CupertinoIcons.compass_fill),
               label: S.of(context).dashboard),
           BottomNavigationBarItem(
-              icon: new Icon(CupertinoIcons.bell),
-              activeIcon: Icon(CupertinoIcons.bell_fill),
+              icon: new Icon(CupertinoIcons.square_stack_3d_down_right),
+              activeIcon: Icon(CupertinoIcons.square_stack_3d_down_right_fill),
               label: S.of(context).notification),
           // BottomNavigationBarItem(
           //     icon: new Icon(Icons.stars_outlined),
           //     activeIcon: Icon(Icons.stars),
           //     label: S.of(context).favorites),
           BottomNavigationBarItem(
-              icon: new Icon(Icons.message_outlined),
-              activeIcon: Icon(Icons.message_rounded),
+              icon: new Icon(CupertinoIcons.ellipses_bubble),
+              activeIcon: Icon(CupertinoIcons.ellipses_bubble_fill),
               label: S.of(context).chatMessage),
         ],
 
