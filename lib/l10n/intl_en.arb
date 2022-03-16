@@ -497,5 +497,12 @@
     }
   },
   "favoriteForum": "Favorite forums",
-  "collapseItem": "Collapse content"
+  "collapseItem": "Collapse content",
+  "brokenCountDown": "Invalid count down timer",
+  "countDownEnd": "The count down is finished.",
+  "countDownTimeZoneNotify": "This count down timezone shall be in Asia/Shanghai and might differ from your timezone",
+  "day": "D",
+  "hour": "H",
+  "minute": "M",
+  "second": "S"
 }

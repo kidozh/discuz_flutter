@@ -497,5 +497,12 @@
     }
   },
   "favoriteForum": "收藏的板块",
-  "collapseItem": "已折叠内容"
+  "collapseItem": "已折叠内容",
+  "brokenCountDown": "无效的倒数指令",
+  "countDownEnd": "倒计时已过期。",
+  "countDownTimeZoneNotify": "此倒计时很有可能是北京时间，如果您不处于东八区，那么此倒计时很有可能不准确",
+  "day": "天",
+  "hour": "时",
+  "minute": "分",
+  "second": "秒"
 }

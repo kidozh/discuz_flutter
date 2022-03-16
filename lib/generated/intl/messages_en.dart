@@ -127,6 +127,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Cute yellow Minions"),
         "brightnessDark": MessageLookupByLibrary.simpleMessage("Dark"),
         "brightnessLight": MessageLookupByLibrary.simpleMessage("Light"),
+        "brokenCountDown":
+            MessageLookupByLibrary.simpleMessage("Invalid count down timer"),
         "bugTestSubtitle": MessageLookupByLibrary.simpleMessage(
             "You can directly email us via kidozh@gmail.com. Thank you for your help!"),
         "bugTestTitle":
@@ -181,6 +183,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "continueToDo": MessageLookupByLibrary.simpleMessage("Continue"),
         "continueToTest":
             MessageLookupByLibrary.simpleMessage("Continue to take a bite"),
+        "countDownEnd":
+            MessageLookupByLibrary.simpleMessage("The count down is finished."),
+        "countDownTimeZoneNotify": MessageLookupByLibrary.simpleMessage(
+            "This count down timezone shall be in Asia/Shanghai and might differ from your timezone"),
         "credit": MessageLookupByLibrary.simpleMessage("Credit"),
         "customStatusTitle":
             MessageLookupByLibrary.simpleMessage("Custom title"),
@@ -189,6 +195,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "The version is not permanent and your data may get lost in upgrading process."),
         "dataBackupInTestTitle":
             MessageLookupByLibrary.simpleMessage("Data backup"),
+        "day": MessageLookupByLibrary.simpleMessage("D"),
         "dayAgo": m3,
         "dayLater": m4,
         "deleteAccount": MessageLookupByLibrary.simpleMessage("Delete"),
@@ -277,6 +284,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "groupInfoDescription": m11,
         "habit": MessageLookupByLibrary.simpleMessage("Habits"),
         "homepage": MessageLookupByLibrary.simpleMessage("Homepage"),
+        "hour": MessageLookupByLibrary.simpleMessage("H"),
         "hourAgo": m12,
         "hourLater": m13,
         "httpBrowseWarn":
@@ -334,6 +342,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "materialDesign":
             MessageLookupByLibrary.simpleMessage("Material Design"),
         "me": MessageLookupByLibrary.simpleMessage("Me"),
+        "minute": MessageLookupByLibrary.simpleMessage("M"),
         "minuteAgo": m15,
         "minuteLater": m16,
         "more": MessageLookupByLibrary.simpleMessage("More"),
@@ -450,6 +459,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "savePictureToDevice": MessageLookupByLibrary.simpleMessage("Save"),
         "savedSmileyTabTitle":
             MessageLookupByLibrary.simpleMessage("Recently used"),
+        "second": MessageLookupByLibrary.simpleMessage("S"),
         "seeAllReplies":
             MessageLookupByLibrary.simpleMessage("View all replies"),
         "selectUserNull": MessageLookupByLibrary.simpleMessage(

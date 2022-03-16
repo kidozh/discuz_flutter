@@ -23,6 +23,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:slide_countdown/slide_countdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart' hide NavigationRequest,NavigationDecision;
 
@@ -45,17 +46,17 @@ class DiscuzHtmlWidget extends StatelessWidget{
   String replaceCollapseTag(String string){
     //log("Recv html $string");
     string = string.replaceAllMapped(RegExp(r"\[collapse(|=(.*?))]"), (match){
-      log("Get match string ${match.groupCount} ${match.group(0)}");
+      //log("Get match string ${match.groupCount} ${match.group(0)}");
       if(match.groupCount == 2){
         String title = match.group(1)!;
         if(title.startsWith("=")){
           title = title.replaceFirst("=", "");
         }
-        log("Recv matched message ${match.group(1)} $title");
+        //log("Recv matched message ${match.group(1)} $title");
         return '<collapse title="$title">';
       }
       else{
-        return "<collapse title="">";
+        return '<collapse>';
       }
     });
     string = string.replaceAll(RegExp(r"\[/collapse.*?\]"), r"</collapse>");
@@ -63,8 +64,29 @@ class DiscuzHtmlWidget extends StatelessWidget{
     return string;
   }
 
+  String replaceSpoilTag(String string){
+    string = string
+        .replaceAll(RegExp(r"\[spoil.*?\]"), r'<spoil>')
+        .replaceAll(RegExp(r"\[/spoil\]"), r"</spoil>");
+
+    return string;
+  }
+
+  String replaceCountDownTag(String string){
+    string = string.replaceAllMapped(RegExp(r"\[micxp_countdown.*?\](.*?)\[/micxp_countdown\]"), (match) {
+      if(match.groupCount == 1){
+        return '<countdown time="${match.group(1)}"></countdown>';
+      }
+      return "";
+    });
+    return string;
+  }
+
   String getDecodedString(){
     String decodedString = replaceCollapseTag(this.html);
+    decodedString = replaceSpoilTag(decodedString);
+    decodedString = replaceCountDownTag(decodedString);
+    log("decode string ${decodedString}");
     return decodedString;
   }
 
@@ -339,9 +361,75 @@ class DiscuzHtmlWidget extends StatelessWidget{
                   collapsedTextColor: Theme.of(context.buildContext).colorScheme.onPrimary,
                   collapsedIconColor: Theme.of(context.buildContext).colorScheme.onPrimary,
               );
+            },
+            "spoil":(RenderContext context, Widget child){
+              log("get spoil tag ${child}");
+              String title = S.of(context.buildContext).collapseItem;
+              if(context.tree.element?.attributes["title"] != null){
+                title = context.tree.element!.attributes["title"]!;
+              }
+
+              return ExpansionTile(
+                title: Text(title),
+                controlAffinity: ListTileControlAffinity.platform,
+                children: [
+                  child
+                ],
+                collapsedBackgroundColor: Theme.of(context.buildContext).colorScheme.primary,
+                collapsedTextColor: Theme.of(context.buildContext).colorScheme.onPrimary,
+                collapsedIconColor: Theme.of(context.buildContext).colorScheme.onPrimary,
+              );
+            },
+            "countdown": (RenderContext renderContext, Widget child){
+              String timeString = "";
+              if(renderContext.tree.element?.attributes["time"] != null){
+                timeString = renderContext.tree.element!.attributes["time"]!;
+                DateTime? datetime = DateTime.tryParse(timeString);
+
+                if(datetime!=null){
+
+                  // most of them located in Asia/Shanghai
+                  Duration duration = datetime.difference(DateTime.now());
+
+                  log("get time string ${timeString} ${datetime}");
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 32),
+                    child: ListTile(
+                      leading: Icon(Icons.timer),
+                      title: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SlideCountdown(
+                            duration: duration,
+                            textStyle: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.bold),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(20)),
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            separatorType: SeparatorType.title,
+                            durationTitle: DurationTitle(
+                              days: S.of(context).day,
+                              hours:S.of(context).hour,
+                              minutes:S.of(context).minute,
+                              seconds:S.of(context).second,
+                            ),
+                          )
+                        ],
+                      ),
+                      subtitle: DateTime.now().timeZoneOffset != Duration(hours: 8)? Text(S.of(context).countDownTimeZoneNotify): null,
+                    ),
+                  );
+                }
+                else{
+                  return Text(S.of(renderContext.buildContext).brokenCountDown);
+                }
+              }
+              else{
+                return Text(S.of(renderContext.buildContext).brokenCountDown);
+              }
             }
           },
-          tagsList: Html.tags..addAll(["collapse"]),
+          tagsList: Html.tags..addAll(["collapse", "spoil","countdown"]),
         );
       }),
 

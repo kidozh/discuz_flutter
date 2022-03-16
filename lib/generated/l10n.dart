@@ -3210,6 +3210,76 @@ class S {
       args: [],
     );
   }
+
+  /// `Invalid count down timer`
+  String get brokenCountDown {
+    return Intl.message(
+      'Invalid count down timer',
+      name: 'brokenCountDown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The count down is finished.`
+  String get countDownEnd {
+    return Intl.message(
+      'The count down is finished.',
+      name: 'countDownEnd',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This count down timezone shall be in Asia/Shanghai and might differ from your timezone`
+  String get countDownTimeZoneNotify {
+    return Intl.message(
+      'This count down timezone shall be in Asia/Shanghai and might differ from your timezone',
+      name: 'countDownTimeZoneNotify',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `D`
+  String get day {
+    return Intl.message(
+      'D',
+      name: 'day',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `H`
+  String get hour {
+    return Intl.message(
+      'H',
+      name: 'hour',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `M`
+  String get minute {
+    return Intl.message(
+      'M',
+      name: 'minute',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `S`
+  String get second {
+    return Intl.message(
+      'S',
+      name: 'second',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
