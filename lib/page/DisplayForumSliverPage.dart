@@ -402,7 +402,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         ],
         title: _displayForumResult == null
             ? Text(S.of(context).forumDisplayTitle,overflow: TextOverflow.ellipsis)
-            : Text(_displayForumResult!.discuzIndexVariables.forum.name,overflow: TextOverflow.ellipsis),
+            : Text(_displayForumResult.discuzIndexVariables.forum.name,overflow: TextOverflow.ellipsis),
       ),
       body: EasyRefresh.custom(
         enableControlFinishRefresh: true,
@@ -507,10 +507,10 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
               childCount: 1,
             )),
           // check with sub forum
-          if(_displayForumResult!= null && _displayForumResult!.discuzIndexVariables.subForumList.isNotEmpty)
+          if(_displayForumResult!= null && _displayForumResult.discuzIndexVariables.subForumList.isNotEmpty)
             SliverList(delegate: SliverChildBuilderDelegate(
                 (context, index){
-                    var subForum = _displayForumResult!.discuzIndexVariables.subForumList[index];
+                    var subForum = _displayForumResult.discuzIndexVariables.subForumList[index];
                     return Card(
                       color: Theme.of(context).primaryColor,
                       child: ListTile(
@@ -527,7 +527,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       ),
                     );
                 },
-                childCount: _displayForumResult!.discuzIndexVariables.subForumList.length
+                childCount: _displayForumResult.discuzIndexVariables.subForumList.length
               )
             ),
           SliverList(
@@ -537,7 +537,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 return Column(
                   children: [
                     ForumThreadWidget(discuz, user, _forumThreadList[index],
-                        _displayForumResult!.discuzIndexVariables.threadType),
+                        _displayForumResult.discuzIndexVariables.threadType),
                   ],
                 );
               },
@@ -588,8 +588,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                         Expanded(
                             child: DiscuzHtmlWidget(
                                 discuz,
-                                _displayForumResult!
-                                    .discuzIndexVariables.forum.rules))
+                                _displayForumResult.discuzIndexVariables.forum.rules))
                       ],
                     )
                   ],
@@ -603,9 +602,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   void _showForumFilterBottomSheet(BuildContext context) {
     List<ThreadTypeInfo> threadTypeList = [];
     if (_displayForumResult != null &&
-        _displayForumResult!.discuzIndexVariables.threadType != null) {
+        _displayForumResult.discuzIndexVariables.threadType != null) {
       ThreadType threadType =
-          _displayForumResult!.discuzIndexVariables.threadType!;
+          _displayForumResult.discuzIndexVariables.threadType!;
       //Map<String, String> idNameMap = threadType.idNameMap;
       threadTypeList = threadType.getThreadTypeList();
     }

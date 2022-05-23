@@ -1,11 +1,9 @@
 import 'dart:core';
-import 'dart:core';
 import 'dart:developer';
 import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:discuz_flutter/JsonResult/ErrorResult.dart';
 
 part 'BaseVariableResult.g.dart';
 
@@ -14,7 +12,7 @@ class BaseVariableResult{
   @JsonKey(name:"cookiepre")
   String cookiepre = "";
   @JsonKey(name:"auth")
-  String? auth = null;
+  String? auth;
   String getAuth(){
     if(this.auth == null){
       return "";
@@ -88,7 +86,7 @@ class NoticeCount{
     return int.parse(newmypost);
   }
 
-  NoticeCount(){}
+  NoticeCount();
 
   factory NoticeCount.fromJson(Map<String, dynamic> json) => _$NoticeCountFromJson(json);
   Map<String, dynamic> toJson() => _$NoticeCountToJson(this);

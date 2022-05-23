@@ -84,11 +84,9 @@ class MyApp extends StatelessWidget {
       builder: (context, themeColorEntity, _){
         print("Change brightness ${themeColorEntity.brightness}");
         Brightness? systemBrightness = null;
-        if(WidgetsBinding.instance!=null){
-          final brightness = MediaQueryData.fromWindow(WidgetsBinding.instance!.window).platformBrightness;
-          log("Get system brightness ${brightness}");
-          systemBrightness = brightness;
-        }
+        final brightness = MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness;
+        log("Get system brightness ${brightness}");
+        systemBrightness = brightness;
 
 
         // check whether ios
@@ -225,7 +223,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     _initDb();
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
     _checkAcceptVersionFlag(context);
   }
 
@@ -246,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    WidgetsBinding.instance?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
 
   }
@@ -254,7 +252,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   void didChangePlatformBrightness() {
     super.didChangePlatformBrightness();
-    final Brightness? brightness = WidgetsBinding.instance?.window.platformBrightness;
+    final Brightness? brightness = WidgetsBinding.instance.window.platformBrightness;
     if (brightness != null && Provider.of<ThemeNotifierProvider>(context).brightness == null){
       Provider.of<ThemeNotifierProvider>(context).setBrightness(brightness);
     }

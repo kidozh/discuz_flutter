@@ -108,6 +108,9 @@ class DiscuzHtmlWidget extends StatelessWidget{
             return NavigationDecision.navigate;
           },
           style: {
+            "*": Style(
+              fontSize: FontSize(paragraphFontSize*scalingParameter),
+            ),
             ".reply_wrap" :Style(
               //backgroundColor: MediaQuery.of(context).platformBrightness == Brightness.light ? Colors.grey.shade200: Colors.grey.shade600,
               backgroundColor: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade200: Colors.grey.shade600,
@@ -118,13 +121,13 @@ class DiscuzHtmlWidget extends StatelessWidget{
             ),
             "p":Style(
               fontStyle: Theme.of(context).textTheme.bodyText2?.fontStyle,
-              fontSize: FontSize(paragraphFontSize*scalingParameter),
+              //fontSize: FontSize(paragraphFontSize*scalingParameter),
               //fontSize: scalingParameter <= 1.0? FontSize(Theme.of(context).textTheme.bodyText2?.fontSize): FontSize(14*scalingParameter),
 
             ),
             "a":Style(
               color: Theme.of(context).primaryColor,
-              fontSize: FontSize(paragraphFontSize*scalingParameter),
+              //fontSize: FontSize(paragraphFontSize*scalingParameter),
             )
 
           },

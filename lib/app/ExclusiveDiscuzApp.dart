@@ -60,7 +60,7 @@ class ExclusiveDiscuzApp extends StatelessWidget{
         if(getTargetPlatformByName(platformName) == TargetPlatform.iOS || (getTargetPlatformByName(platformName) == null && Platform.isIOS) ){
           // if in cupertino environment we need to automatically adjust the environment
           // get system first
-          Brightness sysBrightness = MediaQueryData.fromWindow(WidgetsBinding.instance!.window).platformBrightness;
+          Brightness sysBrightness = MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness;
           log("current system brightness ${sysBrightness}");
           selectedBrightness = sysBrightness;
 

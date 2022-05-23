@@ -217,8 +217,8 @@ class PostState extends State<PostStatefulWidget> {
                     Padding(
                       padding: EdgeInsets.all(4.0),
                       child: Container(
-                        width: 30.0 * typesetting.scalingParameter,
-                        height: 30.0 * typesetting.scalingParameter,
+                        width: 30.0 ,
+                        height: 30.0 ,
                         child: InkWell(
                           child: CachedNetworkImage(
                             imageUrl: URLUtils.getSmallAvatarURL(
@@ -286,7 +286,7 @@ class PostState extends State<PostStatefulWidget> {
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize:
-                                          14 * typesetting.scalingParameter)),
+                                          14)),
                                   if (_authorId == _post.authorId)
                                     TextSpan(
                                         text: ' ' + S.of(context).postAuthorLabel,
@@ -294,7 +294,7 @@ class PostState extends State<PostStatefulWidget> {
                                             fontWeight: FontWeight.bold,
                                             color: Theme.of(context).primaryColor,
                                             fontSize:
-                                            14 * typesetting.scalingParameter)),
+                                            14)),
                                 ],
                               ),
                             ),
@@ -303,7 +303,7 @@ class PostState extends State<PostStatefulWidget> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.w400,
                                     fontSize:
-                                    12 * typesetting.scalingParameter),)
+                                    12),)
                           ],
                         ),
                         Spacer(),
@@ -312,7 +312,7 @@ class PostState extends State<PostStatefulWidget> {
                             padding: EdgeInsets.only(right: 4.0),
                             child: Icon(
                               Icons.smartphone,
-                              size: 16 * typesetting.scalingParameter,
+                              size: 16,
                             ),
                           ),
                         Padding(
@@ -321,7 +321,7 @@ class PostState extends State<PostStatefulWidget> {
                             S.of(context).postPosition(_post.position),
                             style: TextStyle(
                                 fontWeight: FontWeight.w400,
-                                fontSize: 12 * typesetting.scalingParameter),
+                                fontSize: 12),
                           ),
                         ),
                         if(_user !=  null)
