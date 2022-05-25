@@ -1,6 +1,7 @@
 
 
 import 'package:discuz_flutter/dao/UserDao.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
@@ -8,7 +9,6 @@ import 'package:discuz_flutter/page/LoginPage.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -76,9 +76,9 @@ class ManageAccountState extends State<ManageAccountStateWidget>{
   }
 
   void _initDb() async {
-    final db = await DBHelper.getAppDb();
-    setState(() {
-      _userDao = db.userDao;
+
+    setState(() async{
+      _userDao = await AppDatabase.getUserDao();
     });
 
   }
@@ -140,7 +140,7 @@ class ManageAccountState extends State<ManageAccountStateWidget>{
     // TODO: implement build
     if(_userDao != null){
       return StreamBuilder(
-          stream: _userDao!.findAllUsersStreamByDiscuzId(discuz.id!),
+          stream: _userDao!.findAllUsersStreamByDiscuz(discuz),
           builder: (BuildContext context, AsyncSnapshot<List<User>> snapshot){
             List<User>? userList = snapshot.data;
             if(userList == null || userList.isEmpty){

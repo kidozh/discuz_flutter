@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
+import 'package:discuz_flutter/dao/FavoriteForumDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
@@ -12,7 +13,6 @@ import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/page/InternalWebviewBrowserPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/EmptyScreen.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -110,7 +110,6 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
   // 底部回弹
   bool _bottomBouncing = true;
-  AppDatabase? _db;
   late Dio dio;
   late MobileApiClient client;
 
@@ -120,8 +119,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     _controller = EasyRefreshController();
     _scrollController = ScrollController();
     _loadClient();
-    //_invalidateContent();
-    // init ad
+    _loadFavoriteDao();
   }
 
   Future<void> _loadClient() async{
@@ -129,10 +127,12 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     client = MobileApiClient(dio, baseUrl: discuz.baseURL);
-    setState(() async{
-      _db = await DBHelper.getAppDb();
-    });
+  }
 
+  void _loadFavoriteDao() async{
+    setState(() async{
+      favoriteForumDao = await AppDatabase.getFavoriteForumDao();
+    });
 
   }
 
@@ -145,13 +145,13 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   }
 
   void favoriteForum() async{
-
-    _db!.favoriteForumDao.insertFavoriteForum(
-      FavoriteForumInDatabase(null, 0, _displayForumResult.discuzIndexVariables.member_uid,
+    FavoriteForumDao favoriteForumDao = await AppDatabase.getFavoriteForumDao();
+    favoriteForumDao.insertFavoriteForum(
+      FavoriteForumInDatabase(0, _displayForumResult.discuzIndexVariables.member_uid,
           fid, "fid", _displayForumResult.discuzIndexVariables.forum.name,
           _displayForumResult.discuzIndexVariables.forum.description,
           DateTime.now(),
-          discuz.id!)
+          discuz)
     );
     client.favoriteForumActionResult(_displayForumResult.discuzIndexVariables.formHash, fid).then((value){
       if(value.errorResult!= null && value.errorResult!.key == "do_success"){
@@ -164,9 +164,11 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   }
 
   void unfavoriteForum() async{
-    FavoriteForumInDatabase? favoriteForumInDatabase = await _db!.favoriteForumDao.getFavoriteForumByFid(fid, discuz.id!);
+    FavoriteForumDao favoriteForumDao = await AppDatabase.getFavoriteForumDao();
+
+    FavoriteForumInDatabase? favoriteForumInDatabase = favoriteForumDao.getFavoriteForumByFid(fid, discuz);
     if(favoriteForumInDatabase!= null){
-      _db!.favoriteForumDao.removeFavoriteForum(favoriteForumInDatabase);
+      favoriteForumDao.removeFavoriteForum(favoriteForumInDatabase);
       client.unfavoriteThreadActionResult(_displayForumResult.discuzIndexVariables.formHash, favoriteForumInDatabase.favid).then((value){
         if(value.errorResult!= null && value.errorResult!.key == "do_success"){
           EasyLoading.showSuccess(S.of(context).discuzOperationMessage(value.errorResult!.key, value.errorResult!.content));
@@ -184,14 +186,14 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     // check if needed
     bool allowViewHistory =
         await UserPreferencesUtils.getRecordHistoryEnabled();
+    final dao = await AppDatabase.getViewHistoryDao();
     if (!allowViewHistory) {
       historySaved = true;
       return;
     } else {
-      final db = await DBHelper.getAppDb();
-      final dao = db.viewHistoryDao;
-      ViewHistory? viewHistory =
-          await dao.forumExistInDatabase(discuz.id!, fid);
+
+
+      ViewHistory? viewHistory = dao.forumExistInDatabase(discuz, fid);
       print("Found forum $viewHistory");
       if (viewHistory == null) {
         // show rule
@@ -199,12 +201,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       }
     }
 
-    // prepare database
-    final db = await DBHelper.getAppDb();
-    ViewHistoryDao viewHistoryDao = db.viewHistoryDao;
-
     ViewHistory insertViewHistory = ViewHistory(
-        null,
         forumDetail.name,
         forumDetail.description,
         forumDetail.rules,
@@ -212,9 +209,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         forumDetail.fid,
         "",
         0,
-        discuz.id!,
+        discuz,
         DateTime.now());
-    int primaryKey = await viewHistoryDao.insertViewHistory(insertViewHistory);
+    int primaryKey = await dao.insertViewHistory(insertViewHistory);
     print("save history with primary key ${primaryKey}");
     historySaved = true;
   }
@@ -331,6 +328,8 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     });
   }
 
+  FavoriteForumDao? favoriteForumDao;
+
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
@@ -339,9 +338,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       appBar: PlatformAppBar(
         //middle: Text(S.of(context).forumDisplayTitle),
         trailingActions: [
-          if(_db != null)
+          if(favoriteForumDao != null)
             StreamBuilder(
-              stream: _db!.favoriteForumDao.getFavoriteForumStreamByFid(fid,discuz.id!),
+              stream: favoriteForumDao!.getFavoriteForumStreamByFid(fid,discuz),
               builder: (context, AsyncSnapshot<FavoriteForumInDatabase?> snapshot){
                 if(snapshot.data == null){
                   return IconButton(

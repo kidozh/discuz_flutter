@@ -13,7 +13,6 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/utility/ConstUtils.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
@@ -64,7 +63,6 @@ class FavoriteThreadState extends State<FavoriteThreadStatefulWidget>{
   late User? _user;
 
   // database
-  late AppDatabase db;
   late FavoriteThreadDao _favoriteThreadDao;
   Stream<List<FavoriteThreadInDatabase>> _streamInDb = Stream.fromIterable([]);
   int progress = 0;
@@ -83,10 +81,10 @@ class FavoriteThreadState extends State<FavoriteThreadStatefulWidget>{
   }
 
   void _loadDb() async{
-    db = await DBHelper.getAppDb();
-    _favoriteThreadDao = db.favoriteThreadDao;
+
+    _favoriteThreadDao = await AppDatabase.getFavoriteThreadDao();
     setState(() {
-      _streamInDb = _favoriteThreadDao.getFavoriteThreadListStream(_discuz.id!);
+      _streamInDb = _favoriteThreadDao.getFavoriteThreadListStream(_discuz);
     });
 
     var dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
@@ -114,7 +112,7 @@ class FavoriteThreadState extends State<FavoriteThreadStatefulWidget>{
       for(var favoriteThread in favoriteThreadListInServer){
         // save them one by one
         FavoriteThreadInDatabase? favoriteThreadInDatabase =
-        await this._favoriteThreadDao.getFavoriteThreadByTid(favoriteThread.id, _discuz.id!);
+        await this._favoriteThreadDao.getFavoriteThreadByTid(favoriteThread.id, _discuz);
         print("Get favoriteThread In DB ${favoriteThreadInDatabase}");
         if(favoriteThreadInDatabase == null){
           // insert it

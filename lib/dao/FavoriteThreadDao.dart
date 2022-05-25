@@ -1,27 +1,66 @@
 
-
-import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
-import 'package:floor/floor.dart';
+import 'package:hive/hive.dart';
 
-@dao
-abstract class FavoriteThreadDao{
-  @Query("SELECT * FROM FavoriteThreadInDatabase WHERE discuz_id=:discuzId")
-  Future<List<FavoriteThreadInDatabase>> getFavoriteThreadList(int discuzId);
+import '../entity/Discuz.dart';
 
-  @Query("SELECT * FROM FavoriteThreadInDatabase WHERE discuz_id=:discuzId ORDER BY date DESC")
-  Stream<List<FavoriteThreadInDatabase>> getFavoriteThreadListStream(int discuzId);
+class FavoriteThreadDao{
+  Box<FavoriteThreadInDatabase> favoriteThreadBox;
+
+  FavoriteThreadDao(this.favoriteThreadBox);
+
+  List<FavoriteThreadInDatabase> getFavoriteThreadList(Discuz discuz){
+    return favoriteThreadBox.values.where((element) => element.discuz == discuz).toList();
+  }
 
 
-  @Insert(onConflict: OnConflictStrategy.replace)
-  Future<int> insertFavoriteThread(FavoriteThreadInDatabase favoriteThreadInDatabase);
+  Stream<List<FavoriteThreadInDatabase>> getFavoriteThreadListStream(Discuz discuz){
+    return favoriteThreadBox.watch().map((event) => favoriteThreadBox.values.where((element) => element.discuz == discuz).toList());
+  }
 
-  @delete
-  Future<void> removeFavoriteThread(FavoriteThreadInDatabase favoriteThreadInDatabase);
+  Future<int> insertFavoriteThread(FavoriteThreadInDatabase favoriteThreadInDatabase){
+    return favoriteThreadBox.add(favoriteThreadInDatabase);
+  }
 
-  @Query("SELECT * FROM FavoriteThreadInDatabase WHERE idInServer=:idInServer AND discuz_id=:discuzId  LIMIT 1")
-  Future<FavoriteThreadInDatabase?> getFavoriteThreadByTid(int idInServer, int discuzId);
+  Future<void> removeFavoriteThread(FavoriteThreadInDatabase favoriteThreadInDatabase) async{
+    favoriteThreadBox.values.where((element) => element == favoriteThreadInDatabase).forEach((element) {
+      favoriteThreadBox.delete(favoriteThreadInDatabase.key);
+    });
+  }
 
-  @Query("SELECT * FROM FavoriteThreadInDatabase WHERE idInServer=:idInServer AND discuz_id=:discuzId LIMIT 1")
-  Stream<FavoriteThreadInDatabase?> getFavoriteThreadStreamByTid(int idInServer, int discuzId);
+  FavoriteThreadInDatabase? getFavoriteThreadByTid(int idInServer, Discuz discuz){
+    if(favoriteThreadBox.values.where((element) => element.idInServer == idInServer && element.discuz == discuz).isNotEmpty){
+      return favoriteThreadBox.values.where((element) => element.idInServer == idInServer && element.discuz == discuz).first;
+    }
+    else{
+      return null;
+    }
+  }
+
+  Stream<FavoriteThreadInDatabase?> getFavoriteThreadStreamByTid(int idInServer, Discuz discuz){
+    return favoriteThreadBox.watch().map((event) => favoriteThreadBox.values.where((element) => element.idInServer == idInServer && element.discuz == discuz).first);
+  }
+
 }
+
+// @dao
+// abstract class FavoriteThreadDao{
+//   @Query("SELECT * FROM FavoriteThreadInDatabase WHERE discuz_id=:discuzId")
+//   Future<List<FavoriteThreadInDatabase>> getFavoriteThreadList(int discuzId);
+//
+//   @Query("SELECT * FROM FavoriteThreadInDatabase WHERE discuz_id=:discuzId ORDER BY date DESC")
+//   Stream<List<FavoriteThreadInDatabase>> getFavoriteThreadListStream(int discuzId);
+//
+//
+//   @Insert(onConflict: OnConflictStrategy.replace)
+//   Future<int> insertFavoriteThread(FavoriteThreadInDatabase favoriteThreadInDatabase);
+//
+//   @delete
+//   Future<void> removeFavoriteThread(FavoriteThreadInDatabase favoriteThreadInDatabase);
+//
+//   @Query("SELECT * FROM FavoriteThreadInDatabase WHERE idInServer=:idInServer AND discuz_id=:discuzId  LIMIT 1")
+//   Future<FavoriteThreadInDatabase?> getFavoriteThreadByTid(int idInServer, int discuzId);
+//
+//   @Query("SELECT * FROM FavoriteThreadInDatabase WHERE idInServer=:idInServer AND discuz_id=:discuzId LIMIT 1")
+//   Stream<FavoriteThreadInDatabase?> getFavoriteThreadStreamByTid(int idInServer, int discuzId);
+// }

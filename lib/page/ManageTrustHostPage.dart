@@ -1,21 +1,13 @@
 
 
-import 'package:discuz_flutter/dao/DiscuzDao.dart';
 import 'package:discuz_flutter/dao/TrustHostDao.dart';
-import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/TrustHost.dart';
-import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
-import 'package:discuz_flutter/page/AddDiscuzPage.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
-import 'package:discuz_flutter/screen/NullUserScreen.dart';
-import 'package:discuz_flutter/utility/CustomizeColor.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 
 class ManageTrustHostPage extends StatelessWidget{
 
@@ -71,9 +63,9 @@ class ManageTrustHostState extends State<ManageTrustHostStateWidget>{
   }
 
   void _initDb() async {
-    final db = await DBHelper.getTrustHostDb();
-    setState(() {
-      _trustHostDao = db.trustHostDatabaseDao;
+
+    setState(() async {
+      _trustHostDao = await AppDatabase.getTrustHostDao();
     });
 
   }
@@ -94,7 +86,7 @@ class ManageTrustHostState extends State<ManageTrustHostStateWidget>{
                 itemBuilder: (context, index){
                   TrustHost trustHost = list[index];
                   return Dismissible(
-                    key: Key(trustHost.id.toString()),
+                    key: Key(trustHost.key),
                     child: Column(
                       children: [
                         ListTile(

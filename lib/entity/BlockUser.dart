@@ -1,31 +1,25 @@
 
 
-import 'package:discuz_flutter/converter/FloorDateTimeConverter.dart';
-import 'package:floor/floor.dart';
+import 'package:hive/hive.dart';
 
+import '../utility/ConstUtils.dart';
 import 'Discuz.dart';
 
-@Entity(
-    foreignKeys:[
-      ForeignKey(
-          childColumns: ["discuz_id"],
-          parentColumns: ["id"],
-          entity: Discuz,
-          onDelete: ForeignKeyAction.cascade)
-    ]
-)
-@TypeConverters([FloorDateTimeConverter])
-class BlockUser{
-  @PrimaryKey(autoGenerate: true)
-  final int? id;
-  int uid;
-  String name;
+part 'BlockUser.g.dart';
 
+@HiveType(typeId: ConstUtils.HIVE_TYPE_ID_BLOCK_USER)
+class BlockUser extends HiveObject{
+  @HiveField(1)
+  int uid;
+  @HiveField(2)
+  String name;
+  @HiveField(3)
   DateTime insertTime = DateTime.now();
+  @HiveField(4)
   DateTime updateTime;
 
-  @ColumnInfo(name: "discuz_id")
-  final int discuzId;
+  @HiveField(5)
+  Discuz discuz;
 
-  BlockUser(this.id,this.uid, this.name, this.discuzId, this.updateTime);
+  BlockUser(this.uid, this.name, this.updateTime, this.discuz);
 }

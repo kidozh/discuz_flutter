@@ -1,6 +1,7 @@
 
 
 import 'package:discuz_flutter/dao/UserDao.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
@@ -11,7 +12,6 @@ import 'package:discuz_flutter/screen/ConfigurationScreen.dart';
 import 'package:discuz_flutter/screen/DiscuzPortalScreen.dart';
 import 'package:discuz_flutter/screen/HotThreadScreen.dart';
 import 'package:discuz_flutter/screen/NotificationScreen.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -54,13 +54,12 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
 
   void _initDb() async {
     Provider.of<DiscuzAndUserNotifier>(context, listen: false).setDiscuz(_discuz);
-    final db = await DBHelper.getAppDb();
-    _userDao = db.userDao;
-    await _setFirstUserInDiscuz(_discuz.id!);
+    _userDao = await AppDatabase.getUserDao();
+    await _setFirstUserInDiscuz(_discuz);
   }
 
-  Future<void> _setFirstUserInDiscuz(int discuzId) async{
-    List<User> userList = await _userDao.findAllUsersByDiscuzId(discuzId);
+  Future<void> _setFirstUserInDiscuz(Discuz discuz) async{
+    List<User> userList = await _userDao.findAllUsersByDiscuz(discuz);
     if(userList.isNotEmpty && userList.length > 0){
       print("find a user in the database ${userList.length}");
       Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(userList.last);

@@ -59,7 +59,6 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
         Provider.of<TypeSettingNotifierProvider>(context, listen: false)
             .scalingParameter;
     Discuz mockedDiscuz = Discuz(
-        0,
         "https://bbs.nwpu.edu.cn",
         "4",
         "utf8",

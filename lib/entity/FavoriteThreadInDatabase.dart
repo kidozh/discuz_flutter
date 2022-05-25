@@ -1,41 +1,39 @@
-import 'package:discuz_flutter/converter/FloorDateTimeConverter.dart';
-import 'package:floor/floor.dart';
 
+
+import 'package:hive/hive.dart';
+
+import '../utility/ConstUtils.dart';
 import 'Discuz.dart';
 
+part 'FavoriteThreadInDatabase.g.dart';
 
-@Entity(
-    foreignKeys:[
-      ForeignKey(
-          childColumns: ["discuz_id"],
-          parentColumns: ["id"],
-          entity: Discuz,
-          onDelete: ForeignKeyAction.cascade)
-    ]
-)
-@TypeConverters([FloorDateTimeConverter])
-class FavoriteThreadInDatabase{
-  @PrimaryKey(autoGenerate: true)
-  final int? id;
-
-  int favid = 0, uid = 0;
+@HiveType(typeId: ConstUtils.HIVE_TYPE_ID_FAVORITE_THREAD)
+class FavoriteThreadInDatabase extends HiveObject{
+  @HiveField(0)
+  int favid = 0;
+  @HiveField(1)
+  int uid = 0;
+  @HiveField(2)
   int idInServer = 0;
-
+  @HiveField(3)
   String idType = "";
+  @HiveField(4)
   int spaceUid = 0;
-
+  @HiveField(5)
   String title = "";
+  @HiveField(6)
   String description = "";
+  @HiveField(7)
   String author = "";
+  @HiveField(8)
   int replies = 0;
-
+  @HiveField(9)
   DateTime date = DateTime.now();
 
-  @ColumnInfo(name: "discuz_id")
-  final int discuzId;
+  @HiveField(10)
+  Discuz discuz;
 
   FavoriteThreadInDatabase(
-      this.id,
       this.favid,
       this.uid,
       this.idInServer,
@@ -46,5 +44,5 @@ class FavoriteThreadInDatabase{
       this.author,
       this.replies,
       this.date,
-      this.discuzId);
+      this.discuz);
 }

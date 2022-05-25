@@ -4,13 +4,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/SmileyResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/dao/SmileyDao.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/Smiley.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
@@ -62,15 +62,15 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
   }
 
   void _initDB() async {
-    final db = await DBHelper.getAppDb();
-    _smileyDao = db.smileyDao;
+
+    _smileyDao = await AppDatabase.getSmileyDao();
     Discuz? discuz = Provider
         .of<DiscuzAndUserNotifier>(context, listen: false)
         .discuz;
-    if (discuz == null || discuz.id == null) {
+    if (discuz == null) {
       return;
     }
-    var smileyList = await _smileyDao.findAllSmileyByDiscuzId(discuz.id!);
+    var smileyList = await _smileyDao.findAllSmileyByDiscuz(discuz);
     setState(() {
       _savedSmileyList = smileyList;
     });
@@ -140,15 +140,15 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
 
                     // add to smiley
                     // check whether exist
-                    Smiley? smileyInDb = await _smileyDao.findSmileyByDiscuzIdAndCode(discuz.id!, smiley.code);
+                    Smiley? smileyInDb = await _smileyDao.findSmileyByDiscuzIdAndCode(discuz, smiley.code);
                     log("on tap smiley $smiley ${smileyInDb}");
                     if(smileyInDb != null){
                       smileyInDb.dateTime = DateTime.now();
-                      smiley.discuzId = discuz.id!;
+                      smiley.discuz = discuz;
                       _smileyDao.insertSmiley(smileyInDb);
                     }
                     else{
-                      smiley.discuzId = discuz.id!;
+                      smiley.discuz = discuz;
                       _smileyDao.insertSmiley(smiley);
                     }
 
@@ -237,15 +237,14 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget>{
   }
 
   void _initDB() async {
-    final db = await DBHelper.getAppDb();
-    setState(() {
-      _smileyDao = db.smileyDao;
+    setState(() async{
+      _smileyDao = await AppDatabase.getSmileyDao();
     });
 
     Discuz? discuz = Provider
         .of<DiscuzAndUserNotifier>(context, listen: false)
         .discuz;
-    if (discuz == null || discuz.id == null) {
+    if (discuz == null) {
       return;
     }
   }
@@ -258,12 +257,12 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget>{
     if(_smileyDao==null){
       return BlankScreen();
     }
-    if(discuz == null || discuz.id == null){
+    if(discuz == null){
       return NullDiscuzScreen();
     }
     else{
       return StreamBuilder(
-        stream: _smileyDao!.findAllSmileyStreamByDiscuzId(discuz.id!),
+        stream: _smileyDao!.findAllSmileyStreamByDiscuz(discuz),
         builder: (buildContext, AsyncSnapshot<List<Smiley>> snapshot){
           List<Smiley>? smileyData = snapshot.data;
           if(smileyData == null){
@@ -291,11 +290,11 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget>{
                       smileyValueGetter(smiley);
                       // add to smiley
                       // check whether exist
-                      if(smiley.id!=null){
+                      if(smiley.key!=null){
                         smiley.dateTime = DateTime.now();
                         _smileyDao!.insertSmiley(smiley);
                       }
-                      log("pressed smiley ${smiley} ${smiley.id} ");
+                      log("pressed smiley ${smiley} ${smiley.key} ");
 
 
                     },

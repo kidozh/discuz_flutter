@@ -3,11 +3,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
-import 'package:discuz_flutter/utility/DiscuzWebviewCookieManager.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
@@ -211,20 +210,19 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
       if(value.variables.member_uid!=0){
         // it's a success
         try{
-          final db = await DBHelper.getAppDb();
-          final dao = db.userDao;
+          final dao = await AppDatabase.getUserDao();
           User user = value.variables.getUser(discuz);
           // search in database first
-          User? userInDataBase = await dao.findUsersByDiscuzIdAndUid(discuz.id!, value.variables.member_uid);
+          User? userInDataBase = await dao.findUsersByDiscuzAndUid(discuz, value.variables.member_uid);
           if(userInDataBase != null){
-            user.id = userInDataBase.id;
+            user = userInDataBase;
           }
 
           int primaryKey = await dao.insert(user);
 
           // save it in cookiejar
           List<Cookie> cookies = await cookieJar.loadForRequest(Uri.parse(discuz.baseURL));
-          PersistCookieJar savedCookieJar = await NetworkUtils.getPersistentCookieJarByUserId(primaryKey);
+          PersistCookieJar savedCookieJar = await NetworkUtils.getPersistentCookieJarByUser(user);
           print("cookies ${cookies}");
           savedCookieJar.saveFromResponse(Uri.parse(discuz.baseURL), cookies);
           // pop the activity

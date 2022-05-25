@@ -3,13 +3,12 @@ import 'dart:developer';
 
 import 'package:discuz_flutter/JsonResult/CheckResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -50,26 +49,11 @@ class _AddDiscuzFormFieldState
   final TextEditingController _urlController = new TextEditingController(text: "https://");
 
   Future<void> _saveDiscuzInDb(Discuz discuz) async {
-    final db = await DBHelper.getAppDb();
-    final dao = db.discuzDao;
+
+    final dao = await AppDatabase.getDiscuzDao();
     int insertId = await dao.insertDiscuz(discuz);
-    Discuz selectedDiscuz = Discuz(
-      insertId,
-      discuz.baseURL,
-      discuz.discuzVersion,
-      discuz.charset,
-      discuz.apiVersion,
-      discuz.pluginVersion,
-      discuz.regname,
-      discuz.qqconnect,
-      discuz.wsqqqconnect,
-      discuz.wsqhideregister,
-      discuz.siteName,
-      discuz.siteId,
-      discuz.uCenterURL,
-      discuz.defaultFid
-    );
-    Provider.of<DiscuzAndUserNotifier>(context, listen: false).setDiscuz(selectedDiscuz);
+
+    Provider.of<DiscuzAndUserNotifier>(context, listen: false).setDiscuz(discuz);
     Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(null);
     // pop the activity
     EasyLoading.showToast(S.of(context).addDiscuzSuccessfully(discuz.siteName));

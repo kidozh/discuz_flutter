@@ -1,6 +1,5 @@
 
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/FavoriteForumResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/dao/FavoriteForumDao.dart';
@@ -12,11 +11,8 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/utility/ConstUtils.dart';
-import 'package:discuz_flutter/utility/CustomizeColor.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
-import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,8 +21,6 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
 import 'DisplayForumSliverPage.dart';
-import 'UserProfilePage.dart';
-import 'ViewThreadSliverPage.dart';
 
 class FavoriteForumPage extends StatelessWidget{
   @override
@@ -56,8 +50,7 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget>{
   late Discuz _discuz;
   late User? _user;
 
-  // database
-  late AppDatabase db;
+
   late FavoriteForumDao _favoriteForumDao;
   Stream<List<FavoriteForumInDatabase>> _streamInDb = Stream.fromIterable([]);
   int progress = 0;
@@ -76,10 +69,10 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget>{
   }
 
   void _loadDb() async{
-    db = await DBHelper.getAppDb();
-    _favoriteForumDao = db.favoriteForumDao;
+
+    _favoriteForumDao = await AppDatabase.getFavoriteForumDao();
     setState(() {
-      _streamInDb = _favoriteForumDao.getFavoriteForumListStream(_discuz.id!);
+      _streamInDb = _favoriteForumDao.getFavoriteForumListStream(_discuz);
     });
 
     var dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
@@ -107,7 +100,7 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget>{
       for(var favoriteForum in FavoriteForumListInServer){
         // save them one by one
         FavoriteForumInDatabase? favoriteForumInDatabase =
-        await this._favoriteForumDao.getFavoriteForumByFid(favoriteForum.id, _discuz.id!);
+        await this._favoriteForumDao.getFavoriteForumByFid(favoriteForum.id, _discuz);
         print("Get FavoriteForum In DB ${FavoriteForumInDatabase}");
         if(favoriteForumInDatabase == null){
           // insert it

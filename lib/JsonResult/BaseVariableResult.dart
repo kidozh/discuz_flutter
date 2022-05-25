@@ -47,10 +47,10 @@ class BaseVariableResult{
 
   User getUser(Discuz discuz){
     log("User ${this.member_uid} ${this.member_username}");
-    return User(null, this.getAuth(), saltkey,
+    return User(this.getAuth(), saltkey,
         this.member_username, this.member_avatar,
         this.groupId, this.member_uid, this.readAccess,
-        discuz.id!);
+        discuz);
   }
 
   BaseVariableResult();

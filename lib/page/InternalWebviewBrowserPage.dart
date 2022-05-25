@@ -46,7 +46,7 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
 
   void loadCookieByUser() async {
     if(_user!=null){
-      PersistCookieJar savedCookieJar = await NetworkUtils.getPersistentCookieJarByUserId(_user!.id!);
+      PersistCookieJar savedCookieJar = await NetworkUtils.getPersistentCookieJarByUser(_user!);
       List<Cookie> cookies =
       await savedCookieJar.loadForRequest(Uri.parse(_discuz.baseURL));
       webviewCookieManager.setCookies(cookies, origin: _discuz.baseURL);
@@ -95,10 +95,10 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
                 WebViewController webViewController = await _controller.future;
                 String? url = await webViewController.currentUrl();
                 if(url!= null){
-                  bool canOpen = await canLaunch(url);
+                  bool canOpen = await canLaunchUrl(Uri.parse(url));
                   if(canOpen){
                     VibrationUtils.vibrateWithClickIfPossible();
-                    await launch(url);
+                    await launchUrl(Uri.parse(url));
                   }
                   else{
                     VibrationUtils.vibrateErrorIfPossible();

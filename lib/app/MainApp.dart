@@ -1,34 +1,24 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/page/DrawerPage.dart';
-import 'package:discuz_flutter/page/ExclusiveDiscuzPortalPage.dart';
 import 'package:discuz_flutter/dialog/SwitchDiscuzDialog.dart';
 import 'package:discuz_flutter/page/ExploreWebsitePage.dart';
-import 'package:discuz_flutter/page/ManageAccountPage.dart';
-import 'package:discuz_flutter/page/ManageDiscuzPage.dart';
-import 'package:discuz_flutter/page/ManageTrustHostPage.dart';
 import 'package:discuz_flutter/page/TestFlightBannerPage.dart';
-import 'package:discuz_flutter/page/ViewHistoryPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
-import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
-import 'package:discuz_flutter/screen/FavoriteThreadScreen.dart';
 import 'package:discuz_flutter/screen/HotThreadScreen.dart';
 import 'package:discuz_flutter/screen/NotificationScreen.dart';
-import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
-import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:discuz_flutter/page/AddDiscuzPage.dart';
-import 'package:discuz_flutter/page/LoginPage.dart';
 import 'package:discuz_flutter/screen/DiscuzPortalScreen.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -39,7 +29,6 @@ import 'package:discuz_flutter/dao/DiscuzDao.dart';
 import 'package:discuz_flutter/dao/UserDao.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
-import 'package:discuz_flutter/page/SettingPage.dart';
 
 import 'package:discuz_flutter/entity/User.dart';
 
@@ -259,13 +248,12 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   void _initDb() async {
-    final db = await DBHelper.getAppDb();
-    _userDao = db.userDao;
-    _discuzDao = db.discuzDao;
+    _userDao = await AppDatabase.getUserDao();
+    _discuzDao = await AppDatabase.getDiscuzDao();
   }
 
-  void _setFirstUserInDiscuz(int discuzId) async{
-    List<User> userList = await _userDao.findAllUsersByDiscuzId(discuzId);
+  void _setFirstUserInDiscuz(Discuz discuz) async{
+    List<User> userList = await _userDao.findAllUsersByDiscuz(discuz);
     if(userList.isNotEmpty && userList.length > 0){
       Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(userList.first);
     }
@@ -283,15 +271,15 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       widgetList.add(SimpleDialogItem(
         key: UniqueKey(),
         icon:
-        (_selecteddiscuz != null && _selecteddiscuz.id == discuz.id) ? PlatformIcons(context).checkMarkCircledSolid : Icons.amp_stories,
-        color: (_selecteddiscuz != null && _selecteddiscuz.id == discuz.id) ? Theme.of(context).primaryColor : Theme.of(context).unselectedWidgetColor,
+        (_selecteddiscuz != null && _selecteddiscuz == discuz) ? PlatformIcons(context).checkMarkCircledSolid : Icons.amp_stories,
+        color: (_selecteddiscuz != null && _selecteddiscuz == discuz) ? Theme.of(context).primaryColor : Theme.of(context).unselectedWidgetColor,
         text: discuz.siteName,
         onPressed: () {
           setState(() {
             VibrationUtils.vibrateWithClickIfPossible();
             Provider.of<DiscuzAndUserNotifier>(context, listen: false)
                 .initDiscuz(discuz);
-            _setFirstUserInDiscuz(discuz.id!);
+            _setFirstUserInDiscuz(discuz);
             Navigator.of(context).pop();
           });
         },
@@ -323,8 +311,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   Future<void> _getDiscuzList() async {
-    final db = await DBHelper.getAppDb();
-    final dao = db.discuzDao;
+    final dao = await AppDatabase.getDiscuzDao();
 
     _allDiscuzs = await dao.findAllDiscuzs();
 
@@ -333,8 +320,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
 
   void _queryDiscuzList() async {
-    final db = await DBHelper.getAppDb();
-    final dao = db.discuzDao;
+    final dao = await AppDatabase.getDiscuzDao();
     setState(() {
       this._discuzListStream = dao.findAllDiscuzStream();
     });
@@ -346,7 +332,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         // set
         Provider.of<DiscuzAndUserNotifier>(context, listen: false)
             .initDiscuz(_allDiscuzs.first);
-        _setFirstUserInDiscuz(_allDiscuzs.first.id!);
+        _setFirstUserInDiscuz(_allDiscuzs.first);
       });
     }
 

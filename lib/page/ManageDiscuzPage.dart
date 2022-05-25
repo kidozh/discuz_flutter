@@ -1,15 +1,13 @@
 
 
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/page/ExclusiveDiscuzPortalPage.dart';
 import 'package:discuz_flutter/dao/DiscuzDao.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/AddDiscuzPage.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
-import 'package:discuz_flutter/utility/CustomizeColor.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -70,9 +68,8 @@ class ManageDiscuzState extends State<ManageDiscuzStateWidget>{
   }
 
   void _initDb() async {
-    final db = await DBHelper.getAppDb();
-    setState(() {
-      _discuzDao = db.discuzDao;
+    setState(() async {
+      _discuzDao = await AppDatabase.getDiscuzDao();
     });
 
   }
@@ -109,7 +106,7 @@ class ManageDiscuzState extends State<ManageDiscuzStateWidget>{
                         // width: 16.0,
                         // height: 16.0,
                         child: CircleAvatar(
-                          backgroundColor: CustomizeColor.getColorBackgroundById(discuz.id!),
+                          backgroundColor: Theme.of(context).primaryColor,
                           child: Text(
                             discuz.siteName.length != 0
                                 ? discuz.siteName[0].toUpperCase()

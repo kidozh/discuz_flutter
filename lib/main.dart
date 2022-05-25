@@ -1,10 +1,10 @@
 import 'dart:developer';
 import 'package:discuz_flutter/app/ExclusiveDiscuzApp.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -21,20 +21,23 @@ String initialPlatform = "";
 
 bool isExclusiveDiscuz = false;
 
-Discuz exclusiveDiscuz = Discuz(null, "https://keylol.com", "X3.2", "utf-8", 4, "1.4.8", "register", true, "true", "true", "其乐 Keylol", "0", "https://keylol.com/uc_server", "161");
+Discuz exclusiveDiscuz = Discuz("https://keylol.com", "X3.2", "utf-8", 4, "1.4.8", "register", true, "true", "true", "其乐 Keylol", "0", "https://keylol.com/uc_server", "161");
 
 void main() async{
   // init google ads
 
   WidgetsFlutterBinding.ensureInitialized();
+  // init for hive
+  await Hive.initFlutter();
+  await AppDatabase.initBoxes();
+
   log("languages initialization");
   initialPlatform = await UserPreferencesUtils.getPlatformPreference();
   Discuz discuz = exclusiveDiscuz;
   // save them to database first
   if(isExclusiveDiscuz){
     // save discuz to database first
-    final db = await DBHelper.getAppDb();
-    DiscuzDao discuzDao = db.discuzDao;
+    DiscuzDao discuzDao = await AppDatabase.getDiscuzDao();
     Discuz? existDiscuz = await discuzDao.findDiscuzByBaseURL(exclusiveDiscuz.baseURL);
     if(existDiscuz == null){
       // insert it if not exist
@@ -52,7 +55,7 @@ void main() async{
     }
   }
 
-  await Hive.initFlutter();
+
 
   runApp(
       MultiProvider(

@@ -6,17 +6,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/BlockUser.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
-import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -81,13 +80,13 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
   bool isUserBlocked = false;
 
   void loadDatabase() async{
-    final db = await DBHelper.getAppDb();
-    setState(() {
-      dao = db.viewHistoryDao;
+
+    setState(() async{
+      dao = await AppDatabase.getViewHistoryDao();
     });
-    blockUserDao = db.blockUserDao;
+    blockUserDao = await AppDatabase.getBlockUserDao();
     // check with block information
-    List<BlockUser> userBlockedInDB = await blockUserDao.isUserBlocked(_forumThread.getAuthorId(), _discuz.id!);
+    List<BlockUser> userBlockedInDB = blockUserDao.isUserBlocked(_forumThread.getAuthorId(), _discuz);
     log("get blocked info ${userBlockedInDB} In DB");
     if (userBlockedInDB.isEmpty){
       setState(() {
@@ -209,7 +208,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
           setState(() {
             this.isUserBlocked = true;
           });
-          BlockUser blockUser = BlockUser(null, _forumThread.getAuthorId(), _forumThread.author, _discuz.id!, DateTime.now());
+          BlockUser blockUser = BlockUser(_forumThread.getAuthorId(), _forumThread.author,DateTime.now(), _discuz );
           int insertId = await blockUserDao.insertBlockUser(blockUser);
           log("insert id into block user ${insertId}");
         },
@@ -251,7 +250,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                           setState(() {
                             this.isUserBlocked = false;
                           });
-                          await blockUserDao.deleteBlockUserByUid(_forumThread.getAuthorId(),  _discuz.id!);
+                          await blockUserDao.deleteBlockUserByUid(_forumThread.getAuthorId(),  _discuz);
                         },
                       )
                     ],
@@ -265,14 +264,14 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     if(read == true){
       return getForumThreadCard(true);
     }
-    if(dao == null|| _discuz.id == null){
+    if(dao == null){
       return getForumThreadCard(false);
     }
     else{
       return StreamBuilder(
-        stream: dao!.threadHistoryExistInDatabase(_discuz.id!, _forumThread.getTid()),
-        builder: (BuildContext context, AsyncSnapshot<ViewHistory?> snapshot) {
-          if(snapshot.data == null){
+        stream: dao!.threadHistoryExistInDatabase(_discuz, _forumThread.getTid()),
+        builder: (BuildContext context, AsyncSnapshot<bool?> snapshot) {
+          if(snapshot.data == false){
             return getForumThreadCard(false);
           }
           else{

@@ -1,58 +1,125 @@
-// database.dart
 
-// required package imports
-import 'dart:async';
-import 'package:discuz_flutter/converter/FloorDateTimeConverter.dart';
-import 'package:discuz_flutter/dao/BlockUserDao.dart';
+
+
 import 'package:discuz_flutter/dao/DiscuzDao.dart';
-import 'package:discuz_flutter/dao/FavoriteForumDao.dart';
-import 'package:discuz_flutter/dao/FavoriteThreadDao.dart';
-import 'package:discuz_flutter/dao/SmileyDao.dart';
-import 'package:discuz_flutter/dao/UserDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/entity/BlockUser.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
-import 'package:discuz_flutter/entity/Smiley.dart';
-import 'package:discuz_flutter/entity/User.dart';
+import 'package:discuz_flutter/entity/TrustHost.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
-import 'package:floor/floor.dart';
-import 'package:sqflite/sqflite.dart' as sqflite;
+import 'package:hive/hive.dart';
+
+import '../dao/BlockUserDao.dart';
+import '../dao/FavoriteForumDao.dart';
+import '../dao/FavoriteThreadDao.dart';
+import '../dao/SmileyDao.dart';
+import '../dao/TrustHostDao.dart';
+import '../dao/UserDao.dart';
+import '../entity/Smiley.dart';
+import '../entity/User.dart';
+
+class AppDatabase{
+  static const hiveBoxPrefix = "discuz_flutter";
+  static Box<Discuz>? discuzBox;
+  static Box<BlockUser>? blockUserBox;
+  static Box<FavoriteForumInDatabase>? favoriteForumBox;
+  static Box<FavoriteThreadInDatabase>? favoriteThreadBox;
+  static Box<TrustHost>? trustHostBox;
+  static Box<User>? userBox;
+  static Box<ViewHistory>? viewHistoryBox;
+  static Box<Smiley>? smileyBox;
+
+  static Future<void> initBoxes() async {
+    Hive
+      ..registerAdapter(DiscuzAdapter())
+      ..registerAdapter(BlockUserAdapter())
+      ..registerAdapter(FavoriteForumInDatabaseAdapter())
+      ..registerAdapter(FavoriteThreadInDatabaseAdapter())
+      ..registerAdapter(TrustHostAdapter())
+      ..registerAdapter(UserAdapter())
+      ..registerAdapter(SmileyAdapter())
+      ..registerAdapter(ViewHistoryAdapter());
+
+
+    //blockUserBox = await Hive.openBox<BlockUser>('${hiveBoxPrefix}_block_user');
+
+
+    await getBlockUserDao();
+    await getDiscuzDao();
+    await getFavoriteForumDao();
+    await getFavoriteThreadDao();
+    await getTrustHostDao();
+    await getUserDao();
+    await getViewHistoryDao();
+  }
 
 
 
-part 'AppDatabase.g.dart'; // the generated code will be there
+  static Future<BlockUserDao> getBlockUserDao() async {
+    if(blockUserBox == null){
+      blockUserBox = await Hive.openBox<BlockUser>('${hiveBoxPrefix}_block_user');
+    }
 
-@Database(version: 5, entities: [User, Discuz, ViewHistory, FavoriteThreadInDatabase, Smiley, BlockUser, FavoriteForumInDatabase])
-abstract class AppDatabase extends FloorDatabase {
-  UserDao get userDao;
-  DiscuzDao get discuzDao;
-  ViewHistoryDao get viewHistoryDao;
-  SmileyDao get smileyDao;
-  BlockUserDao get blockUserDao;
-  FavoriteThreadDao get favoriteThreadDao;
-  FavoriteForumDao get favoriteForumDao;
+    return BlockUserDao(blockUserBox!);
+  }
 
-  static final migration1to2 = Migration(1, 2, (database) async {
-    await database.execute('CREATE TABLE IF NOT EXISTS `Smiley` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `code` TEXT NOT NULL, `relativePath` TEXT NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
-  });
+  static Future<DiscuzDao> getDiscuzDao() async {
+    if(discuzBox == null){
+      discuzBox = await Hive.openBox<Discuz>('${hiveBoxPrefix}_discuz');
+    }
 
-  static final migration2to3 = Migration(2, 3, (database) async {
-    // add favorite thread
-    await database.execute('CREATE TABLE IF NOT EXISTS `FavoriteThreadInDatabase` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `favid` INTEGER NOT NULL, `uid` INTEGER NOT NULL, `idInServer` INTEGER NOT NULL, `idType` TEXT NOT NULL, `spaceUid` INTEGER NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `author` TEXT NOT NULL, `replies` INTEGER NOT NULL, `date` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
-    // add a updateTime
-    await database.execute('ALTER TABLE SMILEY ADD COLUMN dateTime INTEGER NOT NULL DEFAULT 0');
-  });
+    return DiscuzDao(discuzBox!);
+  }
 
-  static final migration3to4 = Migration(3, 4, (database) async {
-    // add block user
-    await database.execute('CREATE TABLE IF NOT EXISTS `BlockUser` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `uid` INTEGER NOT NULL, `name` TEXT NOT NULL, `insertTime` INTEGER NOT NULL, `updateTime` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
-  });
+  static Future<FavoriteForumDao> getFavoriteForumDao() async {
+    if(favoriteForumBox == null){
+      favoriteForumBox = await Hive.openBox<FavoriteForumInDatabase>('${hiveBoxPrefix}_favorite_forum');
+    }
 
-  static final migration4to5 = Migration(4, 5, (database) async {
-    // add block user
-    await database.execute('CREATE TABLE IF NOT EXISTS `FavoriteForumInDatabase` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `favid` INTEGER NOT NULL, `uid` INTEGER NOT NULL, `idKey` INTEGER NOT NULL, `idType` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `date` INTEGER NOT NULL, `discuz_id` INTEGER NOT NULL, FOREIGN KEY (`discuz_id`) REFERENCES `Discuz` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE)');
-  });
+    return FavoriteForumDao(favoriteForumBox!);
+  }
+
+  static Future<FavoriteThreadDao> getFavoriteThreadDao() async {
+    if(favoriteThreadBox == null){
+      favoriteThreadBox = await Hive.openBox<FavoriteThreadInDatabase>('${hiveBoxPrefix}_favorite_thread');
+    }
+
+    return FavoriteThreadDao(favoriteThreadBox!);
+  }
+
+  static Future<TrustHostDao> getTrustHostDao() async {
+    if(trustHostBox == null){
+      trustHostBox = await Hive.openBox<TrustHost>('${hiveBoxPrefix}_trust_host');
+    }
+
+    return TrustHostDao(trustHostBox!);
+  }
+
+  static Future<UserDao> getUserDao() async {
+    if(userBox == null){
+      userBox = await Hive.openBox<User>('${hiveBoxPrefix}_user');
+    }
+
+    return UserDao(userBox!);
+  }
+
+  static Future<ViewHistoryDao> getViewHistoryDao() async {
+    if(viewHistoryBox == null){
+      viewHistoryBox =  await Hive.openBox<ViewHistory>('${hiveBoxPrefix}_view_history');
+    }
+
+    return ViewHistoryDao(viewHistoryBox!);
+  }
+
+  static Future<SmileyDao> getSmileyDao() async {
+    if(smileyBox == null){
+      smileyBox =  await Hive.openBox<Smiley>('${hiveBoxPrefix}_smiley');
+    }
+
+    return SmileyDao(smileyBox!);
+  }
+
 
 }

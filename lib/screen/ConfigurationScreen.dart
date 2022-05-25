@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/LoginPage.dart';
@@ -8,7 +9,6 @@ import 'package:discuz_flutter/page/ViewHistoryPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
@@ -155,8 +155,7 @@ class ConfigurationUserState extends State<ConfigurationUserStatefulWidget>{
                 VibrationUtils.vibrateWithClickIfPossible();
                 // wipe out first
                 if(discuzAndUser.user != null){
-                  final db = await DBHelper.getAppDb();
-                  var _userDao = db.userDao;
+                  var _userDao = await AppDatabase.getUserDao();
                   await _userDao.deleteUser(discuzAndUser.user!);
                   Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(null);
                 }

@@ -66,7 +66,7 @@ class FavoriteThread{
   factory FavoriteThread.fromJson(Map<String, dynamic> json) => _$FavoriteThreadFromJson(json);
 
   FavoriteThreadInDatabase toDb(Discuz discuz){
-    return FavoriteThreadInDatabase(null, favId, uid, id, idType, uid, title, description, author, replies, publishAt, discuz.id!);
+    return FavoriteThreadInDatabase(favId, uid, id, idType, uid, title, description, author, replies, publishAt, discuz);
   }
 }
 

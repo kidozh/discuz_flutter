@@ -1,22 +1,37 @@
-import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/TrustHost.dart';
-import 'package:floor/floor.dart';
+import 'package:hive/hive.dart';
 
 
-@dao
-abstract class TrustHostDao {
-  @Query('SELECT * FROM TrustHost')
-  Future<List<TrustHost>> findAllTrustHosts();
+class TrustHostDao{
+  Box<TrustHost> trustHostBox;
 
-  @Query('SELECT * FROM TrustHost')
-  Stream<List<TrustHost>> findAllTrustHostsStream();
+  TrustHostDao(this.trustHostBox);
 
-  @Insert(onConflict: OnConflictStrategy.replace)
-  Future<void> insertTrustHost(TrustHost trustHost);
+  List<TrustHost> findAllTrustHosts(){
+    return trustHostBox.values.toList();
+  }
 
-  @delete
-  Future<void> deleteTrustHost(TrustHost trustHost);
+  Stream<List<TrustHost>> findAllTrustHostsStream(){
+    return trustHostBox.watch().map((event) => trustHostBox.values.toList());
+  }
 
-  @Query('SELECT * FROM TrustHost WHERE host=:host')
-  Future<TrustHost?> findTrustHostByName(String host);
+  Future<int> insertTrustHost(TrustHost trustHost){
+    return trustHostBox.add(trustHost);
+  }
+
+  Future<void> deleteTrustHost(TrustHost trustHost) async{
+    return trustHostBox.values.where((element) => element == trustHost).forEach((element) {
+      trustHostBox.delete(trustHost.key);
+    });
+  }
+
+  TrustHost? findTrustHostByName(String host){
+    if(trustHostBox.values.where((element) => element.host == host).isNotEmpty){
+      return trustHostBox.values.where((element) => element.host == host).first;
+    }
+    else{
+      return null;
+    }
+  }
+
 }

@@ -1,51 +1,15 @@
-import 'dart:collection';
-import 'dart:developer';
 
-import 'package:discuz_flutter/JsonResult/SmileyResult.dart';
-import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
-import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
-import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/BlockUser.dart';
-import 'package:discuz_flutter/entity/DiscuzError.dart';
-import 'package:discuz_flutter/entity/Post.dart';
-import 'package:discuz_flutter/entity/Smiley.dart';
 import 'package:discuz_flutter/entity/User.dart';
-import 'package:discuz_flutter/entity/ViewHistory.dart';
-import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
-import 'package:discuz_flutter/screen/ExtraFuncInThreadScreen.dart';
-import 'package:discuz_flutter/screen/SmileyListScreen.dart';
-import 'package:discuz_flutter/utility/ConstUtils.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
-import 'package:discuz_flutter/utility/NetworkUtils.dart';
-import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
-import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
-import 'package:discuz_flutter/utility/URLUtils.dart';
-import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
-import 'package:discuz_flutter/utility/VibrationUtils.dart';
-import 'package:discuz_flutter/widget/CaptchaWidget.dart';
-import 'package:discuz_flutter/widget/ErrorCard.dart';
-import 'package:discuz_flutter/widget/PollWidget.dart';
-import 'package:discuz_flutter/widget/PostTextField.dart';
-import 'package:discuz_flutter/widget/PostWidget.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
-import 'package:intl/intl.dart';
-import 'package:progress_state_button/iconed_button.dart';
-import 'package:progress_state_button/progress_button.dart';
-import 'package:provider/provider.dart';
-import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
-import 'InternalWebviewBrowserPage.dart';
 
 class BlockUserPage extends StatelessWidget {
   late final Discuz discuz;
@@ -85,10 +49,12 @@ class _BlockUserState extends State<BlockUserStatefulWidget> {
 
   BlockUserDao? _blockUserDao;
 
+
+
   void _initDb() async {
-    final db = await DBHelper.getAppDb();
-    setState(() {
-      _blockUserDao = db.blockUserDao;
+
+    setState(() async{
+      _blockUserDao = await AppDatabase.getBlockUserDao();
     });
 
   }
@@ -105,7 +71,7 @@ class _BlockUserState extends State<BlockUserStatefulWidget> {
           automaticallyImplyLeading: true,
         ),
         body: StreamBuilder(
-          stream: _blockUserDao!.getBlockUserListStream(_discuz.id!),
+          stream: _blockUserDao!.getBlockUserListStream(_discuz),
           builder: (BuildContext context, AsyncSnapshot<List<BlockUser>> snapshot) {
             List<BlockUser>? blockUserList = snapshot.data;
             if (blockUserList == null || blockUserList.isEmpty){
@@ -125,7 +91,7 @@ class _BlockUserState extends State<BlockUserStatefulWidget> {
                             child: Padding(
                               padding: EdgeInsets.all(8),
                               child: ListTile(
-                                leading: UserAvatar(_discuz, User(null,"","",blockUserList[index].name,"",0,blockUserList[index].uid, 0, _discuz.id!)),
+                                leading: UserAvatar(_discuz, User("","",blockUserList[index].name,"",0,blockUserList[index].uid, 0, _discuz)),
                                 title: Text(blockUserList[index].name),
                               )
 

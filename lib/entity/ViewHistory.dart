@@ -1,38 +1,36 @@
 
 
-import 'package:discuz_flutter/converter/FloorDateTimeConverter.dart';
-import 'package:floor/floor.dart';
 
+import 'package:hive/hive.dart';
+
+import '../utility/ConstUtils.dart';
 import 'Discuz.dart';
 
+part 'ViewHistory.g.dart';
 
-@Entity(
-    foreignKeys:[
-      ForeignKey(
-          childColumns: ["discuz_id"],
-          parentColumns: ["id"],
-          entity: Discuz,
-          onDelete: ForeignKeyAction.cascade)
-    ]
-)
-@TypeConverters([FloorDateTimeConverter])
-class ViewHistory{
-  @PrimaryKey(autoGenerate: true)
-  final int? id;
+@HiveType(typeId: ConstUtils.HIVE_TYPE_ID_VIEW_HISTORY)
+class ViewHistory extends HiveObject{
+  @HiveField(0)
   String title;
+  @HiveField(1)
   String subject;
+  @HiveField(2)
   String description;
+  @HiveField(3)
   String type;
+  @HiveField(4)
   int identification;
-
+  @HiveField(5)
   String author;
+  @HiveField(6)
   int authorId;
-
+  @HiveField(7)
   DateTime insertTime = DateTime.now();
+  @HiveField(8)
   DateTime updateTime;
 
-  @ColumnInfo(name: "discuz_id")
-  final int discuzId;
+  @HiveField(9)
+  Discuz discuz;
 
-  ViewHistory(this.id,this.title, this.subject, this.description, this.type, this.identification,this.author, this.authorId, this.discuzId, this.updateTime);
+  ViewHistory(this.title, this.subject, this.description, this.type, this.identification,this.author, this.authorId, this.discuz, this.updateTime);
 }

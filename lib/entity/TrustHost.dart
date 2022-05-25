@@ -1,15 +1,15 @@
 
-import 'package:discuz_flutter/converter/FloorDateTimeConverter.dart';
-import 'package:floor/floor.dart';
+import 'package:discuz_flutter/utility/ConstUtils.dart';
+import 'package:hive/hive.dart';
 
-@entity
-@TypeConverters([FloorDateTimeConverter])
-class TrustHost{
-  @PrimaryKey(autoGenerate: true)
-  final int? id;
+part 'TrustHost.g.dart';
 
+@HiveType(typeId: ConstUtils.HIVE_TYPE_ID_TRUST_HOST)
+class TrustHost extends HiveObject{
+  @HiveField(0)
   String host;
+  @HiveField(1)
   DateTime trustAt = DateTime.now();
 
-  TrustHost(this.id, this.host);
+  TrustHost(this.host);
 }

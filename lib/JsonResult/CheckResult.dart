@@ -65,7 +65,7 @@ class CheckResult {
   Map<String, dynamic> toJson() => _$CheckResultToJson(this);
 
   Discuz toDiscuz(String baseURL){
-    return Discuz(null,baseURL,discuzVersion, charset, getApiVersion(),
+    return Discuz(baseURL,discuzVersion, charset, getApiVersion(),
         pluginVersion, regname, qqEnabled(),
         wsqqqconnect, wsqhideregister, siteName,
         siteId, uCenterURL, defaultFid);

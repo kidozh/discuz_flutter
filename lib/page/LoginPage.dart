@@ -4,15 +4,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/LoginByWebviewPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -140,22 +139,20 @@ class _LoginFormFieldState
           _loginState = ButtonState.success;
         });
         try{
-          final db = await DBHelper.getAppDb();
-          final dao = db.userDao;
+
+          final dao = await AppDatabase.getUserDao();
           // search in database first
-          User? userInDataBase = await dao.findUsersByDiscuzIdAndUid(discuz.id!, user.uid);
+          User? userInDataBase = dao.findUsersByDiscuzAndUid(discuz, user.uid);
           if(userInDataBase != null){
-            user.id = userInDataBase.id;
+            user = userInDataBase;
           }
 
 
           int primaryKey = await dao.insert(user);
-          user.id = primaryKey;
-          print("Inserted id ${user.id}, ${user.discuzId} ${discuz.id} ${user.username} ${user.uid}");
 
           // save it in cookiejar
           List<Cookie> cookies = await cookieJar.loadForRequest(Uri.parse(discuz.baseURL));
-          PersistCookieJar savedCookieJar = await NetworkUtils.getPersistentCookieJarByUserId(primaryKey);
+          PersistCookieJar savedCookieJar = await NetworkUtils.getPersistentCookieJarByUser(user);
           log("cookies ${cookies}");
           savedCookieJar.saveFromResponse(Uri.parse(discuz.baseURL), cookies);
           // pop the activity

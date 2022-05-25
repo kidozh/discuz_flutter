@@ -15,10 +15,8 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
-import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/AttachmentWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
@@ -129,12 +127,11 @@ class PostState extends State<PostStatefulWidget> {
   bool isUserBlocked = false;
 
   _loadDB() async{
-    AppDatabase appDatabase = await DBHelper.getAppDb();
-    _blockUserDao = appDatabase.blockUserDao;
+    _blockUserDao = await AppDatabase.getBlockUserDao();
     // query whether use get blocked
     Discuz discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
     _user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    List<BlockUser> userBlockedInDB = await _blockUserDao.isUserBlocked(_post.authorId, discuz.id!);
+    List<BlockUser> userBlockedInDB = await _blockUserDao.isUserBlocked(_post.authorId, discuz);
     log("get blocked info ${userBlockedInDB} In DB");
     if (userBlockedInDB.isEmpty){
       setState(() {
@@ -183,7 +180,7 @@ class PostState extends State<PostStatefulWidget> {
                         setState(() {
                           this.isUserBlocked = false;
                         });
-                        await _blockUserDao.deleteBlockUserByUid(_post.authorId,  _discuz.id!);
+                        await _blockUserDao.deleteBlockUserByUid(_post.authorId,  _discuz);
                       },
                     )
                   ],
@@ -407,7 +404,7 @@ class PostState extends State<PostStatefulWidget> {
                                   setState(() {
                                     this.isUserBlocked = true;
                                   });
-                                  BlockUser blockUser = BlockUser(null, _post.authorId, _post.author, _discuz.id!, DateTime.now());
+                                  BlockUser blockUser = BlockUser(_post.authorId, _post.author, DateTime.now(), _discuz!);
                                   int insertId = await _blockUserDao.insertBlockUser(blockUser);
                                   log("insert id into block user ${insertId}");
                                   break;
@@ -418,7 +415,7 @@ class PostState extends State<PostStatefulWidget> {
                                   setState(() {
                                     this.isUserBlocked = false;
                                   });
-                                  _blockUserDao.deleteBlockUserByUid(_post.authorId,  _discuz.id!);
+                                  _blockUserDao.deleteBlockUserByUid(_post.authorId,  _discuz);
                                   break;
                                 }
                             }

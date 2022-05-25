@@ -62,7 +62,7 @@ class FavoriteForum{
   factory FavoriteForum.fromJson(Map<String, dynamic> json) => _$FavoriteForumFromJson(json);
 
   FavoriteForumInDatabase toDb(Discuz discuz){
-    return FavoriteForumInDatabase(null,favId,uid, id,idType, title, description, DateTime.now(), discuz.id!);
+    return FavoriteForumInDatabase(favId,uid, id,idType, title, description, DateTime.now(), discuz);
   }
 }
 

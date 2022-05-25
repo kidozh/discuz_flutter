@@ -1,38 +1,32 @@
-import 'package:discuz_flutter/converter/FloorDateTimeConverter.dart';
-import 'package:floor/floor.dart';
 
+
+import 'package:hive/hive.dart';
+
+import '../utility/ConstUtils.dart';
 import 'Discuz.dart';
 
+part 'FavoriteForumInDatabase.g.dart';
 
-@Entity(
-    foreignKeys:[
-      ForeignKey(
-          childColumns: ["discuz_id"],
-          parentColumns: ["id"],
-          entity: Discuz,
-          onDelete: ForeignKeyAction.cascade)
-    ]
-)
-@TypeConverters([FloorDateTimeConverter])
-class FavoriteForumInDatabase{
-  @PrimaryKey(autoGenerate: true)
-  final int? id;
-
-  int favid = 0, uid = 0;
+@HiveType(typeId: ConstUtils.HIVE_TYPE_ID_FAVORITE_FORUM)
+class FavoriteForumInDatabase extends HiveObject{
+  @HiveField(0)
+  int favid = 0;
+  @HiveField(1)
+  int uid = 0;
+  @HiveField(2)
   int idKey = 0;
-
+  @HiveField(3)
   String idType = "";
-
+  @HiveField(4)
   String title = "";
+  @HiveField(5)
   String description = "";
-
+  @HiveField(6)
   DateTime date = DateTime.now();
-
-  @ColumnInfo(name: "discuz_id")
-  final int discuzId;
+  @HiveField(7)
+  Discuz discuz;
 
   FavoriteForumInDatabase(
-      this.id,
       this.favid,
       this.uid,
       this.idKey,
@@ -40,5 +34,5 @@ class FavoriteForumInDatabase{
       this.title,
       this.description,
       this.date,
-      this.discuzId);
+      this.discuz);
 }

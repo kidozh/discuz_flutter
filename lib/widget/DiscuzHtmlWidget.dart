@@ -2,7 +2,7 @@
 import 'dart:developer';
 
 import 'package:discuz_flutter/dao/TrustHostDao.dart';
-import 'package:discuz_flutter/database/TrustHostDatabase.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/TrustHost.dart';
 import 'package:discuz_flutter/entity/User.dart';
@@ -13,7 +13,6 @@ import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
@@ -38,9 +37,8 @@ class DiscuzHtmlWidget extends StatelessWidget{
   DiscuzHtmlWidget(this.discuz,this.html,{this.callback});
 
   _trustHost(String host) async{
-    TrustHostDatabase trustHostDatabase = await DBHelper.getTrustHostDb();
-    TrustHostDao trustHostDao = trustHostDatabase.trustHostDatabaseDao;
-    await trustHostDao.insertTrustHost(TrustHost(null, host));
+    TrustHostDao trustHostDao = await AppDatabase.getTrustHostDao();
+    await trustHostDao.insertTrustHost(TrustHost(host));
   }
 
   String replaceCollapseTag(String string){
@@ -155,8 +153,8 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 // check host
                 if(uri.host != Uri.parse(discuz.baseURL).host){
                   // check if database exists
-                  TrustHostDatabase trustHostDatabase = await DBHelper.getTrustHostDb();
-                  TrustHostDao trustHostDao = trustHostDatabase.trustHostDatabaseDao;
+
+                  TrustHostDao trustHostDao = await AppDatabase.getTrustHostDao();
                   TrustHost? trustHostInDb = await trustHostDao.findTrustHostByName(uri.host);
                   if(trustHostInDb == null){
                     showPlatformDialog(context: context.buildContext, builder: (context){

@@ -2,11 +2,8 @@
 
 import 'dart:developer';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

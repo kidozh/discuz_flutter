@@ -5,18 +5,17 @@ import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/BlockUser.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/HotThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
-import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/ConstUtils.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -77,14 +76,14 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
   bool isUserBlocked = false;
 
   void loadDatabase() async{
-    final db = await DBHelper.getAppDb();
-    setState(() {
-      dao = db.viewHistoryDao;
+
+    setState(() async{
+      dao = await AppDatabase.getViewHistoryDao();
 
     });
-    blockUserDao = db.blockUserDao;
+    blockUserDao = await AppDatabase.getBlockUserDao();
     // check with block information
-    List<BlockUser> userBlockedInDB = await blockUserDao.isUserBlocked(_hotThread.authorId, _discuz.id!);
+    List<BlockUser> userBlockedInDB = await blockUserDao.isUserBlocked(_hotThread.authorId, _discuz);
     log("get blocked info ${userBlockedInDB} In DB");
     if (userBlockedInDB.isEmpty){
       setState(() {
@@ -201,7 +200,7 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
           setState(() {
             this.isUserBlocked = true;
           });
-          BlockUser blockUser = BlockUser(null, _hotThread.authorId, _hotThread.author, _discuz.id!, DateTime.now());
+          BlockUser blockUser = BlockUser(_hotThread.authorId, _hotThread.author, DateTime.now(), _discuz);
           int insertId = await blockUserDao.insertBlockUser(blockUser);
           log("insert id into block user ${insertId}");
         },
@@ -242,7 +241,7 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
                           setState(() {
                             this.isUserBlocked = false;
                           });
-                          await blockUserDao.deleteBlockUserByUid(_hotThread.authorId,  _discuz.id!);
+                          await blockUserDao.deleteBlockUserByUid(_hotThread.authorId,  _discuz);
                         },
                       )
                     ],
@@ -256,14 +255,14 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
     else if(read == true){
       return getHotThreadCard(read);
     }
-    else if(dao == null|| _discuz.id == null){
+    else if(dao == null){
       return getHotThreadCard(false);
     }
     else{
       return StreamBuilder(
-        stream: dao!.threadHistoryExistInDatabase(_discuz.id!, _hotThread.tid),
-        builder: (BuildContext context, AsyncSnapshot<ViewHistory?> snapshot) {
-          if(snapshot.data == null){
+        stream: dao!.threadHistoryExistInDatabase(_discuz, _hotThread.tid),
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          if(snapshot.data == false){
             return getHotThreadCard(false);
           }
           else{

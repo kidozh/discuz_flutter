@@ -1,13 +1,13 @@
 import 'dart:developer';
 
 import 'package:discuz_flutter/dao/UserDao.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/FavoriteThreadPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter/material.dart';
@@ -51,9 +51,8 @@ class DrawerState extends State<DrawerStatefulWidget>{
   }
 
   void _initDb() async {
-    final db = await DBHelper.getAppDb();
-    _userDao = db.userDao;
-    //_discuzDao = db.discuzDao;
+    _userDao = await AppDatabase.getUserDao();
+
   }
 
   Widget _buildFunctionNavWidgetList() {
@@ -200,9 +199,9 @@ class DrawerState extends State<DrawerStatefulWidget>{
     Discuz? discuz =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
     if (discuz != null) {
-      log("Get discuz id ${discuz.id}");
+      log("Get discuz id ${discuz.key}");
       return StreamBuilder(
-        stream: _userDao.findAllUsersStreamByDiscuzId(discuz.id!),
+        stream: _userDao.findAllUsersStreamByDiscuz(discuz),
         builder: (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
           if (snapshot.data == null) {
             return ListView(

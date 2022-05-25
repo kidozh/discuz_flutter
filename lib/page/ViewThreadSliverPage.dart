@@ -1,9 +1,9 @@
 import 'dart:collection';
 import 'dart:developer';
 
-import 'package:discuz_flutter/JsonResult/SmileyResult.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
+import 'package:discuz_flutter/dao/FavoriteThreadDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
@@ -16,7 +16,6 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/ExtraFuncInThreadScreen.dart';
 import 'package:discuz_flutter/screen/SmileyListScreen.dart';
 import 'package:discuz_flutter/utility/ConstUtils.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
@@ -96,7 +95,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   ViewThreadQuery viewThreadQuery = ViewThreadQuery();
   Map<String, List<Comment>> postCommentList = {};
   final FocusNode _focusNode = FocusNode();
-  AppDatabase? _db;
+
 
   // smiley=1, extra=2 or none = 0
   int dialogStatus = 0;
@@ -151,6 +150,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     _loadPreference();
     //_invalidateContent();
     bindFocusNode();
+    _loadDao();
+  }
+
+  void _loadDao() async{
+    setState(() async{
+      favoriteThreadDao = await AppDatabase.getFavoriteThreadDao();
+    });
+
   }
 
   void bindFocusNode(){
@@ -203,10 +210,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   void _loadPreference() async {
     ignoreFontCustomization =
         await UserPreferencesUtils.getDisableFontCustomizationPreference();
-    var db = await DBHelper.getAppDb();
-    setState(() {
-      _db = db;
-    });
+
 
   }
 
@@ -222,10 +226,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
     // prepare database
 
-    ViewHistoryDao viewHistoryDao = _db!.viewHistoryDao;
+    ViewHistoryDao viewHistoryDao = await AppDatabase.getViewHistoryDao();
 
     ViewHistory insertViewHistory = ViewHistory(
-        null,
         threadInfo.subject,
         contents,
         threadInfo.freeMessage,
@@ -233,7 +236,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         threadInfo.tid,
         threadInfo.author,
         threadInfo.authorId,
-        discuz.id!,
+        discuz,
         DateTime.now());
     int primaryKey = await viewHistoryDao.insertViewHistory(insertViewHistory);
     print("save history with primary key ${primaryKey}");
@@ -370,9 +373,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   }
 
   void favoriteThread() async{
-
-    _db!.favoriteThreadDao.insertFavoriteThread(
-        FavoriteThreadInDatabase(null, 1, _viewThreadResult.threadVariables.member_uid,
+    FavoriteThreadDao favoriteThreadDao = await AppDatabase.getFavoriteThreadDao();
+    favoriteThreadDao.insertFavoriteThread(
+        FavoriteThreadInDatabase(1, _viewThreadResult.threadVariables.member_uid,
             tid,
             "tid",
             _viewThreadResult.threadVariables.threadInfo.authorId,
@@ -381,7 +384,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             _viewThreadResult.threadVariables.threadInfo.author,
             _viewThreadResult.threadVariables.threadInfo.replies,
             DateTime.now(),
-            discuz.id!)
+            discuz)
     );
     client.favoriteThreadActionResult(_viewThreadResult.threadVariables.formHash, tid).then((value){
       if(value.errorResult!= null && value.errorResult!.key == "do_success"){
@@ -394,9 +397,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   }
 
   void unfavoriteThread() async{
-    FavoriteThreadInDatabase? favoriteThreadInDatabase = await _db!.favoriteThreadDao.getFavoriteThreadByTid(tid, discuz.id!);
+    FavoriteThreadDao favoriteThreadDao = await AppDatabase.getFavoriteThreadDao();
+    FavoriteThreadInDatabase? favoriteThreadInDatabase = favoriteThreadDao.getFavoriteThreadByTid(tid, discuz);
     if(favoriteThreadInDatabase!= null){
-      _db!.favoriteThreadDao.removeFavoriteThread(favoriteThreadInDatabase);
+      favoriteThreadDao.removeFavoriteThread(favoriteThreadInDatabase);
       client.unfavoriteThreadActionResult(_viewThreadResult.threadVariables.formHash, favoriteThreadInDatabase.favid).then((value){
         if(value.errorResult!= null && value.errorResult!.key == "do_success"){
           EasyLoading.showSuccess(S.of(context).discuzOperationMessage(value.errorResult!.key, value.errorResult!.content));
@@ -409,6 +413,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
 
   }
+
+  FavoriteThreadDao? favoriteThreadDao;
 
   Future<void> _loadForumContent() async {
     // check the availability
@@ -543,11 +549,11 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             : Text(_viewThreadResult.threadVariables.threadInfo.subject,
                 overflow: TextOverflow.ellipsis),
         trailingActions: [
-          if(_db != null)
+          if(favoriteThreadDao != null)
           IconButton(
               onPressed: () async{
                 VibrationUtils.vibrateWithClickIfPossible();
-                FavoriteThreadInDatabase? favoriteThreadInDatabase = await _db!.favoriteThreadDao.getFavoriteThreadByTid(tid, discuz.id!);
+                FavoriteThreadInDatabase? favoriteThreadInDatabase = favoriteThreadDao!.getFavoriteThreadByTid(tid, discuz);
                 if(favoriteThreadInDatabase == null){
                   favoriteThread();
                 }
@@ -556,7 +562,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                 }
               },
               icon: StreamBuilder(
-                stream: _db!.favoriteThreadDao.getFavoriteThreadStreamByTid(tid,discuz.id!),
+                stream: favoriteThreadDao!.getFavoriteThreadStreamByTid(tid,discuz),
                 builder: (context, AsyncSnapshot<FavoriteThreadInDatabase?> snapshot){
                   if(snapshot.data == null){
                     return Icon(Icons.favorite_border,size: 24,);

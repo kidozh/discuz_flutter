@@ -3,6 +3,7 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
@@ -11,7 +12,6 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -68,9 +68,8 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
   }
 
   void _initDb() async {
-    final db = await DBHelper.getAppDb();
-    setState(() {
-      _viewHistoryDao = db.viewHistoryDao;
+    setState(() async{
+      _viewHistoryDao = await AppDatabase.getViewHistoryDao();
     });
 
   }
@@ -93,22 +92,22 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
   }
 
   Future<void> _clearAllViewHistory() async{
-    final db = await DBHelper.getAppDb();
-    ViewHistoryDao viewHistoryDao = db.viewHistoryDao;
-    await viewHistoryDao.deleteAllHistories();
+
+    ViewHistoryDao viewHistoryDao = await AppDatabase.getViewHistoryDao();
+    await viewHistoryDao.deleteViewHistoryByDiscuz(discuz);
     Navigator.pop(context);
 
   }
 
   Future<void> _deleteViewHistory(ViewHistory viewHistory) async{
-    final db = await DBHelper.getAppDb();
-    var viewHistoryDao = db.viewHistoryDao;
-    int primaryKey = await viewHistoryDao.deleteViewHistories([viewHistory]);
-    print("delete primary key ${primaryKey} ${viewHistory.id}");
+
+    var viewHistoryDao = await AppDatabase.getViewHistoryDao();
+    viewHistoryDao.deleteViewHistories([viewHistory]);
+
     ScaffoldMessenger.of(context)
         .showSnackBar(
         SnackBar(
-          content: Text(S.of(context).successfullyDeleteViewHistoryContent("${viewHistory.subject} ($primaryKey)")),
+          content: Text(S.of(context).successfullyDeleteViewHistoryContent("${viewHistory.subject}")),
           action: SnackBarAction(
             label: S.of(context).undo,
             onPressed: (){
@@ -168,7 +167,7 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
           ],
         ),
         body: StreamBuilder(
-            stream: _viewHistoryDao!.findAllViewHistoriesStreamByDiscuzId(discuz.id!),
+            stream: _viewHistoryDao!.findAllViewHistoriesStreamByDiscuz(discuz),
             builder: (BuildContext context, AsyncSnapshot<List<ViewHistory>> snapshot){
               List<ViewHistory>? viewHistoryList = snapshot.data;
               if(viewHistoryList == null || viewHistoryList.isEmpty){
@@ -180,7 +179,7 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
                     ViewHistory viewHistory = viewHistoryList[index];
                     return Dismissible(
                       background: Container(color: Colors.pinkAccent),
-                      key: Key(viewHistory.id.toString()),
+                      key: Key(viewHistory.key),
                       child: InkWell(
                         child: Card(
                           child: Column(

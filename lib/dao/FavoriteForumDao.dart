@@ -1,26 +1,69 @@
 
 
 import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
-import 'package:floor/floor.dart';
+import 'package:hive/hive.dart';
 
-@dao
-abstract class FavoriteForumDao{
-  @Query("SELECT * FROM FavoriteForumInDatabase WHERE discuz_id=:discuzId")
-  Future<List<FavoriteForumInDatabase>> getFavoriteForumList(int discuzId);
+import '../entity/Discuz.dart';
 
-  @Query("SELECT * FROM FavoriteForumInDatabase WHERE discuz_id=:discuzId ORDER BY date DESC")
-  Stream<List<FavoriteForumInDatabase>> getFavoriteForumListStream(int discuzId);
+class FavoriteForumDao{
+  Box<FavoriteForumInDatabase> favoriteForumBox;
 
+  FavoriteForumDao(this.favoriteForumBox);
 
-  @Insert(onConflict: OnConflictStrategy.replace)
-  Future<int> insertFavoriteForum(FavoriteForumInDatabase favoriteThreadInDatabase);
+  Future<List<FavoriteForumInDatabase>> getFavoriteForumList(Discuz discuz) async{
+    return favoriteForumBox.values.where((element) => element.discuz == discuz).toList();
+  }
 
-  @delete
-  Future<void> removeFavoriteForum(FavoriteForumInDatabase favoriteThreadInDatabase);
+  Stream<List<FavoriteForumInDatabase>> getFavoriteForumListStream(Discuz discuz){
+    return favoriteForumBox.watch().map((event) {
+      List<FavoriteForumInDatabase> list = favoriteForumBox.values.where((element) => element.discuz==discuz).toList();
+      list.sort((a,b) => a.key > b.key);
+      return list;
+    }
+    );
+  }
 
-  @Query("SELECT * FROM FavoriteForumInDatabase WHERE idKey=:idInServer AND discuz_id=:discuzId  LIMIT 1")
-  Future<FavoriteForumInDatabase?> getFavoriteForumByFid(int idInServer, int discuzId);
+  Future<int> insertFavoriteForum(FavoriteForumInDatabase favoriteThreadInDatabase){
+    return favoriteForumBox.add(favoriteThreadInDatabase);
+  }
 
-  @Query("SELECT * FROM FavoriteForumInDatabase WHERE idKey=:idInServer AND discuz_id=:discuzId LIMIT 1")
-  Stream<FavoriteForumInDatabase?> getFavoriteForumStreamByFid(int idInServer, int discuzId);
+  Future<void> removeFavoriteForum(FavoriteForumInDatabase favoriteThreadInDatabase) async{
+    return favoriteForumBox.values.where((element) => element == favoriteThreadInDatabase).forEach((element) {
+      favoriteForumBox.delete(element.key);
+    });
+  }
+
+  FavoriteForumInDatabase? getFavoriteForumByFid(int idInServer, Discuz discuz){
+    if(favoriteForumBox.values.where((element) => element.idKey == idInServer && element.discuz == discuz).isNotEmpty){
+      return favoriteForumBox.values.where((element) => element.idKey == idInServer && element.discuz == discuz).first;
+    }
+    return null;
+  }
+
+  Stream<FavoriteForumInDatabase?> getFavoriteForumStreamByFid(int idInServer, Discuz discuz){
+    return favoriteForumBox.watch().map((event) => favoriteForumBox.values.where((element) => element.idKey == idInServer && element.discuz == discuz).first);
+  }
+
 }
+
+// @dao
+// abstract class FavoriteForumDao{
+//   @Query("SELECT * FROM FavoriteForumInDatabase WHERE discuz_id=:discuzId")
+//   Future<List<FavoriteForumInDatabase>> getFavoriteForumList(int discuzId);
+//
+//   @Query("SELECT * FROM FavoriteForumInDatabase WHERE discuz_id=:discuzId ORDER BY date DESC")
+//   Stream<List<FavoriteForumInDatabase>> getFavoriteForumListStream(int discuzId);
+//
+//
+//   @Insert(onConflict: OnConflictStrategy.replace)
+//   Future<int> insertFavoriteForum(FavoriteForumInDatabase favoriteThreadInDatabase);
+//
+//   @delete
+//   Future<void> removeFavoriteForum(FavoriteForumInDatabase favoriteThreadInDatabase);
+//
+//   @Query("SELECT * FROM FavoriteForumInDatabase WHERE idKey=:idInServer AND discuz_id=:discuzId  LIMIT 1")
+//   Future<FavoriteForumInDatabase?> getFavoriteForumByFid(int idInServer, int discuzId);
+//
+//   @Query("SELECT * FROM FavoriteForumInDatabase WHERE idKey=:idInServer AND discuz_id=:discuzId LIMIT 1")
+//   Stream<FavoriteForumInDatabase?> getFavoriteForumStreamByFid(int idInServer, int discuzId);
+// }

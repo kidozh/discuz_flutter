@@ -1,10 +1,8 @@
 
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
-import 'package:discuz_flutter/JsonResult/FavoriteForumResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/dao/FavoriteForumDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
@@ -17,8 +15,6 @@ import 'package:discuz_flutter/page/DisplayForumSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/ConstUtils.dart';
-import 'package:discuz_flutter/utility/DBHelper.dart';
-import 'package:discuz_flutter/utility/GlobalTheme.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -102,11 +98,11 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
   List<FavoriteForumInDatabase> favoriteForumInDbList = [];
 
   void _loadFavoriteForum() async{
-    _db = await DBHelper.getAppDb();
+
     Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
-    if(discuz != null && discuz.id != null){
-      FavoriteForumDao favoriteForumDao = _db.favoriteForumDao;
-      favoriteForumDao.getFavoriteForumListStream(discuz.id!).listen((event) {
+    if(discuz != null){
+      FavoriteForumDao favoriteForumDao = await AppDatabase.getFavoriteForumDao();
+      favoriteForumDao.getFavoriteForumListStream(discuz).listen((event) {
         print("Get new event ${event}");
         setState(() {
           favoriteForumInDbList = event;

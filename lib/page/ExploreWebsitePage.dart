@@ -55,7 +55,7 @@ class ExploreWebsiteState extends State<ExploreWebsitePage> {
       }
       else{
 
-        return InnerWebviewScreen(ValueKey(discuzAndUser.discuz!.id!),discuzAndUser.discuz!, discuzAndUser.user, initialURL: initialURL,);
+        return InnerWebviewScreen(ValueKey(discuzAndUser.discuz),discuzAndUser.discuz!, discuzAndUser.user, initialURL: initialURL,);
       }
     });
 
@@ -171,7 +171,7 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
 
   void loadCookieByUser(Discuz _discuz,User? _user) async {
     if(_user!=null){
-      PersistCookieJar savedCookieJar = await NetworkUtils.getPersistentCookieJarByUserId(_user.id!);
+      PersistCookieJar savedCookieJar = await NetworkUtils.getPersistentCookieJarByUser(_user);
       List<Cookie> cookies =
       await savedCookieJar.loadForRequest(Uri.parse(_discuz.baseURL));
       webviewCookieManager.setCookies(cookies, origin: _discuz.baseURL);
