@@ -9,6 +9,7 @@ import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/utility/ConstUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
@@ -18,6 +19,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'DisplayForumSliverPage.dart';
@@ -52,7 +54,6 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget>{
 
 
   late FavoriteForumDao _favoriteForumDao;
-  Stream<List<FavoriteForumInDatabase>> _streamInDb = Stream.fromIterable([]);
   int progress = 0;
   late MobileApiClient client;
 
@@ -72,7 +73,7 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget>{
 
     _favoriteForumDao = await AppDatabase.getFavoriteForumDao();
     setState(() {
-      _streamInDb = _favoriteForumDao.getFavoriteForumListStream(_discuz);
+      _favoriteForumDao = _favoriteForumDao;
     });
 
     var dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
@@ -100,7 +101,7 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget>{
       for(var favoriteForum in FavoriteForumListInServer){
         // save them one by one
         FavoriteForumInDatabase? favoriteForumInDatabase =
-        await this._favoriteForumDao.getFavoriteForumByFid(favoriteForum.id, _discuz);
+        this._favoriteForumDao.getFavoriteForumByFid(favoriteForum.id, _discuz);
         print("Get FavoriteForum In DB ${FavoriteForumInDatabase}");
         if(favoriteForumInDatabase == null){
           // insert it
@@ -133,25 +134,30 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget>{
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: _streamInDb,
-        builder: (context, AsyncSnapshot<List<FavoriteForumInDatabase>> snapshot){
-          if(snapshot.data!=null && snapshot.data!.length!= 0){
+    if(_favoriteForumDao == null){
+      return BlankScreen();
+    }
+    else{
+      return ValueListenableBuilder(
+        valueListenable: _favoriteForumDao!.favoriteForumBox.listenable(),
+        builder: (BuildContext context, Box<FavoriteForumInDatabase> value, Widget? child) {
+          List<FavoriteForumInDatabase> favoriteForumList = _favoriteForumDao!.getFavoriteForumList(_discuz);
+          if(favoriteForumList.isNotEmpty){
             return ListView.builder(
                 itemBuilder:(context, index){
-                  return FavoriteForumCardWidget(_discuz, _user, snapshot.data![index]);
+                  return FavoriteForumCardWidget(_discuz, _user, favoriteForumList[index]);
                 },
 
-                itemCount: snapshot.data?.length
+                itemCount: favoriteForumList.length
             );
           }
           else{
             return EmptyListScreen();
           }
+        },
 
-        }
-    );
-
+      );
+    }
   }
 
 }

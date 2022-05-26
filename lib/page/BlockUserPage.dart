@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class BlockUserPage extends StatelessWidget {
   late final Discuz discuz;
@@ -52,9 +53,9 @@ class _BlockUserState extends State<BlockUserStatefulWidget> {
 
 
   void _initDb() async {
-
-    setState(() async{
-      _blockUserDao = await AppDatabase.getBlockUserDao();
+    BlockUserDao blockUserDao = await AppDatabase.getBlockUserDao();
+    setState(() {
+      _blockUserDao = blockUserDao;
     });
 
   }
@@ -70,11 +71,11 @@ class _BlockUserState extends State<BlockUserStatefulWidget> {
           title: Text(S.of(context).blockedUserList),
           automaticallyImplyLeading: true,
         ),
-        body: StreamBuilder(
-          stream: _blockUserDao!.getBlockUserListStream(_discuz),
-          builder: (BuildContext context, AsyncSnapshot<List<BlockUser>> snapshot) {
-            List<BlockUser>? blockUserList = snapshot.data;
-            if (blockUserList == null || blockUserList.isEmpty){
+        body: ValueListenableBuilder(
+          valueListenable:_blockUserDao!.blockUserBox.listenable(),
+          builder: (BuildContext context, value, Widget? child) {
+            List<BlockUser>? blockUserList = _blockUserDao!.getBlockUserListByDiscuz(_discuz);
+            if ( blockUserList.isEmpty){
               return EmptyListScreen();
             }
             else{
@@ -82,32 +83,32 @@ class _BlockUserState extends State<BlockUserStatefulWidget> {
                 itemCount: blockUserList.length,
                 itemBuilder: (context, index){
                   return Dismissible(
-                      background: Container(color: Colors.pinkAccent),
-                      key: Key(index.toString()),
-                      child: InkWell(
-                        child: Card(
-                          child: Container(
-                            width: double.infinity,
-                            child: Padding(
+                    background: Container(color: Colors.pinkAccent),
+                    key: Key(index.toString()),
+                    child: InkWell(
+                      child: Card(
+                        child: Container(
+                          width: double.infinity,
+                          child: Padding(
                               padding: EdgeInsets.all(8),
                               child: ListTile(
                                 leading: UserAvatar(_discuz, User("","",blockUserList[index].name,"",0,blockUserList[index].uid, 0, _discuz)),
                                 title: Text(blockUserList[index].name),
                               )
 
-                            ),
                           ),
                         ),
                       ),
-                      onDismissed: (direction) async{
-                        _blockUserDao?.deleteBlockUser(blockUserList[index]);
-                      },
+                    ),
+                    onDismissed: (direction) async{
+                      _blockUserDao?.deleteBlockUser(blockUserList[index]);
+                    },
                   );
                 },
               );
             }
           },
-        ),
+        )
       );
     }
   }

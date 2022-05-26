@@ -18,6 +18,7 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'DisplayForumSliverPage.dart';
@@ -68,8 +69,9 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
   }
 
   void _initDb() async {
-    setState(() async{
-      _viewHistoryDao = await AppDatabase.getViewHistoryDao();
+    ViewHistoryDao viewHistoryDao = await AppDatabase.getViewHistoryDao();
+    setState(() {
+      _viewHistoryDao = viewHistoryDao;
     });
 
   }
@@ -166,90 +168,81 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
             )
           ],
         ),
-        body: StreamBuilder(
-            stream: _viewHistoryDao!.findAllViewHistoriesStreamByDiscuz(discuz),
-            builder: (BuildContext context, AsyncSnapshot<List<ViewHistory>> snapshot){
-              List<ViewHistory>? viewHistoryList = snapshot.data;
-              if(viewHistoryList == null || viewHistoryList.isEmpty){
-                return EmptyListScreen();
-              }
-              else {
-                return ListView.builder(
-                  itemBuilder: (context, index){
-                    ViewHistory viewHistory = viewHistoryList[index];
-                    return Dismissible(
-                      background: Container(color: Colors.pinkAccent),
-                      key: Key(viewHistory.key),
-                      child: InkWell(
-                        child: Card(
-                          child: Column(
-                            children: [
-                              ListTile(
-                                leading: Container(
-                                  width: 32,
-                                  child: viewHistory.type == "thread" ?
-                                  getUserAvatar(viewHistory.authorId, viewHistory.author) :
-                                      CircleAvatar(
-                                        backgroundColor: Theme.of(context).primaryColor,
-                                        child: Icon(Icons.forum_outlined, color: Colors.white, size: 16,),
-                                      )
-                                  ,
-                                ),
-                                title: Text(viewHistory.title),
-                                subtitle: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    if(viewHistory.type == "thread")
-                                    Icon(PlatformIcons(context).person, size: 12,),
-                                    if(viewHistory.type == "thread")
-                                    Text(viewHistory.author, style: TextStyle(fontSize: 12),),
-                                    SizedBox(width: 4,),
-                                    Icon(Icons.access_time, size: 12,),
-                                    Text(TimeDisplayUtils.getLocaledTimeDisplay(context,viewHistory.updateTime), style: TextStyle(fontSize: 12),)
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-
-
-                        ),
-                        onTap: () async{
-                          VibrationUtils.vibrateWithClickIfPossible();
-                          User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-                          if(viewHistory.type == "thread"){
-                            await Navigator.push(
-                                context,
-                                platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz,user, viewHistory.identification))
-                            );
-                          }
-                          else if(viewHistory.type == "forum"){
-                            await Navigator.push(
-                                context,
-                                platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(discuz, user, viewHistory.identification))
-                            );
-                          }
-                        },
-                      ),
-                      onDismissed: (direction) async{
-                        await _deleteViewHistory(viewHistory);
-                      },
-                    );
-                  },
-                  itemCount: viewHistoryList.length,
-                );
-              }
-
+        body: ValueListenableBuilder(
+          valueListenable: _viewHistoryDao!.viewHistoryBox.listenable(),
+          builder: (context, Box<ViewHistory> box, widget){
+            List<ViewHistory> viewHistoryList = _viewHistoryDao!.findAllViewHistoriesByDiscuz(discuz);
+            if(viewHistoryList == null || viewHistoryList.isEmpty){
+              return EmptyListScreen();
             }
-        ),
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () {
-        //     VibrationUtils.vibrateWithClickIfPossible();
-        //     _showDeleteAllDialog(context);
-        //   },
-        //   tooltip: S.of(context).clearAllViewHistories,
-        //   child: Icon(Icons.delete_sweep),
-        // ),
+            else {
+              return ListView.builder(
+                itemBuilder: (context, index){
+                  ViewHistory viewHistory = viewHistoryList[index];
+                  return Dismissible(
+                    background: Container(color: Colors.pinkAccent),
+                    key: Key(viewHistory.key.toString()),
+                    child: InkWell(
+                      child: Card(
+                        child: Column(
+                          children: [
+                            ListTile(
+                              leading: Container(
+                                width: 32,
+                                child: viewHistory.type == "thread" ?
+                                getUserAvatar(viewHistory.authorId, viewHistory.author) :
+                                CircleAvatar(
+                                  backgroundColor: Theme.of(context).primaryColor,
+                                  child: Icon(Icons.forum_outlined, color: Colors.white, size: 16,),
+                                )
+                                ,
+                              ),
+                              title: Text(viewHistory.title),
+                              subtitle: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  if(viewHistory.type == "thread")
+                                    Icon(PlatformIcons(context).person, size: 12,),
+                                  if(viewHistory.type == "thread")
+                                    Text(viewHistory.author, style: TextStyle(fontSize: 12),),
+                                  SizedBox(width: 4,),
+                                  Icon(Icons.access_time, size: 12,),
+                                  Text(TimeDisplayUtils.getLocaledTimeDisplay(context,viewHistory.updateTime), style: TextStyle(fontSize: 12),)
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+
+                      ),
+                      onTap: () async{
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+                        if(viewHistory.type == "thread"){
+                          await Navigator.push(
+                              context,
+                              platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz,user, viewHistory.identification))
+                          );
+                        }
+                        else if(viewHistory.type == "forum"){
+                          await Navigator.push(
+                              context,
+                              platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(discuz, user, viewHistory.identification))
+                          );
+                        }
+                      },
+                    ),
+                    onDismissed: (direction) async{
+                      await _deleteViewHistory(viewHistory);
+                    },
+                  );
+                },
+                itemCount: viewHistoryList.length,
+              );
+            }
+          }
+        )
       );
     }
     else{

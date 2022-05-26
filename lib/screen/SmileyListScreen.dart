@@ -15,6 +15,7 @@ import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'BlankScreen.dart';
@@ -261,14 +262,11 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget>{
       return NullDiscuzScreen();
     }
     else{
-      return StreamBuilder(
-        stream: _smileyDao!.findAllSmileyStreamByDiscuz(discuz),
-        builder: (buildContext, AsyncSnapshot<List<Smiley>> snapshot){
-          List<Smiley>? smileyData = snapshot.data;
-          if(smileyData == null){
-            return BlankScreen();
-          }
-          else if(smileyData.isEmpty){
+      return ValueListenableBuilder(
+        valueListenable: _smileyDao!.smileyBox.listenable(),
+        builder: (BuildContext context, Box<Smiley> value, Widget? child) {
+          List<Smiley> smileyData = _smileyDao!.findAllSmileyByDiscuz(discuz);
+          if(smileyData.isEmpty){
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,

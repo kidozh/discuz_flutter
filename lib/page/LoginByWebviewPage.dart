@@ -212,8 +212,9 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
         try{
           final dao = await AppDatabase.getUserDao();
           User user = value.variables.getUser(discuz);
+          user.discuz = discuz;
           // search in database first
-          User? userInDataBase = await dao.findUsersByDiscuzAndUid(discuz, value.variables.member_uid);
+          User? userInDataBase = dao.findUsersByDiscuzAndUid(discuz, value.variables.member_uid);
           if(userInDataBase != null){
             user = userInDataBase;
           }

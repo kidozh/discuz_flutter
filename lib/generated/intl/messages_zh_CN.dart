@@ -437,6 +437,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "unblockUser": MessageLookupByLibrary.simpleMessage("解除屏蔽"),
         "undo": MessageLookupByLibrary.simpleMessage("撤销"),
         "updateAt": MessageLookupByLibrary.simpleMessage("更新于 %T"),
+        "upgrade_notification_subtitle": MessageLookupByLibrary.simpleMessage(
+            "由于Floor库可预期的废弃，因此我们已经使用Hive管理数据。很抱歉的通知您，您之前的旧数据因库的废弃而停用。点此了解更多。"),
+        "upgrade_notification_title":
+            MessageLookupByLibrary.simpleMessage("升级提醒"),
         "uploadCompressedImageToServer":
             MessageLookupByLibrary.simpleMessage("适当压缩的图片（推荐）"),
         "uploadImageError1": MessageLookupByLibrary.simpleMessage("不支持此类扩展名."),

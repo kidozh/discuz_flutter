@@ -25,6 +25,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 
 import 'EmptyScreen.dart';
@@ -57,7 +58,6 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
   late MobileApiClient _client;
   DiscuzIndexResult? result = null;
   DiscuzError? _error;
-  late AppDatabase _db;
   late EasyRefreshController _controller;
   late ScrollController _scrollController;
 
@@ -95,21 +95,13 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
     _loadFavoriteForum();
   }
 
-  List<FavoriteForumInDatabase> favoriteForumInDbList = [];
+  FavoriteForumDao? favoriteForumDao;
 
   void _loadFavoriteForum() async{
-
-    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
-    if(discuz != null){
-      FavoriteForumDao favoriteForumDao = await AppDatabase.getFavoriteForumDao();
-      favoriteForumDao.getFavoriteForumListStream(discuz).listen((event) {
-        print("Get new event ${event}");
-        setState(() {
-          favoriteForumInDbList = event;
-        });
-      });
-
-    }
+    FavoriteForumDao dao = await AppDatabase.getFavoriteForumDao();
+    setState(() {
+      favoriteForumDao = dao;
+    });
 
   }
 
@@ -277,14 +269,22 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
             )),
       ),
       slivers: <Widget>[
-
-        SliverList(delegate: SliverChildBuilderDelegate(
-            (context, index){
-              return FavoriteForumCardWidget(discuz,user,favoriteForumInDbList[index]);
-            },
-            childCount: favoriteForumInDbList.length
-            ),
-
+        if(favoriteForumDao != null)
+        ValueListenableBuilder(
+          valueListenable: favoriteForumDao!.favoriteForumBox.listenable(),
+          builder: (BuildContext context, value, Widget? child) {
+            List<
+                FavoriteForumInDatabase> favoriteForumInDbList = favoriteForumDao!
+                .getFavoriteForumList(discuz);
+            return SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  return FavoriteForumCardWidget(
+                      discuz, user, favoriteForumInDbList[index]);
+                },
+                    childCount: favoriteForumInDbList.length
+                )
+            );
+          }
         ),
         SliverList(
           delegate: SliverChildBuilderDelegate(

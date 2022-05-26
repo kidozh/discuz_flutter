@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class ManageAccountPage extends StatelessWidget{
   Discuz discuz;
@@ -76,9 +77,9 @@ class ManageAccountState extends State<ManageAccountStateWidget>{
   }
 
   void _initDb() async {
-
-    setState(() async{
-      _userDao = await AppDatabase.getUserDao();
+    UserDao userDao = await AppDatabase.getUserDao();
+    setState((){
+      _userDao = userDao;
     });
 
   }
@@ -139,18 +140,17 @@ class ManageAccountState extends State<ManageAccountStateWidget>{
   Widget build(BuildContext context) {
     // TODO: implement build
     if(_userDao != null){
-      return StreamBuilder(
-          stream: _userDao!.findAllUsersStreamByDiscuz(discuz),
-          builder: (BuildContext context, AsyncSnapshot<List<User>> snapshot){
-            List<User>? userList = snapshot.data;
-            if(userList == null || userList.isEmpty){
-              return NullUserScreen();
-            }
-            else {
-              return _buildUserListWidget(userList);
-            }
-
+      return ValueListenableBuilder(
+        valueListenable: _userDao!.userBox.listenable(),
+        builder: (BuildContext context, Box<User> value, Widget? child) {
+          List<User> userList = _userDao!.findAllUsersByDiscuz(discuz);
+          if(userList.isEmpty){
+            return NullUserScreen();
           }
+          else {
+            return _buildUserListWidget(userList);
+          }
+        },
       );
     }
     else{

@@ -11,17 +11,17 @@ class UserDao{
     return userBox.values.toList();
   }
 
-  Stream<List<User>> findAllDiscuzStream(){
-    return userBox.watch().map((event) => userBox.values.toList());
-  }
+  // Stream<List<User>> findAllDiscuzStream(){
+  //   return userBox.watch().map((event) => userBox.values.toList());
+  // }
 
   List<User> findAllUsersByDiscuz(Discuz discuz){
     return userBox.values.where((element) => element.discuz == discuz).toList();
   }
 
-  Stream<List<User>> findAllUsersStreamByDiscuz(Discuz discuz){
-    return userBox.watch().map((event) => userBox.values.where((element) => element.discuz == discuz).toList());
-  }
+  // Stream<List<User>> findAllUsersStreamByDiscuz(Discuz discuz){
+  //   return userBox.watch().map((event) => userBox.values.where((element) => element.discuz == discuz).toList());
+  // }
 
   Future<int> insert(User user){
     return userBox.add(user);

@@ -201,7 +201,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   //
   List<Discuz> _allDiscuzs = [];
-  Stream<List<Discuz>>? _discuzListStream;
 
 
   _MyHomePageState() {
@@ -321,9 +320,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   void _queryDiscuzList() async {
     final dao = await AppDatabase.getDiscuzDao();
-    setState(() {
-      this._discuzListStream = dao.findAllDiscuzStream();
-    });
 
     _allDiscuzs = await dao.findAllDiscuzs();
     log("recv discuz list ${_allDiscuzs.length}");

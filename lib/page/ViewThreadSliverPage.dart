@@ -36,6 +36,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:intl/intl.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
@@ -561,17 +562,20 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                   unfavoriteThread();
                 }
               },
-              icon: StreamBuilder(
-                stream: favoriteThreadDao!.getFavoriteThreadStreamByTid(tid,discuz),
-                builder: (context, AsyncSnapshot<FavoriteThreadInDatabase?> snapshot){
-                  if(snapshot.data == null){
-                    return Icon(Icons.favorite_border,size: 24,);
-                  }
-                  else{
-                    return Icon(Icons.favorite,size: 24);
-                  }
+              icon: ValueListenableBuilder(
+                valueListenable: favoriteThreadDao!.favoriteThreadBox.listenable(),
+                builder: (BuildContext context, value, Widget? child) {
+                    FavoriteThreadInDatabase? favList = favoriteThreadDao!.getFavoriteThreadByTid(tid, discuz);
+                    if(favList == null){
+                      return Icon(Icons.favorite_border,size: 24,);
+                    }
+                    else{
+                      return Icon(Icons.favorite,size: 24);
+                    }
                 },
-              )),
+
+              )
+          ),
 
 
           IconButton(

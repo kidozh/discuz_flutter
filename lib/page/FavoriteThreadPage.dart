@@ -10,6 +10,7 @@ import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/utility/ConstUtils.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
@@ -21,6 +22,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'UserProfilePage.dart';
@@ -63,8 +65,8 @@ class FavoriteThreadState extends State<FavoriteThreadStatefulWidget>{
   late User? _user;
 
   // database
-  late FavoriteThreadDao _favoriteThreadDao;
-  Stream<List<FavoriteThreadInDatabase>> _streamInDb = Stream.fromIterable([]);
+  FavoriteThreadDao? _favoriteThreadDao;
+
   int progress = 0;
   late MobileApiClient client;
 
@@ -84,7 +86,7 @@ class FavoriteThreadState extends State<FavoriteThreadStatefulWidget>{
 
     _favoriteThreadDao = await AppDatabase.getFavoriteThreadDao();
     setState(() {
-      _streamInDb = _favoriteThreadDao.getFavoriteThreadListStream(_discuz);
+      _favoriteThreadDao = _favoriteThreadDao;
     });
 
     var dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
@@ -112,16 +114,16 @@ class FavoriteThreadState extends State<FavoriteThreadStatefulWidget>{
       for(var favoriteThread in favoriteThreadListInServer){
         // save them one by one
         FavoriteThreadInDatabase? favoriteThreadInDatabase =
-        await this._favoriteThreadDao.getFavoriteThreadByTid(favoriteThread.id, _discuz);
+        await this._favoriteThreadDao!.getFavoriteThreadByTid(favoriteThread.id, _discuz);
         print("Get favoriteThread In DB ${favoriteThreadInDatabase}");
         if(favoriteThreadInDatabase == null){
           // insert it
-          int insertId = await _favoriteThreadDao.insertFavoriteThread(favoriteThread.toDb(_discuz));
+          int insertId = await _favoriteThreadDao!.insertFavoriteThread(favoriteThread.toDb(_discuz));
           print("Inserted id ${insertId}");
         }
         else if(favoriteThreadInDatabase.favid != favoriteThread.favId){
           favoriteThreadInDatabase.favid = favoriteThread.favId;
-          int insertId = await _favoriteThreadDao.insertFavoriteThread(favoriteThreadInDatabase);
+          int insertId = await _favoriteThreadDao!.insertFavoriteThread(favoriteThreadInDatabase);
         }
       }
 
@@ -145,24 +147,29 @@ class FavoriteThreadState extends State<FavoriteThreadStatefulWidget>{
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: _streamInDb,
-        builder: (context, AsyncSnapshot<List<FavoriteThreadInDatabase>> snapshot){
-          if(snapshot.data!=null && snapshot.data!.length!= 0){
+    if(_favoriteThreadDao == null){
+      return BlankScreen();
+    }
+    else{
+      return ValueListenableBuilder(
+        valueListenable: _favoriteThreadDao!.favoriteThreadBox.listenable(),
+        builder: (BuildContext context, Box<FavoriteThreadInDatabase> value, Widget? child) {
+          List<FavoriteThreadInDatabase> favoriteList = _favoriteThreadDao!.getFavoriteThreadList(_discuz);
+          if(favoriteList.isNotEmpty){
             return ListView.builder(
                 itemBuilder:(context, index){
-                  return FavoriteThreadCardWidget(_discuz, _user, snapshot.data![index]);
+                  return FavoriteThreadCardWidget(_discuz, _user, favoriteList[index]);
                 },
 
-                itemCount: snapshot.data?.length
+                itemCount: favoriteList.length
             );
           }
           else{
             return EmptyListScreen();
           }
-
-        }
-    );
+        },
+      );
+    }
 
   }
 

@@ -11,9 +11,9 @@ class TrustHostDao{
     return trustHostBox.values.toList();
   }
 
-  Stream<List<TrustHost>> findAllTrustHostsStream(){
-    return trustHostBox.watch().map((event) => trustHostBox.values.toList());
-  }
+  // Stream<List<TrustHost>> findAllTrustHostsStream(){
+  //   return trustHostBox.watch().map((event) => trustHostBox.values.toList());
+  // }
 
   Future<int> insertTrustHost(TrustHost trustHost){
     return trustHostBox.add(trustHost);

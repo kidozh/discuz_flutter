@@ -2,6 +2,7 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class ViewHistoryDao{
   Box<ViewHistory> viewHistoryBox;
@@ -12,9 +13,12 @@ class ViewHistoryDao{
     return viewHistoryBox.values.where((element) => element.discuz == discuz).toList();
   }
 
-  Stream<List<ViewHistory>> findAllViewHistoriesStreamByDiscuz(Discuz discuz){
-    return viewHistoryBox.watch().map((event) => viewHistoryBox.values.where((element) => element.discuz == discuz).toList());
-  }
+  // Stream<List<ViewHistory>> findAllViewHistoriesStreamByDiscuz(Discuz discuz){
+  //
+  //   return viewHistoryBox.watch().map((event) => viewHistoryBox.values
+  //       .where((element) => element.discuz == discuz)
+  //       .toList());
+  // }
 
   Future<int> insertViewHistory(ViewHistory viewHistory){
     return viewHistoryBox.add(viewHistory);
@@ -46,9 +50,9 @@ class ViewHistoryDao{
     return viewHistoryBox.watch().map((event) => viewHistoryBox.values.where((element) => element.identification == tid && element.discuz == discuz && element.type == "thread").isNotEmpty);
   }
 
-  Stream<bool> forumHistoryExistInDatabase(Discuz discuz, int fid){
-    return viewHistoryBox.watch().map((event) => viewHistoryBox.values.where((element) => element.identification == fid && element.discuz == discuz && element.type == "forum").isNotEmpty);
-  }
+  // Stream<bool> forumHistoryExistInDatabase(Discuz discuz, int fid){
+  //   return viewHistoryBox.watch().map((event) => viewHistoryBox.values.where((element) => element.identification == fid && element.discuz == discuz && element.type == "forum").isNotEmpty);
+  // }
 
   ViewHistory? forumExistInDatabase(Discuz discuz, int fid){
     if(viewHistoryBox.values.where((element) => element.identification == fid && element.discuz == discuz && element.type == "forum").isNotEmpty){

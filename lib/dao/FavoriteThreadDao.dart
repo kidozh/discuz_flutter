@@ -14,9 +14,9 @@ class FavoriteThreadDao{
   }
 
 
-  Stream<List<FavoriteThreadInDatabase>> getFavoriteThreadListStream(Discuz discuz){
-    return favoriteThreadBox.watch().map((event) => favoriteThreadBox.values.where((element) => element.discuz == discuz).toList());
-  }
+  // Stream<List<FavoriteThreadInDatabase>> getFavoriteThreadListStream(Discuz discuz){
+  //   return favoriteThreadBox.watch().map((event) => favoriteThreadBox.values.where((element) => element.discuz == discuz).toList());
+  // }
 
   Future<int> insertFavoriteThread(FavoriteThreadInDatabase favoriteThreadInDatabase){
     return favoriteThreadBox.add(favoriteThreadInDatabase);
@@ -37,9 +37,9 @@ class FavoriteThreadDao{
     }
   }
 
-  Stream<FavoriteThreadInDatabase?> getFavoriteThreadStreamByTid(int idInServer, Discuz discuz){
-    return favoriteThreadBox.watch().map((event) => favoriteThreadBox.values.where((element) => element.idInServer == idInServer && element.discuz == discuz).first);
-  }
+  // Stream<FavoriteThreadInDatabase?> getFavoriteThreadStreamByTid(int idInServer, Discuz discuz){
+  //   return favoriteThreadBox.watch().map((event) => favoriteThreadBox.values.where((element) => element.idInServer == idInServer && element.discuz == discuz).first);
+  // }
 
 }
 

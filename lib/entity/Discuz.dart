@@ -55,5 +55,38 @@ class Discuz extends HiveObject {
       this.uCenterURL,
       this.defaultFid);
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Discuz &&
+          runtimeType == other.runtimeType &&
+          discuzVersion == other.discuzVersion &&
+          charset == other.charset &&
+          apiVersion == other.apiVersion &&
+          pluginVersion == other.pluginVersion &&
+          regname == other.regname &&
+          qqconnect == other.qqconnect &&
+          wsqqqconnect == other.wsqqqconnect &&
+          wsqhideregister == other.wsqhideregister &&
+          siteName == other.siteName &&
+          siteId == other.siteId &&
+          uCenterURL == other.uCenterURL &&
+          defaultFid == other.defaultFid &&
+          baseURL == other.baseURL;
 
+  @override
+  int get hashCode =>
+      discuzVersion.hashCode ^
+      charset.hashCode ^
+      apiVersion.hashCode ^
+      pluginVersion.hashCode ^
+      regname.hashCode ^
+      qqconnect.hashCode ^
+      wsqqqconnect.hashCode ^
+      wsqhideregister.hashCode ^
+      siteName.hashCode ^
+      siteId.hashCode ^
+      uCenterURL.hashCode ^
+      defaultFid.hashCode ^
+      baseURL.hashCode;
 }

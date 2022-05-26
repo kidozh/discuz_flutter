@@ -52,6 +52,9 @@ class _AddDiscuzFormFieldState
 
     final dao = await AppDatabase.getDiscuzDao();
     int insertId = await dao.insertDiscuz(discuz);
+    if(dao.getDiscuzByIndex(insertId)!=null){
+      discuz = dao.getDiscuzByIndex(insertId)!;
+    }
 
     Provider.of<DiscuzAndUserNotifier>(context, listen: false).setDiscuz(discuz);
     Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(null);

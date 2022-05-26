@@ -30,6 +30,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 
 class DisplayForumSliverPage extends StatelessWidget {
@@ -339,10 +340,11 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         //middle: Text(S.of(context).forumDisplayTitle),
         trailingActions: [
           if(favoriteForumDao != null)
-            StreamBuilder(
-              stream: favoriteForumDao!.getFavoriteForumStreamByFid(fid,discuz),
-              builder: (context, AsyncSnapshot<FavoriteForumInDatabase?> snapshot){
-                if(snapshot.data == null){
+            ValueListenableBuilder(
+              valueListenable: favoriteForumDao!.favoriteForumBox.listenable(),
+              builder: (BuildContext context, value, Widget? child) {
+                FavoriteForumInDatabase? favoriteForumInDb = favoriteForumDao!.getFavoriteForumByFid(fid, discuz);
+                if(favoriteForumInDb == null){
                   return IconButton(
                     icon: Icon(Icons.favorite_border,size: 24),
                     onPressed: () {
@@ -362,6 +364,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 }
               },
             ),
+
           IconButton(
               icon: Icon(Icons.filter_alt_outlined,size: 24),
               onPressed: () {

@@ -12,6 +12,7 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'BlockUserPage.dart';
@@ -200,10 +201,11 @@ class DrawerState extends State<DrawerStatefulWidget>{
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
     if (discuz != null) {
       log("Get discuz id ${discuz.key}");
-      return StreamBuilder(
-        stream: _userDao.findAllUsersStreamByDiscuz(discuz),
-        builder: (BuildContext context, AsyncSnapshot<List<User>> snapshot) {
-          if (snapshot.data == null) {
+      return ValueListenableBuilder(
+        valueListenable: _userDao.userBox.listenable(),
+        builder: (BuildContext context, Box<User> value, Widget? child) {
+          List<User> userList = _userDao.findAllUsersByDiscuz(discuz);
+          if (userList.isEmpty) {
             return ListView(
               children: [
                 ListTile(
@@ -219,7 +221,7 @@ class DrawerState extends State<DrawerStatefulWidget>{
               ],
             );
           } else {
-            List<User> userList = snapshot.data!;
+
             return ListView.builder(
                 itemCount: userList.length + 1,
                 itemBuilder: (context, position) {
@@ -266,6 +268,7 @@ class DrawerState extends State<DrawerStatefulWidget>{
                 });
           }
         },
+
       );
     } else {
       return Container();

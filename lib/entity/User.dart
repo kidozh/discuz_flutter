@@ -29,6 +29,21 @@ class User extends HiveObject {
   User(this.auth, this.saltkey, this.username, this.avatarUrl,
       this.groupId, this.uid, this.readPerm, this.discuz);
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is User &&
+          uid == other.uid &&
+          discuz == other.discuz;
 
-
+  @override
+  int get hashCode =>
+      auth.hashCode ^
+      saltkey.hashCode ^
+      username.hashCode ^
+      avatarUrl.hashCode ^
+      groupId.hashCode ^
+      uid.hashCode ^
+      readPerm.hashCode ^
+      discuz.hashCode;
 }

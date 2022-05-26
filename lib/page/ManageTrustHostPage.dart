@@ -8,6 +8,7 @@ import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class ManageTrustHostPage extends StatelessWidget{
 
@@ -74,10 +75,10 @@ class ManageTrustHostState extends State<ManageTrustHostStateWidget>{
   Widget build(BuildContext context) {
     // TODO: implement build
     if(_trustHostDao != null){
-      return StreamBuilder(
-          stream: _trustHostDao!.findAllTrustHostsStream(),
-          builder: (BuildContext context, AsyncSnapshot<List<TrustHost>> snapshot){
-            List<TrustHost>? list = snapshot.data;
+      return ValueListenableBuilder(
+          valueListenable: _trustHostDao!.trustHostBox.listenable(),
+        builder: (BuildContext context, Box<TrustHost> value, Widget? child) {
+            List<TrustHost> list = _trustHostDao!.findAllTrustHosts();
             if(list == null || list.isEmpty){
               return EmptyListScreen();
             }
@@ -104,7 +105,7 @@ class ManageTrustHostState extends State<ManageTrustHostStateWidget>{
               );
             }
 
-          }
+        },
       );
     }
     else{

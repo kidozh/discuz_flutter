@@ -14,9 +14,9 @@ class SmileyDao{
     return smileyBox.values.where((element) => element.discuz == discuz).toList();
   }
 
-  Stream<List<Smiley>> findAllSmileyStreamByDiscuz(Discuz discuz){
-    return smileyBox.watch().map((event) => smileyBox.values.where((element) => element.discuz == discuz).toList());
-  }
+  // Stream<List<Smiley>> findAllSmileyStreamByDiscuz(Discuz discuz){
+  //   return smileyBox.watch().map((event) => smileyBox.values.where((element) => element.discuz == discuz).toList());
+  // }
 
   Smiley? findSmileyByDiscuzIdAndCode(Discuz discuz, String code){
     if(smileyBox.values.where((element) => element.discuz == discuz && element.code == code).isNotEmpty){

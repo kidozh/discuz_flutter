@@ -133,6 +133,7 @@ class _LoginFormFieldState
       log("Recv a result ${value} ${value.toJson().toString()}");
       // if user is validated
       User user = value.loginVariables.getUser(discuz);
+      user.discuz = discuz;
       if(value.errorResult!.key == "login_succeed"){
         // save it in database
         setState(() {

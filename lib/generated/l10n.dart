@@ -3280,6 +3280,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Update notice`
+  String get upgrade_notification_title {
+    return Intl.message(
+      'Update notice',
+      name: 'upgrade_notification_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Because of the depreciation of Floor package, we are upgrading the dataset backend to hive and the old data is no longer available.`
+  String get upgrade_notification_subtitle {
+    return Intl.message(
+      'Because of the depreciation of Floor package, we are upgrading the dataset backend to hive and the old data is no longer available.',
+      name: 'upgrade_notification_subtitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

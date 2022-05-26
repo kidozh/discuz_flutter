@@ -10,18 +10,18 @@ class FavoriteForumDao{
 
   FavoriteForumDao(this.favoriteForumBox);
 
-  Future<List<FavoriteForumInDatabase>> getFavoriteForumList(Discuz discuz) async{
+  List<FavoriteForumInDatabase> getFavoriteForumList(Discuz discuz){
     return favoriteForumBox.values.where((element) => element.discuz == discuz).toList();
   }
 
-  Stream<List<FavoriteForumInDatabase>> getFavoriteForumListStream(Discuz discuz){
-    return favoriteForumBox.watch().map((event) {
-      List<FavoriteForumInDatabase> list = favoriteForumBox.values.where((element) => element.discuz==discuz).toList();
-      list.sort((a,b) => a.key > b.key);
-      return list;
-    }
-    );
-  }
+  // Stream<List<FavoriteForumInDatabase>> getFavoriteForumListFStream(Discuz discuz){
+  //   return favoriteForumBox.watch().map((event) {
+  //     List<FavoriteForumInDatabase> list = favoriteForumBox.values.where((element) => element.discuz==discuz).toList();
+  //     list.sort((a,b) => a.key > b.key);
+  //     return list;
+  //   }
+  //   );
+  // }
 
   Future<int> insertFavoriteForum(FavoriteForumInDatabase favoriteThreadInDatabase){
     return favoriteForumBox.add(favoriteThreadInDatabase);
@@ -40,9 +40,9 @@ class FavoriteForumDao{
     return null;
   }
 
-  Stream<FavoriteForumInDatabase?> getFavoriteForumStreamByFid(int idInServer, Discuz discuz){
-    return favoriteForumBox.watch().map((event) => favoriteForumBox.values.where((element) => element.idKey == idInServer && element.discuz == discuz).first);
-  }
+  // Stream<FavoriteForumInDatabase?> getFavoriteForumStreamByFid(int idInServer, Discuz discuz){
+  //   return favoriteForumBox.watch().map((event) => favoriteForumBox.values.where((element) => element.idKey == idInServer && element.discuz == discuz).first);
+  // }
 
 }
 

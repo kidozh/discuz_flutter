@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:hive_flutter/adapters.dart';
 
 class ManageDiscuzPage extends StatelessWidget{
 
@@ -68,8 +69,9 @@ class ManageDiscuzState extends State<ManageDiscuzStateWidget>{
   }
 
   void _initDb() async {
-    setState(() async {
-      _discuzDao = await AppDatabase.getDiscuzDao();
+    DiscuzDao discuzDao = await AppDatabase.getDiscuzDao();
+    setState(() {
+      _discuzDao = discuzDao;
     });
 
   }
@@ -87,64 +89,123 @@ class ManageDiscuzState extends State<ManageDiscuzStateWidget>{
   Widget build(BuildContext context) {
     // TODO: implement build
     if(_discuzDao != null){
-      return StreamBuilder(
-          stream: _discuzDao!.findAllDiscuzStream(),
-          builder: (BuildContext context, AsyncSnapshot<List<Discuz>> snapshot){
-            List<Discuz>? discuzList = snapshot.data;
-            if(discuzList == null || discuzList.isEmpty){
-              return NullUserScreen();
-            }
-            else {
-              return ListView.builder(
-                itemBuilder: (context, index){
-                  Discuz discuz = discuzList[index];
-                  return Slidable(
-                    child: ListTile(
-                      title: Text(discuz.siteName),
-                      subtitle: Text(discuz.baseURL),
-                      leading:  Container(
-                        // width: 16.0,
-                        // height: 16.0,
-                        child: CircleAvatar(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          child: Text(
-                            discuz.siteName.length != 0
-                                ? discuz.siteName[0].toUpperCase()
-                                : S.of(context).anonymous,
-                            style: TextStyle(color: Colors.white,fontSize: 18),
-                          ),
+      return ValueListenableBuilder(
+        valueListenable: _discuzDao!.discuzBox.listenable(),
+        builder: (BuildContext context, value, Widget? child) {
+          List<Discuz>? discuzList =  _discuzDao!.findAllDiscuzs();
+          if(discuzList == null || discuzList.isEmpty){
+            return NullUserScreen();
+          }
+          else {
+            return ListView.builder(
+              itemBuilder: (context, index){
+                Discuz discuz = discuzList[index];
+                return Slidable(
+                  child: ListTile(
+                    title: Text(discuz.siteName),
+                    subtitle: Text(discuz.baseURL),
+                    leading:  Container(
+                      // width: 16.0,
+                      // height: 16.0,
+                      child: CircleAvatar(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        child: Text(
+                          discuz.siteName.length != 0
+                              ? discuz.siteName[0].toUpperCase()
+                              : S.of(context).anonymous,
+                          style: TextStyle(color: Colors.white,fontSize: 18),
                         ),
                       ),
-                      trailing: _buildSecureIcon(context, discuz),
-                      onTap: (){
-                        VibrationUtils.vibrateWithClickIfPossible();
-                        Navigator.push(context,
-                            platformPageRoute(context:context,builder: (context) => ExclusiveDiscuzPortalPage(discuz)));
-                      },
                     ),
-                    endActionPane: ActionPane(
-                      motion: DrawerMotion(),
-                      extentRatio: 0.25,
-                      children: [
-                        SlidableAction(
-                            label: S.of(context).deleteAccount,
-                            backgroundColor: Colors.redAccent,
-                            icon: Icons.delete,
-                            onPressed: (context) {
-                              _deleteDiscuz(discuz);
-                            },
+                    trailing: _buildSecureIcon(context, discuz),
+                    onTap: (){
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      Navigator.push(context,
+                          platformPageRoute(context:context,builder: (context) => ExclusiveDiscuzPortalPage(discuz)));
+                    },
+                  ),
+                  endActionPane: ActionPane(
+                    motion: DrawerMotion(),
+                    extentRatio: 0.25,
+                    children: [
+                      SlidableAction(
+                        label: S.of(context).deleteAccount,
+                        backgroundColor: Colors.redAccent,
+                        icon: Icons.delete,
+                        onPressed: (context) {
+                          _deleteDiscuz(discuz);
+                        },
 
-                        )
-                      ],
-                    ),
-                  );
-                },
-                itemCount: discuzList.length,
-              );
-            }
-
+                      )
+                    ],
+                  ),
+                );
+              },
+              itemCount: discuzList.length,
+            );
           }
+
+        },
+
       );
+      // return StreamBuilder(
+      //     stream: _discuzDao!.findAllDiscuzStream(),
+      //     builder: (BuildContext context, AsyncSnapshot<List<Discuz>> snapshot){
+      //       List<Discuz>? discuzList = snapshot.data;
+      //       if(discuzList == null || discuzList.isEmpty){
+      //         return NullUserScreen();
+      //       }
+      //       else {
+      //         return ListView.builder(
+      //           itemBuilder: (context, index){
+      //             Discuz discuz = discuzList[index];
+      //             return Slidable(
+      //               child: ListTile(
+      //                 title: Text(discuz.siteName),
+      //                 subtitle: Text(discuz.baseURL),
+      //                 leading:  Container(
+      //                   // width: 16.0,
+      //                   // height: 16.0,
+      //                   child: CircleAvatar(
+      //                     backgroundColor: Theme.of(context).primaryColor,
+      //                     child: Text(
+      //                       discuz.siteName.length != 0
+      //                           ? discuz.siteName[0].toUpperCase()
+      //                           : S.of(context).anonymous,
+      //                       style: TextStyle(color: Colors.white,fontSize: 18),
+      //                     ),
+      //                   ),
+      //                 ),
+      //                 trailing: _buildSecureIcon(context, discuz),
+      //                 onTap: (){
+      //                   VibrationUtils.vibrateWithClickIfPossible();
+      //                   Navigator.push(context,
+      //                       platformPageRoute(context:context,builder: (context) => ExclusiveDiscuzPortalPage(discuz)));
+      //                 },
+      //               ),
+      //               endActionPane: ActionPane(
+      //                 motion: DrawerMotion(),
+      //                 extentRatio: 0.25,
+      //                 children: [
+      //                   SlidableAction(
+      //                       label: S.of(context).deleteAccount,
+      //                       backgroundColor: Colors.redAccent,
+      //                       icon: Icons.delete,
+      //                       onPressed: (context) {
+      //                         _deleteDiscuz(discuz);
+      //                       },
+      //
+      //                   )
+      //                 ],
+      //               ),
+      //             );
+      //           },
+      //           itemCount: discuzList.length,
+      //         );
+      //       }
+      //
+      //     }
+      // );
     }
     else{
       return BlankScreen();

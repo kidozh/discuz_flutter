@@ -511,6 +511,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "unblockUser": MessageLookupByLibrary.simpleMessage("Unblock user"),
         "undo": MessageLookupByLibrary.simpleMessage("Undo"),
         "updateAt": MessageLookupByLibrary.simpleMessage("Update at %T"),
+        "upgrade_notification_subtitle": MessageLookupByLibrary.simpleMessage(
+            "Because of the depreciation of Floor package, we are upgrading the dataset backend to hive and the old data is no longer available."),
+        "upgrade_notification_title":
+            MessageLookupByLibrary.simpleMessage("Update notice"),
         "uploadCompressedImageToServer": MessageLookupByLibrary.simpleMessage(
             "Send compressed image(Recommended)"),
         "uploadImageError1": MessageLookupByLibrary.simpleMessage(

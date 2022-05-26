@@ -55,6 +55,19 @@ class TestFlightBannerContent extends StatelessWidget{
               ),textAlign: TextAlign.center,),
               SizedBox(height: 30,),
               ListTile(
+
+                leading: CircleAvatar(
+                  backgroundColor: Colors.deepOrangeAccent,
+                  child: Icon(CupertinoIcons.up_arrow,color: Colors.white),
+                ),
+                title: Text(S.of(context).upgrade_notification_title),
+                subtitle: Text(S.of(context).upgrade_notification_subtitle),
+                onTap: (){
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  _launchURL("https://discuzhub.kidozh.com/dev-blog/disfly-upgrading-to-v1.0.7-notification/");
+                },
+              ),
+              ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.redAccent,
                   child: Icon(CupertinoIcons.hand_raised_fill,color: Colors.white),
@@ -83,7 +96,7 @@ class TestFlightBannerContent extends StatelessWidget{
                 subtitle: Text(S.of(context).termsOfUseDescription),
                 onTap: (){
                   VibrationUtils.vibrateWithClickIfPossible();
-                  _launchURL("https://discuzhub.kidozh.com/privacy_policy/");
+                  _launchURL("https://discuzhub.kidozh.com/zh/term_of_use/");
                 },
               ),
               ListTile(

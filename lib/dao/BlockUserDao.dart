@@ -35,8 +35,12 @@ class BlockUserDao{
   }
 
 
-  Stream<List<BlockUser>> getBlockUserListStream(Discuz discuz){
-    return blockUserBox.watch().map((event) => blockUserBox.values.where((element) => element.discuz == discuz).toList());
+  // Stream<List<BlockUser>> getBlockUserListStream(Discuz discuz){
+  //   return blockUserBox.watch().map((event) => blockUserBox.values.where((element) => element.discuz == discuz).toList());
+  // }
+
+  List<BlockUser> getBlockUserListByDiscuz(Discuz discuz){
+    return blockUserBox.values.where((element) => element.discuz == discuz).toList();
   }
 
 

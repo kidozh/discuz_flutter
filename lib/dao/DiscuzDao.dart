@@ -6,13 +6,14 @@ class DiscuzDao{
 
   DiscuzDao(this.discuzBox);
 
-  Future<List<Discuz>> findAllDiscuzs() async{
+  List<Discuz> findAllDiscuzs(){
     return discuzBox.values.toList();
   }
 
-  Stream<List<Discuz>> findAllDiscuzStream(){
-    return discuzBox.watch().map((event) => discuzBox.values.toList());
-  }
+
+  // Stream<List<Discuz>> findAllDiscuzStream(){
+  //   return discuzBox.watch().map((event) => discuzBox.values.toList());
+  // }
 
   Discuz? findDiscuzByBaseURL(String baseURL){
     if (discuzBox.values.where((element) => element.baseURL == baseURL).isEmpty){
@@ -25,6 +26,10 @@ class DiscuzDao{
 
   Future<int> insertDiscuz(Discuz discuz){
     return discuzBox.add(discuz);
+  }
+
+  Discuz? getDiscuzByIndex(int index){
+    return discuzBox.getAt(index);
   }
 
   Future<void> deleteDiscuz(Discuz discuz) async{
