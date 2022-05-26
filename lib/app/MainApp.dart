@@ -389,6 +389,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         ),
       ),
       body: [
+        if(!Platform.isIOS)
         ExploreWebsitePage(key: ValueKey(0),),
         DiscuzPortalScreen(key: ValueKey(1),),
         HotThreadScreen(key: ValueKey(2),),
@@ -409,6 +410,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           });
         },
         items: [
+          if(!Platform.isIOS)
           BottomNavigationBarItem(
               icon: new Icon(CupertinoIcons.today),
               activeIcon: Icon(CupertinoIcons.today_fill),

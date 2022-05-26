@@ -323,7 +323,7 @@ class _LoginFormFieldState
                       //   padding: EdgeInsets.symmetric(vertical: 8,horizontal: 0),
                       // ),
                       SizedBox(height: 12,),
-                      if(Platform.isAndroid || Platform.isIOS)
+                      if(!Platform.isIOS)
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton.icon(
