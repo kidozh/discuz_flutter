@@ -72,14 +72,18 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           //NavigationControls(_controller.future),
           if(websiteLoaded)
             IconButton(
-              icon: Icon(PlatformIcons(context).checkMark),
+              icon: Icon(PlatformIcons(context).checkMark, size: 24,),
               onPressed: () {
                 VibrationUtils.vibrateWithClickIfPossible();
                 _checkUserLogined();
               },
             ),
           if(!websiteLoaded)
-            PlatformCircularProgressIndicator(),
+            Container(
+              width: 24,
+              height: 24,
+              child: PlatformCircularProgressIndicator(),
+            ),
         ],
       ),
       body: Builder(builder: (BuildContext context) {
@@ -220,6 +224,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           }
 
           int primaryKey = await dao.insert(user);
+
 
           // save it in cookiejar
           List<Cookie> cookies = await cookieJar.loadForRequest(Uri.parse(discuz.baseURL));
