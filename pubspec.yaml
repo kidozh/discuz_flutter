@@ -36,7 +36,7 @@ dependencies:
   logger: any  #for logging purpose
   # floor: ^1.2.0
   settings_ui:
-    git: git://github.com/beerstorm-net/flutter-settings-ui.git
+    git: https://github.com/beerstorm-net/flutter-settings-ui.git
   form_validator: ^1.0.1
   persistent_bottom_nav_bar: ^4.0.2
   cached_network_image: ^3.2.0
