@@ -553,6 +553,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Send raw image"),
         "uploadingImageToServer": MessageLookupByLibrary.simpleMessage(
             "Upload the file to the server..."),
+        "useMaterial3NoSubtitle": MessageLookupByLibrary.simpleMessage(
+            "App will use the Material 2 look and feel."),
+        "useMaterial3Title":
+            MessageLookupByLibrary.simpleMessage("Use Material You design"),
+        "useMaterial3YesSubtitle": MessageLookupByLibrary.simpleMessage(
+            "Components that have been migrated to Material 3 will use new colors, typography and other features of Material 3."),
         "userCredit": MessageLookupByLibrary.simpleMessage("Credits"),
         "userExpiredSubtitle": MessageLookupByLibrary.simpleMessage(
             "The current user is expired, some function may not work."),

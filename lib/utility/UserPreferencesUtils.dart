@@ -220,5 +220,18 @@ class UserPreferencesUtils{
     return value == null ? "" : value;
   }
 
+  static final String useMaterial3PreferenceKey = "useMaterial3PreferenceKey";
+
+  static Future<bool> getMaterial3PropertyPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var useMaterial3 =  prefs.getBool(useMaterial3PreferenceKey);
+    return useMaterial3 == null? true: useMaterial3;
+  }
+
+  static Future<void> putMaterial3PropertyPreference(bool value) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(useMaterial3PreferenceKey, value);
+  }
+
 
 }

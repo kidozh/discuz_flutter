@@ -236,7 +236,9 @@ class PostState extends State<PostStatefulWidget> {
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize:
-                                          20 * typesetting.scalingParameter),
+                                          20
+                                              // * typesetting.scalingParameter
+                                  ),
                                 ),
                               ),
                             ),

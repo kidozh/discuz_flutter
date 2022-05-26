@@ -3300,6 +3300,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Use Material You design`
+  String get useMaterial3Title {
+    return Intl.message(
+      'Use Material You design',
+      name: 'useMaterial3Title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Components that have been migrated to Material 3 will use new colors, typography and other features of Material 3.`
+  String get useMaterial3YesSubtitle {
+    return Intl.message(
+      'Components that have been migrated to Material 3 will use new colors, typography and other features of Material 3.',
+      name: 'useMaterial3YesSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `App will use the Material 2 look and feel.`
+  String get useMaterial3NoSubtitle {
+    return Intl.message(
+      'App will use the Material 2 look and feel.',
+      name: 'useMaterial3NoSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

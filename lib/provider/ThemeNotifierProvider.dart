@@ -35,6 +35,8 @@ class ThemeNotifierProvider with ChangeNotifier{
 
   Brightness? _brightnessPreference;
 
+  bool useMaterial3 = true;
+
   setBrightness(Brightness? brightness){
     _brightnessPreference = brightness;
     notifyListeners();
@@ -43,11 +45,6 @@ class ThemeNotifierProvider with ChangeNotifier{
   Brightness? get brightness => _brightnessPreference;
 
   //Brightness? get brightness => null;
-
-
-
-
-
 
 
   setTheme(String themeColorName){
@@ -143,4 +140,10 @@ class ThemeNotifierProvider with ChangeNotifier{
       return S.of(context).followSystem;
     }
   }
+
+  setMaterial3(bool material3Property){
+    this.useMaterial3 = material3Property;
+    notifyListeners();
+  }
+
 }

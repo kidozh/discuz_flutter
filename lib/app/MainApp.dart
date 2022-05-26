@@ -46,6 +46,7 @@ class MyApp extends StatelessWidget {
     platformName = await UserPreferencesUtils.getPlatformPreference();
     double scale = await UserPreferencesUtils.getTypesettingScalePreference();
     Brightness? brightness = await UserPreferencesUtils.getInterfaceBrightnessPreference();
+    bool useMaterial3 = await UserPreferencesUtils.getMaterial3PropertyPreference();
 
     print("Get brightness ${brightness}");
 
@@ -53,7 +54,7 @@ class MyApp extends StatelessWidget {
     Provider.of<ThemeNotifierProvider>(context,listen: false).setPlatformName(platformName);
     Provider.of<TypeSettingNotifierProvider>(context,listen: false).setScalingParameter(scale);
     Provider.of<ThemeNotifierProvider>(context,listen: false).setBrightness(brightness);
-
+    Provider.of<ThemeNotifierProvider>(context,listen: false).setMaterial3(useMaterial3);
   }
 
 
@@ -86,8 +87,8 @@ class MyApp extends StatelessWidget {
           themeColorEntity.setBrightness(systemBrightness);
         }
 
-
         final materialTheme = ThemeData(
+          useMaterial3: themeColorEntity.useMaterial3,
           brightness: themeColorEntity.brightness,
 
           cupertinoOverrideTheme: CupertinoThemeData(

@@ -6,6 +6,7 @@ import 'package:discuz_flutter/entity/TrustHost.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
+import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -87,11 +88,12 @@ class ManageTrustHostState extends State<ManageTrustHostStateWidget>{
                 itemBuilder: (context, index){
                   TrustHost trustHost = list[index];
                   return Dismissible(
-                    key: Key(trustHost.key),
+                    key: Key(trustHost.key.toString()),
                     child: Column(
                       children: [
                         ListTile(
                           title: Text(trustHost.host),
+                          subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, trustHost.trustAt)),
                         ),
                         Divider()
                       ],

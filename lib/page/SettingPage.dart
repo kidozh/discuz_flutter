@@ -6,7 +6,6 @@ import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
@@ -103,10 +102,23 @@ class _SettingPageState extends State<SettingPage> {
                     ));
                   },
                 ),
+                SettingsTile.switchTile(
+                  title: S.of(context).useMaterial3Title,
+                  subtitle: themeEntity.useMaterial3
+                      ? S.of(context).useMaterial3YesSubtitle
+                      : S.of(context).useMaterial3NoSubtitle,
+                  leading: Icon(Icons.style_outlined),
+                  switchValue: themeEntity.useMaterial3,
+                  onToggle: (bool value) {
+                    VibrationUtils.vibrateWithSwitchIfPossible();
+                    UserPreferencesUtils.putMaterial3PropertyPreference(value);
+                    Provider.of<ThemeNotifierProvider>(context,listen: false).setMaterial3(value);
+                  },
+                ),
                 SettingsTile(
                   title: S.of(context).interfaceBrightness,
                   subtitle: themeEntity.getBrightnessName(context),
-                  leading: Icon(Icons.exposure),
+                  leading: Icon(Icons.exposure_outlined),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
@@ -118,7 +130,7 @@ class _SettingPageState extends State<SettingPage> {
                 SettingsTile(
                   title: S.of(context).typeSetting,
                   subtitle: S.of(context).fontSizeScaleParameterUnit(typeSetting.scalingParameter.toStringAsFixed(3)),
-                  leading: Icon(Icons.format_size),
+                  leading: Icon(Icons.format_size_outlined),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(

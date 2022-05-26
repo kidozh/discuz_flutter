@@ -472,6 +472,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("原始图片（可能因为太大被服务器拒绝）"),
         "uploadingImageToServer":
             MessageLookupByLibrary.simpleMessage("向服务器传输数据中。。。"),
+        "useMaterial3NoSubtitle":
+            MessageLookupByLibrary.simpleMessage("应用会使用 Material 2 的外观。"),
+        "useMaterial3Title":
+            MessageLookupByLibrary.simpleMessage("使用Material 3属性"),
+        "useMaterial3YesSubtitle": MessageLookupByLibrary.simpleMessage(
+            "迁移到 Material 3 的组件将使用 Material 3 的新颜色、排版和其他功能。"),
         "userCredit": MessageLookupByLibrary.simpleMessage("积分"),
         "userExpiredSubtitle":
             MessageLookupByLibrary.simpleMessage("当前用户授权已过期，你需要重新登录以重新激活此用户。"),
