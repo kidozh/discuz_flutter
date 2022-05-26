@@ -54,18 +54,24 @@ class TestFlightBannerContent extends StatelessWidget{
 
               ),textAlign: TextAlign.center,),
               SizedBox(height: 30,),
-              ListTile(
+              Card(
 
-                leading: CircleAvatar(
-                  backgroundColor: Colors.deepOrangeAccent,
-                  child: Icon(CupertinoIcons.up_arrow,color: Colors.white),
+                color: Colors.deepOrange,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 4.0),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: Icon(Icons.error_outline,color: Colors.deepOrangeAccent),
+                    ),
+                    title: Text(S.of(context).upgrade_notification_title, style: TextStyle(color: Colors.white),),
+                    subtitle: Text(S.of(context).upgrade_notification_subtitle, style: TextStyle(color: Colors.white)),
+                    onTap: (){
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      _launchURL("https://discuzhub.kidozh.com/dev-blog/disfly-upgrading-to-v1.0.7-notification/");
+                    },
+                  ),
                 ),
-                title: Text(S.of(context).upgrade_notification_title),
-                subtitle: Text(S.of(context).upgrade_notification_subtitle),
-                onTap: (){
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  _launchURL("https://discuzhub.kidozh.com/dev-blog/disfly-upgrading-to-v1.0.7-notification/");
-                },
               ),
               ListTile(
                 leading: CircleAvatar(
