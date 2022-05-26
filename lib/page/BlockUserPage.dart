@@ -74,7 +74,7 @@ class _BlockUserState extends State<BlockUserStatefulWidget> {
         body: ValueListenableBuilder(
           valueListenable:_blockUserDao!.blockUserBox.listenable(),
           builder: (BuildContext context, value, Widget? child) {
-            List<BlockUser>? blockUserList = _blockUserDao!.getBlockUserListByDiscuz(_discuz);
+            List<BlockUser> blockUserList = _blockUserDao!.getBlockUserListByDiscuz(_discuz);
             if ( blockUserList.isEmpty){
               return EmptyListScreen();
             }
@@ -92,7 +92,12 @@ class _BlockUserState extends State<BlockUserStatefulWidget> {
                           child: Padding(
                               padding: EdgeInsets.all(8),
                               child: ListTile(
-                                leading: UserAvatar(_discuz, User("","",blockUserList[index].name,"",0,blockUserList[index].uid, 0, _discuz)),
+                                leading: UserAvatar(
+                                    _discuz,
+                                    User("","",blockUserList[index].name,"",0,blockUserList[index].uid, 0, _discuz),
+                                    width: 32,
+                                    height: 32,
+                                ),
                                 title: Text(blockUserList[index].name),
                               )
 

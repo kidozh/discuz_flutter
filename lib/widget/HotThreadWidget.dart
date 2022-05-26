@@ -21,7 +21,10 @@ import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+
+import '../entity/ViewHistory.dart';
 
 // ignore: must_be_immutable
 class HotThreadWidget extends StatelessWidget{
@@ -76,9 +79,9 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
   bool isUserBlocked = false;
 
   void loadDatabase() async{
-
-    setState(() async{
-      dao = await AppDatabase.getViewHistoryDao();
+    ViewHistoryDao viewHistoryDao = await AppDatabase.getViewHistoryDao();
+    setState((){
+      dao = viewHistoryDao;
 
     });
     blockUserDao = await AppDatabase.getBlockUserDao();
@@ -259,17 +262,12 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
       return getHotThreadCard(false);
     }
     else{
-      return StreamBuilder(
-        stream: dao!.threadHistoryExistInDatabase(_discuz, _hotThread.tid),
-        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-          if(snapshot.data == false){
-            return getHotThreadCard(false);
-          }
-          else{
-            return getHotThreadCard(true);
-          }
-        },
-      );
+      return ValueListenableBuilder(
+          valueListenable: dao!.viewHistoryBox.listenable(),
+          builder: (BuildContext context, Box<ViewHistory> value, Widget? child) {
+            bool exist = dao!.threadHistoryExistInDatabase(_discuz, _hotThread.tid);
+            return getHotThreadCard(exist);
+          });
     }
   }
 

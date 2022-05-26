@@ -21,7 +21,10 @@ import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
+
+import '../entity/ViewHistory.dart';
 
 // ignore: must_be_immutable
 class ForumThreadWidget extends StatelessWidget{
@@ -80,9 +83,9 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
   bool isUserBlocked = false;
 
   void loadDatabase() async{
-
-    setState(() async{
-      dao = await AppDatabase.getViewHistoryDao();
+    ViewHistoryDao viewHistoryDao = await AppDatabase.getViewHistoryDao();
+    setState((){
+      dao = viewHistoryDao;
     });
     blockUserDao = await AppDatabase.getBlockUserDao();
     // check with block information
@@ -268,17 +271,12 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
       return getForumThreadCard(false);
     }
     else{
-      return StreamBuilder(
-        stream: dao!.threadHistoryExistInDatabase(_discuz, _forumThread.getTid()),
-        builder: (BuildContext context, AsyncSnapshot<bool?> snapshot) {
-          if(snapshot.data == false){
-            return getForumThreadCard(false);
-          }
-          else{
-            return getForumThreadCard(true);
-          }
-        },
-      );
+      return ValueListenableBuilder(
+          valueListenable: dao!.viewHistoryBox.listenable(),
+          builder: (BuildContext context, Box<ViewHistory> value, Widget? child) {
+            bool exist = dao!.threadHistoryExistInDatabase(_discuz, _forumThread.getTid());
+            return getForumThreadCard(exist);
+          });
     }
   }
 

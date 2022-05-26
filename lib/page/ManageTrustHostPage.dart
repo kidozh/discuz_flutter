@@ -64,9 +64,9 @@ class ManageTrustHostState extends State<ManageTrustHostStateWidget>{
   }
 
   void _initDb() async {
-
-    setState(() async {
-      _trustHostDao = await AppDatabase.getTrustHostDao();
+    TrustHostDao trustHostDao = await AppDatabase.getTrustHostDao();
+    setState(() {
+      _trustHostDao = trustHostDao;
     });
 
   }

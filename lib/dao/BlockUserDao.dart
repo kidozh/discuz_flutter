@@ -11,7 +11,7 @@ class BlockUserDao{
   BlockUserDao(this.blockUserBox);
 
   List<BlockUser> isUserBlocked(int uid, Discuz discuz){
-    return blockUserBox.values.where((element) => element.uid == uid && element.discuz == discuz).toList(growable: true);
+    return blockUserBox.values.where((element) => element.uid == uid && element.discuz == discuz).toList();
   }
 
   Future<int> insertBlockUser(BlockUser blockUser){

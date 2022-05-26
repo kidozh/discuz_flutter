@@ -24,7 +24,6 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_countdown/slide_countdown.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:webview_flutter/webview_flutter.dart' hide NavigationRequest,NavigationDecision;
 
 typedef void JumpToPidCallback(int pid);
 
@@ -134,16 +133,16 @@ class DiscuzHtmlWidget extends StatelessWidget{
             log("Press link ${urlString} ");
             if(urlString != null){
               urlString = urlString.replaceAll("&amp;", "&");
-              bool urlLauchable = await canLaunch(urlString);
+              bool urlLauchable = await canLaunchUrl(Uri.parse(urlString));
               User? user = Provider.of<DiscuzAndUserNotifier>(context.buildContext, listen: false).user;
               // judge if it is a path
               Uri? tryUri = Uri.tryParse(urlString);
-              log("${Uri.parse(urlString).isAbsolute} can launch ${urlLauchable} ${urlString}");
+              log("${Uri.parse(urlString).isAbsolute} can launch $urlLauchable $urlString");
               if(!Uri.parse(urlString).isAbsolute){
                 // add a prefix to test if it's a url
                 urlString = discuz.baseURL+ "/" + urlString;
                 log("Press after link ${urlString} ");
-                urlLauchable = await canLaunch(urlString);
+                urlLauchable = await canLaunchUrl(Uri.parse(urlString));
               }
 
 
@@ -192,14 +191,14 @@ class DiscuzHtmlWidget extends StatelessWidget{
                                 String host = uri.host;
                                 await _trustHost(host);
 
-                                launch(urlString!);
+                                launchUrl(Uri.parse(urlString!));
                                 Navigator.pop(context);
                               },
                               child: Text(S.of(context).trustHostActionText)
                           ),
                           TextButton(
                               onPressed: (){
-                                launch(urlString!);
+                                launchUrl(Uri.parse(urlString!));
                                 Navigator.pop(context);
                               },
                               child: Text(S.of(context).openInBrowser)
@@ -213,7 +212,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                   }
                   else{
                     // direct open it
-                    launch(urlString);
+                    launchUrl(Uri.parse(urlString));
                   }
 
 
@@ -323,7 +322,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 }
 
 
-                await launch(urlString);
+                await launchUrl(Uri.parse(urlString));;
               }
               else{
                 // show the link

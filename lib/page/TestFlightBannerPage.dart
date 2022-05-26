@@ -65,7 +65,7 @@ class TestFlightBannerContent extends StatelessWidget{
                       child: Icon(Icons.error_outline,color: Colors.deepOrangeAccent),
                     ),
                     title: Text(S.of(context).upgrade_notification_title, style: TextStyle(color: Colors.white),),
-                    subtitle: Text(S.of(context).upgrade_notification_subtitle, style: TextStyle(color: Colors.white)),
+                    subtitle: Text(S.of(context).upgrade_notification_subtitle, style: TextStyle(color: Colors.white60)),
                     onTap: (){
                       VibrationUtils.vibrateWithClickIfPossible();
                       _launchURL("https://discuzhub.kidozh.com/dev-blog/disfly-upgrading-to-v1.0.7-notification/");
@@ -131,6 +131,6 @@ class TestFlightBannerContent extends StatelessWidget{
   }
 
   void _launchURL(String url) async =>
-      await canLaunch(url) ? await launch(url) : throw 'Could not launch $url';
+      await canLaunchUrl(Uri.parse(url)) ? await launchUrl(Uri.parse(url)) : throw 'Could not launch $url';
 
 }

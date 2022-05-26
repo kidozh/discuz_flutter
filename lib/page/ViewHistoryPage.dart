@@ -97,7 +97,7 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
 
     ViewHistoryDao viewHistoryDao = await AppDatabase.getViewHistoryDao();
     await viewHistoryDao.deleteViewHistoryByDiscuz(discuz);
-    Navigator.pop(context);
+    //Navigator.pop(context);
 
   }
 

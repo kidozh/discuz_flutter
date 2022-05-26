@@ -46,9 +46,13 @@ class ViewHistoryDao{
     });
   }
 
-  Stream<bool> threadHistoryExistInDatabase(Discuz discuz, int tid){
-    return viewHistoryBox.watch().map((event) => viewHistoryBox.values.where((element) => element.identification == tid && element.discuz == discuz && element.type == "thread").isNotEmpty);
+  bool threadHistoryExistInDatabase(Discuz discuz, int tid){
+    return viewHistoryBox.values.where((element) => element.identification == tid && element.discuz == discuz && element.type == "thread").isNotEmpty;
   }
+
+  // Stream<bool> threadHistoryExistInDatabase(Discuz discuz, int tid){
+  //   return viewHistoryBox.watch().map((event) => viewHistoryBox.values.where((element) => element.identification == tid && element.discuz == discuz && element.type == "thread").isNotEmpty);
+  // }
 
   // Stream<bool> forumHistoryExistInDatabase(Discuz discuz, int fid){
   //   return viewHistoryBox.watch().map((event) => viewHistoryBox.values.where((element) => element.identification == fid && element.discuz == discuz && element.type == "forum").isNotEmpty);

@@ -155,8 +155,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   }
 
   void _loadDao() async{
-    setState(() async{
-      favoriteThreadDao = await AppDatabase.getFavoriteThreadDao();
+    FavoriteThreadDao dao = await AppDatabase.getFavoriteThreadDao();
+    setState((){
+      favoriteThreadDao = dao;
     });
 
   }
@@ -220,7 +221,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     bool allowViewHistory =
         await UserPreferencesUtils.getRecordHistoryEnabled();
     if (!allowViewHistory) {
-      historySaved = true;
       historySaved = true;
       return;
     }
