@@ -27,6 +27,10 @@ class UserDao{
     return userBox.add(user);
   }
 
+  Future<void> insertWithKey(dynamic key,User user){
+    return userBox.put(key, user);
+  }
+
   User? findUsersByDiscuzAndUid(Discuz discuz, int uid){
     if(userBox.values.where((element) => element.discuz == discuz && element.uid == uid).isNotEmpty){
       return userBox.values.where((element) => element.discuz == discuz && element.uid == uid).first;

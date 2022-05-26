@@ -222,8 +222,11 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           if(userInDataBase != null){
             user = userInDataBase;
           }
+          else{
+            await dao.insert(user);
+          }
 
-          int primaryKey = await dao.insert(user);
+
 
 
           // save it in cookiejar

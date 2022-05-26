@@ -146,11 +146,11 @@ class _LoginFormFieldState
           User? userInDataBase = dao.findUsersByDiscuzAndUid(discuz, user.uid);
           if(userInDataBase != null){
             user = userInDataBase;
+            await dao.insertWithKey(userInDataBase.key, user);
           }
-
-
-          int primaryKey = await dao.insert(user);
-
+          else{
+            await dao.insert(user);
+          }
           // save it in cookiejar
           List<Cookie> cookies = await cookieJar.loadForRequest(Uri.parse(discuz.baseURL));
           PersistCookieJar savedCookieJar = await NetworkUtils.getPersistentCookieJarByUser(user);
