@@ -20,9 +20,7 @@ class TrustHostDao{
   }
 
   Future<void> deleteTrustHost(TrustHost trustHost) async{
-    return trustHostBox.values.where((element) => element == trustHost).forEach((element) {
-      trustHostBox.delete(trustHost.key);
-    });
+    return trustHostBox.delete(trustHost.key);
   }
 
   TrustHost? findTrustHostByName(String host){

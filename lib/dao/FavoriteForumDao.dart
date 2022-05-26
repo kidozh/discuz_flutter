@@ -28,9 +28,7 @@ class FavoriteForumDao{
   }
 
   Future<void> removeFavoriteForum(FavoriteForumInDatabase favoriteThreadInDatabase) async{
-    return favoriteForumBox.values.where((element) => element == favoriteThreadInDatabase).forEach((element) {
-      favoriteForumBox.delete(element.key);
-    });
+    favoriteForumBox.delete(favoriteThreadInDatabase.key);
   }
 
   FavoriteForumInDatabase? getFavoriteForumByFid(int idInServer, Discuz discuz){

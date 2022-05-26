@@ -32,9 +32,7 @@ class SmileyDao{
   }
 
   Future<void> deleteSmiley(Smiley smiley) async{
-    smileyBox.values.where((element) => element == smiley).forEach((element) {
-      smileyBox.delete(smiley.key);
-    });
+    smileyBox.delete(smiley.key);
   }
 
 }

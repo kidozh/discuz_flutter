@@ -37,9 +37,7 @@ class UserDao{
   }
 
   Future<void> deleteUser(User user) async{
-    return userBox.values.where((element) => element == User).forEach((element) {
-      userBox.delete(user.key);
-    });
+    return userBox.delete(user.key);
   }
 
 }

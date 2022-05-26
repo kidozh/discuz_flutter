@@ -23,9 +23,7 @@ class FavoriteThreadDao{
   }
 
   Future<void> removeFavoriteThread(FavoriteThreadInDatabase favoriteThreadInDatabase) async{
-    favoriteThreadBox.values.where((element) => element == favoriteThreadInDatabase).forEach((element) {
-      favoriteThreadBox.delete(favoriteThreadInDatabase.key);
-    });
+    favoriteThreadBox.delete(favoriteThreadInDatabase.key);
   }
 
   FavoriteThreadInDatabase? getFavoriteThreadByTid(int idInServer, Discuz discuz){

@@ -29,13 +29,12 @@ class DiscuzDao{
   }
 
   Discuz? getDiscuzByIndex(int index){
-    return discuzBox.getAt(index);
+    return discuzBox.get(index);
   }
 
   Future<void> deleteDiscuz(Discuz discuz) async{
-    discuzBox.values.where((element) => element == discuz).forEach((element) {
-      discuzBox.delete(discuz.key);
-    });
+    discuzBox.delete(discuz.key);
+
   }
 
 }
