@@ -32,6 +32,7 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class DisplayForumSliverPage extends StatelessWidget {
   late final Discuz discuz;
@@ -382,6 +383,10 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
               PopupMenuItem<int>(
                 child: Text(S.of(context).openViaInternalBrowser),
                 value: 0,
+              ),
+              PopupMenuItem<int>(
+                child: Text(S.of(context).share),
+                value: 1,
               )
             ],
             onSelected: (int pos) {
@@ -397,7 +402,12 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                                 discuz,
                                 user,
                                 URLUtils.getForumDisplayURL(discuz, fid))));
+                    break;
                   }
+                case 1:{
+                  Share.share(URLUtils.getForumDisplayURL(discuz, fid), subject: _displayForumResult.discuzIndexVariables.forum.name);
+                  break;
+                }
               }
             },
           )

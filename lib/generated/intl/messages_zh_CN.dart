@@ -402,6 +402,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "sendReplyHint": MessageLookupByLibrary.simpleMessage("说些什么吧。"),
         "settingTitle": MessageLookupByLibrary.simpleMessage("设置"),
         "settings": MessageLookupByLibrary.simpleMessage("设置"),
+        "share": MessageLookupByLibrary.simpleMessage("分享"),
         "signInSuccessTitle": m24,
         "signInTitle": m25,
         "signInViaBrowser": MessageLookupByLibrary.simpleMessage("使用网页登录"),

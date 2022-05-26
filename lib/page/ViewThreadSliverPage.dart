@@ -42,6 +42,7 @@ import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:provider/provider.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'InternalWebviewBrowserPage.dart';
 
 class ViewThreadSliverPage extends StatelessWidget {
@@ -593,13 +594,16 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
               PopupMenuItem<int>(
                 child: Text(S.of(context).openViaInternalBrowser),
                 value: 0,
+              ),
+              PopupMenuItem<int>(
+                child: Text(S.of(context).share),
+                value: 1,
               )
             ],
             onSelected: (int pos) {
               VibrationUtils.vibrateWithClickIfPossible();
               switch (pos) {
-                case 0:
-                  {
+                case 0:{
                     Navigator.push(
                         context,
                         platformPageRoute(
@@ -608,7 +612,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                 discuz,
                                 user,
                                 URLUtils.getViewThreadURL(discuz, tid))));
+                    break;
                   }
+                case 1:{
+                  Share.share(URLUtils.getViewThreadURL(discuz, tid), subject: _viewThreadResult.threadVariables.threadInfo.subject);
+                  break;
+                }
               }
             },
           )

@@ -509,5 +509,6 @@
   "upgrade_notification_subtitle": "Because of the depreciation of Floor package, we are upgrading the dataset backend to hive and the old data is no longer available.",
   "useMaterial3Title": "Use Material You design",
   "useMaterial3YesSubtitle": "Components that have been migrated to Material 3 will use new colors, typography and other features of Material 3.",
-  "useMaterial3NoSubtitle": "App will use the Material 2 look and feel."
+  "useMaterial3NoSubtitle": "App will use the Material 2 look and feel.",
+  "share": "Share"
 }

@@ -7,7 +7,6 @@ import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
-import 'package:discuz_flutter/page/ExploreWebsitePage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
@@ -119,7 +118,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
           Row(
             children: [
               IconButton(
-                  icon: Icon(Icons.message),
+                  icon: Icon(Icons.message, size: 24,),
                   onPressed: () {
                     if (_userProfileResult != null &&
                         _userProfileResult!.variables.space != null) {
