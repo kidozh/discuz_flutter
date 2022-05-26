@@ -9,6 +9,7 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +27,8 @@ Discuz exclusiveDiscuz = Discuz("https://keylol.com", "X3.2", "utf-8", 4, "1.4.8
 void main() async{
   // init google ads
 
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   // init for hive
   await Hive.initFlutter();
   await AppDatabase.initBoxes();
@@ -55,7 +57,7 @@ void main() async{
     }
   }
 
-
+  FlutterNativeSplash.remove();
 
   runApp(
       MultiProvider(
@@ -67,6 +69,7 @@ void main() async{
         ],
         child: isExclusiveDiscuz? ExclusiveDiscuzApp(initialPlatform,discuz): MyApp(initialPlatform),
       ));
+
 }
 
 

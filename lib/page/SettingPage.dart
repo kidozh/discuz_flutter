@@ -143,32 +143,23 @@ class _SettingPageState extends State<SettingPage> {
 
               ],
             ),
-
-
-            // SettingsSection(
-            //   title: 'Account',
-            //   tiles: [
-            //     SettingsTile(title: 'Phone number', leading: Icon(Icons.phone)),
-            //     SettingsTile(title: 'Email', leading: Icon(Icons.email)),
-            //     SettingsTile(title: 'Sign out', leading: Icon(Icons.exit_to_app)),
-            //   ],
-            // ),
-            // SettingsSection(
-            //   title: 'Security',
-            //   tiles: [
-            //     SettingsTile.switchTile(
-            //       title: 'Lock app in background',
-            //       leading: Icon(Icons.phonelink_lock),
-            //       switchValue: lockInBackground,
-            //       onToggle: (bool value) {
-            //         setState(() {
-            //           lockInBackground = value;
-            //           notificationsEnabled = value;
-            //         });
-            //       },
-            //     ),
-            //   ],
-            // ),
+            SettingsSection(
+              title: S.of(context).post,
+              tiles: [
+                SettingsTile(
+                  title: S.of(context).appearanceOptimizedPlatform,
+                  subtitle: themeEntity.getPlatformLocaleName(context),
+                  leading: Icon(PlatformIcons(context).home),
+                  onPressed: (context) {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    Navigator.of(context).push(platformPageRoute(
+                      builder: (_) => ChoosePlatformPage(),
+                      context: context,
+                    ));
+                  },
+                ),
+              ],
+            ),
             SettingsSection(
               title: S.of(context).legalInformation,
               tiles: [

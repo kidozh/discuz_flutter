@@ -391,6 +391,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "policy": MessageLookupByLibrary.simpleMessage("Our policy"),
         "pollExpireAt": m18,
         "pollVoterNumber": m19,
+        "post": MessageLookupByLibrary.simpleMessage("Post"),
         "postAuthorLabel": MessageLookupByLibrary.simpleMessage("OP"),
         "postNumber": MessageLookupByLibrary.simpleMessage("Post number"),
         "postPosition": m20,
@@ -477,6 +478,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "signInViaBrowser":
             MessageLookupByLibrary.simpleMessage("Sign in by web"),
         "signUp": MessageLookupByLibrary.simpleMessage("Sign up"),
+        "signatureStyle":
+            MessageLookupByLibrary.simpleMessage("Signature style"),
         "sitePage": MessageLookupByLibrary.simpleMessage("Homepage"),
         "smileyLabel": m26,
         "spam": MessageLookupByLibrary.simpleMessage("Spam"),

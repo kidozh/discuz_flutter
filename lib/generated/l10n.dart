@@ -3340,6 +3340,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Post`
+  String get post {
+    return Intl.message(
+      'Post',
+      name: 'post',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Signature style`
+  String get signatureStyle {
+    return Intl.message(
+      'Signature style',
+      name: 'signatureStyle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
