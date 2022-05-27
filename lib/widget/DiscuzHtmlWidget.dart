@@ -50,21 +50,21 @@ class DiscuzHtmlWidget extends StatelessWidget{
           title = title.replaceFirst("=", "");
         }
         //log("Recv matched message ${match.group(1)} $title");
-        return '<collapse title="$title">';
+        return '<collapse title="$title"> \n';
       }
       else{
-        return '<collapse>';
+        return '<collapse>\n';
       }
     });
-    string = string.replaceAll(RegExp(r"\[/collapse.*?\]"), r"</collapse>");
+    string = string.replaceAll(RegExp(r"\[/collapse.*?\]"), r"<br/></collapse>");
 
     return string;
   }
 
   String replaceSpoilTag(String string){
     string = string
-        .replaceAll(RegExp(r"\[spoil.*?\]"), r'<spoil>')
-        .replaceAll(RegExp(r"\[/spoil\]"), r"</spoil>");
+        .replaceAll(RegExp(r"\[spoil.*?\]"), r'<spoil><br/>')
+        .replaceAll(RegExp(r"\[/spoil\]"), r"<br/></spoil>");
 
     return string;
   }

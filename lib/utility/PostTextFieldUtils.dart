@@ -46,7 +46,7 @@ class PostTextFieldUtils{
     }
     else if(Platform.isIOS){
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-      return iosInfo.name== null? "": iosInfo.name!;
+      return iosInfo.model== null? "": iosInfo.model!;
     }
     else if(Platform.isWindows){
       WindowsDeviceInfo windowsDeviceInfo = await deviceInfo.windowsInfo;

@@ -10,7 +10,9 @@ class ViewHistoryDao{
   ViewHistoryDao(this.viewHistoryBox);
 
   List<ViewHistory> findAllViewHistoriesByDiscuz(Discuz discuz){
-    return viewHistoryBox.values.where((element) => element.discuz == discuz).toList();
+    List<ViewHistory> viewHistoryList= viewHistoryBox.values.where((element) => element.discuz == discuz).toList();
+    viewHistoryList.sort((a,b) => -a.updateTime.compareTo(b.updateTime));
+    return viewHistoryList;
   }
 
   // Stream<List<ViewHistory>> findAllViewHistoriesStreamByDiscuz(Discuz discuz){

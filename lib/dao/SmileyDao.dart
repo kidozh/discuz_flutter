@@ -11,12 +11,10 @@ class SmileyDao{
   SmileyDao(this.smileyBox);
 
   List<Smiley> findAllSmileyByDiscuz(Discuz discuz){
-    return smileyBox.values.where((element) => element.discuz == discuz).toList();
+    List<Smiley> smileyList = smileyBox.values.where((element) => element.discuz == discuz).toList();
+    smileyList.sort((a,b) => - a.dateTime.compareTo(b.dateTime));
+    return smileyList;
   }
-
-  // Stream<List<Smiley>> findAllSmileyStreamByDiscuz(Discuz discuz){
-  //   return smileyBox.watch().map((event) => smileyBox.values.where((element) => element.discuz == discuz).toList());
-  // }
 
   Smiley? findSmileyByDiscuzIdAndCode(Discuz discuz, String code){
     if(smileyBox.values.where((element) => element.discuz == discuz && element.code == code).isNotEmpty){
@@ -29,6 +27,10 @@ class SmileyDao{
 
   Future<int> insertSmiley(Smiley smiley){
     return smileyBox.add(smiley);
+  }
+
+  Future<void> insertSmileyWithKey(dynamic key,Smiley smiley){
+    return smileyBox.put(key,smiley);
   }
 
   Future<void> deleteSmiley(Smiley smiley) async{

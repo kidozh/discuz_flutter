@@ -146,7 +146,7 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
                     if(smileyInDb != null){
                       smileyInDb.dateTime = DateTime.now();
                       smiley.discuz = discuz;
-                      _smileyDao.insertSmiley(smileyInDb);
+                      _smileyDao.insertSmileyWithKey(smileyInDb.key,smileyInDb);
                     }
                     else{
                       smiley.discuz = discuz;
@@ -238,8 +238,9 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget>{
   }
 
   void _initDB() async {
-    setState(() async{
-      _smileyDao = await AppDatabase.getSmileyDao();
+    SmileyDao smileyDao = await AppDatabase.getSmileyDao();
+    setState((){
+      _smileyDao = smileyDao;
     });
 
     Discuz? discuz = Provider
@@ -290,7 +291,7 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget>{
                       // check whether exist
                       if(smiley.key!=null){
                         smiley.dateTime = DateTime.now();
-                        _smileyDao!.insertSmiley(smiley);
+                        _smileyDao!.insertSmileyWithKey(smiley.key,smiley);
                       }
                       log("pressed smiley ${smiley} ${smiley.key} ");
 
