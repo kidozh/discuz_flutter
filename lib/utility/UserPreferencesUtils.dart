@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'dart:ui';
 
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserPreferencesUtils{
@@ -231,6 +232,30 @@ class UserPreferencesUtils{
   static Future<void> putMaterial3PropertyPreference(bool value) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool(useMaterial3PreferenceKey, value);
+  }
+
+  static final String signaturePreferenceKey = "signaturePreferenceKey";
+
+  static Future<String> getSignaturePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var signaturePreference =  prefs.getString(signaturePreferenceKey);
+    return signaturePreference == null? "": signaturePreference!;
+  }
+
+  static Future<void> putSignaturePreference(String value) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(signaturePreferenceKey, value);
+  }
+
+
+}
+
+class SignaturePreferenceNotifier with ChangeNotifier{
+  String signature = "";
+
+  setSignature(String siganture){
+    this.signature = siganture;
+    notifyListeners();
   }
 
 

@@ -3360,6 +3360,96 @@ class S {
       args: [],
     );
   }
+
+  /// `Enable signature`
+  String get insertSignatureAtTheEndTitle {
+    return Intl.message(
+      'Enable signature',
+      name: 'insertSignatureAtTheEndTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No signature`
+  String get noSignature {
+    return Intl.message(
+      'No signature',
+      name: 'noSignature',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Use device name`
+  String get deviceNameSignature {
+    return Intl.message(
+      'Use device name',
+      name: 'deviceNameSignature',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Custom`
+  String get customSignature {
+    return Intl.message(
+      'Custom',
+      name: 'customSignature',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{name}'s Windows device`
+  String windowsDeviceName(Object name) {
+    return Intl.message(
+      '$name\'s Windows device',
+      name: 'windowsDeviceName',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `{name}'s Linux device`
+  String linuxDeviceName(Object name) {
+    return Intl.message(
+      '$name\'s Linux device',
+      name: 'linuxDeviceName',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `{name}'s MacOS device`
+  String macOSDeviceName(Object name) {
+    return Intl.message(
+      '$name\'s MacOS device',
+      name: 'macOSDeviceName',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Input signature for every post`
+  String get signatureHint {
+    return Intl.message(
+      'Input signature for every post',
+      name: 'signatureHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sent by {device}.`
+  String fromDeviceSignature(Object device) {
+    return Intl.message(
+      'Sent by $device.',
+      name: 'fromDeviceSignature',
+      desc: '',
+      args: [device],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

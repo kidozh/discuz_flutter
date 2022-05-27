@@ -261,7 +261,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     _loadForumContent();
   }
 
-  Future<void> _sendReply() async {
+  Future<void> _sendReply(BuildContext context) async {
     User? user =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     String formhash = _viewThreadResult.threadVariables.formHash;
@@ -276,6 +276,21 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
     // need to be filtered
     String message = PostTextFieldUtils.getPostMessage(_replyController.text);
+    // check with preference
+    String signaturePreference = await UserPreferencesUtils.getSignaturePreference();
+    log("Recv signature ${signaturePreference}");
+    if(signaturePreference.isNotEmpty){
+      if(signaturePreference == PostTextFieldUtils.USE_DEVICE_SIGNATURE){
+        String deviceName = await PostTextFieldUtils.getDeviceName(context);
+        if(deviceName.isNotEmpty){
+          message += "\n\n${S.of(context).fromDeviceSignature(deviceName)}";
+        }
+
+      }
+      else{
+        message += "\n\n${signaturePreference}";
+      }
+    }
 
     // check for captcha information
     CaptchaFields? captchaFields = _captchaController.value;
@@ -934,7 +949,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                             },
                                             onPressed: () {
                                               VibrationUtils.vibrateWithClickIfPossible();
-                                              _sendReply();
+                                              _sendReply(context);
                                             },
                                             state: _sendReplyStatus);
                                       }

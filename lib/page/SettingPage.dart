@@ -2,6 +2,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/ChooseInterfaceBrightnessPage.dart';
 import 'package:discuz_flutter/page/ChoosePlatformPage.dart';
 import 'package:discuz_flutter/page/ChooseTypeSettingScalePage.dart';
+import 'package:discuz_flutter/page/SelectSignatureStylePage.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -147,13 +148,15 @@ class _SettingPageState extends State<SettingPage> {
               title: S.of(context).post,
               tiles: [
                 SettingsTile(
-                  title: S.of(context).appearanceOptimizedPlatform,
-                  subtitle: themeEntity.getPlatformLocaleName(context),
-                  leading: Icon(PlatformIcons(context).home),
+                  title: S.of(context).signatureStyle,
+                  leading: Icon(PlatformIcons(context).pen),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
-                      builder: (_) => ChoosePlatformPage(),
+                      builder: (_) => Provider<SignaturePreferenceNotifier>(
+                        create: (_) => SignaturePreferenceNotifier(),
+                        child: SelectSignatureStylePage(),
+                      ),
                       context: context,
                     ));
                   },

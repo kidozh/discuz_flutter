@@ -512,5 +512,35 @@
   "useMaterial3NoSubtitle": "App will use the Material 2 look and feel.",
   "share": "Share",
   "post": "Post",
-  "signatureStyle": "Signature style"
+  "signatureStyle": "Signature style",
+  "insertSignatureAtTheEndTitle": "Enable signature",
+  "noSignature": "No signature",
+  "deviceNameSignature": "Use device name",
+  "customSignature": "Custom",
+  "windowsDeviceName":"{name}'s Windows device",
+  "@windowsDeviceName": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "linuxDeviceName":"{name}'s Linux device",
+  "@linuxDeviceName": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+
+  "macOSDeviceName":"{name}'s MacOS device",
+  "@macOSDeviceName": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "signatureHint": "Input signature for every post",
+  "fromDeviceSignature": "Sent by {device}.",
+  "@fromDeviceSignature": {
+    "placeholders": {
+      "device": {}
+    }
+  }
 }

@@ -371,6 +371,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             icon: Icon(Icons.account_tree),
           )
         ],
+        automaticallyImplyLeading: true,
         leading: Consumer<DiscuzAndUserNotifier>(
           builder: (context, value, child){
             if(value.discuz == null){

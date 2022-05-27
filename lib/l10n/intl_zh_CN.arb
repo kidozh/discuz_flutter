@@ -512,5 +512,35 @@
   "useMaterial3NoSubtitle": "应用会使用 Material 2 的外观。",
   "share": "分享",
   "post": "发帖",
-  "signatureStyle": "发帖签名样式"
+  "signatureStyle": "发帖签名样式",
+  "insertSignatureAtTheEndTitle": "启用结尾签名",
+  "noSignature": "不使用签名",
+  "deviceNameSignature": "使用设备名称",
+  "customSignature": "自定义",
+  "windowsDeviceName":"{name}的Windows电脑",
+  "@windowsDeviceName": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "linuxDeviceName":"{name}的Linux电脑",
+  "@linuxDeviceName": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+
+  "macOSDeviceName":"{name}的MacOS设备",
+  "@macOSDeviceName": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "signatureHint": "在此键入签名",
+  "fromDeviceSignature": "消息由{device}发出。",
+  "@fromDeviceSignature": {
+    "placeholders": {
+      "device": {}
+    }
+  }
 }
