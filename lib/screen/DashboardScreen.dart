@@ -34,12 +34,12 @@ class MaterialDashboardScreen extends StatelessWidget{
               tabs: [
 
                 Tab(
-                  //icon: Icon(Icons.whatshot),
-                  text: S.of(context).hotThread,
+                  icon: Icon(Icons.whatshot),
+                  //text: S.of(context).hotThread,
                 ),
                 Tab(
-                  //icon: Icon(CupertinoIcons.today_fill),
-                  text: S.of(context).newThread,
+                  icon: Icon(CupertinoIcons.today_fill),
+                  //text: S.of(context).newThread,
                 ),
               ],
               labelColor: Theme.of(context).primaryColor,
