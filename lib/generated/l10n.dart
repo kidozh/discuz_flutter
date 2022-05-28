@@ -3281,20 +3281,20 @@ class S {
     );
   }
 
-  /// `Update notice`
+  /// `Safe update`
   String get upgrade_notification_title {
     return Intl.message(
-      'Update notice',
+      'Safe update',
       name: 'upgrade_notification_title',
       desc: '',
       args: [],
     );
   }
 
-  /// `Because of the depreciation of Floor package, we are upgrading the dataset backend to hive and the old data is no longer available.`
+  /// `Update includes bug fix, function add and interface change.`
   String get upgrade_notification_subtitle {
     return Intl.message(
-      'Because of the depreciation of Floor package, we are upgrading the dataset backend to hive and the old data is no longer available.',
+      'Update includes bug fix, function add and interface change.',
       name: 'upgrade_notification_subtitle',
       desc: '',
       args: [],

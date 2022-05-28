@@ -460,7 +460,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "undo": MessageLookupByLibrary.simpleMessage("撤销"),
         "updateAt": MessageLookupByLibrary.simpleMessage("更新于 %T"),
         "upgrade_notification_subtitle": MessageLookupByLibrary.simpleMessage(
-            "由于Floor库可预期的废弃，因此我们已经使用Hive管理数据。很抱歉的通知您，您之前的旧数据因库的废弃而停用。点此了解更多。"),
+            "此次升级包含常规的功能更新、问题修复以及界面样式更改。可以正常兼容升级。"),
         "upgrade_notification_title":
             MessageLookupByLibrary.simpleMessage("升级提醒"),
         "uploadCompressedImageToServer":

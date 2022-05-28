@@ -56,16 +56,17 @@ class TestFlightBannerContent extends StatelessWidget{
               SizedBox(height: 30,),
               Card(
 
-                color: Colors.deepOrange,
+                color: Colors.green,
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 4.0),
                   child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.white,
-                      child: Icon(Icons.error_outline,color: Colors.deepOrangeAccent),
-                    ),
-                    title: Text(S.of(context).upgrade_notification_title, style: TextStyle(color: Colors.white),),
-                    subtitle: Text(S.of(context).upgrade_notification_subtitle, style: TextStyle(color: Colors.white60)),
+                    leading: Icon(PlatformIcons(context).checkMarkCircled,color: Colors.white, size: 40,),
+                    // leading: CircleAvatar(
+                    //   backgroundColor: Colors.white,
+                    //   child: Icon(PlatformIcons(context).checkMarkCircled,color: Colors.green),
+                    // ),
+                    //title: Text(S.of(context).upgrade_notification_title, style: TextStyle(color: Colors.white),),
+                    subtitle: Text(S.of(context).upgrade_notification_subtitle, style: TextStyle(color: Colors.white)),
                     onTap: (){
                       VibrationUtils.vibrateWithClickIfPossible();
                       _launchURL("https://discuzhub.kidozh.com/dev-blog/disfly-upgrading-to-v1.0.7-notification/");

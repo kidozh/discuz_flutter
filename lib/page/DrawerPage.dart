@@ -140,7 +140,7 @@ class DrawerState extends State<DrawerStatefulWidget>{
         ),
         ListTile(
           title: Text(S.of(context).favoriteForum),
-          leading: Icon(PlatformIcons(context).bookmark),
+          leading: Icon(PlatformIcons(context).bookmarkSolid),
           onTap: () async {
             Discuz? discuz =
                 Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
