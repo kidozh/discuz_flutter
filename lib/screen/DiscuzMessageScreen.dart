@@ -106,7 +106,7 @@ class CupertinoDiscuzMessageState extends State<CupertinoDiscuzMessageStatefulWi
       children: [
         Container(
           width: double.infinity,
-          child: Padding(padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          child: Padding(padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
             child: CupertinoSlidingSegmentedControl<int>(
                 children: <int, Widget>{
                   0: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).privateMessage),),
