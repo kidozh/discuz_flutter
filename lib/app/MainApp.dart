@@ -368,6 +368,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         ),
         trailingActions: [
           PlatformIconButton(
+            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
             onPressed: _triggerSwitchDiscuzDialog,
             icon: Icon(Icons.account_tree),
           )
@@ -380,12 +381,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             }
             else{
               return PlatformIconButton(
+                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                   onPressed: () async{
                     // open drawer
                     VibrationUtils.vibrateWithClickIfPossible();
                     await Navigator.push(context, platformPageRoute(context:context,builder: (context) => DrawerPage()));
                   },
-                  icon: Icon(PlatformIcons(context).dehaze)
+                  icon: Icon(Icons.menu)
               );
             }
           },
