@@ -69,7 +69,7 @@ class TestFlightBannerContent extends StatelessWidget{
                     subtitle: Text(S.of(context).upgrade_notification_subtitle, style: TextStyle(color: Colors.white)),
                     onTap: (){
                       VibrationUtils.vibrateWithClickIfPossible();
-                      _launchURL("https://discuzhub.kidozh.com/dev-blog/disfly-upgrading-to-v1.0.7-notification/");
+                      _launchURL("https://discuzhub.kidozh.com/dev-blog/disfly-release-v1.0.10/");
                     },
                   ),
                 ),
