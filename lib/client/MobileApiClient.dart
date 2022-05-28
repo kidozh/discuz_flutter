@@ -25,6 +25,8 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:dio/dio.dart' hide Headers;
 import 'package:retrofit/retrofit.dart';
 
+import '../JsonResult/NewThreadResult.dart';
+
 part 'MobileApiClient.g.dart';
 
 @RestApi(baseUrl: "https://keylol.com/")
@@ -246,4 +248,7 @@ abstract class MobileApiClient {
       @Field("formhash") String formhash,
       @Field("favid") int favid,
       );
+
+  @GET("/api/mobile/index.php?version=4&module=newthreads&limit=20")
+  Future<NewThreadResult> newThreadsResult(@Query("fids") String fids, @Query("start") int start);
 }

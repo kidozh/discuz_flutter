@@ -248,6 +248,21 @@ class UserPreferencesUtils{
   }
 
 
+
+  static Future<String> getDiscuzForumFids(Discuz discuz,) async {
+    String discuzForumFidsKey = "signaturePreferenceKey_${discuz.baseURL}";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var signaturePreference =  prefs.getString(discuzForumFidsKey);
+    return signaturePreference == null? "": signaturePreference;
+  }
+
+  static Future<void> putDiscuzForumFids(Discuz discuz,String value) async{
+    String discuzForumFidsKey = "signaturePreferenceKey_${discuz.baseURL}";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(discuzForumFidsKey, value);
+  }
+
+
 }
 
 class SignaturePreferenceNotifier with ChangeNotifier{

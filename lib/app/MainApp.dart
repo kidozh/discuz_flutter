@@ -8,6 +8,7 @@ import 'package:discuz_flutter/page/TestFlightBannerPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
+import 'package:discuz_flutter/screen/DashboardScreen.dart';
 import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
 import 'package:discuz_flutter/screen/HotThreadScreen.dart';
 import 'package:discuz_flutter/screen/NotificationScreen.dart';
@@ -394,7 +395,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         if(!Platform.isIOS)
         ExploreWebsitePage(key: ValueKey(0),),
         DiscuzPortalScreen(key: ValueKey(1),),
-        HotThreadScreen(key: ValueKey(2),),
+        //HotThreadScreen(key: ValueKey(2),),
+        DashboardScreen(),
         NotificationScreen(key: ValueKey(3),),
         // FavoriteThreadScreen(),
         DiscuzMessageScreen(key: ValueKey(4),)

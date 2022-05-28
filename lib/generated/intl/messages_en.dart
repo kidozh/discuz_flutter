@@ -296,6 +296,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "groupInfoDescription": m12,
         "habit": MessageLookupByLibrary.simpleMessage("Habits"),
         "homepage": MessageLookupByLibrary.simpleMessage("Homepage"),
+        "hotThread": MessageLookupByLibrary.simpleMessage("Hot"),
         "hour": MessageLookupByLibrary.simpleMessage("H"),
         "hourAgo": m13,
         "hourLater": m14,
@@ -366,6 +367,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Error in connecting with the server."),
         "networkFailed":
             MessageLookupByLibrary.simpleMessage("Network failed."),
+        "newThread": MessageLookupByLibrary.simpleMessage("New"),
         "noFavoriteThreadInDb": MessageLookupByLibrary.simpleMessage(
             "No favorite thread is stored in your device"),
         "noImagePicked":

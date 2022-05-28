@@ -258,6 +258,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "groupInfoDescription": m12,
         "habit": MessageLookupByLibrary.simpleMessage("爱好"),
         "homepage": MessageLookupByLibrary.simpleMessage("个人主页"),
+        "hotThread": MessageLookupByLibrary.simpleMessage("最新热门"),
         "hour": MessageLookupByLibrary.simpleMessage("时"),
         "hourAgo": m13,
         "hourLater": m14,
@@ -316,6 +317,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "more": MessageLookupByLibrary.simpleMessage("更多"),
         "networkFail": MessageLookupByLibrary.simpleMessage("连接服务器时出错。"),
         "networkFailed": MessageLookupByLibrary.simpleMessage("网络访问失败。"),
+        "newThread": MessageLookupByLibrary.simpleMessage("最新发表"),
         "noFavoriteThreadInDb":
             MessageLookupByLibrary.simpleMessage("还没有收藏一个帖子"),
         "noImagePicked": MessageLookupByLibrary.simpleMessage("您可能没有选择任何一张图片。"),

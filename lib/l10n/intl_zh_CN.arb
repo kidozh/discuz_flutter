@@ -542,5 +542,7 @@
     "placeholders": {
       "device": {}
     }
-  }
+  },
+  "hotThread": "最新热门",
+  "newThread": "最新发表"
 }

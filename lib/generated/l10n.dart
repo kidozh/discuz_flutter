@@ -3450,6 +3450,26 @@ class S {
       args: [device],
     );
   }
+
+  /// `Hot`
+  String get hotThread {
+    return Intl.message(
+      'Hot',
+      name: 'hotThread',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New`
+  String get newThread {
+    return Intl.message(
+      'New',
+      name: 'newThread',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

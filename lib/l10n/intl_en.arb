@@ -542,5 +542,7 @@
     "placeholders": {
       "device": {}
     }
-  }
+  },
+  "hotThread": "Hot",
+  "newThread": "New"
 }

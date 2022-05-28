@@ -17,6 +17,7 @@ import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/ConstUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
+import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumPartitionWidget.dart';
@@ -115,6 +116,15 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       setState(() {
         result = value;
       });
+      // get fids;
+      if(value.discuzIndexVariables.forumList.isNotEmpty){
+        String fids = "";
+        for(var forum in value.discuzIndexVariables.forumList){
+          fids += "${forum.fid},";
+        }
+        UserPreferencesUtils.putDiscuzForumFids(discuz, fids);
+        log("Save fids ${fids} to User Preference");
+      }
       if(value.getErrorString()!= null){
         EasyLoading.showError(value.getErrorString()!);
       }
@@ -135,6 +145,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       }
 
     }).catchError((onError) {
+
       // VibrationUtils.vibrateErrorIfPossible();
       // if (!_enableControlFinish) {
       //   _controller.resetLoadState();

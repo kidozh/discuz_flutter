@@ -729,6 +729,23 @@ class _MobileApiClient implements MobileApiClient {
     return value;
   }
 
+  @override
+  Future<NewThreadResult> newThreadsResult(fids, start) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'fids': fids, r'start': start};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<NewThreadResult>(Options(
+                method: 'GET', headers: _headers, extra: _extra)
+            .compose(_dio.options,
+                '/api/mobile/index.php?version=4&module=newthreads&limit=20',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = NewThreadResult.fromJson(_result.data!);
+    return value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||
