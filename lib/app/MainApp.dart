@@ -370,7 +370,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           PlatformIconButton(
             padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
             onPressed: _triggerSwitchDiscuzDialog,
-            icon: Icon(Icons.account_tree),
+            icon: Icon(Icons.account_tree, color: Theme.of(context).textTheme.titleSmall?.color,),
           )
         ],
         automaticallyImplyLeading: true,
@@ -387,7 +387,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     VibrationUtils.vibrateWithClickIfPossible();
                     await Navigator.push(context, platformPageRoute(context:context,builder: (context) => DrawerPage()));
                   },
-                  icon: Icon(Icons.menu)
+                  icon: Icon(Icons.menu, color: Theme.of(context).textTheme.titleSmall?.color)
               );
             }
           },
