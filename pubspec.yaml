@@ -80,6 +80,7 @@ dependencies:
   hive_flutter: any
   device_info_plus: ^3.2.3
   share_plus: ^4.0.4
+  firebase_messaging: ^11.4.1
 
 
 

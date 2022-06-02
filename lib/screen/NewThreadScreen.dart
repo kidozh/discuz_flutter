@@ -105,7 +105,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
     String fids = await UserPreferencesUtils.getDiscuzForumFids(discuz);
     log("Recv fids ${fids}");
 
-    _client.newThreadsResult(fids,_page*20).then((value){
+    _client.newThreadsResult(fids,(_page-1)*20).then((value){
       setState(() {
         result = value;
         _error = null;
