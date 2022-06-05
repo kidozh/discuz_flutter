@@ -8,7 +8,9 @@ class TrustHostDao{
   TrustHostDao(this.trustHostBox);
 
   List<TrustHost> findAllTrustHosts(){
-    return trustHostBox.values.toList();
+    List<TrustHost> list = trustHostBox.values.toList();
+    list.sort((a,b) => -a.trustAt.compareTo(b.trustAt));
+    return list;
   }
 
   // Stream<List<TrustHost>> findAllTrustHostsStream(){
