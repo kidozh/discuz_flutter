@@ -64,7 +64,7 @@ class _SettingPageState extends State<SettingPage> {
                   description: Text(recordHistory
                       ? S.of(context).recordHistoryOnDescription
                       : S.of(context).recordHistoryOffDescription),
-                  leading: Icon(Icons.history),
+                  leading: Icon(PlatformIcons(context).bookmarkOutline),
                   //switchValue: recordHistory,
                   activeSwitchColor: Theme.of(context).primaryColor,
                   onToggle: (bool value) {
@@ -121,7 +121,7 @@ class _SettingPageState extends State<SettingPage> {
                 SettingsTile(
                   title: Text(S.of(context).interfaceBrightness),
                   trailing: Text(themeEntity.getBrightnessName(context)),
-                  leading: Icon(Icons.exposure_outlined),
+                  leading: Icon(PlatformIcons(context).brightness),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
@@ -170,7 +170,7 @@ class _SettingPageState extends State<SettingPage> {
               tiles: [
                 SettingsTile(
                   title: Text(S.of(context).termsOfService),
-                  leading: Icon(Icons.description),
+                  leading: Icon(PlatformIcons(context).tagOutline),
                   onPressed: (_) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     _launchURL("https://discuzhub.kidozh.com/term_of_use/");
@@ -178,7 +178,7 @@ class _SettingPageState extends State<SettingPage> {
                 ),
                 SettingsTile(
                   title: Text(S.of(context).privacyPolicy),
-                  leading: Icon(Icons.privacy_tip),
+                  leading: Icon(PlatformIcons(context).tagOutline),
                   onPressed: (_) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     _launchURL("https://discuzhub.kidozh.com/privacy_policy/");
@@ -186,7 +186,7 @@ class _SettingPageState extends State<SettingPage> {
                 ),
                 SettingsTile(
                   title: Text(S.of(context).openSourceLicence),
-                  leading: Icon(Icons.collections_bookmark),
+                  leading: Icon(PlatformIcons(context).tagOutline),
                   onPressed: (_) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     _launchURL(
