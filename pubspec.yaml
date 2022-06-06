@@ -35,8 +35,7 @@ dependencies:
   retrofit: ^3.0.0
   logger: any  #for logging purpose
   # floor: ^1.2.0
-  settings_ui:
-    git: https://github.com/beerstorm-net/flutter-settings-ui.git
+  settings_ui: ^2.0.2
   form_validator: ^1.0.1
   persistent_bottom_nav_bar: ^4.0.2
   cached_network_image: ^3.2.0

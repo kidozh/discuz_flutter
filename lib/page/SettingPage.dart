@@ -44,6 +44,7 @@ class _SettingPageState extends State<SettingPage> {
   Widget build(BuildContext context) {
     return PlatformScaffold(
       appBar: PlatformAppBar(title: Text(S.of(context).settingTitle)),
+      iosContentPadding: true,
       body: buildSettingsList(),
     );
   }
@@ -56,16 +57,16 @@ class _SettingPageState extends State<SettingPage> {
         return SettingsList(
           sections: [
             SettingsSection(
-              title: S.of(context).common,
+              title: Text(S.of(context).common),
               tiles: [
                 SettingsTile.switchTile(
-                  title: S.of(context).recordHistoryTitle,
-                  subtitle: recordHistory
+                  title: Text(S.of(context).recordHistoryTitle),
+                  description: Text(recordHistory
                       ? S.of(context).recordHistoryOnDescription
-                      : S.of(context).recordHistoryOffDescription,
+                      : S.of(context).recordHistoryOffDescription),
                   leading: Icon(Icons.history),
-                  switchValue: recordHistory,
-                  switchActiveColor: Theme.of(context).primaryColor,
+                  //switchValue: recordHistory,
+                  activeSwitchColor: Theme.of(context).primaryColor,
                   onToggle: (bool value) {
                     VibrationUtils.vibrateWithSwitchIfPossible();
                     print("set record history ${value} ");
@@ -73,16 +74,16 @@ class _SettingPageState extends State<SettingPage> {
                     setState(() {
                       recordHistory = value;
                     });
-                  },
+                  }, initialValue: recordHistory,
                 ),
               ],
             ),
             SettingsSection(
-              title: S.of(context).displaySettingTitle,
+              title: Text(S.of(context).displaySettingTitle),
               tiles: [
                 SettingsTile(
-                  title: S.of(context).chooseThemeTitle,
-                  subtitle: themeEntity.getColorName(context),
+                  title: Text(S.of(context).chooseThemeTitle),
+                  trailing: Text(themeEntity.getColorName(context)),
                   leading: Icon(Icons.color_lens_outlined),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
@@ -93,8 +94,8 @@ class _SettingPageState extends State<SettingPage> {
                   },
                 ),
                 SettingsTile(
-                  title: S.of(context).appearanceOptimizedPlatform,
-                  subtitle: themeEntity.getPlatformLocaleName(context),
+                  title: Text(S.of(context).appearanceOptimizedPlatform),
+                  trailing: Text(themeEntity.getPlatformLocaleName(context)),
                   leading: Icon(PlatformIcons(context).home),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
@@ -105,22 +106,21 @@ class _SettingPageState extends State<SettingPage> {
                   },
                 ),
                 SettingsTile.switchTile(
-                  title: S.of(context).useMaterial3Title,
-                  subtitle: themeEntity.useMaterial3
-                      ? S.of(context).useMaterial3YesSubtitle
-                      : S.of(context).useMaterial3NoSubtitle,
+                  title: Text(S.of(context).useMaterial3Title),
+                  description: themeEntity.useMaterial3
+                      ? Text(S.of(context).useMaterial3YesSubtitle)
+                      : Text(S.of(context).useMaterial3NoSubtitle),
                   leading: Icon(Icons.style_outlined),
-                  switchValue: themeEntity.useMaterial3,
-                  switchActiveColor: Theme.of(context).primaryColor,
+                  activeSwitchColor: Theme.of(context).primaryColor,
                   onToggle: (bool value) {
                     VibrationUtils.vibrateWithSwitchIfPossible();
                     UserPreferencesUtils.putMaterial3PropertyPreference(value);
                     Provider.of<ThemeNotifierProvider>(context,listen: false).setMaterial3(value);
-                  },
+                  }, initialValue: themeEntity.useMaterial3,
                 ),
                 SettingsTile(
-                  title: S.of(context).interfaceBrightness,
-                  subtitle: themeEntity.getBrightnessName(context),
+                  title: Text(S.of(context).interfaceBrightness),
+                  trailing: Text(themeEntity.getBrightnessName(context)),
                   leading: Icon(Icons.exposure_outlined),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
@@ -131,8 +131,8 @@ class _SettingPageState extends State<SettingPage> {
                   },
                 ),
                 SettingsTile(
-                  title: S.of(context).typeSetting,
-                  subtitle: S.of(context).fontSizeScaleParameterUnit(typeSetting.scalingParameter.toStringAsFixed(3)),
+                  title: Text(S.of(context).typeSetting),
+                  trailing: Text(S.of(context).fontSizeScaleParameterUnit(typeSetting.scalingParameter.toStringAsFixed(3))),
                   leading: Icon(Icons.format_size_outlined),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
@@ -147,10 +147,10 @@ class _SettingPageState extends State<SettingPage> {
               ],
             ),
             SettingsSection(
-              title: S.of(context).post,
+              title: Text(S.of(context).post),
               tiles: [
                 SettingsTile(
-                  title: S.of(context).signatureStyle,
+                  title: Text(S.of(context).signatureStyle),
                   leading: Icon(PlatformIcons(context).pen),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
@@ -166,10 +166,10 @@ class _SettingPageState extends State<SettingPage> {
               ],
             ),
             SettingsSection(
-              title: S.of(context).legalInformation,
+              title: Text(S.of(context).legalInformation),
               tiles: [
                 SettingsTile(
-                  title: S.of(context).termsOfService,
+                  title: Text(S.of(context).termsOfService),
                   leading: Icon(Icons.description),
                   onPressed: (_) {
                     VibrationUtils.vibrateWithClickIfPossible();
@@ -177,7 +177,7 @@ class _SettingPageState extends State<SettingPage> {
                   },
                 ),
                 SettingsTile(
-                  title: S.of(context).privacyPolicy,
+                  title: Text(S.of(context).privacyPolicy),
                   leading: Icon(Icons.privacy_tip),
                   onPressed: (_) {
                     VibrationUtils.vibrateWithClickIfPossible();
@@ -185,7 +185,7 @@ class _SettingPageState extends State<SettingPage> {
                   },
                 ),
                 SettingsTile(
-                  title: S.of(context).openSourceLicence,
+                  title: Text(S.of(context).openSourceLicence),
                   leading: Icon(Icons.collections_bookmark),
                   onPressed: (_) {
                     VibrationUtils.vibrateWithClickIfPossible();
@@ -195,7 +195,7 @@ class _SettingPageState extends State<SettingPage> {
                 ),
               ],
             ),
-            CustomSection(
+            CustomSettingsSection(
               child: Column(
                 children: [
                   Padding(

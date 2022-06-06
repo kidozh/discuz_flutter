@@ -22,6 +22,7 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
     _selectedColorName = Provider.of<ThemeNotifierProvider>(context,listen: false).themeColorName;
 
     return PlatformScaffold(
+      iosContentPadding: true,
       appBar: PlatformAppBar(
         title: Text(S.of(context).chooseThemeTitle),
       ),
@@ -30,133 +31,133 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
 
           SettingsSection(tiles: [
             SettingsTile(
-              title: S.of(context).colorAmber,
+              title: Text(S.of(context).colorAmber),
               trailing: trailingWidget("amber"),
               onPressed: (BuildContext context) {
                 changeColor("amber");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorGrey,
+              title: Text(S.of(context).colorGrey),
               trailing: trailingWidget("grey"),
               onPressed: (BuildContext context) {
                 changeColor("grey");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorBlue,
+              title: Text(S.of(context).colorBlue),
               trailing: trailingWidget("blue"),
               onPressed: (BuildContext context) {
                 changeColor("blue");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorCyan,
+              title: Text(S.of(context).colorCyan),
               trailing: trailingWidget("cyan"),
               onPressed: (BuildContext context) {
                 changeColor("cyan");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorDeepPurple,
+              title: Text(S.of(context).colorDeepPurple),
               trailing: trailingWidget("deepPurple"),
               onPressed: (BuildContext context) {
                 changeColor("deepPurple");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorDeepOrange,
+              title: Text(S.of(context).colorDeepOrange),
               trailing: trailingWidget("deepOrange"),
               onPressed: (BuildContext context) {
                 changeColor("deepOrange");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorYellow,
+              title: Text(S.of(context).colorYellow),
               trailing: trailingWidget("yellow"),
               onPressed: (BuildContext context) {
                 changeColor("yellow");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorLime,
+              title: Text(S.of(context).colorLime),
               trailing: trailingWidget("lime"),
               onPressed: (BuildContext context) {
                 changeColor("lime");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorGreen,
+              title: Text(S.of(context).colorGreen),
               trailing: trailingWidget("green"),
               onPressed: (BuildContext context) {
                 changeColor("green");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorIndigo,
+              title: Text(S.of(context).colorIndigo),
               trailing: trailingWidget("indigo"),
               onPressed: (BuildContext context) {
                 changeColor("indigo");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorOrange,
+              title: Text(S.of(context).colorOrange),
               trailing: trailingWidget("orange"),
               onPressed: (BuildContext context) {
                 changeColor("orange");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorPurple,
+              title: Text(S.of(context).colorPurple),
               trailing: trailingWidget("purple"),
               onPressed: (BuildContext context) {
                 changeColor("purple");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorPink,
+              title: Text(S.of(context).colorPink),
               trailing: trailingWidget("pink"),
               onPressed: (BuildContext context) {
                 changeColor("pink");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorRed,
+              title: Text(S.of(context).colorRed),
               trailing: trailingWidget("red"),
               onPressed: (BuildContext context) {
                 changeColor("red");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorTeal,
+              title: Text(S.of(context).colorTeal),
               trailing: trailingWidget("teal"),
               onPressed: (BuildContext context) {
                 changeColor("teal");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorBrown,
+              title: Text(S.of(context).colorBrown),
               trailing: trailingWidget("brown"),
               onPressed: (BuildContext context) {
                 changeColor("brown");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorLightBlue,
+              title: Text(S.of(context).colorLightBlue),
               trailing: trailingWidget("lightBlue"),
               onPressed: (BuildContext context) {
                 changeColor("lightBlue");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorBlueGrey,
+              title: Text(S.of(context).colorBlueGrey),
               trailing: trailingWidget("blueGrey"),
               onPressed: (BuildContext context) {
                 changeColor("blueGrey");
               },
             ),
             SettingsTile(
-              title: S.of(context).colorLightGreen,
+              title: Text(S.of(context).colorLightGreen),
               trailing: trailingWidget("lightGreen"),
               onPressed: (BuildContext context) {
                 changeColor("lightGreen");

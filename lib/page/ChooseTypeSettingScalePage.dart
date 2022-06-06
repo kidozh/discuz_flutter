@@ -75,6 +75,7 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
 
 
     return PlatformScaffold(
+      iosContentPadding: true,
       appBar: PlatformAppBar(
         title: Text(S.of(context).typeSetting),
       ),
@@ -85,12 +86,12 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
             SettingsSection(
               tiles: [
                 SettingsTile.switchTile(
-                  title: S.of(context).disableFontCustomization,
-                  subtitle: ignoreCustomFontStyle
-                      ? S.of(context).disableFontCustomizationTitle
+                  title: Text(S.of(context).disableFontCustomization),
+                  description: ignoreCustomFontStyle
+                      ? Text(S.of(context).disableFontCustomizationTitle)
                       : null,
                   leading: Icon(PlatformIcons(context).edit),
-                  switchValue: ignoreCustomFontStyle,
+                  //switchValue: ignoreCustomFontStyle,
                   onToggle: (bool value) {
                     VibrationUtils.vibrateWithSwitchIfPossible();
                     print("set record history ${value} ");
@@ -98,11 +99,11 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
                     setState(() {
                       ignoreCustomFontStyle = value;
                     });
-                  },
+                  }, initialValue: ignoreCustomFontStyle,
                 ),
               ],
             ),
-            CustomSection(
+            CustomSettingsSection(
                 child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
@@ -156,7 +157,7 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
                 )
               ],
             )),
-            CustomSection(
+            CustomSettingsSection(
               child: SingleChildScrollView(
                 child: Column(
                   children: [

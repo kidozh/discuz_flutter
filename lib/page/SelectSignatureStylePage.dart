@@ -64,6 +64,7 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
   Widget build(BuildContext context) {
 
     return PlatformScaffold(
+      iosContentPadding: true,
       appBar: PlatformAppBar(
         title: Text(S.of(context).signatureStyle),
       ),
@@ -76,7 +77,7 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
                 tiles: [
 
                   SettingsTile(
-                    title: S.of(context).noSignature,
+                    title: Text(S.of(context).noSignature),
                     trailing: signature == PostTextFieldUtils.NO_SIGNATURE ?Icon(PlatformIcons(context).checkMark, color: Theme.of(context).primaryColor,): Icon(null),
                     onPressed: (BuildContext context){
                       VibrationUtils.vibrateWithClickIfPossible();
@@ -84,8 +85,8 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
                     },
                   ),
                   SettingsTile(
-                    title: S.of(context).deviceNameSignature,
-                    subtitle: deviceSignature,
+                    title: Text(S.of(context).deviceNameSignature),
+                    description: Text(deviceSignature),
                     trailing: signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE?Icon(PlatformIcons(context).checkMark, color: Theme.of(context).primaryColor):Icon(null),
                     onPressed: (BuildContext context){
                       VibrationUtils.vibrateWithClickIfPossible();
@@ -93,7 +94,7 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
                     },
                   ),
                   SettingsTile(
-                    title: S.of(context).customSignature,
+                    title: Text(S.of(context).customSignature),
                     trailing: (signature != PostTextFieldUtils.NO_SIGNATURE && signature != PostTextFieldUtils.USE_DEVICE_SIGNATURE)?
                     Icon(PlatformIcons(context).checkMark, color: Theme.of(context).primaryColor):
                     Icon(null),
@@ -108,10 +109,10 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
               )
             ],
           ),
-          SizedBox(height: 8,),
+          SizedBox(height: 0,),
           if(signature!= PostTextFieldUtils.NO_SIGNATURE && signature!= PostTextFieldUtils.USE_DEVICE_SIGNATURE)
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
             child: PlatformTextField(
               enabled: (signature!= PostTextFieldUtils.NO_SIGNATURE && signature!= PostTextFieldUtils.USE_DEVICE_SIGNATURE),
               hintText: S.of(context).signatureHint,

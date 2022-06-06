@@ -44,6 +44,7 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
     }
 
     return PlatformScaffold(
+      iosContentPadding: true,
       appBar: PlatformAppBar(
         title: Text(S.of(context).interfaceBrightness),
       ),
@@ -52,7 +53,7 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
 
           SettingsSection(tiles: [
             SettingsTile(
-              title: S.of(context).followSystem,
+              title: Text(S.of(context).followSystem),
               trailing: trailingWidget(""),
               onPressed: (BuildContext context) {
 
@@ -60,14 +61,14 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
               },
             ),
             SettingsTile(
-              title: S.of(context).brightnessLight,
+              title: Text(S.of(context).brightnessLight),
               trailing: trailingWidget("light"),
               onPressed: (BuildContext context) {
                 changePlatform("light");
               },
             ),
             SettingsTile(
-              title: S.of(context).brightnessDark,
+              title: Text(S.of(context).brightnessDark),
               trailing: trailingWidget("dark"),
               onPressed: (BuildContext context) {
                 changePlatform("dark");
@@ -75,7 +76,7 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
             ),
             
           ]),
-          CustomSection(child: Column(
+          CustomSettingsSection(child: Column(
             children: [
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),

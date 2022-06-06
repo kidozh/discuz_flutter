@@ -22,6 +22,7 @@ class _ChoosePlatformState extends State<ChoosePlatformPage> {
     _selectedPlatformName = Provider.of<ThemeNotifierProvider>(context,listen: false).platformName;
 
     return PlatformScaffold(
+      iosContentPadding: true,
       appBar: PlatformAppBar(
         title: Text(S.of(context).appearanceOptimizedPlatform),
       ),
@@ -30,7 +31,7 @@ class _ChoosePlatformState extends State<ChoosePlatformPage> {
 
           SettingsSection(tiles: [
             SettingsTile(
-              title: S.of(context).followSystem,
+              title: Text(S.of(context).followSystem),
               trailing: trailingWidget(""),
               onPressed: (BuildContext context) {
 
@@ -38,14 +39,14 @@ class _ChoosePlatformState extends State<ChoosePlatformPage> {
               },
             ),
             SettingsTile(
-              title: S.of(context).materialDesign,
+              title: Text(S.of(context).materialDesign),
               trailing: trailingWidget("android"),
               onPressed: (BuildContext context) {
                 changePlatform("android");
               },
             ),
             SettingsTile(
-              title: S.of(context).ios,
+              title: Text(S.of(context).ios),
               trailing: trailingWidget("ios"),
               onPressed: (BuildContext context) {
                 changePlatform("ios");
