@@ -104,29 +104,31 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
                     },
                   ),
 
+
                 ],
 
-              )
+              ),
+              if(signature!= PostTextFieldUtils.NO_SIGNATURE && signature!= PostTextFieldUtils.USE_DEVICE_SIGNATURE)
+                CustomSettingsSection(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
+                      child: PlatformTextField(
+                        enabled: (signature!= PostTextFieldUtils.NO_SIGNATURE && signature!= PostTextFieldUtils.USE_DEVICE_SIGNATURE),
+                        hintText: S.of(context).signatureHint,
+                        onChanged: (String string){
+                          if(string != signature){
+                            setSignature(string);
+                          }
+
+                        },
+                        controller: controller,
+
+                      ),
+                    )
+
+                ),
             ],
           ),
-          SizedBox(height: 0,),
-          if(signature!= PostTextFieldUtils.NO_SIGNATURE && signature!= PostTextFieldUtils.USE_DEVICE_SIGNATURE)
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
-            child: PlatformTextField(
-              enabled: (signature!= PostTextFieldUtils.NO_SIGNATURE && signature!= PostTextFieldUtils.USE_DEVICE_SIGNATURE),
-              hintText: S.of(context).signatureHint,
-              onChanged: (String string){
-                if(string != signature){
-                  setSignature(string);
-                }
-
-              },
-              controller: controller,
-
-            ),
-          ),
-
         ],
       ),
     );
