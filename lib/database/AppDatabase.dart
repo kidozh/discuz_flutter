@@ -2,11 +2,13 @@
 
 
 import 'package:discuz_flutter/dao/DiscuzDao.dart';
+import 'package:discuz_flutter/dao/ImageAttachmentDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/entity/BlockUser.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
+import 'package:discuz_flutter/entity/ImageAttachment.dart';
 import 'package:discuz_flutter/entity/TrustHost.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:hive/hive.dart';
@@ -30,6 +32,7 @@ class AppDatabase{
   static Box<User>? userBox;
   static Box<ViewHistory>? viewHistoryBox;
   static Box<Smiley>? smileyBox;
+  static Box<ImageAttachment>? imageAttachmentBox;
 
   static Future<void> initBoxes() async {
     Hive
@@ -40,7 +43,9 @@ class AppDatabase{
       ..registerAdapter(TrustHostAdapter())
       ..registerAdapter(UserAdapter())
       ..registerAdapter(SmileyAdapter())
-      ..registerAdapter(ViewHistoryAdapter());
+      ..registerAdapter(ViewHistoryAdapter())
+      ..registerAdapter(ImageAttachmentAdapter())
+    ;
 
 
     //blockUserBox = await Hive.openBox<BlockUser>('${hiveBoxPrefix}_block_user');
@@ -53,6 +58,7 @@ class AppDatabase{
     await getTrustHostDao();
     await getUserDao();
     await getViewHistoryDao();
+    await getImageAttachmentDao();
   }
 
 
@@ -119,6 +125,14 @@ class AppDatabase{
     }
 
     return SmileyDao(smileyBox!);
+  }
+
+  static Future<ImageAttachmentDao> getImageAttachmentDao() async {
+    if(imageAttachmentBox == null){
+      imageAttachmentBox =  await Hive.openBox<ImageAttachment>('${hiveBoxPrefix}_image_attachment_1');
+    }
+
+    return ImageAttachmentDao(imageAttachmentBox!);
   }
 
 

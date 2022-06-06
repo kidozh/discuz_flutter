@@ -11,4 +11,5 @@ class ConstUtils{
   static const HIVE_TYPE_ID_TRUST_HOST = 5;
   static const HIVE_TYPE_ID_VIEW_HISTORY = 6;
   static const HIVE_TYPE_ID_SMILEY = 7;
+  static const HIVE_TYPE_ID_IMAGE_ATTACHMENT = 8;
 }

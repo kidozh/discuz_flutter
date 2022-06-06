@@ -181,24 +181,27 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
 
         
       }
-      return DefaultTabController(
-          length: smileyTab.length,
-          child: Column(
-            children: [
-              TabBar(
-                tabs: smileyTab,
-                isScrollable: true,
-                labelColor: Theme
-                    .of(context)
-                    .primaryColor,
-                unselectedLabelColor: Colors.grey,
-              ),
-              SizedBox(
-                  height: 100,
-                  child: TabBarView(children: tabBarViewList))
+      return Container(
+        height: MediaQuery.of(context).size.height*0.25,
+        child: DefaultTabController(
+            length: smileyTab.length,
+            child: Column(
+              children: [
+                TabBar(
+                  tabs: smileyTab,
+                  isScrollable: true,
+                  labelColor: Theme
+                      .of(context)
+                      .primaryColor,
+                  unselectedLabelColor: Colors.grey,
+                ),
+                SizedBox(
+                    height: 100,
+                    child: TabBarView(children: tabBarViewList))
 
-            ],
-          )
+              ],
+            )
+        ),
       );
     }
   }

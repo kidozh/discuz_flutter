@@ -438,8 +438,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           //     activeIcon: Icon(Icons.stars),
           //     label: S.of(context).favorites),
           BottomNavigationBarItem(
-              icon: new Icon(CupertinoIcons.ellipses_bubble),
-              activeIcon: Icon(CupertinoIcons.ellipses_bubble_fill),
+              icon: new Icon(PlatformIcons(context).conversationBubbleOutline),
+              activeIcon: Icon(PlatformIcons(context).conversationBubble),
               label: S.of(context).chatMessage),
         ],
 

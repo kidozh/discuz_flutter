@@ -4,10 +4,12 @@ import 'dart:developer';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/dao/FavoriteThreadDao.dart';
+import 'package:discuz_flutter/dao/ImageAttachmentDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
+import 'package:discuz_flutter/entity/ImageAttachment.dart';
 import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/entity/Smiley.dart';
 import 'package:discuz_flutter/entity/User.dart';
@@ -583,10 +585,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                 builder: (BuildContext context, value, Widget? child) {
                     FavoriteThreadInDatabase? favList = favoriteThreadDao!.getFavoriteThreadByTid(tid, discuz);
                     if(favList == null){
-                      return Icon(Icons.favorite_border,size: 24,);
+                      return Icon(PlatformIcons(context).favoriteOutline,size: 24,);
                     }
                     else{
-                      return Icon(Icons.favorite,size: 24);
+                      return Icon(PlatformIcons(context).favoriteSolid,size: 24);
                     }
                 },
 
@@ -997,8 +999,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                               Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  ExtraFuncInThreadScreen(tid,_viewThreadResult.threadVariables.fid,
-                                    onReplyWithImage: (aid){
+                                  ExtraFuncInThreadScreen(discuz, tid,_viewThreadResult.threadVariables.fid,
+                                    onReplyWithImage: (aid, path) async{
                                       // fill with text first
                                       // refresh the layout
                                       // insertedAidList.clear();
@@ -1006,22 +1008,24 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                         _replyController.text = _replyController.text + "[attachimg]${aid}[/attachimg]";
                                         // add aid to list
                                         insertedAidList.add(aid);
+                                        // add to historical attachment
+                                        bool savedInDatabase = await UserPreferencesUtils.getRecordHistoryEnabled();
+                                        if(savedInDatabase){
+                                          // save it to database
+                                          ImageAttachmentDao imageAttachmentDao = await AppDatabase.getImageAttachmentDao();
+                                          ImageAttachment? imageAttachment = imageAttachmentDao.findImageAttachmentByDiscuzAndAid(discuz, aid);
+                                          if(imageAttachment!= null){
+                                            imageAttachment.updateAt = DateTime.now();
+                                            imageAttachmentDao.insertImageAttachmentWithKey(imageAttachment.key, imageAttachment);
+                                          }
+                                          else{
+                                            imageAttachmentDao.insertImageAttachment(ImageAttachment(aid, discuz, path));
+                                          }
+                                        }
                                       }
                                       else{
 
                                       }
-
-                                      // not to send it automatically
-                                      // check whether need seccode
-                                      // CaptchaFields? captchaFields = _captchaController.value;
-                                      // if(captchaFields != null && captchaFields.captchaFormHash.isNotEmpty){
-                                      //   EasyLoading.showInfo(S.of(context).sendImageWithVerificationNotice);
-                                      // }
-                                      // else{
-                                      //   _sendReply();
-                                      // }
-
-
                                     },
                                   ),
                                 ],

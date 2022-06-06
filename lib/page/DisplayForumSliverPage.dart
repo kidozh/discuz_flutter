@@ -347,7 +347,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 FavoriteForumInDatabase? favoriteForumInDb = favoriteForumDao!.getFavoriteForumByFid(fid, discuz);
                 if(favoriteForumInDb == null){
                   return IconButton(
-                    icon: Icon(Icons.favorite_border,size: 24),
+                    icon: Icon(PlatformIcons(context).favoriteOutline,size: 24),
                     onPressed: () {
                       VibrationUtils.vibrateWithClickIfPossible();
                       favoriteForum();
@@ -356,7 +356,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 }
                 else{
                   return IconButton(
-                    icon: Icon(Icons.favorite,size: 24),
+                    icon: Icon(PlatformIcons(context).favoriteSolid,size: 24),
                     onPressed: () {
                       VibrationUtils.vibrateWithClickIfPossible();
                       unfavoriteForum();

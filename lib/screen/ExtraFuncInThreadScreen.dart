@@ -2,14 +2,18 @@
 
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/CheckPostResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
+import 'package:discuz_flutter/dao/ImageAttachmentDao.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,20 +25,23 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
-typedef StringToVoidFunc = void Function(String);
+import '../entity/ImageAttachment.dart';
+
+typedef StringToVoidFunc = void Function(String, String);
 
 class ExtraFuncInThreadScreen extends StatefulWidget{
 
   int tid = 0;
   int fid = 0;
   StringToVoidFunc onReplyWithImage;
+  Discuz discuz;
 
 
-  ExtraFuncInThreadScreen(this.tid, this.fid,{required this.onReplyWithImage});
+  ExtraFuncInThreadScreen(this.discuz,this.tid, this.fid,{required this.onReplyWithImage});
 
   @override
   ExtraFuncInThreadState createState() {
-    return ExtraFuncInThreadState(this.tid, this.fid, this.onReplyWithImage);
+    return ExtraFuncInThreadState(this.discuz,this.tid, this.fid, this.onReplyWithImage);
   }
 
 }
@@ -48,14 +55,24 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
   int tid = 0;
   int fid = 0;
   StringToVoidFunc onReplyWithImage;
+  List<ImageAttachment> imageAttachmentList = [];
+  Discuz discuz;
 
 
-  ExtraFuncInThreadState(this.tid, this.fid, this.onReplyWithImage);
+  ExtraFuncInThreadState(this.discuz,this.tid, this.fid, this.onReplyWithImage);
 
   @override
   void initState() {
     super.initState();
     _loadCheckPostInfo();
+    _loadAllSavedImageAttachment();
+  }
+
+  void _loadAllSavedImageAttachment() async {
+    ImageAttachmentDao imageAttachmentDao = await AppDatabase.getImageAttachmentDao();
+    setState((){
+      imageAttachmentList = imageAttachmentDao.getFavoriteThreadList(discuz);
+    });
   }
 
   @override
@@ -63,7 +80,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
 
     if(_discuzError != null){
       return Container(
-        height: 100,
+        height: MediaQuery.of(context).size.height*0.25,
         child: ListTile(
           leading: Icon(Icons.error_outline, color: Colors.red,),
           title: Text(_discuzError!.content),
@@ -72,7 +89,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
     }
     else if(_checkPostResult.variables.allowPerm.uploadHash.isEmpty){
       return Container(
-        height: 100,
+        height: MediaQuery.of(context).size.height*0.25,
         child: ListTile(
           leading: PlatformCircularProgressIndicator(),
           title: Text(S.of(context).preparingPage),
@@ -81,210 +98,240 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
     }
     else{
       return Container(
-        height: 100,
+        height: MediaQuery.of(context).size.height*0.25,
         child: GridView.count(
           crossAxisCount: 4,
           padding: EdgeInsets.all(4.0),
           shrinkWrap: true,
-          children: [
-            ExtraFuncBlockButton(PlatformIcons(context).collectionsSolid, S.of(context).addAPhoto, onPressed: () async{
-              // recv the photo from gallery
-              VibrationUtils.vibrateWithClickIfPossible();
-              final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-
-              // then upload to the server
-              if(image != null){
-                File file = File(image.path);
-                // confirm with user
-                showPlatformDialog(
-                    context: context,
-                    builder: (context) {
-                      bool isUploadingPicture = false;
-                      return PlatformAlertDialog(
-                        title: Text(S.of(context).uploadImageToServerDialogTitle),
-                        content: Column(
-                          children: [
-                            if(isUploadingPicture)
-                              ListTile(
-                                leading: PlatformCircularProgressIndicator(),
-                                title: Text(S.of(context).uploadingImageToServer),
-                              ),
-                            Image.file(file),
-                          ],
-                        ),
-                        actions: [
-                          PlatformDialogAction(
-                            child: Text(S.of(context).uploadCompressedImageToServer),
-                            onPressed: () async{
-                              setState(() {
-                                isUploadingPicture = true;
-                              });
-                              EasyLoading.showInfo(S.of(context).uploadingImageToServer);
-                              // compress it first
-                              // get a temp directory
-
-                              Directory directory = await getTemporaryDirectory();
-                              final compressionPath = directory.path+"/temp.jpg";
-                              // with 90% compression
-                              File? compressedFile = await FlutterImageCompress.compressAndGetFile(file.path,
-                                compressionPath,
-                              );
-                              if(compressedFile != null){
-                                file = compressedFile;
-                              }
-
-                              String respString = await uploadPhotoToDiscuzServer(context, file);
-                              setState(() {
-                                isUploadingPicture = false;
-                              });
-                              print("Successful upload image string ${respString}");
-                              String aid = getAidFromDiscuzUploadResponse(context, respString);
-                              if(aid.isNotEmpty){
-                                // send it with aid
-                                onReplyWithImage(aid);
-                              }
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          PlatformDialogAction(
-                            child: Text(S.of(context).uploadRawImageToServer),
-                            onPressed: () async{
-                              setState(() {
-                                isUploadingPicture = true;
-                              });
-                              EasyLoading.showInfo(S.of(context).uploadingImageToServer);
-                              String respString = await uploadPhotoToDiscuzServer(context, file);
-                              setState(() {
-                                isUploadingPicture = false;
-                              });
-                              print("Successful upload image string ${respString}");
-                              String aid = getAidFromDiscuzUploadResponse(context, respString);
-                              if(aid.isNotEmpty){
-                                // send it with aid
-                                onReplyWithImage(aid);
-                              }
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          PlatformDialogAction(
-                            child: Text(S.of(context).cancel),
-                            onPressed: () async{
-                              // cancel it
-                              Navigator.of(context).pop();
-                            },
-                          )
-                        ],
-                      );
-                    }
-                );
-
-
-              }
-              else{
-                EasyLoading.showToast(S.of(context).noImagePicked);
-              }
-
-
-            }),
-            ExtraFuncBlockButton(PlatformIcons(context).photoCameraSolid, S.of(context).takeAPicture, onPressed: () async{
-              final XFile? image = await _picker.pickImage(source: ImageSource.camera);
-              if(image != null){
-                File file = File(image.path);
-
-                showPlatformDialog(
-                    context: context,
-                    builder: (context){
-                      bool isUploadingPicture = false;
-                      return PlatformAlertDialog(
-                        title: Text(S.of(context).uploadImageToServerDialogTitle),
-                        content: Column(
-                          children: [
-                            if(isUploadingPicture)
-                              ListTile(
-                                leading: PlatformCircularProgressIndicator(),
-                                title: Text(S.of(context).uploadingImageToServer),
-                              ),
-                            Image.file(file),
-                          ],
-                        ),
-                        actions: [
-                          PlatformDialogAction(
-                            child: Text(S.of(context).uploadCompressedImageToServer),
-                            onPressed: () async{
-                              setState(() {
-                                isUploadingPicture = true;
-                              });
-                              EasyLoading.showInfo(S.of(context).uploadingImageToServer);
-                              // compress it first
-                              // get a temp directory
-
-                              Directory directory = await getTemporaryDirectory();
-                              final compressionPath = directory.path+"/temp.jpg";
-                              // with 90% compression
-                              File? compressedFile = await FlutterImageCompress.compressAndGetFile(file.path,
-                                compressionPath,
-                              );
-                              if(compressedFile != null){
-                                file = compressedFile;
-                              }
-                              String respString = await uploadPhotoToDiscuzServer(context, file);
-                              setState(() {
-                                isUploadingPicture = false;
-                              });
-                              print("Successful upload image string ${respString}");
-                              String aid = getAidFromDiscuzUploadResponse(context, respString);
-                              if(aid.isNotEmpty){
-                                // send it with aid
-                                onReplyWithImage(aid);
-
-                              }
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          PlatformDialogAction(
-                            child: Text(S.of(context).uploadRawImageToServer),
-                            onPressed: () async{
-                              setState(() {
-                                isUploadingPicture = true;
-                              });
-                              EasyLoading.showInfo(S.of(context).uploadingImageToServer);
-                              String respString = await uploadPhotoToDiscuzServer(context, file);
-                              setState(() {
-                                isUploadingPicture = false;
-                              });
-                              print("Successful upload image string ${respString}");
-                              String aid = getAidFromDiscuzUploadResponse(context, respString);
-                              if(aid.isNotEmpty){
-                                // send it with aid
-                                onReplyWithImage(aid);
-
-                              }
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          PlatformDialogAction(
-                            child: Text(S.of(context).cancel),
-                            onPressed: () async{
-                              // cancel it
-                              Navigator.of(context).pop();
-                            },
-                          )
-                        ],
-                      );
-                    }
-                );
-
-              }
-              else{
-                EasyLoading.showToast(S.of(context).noImagePicked);
-              }
-
-            }),
-          ],
+          children: extraFuncListWidget(),
         ),
       );
     }
 
+
+
+  }
+  List<Widget> extraFuncListWidget(){
+    List<Widget> widgetList = [
+      ExtraFuncBlockButton(PlatformIcons(context).collectionsSolid, S.of(context).addAPhoto, onPressed: () async{
+        // recv the photo from gallery
+        VibrationUtils.vibrateWithClickIfPossible();
+        final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+        // then upload to the server
+        if(image != null){
+          File file = File(image.path);
+          // confirm with user
+          showPlatformDialog(
+              context: context,
+              builder: (context) {
+                bool isUploadingPicture = false;
+                return PlatformAlertDialog(
+                  title: Text(S.of(context).uploadImageToServerDialogTitle),
+                  content: Column(
+                    children: [
+                      if(isUploadingPicture)
+                        ListTile(
+                          leading: PlatformCircularProgressIndicator(),
+                          title: Text(S.of(context).uploadingImageToServer),
+                        ),
+                      Image.file(file),
+                    ],
+                  ),
+                  actions: [
+                    PlatformDialogAction(
+                      child: Text(S.of(context).uploadCompressedImageToServer),
+                      onPressed: () async{
+                        setState(() {
+                          isUploadingPicture = true;
+                        });
+                        EasyLoading.showInfo(S.of(context).uploadingImageToServer);
+                        // compress it first
+                        // get a temp directory
+
+                        Directory directory = await getApplicationDocumentsDirectory();
+                        final compressionPath = directory.path+"/"+file.path.split("/").last;
+                        // with 90% compression
+                        File? compressedFile = await FlutterImageCompress.compressAndGetFile(file.path,
+                          compressionPath,
+                        );
+                        if(compressedFile != null){
+                          file = compressedFile;
+                        }
+
+                        String respString = await uploadPhotoToDiscuzServer(context, file);
+                        setState(() {
+                          isUploadingPicture = false;
+                        });
+                        print("Successful upload image string ${respString}");
+                        String aid = getAidFromDiscuzUploadResponse(context, respString);
+                        if(aid.isNotEmpty){
+                          // send it with aid
+                          onReplyWithImage(aid, file.path);
+                        }
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    PlatformDialogAction(
+                      child: Text(S.of(context).uploadRawImageToServer),
+                      onPressed: () async{
+                        setState(() {
+                          isUploadingPicture = true;
+                        });
+                        EasyLoading.showInfo(S.of(context).uploadingImageToServer);
+                        String respString = await uploadPhotoToDiscuzServer(context, file);
+                        setState(() {
+                          isUploadingPicture = false;
+                        });
+                        print("Successful upload image string ${respString}");
+                        String aid = getAidFromDiscuzUploadResponse(context, respString);
+                        if(aid.isNotEmpty){
+                          // send it with aid
+                          onReplyWithImage(aid, file.path);
+                        }
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    PlatformDialogAction(
+                      child: Text(S.of(context).cancel),
+                      onPressed: () async{
+                        // cancel it
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  ],
+                );
+              }
+          );
+
+
+        }
+        else{
+          EasyLoading.showToast(S.of(context).noImagePicked);
+        }
+
+
+      }),
+      ExtraFuncBlockButton(PlatformIcons(context).photoCameraSolid, S.of(context).takeAPicture, onPressed: () async{
+        final XFile? image = await _picker.pickImage(source: ImageSource.camera);
+        if(image != null){
+          File file = File(image.path);
+
+          showPlatformDialog(
+              context: context,
+              builder: (context){
+                bool isUploadingPicture = false;
+                return PlatformAlertDialog(
+                  title: Text(S.of(context).uploadImageToServerDialogTitle),
+                  content: Column(
+                    children: [
+                      if(isUploadingPicture)
+                        ListTile(
+                          leading: PlatformCircularProgressIndicator(),
+                          title: Text(S.of(context).uploadingImageToServer),
+                        ),
+                      Image.file(file),
+                    ],
+                  ),
+                  actions: [
+                    PlatformDialogAction(
+                      child: Text(S.of(context).uploadCompressedImageToServer),
+                      onPressed: () async{
+                        setState(() {
+                          isUploadingPicture = true;
+                        });
+                        EasyLoading.showInfo(S.of(context).uploadingImageToServer);
+                        // compress it first
+                        // get a temp directory
+
+                        Directory directory = await getApplicationDocumentsDirectory();
+
+                        final compressionPath = directory.path+"/"+file.path.split("/").last;
+                        // with 90% compression
+                        File? compressedFile = await FlutterImageCompress.compressAndGetFile(file.path,
+                          compressionPath,
+                        );
+                        if(compressedFile != null){
+                          file = compressedFile;
+                        }
+                        String respString = await uploadPhotoToDiscuzServer(context, file);
+                        setState(() {
+                          isUploadingPicture = false;
+                        });
+                        print("Successful upload image string ${respString}");
+                        String aid = getAidFromDiscuzUploadResponse(context, respString);
+                        if(aid.isNotEmpty){
+                          // send it with aid
+                          onReplyWithImage(aid, file.path);
+
+                        }
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    PlatformDialogAction(
+                      child: Text(S.of(context).uploadRawImageToServer),
+                      onPressed: () async{
+                        setState(() {
+                          isUploadingPicture = true;
+                        });
+                        EasyLoading.showInfo(S.of(context).uploadingImageToServer);
+                        String respString = await uploadPhotoToDiscuzServer(context, file);
+                        setState(() {
+                          isUploadingPicture = false;
+                        });
+                        print("Successful upload image string ${respString}");
+                        String aid = getAidFromDiscuzUploadResponse(context, respString);
+                        if(aid.isNotEmpty){
+                          // send it with aid
+                          onReplyWithImage(aid, file.path);
+
+                        }
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    PlatformDialogAction(
+                      child: Text(S.of(context).cancel),
+                      onPressed: () async{
+                        // cancel it
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  ],
+                );
+              }
+          );
+
+        }
+        else{
+          EasyLoading.showToast(S.of(context).noImagePicked);
+        }
+
+      }),
+      // comes with inserted attachment
+
+    ];
+
+    // append all saved image
+    for(var imageAttachment in imageAttachmentList){
+      widgetList.add(
+        InkWell(
+          child: Image.file(File(imageAttachment.path)),
+          onTap: () async{
+            VibrationUtils.vibrateWithClickIfPossible();
+            // add to textfields
+            onReplyWithImage(imageAttachment.aid, imageAttachment.path);
+            // change with
+            ImageAttachmentDao imageAttachmentDao = await AppDatabase.getImageAttachmentDao();
+            ImageAttachment insertedIA = imageAttachment;
+            insertedIA.updateAt = DateTime.now();
+            imageAttachmentDao.insertImageAttachmentWithKey(insertedIA.key, insertedIA);
+          },
+        )
+
+      );
+    }
+
+    return widgetList;
   }
 
   Future<String> uploadPhotoToDiscuzServer(BuildContext context, File photoFile) async{

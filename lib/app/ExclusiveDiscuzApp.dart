@@ -103,7 +103,7 @@ class ExclusiveDiscuzApp extends StatelessWidget{
               initialPlatform: getTargetPlatformByName(platformName),
 
               settings: PlatformSettingsData(
-                iosUsesMaterialWidgets: true,
+                iosUsesMaterialWidgets: false,
 
 
               ),
