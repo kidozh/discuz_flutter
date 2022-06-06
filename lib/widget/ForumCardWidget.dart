@@ -8,6 +8,8 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
+import '../utility/CustomizeColor.dart';
+
 // ignore: must_be_immutable
 class ForumCardWidget extends StatelessWidget{
 
@@ -22,10 +24,17 @@ class ForumCardWidget extends StatelessWidget{
     return Card(
       elevation: 2.0,
       child: ListTile(
-        leading: CachedNetworkImage(
-          imageUrl: _forum.iconUrl,
-          progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-          errorWidget: (context, url, error) => Icon(Icons.forum_outlined),
+        leading: Container(
+          width: 64,
+          height: 64,
+          child: CachedNetworkImage(
+            imageUrl: _forum.iconUrl,
+            progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+            errorWidget: (context, url, error) => CircleAvatar(
+              backgroundColor: Theme.of(context).primaryColor,
+              child: Icon(PlatformIcons(context).tagSolid),
+            ),
+          ),
         ),
         title: Text(_forum.name,maxLines: 1, softWrap: true,),
         subtitle: Text(_forum.description, maxLines: 2,),

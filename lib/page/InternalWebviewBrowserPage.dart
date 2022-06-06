@@ -89,7 +89,7 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
           trailingActions: <Widget>[
             NavigationControls(_controller.future),
             IconButton(
-              icon: Icon(Icons.open_in_browser),
+              icon: Icon(PlatformIcons(context).share, size: 24,),
               onPressed: () async{
 
                 WebViewController webViewController = await _controller.future;
@@ -236,7 +236,7 @@ class NavigationControls extends StatelessWidget {
             //   },
             // ),
             IconButton(
-              icon: const Icon(Icons.replay),
+              icon: Icon(PlatformIcons(context).refresh, size: 24,),
               onPressed: !webViewReady
                   ? null
                   : () {

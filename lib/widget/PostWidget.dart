@@ -209,13 +209,15 @@ class PostState extends State<PostStatefulWidget> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
+                  mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
                       padding: EdgeInsets.all(4.0),
                       child: Container(
-                        width: 30.0 ,
-                        height: 30.0 ,
+                        width: 30.0 * typesetting.scalingParameter,
+                        height: 30.0 * typesetting.scalingParameter,
                         child: InkWell(
                           child: CachedNetworkImage(
                             imageUrl: URLUtils.getSmallAvatarURL(
@@ -236,8 +238,7 @@ class PostState extends State<PostStatefulWidget> {
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize:
-                                          20
-                                              // * typesetting.scalingParameter
+                                          20 * typesetting.scalingParameter
                                   ),
                                 ),
                               ),
@@ -268,6 +269,7 @@ class PostState extends State<PostStatefulWidget> {
                     ),
                     Expanded(
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                       children: [
                         SizedBox(width: 4.0,),
                         Column(
@@ -285,7 +287,7 @@ class PostState extends State<PostStatefulWidget> {
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize:
-                                          14)),
+                                          16* typesetting.scalingParameter)),
                                   if (_authorId == _post.authorId)
                                     TextSpan(
                                         text: ' ' + S.of(context).postAuthorLabel,
@@ -293,50 +295,76 @@ class PostState extends State<PostStatefulWidget> {
                                             fontWeight: FontWeight.bold,
                                             color: Theme.of(context).primaryColor,
                                             fontSize:
-                                            14)),
+                                            16 * typesetting.scalingParameter)),
                                 ],
                               ),
                             ),
-                            Text(TimeDisplayUtils.getLocaledTimeDisplay(context,_post.publishAt,),
+
+                            RichText(
                               overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize:
-                                    12),)
+                              text: TextSpan(
+                                text: TimeDisplayUtils.getLocaledTimeDisplay(context,_post.publishAt,),
+                                style: DefaultTextStyle.of(context).style,
+                                children: [
+                                  if (_post.status & POST_REVISED != 0)
+                                    TextSpan(
+                                        text: ' · ' + S.of(context).editedPost,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(context).primaryColor,
+                                            fontSize: 14* typesetting.scalingParameter)),
+
+                                ],
+                              ),
+                            ),
                           ],
+
                         ),
-                        Spacer(),
+
+
+
+                      ],
+                    )),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+
+                      children: [
                         if (_post.status & POST_MOBILE != 0)
                           Padding(
-                            padding: EdgeInsets.only(right: 4.0),
+                            padding: EdgeInsets.only(right: 2.0),
                             child: Icon(
                               Icons.smartphone,
-                              size: 16,
+                              size: 16* typesetting.scalingParameter,
                             ),
                           ),
                         Padding(
-                          padding: EdgeInsets.only(right: 4.0),
+                          padding: EdgeInsets.only(right: 2.0),
                           child: Text(
                             S.of(context).postPosition(_post.position),
                             style: TextStyle(
                                 fontWeight: FontWeight.w400,
-                                fontSize: 12),
+                                fontSize: 12* typesetting.scalingParameter),
                           ),
                         ),
                         if(_user !=  null)
-                        IconButton(
-                          icon: Icon(Icons.flag,),
-                          onPressed: () {
-                            VibrationUtils.vibrateWithClickIfPossible();
-                            Navigator.push(
-                                context,
-                                platformPageRoute(
-                                    context: context,
-                                    builder: (context) => ReportContentPage(_post.author,_post.pid, 0, formhash)));
-                          },
+                          IconButton(
+                            padding: EdgeInsets.only(left: 4.0, right: 4.0, top: 0, bottom: 0),
+                            icon: Icon(Icons.flag,size: 16* typesetting.scalingParameter,),
+                            onPressed: () {
+                              VibrationUtils.vibrateWithClickIfPossible();
+                              Navigator.push(
+                                  context,
+                                  platformPageRoute(
+                                      context: context,
+                                      builder: (context) => ReportContentPage(_post.author,_post.pid, 0, formhash)));
+                            },
 
-                        ),
+                          ),
                         PopupMenuButton(
+                          padding: EdgeInsets.only(left: 4.0, right: 4.0, top: 0, bottom: 0),
+                          icon: Icon(PlatformIcons(context).ellipsis,size: 16* typesetting.scalingParameter,),
                           itemBuilder: (context) => [
                             PopupMenuItem<int>(
                               child: Text(S.of(context).replyPost),
@@ -352,10 +380,10 @@ class PostState extends State<PostStatefulWidget> {
                               value: 2,
                             ),
                             if(!this.isUserBlocked)
-                            PopupMenuItem<int>(
-                              child: Text(S.of(context).blockUser),
-                              value: 3,
-                            ),
+                              PopupMenuItem<int>(
+                                child: Text(S.of(context).blockUser),
+                                value: 3,
+                              ),
                             if(this.isUserBlocked)
                               PopupMenuItem<int>(
                                 child: Text(S.of(context).unblockUser),
@@ -370,8 +398,8 @@ class PostState extends State<PostStatefulWidget> {
                                   // set provider to
 
                                   Provider.of<ReplyPostNotifierProvider>(
-                                          context,
-                                          listen: false)
+                                      context,
+                                      listen: false)
                                       .setPost(_post);
                                   break;
                                 }
@@ -379,8 +407,8 @@ class PostState extends State<PostStatefulWidget> {
                                 {
                                   User? user =
                                       Provider.of<DiscuzAndUserNotifier>(
-                                              context,
-                                              listen: false)
+                                          context,
+                                          listen: false)
                                           .user;
                                   Navigator.push(
                                       context,
@@ -424,15 +452,15 @@ class PostState extends State<PostStatefulWidget> {
                           },
                         )
                       ],
-                    ))
+                    )
+
                   ],
                 ),
                 // banned or warn
                 if (_post.status & POST_BLOCKED != 0)
                   getPostBlockedBlock(context),
                 if (_post.status & POST_WARNED != 0) getPostWarnBlock(context),
-                if (_post.status & POST_REVISED != 0)
-                  getPostRevisedBlock(context),
+
                 // rich text rendering
                 DiscuzHtmlWidget(_discuz, _html),
                 if (_post.attachmentMapper.isNotEmpty)

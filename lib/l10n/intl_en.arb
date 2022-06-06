@@ -544,5 +544,6 @@
     }
   },
   "hotThread": "Hot",
-  "newThread": "New"
+  "newThread": "New",
+  "editedPost": "Edited"
 }

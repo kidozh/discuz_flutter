@@ -379,6 +379,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 _showInformationBottomSheet(context);
               }),
           PopupMenuButton(
+            icon: Icon(PlatformIcons(context).ellipsis, size: 24,),
             itemBuilder: (context) => [
               PopupMenuItem<int>(
                 child: Text(S.of(context).openViaInternalBrowser),

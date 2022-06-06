@@ -65,6 +65,7 @@ class _SettingPageState extends State<SettingPage> {
                       : S.of(context).recordHistoryOffDescription,
                   leading: Icon(Icons.history),
                   switchValue: recordHistory,
+                  switchActiveColor: Theme.of(context).primaryColor,
                   onToggle: (bool value) {
                     VibrationUtils.vibrateWithSwitchIfPossible();
                     print("set record history ${value} ");
@@ -110,6 +111,7 @@ class _SettingPageState extends State<SettingPage> {
                       : S.of(context).useMaterial3NoSubtitle,
                   leading: Icon(Icons.style_outlined),
                   switchValue: themeEntity.useMaterial3,
+                  switchActiveColor: Theme.of(context).primaryColor,
                   onToggle: (bool value) {
                     VibrationUtils.vibrateWithSwitchIfPossible();
                     UserPreferencesUtils.putMaterial3PropertyPreference(value);

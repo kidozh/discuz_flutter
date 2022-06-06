@@ -3470,6 +3470,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Edited`
+  String get editedPost {
+    return Intl.message(
+      'Edited',
+      name: 'editedPost',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

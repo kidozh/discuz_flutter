@@ -207,6 +207,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "downloadAttachment": MessageLookupByLibrary.simpleMessage("下载附件"),
         "downloadingFiles": m8,
         "duplicatedPost": MessageLookupByLibrary.simpleMessage("重复发帖"),
+        "editedPost": MessageLookupByLibrary.simpleMessage("已编辑"),
         "emptyListDescription": MessageLookupByLibrary.simpleMessage("当前列表为空。"),
         "emptyScreenTitle": MessageLookupByLibrary.simpleMessage("当前列表为空。"),
         "error": MessageLookupByLibrary.simpleMessage("出错了"),

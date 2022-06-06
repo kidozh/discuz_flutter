@@ -230,6 +230,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "downloadingFiles": m8,
         "duplicatedPost":
             MessageLookupByLibrary.simpleMessage("Duplicated Posts"),
+        "editedPost": MessageLookupByLibrary.simpleMessage("Edited"),
         "emptyListDescription":
             MessageLookupByLibrary.simpleMessage("The content is empty"),
         "emptyScreenTitle":

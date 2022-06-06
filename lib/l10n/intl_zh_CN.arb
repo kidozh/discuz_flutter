@@ -544,5 +544,6 @@
     }
   },
   "hotThread": "最新热门",
-  "newThread": "最新发表"
+  "newThread": "最新发表",
+  "editedPost": "已编辑"
 }

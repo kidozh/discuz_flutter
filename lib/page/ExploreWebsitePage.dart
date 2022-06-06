@@ -122,7 +122,7 @@ class NavigationControls extends StatelessWidget {
             //   },
             // ),
             IconButton(
-              icon: const Icon(Icons.replay),
+              icon: Icon(PlatformIcons(context).refresh, size: 24,),
               onPressed: !webViewReady
                   ? null
                   : () {

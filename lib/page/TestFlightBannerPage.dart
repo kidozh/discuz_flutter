@@ -66,7 +66,7 @@ class TestFlightBannerContent extends StatelessWidget{
                     //   child: Icon(PlatformIcons(context).checkMarkCircled,color: Colors.green),
                     // ),
                     //title: Text(S.of(context).upgrade_notification_title, style: TextStyle(color: Colors.white),),
-                    subtitle: Text(S.of(context).upgrade_notification_subtitle, style: TextStyle(color: Colors.white)),
+                    title: Text(S.of(context).upgrade_notification_subtitle, style: TextStyle(color: Colors.white)),
                     onTap: (){
                       VibrationUtils.vibrateWithClickIfPossible();
                       _launchURL("https://discuzhub.kidozh.com/dev-blog/disfly-release-v1.0.10/");
