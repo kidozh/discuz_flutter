@@ -34,4 +34,6 @@ class AppPlatformIcons{
   IconData get typeSettingOutlined => isMaterial(context)? Icons.format_size_outlined : CupertinoIcons.textformat_alt;
 
   IconData get historyOutlined => isMaterial(context)? Icons.archive_outlined : CupertinoIcons.tray;
+
+  IconData get pushServiceOutlined => isMaterial(context)? Icons.quickreply_outlined : CupertinoIcons.captions_bubble;
 }

@@ -82,7 +82,7 @@ class _SettingPageState extends State<SettingPage> {
                 ),
                 SettingsTile.navigation(
                   title: Text(S.of(context).pushNotification),
-                  leading: Icon(PlatformIcons(context).cloud),
+                  leading: Icon(AppPlatformIcons(context).pushServiceOutlined),
                   value: Consumer<UserPreferenceNotifierProvider>(
                     builder: (context, userPreference, child){
                       if(userPreference.allowPush){

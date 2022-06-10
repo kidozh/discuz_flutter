@@ -164,7 +164,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
             ),
             SettingsTile.navigation(
               title: Text(S.of(context).authorizedSite),
-              leading: Icon(PlatformIcons(context).checkMarkCircled),
+              leading: Icon(PlatformIcons(context).checkMarkCircledOutline),
               onPressed: (_) {
                 VibrationUtils.vibrateWithClickIfPossible();
                 _launchURL("https://discuzhub.kidozh.com/open_source_licence/");
