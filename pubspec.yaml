@@ -80,6 +80,7 @@ dependencies:
   device_info_plus: ^3.2.3
   share_plus: ^4.0.4
   firebase_messaging: ^11.4.1
+  firebase_core: ^1.17.1
   font_awesome_flutter: ^10.1.0
 
 

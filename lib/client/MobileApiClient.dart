@@ -26,6 +26,7 @@ import 'package:dio/dio.dart' hide Headers;
 import 'package:retrofit/retrofit.dart';
 
 import '../JsonResult/NewThreadResult.dart';
+import '../JsonResult/PushTokenListResult.dart';
 
 part 'MobileApiClient.g.dart';
 
@@ -251,4 +252,9 @@ abstract class MobileApiClient {
 
   @GET("/api/mobile/index.php?version=4&module=newthreads&limit=20")
   Future<NewThreadResult> newThreadsResult(@Query("fids") String fids, @Query("start") int start);
+
+  // push notification
+  @GET("/plugin.php?id=dhpush:token")
+  Future<PushTokenListResult> getPushTokenListResult();
+
 }

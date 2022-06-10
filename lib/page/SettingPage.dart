@@ -3,6 +3,7 @@ import 'package:discuz_flutter/page/ChooseInterfaceBrightnessPage.dart';
 import 'package:discuz_flutter/page/ChoosePlatformPage.dart';
 import 'package:discuz_flutter/page/ChooseTypeSettingScalePage.dart';
 import 'package:discuz_flutter/page/SelectSignatureStylePage.dart';
+import 'package:discuz_flutter/page/SetPushNotificationPage.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -76,14 +77,26 @@ class _SettingPageState extends State<SettingPage> {
                     });
                   }, initialValue: recordHistory,
                 ),
+                SettingsTile.navigation(
+                  title: Text(S.of(context).pushNotification),
+                  leading: Icon(PlatformIcons(context).cloudSolid),
+                  value: Text(S.of(context).pushNotificationOff),
+                  onPressed: (context){
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    Navigator.of(context).push(platformPageRoute(
+                      builder: (_) => SetPushNotificationPage(),
+                      context: context,
+                    ));
+                  },
+                )
               ],
             ),
             SettingsSection(
               title: Text(S.of(context).displaySettingTitle),
               tiles: [
-                SettingsTile(
+                SettingsTile.navigation(
                   title: Text(S.of(context).chooseThemeTitle),
-                  trailing: Text(themeEntity.getColorName(context)),
+                  value: Text(themeEntity.getColorName(context)),
                   leading: Icon(Icons.color_lens_outlined),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
@@ -93,9 +106,9 @@ class _SettingPageState extends State<SettingPage> {
                     ));
                   },
                 ),
-                SettingsTile(
+                SettingsTile.navigation(
                   title: Text(S.of(context).appearanceOptimizedPlatform),
-                  trailing: Text(themeEntity.getPlatformLocaleName(context)),
+                  value: Text(themeEntity.getPlatformLocaleName(context)),
                   leading: Icon(PlatformIcons(context).home),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
@@ -118,9 +131,9 @@ class _SettingPageState extends State<SettingPage> {
                     Provider.of<ThemeNotifierProvider>(context,listen: false).setMaterial3(value);
                   }, initialValue: themeEntity.useMaterial3,
                 ),
-                SettingsTile(
+                SettingsTile.navigation(
                   title: Text(S.of(context).interfaceBrightness),
-                  trailing: Text(themeEntity.getBrightnessName(context)),
+                  value: Text(themeEntity.getBrightnessName(context)),
                   leading: Icon(PlatformIcons(context).brightness),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
@@ -130,9 +143,9 @@ class _SettingPageState extends State<SettingPage> {
                     ));
                   },
                 ),
-                SettingsTile(
+                SettingsTile.navigation(
                   title: Text(S.of(context).typeSetting),
-                  trailing: Text(S.of(context).fontSizeScaleParameterUnit(typeSetting.scalingParameter.toStringAsFixed(3))),
+                  value: Text(S.of(context).fontSizeScaleParameterUnit(typeSetting.scalingParameter.toStringAsFixed(3))),
                   leading: Icon(Icons.format_size_outlined),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
@@ -149,7 +162,7 @@ class _SettingPageState extends State<SettingPage> {
             SettingsSection(
               title: Text(S.of(context).post),
               tiles: [
-                SettingsTile(
+                SettingsTile.navigation(
                   title: Text(S.of(context).signatureStyle),
                   leading: Icon(PlatformIcons(context).pen),
                   onPressed: (context) {
@@ -168,29 +181,22 @@ class _SettingPageState extends State<SettingPage> {
             SettingsSection(
               title: Text(S.of(context).legalInformation),
               tiles: [
-                SettingsTile(
+                SettingsTile.navigation(
                   title: Text(S.of(context).termsOfService),
                   leading: Icon(PlatformIcons(context).tagOutline),
+
                   onPressed: (_) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     _launchURL("https://discuzhub.kidozh.com/term_of_use/");
                   },
                 ),
-                SettingsTile(
+                SettingsTile.navigation(
                   title: Text(S.of(context).privacyPolicy),
                   leading: Icon(PlatformIcons(context).tagOutline),
+
                   onPressed: (_) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     _launchURL("https://discuzhub.kidozh.com/privacy_policy/");
-                  },
-                ),
-                SettingsTile(
-                  title: Text(S.of(context).openSourceLicence),
-                  leading: Icon(PlatformIcons(context).tagOutline),
-                  onPressed: (_) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    _launchURL(
-                        "https://discuzhub.kidozh.com/open_source_licence/");
                   },
                 ),
               ],
@@ -222,5 +228,5 @@ class _SettingPageState extends State<SettingPage> {
   double paragraphFontSize = 12.0;
 
   void _launchURL(String url) async =>
-      await canLaunch(url) ? await launch(url) : throw 'Could not launch $url';
+      await canLaunchUrl(Uri.parse(url)) ? await launchUrl(Uri.parse(url)) : throw 'Could not launch $url';
 }

@@ -3480,6 +3480,156 @@ class S {
       args: [],
     );
   }
+
+  /// `Push notification service`
+  String get pushNotification {
+    return Intl.message(
+      'Push notification service',
+      name: 'pushNotification',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `On`
+  String get pushNotificationOn {
+    return Intl.message(
+      'On',
+      name: 'pushNotificationOn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Off`
+  String get pushNotificationOff {
+    return Intl.message(
+      'Off',
+      name: 'pushNotificationOff',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable Push notification service`
+  String get pushNotificationEnable {
+    return Intl.message(
+      'Enable Push notification service',
+      name: 'pushNotificationEnable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Push notification is only enabled when dhpush is enabled in the Discuz site.`
+  String get pushNotificationDescription {
+    return Intl.message(
+      'Push notification is only enabled when dhpush is enabled in the Discuz site.',
+      name: 'pushNotificationDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Law information`
+  String get lawInformation {
+    return Intl.message(
+      'Law information',
+      name: 'lawInformation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Push service relies on Firebase and APNs, which needs token, device information.`
+  String get pushNotificationSubmittedContent {
+    return Intl.message(
+      'Push service relies on Firebase and APNs, which needs token, device information.',
+      name: 'pushNotificationSubmittedContent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pushed information`
+  String get pushInformation {
+    return Intl.message(
+      'Pushed information',
+      name: 'pushInformation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Device type`
+  String get pushDevice {
+    return Intl.message(
+      'Device type',
+      name: 'pushDevice',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Channel`
+  String get pushChannel {
+    return Intl.message(
+      'Channel',
+      name: 'pushChannel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Firebase token`
+  String get pushToken {
+    return Intl.message(
+      'Firebase token',
+      name: 'pushToken',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Firebase/APNs`
+  String get pushChannelFirebase {
+    return Intl.message(
+      'Firebase/APNs',
+      name: 'pushChannelFirebase',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Push permission not authorized.`
+  String get pushNotificationPermissionNotAuthorized {
+    return Intl.message(
+      'Push permission not authorized.',
+      name: 'pushNotificationPermissionNotAuthorized',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Package ID`
+  String get pushPackageId {
+    return Intl.message(
+      'Package ID',
+      name: 'pushPackageId',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Authorized site`
+  String get authorizedSite {
+    return Intl.message(
+      'Authorized site',
+      name: 'authorizedSite',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -120,6 +120,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage(
                 "Choose the app appearance on preferred platform."),
         "attachFile": m1,
+        "authorizedSite":
+            MessageLookupByLibrary.simpleMessage("Authorized site"),
         "basicUse": MessageLookupByLibrary.simpleMessage("Basic"),
         "basicUseDescribe":
             MessageLookupByLibrary.simpleMessage("Basic use of EasyRefresh"),
@@ -330,6 +332,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Last active at"),
         "lastPostTime": MessageLookupByLibrary.simpleMessage("Last post at"),
         "lastVisitTime": MessageLookupByLibrary.simpleMessage("Last visit at"),
+        "lawInformation":
+            MessageLookupByLibrary.simpleMessage("Law information"),
         "legalInformation":
             MessageLookupByLibrary.simpleMessage("Legal information"),
         "linkUnableToOpen": m15,
@@ -443,7 +447,28 @@ class MessageLookup extends MessageLookupByLibrary {
         "publishAt": MessageLookupByLibrary.simpleMessage(" published at "),
         "pullToRefresh":
             MessageLookupByLibrary.simpleMessage("Pull to refresh"),
+        "pushChannel": MessageLookupByLibrary.simpleMessage("Channel"),
+        "pushChannelFirebase":
+            MessageLookupByLibrary.simpleMessage("Firebase/APNs"),
+        "pushDevice": MessageLookupByLibrary.simpleMessage("Device type"),
+        "pushInformation":
+            MessageLookupByLibrary.simpleMessage("Pushed information"),
+        "pushNotification":
+            MessageLookupByLibrary.simpleMessage("Push notification service"),
+        "pushNotificationDescription": MessageLookupByLibrary.simpleMessage(
+            "Push notification is only enabled when dhpush is enabled in the Discuz site."),
+        "pushNotificationEnable": MessageLookupByLibrary.simpleMessage(
+            "Enable Push notification service"),
+        "pushNotificationOff": MessageLookupByLibrary.simpleMessage("Off"),
+        "pushNotificationOn": MessageLookupByLibrary.simpleMessage("On"),
+        "pushNotificationPermissionNotAuthorized":
+            MessageLookupByLibrary.simpleMessage(
+                "Push permission not authorized."),
+        "pushNotificationSubmittedContent": MessageLookupByLibrary.simpleMessage(
+            "Push service relies on Firebase and APNs, which needs token, device information."),
+        "pushPackageId": MessageLookupByLibrary.simpleMessage("Package ID"),
         "pushToLoad": MessageLookupByLibrary.simpleMessage("Push to load"),
+        "pushToken": MessageLookupByLibrary.simpleMessage("Firebase token"),
         "recentNote": MessageLookupByLibrary.simpleMessage("Recent note"),
         "recordHistoryOffDescription": MessageLookupByLibrary.simpleMessage(
             "App Won\'t record your browser history"),

@@ -545,5 +545,20 @@
   },
   "hotThread": "Hot",
   "newThread": "New",
-  "editedPost": "Edited"
+  "editedPost": "Edited",
+  "pushNotification": "Push notification service",
+  "pushNotificationOn": "On",
+  "pushNotificationOff": "Off",
+  "pushNotificationEnable": "Enable Push notification service",
+  "pushNotificationDescription": "Push notification is only enabled when dhpush is enabled in the Discuz site.",
+  "lawInformation": "Law information",
+  "pushNotificationSubmittedContent": "Push service relies on Firebase and APNs, which needs token, device information.",
+  "pushInformation": "Pushed information",
+  "pushDevice": "Device type",
+  "pushChannel": "Channel",
+  "pushToken": "Firebase token",
+  "pushChannelFirebase": "Firebase/APNs",
+  "pushNotificationPermissionNotAuthorized": "Push permission not authorized.",
+  "pushPackageId": "Package ID",
+  "authorizedSite": "Authorized site"
 }

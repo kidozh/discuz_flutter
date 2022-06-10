@@ -114,6 +114,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "appearanceOptimizedPlatformSubtitle":
             MessageLookupByLibrary.simpleMessage("你可以选择对应平台下应用的显示样式"),
         "attachFile": m1,
+        "authorizedSite": MessageLookupByLibrary.simpleMessage("已验证站点"),
         "basicUse": MessageLookupByLibrary.simpleMessage("基本使用"),
         "basicUseDescribe":
             MessageLookupByLibrary.simpleMessage("EasyRefresh的基本使用"),
@@ -286,6 +287,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "lastActivityTime": MessageLookupByLibrary.simpleMessage("上次活动于"),
         "lastPostTime": MessageLookupByLibrary.simpleMessage("上次发帖时间"),
         "lastVisitTime": MessageLookupByLibrary.simpleMessage("上次访问时间"),
+        "lawInformation": MessageLookupByLibrary.simpleMessage("法律信息"),
         "legalInformation": MessageLookupByLibrary.simpleMessage("法律信息"),
         "linkUnableToOpen": m15,
         "linuxDeviceName": m16,
@@ -383,7 +385,27 @@ class MessageLookup extends MessageLookupByLibrary {
         "publicMessage": MessageLookupByLibrary.simpleMessage("公共消息"),
         "publishAt": MessageLookupByLibrary.simpleMessage(" 发帖于 "),
         "pullToRefresh": MessageLookupByLibrary.simpleMessage("拉动刷新"),
+        "pushChannel": MessageLookupByLibrary.simpleMessage("推送渠道"),
+        "pushChannelFirebase":
+            MessageLookupByLibrary.simpleMessage("Firebase以及APNs"),
+        "pushDevice": MessageLookupByLibrary.simpleMessage("设备信息"),
+        "pushInformation":
+            MessageLookupByLibrary.simpleMessage("下列信息将在同意后直接发送给论坛服务器"),
+        "pushNotification": MessageLookupByLibrary.simpleMessage("通知推送服务"),
+        "pushNotificationDescription": MessageLookupByLibrary.simpleMessage(
+            "推送通知服务仅当对应的Discuz站点启用了dhpush插件并且通过验证后才能开启。"),
+        "pushNotificationEnable":
+            MessageLookupByLibrary.simpleMessage("开启推送通知服务"),
+        "pushNotificationOff": MessageLookupByLibrary.simpleMessage("拒绝"),
+        "pushNotificationOn": MessageLookupByLibrary.simpleMessage("开启"),
+        "pushNotificationPermissionNotAuthorized":
+            MessageLookupByLibrary.simpleMessage("未获得通知授权，请检查您是否允许授予应用通知权限。"),
+        "pushNotificationSubmittedContent":
+            MessageLookupByLibrary.simpleMessage(
+                "推送服务依赖Firebase以及APNs，需要您的设备型号、操作系统类别以及偏好渠道等信息。"),
+        "pushPackageId": MessageLookupByLibrary.simpleMessage("应用包名"),
         "pushToLoad": MessageLookupByLibrary.simpleMessage("拉动加载"),
+        "pushToken": MessageLookupByLibrary.simpleMessage("Firebase令牌"),
         "recentNote": MessageLookupByLibrary.simpleMessage("最近的帖子"),
         "recordHistoryOffDescription":
             MessageLookupByLibrary.simpleMessage("应用不会记录您的浏览历史"),

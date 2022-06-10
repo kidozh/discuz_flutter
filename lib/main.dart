@@ -6,6 +6,8 @@ import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,7 @@ import 'package:provider/provider.dart';
 import 'app/MainApp.dart';
 import 'dao/DiscuzDao.dart';
 import 'entity/Discuz.dart';
+import 'firebase_options.dart';
 
 
 String initialPlatform = "";
@@ -32,6 +35,9 @@ void main() async{
   // init for hive
   await Hive.initFlutter();
   await AppDatabase.initBoxes();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
 
   log("languages initialization");
   initialPlatform = await UserPreferencesUtils.getPlatformPreference();

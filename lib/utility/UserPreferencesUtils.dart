@@ -239,7 +239,7 @@ class UserPreferencesUtils{
   static Future<String> getSignaturePreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var signaturePreference =  prefs.getString(signaturePreferenceKey);
-    return signaturePreference == null? "": signaturePreference!;
+    return signaturePreference == null? "": signaturePreference;
   }
 
   static Future<void> putSignaturePreference(String value) async{
