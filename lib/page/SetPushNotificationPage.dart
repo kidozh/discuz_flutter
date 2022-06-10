@@ -17,6 +17,7 @@ import 'package:settings_ui/settings_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../provider/UserPreferenceNotifierProvider.dart';
+import '../utility/AppPlatformIcons.dart';
 
 class SetPushNotificationPage extends StatefulWidget {
   @override
@@ -83,27 +84,13 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
         sections: [
           if(token == "")
             SettingsSection(tiles: [
-              CustomSettingsTile(
-                  child: Card(
-                    color: Colors.red,
-                    child: ListTile(
-                      leading: Icon(PlatformIcons(context).removeCircled, color: Colors.white,),
-                      title: Text(S.of(context).pushDeviceNotSupported, style: TextStyle(color: Colors.white),),
-                      subtitle: Text(S.of(context).pushDeviceNotSupportedDescription, style: TextStyle(color: Colors.white70)),
-                    ),
-                  )
-              ),
-              CustomSettingsTile(
-                  child: Card(
-                    color: Colors.green,
-                    child: ListTile(
-                      leading: Icon(PlatformIcons(context).checkMarkCircled, color: Colors.white,),
-                      title: Text(S.of(context).pushDeviceNotInterfaceWithService, style: TextStyle(color: Colors.white),),
-                      subtitle: Text(S.of(context).pushDeviceNotInterfaceWithServiceDescription, style: TextStyle(color: Colors.white70)),
-                    ),
-                  )
-              ),
-            ]),
+              SettingsTile(
+                title: Text(S.of(context).pushDeviceNotSupported),
+                description: Text(S.of(context).pushDeviceNotSupportedDescription),
+                leading: Icon(PlatformIcons(context).removeCircledSolid),
+              )
+            ],
+            ),
           if(token != "")
           SettingsSection(tiles: [
             SettingsTile.switchTile(
@@ -150,7 +137,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
           SettingsSection(title: Text(S.of(context).legalInformation), tiles: [
             SettingsTile.navigation(
               title: Text(S.of(context).termsOfService),
-              leading: Icon(PlatformIcons(context).tagOutline),
+              leading: Icon(AppPlatformIcons(context).termsOfServiceOutlined),
               onPressed: (_) {
                 VibrationUtils.vibrateWithClickIfPossible();
                 _launchURL("https://discuzhub.kidozh.com/term_of_use/");
@@ -158,7 +145,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
             ),
             SettingsTile.navigation(
               title: Text(S.of(context).privacyPolicy),
-              leading: Icon(PlatformIcons(context).tagOutline),
+              leading: Icon(AppPlatformIcons(context).privacyPolicyOutlined),
               onPressed: (_) {
                 VibrationUtils.vibrateWithClickIfPossible();
                 _launchURL("https://discuzhub.kidozh.com/privacy_policy/");
@@ -199,6 +186,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
                 PlatformDialogAction(
                   child: Text(S.of(context).ok),
                   onPressed: () async {
+                    VibrationUtils.vibrateWithClickIfPossible();
                     FirebaseMessaging messaging = FirebaseMessaging.instance;
                     NotificationSettings settings = await messaging.requestPermission(
                       alert: true,
@@ -229,6 +217,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
                 PlatformDialogAction(
                   child: Text(S.of(context).cancel),
                   onPressed: () {
+                    VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).pop();
                   },
                 )

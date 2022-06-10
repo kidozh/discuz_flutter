@@ -406,7 +406,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "推送通知服务仅当对应的Discuz站点启用了dhpush插件并且通过验证后才能开启。"),
         "pushNotificationEnable":
             MessageLookupByLibrary.simpleMessage("开启推送通知服务"),
-        "pushNotificationOff": MessageLookupByLibrary.simpleMessage("拒绝"),
+        "pushNotificationOff": MessageLookupByLibrary.simpleMessage("已禁用"),
         "pushNotificationOn": MessageLookupByLibrary.simpleMessage("开启"),
         "pushNotificationPermissionNotAuthorized":
             MessageLookupByLibrary.simpleMessage("未获得通知授权，请检查您是否允许授予应用通知权限。"),

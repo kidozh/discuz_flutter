@@ -548,7 +548,7 @@
   "editedPost": "已编辑",
   "pushNotification": "通知推送服务",
   "pushNotificationOn": "开启",
-  "pushNotificationOff": "拒绝",
+  "pushNotificationOff": "已禁用",
   "pushNotificationEnable": "开启推送通知服务",
   "pushNotificationDescription": "推送通知服务仅当对应的Discuz站点启用了dhpush插件并且通过验证后才能开启。",
   "lawInformation": "法律信息",

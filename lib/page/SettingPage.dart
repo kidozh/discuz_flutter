@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../utility/AppPlatformIcons.dart';
 import '../utility/PostTextFieldUtils.dart';
 import 'ChooseThemeColorPage.dart';
 
@@ -67,7 +68,7 @@ class _SettingPageState extends State<SettingPage> {
                   description: Text(recordHistory
                       ? S.of(context).recordHistoryOnDescription
                       : S.of(context).recordHistoryOffDescription),
-                  leading: Icon(PlatformIcons(context).bookmarkOutline),
+                  leading: Icon(AppPlatformIcons(context).historyOutlined),
                   //switchValue: recordHistory,
                   activeSwitchColor: Theme.of(context).primaryColor,
                   onToggle: (bool value) {
@@ -108,7 +109,7 @@ class _SettingPageState extends State<SettingPage> {
                 SettingsTile.navigation(
                   title: Text(S.of(context).chooseThemeTitle),
                   value: Text(themeEntity.getColorName(context)),
-                  leading: Icon(Icons.color_lens_outlined),
+                  leading: Icon(AppPlatformIcons(context).appThemeOutlined),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
@@ -120,7 +121,7 @@ class _SettingPageState extends State<SettingPage> {
                 SettingsTile.navigation(
                   title: Text(S.of(context).appearanceOptimizedPlatform),
                   value: Text(themeEntity.getPlatformLocaleName(context)),
-                  leading: Icon(PlatformIcons(context).home),
+                  leading: Icon(AppPlatformIcons(context).appAppearanceOutlined),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
@@ -134,7 +135,7 @@ class _SettingPageState extends State<SettingPage> {
                   description: themeEntity.useMaterial3
                       ? Text(S.of(context).useMaterial3YesSubtitle)
                       : Text(S.of(context).useMaterial3NoSubtitle),
-                  leading: Icon(Icons.style_outlined),
+                  leading: Icon(AppPlatformIcons(context).material3Outlined),
                   activeSwitchColor: Theme.of(context).primaryColor,
                   onToggle: (bool value) {
                     VibrationUtils.vibrateWithSwitchIfPossible();
@@ -157,7 +158,7 @@ class _SettingPageState extends State<SettingPage> {
                 SettingsTile.navigation(
                   title: Text(S.of(context).typeSetting),
                   value: Text(S.of(context).fontSizeScaleParameterUnit(typeSetting.scalingParameter.toStringAsFixed(3))),
-                  leading: Icon(Icons.format_size_outlined),
+                  leading: Icon(AppPlatformIcons(context).typeSettingOutlined),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
@@ -175,7 +176,7 @@ class _SettingPageState extends State<SettingPage> {
               tiles: [
                 SettingsTile.navigation(
                   title: Text(S.of(context).signatureStyle),
-                  leading: Icon(PlatformIcons(context).pen),
+                  leading: Icon(AppPlatformIcons(context).signatureOutlined),
                   value: Consumer<UserPreferenceNotifierProvider>(
                     builder: (context, userPreference, child){
                       if(userPreference.signature == PostTextFieldUtils.NO_SIGNATURE){
@@ -204,7 +205,7 @@ class _SettingPageState extends State<SettingPage> {
               tiles: [
                 SettingsTile.navigation(
                   title: Text(S.of(context).termsOfService),
-                  leading: Icon(PlatformIcons(context).tagOutline),
+                  leading: Icon(AppPlatformIcons(context).privacyPolicyOutlined),
 
                   onPressed: (_) {
                     VibrationUtils.vibrateWithClickIfPossible();
@@ -213,7 +214,7 @@ class _SettingPageState extends State<SettingPage> {
                 ),
                 SettingsTile.navigation(
                   title: Text(S.of(context).privacyPolicy),
-                  leading: Icon(PlatformIcons(context).tagOutline),
+                  leading: Icon(AppPlatformIcons(context).termsOfServiceOutlined),
 
                   onPressed: (_) {
                     VibrationUtils.vibrateWithClickIfPossible();
