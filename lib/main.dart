@@ -5,6 +5,7 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
+import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -71,7 +72,8 @@ void main() async{
           ChangeNotifierProvider.value(value: ThemeNotifierProvider()),
           ChangeNotifierProvider.value(value: DiscuzAndUserNotifier()),
           ChangeNotifierProvider.value(value: ReplyPostNotifierProvider()),
-          ChangeNotifierProvider.value(value: TypeSettingNotifierProvider())
+          ChangeNotifierProvider.value(value: TypeSettingNotifierProvider()),
+          ChangeNotifierProvider.value(value: UserPreferenceNotifierProvider())
         ],
         child: isExclusiveDiscuz? ExclusiveDiscuzApp(initialPlatform,discuz): MyApp(initialPlatform),
       ));

@@ -3541,10 +3541,10 @@ class S {
     );
   }
 
-  /// `Push service relies on Firebase and APNs, which needs token, device information.`
+  /// `Push service relies on Firebase and APNs, which needs token, device information. You should agree with terms of service and privacy policy of push service to use it.`
   String get pushNotificationSubmittedContent {
     return Intl.message(
-      'Push service relies on Firebase and APNs, which needs token, device information.',
+      'Push service relies on Firebase and APNs, which needs token, device information. You should agree with terms of service and privacy policy of push service to use it.',
       name: 'pushNotificationSubmittedContent',
       desc: '',
       args: [],
@@ -3626,6 +3626,66 @@ class S {
     return Intl.message(
       'Authorized site',
       name: 'authorizedSite',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Device not supported.`
+  String get pushDeviceNotSupported {
+    return Intl.message(
+      'Device not supported.',
+      name: 'pushDeviceNotSupported',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cannot find GMS or APNs service in your device.`
+  String get pushDeviceNotSupportedDescription {
+    return Intl.message(
+      'Cannot find GMS or APNs service in your device.',
+      name: 'pushDeviceNotSupportedDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Other service functions normally`
+  String get pushDeviceNotInterfaceWithService {
+    return Intl.message(
+      'Other service functions normally',
+      name: 'pushDeviceNotInterfaceWithService',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Other functions not relied on push service still works.`
+  String get pushDeviceNotInterfaceWithServiceDescription {
+    return Intl.message(
+      'Other functions not relied on push service still works.',
+      name: 'pushDeviceNotInterfaceWithServiceDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `How does push service work?`
+  String get workProcedure {
+    return Intl.message(
+      'How does push service work?',
+      name: 'workProcedure',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Helps`
+  String get pushHelpPages {
+    return Intl.message(
+      'Helps',
+      name: 'pushHelpPages',
       desc: '',
       args: [],
     );

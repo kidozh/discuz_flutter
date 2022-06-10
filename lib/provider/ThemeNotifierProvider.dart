@@ -35,7 +35,14 @@ class ThemeNotifierProvider with ChangeNotifier{
 
   Brightness? _brightnessPreference;
 
-  bool useMaterial3 = true;
+  bool _useMaterial3 = true;
+
+  get useMaterial3 => _useMaterial3;
+
+  set userMaterial3(bool value){
+    this._useMaterial3 = value;
+    notifyListeners();
+  }
 
   setBrightness(Brightness? brightness){
     _brightnessPreference = brightness;
@@ -142,7 +149,7 @@ class ThemeNotifierProvider with ChangeNotifier{
   }
 
   setMaterial3(bool material3Property){
-    this.useMaterial3 = material3Property;
+    this._useMaterial3 = material3Property;
     notifyListeners();
   }
 

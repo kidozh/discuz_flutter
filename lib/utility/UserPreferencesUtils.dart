@@ -1,6 +1,7 @@
 
 
 import 'dart:developer';
+import 'dart:ffi';
 import 'dart:ui';
 
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -250,27 +251,29 @@ class UserPreferencesUtils{
 
 
   static Future<String> getDiscuzForumFids(Discuz discuz,) async {
-    String discuzForumFidsKey = "signaturePreferenceKey_${discuz.baseURL}";
+    String discuzForumFidsKey = "discuz_forums_${discuz.baseURL}";
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var signaturePreference =  prefs.getString(discuzForumFidsKey);
     return signaturePreference == null? "": signaturePreference;
   }
 
   static Future<void> putDiscuzForumFids(Discuz discuz,String value) async{
-    String discuzForumFidsKey = "signaturePreferenceKey_${discuz.baseURL}";
+    String discuzForumFidsKey = "discuz_forums_${discuz.baseURL}";
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(discuzForumFidsKey, value);
   }
 
+  static final String pushPreferenceKey = "pushPreferenceKey";
 
-}
+  static Future<bool> getPushPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var pushPreference =  prefs.getBool(pushPreferenceKey);
+    return pushPreference == null? false: pushPreference;
+  }
 
-class SignaturePreferenceNotifier with ChangeNotifier{
-  String signature = "";
-
-  setSignature(String siganture){
-    this.signature = siganture;
-    notifyListeners();
+  static Future<void> putPushPreference(bool value) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(pushPreferenceKey, value);
   }
 
 

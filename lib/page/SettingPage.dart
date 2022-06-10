@@ -6,6 +6,7 @@ import 'package:discuz_flutter/page/SelectSignatureStylePage.dart';
 import 'package:discuz_flutter/page/SetPushNotificationPage.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
+import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../utility/PostTextFieldUtils.dart';
 import 'ChooseThemeColorPage.dart';
 
 class SettingPage extends StatefulWidget {
@@ -79,8 +81,17 @@ class _SettingPageState extends State<SettingPage> {
                 ),
                 SettingsTile.navigation(
                   title: Text(S.of(context).pushNotification),
-                  leading: Icon(PlatformIcons(context).cloudSolid),
-                  value: Text(S.of(context).pushNotificationOff),
+                  leading: Icon(PlatformIcons(context).cloud),
+                  value: Consumer<UserPreferenceNotifierProvider>(
+                    builder: (context, userPreference, child){
+                      if(userPreference.allowPush){
+                        return Text(S.of(context).pushNotificationOn);
+                      }
+                      else{
+                        return Text(S.of(context).pushNotificationOff);
+                      }
+                    },
+                  ),
                   onPressed: (context){
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
@@ -165,13 +176,23 @@ class _SettingPageState extends State<SettingPage> {
                 SettingsTile.navigation(
                   title: Text(S.of(context).signatureStyle),
                   leading: Icon(PlatformIcons(context).pen),
+                  value: Consumer<UserPreferenceNotifierProvider>(
+                    builder: (context, userPreference, child){
+                      if(userPreference.signature == PostTextFieldUtils.NO_SIGNATURE){
+                        return Text(S.of(context).noSignature);
+                      }
+                      else if(userPreference.signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE){
+                        return Text(S.of(context).deviceNameSignature);
+                      }
+                      else {
+                        return Text(S.of(context).customSignature);
+                      }
+                    },
+                  ),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
-                      builder: (_) => Provider<SignaturePreferenceNotifier>(
-                        create: (_) => SignaturePreferenceNotifier(),
-                        child: SelectSignatureStylePage(),
-                      ),
+                      builder: (_) => SelectSignatureStylePage(),
                       context: context,
                     ));
                   },

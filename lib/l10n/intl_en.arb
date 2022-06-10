@@ -552,7 +552,7 @@
   "pushNotificationEnable": "Enable Push notification service",
   "pushNotificationDescription": "Push notification is only enabled when dhpush is enabled in the Discuz site.",
   "lawInformation": "Law information",
-  "pushNotificationSubmittedContent": "Push service relies on Firebase and APNs, which needs token, device information.",
+  "pushNotificationSubmittedContent": "Push service relies on Firebase and APNs, which needs token, device information. You should agree with terms of service and privacy policy of push service to use it.",
   "pushInformation": "Pushed information",
   "pushDevice": "Device type",
   "pushChannel": "Channel",
@@ -560,5 +560,11 @@
   "pushChannelFirebase": "Firebase/APNs",
   "pushNotificationPermissionNotAuthorized": "Push permission not authorized.",
   "pushPackageId": "Package ID",
-  "authorizedSite": "Authorized site"
+  "authorizedSite": "Authorized site",
+  "pushDeviceNotSupported": "Device not supported.",
+  "pushDeviceNotSupportedDescription": "Cannot find GMS or APNs service in your device.",
+  "pushDeviceNotInterfaceWithService": "Other service functions normally",
+  "pushDeviceNotInterfaceWithServiceDescription": "Other functions not relied on push service still works.",
+  "workProcedure": "How does push service work?",
+  "pushHelpPages": "Helps"
 }

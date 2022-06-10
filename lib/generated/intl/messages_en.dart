@@ -451,6 +451,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushChannelFirebase":
             MessageLookupByLibrary.simpleMessage("Firebase/APNs"),
         "pushDevice": MessageLookupByLibrary.simpleMessage("Device type"),
+        "pushDeviceNotInterfaceWithService":
+            MessageLookupByLibrary.simpleMessage(
+                "Other service functions normally"),
+        "pushDeviceNotInterfaceWithServiceDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "Other functions not relied on push service still works."),
+        "pushDeviceNotSupported":
+            MessageLookupByLibrary.simpleMessage("Device not supported."),
+        "pushDeviceNotSupportedDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "Cannot find GMS or APNs service in your device."),
+        "pushHelpPages": MessageLookupByLibrary.simpleMessage("Helps"),
         "pushInformation":
             MessageLookupByLibrary.simpleMessage("Pushed information"),
         "pushNotification":
@@ -465,7 +477,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage(
                 "Push permission not authorized."),
         "pushNotificationSubmittedContent": MessageLookupByLibrary.simpleMessage(
-            "Push service relies on Firebase and APNs, which needs token, device information."),
+            "Push service relies on Firebase and APNs, which needs token, device information. You should agree with terms of service and privacy policy of push service to use it."),
         "pushPackageId": MessageLookupByLibrary.simpleMessage("Package ID"),
         "pushToLoad": MessageLookupByLibrary.simpleMessage("Push to load"),
         "pushToken": MessageLookupByLibrary.simpleMessage("Firebase token"),
@@ -636,6 +648,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Welcome to use our Services."),
         "welcomeTitle": MessageLookupByLibrary.simpleMessage("Welcome"),
         "windowsDeviceName": m38,
+        "workProcedure":
+            MessageLookupByLibrary.simpleMessage("How does push service work?"),
         "writeStorageDenied": MessageLookupByLibrary.simpleMessage(
             "Write storage permission denied.")
       };

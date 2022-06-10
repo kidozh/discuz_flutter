@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 import '../generated/l10n.dart';
+import '../provider/UserPreferenceNotifierProvider.dart';
 import '../utility/UserPreferencesUtils.dart';
 
 class SelectSignatureStylePage extends StatefulWidget{
@@ -33,6 +34,9 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
       signature = string;
     });
     UserPreferencesUtils.putSignaturePreference(string);
+    // update provider
+    Provider.of<UserPreferenceNotifierProvider>(context,listen: false).signature = signature;
+    log("New signature ${signature}");
   }
 
   void initState(){

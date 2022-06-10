@@ -389,6 +389,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushChannelFirebase":
             MessageLookupByLibrary.simpleMessage("Firebase以及APNs"),
         "pushDevice": MessageLookupByLibrary.simpleMessage("设备信息"),
+        "pushDeviceNotInterfaceWithService":
+            MessageLookupByLibrary.simpleMessage("其他服务依然是正常的"),
+        "pushDeviceNotInterfaceWithServiceDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "别担心，其他服务依然是正常运行的，您可以关注我们的开发者博客以获得支持设备的最新进展。"),
+        "pushDeviceNotSupported":
+            MessageLookupByLibrary.simpleMessage("您的设备无法接收推送"),
+        "pushDeviceNotSupportedDescription": MessageLookupByLibrary.simpleMessage(
+            "在您的设备无法找到GMS或者APNs服务。您可以开启GMS服务后重试。我们目前仅支持带有GMS服务的Android以及苹果设备。"),
+        "pushHelpPages": MessageLookupByLibrary.simpleMessage("推送服务帮助"),
         "pushInformation":
             MessageLookupByLibrary.simpleMessage("下列信息将在同意后直接发送给论坛服务器"),
         "pushNotification": MessageLookupByLibrary.simpleMessage("通知推送服务"),
@@ -400,9 +410,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushNotificationOn": MessageLookupByLibrary.simpleMessage("开启"),
         "pushNotificationPermissionNotAuthorized":
             MessageLookupByLibrary.simpleMessage("未获得通知授权，请检查您是否允许授予应用通知权限。"),
-        "pushNotificationSubmittedContent":
-            MessageLookupByLibrary.simpleMessage(
-                "推送服务依赖Firebase以及APNs，需要您的设备型号、操作系统类别以及偏好渠道等信息。"),
+        "pushNotificationSubmittedContent": MessageLookupByLibrary.simpleMessage(
+            "推送服务依赖Firebase以及APNs，需要您的设备型号、操作系统类别以及偏好渠道等信息。您需要同意我们的推送服务使用条款和隐私政策后使用本服务。"),
         "pushPackageId": MessageLookupByLibrary.simpleMessage("应用包名"),
         "pushToLoad": MessageLookupByLibrary.simpleMessage("拉动加载"),
         "pushToken": MessageLookupByLibrary.simpleMessage("Firebase令牌"),
@@ -545,6 +554,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "欢迎使用我们的服务，我们基于Discuz！移动插件为您服务。"),
         "welcomeTitle": MessageLookupByLibrary.simpleMessage("你好"),
         "windowsDeviceName": m38,
+        "workProcedure": MessageLookupByLibrary.simpleMessage("推送服务是如何工作的？"),
         "writeStorageDenied": MessageLookupByLibrary.simpleMessage("无法获得写入权限。")
       };
 }

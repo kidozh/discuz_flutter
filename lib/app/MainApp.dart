@@ -8,6 +8,7 @@ import 'package:discuz_flutter/page/TestFlightBannerPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
+import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
 import 'package:discuz_flutter/screen/DashboardScreen.dart';
 import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
 import 'package:discuz_flutter/screen/HotThreadScreen.dart';
@@ -48,6 +49,8 @@ class MyApp extends StatelessWidget {
     double scale = await UserPreferencesUtils.getTypesettingScalePreference();
     Brightness? brightness = await UserPreferencesUtils.getInterfaceBrightnessPreference();
     bool useMaterial3 = await UserPreferencesUtils.getMaterial3PropertyPreference();
+    bool allowPush = await UserPreferencesUtils.getPushPreference();
+    String signature = await UserPreferencesUtils.getSignaturePreference();
 
     print("Get brightness ${brightness}");
 
@@ -56,6 +59,9 @@ class MyApp extends StatelessWidget {
     Provider.of<TypeSettingNotifierProvider>(context,listen: false).setScalingParameter(scale);
     Provider.of<ThemeNotifierProvider>(context,listen: false).setBrightness(brightness);
     Provider.of<ThemeNotifierProvider>(context,listen: false).setMaterial3(useMaterial3);
+    Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = allowPush;
+    Provider.of<UserPreferenceNotifierProvider>(context,listen: false).signature = signature;
+
   }
 
 
