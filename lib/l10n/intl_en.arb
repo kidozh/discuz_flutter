@@ -566,5 +566,8 @@
   "pushDeviceNotInterfaceWithService": "Other service functions normally",
   "pushDeviceNotInterfaceWithServiceDescription": "Other functions not relied on push service still works.",
   "workProcedure": "How does push service work?",
-  "pushHelpPages": "Helps"
+  "pushHelpPages": "Helps",
+  "uploadTokenSuccessful": "Upload your token to discuz successfully.",
+  "uploadTokenUnsuccessful": "Unable to upload your token.",
+  "siteDoesNotSupportPushService": "The site may not install DHP Service."
 }

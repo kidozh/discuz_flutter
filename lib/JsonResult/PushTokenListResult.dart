@@ -1,6 +1,8 @@
 
 
+import 'package:discuz_flutter/converter/SecondToDateTimeConverter.dart';
 import 'package:discuz_flutter/converter/StringToBoolConverter.dart';
+import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'PushTokenListResult.g.dart';
@@ -20,14 +22,16 @@ class PushTokenListResult{
 
 @JsonSerializable()
 class PushToken{
+  @StringToIntConverter()
   int id = 0;
+  @StringToIntConverter()
   int uid = 0;
   String username = "";
   String token = "";
   @StringToBoolConverter()
   bool allowPush = true;
   String deviceName = "";
-
+  @SecondToDateTimeConverter()
   DateTime updateAt = DateTime.now();
   String channel = "";
 

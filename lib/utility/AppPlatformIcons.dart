@@ -27,7 +27,7 @@ class AppPlatformIcons{
 
   IconData get appAppearanceOutlined => isMaterial(context)? Icons.highlight_outlined : CupertinoIcons.wand_rays;
 
-  IconData get material3Outlined => isMaterial(context)? Icons.style_outlined : CupertinoIcons.skew;
+  IconData get material3Outlined => isMaterial(context)? Icons.format_paint_outlined : CupertinoIcons.skew;
 
   IconData get signatureOutlined => isMaterial(context)? Icons.edit_outlined : CupertinoIcons.signature;
 
@@ -36,4 +36,8 @@ class AppPlatformIcons{
   IconData get historyOutlined => isMaterial(context)? Icons.archive_outlined : CupertinoIcons.tray;
 
   IconData get pushServiceOutlined => isMaterial(context)? Icons.quickreply_outlined : CupertinoIcons.captions_bubble;
+
+  IconData get pushServiceSolid => isMaterial(context)? Icons.quickreply : CupertinoIcons.captions_bubble_fill;
+
+  IconData get thisDeviceSolid => isMaterial(context)? Icons.my_location : CupertinoIcons.location_fill;
 }

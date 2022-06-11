@@ -238,23 +238,32 @@ abstract class MobileApiClient {
       "/api/mobile/index.php?version=4&module=favforum&type=thread&ac=favorite&favoritesubmit=true")
   @FormUrlEncoded()
   Future<ApiResult> favoriteForumActionResult(
-      @Field("formhash") String formhash,
-      @Field("id") int fid,
-      );
+    @Field("formhash") String formhash,
+    @Field("id") int fid,
+  );
 
   @POST(
       "/api/mobile/index.php?version=4&module=favforum&type=thread&ac=favorite&deletesubmit=true&op=delete")
   @FormUrlEncoded()
   Future<ApiResult> unfavoriteForumActionResult(
-      @Field("formhash") String formhash,
-      @Field("favid") int favid,
-      );
+    @Field("formhash") String formhash,
+    @Field("favid") int favid,
+  );
 
   @GET("/api/mobile/index.php?version=4&module=newthreads&limit=20")
-  Future<NewThreadResult> newThreadsResult(@Query("fids") String fids, @Query("start") int start);
+  Future<NewThreadResult> newThreadsResult(
+      @Query("fids") String fids, @Query("start") int start);
 
   // push notification
   @GET("/plugin.php?id=dhpush:token")
   Future<PushTokenListResult> getPushTokenListResult();
 
+  @POST("/plugin.php?id=dhpush:token")
+  @FormUrlEncoded()
+  Future<PostTokenResult> sendToken(
+      @Field("formhash") String formHash,
+      @Field("token") String token,
+      @Field("deviceName") String deviceName,
+      @Field("packageId") String packageId,
+      @Field("channel") String pushChannel);
 }

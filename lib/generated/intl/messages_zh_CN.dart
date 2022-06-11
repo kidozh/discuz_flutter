@@ -460,6 +460,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "signUp": MessageLookupByLibrary.simpleMessage("注册"),
         "signatureHint": MessageLookupByLibrary.simpleMessage("在此键入签名"),
         "signatureStyle": MessageLookupByLibrary.simpleMessage("发帖签名样式"),
+        "siteDoesNotSupportPushService":
+            MessageLookupByLibrary.simpleMessage("该论坛未开启推送插件。"),
         "sitePage": MessageLookupByLibrary.simpleMessage("主页"),
         "smileyLabel": m29,
         "spam": MessageLookupByLibrary.simpleMessage("恶意灌水"),
@@ -524,6 +526,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("上传文件时遇到了一个未知错误。"),
         "uploadRawImageToServer":
             MessageLookupByLibrary.simpleMessage("原始图片（可能因为太大被服务器拒绝）"),
+        "uploadTokenSuccessful":
+            MessageLookupByLibrary.simpleMessage("您的设备令牌已经成功传入到论坛中。"),
+        "uploadTokenUnsuccessful":
+            MessageLookupByLibrary.simpleMessage("无法添加您的设备到论坛推送系统中。"),
         "uploadingImageToServer":
             MessageLookupByLibrary.simpleMessage("向服务器传输数据中。。。"),
         "useMaterial3NoSubtitle":

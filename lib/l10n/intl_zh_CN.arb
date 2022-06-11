@@ -567,5 +567,8 @@
   "pushDeviceNotInterfaceWithService": "其他服务依然是正常的",
   "pushDeviceNotInterfaceWithServiceDescription": "别担心，其他服务依然是正常运行的，您可以关注我们的开发者博客以获得支持设备的最新进展。",
   "workProcedure": "推送服务是如何工作的？",
-  "pushHelpPages": "推送服务帮助"
+  "pushHelpPages": "推送服务帮助",
+  "uploadTokenSuccessful": "您的设备令牌已经成功传入到论坛中。",
+  "uploadTokenUnsuccessful": "无法添加您的设备到论坛推送系统中。",
+  "siteDoesNotSupportPushService": "该论坛未开启推送插件。"
 }

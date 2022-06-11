@@ -97,6 +97,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
               title: Text(S.of(context).pushNotificationEnable),
               description: Text(S.of(context).pushNotificationDescription),
               initialValue: allowPush,
+              activeSwitchColor: Theme.of(context).primaryColor,
               onToggle: (value) async {
                 VibrationUtils.vibrateWithClickIfPossible();
                 // need to popup a dialog

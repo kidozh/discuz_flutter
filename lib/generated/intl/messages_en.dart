@@ -539,6 +539,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Input signature for every post"),
         "signatureStyle":
             MessageLookupByLibrary.simpleMessage("Signature style"),
+        "siteDoesNotSupportPushService": MessageLookupByLibrary.simpleMessage(
+            "The site may not install DHP Service."),
         "sitePage": MessageLookupByLibrary.simpleMessage("Homepage"),
         "smileyLabel": m29,
         "spam": MessageLookupByLibrary.simpleMessage("Spam"),
@@ -614,6 +616,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "Encounter a unresolved issue when uploading the file"),
         "uploadRawImageToServer":
             MessageLookupByLibrary.simpleMessage("Send raw image"),
+        "uploadTokenSuccessful": MessageLookupByLibrary.simpleMessage(
+            "Upload your token to discuz successfully."),
+        "uploadTokenUnsuccessful": MessageLookupByLibrary.simpleMessage(
+            "Unable to upload your token."),
         "uploadingImageToServer": MessageLookupByLibrary.simpleMessage(
             "Upload the file to the server..."),
         "useMaterial3NoSubtitle": MessageLookupByLibrary.simpleMessage(

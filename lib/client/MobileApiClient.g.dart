@@ -762,6 +762,32 @@ class _MobileApiClient implements MobileApiClient {
     return value;
   }
 
+  @override
+  Future<PostTokenResult> sendToken(
+      formHash, token, deviceName, packageId, pushChannel) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'formhash': formHash,
+      'token': token,
+      'deviceName': deviceName,
+      'packageId': packageId,
+      'channel': pushChannel
+    };
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<PostTokenResult>(Options(
+                method: 'POST',
+                headers: _headers,
+                extra: _extra,
+                contentType: 'application/x-www-form-urlencoded')
+            .compose(_dio.options, '/plugin.php?id=dhpush:token',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = PostTokenResult.fromJson(_result.data!);
+    return value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

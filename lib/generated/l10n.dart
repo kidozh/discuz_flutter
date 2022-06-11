@@ -3690,6 +3690,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Upload your token to discuz successfully.`
+  String get uploadTokenSuccessful {
+    return Intl.message(
+      'Upload your token to discuz successfully.',
+      name: 'uploadTokenSuccessful',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unable to upload your token.`
+  String get uploadTokenUnsuccessful {
+    return Intl.message(
+      'Unable to upload your token.',
+      name: 'uploadTokenUnsuccessful',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The site may not install DHP Service.`
+  String get siteDoesNotSupportPushService {
+    return Intl.message(
+      'The site may not install DHP Service.',
+      name: 'siteDoesNotSupportPushService',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
