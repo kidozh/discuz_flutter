@@ -32,7 +32,7 @@ class ForumCardWidget extends StatelessWidget{
             progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
             errorWidget: (context, url, error) => CircleAvatar(
               backgroundColor: Theme.of(context).primaryColor,
-              child: Icon(PlatformIcons(context).tagSolid),
+              child: Icon(PlatformIcons(context).tagSolid, color: Theme.of(context).primaryTextTheme.bodyText1?.color,),
             ),
           ),
         ),

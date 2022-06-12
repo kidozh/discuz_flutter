@@ -142,13 +142,26 @@ class PushServiceState extends State<PushServiceStateWidget>{
               slivers: [
                 SliverList(delegate: SliverChildBuilderDelegate(
                     (context, index){
-                      return Dismissible(key: UniqueKey(),
+
+                      if(result.list[index].token != deviceToken){
+                        return ListTile(
+                          title: Text(result.list[index].deviceName),
+                          subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, result.list[index].updateAt)),
+                          trailing: result.list[index].token == deviceToken? Icon(AppPlatformIcons(context).thisDeviceSolid): null,
+                        );
+                      }
+                      else{
+                        return Card(
+                          color: Theme.of(context).primaryColor,
                           child: ListTile(
+                            textColor: Theme.of(context).primaryTextTheme.bodyText1?.color,
                             title: Text(result.list[index].deviceName),
                             subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, result.list[index].updateAt)),
-                            trailing: result.list[index].token == deviceToken? Icon(AppPlatformIcons(context).thisDeviceSolid): null,
-                          )
-                      );
+                            trailing: result.list[index].token == deviceToken? Icon(AppPlatformIcons(context).thisDeviceSolid, color: Theme.of(context).primaryTextTheme.bodyText1?.color,): null,
+                          ),
+                        );
+                      }
+
                     },
                   childCount: result.list.length
                 )

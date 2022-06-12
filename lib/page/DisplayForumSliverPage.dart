@@ -527,9 +527,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                     return Card(
                       color: Theme.of(context).primaryColor,
                       child: ListTile(
-                        title: Text(subForum.name, style: TextStyle(color: Colors.white),),
-                        leading: Icon(Icons.forum,color: Colors.white),
-                        trailing: Icon(Icons.arrow_forward, color: Colors.white,),
+                        title: Text(subForum.name, style: TextStyle(color: Theme.of(context).primaryTextTheme.bodyText1?.color),),
+                        leading: Icon(Icons.forum, color: Theme.of(context).primaryTextTheme.bodyText1?.color),
+                        trailing: Icon(Icons.arrow_forward, color: Theme.of(context).primaryTextTheme.bodyText1?.color),
                         onTap: () async {
                           VibrationUtils.vibrateWithClickIfPossible();
                           await Navigator.push(
