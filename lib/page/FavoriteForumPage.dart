@@ -141,7 +141,7 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget>{
       return ValueListenableBuilder(
         valueListenable: _favoriteForumDao.favoriteForumBox.listenable(),
         builder: (BuildContext context, Box<FavoriteForumInDatabase> value, Widget? child) {
-          List<FavoriteForumInDatabase> favoriteForumList = _favoriteForumDao!.getFavoriteForumList(_discuz);
+          List<FavoriteForumInDatabase> favoriteForumList = _favoriteForumDao.getFavoriteForumList(_discuz);
           if(favoriteForumList.isNotEmpty){
             return ListView.builder(
                 itemBuilder:(context, index){

@@ -13,6 +13,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -39,9 +40,13 @@ void main() async{
   await AppDatabase.initBoxes();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging messaging = FirebaseMessaging.instance;
+  await messaging.getToken();
+  await PushServiceUtils.initFirebaseLocalNotification();
+
   // remote message recall
   FirebaseMessaging.onBackgroundMessage(PushServiceUtils.firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen((event) => PushServiceUtils.firebaseMessagingBackgroundHandler(event));
+
 
 
   log("languages initialization");

@@ -12,7 +12,6 @@ import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:form_validator/form_validator.dart';
@@ -123,16 +122,6 @@ class _AddDiscuzFormFieldState
                     valueColor: AlwaysStoppedAnimation(
                         GlobalTheme.getThemeData().primaryColor),
                   ),
-                Padding(
-                    padding: EdgeInsets.all(32.0),
-                    child: Center(
-                      child: SvgPicture.asset(
-                        "assets/images/add-a-new-discuz-site.svg",
-                        semanticsLabel: '论坛的图形标识',
-                        allowDrawingOutsideViewBox: true,
-                        width: MediaQuery.of(context).size.width * 0.5,
-                      ),
-                    )),
                 // input fields
                 new TextFormField(
                   controller: _urlController,

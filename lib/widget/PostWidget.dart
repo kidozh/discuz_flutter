@@ -23,7 +23,6 @@ import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/PostCommentWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/shims/dart_ui.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
@@ -434,7 +433,7 @@ class PostState extends State<PostStatefulWidget> {
                                   setState(() {
                                     this.isUserBlocked = true;
                                   });
-                                  BlockUser blockUser = BlockUser(_post.authorId, _post.author, DateTime.now(), _discuz!);
+                                  BlockUser blockUser = BlockUser(_post.authorId, _post.author, DateTime.now(), _discuz);
                                   int insertId = await _blockUserDao.insertBlockUser(blockUser);
                                   log("insert id into block user ${insertId}");
                                   break;
