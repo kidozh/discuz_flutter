@@ -6,6 +6,7 @@ import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
+import 'package:discuz_flutter/utility/PushServiceUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -38,6 +39,9 @@ void main() async{
   await AppDatabase.initBoxes();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging messaging = FirebaseMessaging.instance;
+  // remote message recall
+  FirebaseMessaging.onBackgroundMessage(PushServiceUtils.firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onMessage.listen((event) => PushServiceUtils.firebaseMessagingBackgroundHandler(event));
 
 
   log("languages initialization");

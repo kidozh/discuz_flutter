@@ -82,6 +82,8 @@ dependencies:
   firebase_messaging: ^11.4.1
   firebase_core: ^1.17.1
   font_awesome_flutter: ^10.1.0
+  firebase_analytics: ^9.1.9
+  flutter_local_notifications: ^9.6.0
 
 
 
