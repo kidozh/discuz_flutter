@@ -43,6 +43,7 @@ void main() async{
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   // check for iOS
   if(Platform.isIOS){
+
     String? apnsToken = await messaging.getAPNSToken();
     print("Get APNS token ${apnsToken}");
   }
