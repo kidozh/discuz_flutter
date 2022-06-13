@@ -2,6 +2,7 @@
 
 
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/PushTokenListResult.dart';
@@ -99,7 +100,13 @@ class PushServiceState extends State<PushServiceStateWidget>{
 
     try{
       FirebaseMessaging messaging = FirebaseMessaging.instance;
+      // try to get APNs before
+      if(Platform.isIOS){
+        String? apnsToken = await messaging.getAPNSToken();
+        print("Get APNS token ${apnsToken}");
+      }
       String? fetchedToken = await messaging.getToken();
+      print("Get token ${fetchedToken}");
       if(fetchedToken != null){
         deviceToken = fetchedToken;
       }
@@ -108,6 +115,8 @@ class PushServiceState extends State<PushServiceStateWidget>{
     catch (e){
 
     }
+
+
   }
 
   @override
