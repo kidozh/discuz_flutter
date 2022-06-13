@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:discuz_flutter/app/ExclusiveDiscuzApp.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
@@ -40,6 +41,11 @@ void main() async{
   await AppDatabase.initBoxes();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging messaging = FirebaseMessaging.instance;
+  // check for iOS
+  if(Platform.isIOS){
+    String? apnsToken = await messaging.getAPNSToken();
+    print("Get APNS token ${apnsToken}");
+  }
   await messaging.getToken();
   await PushServiceUtils.initFirebaseLocalNotification();
 

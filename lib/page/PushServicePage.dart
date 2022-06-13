@@ -102,6 +102,7 @@ class PushServiceState extends State<PushServiceStateWidget>{
       FirebaseMessaging messaging = FirebaseMessaging.instance;
       // try to get APNs before
       if(Platform.isIOS){
+
         String? apnsToken = await messaging.getAPNSToken();
         print("Get APNS token ${apnsToken}");
       }
