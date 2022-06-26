@@ -981,7 +981,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                               ],
                             ),
                             CaptchaWidget(
-                              null,
+                              dio,
                               discuz,
                               user,
                               "post",

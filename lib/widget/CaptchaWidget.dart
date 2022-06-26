@@ -16,7 +16,7 @@ class CaptchaWidget extends StatelessWidget {
   Discuz _discuz;
   User? _user;
   String captchaType;
-  Dio? dio;
+  Dio dio;
 
   CaptchaWidget(this.dio, this._discuz, this._user, this.captchaType,
       {this.captchaController});
@@ -40,7 +40,7 @@ class CaptchaStatefulWidget extends StatefulWidget {
   CaptchaStatefulWidget(this.dio, this._discuz, this._user, this.captchaType,
       this.captchaController);
 
-  Dio? dio;
+  Dio dio;
 
   @override
   State<StatefulWidget> createState() {
@@ -53,7 +53,7 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
   User? _user;
   String captchaType;
   late MobileApiClient _client;
-  Dio? _dio;
+  Dio _dio;
   CaptchaController? captchaController;
 
   CaptchaVariable? captchaVariable;
@@ -74,19 +74,23 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
     return "${_discuz.baseURL}/api/mobile/index.php?module=seccode&sechash=${captchaVariable!.secHash}&version=4&type=$captchaType";
   }
 
+  // Future<void> _refreshDio() async {
+  //   if (_dio == null) {
+  //     if(_user == null){
+  //       _dio = Dio();
+  //     }
+  //     else{
+  //       print("load cookie for user ${_user!.username}");
+  //       _dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
+  //     }
+  //
+  //   }
+  // }
+
   _initNetwork() async {
-    if (_dio == null) {
-      if(_user == null){
-        _dio = Dio();
-      }
-      else{
-        print("load cookie for user ${_user!.username}");
-        _dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
-      }
+    // await _refreshDio();
 
-    }
-
-    _client = MobileApiClient(_dio!, baseUrl: _discuz.baseURL);
+    _client = MobileApiClient(_dio, baseUrl: _discuz.baseURL);
     _loadCaptchaInfo();
     _bindNotifier();
   }
@@ -113,9 +117,11 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
     }
   }
 
-  _loadCaptchaInfo() {
+  _loadCaptchaInfo() async{
+    // refresh
+    _client = MobileApiClient(_dio, baseUrl: _discuz.baseURL);
     _client.captchaResult(this.captchaType).then((value) async {
-      print(value.variables.secCodeURL);
+      print("GET ${value.variables.secCodeURL} ${value.variables.secHash}");
       // the captcha html
       setState(() {
         captchaVariable = value.variables;
@@ -127,13 +133,13 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
       }
 
       Response<Uint8List> rs;
-      _dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
-      rs = await _dio!.get<Uint8List>(_getCaptchaUrl(),
+      // _dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
+      rs = await _dio.get<Uint8List>(_getCaptchaUrl(),
           options: Options(
               responseType: ResponseType.bytes,
               headers: {"Referer": value.variables.secCodeURL}));
       if (rs.data != null) {
-        print("Recv response data ${rs.data}");
+        //print("Recv response data ${rs.data}");
         setState(() {
           imageByte = rs.data!;
         });

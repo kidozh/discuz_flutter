@@ -49,7 +49,6 @@ class LoginForumFieldStatefulWidget extends StatefulWidget {
   LoginForumFieldStatefulWidget(this.discuz, this.accountName);
   @override
   _LoginFormFieldState createState() {
-    // TODO: implement createState
     return _LoginFormFieldState(discuz,accountName);
   }
 }
@@ -70,7 +69,6 @@ class _LoginFormFieldState
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     if(accountName !=null){
       _accountController.text = accountName!;
@@ -84,10 +82,9 @@ class _LoginFormFieldState
   Dio _dio = Dio();
   late PersistCookieJar cookieJar;
 
-  void _initDio() async{
+  Future<void> _initDio() async{
     cookieJar = await NetworkUtils.getTemporaryCookieJar();
     setState(() {
-
       _dio.interceptors.add(CookieManager(cookieJar));
     });
 
@@ -102,17 +99,14 @@ class _LoginFormFieldState
 
     log("Recv url " + discuz.baseURL);
     // check the availability
+    // refresh the dio
+    await _initDio();
     final client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
     setState(() {
       _loginState = ButtonState.loading;
     });
 
-    // client.sendLoginRequestInString(account, password).then((value) {
-    //   log(value);
-    //   var res = LoginResult.fromJson(jsonDecode(value));
-    //   log(res.toString());
-    //
-    // });
+
     CaptchaFields? captchaFields = _captchaController.value;
     String captchaHash = "";
     String captchaMod = "";

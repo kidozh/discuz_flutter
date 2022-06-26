@@ -12,7 +12,7 @@ part 'CaptchaResult.g.dart';
 class CaptchaResult extends BaseResult{
 
   @JsonKey(name: "Variables")
-  late CaptchaVariable variables;
+  CaptchaVariable variables = CaptchaVariable();
 
   CaptchaResult();
 

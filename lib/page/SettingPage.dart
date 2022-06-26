@@ -30,6 +30,8 @@ class _SettingPageState extends State<SettingPage> {
 
   bool recordHistory = false;
 
+  bool useMaterial3 = true;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -42,10 +44,12 @@ class _SettingPageState extends State<SettingPage> {
     setState(() {
       recordHistory = recordHistory;
     });
+
   }
 
   @override
   Widget build(BuildContext context) {
+    useMaterial3 = Provider.of<ThemeNotifierProvider>(context,listen: false).useMaterial3;
     return PlatformScaffold(
       appBar: PlatformAppBar(title: Text(S.of(context).settingTitle)),
       iosContentPadding: true,
@@ -141,7 +145,10 @@ class _SettingPageState extends State<SettingPage> {
                     VibrationUtils.vibrateWithSwitchIfPossible();
                     UserPreferencesUtils.putMaterial3PropertyPreference(value);
                     Provider.of<ThemeNotifierProvider>(context,listen: false).setMaterial3(value);
-                  }, initialValue: themeEntity.useMaterial3,
+                    setState((){
+                      useMaterial3 = value;
+                    });
+                  }, initialValue: useMaterial3,
                 ),
                 SettingsTile.navigation(
                   title: Text(S.of(context).interfaceBrightness),
