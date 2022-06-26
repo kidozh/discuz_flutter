@@ -9,6 +9,7 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
@@ -115,25 +116,22 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
             ? Text(S.of(context).userProfile)
             : Text(_userProfileResult!.variables.getSpace().username),
         trailingActions: [
-          Row(
-            children: [
-              IconButton(
-                  icon: Icon(Icons.message, size: 24,),
-                  onPressed: () {
-                    if (_userProfileResult != null &&
-                        _userProfileResult!.variables.space != null) {
-                      Navigator.push(
-                          context,
-                          platformPageRoute(
-                              context: context,
-                              builder: (context) => PrivateMessageDetailScreen(
-                                  uid,
-                                  _userProfileResult!
-                                      .variables.space!.username)));
-                    }
-                  }),
-            ],
-          )
+          IconButton(
+              icon: Icon(AppPlatformIcons(context).contactUserSolid, size: 24,),
+              onPressed: () {
+                if (_userProfileResult != null &&
+                    _userProfileResult!.variables.space != null) {
+                  Navigator.push(
+                      context,
+                      platformPageRoute(
+                          context: context,
+                          builder: (context) => PrivateMessageDetailScreen(
+                              uid,
+                              _userProfileResult!
+                                  .variables.space!.username)));
+                }
+              }
+              ),
         ],
       ),
       body: Stack(

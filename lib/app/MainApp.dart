@@ -13,6 +13,7 @@ import 'package:discuz_flutter/screen/DashboardScreen.dart';
 import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
 import 'package:discuz_flutter/screen/HotThreadScreen.dart';
 import 'package:discuz_flutter/screen/NotificationScreen.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/services.dart';
@@ -424,28 +425,28 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         items: [
           if(!Platform.isIOS)
           BottomNavigationBarItem(
-              icon: new Icon(CupertinoIcons.today),
-              activeIcon: Icon(CupertinoIcons.today_fill),
+              icon: new Icon(AppPlatformIcons(context).discuzSiteOutlined),
+              activeIcon: Icon(AppPlatformIcons(context).discuzSiteSolid),
               label: S.of(context).sitePage),
           BottomNavigationBarItem(
-              icon: new Icon(CupertinoIcons.bubble_left_bubble_right),
-              activeIcon: Icon(CupertinoIcons.bubble_left_bubble_right_fill),
+              icon: new Icon(AppPlatformIcons(context).discuzPortalOutlined),
+              activeIcon: Icon(AppPlatformIcons(context).discuzPortalSolid),
               label: S.of(context).index),
           BottomNavigationBarItem(
-              icon: new Icon(CupertinoIcons.compass),
-              activeIcon: Icon(CupertinoIcons.compass_fill),
+              icon: new Icon(AppPlatformIcons(context).discuzExploreOutlined),
+              activeIcon: Icon(AppPlatformIcons(context).discuzExploreSolid),
               label: S.of(context).dashboard),
           BottomNavigationBarItem(
-              icon: new Icon(CupertinoIcons.square_stack_3d_down_right),
-              activeIcon: Icon(CupertinoIcons.square_stack_3d_down_right_fill),
+              icon: new Icon(AppPlatformIcons(context).discuzNotificationOutlined),
+              activeIcon: Icon(AppPlatformIcons(context).discuzNotificationSolid),
               label: S.of(context).notification),
           // BottomNavigationBarItem(
           //     icon: new Icon(Icons.stars_outlined),
           //     activeIcon: Icon(Icons.stars),
           //     label: S.of(context).favorites),
           BottomNavigationBarItem(
-              icon: new Icon(PlatformIcons(context).conversationBubbleOutline),
-              activeIcon: Icon(PlatformIcons(context).conversationBubble),
+              icon: new Icon(AppPlatformIcons(context).discuzMessageOutlined),
+              activeIcon: Icon(AppPlatformIcons(context).discuzMessageSolid),
               label: S.of(context).chatMessage),
         ],
 

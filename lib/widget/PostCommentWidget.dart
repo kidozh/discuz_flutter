@@ -55,15 +55,15 @@ class PostCommentWidget extends StatelessWidget {
                       text: _comment.author,
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 12 * typesetting.scalingParameter)),
+                          fontSize: 12 )),
                   TextSpan(text: ' · '),
                   TextSpan(
                       text: _comment.dateline.replaceAll("&nbsp;", ""),
                       style: TextStyle(
                           fontWeight: FontWeight.w400,
-                          fontSize: 12 * typesetting.scalingParameter)),
+                          fontSize: 12 )),
                   TextSpan(text: '    '),
-                  TextSpan(text: _comment.comment, style: TextStyle(fontSize: 12*typesetting.scalingParameter))
+                  TextSpan(text: _comment.comment, style: TextStyle(fontSize: 12))
                 ],
               ),
             ),

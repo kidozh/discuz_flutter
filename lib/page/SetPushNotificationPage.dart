@@ -1,9 +1,5 @@
-import 'dart:ffi';
-import 'dart:io';
 
 import 'package:discuz_flutter/generated/l10n.dart';
-import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
-import 'package:discuz_flutter/utility/ConstUtils.dart';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -160,7 +156,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
               leading: Icon(PlatformIcons(context).helpOutline),
               onPressed: (_) {
                 VibrationUtils.vibrateWithClickIfPossible();
-                _launchURL("https://discuzhub.kidozh.com/privacy_policy/");
+                _launchURL("https://discuzhub.kidozh.com/dev-blog/how-push-service-works/");
               },
             ),
             SettingsTile.navigation(
@@ -168,7 +164,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
               leading: Icon(PlatformIcons(context).checkMarkCircledOutline),
               onPressed: (_) {
                 VibrationUtils.vibrateWithClickIfPossible();
-                _launchURL("https://discuzhub.kidozh.com/open_source_licence/");
+                _launchURL("https://discuzhub.kidozh.com/dev-blog/verified-discuz-site/");
               },
             ),
           ])

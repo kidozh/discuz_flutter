@@ -40,4 +40,26 @@ class AppPlatformIcons{
   IconData get pushServiceSolid => isMaterial(context)? Icons.quickreply : CupertinoIcons.captions_bubble_fill;
 
   IconData get thisDeviceSolid => isMaterial(context)? Icons.my_location : CupertinoIcons.location_fill;
+
+  IconData get discuzPortalSolid => isMaterial(context)? Icons.forum : CupertinoIcons.bubble_left_bubble_right_fill;
+
+  IconData get discuzPortalOutlined => isMaterial(context)? Icons.forum_outlined : CupertinoIcons.bubble_left_bubble_right;
+
+  IconData get discuzExploreSolid => isMaterial(context)? Icons.explore : CupertinoIcons.compass_fill;
+
+  IconData get discuzExploreOutlined => isMaterial(context)? Icons.explore_outlined : CupertinoIcons.compass;
+
+  IconData get discuzNotificationSolid => isMaterial(context)? Icons.notifications : CupertinoIcons.square_stack_3d_down_right_fill;
+
+  IconData get discuzNotificationOutlined => isMaterial(context)? Icons.notifications_outlined : CupertinoIcons.square_stack_3d_down_right;
+
+  IconData get discuzMessageSolid => isMaterial(context)? Icons.message : CupertinoIcons.chat_bubble_fill;
+
+  IconData get discuzMessageOutlined => isMaterial(context)? Icons.message_outlined : CupertinoIcons.chat_bubble;
+
+  IconData get discuzSiteSolid => isMaterial(context)? Icons.home : CupertinoIcons.today_fill;
+
+  IconData get discuzSiteOutlined => isMaterial(context)? Icons.home_outlined : CupertinoIcons.today;
+
+  IconData get contactUserSolid => isMaterial(context)? Icons.message : CupertinoIcons.chat_bubble_fill;
 }
