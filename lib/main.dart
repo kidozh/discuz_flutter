@@ -47,7 +47,7 @@ void main() async{
     String? apnsToken = await messaging.getAPNSToken();
     print("Get APNS token ${apnsToken}");
   }
-  await messaging.getToken();
+  // await messaging.getToken();
   await PushServiceUtils.initFirebaseLocalNotification();
 
   // remote message recall

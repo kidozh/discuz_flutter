@@ -143,6 +143,7 @@ class MyApp extends StatelessWidget {
                   material: (_,__)=> MaterialAppData(
                       theme: materialTheme,
                       darkTheme: ThemeData(
+                        useMaterial3: themeColorEntity.useMaterial3,
                         primaryColor: themeColorEntity.themeColor,
                         floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
                         brightness: Brightness.dark,
