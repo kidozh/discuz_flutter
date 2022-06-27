@@ -397,7 +397,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushDeviceNotSupported":
             MessageLookupByLibrary.simpleMessage("您的设备无法接收推送"),
         "pushDeviceNotSupportedDescription": MessageLookupByLibrary.simpleMessage(
-            "在您的设备无法找到GMS或者APNs服务。您可以开启GMS服务后重试。我们目前仅支持带有GMS服务的Android以及苹果设备。"),
+            "在您的设备无法找到GMS或者APNs服务或者无法连接到FCM服务器注册令牌。我们目前仅支持带有GMS服务的Android以及苹果设备。"),
         "pushHelpPages": MessageLookupByLibrary.simpleMessage("推送服务帮助"),
         "pushInformation":
             MessageLookupByLibrary.simpleMessage("下列信息将在同意后直接发送给论坛服务器"),

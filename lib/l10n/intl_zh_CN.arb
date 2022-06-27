@@ -563,7 +563,7 @@
   "pushPackageId": "应用包名",
   "authorizedSite": "已验证站点",
   "pushDeviceNotSupported": "您的设备无法接收推送",
-  "pushDeviceNotSupportedDescription": "在您的设备无法找到GMS或者APNs服务。您可以开启GMS服务后重试。我们目前仅支持带有GMS服务的Android以及苹果设备。",
+  "pushDeviceNotSupportedDescription": "在您的设备无法找到GMS或者APNs服务或者无法连接到FCM服务器注册令牌。我们目前仅支持带有GMS服务的Android以及苹果设备。",
   "pushDeviceNotInterfaceWithService": "其他服务依然是正常的",
   "pushDeviceNotInterfaceWithServiceDescription": "别担心，其他服务依然是正常运行的，您可以关注我们的开发者博客以获得支持设备的最新进展。",
   "workProcedure": "推送服务是如何工作的？",
