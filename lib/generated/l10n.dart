@@ -3631,10 +3631,10 @@ class S {
     );
   }
 
-  /// `Device not supported.`
+  /// `Device not supported or network failed to connect with Google.`
   String get pushDeviceNotSupported {
     return Intl.message(
-      'Device not supported.',
+      'Device not supported or network failed to connect with Google.',
       name: 'pushDeviceNotSupported',
       desc: '',
       args: [],

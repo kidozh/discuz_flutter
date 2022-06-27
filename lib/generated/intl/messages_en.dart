@@ -457,8 +457,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushDeviceNotInterfaceWithServiceDescription":
             MessageLookupByLibrary.simpleMessage(
                 "Other functions not relied on push service still works."),
-        "pushDeviceNotSupported":
-            MessageLookupByLibrary.simpleMessage("Device not supported."),
+        "pushDeviceNotSupported": MessageLookupByLibrary.simpleMessage(
+            "Device not supported or network failed to connect with Google."),
         "pushDeviceNotSupportedDescription":
             MessageLookupByLibrary.simpleMessage(
                 "Cannot find GMS or APNs service in your device."),

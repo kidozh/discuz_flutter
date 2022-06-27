@@ -561,7 +561,7 @@
   "pushNotificationPermissionNotAuthorized": "Push permission not authorized.",
   "pushPackageId": "Package ID",
   "authorizedSite": "Authorized site",
-  "pushDeviceNotSupported": "Device not supported.",
+  "pushDeviceNotSupported": "Device not supported or network failed to connect with Google.",
   "pushDeviceNotSupportedDescription": "Cannot find GMS or APNs service in your device.",
   "pushDeviceNotInterfaceWithService": "Other service functions normally",
   "pushDeviceNotInterfaceWithServiceDescription": "Other functions not relied on push service still works.",
