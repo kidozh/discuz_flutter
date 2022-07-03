@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:discuz_flutter/JsonResult/ApiResult.dart';
-import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:discuz_flutter/JsonResult/CaptchaResult.dart';
 import 'package:discuz_flutter/JsonResult/CheckLoginResult.dart';
 import 'package:discuz_flutter/JsonResult/CheckPostResult.dart';
@@ -120,6 +119,7 @@ abstract class MobileApiClient {
       @Field("tid") int tid,
       @Field("formhash") String formhash,
       @Field("reppid") int? replyPostId,
+      @Query("repquote") int? replyPId,
       @Field("noticetrimstr") String? notifyTriPostMessage,
       @Field("message") String message,
       // for captcha services

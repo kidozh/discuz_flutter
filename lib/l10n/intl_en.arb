@@ -557,7 +557,7 @@
   "pushDevice": "Device type",
   "pushChannel": "Channel",
   "pushToken": "Firebase token",
-  "pushChannelFirebase": "Firebase/APNs",
+  "pushChannelFirebase": "Firebase",
   "pushNotificationPermissionNotAuthorized": "Push permission not authorized.",
   "pushPackageId": "Package ID",
   "authorizedSite": "Authorized site",
@@ -569,5 +569,6 @@
   "pushHelpPages": "Helps",
   "uploadTokenSuccessful": "Upload your token to discuz successfully.",
   "uploadTokenUnsuccessful": "Unable to upload your token.",
-  "siteDoesNotSupportPushService": "The site may not install DHP Service."
+  "siteDoesNotSupportPushService": "The site may not install DHP Service.",
+  "pushChannelAPNs": "Apple Push Notification service"
 }

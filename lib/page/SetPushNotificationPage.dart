@@ -1,4 +1,7 @@
 
+import 'dart:io';
+
+import 'package:discuz_flutter/generated/intl/messages_en.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -36,21 +39,35 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
   void _loadDeviceInformation() async{
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     deviceName = await PostTextFieldUtils.getDeviceName(context);
-    // firebase
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
     String? fetchedToken = null;
-    try{
-       fetchedToken = await messaging.getToken();
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    if (Platform.isIOS){
+      fetchedToken = await messaging.getAPNSToken();
     }
-    catch(e){
-      fetchedToken = null;
+    else{
+      // firebase
+
+
+      try{
+        fetchedToken = await messaging.getToken();
+      }
+      catch(e){
+        fetchedToken = null;
+      }
     }
+
 
 
     setState((){
       deviceName = deviceName;
       packageId = packageInfo.packageName;
-      channel = S.of(context).pushChannelFirebase;
+      if(Platform.isIOS){
+        channel = S.of(context).pushChannelAPNs;
+      }
+      else{
+        channel = S.of(context).pushChannelFirebase;
+      }
+
       if(fetchedToken!= null){
         token = fetchedToken;
       }

@@ -101,12 +101,17 @@ class PushServiceState extends State<PushServiceStateWidget>{
     try{
       FirebaseMessaging messaging = FirebaseMessaging.instance;
       // try to get APNs before
+      String? fetchedToken = null;
       if(Platform.isIOS){
 
         String? apnsToken = await messaging.getAPNSToken();
         print("Get APNS token ${apnsToken}");
+        fetchedToken = apnsToken;
       }
-      String? fetchedToken = await messaging.getToken();
+      else{
+        fetchedToken = await messaging.getToken();
+      }
+
       print("Get token ${fetchedToken}");
       if(fetchedToken != null){
         deviceToken = fetchedToken;
@@ -205,11 +210,22 @@ class PushServiceState extends State<PushServiceStateWidget>{
       // check with token
       String token = "";
       try{
-        FirebaseMessaging messaging = FirebaseMessaging.instance;
-        String? fetchedToken = await messaging.getToken();
-        if(fetchedToken != null){
-          token = fetchedToken;
+        // check with platform
+        if(Platform.isIOS){
+          FirebaseMessaging messaging = FirebaseMessaging.instance;
+          String? apnToken = await messaging.getAPNSToken();
+          if(apnToken != null){
+            token = apnToken;
+          }
         }
+        else{
+          FirebaseMessaging messaging = FirebaseMessaging.instance;
+          String? fetchedToken = await messaging.getToken();
+          if(fetchedToken != null){
+            token = fetchedToken;
+          }
+        }
+
 
       }
       catch(e){
@@ -238,13 +254,28 @@ class PushServiceState extends State<PushServiceStateWidget>{
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
     // send it
+    // check with token
     String token = "";
+    String channel = "FCM";
     try{
-      FirebaseMessaging messaging = FirebaseMessaging.instance;
-      String? fetchedToken = await messaging.getToken();
-      if(fetchedToken != null){
-        token = fetchedToken;
+      // check with platform
+      if(Platform.isIOS){
+        FirebaseMessaging messaging = FirebaseMessaging.instance;
+        String? apnToken = await messaging.getAPNSToken();
+        if(apnToken != null){
+          token = apnToken;
+        }
+        // to make sure apn get posted
+        channel = "APN";
       }
+      else{
+        FirebaseMessaging messaging = FirebaseMessaging.instance;
+        String? fetchedToken = await messaging.getToken();
+        if(fetchedToken != null){
+          token = fetchedToken;
+        }
+      }
+
 
     }
     catch(e){
@@ -255,7 +286,7 @@ class PushServiceState extends State<PushServiceStateWidget>{
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     String packageId = packageInfo.packageName;
     log("Get formhash ${result.formhash}");
-    _client.sendToken(result.formhash, token, deviceName, packageId, "FCM").then((value){
+    _client.sendToken(result.formhash, token, deviceName, packageId, channel).then((value){
       if(value.result =="success"){
         EasyLoading.showSuccess(S.of(context).uploadTokenSuccessful);
       }

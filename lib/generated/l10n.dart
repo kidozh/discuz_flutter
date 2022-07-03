@@ -3591,10 +3591,10 @@ class S {
     );
   }
 
-  /// `Firebase/APNs`
+  /// `Firebase`
   String get pushChannelFirebase {
     return Intl.message(
-      'Firebase/APNs',
+      'Firebase',
       name: 'pushChannelFirebase',
       desc: '',
       args: [],
@@ -3716,6 +3716,16 @@ class S {
     return Intl.message(
       'The site may not install DHP Service.',
       name: 'siteDoesNotSupportPushService',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Apple Push Notification service`
+  String get pushChannelAPNs {
+    return Intl.message(
+      'Apple Push Notification service',
+      name: 'pushChannelAPNs',
       desc: '',
       args: [],
     );

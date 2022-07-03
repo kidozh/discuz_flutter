@@ -337,6 +337,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             tid,
             formhash,
             replyPost == null ? null : replyPost.pid,
+            replyPost == null ? null : replyPost.pid,
             notifyAuthorMessage,
             message,
             captchaHash,

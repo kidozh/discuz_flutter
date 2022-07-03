@@ -248,6 +248,7 @@ class _MobileApiClient implements MobileApiClient {
       tid,
       formhash,
       replyPostId,
+      replyPId,
       notifyTriPostMessage,
       message,
       captchaHash,
@@ -255,7 +256,7 @@ class _MobileApiClient implements MobileApiClient {
       verification,
       queries) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'repquote': replyPId};
     queryParameters.addAll(queries);
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};

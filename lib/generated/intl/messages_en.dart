@@ -448,8 +448,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "pullToRefresh":
             MessageLookupByLibrary.simpleMessage("Pull to refresh"),
         "pushChannel": MessageLookupByLibrary.simpleMessage("Channel"),
-        "pushChannelFirebase":
-            MessageLookupByLibrary.simpleMessage("Firebase/APNs"),
+        "pushChannelAPNs": MessageLookupByLibrary.simpleMessage(
+            "Apple Push Notification service"),
+        "pushChannelFirebase": MessageLookupByLibrary.simpleMessage("Firebase"),
         "pushDevice": MessageLookupByLibrary.simpleMessage("Device type"),
         "pushDeviceNotInterfaceWithService":
             MessageLookupByLibrary.simpleMessage(

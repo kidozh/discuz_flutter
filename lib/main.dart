@@ -14,6 +14,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_apns/apns.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -53,7 +54,13 @@ void main() async{
   // remote message recall
   FirebaseMessaging.onBackgroundMessage(PushServiceUtils.firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen((event) => PushServiceUtils.firebaseMessagingBackgroundHandler(event));
-
+  if(Platform.isIOS){
+    final connector = createPushConnector();
+    connector.configure(
+      onBackgroundMessage: PushServiceUtils.firebaseMessagingBackgroundHandler,
+      onMessage: PushServiceUtils.firebaseMessagingBackgroundHandler
+    );
+  }
 
 
   log("languages initialization");

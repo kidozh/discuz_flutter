@@ -558,7 +558,7 @@
   "pushChannel": "推送渠道",
   "pushPackage": "应用包名",
   "pushToken": "Firebase令牌",
-  "pushChannelFirebase": "Firebase以及APNs",
+  "pushChannelFirebase": "Firebase",
   "pushNotificationPermissionNotAuthorized": "未获得通知授权，请检查您是否允许授予应用通知权限。",
   "pushPackageId": "应用包名",
   "authorizedSite": "已验证站点",
@@ -570,5 +570,6 @@
   "pushHelpPages": "推送服务帮助",
   "uploadTokenSuccessful": "您的设备令牌已经成功传入到论坛中。",
   "uploadTokenUnsuccessful": "无法添加您的设备到论坛推送系统中。",
-  "siteDoesNotSupportPushService": "该论坛未开启推送插件。"
+  "siteDoesNotSupportPushService": "该论坛未开启推送插件。",
+  "pushChannelAPNs": "Apple推送通知服务"
 }
