@@ -262,6 +262,7 @@ class PushServiceState extends State<PushServiceStateWidget>{
       if(Platform.isIOS){
         FirebaseMessaging messaging = FirebaseMessaging.instance;
         String? apnToken = await messaging.getAPNSToken();
+        log("Get APNS ${apnToken}");
         if(apnToken != null){
           token = apnToken;
         }
