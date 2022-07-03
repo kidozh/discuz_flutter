@@ -1,4 +1,5 @@
 
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:discuz_flutter/generated/intl/messages_en.dart';
@@ -43,6 +44,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     if (Platform.isIOS){
       fetchedToken = await messaging.getAPNSToken();
+      log("Get APNS ${fetchedToken}");
     }
     else{
       // firebase
