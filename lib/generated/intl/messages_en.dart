@@ -531,6 +531,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "settingTitle": MessageLookupByLibrary.simpleMessage("Settings"),
         "settings": MessageLookupByLibrary.simpleMessage("Settings"),
         "share": MessageLookupByLibrary.simpleMessage("Share"),
+        "shortcut": MessageLookupByLibrary.simpleMessage("Shortcut"),
+        "shortcutFidHint":
+            MessageLookupByLibrary.simpleMessage("Input forum id (fid)"),
+        "shortcutGo": MessageLookupByLibrary.simpleMessage("Go"),
+        "shortcutTidHint":
+            MessageLookupByLibrary.simpleMessage("Input thread id (tid)"),
+        "shortcutUidHint":
+            MessageLookupByLibrary.simpleMessage("Input user id (uid)"),
         "signInSuccessTitle": m27,
         "signInTitle": m28,
         "signInViaBrowser":

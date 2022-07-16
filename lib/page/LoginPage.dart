@@ -258,7 +258,8 @@ class _LoginFormFieldState
                   children: [
                     ErrorCard(S.of(context).error, error,(){
                       _verifyAccountAndPassword();
-                    }),
+                    },
+                    largeSize: false,),
                   ],
                 ),
 

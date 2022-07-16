@@ -85,6 +85,7 @@ dependencies:
   firebase_analytics: ^9.1.9
   flutter_local_notifications: ^9.6.0
   flutter_apns: ^1.5.4
+  scroll_to_index: any
 
 
 

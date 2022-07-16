@@ -570,5 +570,10 @@
   "uploadTokenSuccessful": "Upload your token to discuz successfully.",
   "uploadTokenUnsuccessful": "Unable to upload your token.",
   "siteDoesNotSupportPushService": "The site may not install DHP Service.",
-  "pushChannelAPNs": "Apple Push Notification service"
+  "pushChannelAPNs": "Apple Push Notification service",
+  "shortcut": "Shortcut",
+  "shortcutGo": "Go",
+  "shortcutFidHint": "Input forum id (fid)",
+  "shortcutTidHint": "Input thread id (tid)",
+  "shortcutUidHint": "Input user id (uid)"
 }

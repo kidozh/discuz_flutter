@@ -62,4 +62,6 @@ class AppPlatformIcons{
   IconData get discuzSiteOutlined => isMaterial(context)? Icons.home_outlined : CupertinoIcons.today;
 
   IconData get contactUserSolid => isMaterial(context)? Icons.message : CupertinoIcons.chat_bubble_fill;
+
+  IconData get shortcutSolid => isMaterial(context)? Icons.location_pin : CupertinoIcons.compass_fill;
 }

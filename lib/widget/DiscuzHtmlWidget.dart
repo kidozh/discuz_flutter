@@ -1,5 +1,6 @@
 
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:discuz_flutter/dao/TrustHostDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
@@ -32,8 +33,9 @@ class DiscuzHtmlWidget extends StatelessWidget{
   String html;
   Discuz discuz;
   JumpToPidCallback? callback;
+  int? tid;
 
-  DiscuzHtmlWidget(this.discuz,this.html,{this.callback});
+  DiscuzHtmlWidget(this.discuz,this.html,{this.callback, this.tid});
 
   _trustHost(String host) async{
     TrustHostDao trustHostDao = await AppDatabase.getTrustHostDao();
@@ -214,24 +216,37 @@ class DiscuzHtmlWidget extends StatelessWidget{
                     // direct open it
                     launchUrl(Uri.parse(urlString));
                   }
-
-
-
                   return ;
                 }
 
                 // check query parameters for full url
                 if(uri.queryParameters.containsKey("mod")){
                   String modParamter = uri.queryParameters["mod"]!;
-                  log("recv modParamter ${modParamter}");
+                  log("recv modParamter ${modParamter} and tid ${this.tid}" );
                   // check forum display
                   switch (modParamter){
                     case "redirect":{
                       if(uri.queryParameters.containsKey("ptid")){
                         String tidString = uri.queryParameters["ptid"]!;
+                        if(this.tid != null && callback!= null && this.tid.toString() == tidString){
+                          // may need to scroll
+                          log("Need to rescroll by the parameter");
+                          if(uri.queryParameters.containsKey("pid")){
+                            String pidString = uri.queryParameters["pid"]!;
+                            if(int.tryParse(pidString) != null){
+                              int pid = int.parse(pidString);
+                              // navigate
+                              this.callback!(pid);
+                              return;
+                            }
+                          }
+                        }
                         // trigger tid
                         if(int.tryParse(tidString) != null){
                           int tid = int.tryParse(tidString)!;
+
+
+
                           await Navigator.push(
                               context.buildContext,
                               platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadSliverPage( discuz,user, tid))

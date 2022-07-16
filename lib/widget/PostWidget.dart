@@ -40,8 +40,9 @@ class PostWidget extends StatelessWidget{
   JumpToPidCallback? jumpToPidCallback;
   Map<String, List<Comment>>? postCommentList;
   bool? ignoreFontCustomization = false;
+  int? tid;
 
-  PostWidget(this._discuz, this._post, this._authorId, this.formhash, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback});
+  PostWidget(this._discuz, this._post, this._authorId, this.formhash, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback, this.tid});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +50,9 @@ class PostWidget extends StatelessWidget{
       onAuthorSelectedCallback: this.onAuthorSelectedCallback,
       postCommentList: this.postCommentList,
       ignoreFontCustomization: this.ignoreFontCustomization,
-      jumpToPidCallback: this.jumpToPidCallback);
+      jumpToPidCallback: this.jumpToPidCallback,
+      tid: this.tid,
+    );
   }
 
 
@@ -64,8 +67,9 @@ class PostStatefulWidget extends StatefulWidget{
   JumpToPidCallback? jumpToPidCallback;
   Map<String, List<Comment>>? postCommentList;
   bool? ignoreFontCustomization = false;
+  int? tid;
 
-  PostStatefulWidget(this._discuz, this._post, this._authorId,this.formhash, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback});
+  PostStatefulWidget(this._discuz, this._post, this._authorId,this.formhash, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback, this.tid});
 
   @override
   PostState createState() {
@@ -73,7 +77,9 @@ class PostStatefulWidget extends StatefulWidget{
         onAuthorSelectedCallback: this.onAuthorSelectedCallback,
         postCommentList: this.postCommentList,
         ignoreFontCustomization: this.ignoreFontCustomization,
-        jumpToPidCallback: this.jumpToPidCallback);
+        jumpToPidCallback: this.jumpToPidCallback,
+        tid: this.tid
+    );
   }
 
 
@@ -90,6 +96,7 @@ class PostState extends State<PostStatefulWidget> {
   Map<String, List<Comment>>? postCommentList;
   bool? ignoreFontCustomization = false;
   String formhash;
+  int? tid;
 
   bool isFontStyleIgnored(){
     if(ignoreFontCustomization == null || ignoreFontCustomization == false){
@@ -113,7 +120,7 @@ class PostState extends State<PostStatefulWidget> {
     }
   }
 
-  PostState(this._discuz, this._post, this._authorId,this.formhash, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback});
+  PostState(this._discuz, this._post, this._authorId,this.formhash, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback, this.tid});
 
   @override
   void initState() {
@@ -461,7 +468,10 @@ class PostState extends State<PostStatefulWidget> {
                 if (_post.status & POST_WARNED != 0) getPostWarnBlock(context),
 
                 // rich text rendering
-                DiscuzHtmlWidget(_discuz, _html),
+                DiscuzHtmlWidget(_discuz, _html,
+                  tid: this.tid,
+                  callback: jumpToPidCallback,
+                ),
                 if (_post.attachmentMapper.isNotEmpty)
                   ListView.builder(
                     itemBuilder: (context, index) {

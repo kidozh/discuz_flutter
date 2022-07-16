@@ -44,6 +44,7 @@ import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:provider/provider.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:share_plus/share_plus.dart';
 import 'InternalWebviewBrowserPage.dart';
 
@@ -53,11 +54,16 @@ class ViewThreadSliverPage extends StatelessWidget {
   int tid = 0;
   String? passedSubject;
 
-  ViewThreadSliverPage(this.discuz, this.user, this.tid,{this.passedSubject});
+  ViewThreadSliverPage(this.discuz, this.user, this.tid, {this.passedSubject});
 
   @override
   Widget build(BuildContext context) {
-    return ViewThreadStatefulSliverWidget(discuz, user, tid, passedSubject: passedSubject,);
+    return ViewThreadStatefulSliverWidget(
+      discuz,
+      user,
+      tid,
+      passedSubject: passedSubject,
+    );
   }
 }
 
@@ -67,11 +73,13 @@ class ViewThreadStatefulSliverWidget extends StatefulWidget {
   int tid = 0;
   String? passedSubject;
 
-  ViewThreadStatefulSliverWidget(this.discuz, this.user, this.tid,{this.passedSubject});
+  ViewThreadStatefulSliverWidget(this.discuz, this.user, this.tid,
+      {this.passedSubject});
 
   @override
   _ViewThreadSliverState createState() {
-    return _ViewThreadSliverState(this.discuz, this.user, this.tid, passedSubject: passedSubject);
+    return _ViewThreadSliverState(this.discuz, this.user, this.tid,
+        passedSubject: passedSubject);
   }
 }
 
@@ -91,7 +99,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
   bool historySaved = false;
 
-  _ViewThreadSliverState(this.discuz, this.user, this.tid,{this.passedSubject});
+  _ViewThreadSliverState(this.discuz, this.user, this.tid,
+      {this.passedSubject});
 
   late EasyRefreshController _controller;
   late ScrollController _scrollController;
@@ -99,7 +108,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   ViewThreadQuery viewThreadQuery = ViewThreadQuery();
   Map<String, List<Comment>> postCommentList = {};
   final FocusNode _focusNode = FocusNode();
-
 
   // smiley=1, extra=2 or none = 0
   int dialogStatus = 0;
@@ -157,17 +165,16 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     _loadDao();
   }
 
-  void _loadDao() async{
+  void _loadDao() async {
     FavoriteThreadDao dao = await AppDatabase.getFavoriteThreadDao();
-    setState((){
+    setState(() {
       favoriteThreadDao = dao;
     });
-
   }
 
-  void bindFocusNode(){
+  void bindFocusNode() {
     _focusNode.addListener(() {
-      if(_focusNode.hasFocus){
+      if (_focusNode.hasFocus) {
         setState(() {
           dialogStatus = SHOW_NONE_DIALOG;
         });
@@ -176,34 +183,30 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
     _scrollController.addListener(() {
       // remove focus when
-      if(_focusNode.hasFocus){
+      if (_focusNode.hasFocus) {
         _focusNode.unfocus();
       }
-      if(dialogStatus != SHOW_NONE_DIALOG){
+      if (dialogStatus != SHOW_NONE_DIALOG) {
         setState(() {
           dialogStatus = SHOW_NONE_DIALOG;
         });
       }
     });
 
-
-
     _replyController.addListener(() {
       //print("Get reply text ${_replyController.text} ${_replyController.text.isNotEmpty}");
-      if(_replyController.text.isNotEmpty){
-        if(showExtraButton.value == true){
+      if (_replyController.text.isNotEmpty) {
+        if (showExtraButton.value == true) {
           showExtraButton.value = false;
         }
-
-      }
-      else{
+      } else {
         showExtraButton.value = true;
       }
     });
   }
 
   @override
-  void dispose(){
+  void dispose() {
     _focusNode.dispose();
     _replyController.dispose();
 
@@ -215,8 +218,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   void _loadPreference() async {
     ignoreFontCustomization =
         await UserPreferencesUtils.getDisableFontCustomizationPreference();
-
-
   }
 
   void _saveViewHistory(DetailedThreadInfo threadInfo, String contents) async {
@@ -279,17 +280,16 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     // need to be filtered
     String message = PostTextFieldUtils.getPostMessage(_replyController.text);
     // check with preference
-    String signaturePreference = await UserPreferencesUtils.getSignaturePreference();
+    String signaturePreference =
+        await UserPreferencesUtils.getSignaturePreference();
     log("Recv signature ${signaturePreference}");
-    if(signaturePreference.isNotEmpty){
-      if(signaturePreference == PostTextFieldUtils.USE_DEVICE_SIGNATURE){
+    if (signaturePreference.isNotEmpty) {
+      if (signaturePreference == PostTextFieldUtils.USE_DEVICE_SIGNATURE) {
         String deviceName = await PostTextFieldUtils.getDeviceName(context);
-        if(deviceName.isNotEmpty){
+        if (deviceName.isNotEmpty) {
           message += "\n\n${S.of(context).fromDeviceSignature(deviceName)}";
         }
-
-      }
-      else{
+      } else {
         message += "\n\n${signaturePreference}";
       }
     }
@@ -325,8 +325,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
           replyPost.tid, replyPost.author, fullTimeString, trimMessage);
     }
 
-    HashMap<String,String> attachImgMap = HashMap();
-    for(var aid in insertedAidList){
+    HashMap<String, String> attachImgMap = HashMap();
+    for (var aid in insertedAidList) {
       String key = "attachnew[${aid}][description]";
       attachImgMap[key] = "${aid}";
     }
@@ -342,7 +342,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             message,
             captchaHash,
             captchaMod,
-            verification,attachImgMap)
+            verification,
+            attachImgMap)
         .then((value) {
       if (value.errorResult!.key == "post_reply_succeed") {
         EasyLoading.showSuccess(
@@ -384,54 +385,64 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   late Dio dio;
   late MobileApiClient client;
 
-  Future<void> _loadClient() async{
+  Future<void> _loadClient() async {
     User? user =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     client = MobileApiClient(dio, baseUrl: discuz.baseURL);
-
   }
 
-  void favoriteThread() async{
-    FavoriteThreadDao favoriteThreadDao = await AppDatabase.getFavoriteThreadDao();
-    favoriteThreadDao.insertFavoriteThread(
-        FavoriteThreadInDatabase(1, _viewThreadResult.threadVariables.member_uid,
-            tid,
-            "tid",
-            _viewThreadResult.threadVariables.threadInfo.authorId,
-            _viewThreadResult.threadVariables.threadInfo.subject,
-            "",
-            _viewThreadResult.threadVariables.threadInfo.author,
-            _viewThreadResult.threadVariables.threadInfo.replies,
-            DateTime.now(),
-            discuz)
-    );
-    client.favoriteThreadActionResult(_viewThreadResult.threadVariables.formHash, tid).then((value){
-      if(value.errorResult!= null && value.errorResult!.key == "do_success"){
-        EasyLoading.showSuccess(S.of(context).discuzOperationMessage(value.errorResult!.key, value.errorResult!.content));
-      }
-      else{
-        EasyLoading.showToast(S.of(context).discuzOperationMessage(value.errorResult!.key, value.errorResult!.content));
+  void favoriteThread() async {
+    FavoriteThreadDao favoriteThreadDao =
+        await AppDatabase.getFavoriteThreadDao();
+    favoriteThreadDao.insertFavoriteThread(FavoriteThreadInDatabase(
+        1,
+        _viewThreadResult.threadVariables.member_uid,
+        tid,
+        "tid",
+        _viewThreadResult.threadVariables.threadInfo.authorId,
+        _viewThreadResult.threadVariables.threadInfo.subject,
+        "",
+        _viewThreadResult.threadVariables.threadInfo.author,
+        _viewThreadResult.threadVariables.threadInfo.replies,
+        DateTime.now(),
+        discuz));
+    client
+        .favoriteThreadActionResult(
+            _viewThreadResult.threadVariables.formHash, tid)
+        .then((value) {
+      if (value.errorResult != null && value.errorResult!.key == "do_success") {
+        EasyLoading.showSuccess(S.of(context).discuzOperationMessage(
+            value.errorResult!.key, value.errorResult!.content));
+      } else {
+        EasyLoading.showToast(S.of(context).discuzOperationMessage(
+            value.errorResult!.key, value.errorResult!.content));
       }
     });
   }
 
-  void unfavoriteThread() async{
-    FavoriteThreadDao favoriteThreadDao = await AppDatabase.getFavoriteThreadDao();
-    FavoriteThreadInDatabase? favoriteThreadInDatabase = favoriteThreadDao.getFavoriteThreadByTid(tid, discuz);
-    if(favoriteThreadInDatabase!= null){
+  void unfavoriteThread() async {
+    FavoriteThreadDao favoriteThreadDao =
+        await AppDatabase.getFavoriteThreadDao();
+    FavoriteThreadInDatabase? favoriteThreadInDatabase =
+        favoriteThreadDao.getFavoriteThreadByTid(tid, discuz);
+    if (favoriteThreadInDatabase != null) {
       favoriteThreadDao.removeFavoriteThread(favoriteThreadInDatabase);
-      client.unfavoriteThreadActionResult(_viewThreadResult.threadVariables.formHash, favoriteThreadInDatabase.favid).then((value){
-        if(value.errorResult!= null && value.errorResult!.key == "do_success"){
-          EasyLoading.showSuccess(S.of(context).discuzOperationMessage(value.errorResult!.key, value.errorResult!.content));
-        }
-        else{
-          EasyLoading.showToast(S.of(context).discuzOperationMessage(value.errorResult!.key, value.errorResult!.content));
+      client
+          .unfavoriteThreadActionResult(
+              _viewThreadResult.threadVariables.formHash,
+              favoriteThreadInDatabase.favid)
+          .then((value) {
+        if (value.errorResult != null &&
+            value.errorResult!.key == "do_success") {
+          EasyLoading.showSuccess(S.of(context).discuzOperationMessage(
+              value.errorResult!.key, value.errorResult!.content));
+        } else {
+          EasyLoading.showToast(S.of(context).discuzOperationMessage(
+              value.errorResult!.key, value.errorResult!.content));
         }
       });
     }
-
-
   }
 
   FavoriteThreadDao? favoriteThreadDao;
@@ -546,14 +557,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     });
   }
 
-  void scrollToPid(int pid){
-    for(var post in _postList){
-      if(post.pid == pid){
-        
-      }
+  void scrollToPid(int pid) {
+    for (var post in _postList) {
+      if (post.pid == pid) {}
     }
   }
 
+  AutoScrollController _postAutoScrollController = AutoScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -569,38 +579,42 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             : Text(_viewThreadResult.threadVariables.threadInfo.subject,
                 overflow: TextOverflow.ellipsis),
         trailingActions: [
-          if(favoriteThreadDao != null)
-          IconButton(
-              onPressed: () async{
-                VibrationUtils.vibrateWithClickIfPossible();
-                FavoriteThreadInDatabase? favoriteThreadInDatabase = favoriteThreadDao!.getFavoriteThreadByTid(tid, discuz);
-                if(favoriteThreadInDatabase == null){
-                  favoriteThread();
-                }
-                else{
-                  unfavoriteThread();
-                }
-              },
-              icon: ValueListenableBuilder(
-                valueListenable: favoriteThreadDao!.favoriteThreadBox.listenable(),
-                builder: (BuildContext context, value, Widget? child) {
-                    FavoriteThreadInDatabase? favList = favoriteThreadDao!.getFavoriteThreadByTid(tid, discuz);
-                    if(favList == null){
-                      return Icon(PlatformIcons(context).favoriteOutline,size: 24,);
-                    }
-                    else{
-                      return Icon(PlatformIcons(context).favoriteSolid,size: 24);
-                    }
+          if (favoriteThreadDao != null)
+            IconButton(
+                onPressed: () async {
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  FavoriteThreadInDatabase? favoriteThreadInDatabase =
+                      favoriteThreadDao!.getFavoriteThreadByTid(tid, discuz);
+                  if (favoriteThreadInDatabase == null) {
+                    favoriteThread();
+                  } else {
+                    unfavoriteThread();
+                  }
                 },
-
-              )
-          ),
-
-
+                icon: ValueListenableBuilder(
+                  valueListenable:
+                      favoriteThreadDao!.favoriteThreadBox.listenable(),
+                  builder: (BuildContext context, value, Widget? child) {
+                    FavoriteThreadInDatabase? favList =
+                        favoriteThreadDao!.getFavoriteThreadByTid(tid, discuz);
+                    if (favList == null) {
+                      return Icon(
+                        PlatformIcons(context).favoriteOutline,
+                        size: 24,
+                      );
+                    } else {
+                      return Icon(PlatformIcons(context).favoriteSolid,
+                          size: 24);
+                    }
+                  },
+                )),
           IconButton(
-            icon: Icon(viewThreadQuery.timeAscend
-                ? PlatformIcons(context).upArrow
-                : PlatformIcons(context).downArrow, size: 24,),
+            icon: Icon(
+              viewThreadQuery.timeAscend
+                  ? PlatformIcons(context).upArrow
+                  : PlatformIcons(context).downArrow,
+              size: 24,
+            ),
             onPressed: () {
               VibrationUtils.vibrateWithClickIfPossible();
               viewThreadQuery.timeAscend = !viewThreadQuery.timeAscend;
@@ -608,7 +622,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             },
           ),
           PopupMenuButton(
-            icon: Icon(PlatformIcons(context).ellipsis, size: 24,),
+            icon: Icon(
+              PlatformIcons(context).ellipsis,
+              size: 24,
+            ),
             itemBuilder: (context) => [
               PopupMenuItem<int>(
                 child: Text(S.of(context).openViaInternalBrowser),
@@ -622,7 +639,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             onSelected: (int pos) {
               VibrationUtils.vibrateWithClickIfPossible();
               switch (pos) {
-                case 0:{
+                case 0:
+                  {
                     Navigator.push(
                         context,
                         platformPageRoute(
@@ -633,10 +651,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                 URLUtils.getViewThreadURL(discuz, tid))));
                     break;
                   }
-                case 1:{
-                  Share.share(URLUtils.getViewThreadURL(discuz, tid), subject: _viewThreadResult.threadVariables.threadInfo.subject);
-                  break;
-                }
+                case 1:
+                  {
+                    Share.share(URLUtils.getViewThreadURL(discuz, tid),
+                        subject: _viewThreadResult
+                            .threadVariables.threadInfo.subject);
+                    break;
+                  }
               }
             },
           )
@@ -740,25 +761,28 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             slivers: <Widget>[
               SliverList(
                   delegate: SliverChildBuilderDelegate(
-                        (context, _) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Hero(
-                          tag: ConstUtils.HERO_TAG_THREAD_SUBJECT,
-                          child: Text(
-                            _viewThreadResult.threadVariables.threadInfo.subject.isEmpty && passedSubject!=null? passedSubject!: _viewThreadResult.threadVariables.threadInfo.subject,
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-
-                            ),
-                          ),
+                (context, _) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Hero(
+                      tag: ConstUtils.HERO_TAG_THREAD_SUBJECT,
+                      child: Text(
+                        _viewThreadResult.threadVariables.threadInfo.subject
+                                    .isEmpty &&
+                                passedSubject != null
+                            ? passedSubject!
+                            : _viewThreadResult
+                                .threadVariables.threadInfo.subject,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
                         ),
-                      );
-                    },
-                    childCount: 1,
-                  )),
-
+                      ),
+                    ),
+                  );
+                },
+                childCount: 1,
+              )),
               if (_error != null)
                 SliverList(
                     delegate: SliverChildBuilderDelegate(
@@ -769,43 +793,63 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                   },
                   childCount: 1,
                 )),
-
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    return Column(
-                      children: [
-                        // insert poll here
-                        if (index == 0 &&
-                            _viewThreadResult.threadVariables.poll != null)
-                          PollWidget(
-                            _viewThreadResult.threadVariables.poll!,
-                            _viewThreadResult.threadVariables.formHash,
-                            tid,
-                            _viewThreadResult.threadVariables.fid,
-                          ),
-                        PostWidget(
-                          discuz,
-                          _postList[index],
-                          _viewThreadResult.threadVariables.threadInfo.authorId,
-                          _viewThreadResult.threadVariables.formHash,
-                          onAuthorSelectedCallback: () {
-                            if (viewThreadQuery.authorId == 0) {
-                              viewThreadQuery.authorId =
-                                  _postList[index].authorId;
-                            } else {
-                              viewThreadQuery.authorId = 0;
-                            }
-                            setNewViewThreadQuery(viewThreadQuery);
-                          },
-                          postCommentList: postCommentList,
-                          ignoreFontCustomization: ignoreFontCustomization,
-                          jumpToPidCallback: (pid){
-                            // need to find the pid and scroll to it
+                    return AutoScrollTag(
+                      key: ValueKey(index),
+                      controller: _postAutoScrollController,
+                      index: index,
+                      highlightColor:
+                          Theme.of(context).primaryColor.withOpacity(0.1),
+                      child: Column(
+                        children: [
+                          // insert poll here
+                          if (index == 0 &&
+                              _viewThreadResult.threadVariables.poll != null)
+                            PollWidget(
+                              _viewThreadResult.threadVariables.poll!,
+                              _viewThreadResult.threadVariables.formHash,
+                              tid,
+                              _viewThreadResult.threadVariables.fid,
+                            ),
 
-                          },
-                        ),
-                      ],
+                          PostWidget(
+                            discuz,
+                            _postList[index],
+                            _viewThreadResult
+                                .threadVariables.threadInfo.authorId,
+                            _viewThreadResult.threadVariables.formHash,
+                            tid: tid,
+                            onAuthorSelectedCallback: () {
+                              if (viewThreadQuery.authorId == 0) {
+                                viewThreadQuery.authorId =
+                                    _postList[index].authorId;
+                              } else {
+                                viewThreadQuery.authorId = 0;
+                              }
+                              setNewViewThreadQuery(viewThreadQuery);
+                            },
+                            postCommentList: postCommentList,
+                            ignoreFontCustomization: ignoreFontCustomization,
+                            jumpToPidCallback: (pid) {
+                              // need to find the pid and scroll to it
+                              log("jump to pid ${pid} and we are looking it");
+                              int cnt = 0;
+                              for (var post in _postList) {
+                                log("find it: ${post.pid} in ${cnt}");
+                                if (post.pid == pid) {
+                                  log("!find it: ${pid} in ${cnt}");
+                                  _postAutoScrollController.scrollToIndex(cnt);
+                                  break;
+                                }
+                                cnt += 1;
+                              }
+                              // check whether it's the end of the scroll
+                            },
+                          )
+                        ],
+                      ),
                     );
                   },
                   childCount: _postList.length,
@@ -814,7 +858,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             ],
           )),
           // comment parts
-          if(_viewThreadResult.threadVariables.threadInfo.closed)
+          if (_viewThreadResult.threadVariables.threadInfo.closed)
             Container(
               color: Theme.of(context).errorColor.withOpacity(0.1),
               child: Padding(
@@ -822,23 +866,23 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-
-                    Text(S.of(context).threadIsClosed,style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                        color: Theme.of(context).errorColor
-                    ),)
+                    Text(
+                      S.of(context).threadIsClosed,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText1
+                          ?.copyWith(color: Theme.of(context).errorColor),
+                    )
                   ],
                 ),
-
-                ),
-            )
-            ,
-          if(!_viewThreadResult.threadVariables.threadInfo.closed && _viewThreadResult.errorResult==null)
-          Consumer<DiscuzAndUserNotifier>(
-            builder: (context, discuzAndUser, child) {
-              if (discuzAndUser.user != null) {
-                return
-                  Container(
-
+              ),
+            ),
+          if (!_viewThreadResult.threadVariables.threadInfo.closed &&
+              _viewThreadResult.errorResult == null)
+            Consumer<DiscuzAndUserNotifier>(
+              builder: (context, discuzAndUser, child) {
+                if (discuzAndUser.user != null) {
+                  return Container(
                     padding: EdgeInsets.all(4.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -851,14 +895,15 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                 children: [
                                   ActionChip(
                                     label: Text(replyPost.post!.author),
-                                    avatar: Icon(
-                                        PlatformIcons(context).clearThickCircled),
+                                    avatar: Icon(PlatformIcons(context)
+                                        .clearThickCircled),
                                     onPressed: () {
-                                      VibrationUtils.vibrateWithClickIfPossible();
+                                      VibrationUtils
+                                          .vibrateWithClickIfPossible();
                                       // removing it
                                       Provider.of<ReplyPostNotifierProvider>(
-                                          context,
-                                          listen: false)
+                                              context,
+                                              listen: false)
                                           .setPost(null);
                                     },
                                   ),
@@ -868,12 +913,17 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                               left: 8.0, right: 8.0),
                                           child: Text(
                                             replyPost.post!.message
-                                                .replaceAll(RegExp(r"<img*?>"),
-                                                S.of(context).pictureTagInMessage)
                                                 .replaceAll(
-                                                RegExp(r"<div.*?>.*?</div>"),
-                                                "")
-                                                .replaceAll(RegExp(r"<.*?>"), ""),
+                                                    RegExp(r"<img*?>"),
+                                                    S
+                                                        .of(context)
+                                                        .pictureTagInMessage)
+                                                .replaceAll(
+                                                    RegExp(
+                                                        r"<div.*?>.*?</div>"),
+                                                    "")
+                                                .replaceAll(
+                                                    RegExp(r"<.*?>"), ""),
                                             style: TextStyle(fontSize: 14),
                                             overflow: TextOverflow.ellipsis,
                                           )))
@@ -890,61 +940,69 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                           children: [
                             Row(
                               children: [
-
                                 Expanded(
                                     child: Padding(
-                                        padding: EdgeInsets.all(12.0),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            //color: Colors.white,
-                                            borderRadius: BorderRadius.all(Radius.circular(4.0,)),
-                                          ),
-                                          child: PostTextField(discuz, _replyController,focusNode: _focusNode,),
-                                        ),
-                                    )),
+                                  padding: EdgeInsets.all(12.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      //color: Colors.white,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(
+                                        4.0,
+                                      )),
+                                    ),
+                                    child: PostTextField(
+                                      discuz,
+                                      _replyController,
+                                      focusNode: _focusNode,
+                                    ),
+                                  ),
+                                )),
                                 IconButton(
-
-                                  icon: dialogStatus != SHOW_SMILEY_DIALOG ?
-                                  Icon(Icons.emoji_emotions_outlined) :
-                                  Icon(Icons.keyboard_outlined),
-                                  onPressed: (){
-                                    if (dialogStatus!=SHOW_SMILEY_DIALOG) {
-                                      FocusScope.of(context).requestFocus(new FocusNode());
+                                  icon: dialogStatus != SHOW_SMILEY_DIALOG
+                                      ? Icon(Icons.emoji_emotions_outlined)
+                                      : Icon(Icons.keyboard_outlined),
+                                  onPressed: () {
+                                    if (dialogStatus != SHOW_SMILEY_DIALOG) {
+                                      FocusScope.of(context)
+                                          .requestFocus(new FocusNode());
                                       setState(() {
                                         dialogStatus = SHOW_SMILEY_DIALOG;
                                       });
                                     } else {
-                                      FocusScope.of(context).requestFocus(_focusNode);
+                                      FocusScope.of(context)
+                                          .requestFocus(_focusNode);
                                       setState(() {
                                         dialogStatus = SHOW_NONE_DIALOG;
                                       });
                                     }
                                   },
-
                                 ),
                                 ValueListenableBuilder(
                                     valueListenable: showExtraButton,
-                                    builder: (context, value, _){
-                                      if(value == false){
+                                    builder: (context, value, _) {
+                                      if (value == false) {
                                         return ProgressButton.icon(
                                             maxWidth: 60.0,
-
                                             iconedButtons: {
                                               ButtonState.idle: IconedButton(
-                                                //text: S.of(context).sendReply,
+                                                  //text: S.of(context).sendReply,
                                                   icon: Icon(Icons.send,
                                                       color: Colors.white),
-                                                  color: Theme.of(context).primaryColor),
+                                                  color: Theme.of(context)
+                                                      .primaryColor),
                                               ButtonState.loading: IconedButton(
-                                                //text: S.of(context).progressButtonReplySending,
-                                                  color: Theme.of(context).colorScheme.secondary),
+                                                  //text: S.of(context).progressButtonReplySending,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary),
                                               ButtonState.fail: IconedButton(
-                                                //text: S.of(context).progressButtonReplyFailed,
+                                                  //text: S.of(context).progressButtonReplyFailed,
                                                   icon: Icon(Icons.cancel,
                                                       color: Colors.white),
                                                   color: Colors.red.shade300),
                                               ButtonState.success: IconedButton(
-                                                //text: S.of(context).progressButtonReplySuccess,
+                                                  //text: S.of(context).progressButtonReplySuccess,
                                                   icon: Icon(
                                                     Icons.check_circle,
                                                     color: Colors.white,
@@ -952,33 +1010,39 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                                   color: Colors.green.shade400)
                                             },
                                             onPressed: () {
-                                              VibrationUtils.vibrateWithClickIfPossible();
+                                              VibrationUtils
+                                                  .vibrateWithClickIfPossible();
                                               _sendReply(context);
                                             },
                                             state: _sendReplyStatus);
-                                      }
-                                      else{
+                                      } else {
                                         //return Container();
                                         return IconButton(
-                                            icon: Icon(dialogStatus == SHOW_EXTRA_DIALOG ? Icons.close :Icons.add_circle_outline),
-                                            onPressed: (){
-                                              if (dialogStatus!=SHOW_EXTRA_DIALOG) {
-                                                FocusScope.of(context).requestFocus(new FocusNode());
-                                                setState(() {
-                                                  dialogStatus = SHOW_EXTRA_DIALOG;
-                                                });
-                                              } else {
-                                                FocusScope.of(context).requestFocus(_focusNode);
-                                                setState(() {
-                                                  dialogStatus = SHOW_NONE_DIALOG;
-                                                });
-                                              }
-                                            },
+                                          icon: Icon(
+                                              dialogStatus == SHOW_EXTRA_DIALOG
+                                                  ? Icons.close
+                                                  : Icons.add_circle_outline),
+                                          onPressed: () {
+                                            if (dialogStatus !=
+                                                SHOW_EXTRA_DIALOG) {
+                                              FocusScope.of(context)
+                                                  .requestFocus(
+                                                      new FocusNode());
+                                              setState(() {
+                                                dialogStatus =
+                                                    SHOW_EXTRA_DIALOG;
+                                              });
+                                            } else {
+                                              FocusScope.of(context)
+                                                  .requestFocus(_focusNode);
+                                              setState(() {
+                                                dialogStatus = SHOW_NONE_DIALOG;
+                                              });
+                                            }
+                                          },
                                         );
                                       }
-                                    }
-                                )
-
+                                    })
                               ],
                             ),
                             CaptchaWidget(
@@ -1001,33 +1065,49 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                               Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  ExtraFuncInThreadScreen(discuz, tid,_viewThreadResult.threadVariables.fid,
-                                    onReplyWithImage: (aid, path) async{
+                                  ExtraFuncInThreadScreen(
+                                    discuz,
+                                    tid,
+                                    _viewThreadResult.threadVariables.fid,
+                                    onReplyWithImage: (aid, path) async {
                                       // fill with text first
                                       // refresh the layout
                                       // insertedAidList.clear();
-                                      if(aid.isNotEmpty){
-                                        _replyController.text = _replyController.text + "[attachimg]${aid}[/attachimg]";
+                                      if (aid.isNotEmpty) {
+                                        _replyController.text =
+                                            _replyController.text +
+                                                "[attachimg]${aid}[/attachimg]";
                                         // add aid to list
                                         insertedAidList.add(aid);
                                         // add to historical attachment
-                                        bool savedInDatabase = await UserPreferencesUtils.getRecordHistoryEnabled();
-                                        if(savedInDatabase){
+                                        bool savedInDatabase =
+                                            await UserPreferencesUtils
+                                                .getRecordHistoryEnabled();
+                                        if (savedInDatabase) {
                                           // save it to database
-                                          ImageAttachmentDao imageAttachmentDao = await AppDatabase.getImageAttachmentDao();
-                                          ImageAttachment? imageAttachment = imageAttachmentDao.findImageAttachmentByDiscuzAndAid(discuz, aid);
-                                          if(imageAttachment!= null){
-                                            imageAttachment.updateAt = DateTime.now();
-                                            imageAttachmentDao.insertImageAttachmentWithKey(imageAttachment.key, imageAttachment);
-                                          }
-                                          else{
-                                            imageAttachmentDao.insertImageAttachment(ImageAttachment(aid, discuz, path));
+                                          ImageAttachmentDao
+                                              imageAttachmentDao =
+                                              await AppDatabase
+                                                  .getImageAttachmentDao();
+                                          ImageAttachment? imageAttachment =
+                                              imageAttachmentDao
+                                                  .findImageAttachmentByDiscuzAndAid(
+                                                      discuz, aid);
+                                          if (imageAttachment != null) {
+                                            imageAttachment.updateAt =
+                                                DateTime.now();
+                                            imageAttachmentDao
+                                                .insertImageAttachmentWithKey(
+                                                    imageAttachment.key,
+                                                    imageAttachment);
+                                          } else {
+                                            imageAttachmentDao
+                                                .insertImageAttachment(
+                                                    ImageAttachment(
+                                                        aid, discuz, path));
                                           }
                                         }
-                                      }
-                                      else{
-
-                                      }
+                                      } else {}
                                     },
                                   ),
                                 ],
@@ -1037,20 +1117,18 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                       ],
                     ),
                   );
-              } else {
-                return Container(
-                  width: 0,
-                  height: 0,
-                );
-              }
-            },
-          )
+                } else {
+                  return Container(
+                    width: 0,
+                    height: 0,
+                  );
+                }
+              },
+            )
         ],
       ),
     );
   }
-
-
 
   void insertSmiley(Smiley smiley) {
     print("Smiley is pressed ${smiley.code} ${smiley.relativePath}");

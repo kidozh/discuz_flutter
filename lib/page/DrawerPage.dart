@@ -6,6 +6,7 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/FavoriteThreadPage.dart';
+import 'package:discuz_flutter/page/ShortcutPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
@@ -154,6 +155,23 @@ class DrawerState extends State<DrawerStatefulWidget>{
                   platformPageRoute(
                       context: context,
                       builder: (context) => FavoriteForumPage()));
+            }
+
+          },
+        ),
+        ListTile(
+          title: Text(S.of(context).shortcut),
+          leading: Icon(AppPlatformIcons(context).shortcutSolid),
+          onTap: () async {
+            Discuz? discuz =
+                Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+            if(discuz != null){
+              VibrationUtils.vibrateWithClickIfPossible();
+              await Navigator.push(
+                  context,
+                  platformPageRoute(
+                      context: context,
+                      builder: (context) => ShortcutPage()));
             }
 
           },

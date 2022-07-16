@@ -57,7 +57,6 @@ class DisplayForumSliverStatefulWidget extends StatefulWidget {
 
   @override
   _DisplayForumSliverState createState() {
-    // TODO: implement createState
     return _DisplayForumSliverState(this.discuz, this.user, this.fid);
   }
 }
@@ -281,6 +280,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
       if (value.getErrorString() != null) {
         EasyLoading.showError(value.getErrorString()!);
+
       }
 
       if (value.errorResult != null) {

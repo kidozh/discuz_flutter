@@ -146,9 +146,9 @@ class _AddDiscuzFormFieldState
                 if (error.isNotEmpty)
                   Column(
                     children: [
-                      ErrorCard("发生错误", error,(){
+                      ErrorCard(error.hashCode.toString(), error,(){
                         _checkApiAvailable();
-                      }),
+                      }, largeSize: false,),
                     ],
                   ),
                 SizedBox(height: 32.0,),

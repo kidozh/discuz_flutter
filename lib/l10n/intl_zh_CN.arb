@@ -571,5 +571,10 @@
   "uploadTokenSuccessful": "您的设备令牌已经成功传入到论坛中。",
   "uploadTokenUnsuccessful": "无法添加您的设备到论坛推送系统中。",
   "siteDoesNotSupportPushService": "该论坛未开启推送插件。",
-  "pushChannelAPNs": "Apple推送通知服务"
+  "pushChannelAPNs": "Apple推送通知服务",
+  "shortcut": "快速跳转",
+  "shortcutGo": "跳转",
+  "shortcutFidHint": "输入板块编号 (fid)",
+  "shortcutTidHint": "输入帖子编号 (tid)",
+  "shortcutUidHint": "输入用户编号 (uid)"
 }

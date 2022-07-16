@@ -3730,6 +3730,56 @@ class S {
       args: [],
     );
   }
+
+  /// `Shortcut`
+  String get shortcut {
+    return Intl.message(
+      'Shortcut',
+      name: 'shortcut',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Go`
+  String get shortcutGo {
+    return Intl.message(
+      'Go',
+      name: 'shortcutGo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Input forum id (fid)`
+  String get shortcutFidHint {
+    return Intl.message(
+      'Input forum id (fid)',
+      name: 'shortcutFidHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Input thread id (tid)`
+  String get shortcutTidHint {
+    return Intl.message(
+      'Input thread id (tid)',
+      name: 'shortcutTidHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Input user id (uid)`
+  String get shortcutUidHint {
+    return Intl.message(
+      'Input user id (uid)',
+      name: 'shortcutUidHint',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
