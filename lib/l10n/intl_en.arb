@@ -575,5 +575,12 @@
   "shortcutGo": "Go",
   "shortcutFidHint": "Input forum id (fid)",
   "shortcutTidHint": "Input thread id (tid)",
-  "shortcutUidHint": "Input user id (uid)"
+  "shortcutUidHint": "Input user id (uid)",
+  "buildVersionDescription": "Build ver. {version}, num {number}",
+  "@buildVersionDescription": {
+    "placeholders": {
+      "version": {},
+      "number": {}
+    }
+  }
 }

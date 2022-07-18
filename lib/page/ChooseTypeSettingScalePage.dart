@@ -1,7 +1,8 @@
+import 'dart:math';
+
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
-import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -10,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
-import 'dart:math';
 
 class ChooseTypeSettingScalePage extends StatefulWidget {
   @override
@@ -91,6 +91,7 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
                       ? Text(S.of(context).disableFontCustomizationTitle)
                       : null,
                   leading: Icon(PlatformIcons(context).edit),
+                  activeSwitchColor: Theme.of(context).primaryColor,
                   //switchValue: ignoreCustomFontStyle,
                   onToggle: (bool value) {
                     VibrationUtils.vibrateWithSwitchIfPossible();

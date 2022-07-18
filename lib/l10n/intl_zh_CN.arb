@@ -576,5 +576,12 @@
   "shortcutGo": "跳转",
   "shortcutFidHint": "输入板块编号 (fid)",
   "shortcutTidHint": "输入帖子编号 (tid)",
-  "shortcutUidHint": "输入用户编号 (uid)"
+  "shortcutUidHint": "输入用户编号 (uid)",
+  "buildVersionDescription": "应用版本v{version}，序列{number}",
+  "@buildVersionDescription": {
+    "placeholders": {
+      "version": {},
+      "number": {}
+    }
+  }
 }

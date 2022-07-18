@@ -1,10 +1,14 @@
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
+import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/LoginByWebviewPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
@@ -15,9 +19,6 @@ import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:dio/dio.dart';
-import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:discuz_flutter/entity/User.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
@@ -204,139 +205,141 @@ class _LoginFormFieldState
         padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal: 8.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // title and page
-              Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 16.0),
-                  child: Center(
-                    child: CachedNetworkImage(
-                      imageUrl: discuz.getDiscuzAvatarURL(),
-                      progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-                      errorWidget: (context, url, error) => ListTile(
-                        title: Text(discuz.siteName),
-                        subtitle: Text(discuz.baseURL),
-                        leading: CircleAvatar(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          child: Text(
-                            discuz.siteName.length != 0
-                                ? discuz.siteName[0].toUpperCase()
-                                : S.of(context).anonymous,
-                            style: TextStyle(color: Colors.white,fontSize: 18),
-                          ),
-                        ),
-                      )
-                    )
-                  )),
-              // input fields
-              new TextFormField(
-                autofillHints: [AutofillHints.username],
-                controller: _accountController,
-                decoration: new InputDecoration(
+          child: AutofillGroup(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // title and page
+                Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 16.0),
+                    child: Center(
+                        child: CachedNetworkImage(
+                            imageUrl: discuz.getDiscuzAvatarURL(),
+                            progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+                            errorWidget: (context, url, error) => ListTile(
+                              title: Text(discuz.siteName),
+                              subtitle: Text(discuz.baseURL),
+                              leading: CircleAvatar(
+                                backgroundColor: Theme.of(context).primaryColor,
+                                child: Text(
+                                  discuz.siteName.length != 0
+                                      ? discuz.siteName[0].toUpperCase()
+                                      : S.of(context).anonymous,
+                                  style: TextStyle(color: Colors.white,fontSize: 18),
+                                ),
+                              ),
+                            )
+                        )
+                    )),
+                // input fields
+                new TextFormField(
+                    autofillHints: [AutofillHints.username],
+                    controller: _accountController,
+                    decoration: new InputDecoration(
 
-                  labelText: S.of(context).account,
-                  hintText: S.of(context).account,
-                  prefixIcon: Icon(Icons.account_circle),
+                      labelText: S.of(context).account,
+                      hintText: S.of(context).account,
+                      prefixIcon: Icon(Icons.account_circle),
+                    ),
+                    validator: ValidationBuilder().required().build()
                 ),
-                validator: ValidationBuilder().required().build()
-              ),
-              new TextFormField(
-                autofillHints: [AutofillHints.password],
-                controller: _passwdController,
-                decoration: new InputDecoration(
+                new TextFormField(
+                    autofillHints: [AutofillHints.password],
+                    controller: _passwdController,
+                    decoration: new InputDecoration(
 
-                  labelText: S.of(context).password,
-                  prefixIcon: Icon(Icons.vpn_key),
+                      labelText: S.of(context).password,
+                      prefixIcon: Icon(Icons.vpn_key),
+                    ),
+                    obscureText: true,
+                    validator: ValidationBuilder().required().build()
                 ),
-                obscureText: true,
-                validator: ValidationBuilder().required().build()
-              ),
-              CaptchaWidget(_dio, discuz, null, "login",captchaController: _captchaController,),
-              if (error.isNotEmpty)
-                Column(
-                  children: [
-                    ErrorCard(S.of(context).error, error,(){
-                      _verifyAccountAndPassword();
-                    },
-                    largeSize: false,),
-                  ],
-                ),
-
-              Center(
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 4.0),
-                  width: double.infinity,
-                  child: Column(
+                CaptchaWidget(_dio, discuz, null, "login",captchaController: _captchaController,),
+                if (error.isNotEmpty)
+                  Column(
                     children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: ProgressButton.icon(
-                            maxWidth: 230.0,
-                            iconedButtons: {
-                              ButtonState.idle:
-                              IconedButton(
-                                  text: S.of(context).loginTitle,
-                                  icon: Icon(Icons.login,color: Colors.white),
-                                  color: Theme.of(context).accentColor),
-                              ButtonState.loading:
-                              IconedButton(
-                                  text: S.of(context).progressButtonLogining,
-                                  color: Colors.blue.shade300),
-                              ButtonState.fail:
-                              IconedButton(
-                                  text: S.of(context).progressButtonLoginFailed,
-                                  icon: Icon(Icons.cancel,color: Colors.white),
-                                  color: Colors.red.shade300),
-                              ButtonState.success:
-                              IconedButton(
-                                  text: S.of(context).progressButtonLoginSuccess,
-                                  icon: Icon(Icons.check_circle,color: Colors.white,),
-                                  color: Colors.green.shade400)
-                            },
-                            onPressed: (){
-                              VibrationUtils.vibrateWithClickIfPossible();
-                              _verifyAccountAndPassword();
-                            },
-                            state: _loginState
-                        ),
-                      ),
-                      // Row(
-                      //     children: <Widget>[
-                      //       Expanded(
-                      //           child: Divider()
-                      //       ),
-                      //
-                      //       Text(S.of(context).or,style: Theme.of(context).textTheme.bodyText2),
-                      //
-                      //       Expanded(
-                      //           child: Divider()
-                      //       ),
-                      //     ]
-                      // ),
-                      // Container(
-                      //   padding: EdgeInsets.symmetric(vertical: 8,horizontal: 0),
-                      // ),
-                      SizedBox(height: 12,),
-                      if(!Platform.isIOS)
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton.icon(
-                          icon: Icon(Icons.open_in_browser),
-                          label: Text(S.of(context).signInViaBrowser),
-                            onPressed: (){
-                              VibrationUtils.vibrateWithClickIfPossible();
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) => LoginByWebviewPage(discuz)));
-                            }, ),
-                      ),
-
+                      ErrorCard(S.of(context).error, error,(){
+                        _verifyAccountAndPassword();
+                      },
+                        largeSize: false,),
                     ],
                   ),
-                ),
-              ),
 
-            ],
+                Center(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 4.0),
+                    width: double.infinity,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: ProgressButton.icon(
+                              maxWidth: 230.0,
+                              iconedButtons: {
+                                ButtonState.idle:
+                                IconedButton(
+                                    text: S.of(context).loginTitle,
+                                    icon: Icon(Icons.login,color: Theme.of(context).primaryTextTheme.headline1?.color),
+                                    color: Theme.of(context).primaryColor),
+                                ButtonState.loading:
+                                IconedButton(
+                                    text: S.of(context).progressButtonLogining,
+                                    color: Colors.blue.shade300),
+                                ButtonState.fail:
+                                IconedButton(
+                                    text: S.of(context).progressButtonLoginFailed,
+                                    icon: Icon(Icons.cancel,color: Colors.white),
+                                    color: Colors.red.shade300),
+                                ButtonState.success:
+                                IconedButton(
+                                    text: S.of(context).progressButtonLoginSuccess,
+                                    icon: Icon(Icons.check_circle,color: Colors.white,),
+                                    color: Colors.green.shade400)
+                              },
+                              onPressed: (){
+                                VibrationUtils.vibrateWithClickIfPossible();
+                                _verifyAccountAndPassword();
+                              },
+                              state: _loginState
+                          ),
+                        ),
+                        // Row(
+                        //     children: <Widget>[
+                        //       Expanded(
+                        //           child: Divider()
+                        //       ),
+                        //
+                        //       Text(S.of(context).or,style: Theme.of(context).textTheme.bodyText2),
+                        //
+                        //       Expanded(
+                        //           child: Divider()
+                        //       ),
+                        //     ]
+                        // ),
+                        // Container(
+                        //   padding: EdgeInsets.symmetric(vertical: 8,horizontal: 0),
+                        // ),
+                        SizedBox(height: 12,),
+                        if(!Platform.isIOS)
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              icon: Icon(Icons.open_in_browser),
+                              label: Text(S.of(context).signInViaBrowser),
+                              onPressed: (){
+                                VibrationUtils.vibrateWithClickIfPossible();
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) => LoginByWebviewPage(discuz)));
+                              }, ),
+                          ),
+
+                      ],
+                    ),
+                  ),
+                ),
+
+              ],
+            ),
           ),
         ));
   }

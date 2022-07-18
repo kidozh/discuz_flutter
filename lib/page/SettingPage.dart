@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/ChooseInterfaceBrightnessPage.dart';
 import 'package:discuz_flutter/page/ChoosePlatformPage.dart';
@@ -11,6 +13,7 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -32,11 +35,24 @@ class _SettingPageState extends State<SettingPage> {
 
   bool useMaterial3 = true;
 
+  String packageVersion = "";
+  String packageBuildNumber = "";
+
+  _loadPackageInfo() async{
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState((){
+      packageVersion = packageInfo.version;
+      packageBuildNumber = packageInfo.buildNumber;
+    });
+
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getPreference();
+    _loadPackageInfo();
   }
 
   void getPreference() async {
@@ -241,7 +257,7 @@ class _SettingPageState extends State<SettingPage> {
                     ),
                   ),
                   Text(
-                    S.of(context).buildDescription,
+                    S.of(context).buildVersionDescription(packageVersion, packageBuildNumber),
                     style: TextStyle(color: Color(0xFF777777)),
                   ),
                 ],
@@ -257,5 +273,5 @@ class _SettingPageState extends State<SettingPage> {
   double paragraphFontSize = 12.0;
 
   void _launchURL(String url) async =>
-      await canLaunchUrl(Uri.parse(url)) ? await launchUrl(Uri.parse(url)) : throw 'Could not launch $url';
+      await canLaunchUrl(Uri.parse(url)) ? await launchUrl(Uri.parse(url), mode: Platform.isIOS? LaunchMode.inAppWebView: LaunchMode.externalApplication) : throw 'Could not launch $url';
 }

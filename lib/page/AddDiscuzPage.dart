@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/CheckResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
+import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/GlobalTheme.dart';
@@ -12,8 +14,6 @@ import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:dio/dio.dart';
-import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:provider/provider.dart';
 
@@ -109,7 +109,7 @@ class _AddDiscuzFormFieldState
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: const EdgeInsets.all(4.0),
+        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 32),
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,

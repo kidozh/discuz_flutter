@@ -1,6 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -3778,6 +3779,16 @@ class S {
       name: 'shortcutUidHint',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Build ver. {version}, num {number}`
+  String buildVersionDescription(Object version, Object number) {
+    return Intl.message(
+      'Build ver. $version, num $number',
+      name: 'buildVersionDescription',
+      desc: '',
+      args: [version, number],
     );
   }
 }

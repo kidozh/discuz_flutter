@@ -2,7 +2,6 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:discuz_flutter/generated/intl/messages_en.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -243,6 +242,6 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
   }
 
   void _launchURL(String url) async => await canLaunchUrl(Uri.parse(url))
-      ? await launchUrl(Uri.parse(url))
+      ? await launchUrl(Uri.parse(url), mode: Platform.isIOS? LaunchMode.inAppWebView: LaunchMode.externalApplication)
       : throw 'Could not launch $url';
 }

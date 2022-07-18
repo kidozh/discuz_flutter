@@ -193,14 +193,14 @@ class DiscuzHtmlWidget extends StatelessWidget{
                                 String host = uri.host;
                                 await _trustHost(host);
 
-                                launchUrl(Uri.parse(urlString!));
+                                launchUrl(Uri.parse(urlString!), mode: Platform.isIOS? LaunchMode.inAppWebView: LaunchMode.externalApplication);
                                 Navigator.pop(context);
                               },
                               child: Text(S.of(context).trustHostActionText)
                           ),
                           TextButton(
                               onPressed: (){
-                                launchUrl(Uri.parse(urlString!));
+                                launchUrl(Uri.parse(urlString!), mode: Platform.isIOS? LaunchMode.inAppWebView: LaunchMode.externalApplication);
                                 Navigator.pop(context);
                               },
                               child: Text(S.of(context).openInBrowser)
@@ -214,7 +214,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                   }
                   else{
                     // direct open it
-                    launchUrl(Uri.parse(urlString));
+                    launchUrl(Uri.parse(urlString), mode: Platform.isIOS? LaunchMode.inAppWebView: LaunchMode.externalApplication);
                   }
                   return ;
                 }
@@ -337,7 +337,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 }
 
 
-                await launchUrl(Uri.parse(urlString));;
+                await launchUrl(Uri.parse(urlString), mode: Platform.isIOS? LaunchMode.inAppWebView: LaunchMode.externalApplication);
               }
               else{
                 // show the link
