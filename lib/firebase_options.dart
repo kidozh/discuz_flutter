@@ -63,12 +63,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDsnefPA_sGbr6jqwCPbEWtzeylHtGILsU',
-    appId: '1:7909980581:ios:3533283933f3b4f9c5904c',
+    appId: '1:7909980581:ios:6fac45e29c2feadac5904c',
     messagingSenderId: '7909980581',
     projectId: 'discuz-hub',
     storageBucket: 'discuz-hub.appspot.com',
-    iosClientId: '7909980581-qibjv0bedppchiou9pbloarivckc9d4v.apps.googleusercontent.com',
-    iosBundleId: 'com.kidozh.discuz-flutter',
+    iosClientId: '7909980581-aokp9v3v08vcj3p5cpqhre4teulcg2cb.apps.googleusercontent.com',
+    iosBundleId: 'com.kidozh.discu',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
