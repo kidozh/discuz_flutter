@@ -14,6 +14,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_apns/apns.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -53,11 +54,11 @@ void main() async{
   FirebaseMessaging.onBackgroundMessage(PushServiceUtils.firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen((event) => PushServiceUtils.firebaseMessagingBackgroundHandler(event));
   if(Platform.isIOS){
-    // final connector = createPushConnector();
-    // connector.configure(
-    //   onBackgroundMessage: PushServiceUtils.firebaseMessagingBackgroundHandler,
-    //   onMessage: PushServiceUtils.firebaseMessagingBackgroundHandler
-    // );
+    final connector = createPushConnector();
+    connector.configure(
+      onBackgroundMessage: PushServiceUtils.firebaseMessagingBackgroundHandler,
+      onMessage: PushServiceUtils.firebaseMessagingBackgroundHandler
+    );
   }
 
 
