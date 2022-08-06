@@ -79,12 +79,12 @@ dependencies:
   hive_flutter: any
   device_info_plus: ^3.2.3
   share_plus: ^4.0.4
-  firebase_messaging: ^11.4.1
+  firebase_messaging: ^11.2.5
   firebase_core: ^1.17.1
   font_awesome_flutter: ^10.1.0
   firebase_analytics: ^9.1.9
   flutter_local_notifications: ^9.6.0
-  # flutter_apns: ^1.5.4
+  flutter_apns: ^1.5.4
   scroll_to_index: any
   firebase_core_platform_interface: ^4.4.1
   easy_refresh: ^3.0.2+2
