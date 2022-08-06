@@ -21,15 +21,14 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumPartitionWidget.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 
-import 'EmptyScreen.dart';
+import '../utility/EasyRefreshUtils.dart';
 
 class DiscuzPortalScreen extends StatelessWidget {
 
@@ -91,7 +90,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller = EasyRefreshController();
+    _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
     _scrollController = ScrollController();
     _loadFavoriteForum();
   }
@@ -129,11 +128,11 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
         EasyLoading.showError(value.getErrorString()!);
       }
       if (!_enableControlFinish) {
-        _controller.resetLoadState();
+        //_controller.resetLoadState();
         _controller.finishRefresh();
       }
       if (!_enableControlFinish) {
-        _controller.finishLoad(noMore: true);
+        _controller.finishLoad(IndicatorResult.noMore);
       }
 
       // check with user
@@ -145,28 +144,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       }
 
     }).catchError((onError) {
-
-      // VibrationUtils.vibrateErrorIfPossible();
-      // if (!_enableControlFinish) {
-      //   _controller.resetLoadState();
-      //   try{
-      //     _controller.finishRefresh();
-      //   }
-      //   catch (e){
-      //
-      //   }
-      //
-      // }
-      // try{
-      //   setState(() {
-      //     _error =
-      //         DiscuzError(onError.runtimeType.toString(), onError.toString());
-      //   });
-      // }
-      // catch (e){
-      //
-      // }
-
+      _controller.finishLoad(IndicatorResult.fail);
     });
   }
 
@@ -174,7 +152,6 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
 
     return Consumer<DiscuzAndUserNotifier>(builder: (context,discuzAndUser, child){
       if(discuzAndUser.discuz == null){
@@ -198,122 +175,58 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
   }
 
   Widget getEasyRefreshWidget(Discuz discuz, User? user){
-    return EasyRefresh.custom(
+    return EasyRefresh(
 
-      enableControlFinishRefresh: true,
-      enableControlFinishLoad: true,
-      taskIndependence: _taskIndependence,
+      header: EasyRefreshUtils.i18nClassicHeader(context),
+      footer: EasyRefreshUtils.i18nClassicFooter(context),
+      refreshOnStart: true,
       controller: _controller,
-      scrollController: _scrollController,
-      reverse: _reverse,
-      scrollDirection: _direction,
-      topBouncing: _topBouncing,
-      bottomBouncing: _bottomBouncing,
-      emptyWidget: result == null? EmptyScreen(): null,
-      header: _enableRefresh? ClassicalHeader(
-        enableInfiniteRefresh: false,
-        bgColor:
-        _headerFloat ? Theme.of(context).primaryColor : Colors.transparent,
-        // infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
-        textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
-        float: _headerFloat,
-        enableHapticFeedback: _vibration,
-        refreshText: S.of(context).pullToRefresh,
-        refreshReadyText: S.of(context).releaseToRefresh,
-        refreshingText: S.of(context).refreshing,
-        refreshedText: S.of(context).refreshed,
-        refreshFailedText: S.of(context).refreshFailed,
-        noMoreText: S.of(context).noMore,
-        infoText: S.of(context).updateAt,
-      )
-          : null,
-      footer: _enableLoad
-          ? ClassicalFooter(
-        textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
-        enableInfiniteLoad: _enableInfiniteLoad,
-        enableHapticFeedback: _vibration,
-        loadText: S.of(context).pushToLoad,
-        loadReadyText: S.of(context).releaseToLoad,
-        loadingText: S.of(context).loading,
-        loadedText: S.of(context).loaded,
-        loadFailedText: S.of(context).loadFailed,
-        noMoreText: S.of(context).noMore,
-        infoText: S.of(context).updateAt,
-      )
-          : null,
+
       onRefresh: _enableRefresh
           ? () async {
         _loadPortalContent(discuz);
         if (!_enableControlFinish) {
-          _controller.resetLoadState();
+          //_controller.resetLoadState();
           _controller.finishRefresh();
         }
 
       } : null,
-      firstRefresh: true,
-      firstRefreshWidget: Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: Center(
-            child: SizedBox(
-              height: 200.0,
-              width: 300.0,
-              child: Card(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      width: 50.0,
-                      height: 50.0,
-                      child: SpinKitFadingCube(
-                        color: Theme.of(context).primaryColor,
-                        size: 25.0,
-                      ),
-                    ),
-                    Container(
-                      child: Text(S.of(context).loading),
+      child: CustomScrollView(
+        slivers: [if(favoriteForumDao != null)
+          ValueListenableBuilder(
+              valueListenable: favoriteForumDao!.favoriteForumBox.listenable(),
+              builder: (BuildContext context, value, Widget? child) {
+                List<
+                    FavoriteForumInDatabase> favoriteForumInDbList = favoriteForumDao!
+                    .getFavoriteForumList(discuz);
+                return SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      return FavoriteForumCardWidget(
+                          discuz, user, favoriteForumInDbList[index]);
+                    },
+                        childCount: favoriteForumInDbList.length
                     )
-                  ],
-                ),
-              ),
-            )),
-      ),
-      slivers: <Widget>[
-        if(favoriteForumDao != null)
-        ValueListenableBuilder(
-          valueListenable: favoriteForumDao!.favoriteForumBox.listenable(),
-          builder: (BuildContext context, value, Widget? child) {
-            List<
-                FavoriteForumInDatabase> favoriteForumInDbList = favoriteForumDao!
-                .getFavoriteForumList(discuz);
-            return SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  return FavoriteForumCardWidget(
-                      discuz, user, favoriteForumInDbList[index]);
-                },
-                    childCount: favoriteForumInDbList.length
-                )
-            );
-          }
-        ),
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-                (context, index) {
-              List<ForumPartition> forumPartitionList =
-                  result!.discuzIndexVariables.forumPartitionList;
-              List<Forum> _allForumList =
-                  result!.discuzIndexVariables.forumList;
-              ForumPartition forumPartition = forumPartitionList[index];
-              //log("Forum partition length ${result!.discuzIndexVariables.forumPartitionList.length} all ${_allForumList.length}" );
-              return ForumPartitionWidget(discuz,user,forumPartition, _allForumList);
-            },
-            childCount: result == null
-                ? 0
-                : result!.discuzIndexVariables.forumPartitionList.length,
+                );
+              }
           ),
-        ),
-      ],
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                List<ForumPartition> forumPartitionList =
+                    result!.discuzIndexVariables.forumPartitionList;
+                List<Forum> _allForumList =
+                    result!.discuzIndexVariables.forumList;
+                ForumPartition forumPartition = forumPartitionList[index];
+                //log("Forum partition length ${result!.discuzIndexVariables.forumPartitionList.length} all ${_allForumList.length}" );
+                return ForumPartitionWidget(discuz,user,forumPartition, _allForumList);
+              },
+              childCount: result == null
+                  ? 0
+                  : result!.discuzIndexVariables.forumPartitionList.length,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

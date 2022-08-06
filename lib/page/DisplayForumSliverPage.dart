@@ -1,18 +1,19 @@
 import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/dao/FavoriteForumDao.dart';
-import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
+import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
+import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/InternalWebviewBrowserPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/screen/EmptyScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -20,19 +21,17 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:dio/dio.dart';
-import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+
+import '../utility/EasyRefreshUtils.dart';
 
 class DisplayForumSliverPage extends StatelessWidget {
   late final Discuz discuz;
@@ -117,7 +116,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   @override
   void initState() {
     super.initState();
-    _controller = EasyRefreshController();
+    _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
     _scrollController = ScrollController();
     _loadClient();
     _loadFavoriteDao();
@@ -268,14 +267,17 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       _page += 1;
 
       if (!_enableControlFinish) {
-        _controller.resetLoadState();
+        //_controller.resetLoadState();
+
         _controller.finishRefresh();
       }
       // check for loaded all?
       if (!_enableControlFinish) {
         _controller.finishLoad(
-            noMore: _forumThreadList.length >=
-                value.discuzIndexVariables.forum.getThreadCount());
+            _forumThreadList.length >= value.discuzIndexVariables.forum.getThreadCount()?
+        IndicatorResult.noMore:
+        IndicatorResult.success);
+
       }
 
       if (value.getErrorString() != null) {
@@ -308,7 +310,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       //log(onError);
       EasyLoading.showError('${onError}');
       if (!_enableControlFinish) {
-        _controller.resetLoadState();
+        //_controller.resetLoadState();
         _controller.finishRefresh();
       }
       switch (onError.runtimeType) {
@@ -417,59 +419,17 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
             ? Text(S.of(context).forumDisplayTitle,overflow: TextOverflow.ellipsis)
             : Text(_displayForumResult.discuzIndexVariables.forum.name,overflow: TextOverflow.ellipsis),
       ),
-      body: EasyRefresh.custom(
-        enableControlFinishRefresh: true,
-        enableControlFinishLoad: true,
-        taskIndependence: _taskIndependence,
+      body: EasyRefresh(
+
         controller: _controller,
-        scrollController: _scrollController,
-        reverse: _reverse,
-        scrollDirection: _direction,
-        topBouncing: _topBouncing,
-        bottomBouncing: _bottomBouncing,
-        emptyWidget: _forumThreadList.length == 0 ? EmptyScreen() : null,
-        header: _enableRefresh
-            ? ClassicalHeader(
-                enableInfiniteRefresh: false,
-                bgColor: _headerFloat
-                    ? Theme.of(context).primaryColor
-                    : Colors.transparent,
-                // infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
-                textColor: Theme.of(context).textTheme.headline1!.color == null
-                    ? Theme.of(context).primaryColorDark
-                    : Theme.of(context).textTheme.headline1!.color!,
-                float: _headerFloat,
-                enableHapticFeedback: _vibration,
-                refreshText: S.of(context).pullToRefresh,
-                refreshReadyText: S.of(context).releaseToRefresh,
-                refreshingText: S.of(context).refreshing,
-                refreshedText: S.of(context).refreshed,
-                refreshFailedText: S.of(context).refreshFailed,
-                noMoreText: S.of(context).noMore,
-                infoText: S.of(context).updateAt,
-              )
-            : null,
-        footer: _enableLoad
-            ? ClassicalFooter(
-                enableInfiniteLoad: _enableInfiniteLoad,
-                textColor: Theme.of(context).textTheme.headline1!.color == null
-                    ? Theme.of(context).primaryColorDark
-                    : Theme.of(context).textTheme.headline1!.color!,
-                enableHapticFeedback: _vibration,
-                loadText: S.of(context).pushToLoad,
-                loadReadyText: S.of(context).releaseToLoad,
-                loadingText: S.of(context).loading,
-                loadedText: S.of(context).loaded,
-                loadFailedText: S.of(context).loadFailed,
-                noMoreText: S.of(context).noMore,
-                infoText: S.of(context).updateAt,
-              )
-            : null,
+        header: EasyRefreshUtils.i18nClassicHeader(context),
+        footer: EasyRefreshUtils.i18nClassicFooter(context),
+        refreshOnStart: true,
         onRefresh: _enableRefresh
             ? () async {
                 _invalidateContent();
                 if (!_enableControlFinish) {
-                  _controller.resetLoadState();
+                  // _controller.resetLoadState();
                   _controller.finishRefresh();
                 }
               }
@@ -479,50 +439,22 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 _loadForumContent();
               }
             : null,
-        firstRefresh: true,
-        firstRefreshWidget: Container(
-          width: double.infinity,
-          height: double.infinity,
-          child: Center(
-              child: SizedBox(
-            height: 200.0,
-            width: 300.0,
-            child: Card(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    width: 50.0,
-                    height: 50.0,
-                    child: SpinKitFadingCube(
-                      color: Theme.of(context).primaryColor,
-                      size: 25.0,
-                    ),
-                  ),
-                  Container(
-                    child: Text(S.of(context).loading),
-                  )
-                ],
-              ),
-            ),
-          )),
-        ),
-        slivers: <Widget>[
-          if (_error != null)
-            SliverList(
-                delegate: SliverChildBuilderDelegate(
-              (context, _) {
-                return ErrorCard(_error!.key, _error!.content, () {
-                  _controller.callRefresh();
-                });
-              },
-              childCount: 1,
-            )),
-          // check with sub forum
-          if(_displayForumResult!= null && _displayForumResult.discuzIndexVariables.subForumList.isNotEmpty)
-            SliverList(delegate: SliverChildBuilderDelegate(
-                (context, index){
+        child: CustomScrollView(
+          slivers: <Widget>[
+            if (_error != null)
+              SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                        (context, _) {
+                      return ErrorCard(_error!.key, _error!.content, () {
+                        _controller.callRefresh();
+                      });
+                    },
+                    childCount: 1,
+                  )),
+            // check with sub forum
+            if(_displayForumResult!= null && _displayForumResult.discuzIndexVariables.subForumList.isNotEmpty)
+              SliverList(delegate: SliverChildBuilderDelegate(
+                      (context, index){
                     var subForum = _displayForumResult.discuzIndexVariables.subForumList[index];
                     return Card(
                       color: Theme.of(context).primaryColor,
@@ -539,25 +471,28 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                         },
                       ),
                     );
-                },
-                childCount: _displayForumResult.discuzIndexVariables.subForumList.length
+                  },
+                  childCount: _displayForumResult.discuzIndexVariables.subForumList.length
               )
+              ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                  log("${_forumThreadList[index].subject} ${_forumThreadList}");
+                  return Column(
+                    children: [
+                      ForumThreadWidget(discuz, user, _forumThreadList[index],
+                          _displayForumResult.discuzIndexVariables.threadType),
+                    ],
+                  );
+                },
+                childCount: _forumThreadList.length,
+              ),
             ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                log("${_forumThreadList[index].subject} ${_forumThreadList}");
-                return Column(
-                  children: [
-                    ForumThreadWidget(discuz, user, _forumThreadList[index],
-                        _displayForumResult.discuzIndexVariables.threadType),
-                  ],
-                );
-              },
-              childCount: _forumThreadList.length,
-            ),
-          ),
-        ],
+          ],
+        ),
+
+
       ),
     );
   }

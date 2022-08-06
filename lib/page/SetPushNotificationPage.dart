@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
+import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -13,7 +14,6 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../provider/UserPreferenceNotifierProvider.dart';
 import '../utility/AppPlatformIcons.dart';
@@ -145,7 +145,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
                   title: Text(S.of(context).pushChannel),
                   value: Text(S.of(context).pushChannelFirebase),
                 ),
-                SettingsTile(title: Text(S.of(context).pushToken),
+                SettingsTile(title: Text(channel),
                   description: Text(token),
                 ),
               ]
@@ -156,7 +156,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
               leading: Icon(AppPlatformIcons(context).termsOfServiceOutlined),
               onPressed: (_) {
                 VibrationUtils.vibrateWithClickIfPossible();
-                _launchURL("https://discuzhub.kidozh.com/term_of_use/");
+                URLUtils.launchURL("https://discuzhub.kidozh.com/term_of_use/");
               },
             ),
             SettingsTile.navigation(
@@ -164,7 +164,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
               leading: Icon(AppPlatformIcons(context).privacyPolicyOutlined),
               onPressed: (_) {
                 VibrationUtils.vibrateWithClickIfPossible();
-                _launchURL("https://discuzhub.kidozh.com/privacy_policy/");
+                URLUtils.launchURL("https://discuzhub.kidozh.com/privacy_policy/");
               },
             ),
 
@@ -175,7 +175,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
               leading: Icon(PlatformIcons(context).helpOutline),
               onPressed: (_) {
                 VibrationUtils.vibrateWithClickIfPossible();
-                _launchURL("https://discuzhub.kidozh.com/dev-blog/how-push-service-works/");
+                URLUtils.launchURL("https://discuzhub.kidozh.com/dev-blog/how-push-service-works/");
               },
             ),
             SettingsTile.navigation(
@@ -183,7 +183,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
               leading: Icon(PlatformIcons(context).checkMarkCircledOutline),
               onPressed: (_) {
                 VibrationUtils.vibrateWithClickIfPossible();
-                _launchURL("https://discuzhub.kidozh.com/dev-blog/verified-discuz-site/");
+                URLUtils.launchURL("https://discuzhub.kidozh.com/dev-blog/verified-discuz-site/");
               },
             ),
           ])
@@ -240,8 +240,4 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
               ],
             ));
   }
-
-  void _launchURL(String url) async => await canLaunchUrl(Uri.parse(url))
-      ? await launchUrl(Uri.parse(url), mode: Platform.isIOS? LaunchMode.inAppWebView: LaunchMode.externalApplication)
-      : throw 'Could not launch $url';
 }

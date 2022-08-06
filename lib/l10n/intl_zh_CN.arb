@@ -583,5 +583,22 @@
       "version": {},
       "number": {}
     }
-  }
+  },
+  "iframeUrlNull": "无法解析嵌入视图的来源。",
+  "easyRefreshClassicHeaderDragText": "下拉刷新",
+  "easyRefreshClassicHeaderArmedText": "释放开始",
+  "easyRefreshClassicHeaderReadyText": "刷新中...",
+  "easyRefreshClassicHeaderProcessingText": "刷新中...",
+  "easyRefreshClassicHeaderProcessedText": "成功加载",
+  "easyRefreshClassicHeaderNoMoreText": "没有更多内容了",
+  "easyRefreshClassicHeaderFailedText": "访问失败",
+  "easyRefreshClassicHeaderMessageText": "最后更新于 %T",
+  "easyRefreshClassicFooterDragText": "上拉加载",
+  "easyRefreshClassicFooterArmedText": "释放开始",
+  "easyRefreshClassicFooterReadyText": "加载中...",
+  "easyRefreshClassicFooterProcessingText": "加载中...",
+  "easyRefreshClassicFooterProcessedText": "加载成功",
+  "easyRefreshClassicFooterNoMoreText": "没有更多的内容了",
+  "easyRefreshClassicFooterFailedText": "加载失败",
+  "easyRefreshClassicFooterMessageText": "最后更新于 %T"
 }

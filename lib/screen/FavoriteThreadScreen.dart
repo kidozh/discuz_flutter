@@ -12,7 +12,6 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/screen/EmptyScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
@@ -21,12 +20,13 @@ import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
+
+import '../utility/EasyRefreshUtils.dart';
 
 class FavoriteThreadScreen extends StatelessWidget {
 
@@ -62,28 +62,13 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
   late EasyRefreshController _controller;
   late ScrollController _scrollController;
 
-  // 反向
-  bool _reverse = false;
-  // 方向
-  Axis _direction = Axis.vertical;
-  // Header浮动
-  bool _headerFloat = false;
-  // 无限加载
-  bool _enableInfiniteLoad = true;
+
   // 控制结束
   bool _enableControlFinish = false;
-  // 任务独立
-  bool _taskIndependence = false;
-  // 震动
-  bool _vibration = true;
-  // 是否开启刷新
+
   bool _enableRefresh = true;
   // 是否开启加载
   bool _enableLoad = true;
-  // 顶部回弹
-  bool _topBouncing = true;
-  // 底部回弹
-  bool _bottomBouncing = true;
 
   _FavoriteThreadState();
 
@@ -93,7 +78,7 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller = EasyRefreshController();
+    _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
     _scrollController = ScrollController();
 
   }
@@ -126,14 +111,12 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
       });
       _page += 1;
       if (!_enableControlFinish) {
-        _controller.resetLoadState();
         _controller.finishRefresh();
       }
       // check for loaded all?
       log("Get HotThread ${_pmList.length} ${value.variables.count}");
       if (!_enableControlFinish) {
-        _controller.finishLoad(
-            noMore: _pmList.length >= value.variables.count);
+        _controller.finishLoad(_pmList.length >= value.variables.count? IndicatorResult.noMore: IndicatorResult.success);
       }
 
       if(user != null && value.variables.member_uid != user.uid){
@@ -163,8 +146,9 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
       VibrationUtils.vibrateErrorIfPossible();
       EasyLoading.showError('${onError}');
       if (!_enableControlFinish) {
-        _controller.resetLoadState();
+        //_controller.resetLoadState();
         _controller.finishRefresh();
+        _controller.finishLoad(IndicatorResult.fail);
       }
       setState(() {
         _error = DiscuzError(
@@ -204,54 +188,16 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
 
   Widget getEasyRefreshWidget(Discuz discuz, User? user){
     Locale locale = Localizations.localeOf(context);
-    return EasyRefresh.custom(
+    return EasyRefresh(
 
-      enableControlFinishRefresh: true,
-      enableControlFinishLoad: true,
-      taskIndependence: _taskIndependence,
+      header: EasyRefreshUtils.i18nClassicHeader(context),
+      footer: EasyRefreshUtils.i18nClassicFooter(context),
+      refreshOnStart: true,
       controller: _controller,
-      scrollController: _scrollController,
-      reverse: _reverse,
-      scrollDirection: _direction,
-      topBouncing: _topBouncing,
-      bottomBouncing: _bottomBouncing,
-      emptyWidget: _pmList.length == 0? EmptyScreen(): null,
-      header: _enableRefresh? ClassicalHeader(
-        enableInfiniteRefresh: false,
-        bgColor:
-        _headerFloat ? Theme.of(context).primaryColor : Colors.transparent,
-        // infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
-        textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
-        float: _headerFloat,
-        enableHapticFeedback: _vibration,
-        refreshText: S.of(context).pullToRefresh,
-        refreshReadyText: S.of(context).releaseToRefresh,
-        refreshingText: S.of(context).refreshing,
-        refreshedText: S.of(context).refreshed,
-        refreshFailedText: S.of(context).refreshFailed,
-        noMoreText: S.of(context).noMore,
-        infoText: S.of(context).updateAt,
-      )
-          : null,
-      footer: _enableLoad
-          ? ClassicalFooter(
-        textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
-        enableInfiniteLoad: _enableInfiniteLoad,
-        enableHapticFeedback: _vibration,
-        loadText: S.of(context).pushToLoad,
-        loadReadyText: S.of(context).releaseToLoad,
-        loadingText: S.of(context).loading,
-        loadedText: S.of(context).loaded,
-        loadFailedText: S.of(context).loadFailed,
-        noMoreText: S.of(context).noMore,
-        infoText: S.of(context).updateAt,
-      )
-          : null,
       onRefresh: _enableRefresh
           ? () async {
         _invalidateHotThreadContent(discuz);
         if (!_enableControlFinish) {
-          _controller.resetLoadState();
           _controller.finishRefresh();
         }
 
@@ -261,100 +207,73 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
         _loadPortalPrivateMessage(discuz);
       }
           : null,
-      firstRefresh: true,
-      firstRefreshWidget: Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: Center(
-            child: SizedBox(
-              height: 200.0,
-              width: 300.0,
-              child: Card(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      width: 50.0,
-                      height: 50.0,
-                      child: SpinKitFadingCube(
-                        color: Theme.of(context).primaryColor,
-                        size: 25.0,
-                      ),
-                    ),
-                    Container(
-                      child: Text(S.of(context).loading),
-                    )
-                  ],
-                ),
-              ),
-            )),
-      ),
-      slivers: <Widget>[
-
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-                (context, index) {
+      child: CustomScrollView(
+        slivers: [
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+                    (context, index) {
                   FavoriteThread favoriteThread = _pmList[index];
-              return Container(
-                child: ListTile(
-                  leading: InkWell(
-                    child: ClipRRect(
+                  return Container(
+                    child: ListTile(
+                      leading: InkWell(
+                        child: ClipRRect(
 
-                      borderRadius: BorderRadius.circular(10000.0),
-                      child: CachedNetworkImage(
-                        imageUrl: URLUtils.getAvatarURL(discuz, favoriteThread.uid.toString()),
-                        progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-                        errorWidget: (context, url, error) =>
-                            CircleAvatar(
+                          borderRadius: BorderRadius.circular(10000.0),
+                          child: CachedNetworkImage(
+                            imageUrl: URLUtils.getAvatarURL(discuz, favoriteThread.uid.toString()),
+                            progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+                            errorWidget: (context, url, error) =>
+                                CircleAvatar(
 
-                              backgroundColor: CustomizeColor.getColorBackgroundById(favoriteThread.uid),
-                              child: Text(favoriteThread.author.length !=0 ? favoriteThread.author[0].toUpperCase()
-                                  : S.of(context).anonymous,
-                                  style: TextStyle(color: Colors.white)),
-                            )
-                        ,
+                                  backgroundColor: CustomizeColor.getColorBackgroundById(favoriteThread.uid),
+                                  child: Text(favoriteThread.author.length !=0 ? favoriteThread.author[0].toUpperCase()
+                                      : S.of(context).anonymous,
+                                      style: TextStyle(color: Colors.white)),
+                                )
+                            ,
+                          ),
+                        ),
+                        onTap: () async{
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+                          await Navigator.push(
+                              context,
+                              platformPageRoute(context:context,builder: (context) => UserProfilePage(discuz,user, favoriteThread.uid)));
+                        },
                       ),
+                      title: Text(favoriteThread.title,style: TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: RichText(
+                        text: TextSpan(
+                          text: favoriteThread.author,
+                          style: DefaultTextStyle.of(context).style,
+                          children: <TextSpan>[
+                            //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
+                            TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
+                            TextSpan(text: favoriteThread.description),
+                            TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
+                            TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,favoriteThread.publishAt)),
+                          ],
+                        ),
+                      ),
+
+                      onTap: () async {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        await Navigator.push(
+                            context,
+                            platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( discuz,  user, favoriteThread.id,))
+                        );
+                      },
+
+
                     ),
-                    onTap: () async{
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-                      await Navigator.push(
-                          context,
-                          platformPageRoute(context:context,builder: (context) => UserProfilePage(discuz,user, favoriteThread.uid)));
-                    },
-                  ),
-                  title: Text(favoriteThread.title,style: TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: RichText(
-                    text: TextSpan(
-                      text: favoriteThread.author,
-                      style: DefaultTextStyle.of(context).style,
-                      children: <TextSpan>[
-                        //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
-                        TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
-                        TextSpan(text: favoriteThread.description),
-                        TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
-                        TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,favoriteThread.publishAt)),
-                      ],
-                    ),
-                  ),
-
-                  onTap: () async {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    await Navigator.push(
-                        context,
-                        platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( discuz,  user, favoriteThread.id,))
-                    );
-                  },
-
-
-                ),
-              );
-            },
-            childCount: _pmList.length
+                  );
+                },
+                childCount: _pmList.length
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
+
     );
   }
 }

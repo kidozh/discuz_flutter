@@ -8,7 +8,6 @@ import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/screen/EmptyScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/screen/SmileyListScreen.dart';
@@ -16,13 +15,13 @@ import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/PrivateMessageDetailWidget.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
+import '../utility/EasyRefreshUtils.dart';
 import 'UserProfilePage.dart';
 
 class PrivateMessageDetailScreen extends StatelessWidget {
@@ -107,7 +106,7 @@ class _PrivateMessageDetailState
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller = EasyRefreshController();
+    _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
     _scrollController = ScrollController();
     _textEditingController = TextEditingController();
   }
@@ -183,13 +182,13 @@ class _PrivateMessageDetailState
       });
       _page = value.variables.page-1;
       if (!_enableControlFinish) {
-        _controller.resetLoadState();
+        //_controller.resetLoadState();
         _controller.finishRefresh();
       }
       // check for loaded all?
       log("Get HotThread ${_pmList.length} ${value.variables.count}");
       if (!_enableControlFinish) {
-        _controller.finishLoad(noMore: _pmList.length >= value.variables.count);
+        _controller.finishLoad(_pmList.length >= value.variables.count? IndicatorResult.noMore: IndicatorResult.success);
       }
 
       if (user != null && value.variables.member_uid != user.uid) {
@@ -217,7 +216,7 @@ class _PrivateMessageDetailState
       VibrationUtils.vibrateErrorIfPossible();
       EasyLoading.showError('${onError}');
       if (!_enableControlFinish) {
-        _controller.resetLoadState();
+        //_controller.resetLoadState();
         _controller.finishRefresh();
       }
       setState(() {
@@ -276,124 +275,28 @@ class _PrivateMessageDetailState
               flex: 1,
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  // bool overflow = false;
-                  // double heightTmp = 0.0;
-                  // for (MessageEntity entity in _msgList) {
-                  //   heightTmp +=
-                  //       _calculateMsgHeight(context, constraints, entity);
-                  //   if (heightTmp > constraints.maxHeight) {
-                  //     overflow = true;
-                  //   }
-                  // }
+
                   Discuz discuz = discuzAndUser.discuz!;
                   User? user = discuzAndUser.user;
-                  return EasyRefresh.custom(
-                    enableControlFinishRefresh: true,
-                    enableControlFinishLoad: true,
-                    taskIndependence: _taskIndependence,
-                    controller: _controller,
-                    scrollController: _scrollController,
-                    reverse: _reverse,
-                    scrollDirection: _direction,
-                    topBouncing: _topBouncing,
-                    bottomBouncing: _bottomBouncing,
-                    emptyWidget: _pmList.length == 0 ? EmptyScreen() : null,
-                    header: _enableRefresh
-                        ? ClassicalHeader(
-                            enableInfiniteRefresh: false,
-                            bgColor: _headerFloat
-                                ? Theme.of(context).primaryColor
-                                : Colors.transparent,
-                            // infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
-                            textColor: Theme.of(context)
-                                        .textTheme
-                                        .headline1!
-                                        .color ==
-                                    null
-                                ? Theme.of(context).primaryColorDark
-                                : Theme.of(context).textTheme.headline1!.color!,
-                            float: _headerFloat,
-                            enableHapticFeedback: _vibration,
-                            refreshText: S.of(context).pullToRefresh,
-                            refreshReadyText: S.of(context).releaseToRefresh,
-                            refreshingText: S.of(context).refreshing,
-                            refreshedText: S.of(context).refreshed,
-                            refreshFailedText: S.of(context).refreshFailed,
-                            noMoreText: S.of(context).noMore,
-                            infoText: S.of(context).updateAt,
-                          )
-                        : null,
-                    footer: _enableLoad
-                        ? ClassicalFooter(
-                            textColor: Theme.of(context)
-                                        .textTheme
-                                        .headline1!
-                                        .color ==
-                                    null
-                                ? Theme.of(context).primaryColorDark
-                                : Theme.of(context).textTheme.headline1!.color!,
-                            enableInfiniteLoad: _enableInfiniteLoad,
-                            enableHapticFeedback: _vibration,
-                            loadText: S.of(context).pushToLoad,
-                            loadReadyText: S.of(context).releaseToLoad,
-                            loadingText: S.of(context).loading,
-                            loadedText: S.of(context).loaded,
-                            loadFailedText: S.of(context).loadFailed,
-                            noMoreText: S.of(context).noMore,
-                            infoText: S.of(context).updateAt,
-                          )
-                        : null,
-                    onRefresh: _enableRefresh
-                        ? () async {
+                  return EasyRefresh(
+
+                    onRefresh:  () async {
                             _invalidateHotThreadContent(discuz);
                             if (!_enableControlFinish) {
-                              _controller.resetLoadState();
+                              //_controller.resetLoadState();
                               _controller.finishRefresh();
                             }
-                          }
-                        : null,
+                          },
                     onLoad: _enableLoad
                         ? () async {
                             _loadPortalPrivateMessage(discuz);
                           }
                         : null,
-                    firstRefresh: true,
-                    firstRefreshWidget: Container(
-                      width: double.infinity,
-                      height: double.infinity,
-                      child: Center(
-                          child: SizedBox(
-                        height: 200.0,
-                        width: 300.0,
-                        child: Card(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Container(
-                                width: 50.0,
-                                height: 50.0,
-                                child: SpinKitFadingCube(
-                                  color: Theme.of(context).primaryColor,
-                                  size: 25.0,
-                                ),
-                              ),
-                              Container(
-                                child: Text(S.of(context).loading),
-                              )
-                            ],
-                          ),
-                        ),
-                      )),
-                    ),
-                    slivers: <Widget>[
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          return PrivateMessageDetailWidget(
-                              discuz, user, _pmList[index]);
-                        }, childCount: _pmList.length),
-                      ),
-                    ],
+                    child: ListView.builder(itemBuilder: (context, index){
+                      return PrivateMessageDetailWidget(
+                          discuz, user, _pmList[index]);
+                    }, itemCount: _pmList.length,),
+
                   );
                 },
               ),
@@ -524,59 +427,16 @@ class _PrivateMessageDetailState
   }
 
   Widget getEasyRefreshWidget(Discuz discuz, User? user) {
-    return EasyRefresh.custom(
-      enableControlFinishRefresh: true,
-      enableControlFinishLoad: true,
-      taskIndependence: _taskIndependence,
+    return EasyRefresh(
+      header: EasyRefreshUtils.i18nClassicHeader(context),
+      footer: EasyRefreshUtils.i18nClassicFooter(context),
+      refreshOnStart: true,
       controller: _controller,
-      scrollController: _scrollController,
-      reverse: _reverse,
-      scrollDirection: _direction,
-      topBouncing: _topBouncing,
-      bottomBouncing: _bottomBouncing,
-      emptyWidget: _pmList.length == 0 ? EmptyScreen() : null,
-      header: _enableRefresh
-          ? ClassicalHeader(
-              enableInfiniteRefresh: false,
-              bgColor: _headerFloat
-                  ? Theme.of(context).primaryColor
-                  : Colors.transparent,
-              // infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
-              textColor: Theme.of(context).textTheme.headline1!.color == null
-                  ? Theme.of(context).primaryColorDark
-                  : Theme.of(context).textTheme.headline1!.color!,
-              float: _headerFloat,
-              enableHapticFeedback: _vibration,
-              refreshText: S.of(context).pullToRefresh,
-              refreshReadyText: S.of(context).releaseToRefresh,
-              refreshingText: S.of(context).refreshing,
-              refreshedText: S.of(context).refreshed,
-              refreshFailedText: S.of(context).refreshFailed,
-              noMoreText: S.of(context).noMore,
-              infoText: S.of(context).updateAt,
-            )
-          : null,
-      footer: _enableLoad
-          ? ClassicalFooter(
-              textColor: Theme.of(context).textTheme.headline1!.color == null
-                  ? Theme.of(context).primaryColorDark
-                  : Theme.of(context).textTheme.headline1!.color!,
-              enableInfiniteLoad: _enableInfiniteLoad,
-              enableHapticFeedback: _vibration,
-              loadText: S.of(context).pushToLoad,
-              loadReadyText: S.of(context).releaseToLoad,
-              loadingText: S.of(context).loading,
-              loadedText: S.of(context).loaded,
-              loadFailedText: S.of(context).loadFailed,
-              noMoreText: S.of(context).noMore,
-              infoText: S.of(context).updateAt,
-            )
-          : null,
       onRefresh: _enableRefresh
           ? () async {
               _invalidateHotThreadContent(discuz);
               if (!_enableControlFinish) {
-                _controller.resetLoadState();
+                //_controller.resetLoadState();
                 _controller.finishRefresh();
               }
             }
@@ -586,42 +446,12 @@ class _PrivateMessageDetailState
               _loadPortalPrivateMessage(discuz);
             }
           : null,
-      firstRefresh: true,
-      firstRefreshWidget: Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: Center(
-            child: SizedBox(
-          height: 200.0,
-          width: 300.0,
-          child: Card(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  width: 50.0,
-                  height: 50.0,
-                  child: SpinKitFadingCube(
-                    color: Theme.of(context).primaryColor,
-                    size: 25.0,
-                  ),
-                ),
-                Container(
-                  child: Text(S.of(context).loading),
-                )
-              ],
-            ),
-          ),
-        )),
-      ),
-      slivers: <Widget>[
-        SliverList(
-          delegate: SliverChildBuilderDelegate((context, index) {
+      child: ListView.builder(
+          itemBuilder: (context, index){
             return PrivateMessageDetailWidget(discuz, user, _pmList[index]);
-          }, childCount: _pmList.length),
-        ),
-      ],
+          },
+          itemCount: _pmList.length,
+      ),
     );
   }
 }

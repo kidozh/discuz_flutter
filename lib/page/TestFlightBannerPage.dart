@@ -119,7 +119,7 @@ class TestFlightBannerContent extends StatelessWidget{
                 },
               ),
               SizedBox(height: 24,),
-              CupertinoButton.filled(child: Text(S.of(context).continueToDo), onPressed: () async {
+              PlatformElevatedButton(child: Text(S.of(context).continueToDo), onPressed: () async {
                 PackageInfo packageInfo = await PackageInfo.fromPlatform();
                 String version = packageInfo.version;
                 await UserPreferencesUtils.putAcceptVersionCodeFlag(version);

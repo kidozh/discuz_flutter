@@ -235,6 +235,38 @@ class MessageLookup extends MessageLookupByLibrary {
         "downloadingFiles": m9,
         "duplicatedPost":
             MessageLookupByLibrary.simpleMessage("Duplicated Posts"),
+        "easyRefreshClassicFooterArmedText":
+            MessageLookupByLibrary.simpleMessage("Release ready"),
+        "easyRefreshClassicFooterDragText":
+            MessageLookupByLibrary.simpleMessage("Pull to load"),
+        "easyRefreshClassicFooterFailedText":
+            MessageLookupByLibrary.simpleMessage("Failed"),
+        "easyRefreshClassicFooterMessageText":
+            MessageLookupByLibrary.simpleMessage("Last updated at %T"),
+        "easyRefreshClassicFooterNoMoreText":
+            MessageLookupByLibrary.simpleMessage("No more"),
+        "easyRefreshClassicFooterProcessedText":
+            MessageLookupByLibrary.simpleMessage("Succeeded"),
+        "easyRefreshClassicFooterProcessingText":
+            MessageLookupByLibrary.simpleMessage("Loading..."),
+        "easyRefreshClassicFooterReadyText":
+            MessageLookupByLibrary.simpleMessage("Loading..."),
+        "easyRefreshClassicHeaderArmedText":
+            MessageLookupByLibrary.simpleMessage("Release ready"),
+        "easyRefreshClassicHeaderDragText":
+            MessageLookupByLibrary.simpleMessage("Pull to refresh"),
+        "easyRefreshClassicHeaderFailedText":
+            MessageLookupByLibrary.simpleMessage("Failed"),
+        "easyRefreshClassicHeaderMessageText":
+            MessageLookupByLibrary.simpleMessage("Last updated at %T"),
+        "easyRefreshClassicHeaderNoMoreText":
+            MessageLookupByLibrary.simpleMessage("No more"),
+        "easyRefreshClassicHeaderProcessedText":
+            MessageLookupByLibrary.simpleMessage("Succeeded"),
+        "easyRefreshClassicHeaderProcessingText":
+            MessageLookupByLibrary.simpleMessage("Refreshing..."),
+        "easyRefreshClassicHeaderReadyText":
+            MessageLookupByLibrary.simpleMessage("Refreshing..."),
         "editedPost": MessageLookupByLibrary.simpleMessage("Edited"),
         "emptyListDescription":
             MessageLookupByLibrary.simpleMessage("The content is empty"),
@@ -308,6 +340,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "hourLater": m15,
         "httpBrowseWarn":
             MessageLookupByLibrary.simpleMessage("HTTP protocol warning"),
+        "iframeUrlNull": MessageLookupByLibrary.simpleMessage(
+            "Can\'t parse URL in the iframe."),
         "illegalContent":
             MessageLookupByLibrary.simpleMessage("Illegal Content"),
         "incognitoSubtitle": MessageLookupByLibrary.simpleMessage(

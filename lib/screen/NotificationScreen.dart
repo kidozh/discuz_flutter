@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -13,21 +12,17 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
-import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzNotificationWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
-import 'EmptyScreen.dart';
+import '../utility/EasyRefreshUtils.dart';
 
 class NotificationScreen extends StatelessWidget {
-
-
-  NotificationScreen({required Key key}): super(key: key);
+  NotificationScreen({required Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +31,7 @@ class NotificationScreen extends StatelessWidget {
 }
 
 class NotificationStatefulWidget extends StatefulWidget {
-
-
-  NotificationStatefulWidget({required Key key}):super(key: key);
+  NotificationStatefulWidget({required Key key}) : super(key: key);
 
   _NotificationState createState() {
     return _NotificationState();
@@ -46,7 +39,6 @@ class NotificationStatefulWidget extends StatefulWidget {
 }
 
 class _NotificationState extends State<NotificationStatefulWidget> {
-
   late Dio _dio;
   late MobileApiClient _client;
   UserDiscuzNotificationResult result = UserDiscuzNotificationResult();
@@ -82,24 +74,22 @@ class _NotificationState extends State<NotificationStatefulWidget> {
 
   _NotificationState();
 
-
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller = EasyRefreshController();
+    _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
     _scrollController = ScrollController();
-
   }
 
-  _invalidateNotificationContent(Discuz discuz) async{
+  _invalidateNotificationContent(Discuz discuz) async {
     _page = 1;
     await _loadNotificationContent(discuz);
   }
 
   Future<void> _loadNotificationContent(Discuz discuz) async {
-    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
 
@@ -109,7 +99,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
     //
     // });
 
-    _client.userNotificationResult(_page).then((value){
+    _client.userNotificationResult(_page).then((value) {
       setState(() {
         result = value;
         _error = null;
@@ -121,19 +111,21 @@ class _NotificationState extends State<NotificationStatefulWidget> {
       });
       _page += 1;
       if (!_enableControlFinish) {
-        _controller.resetLoadState();
+        //_controller.resetLoadState();
         _controller.finishRefresh();
       }
       // check for loaded all?
       log("Get Notification ${_noteList.length} ${value.variables.count}");
       if (!_enableControlFinish) {
-        _controller.finishLoad(
-            noMore: _noteList.length >= value.variables.count);
+        _controller.finishLoad(_noteList.length >= value.variables.count
+            ? IndicatorResult.noMore
+            : IndicatorResult.success);
       }
 
-      if(user != null && value.variables.member_uid != user.uid){
+      if (user != null && value.variables.member_uid != user.uid) {
         setState(() {
-          _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle);
+          _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
+              S.of(context).userExpiredSubtitle);
         });
       }
 
@@ -141,20 +133,17 @@ class _NotificationState extends State<NotificationStatefulWidget> {
         EasyLoading.showError(value.getErrorString()!);
       }
 
-      if(value.errorResult!= null){
+      if (value.errorResult != null) {
         setState(() {
-          _error = DiscuzError(value.errorResult!.key, value.errorResult!.content);
+          _error =
+              DiscuzError(value.errorResult!.key, value.errorResult!.content);
         });
-      }
-      else{
+      } else {
         setState(() {
           _error = null;
         });
       }
-
-
-    })
-    .catchError((onError){
+    }).catchError((onError) {
       // VibrationUtils.vibrateErrorIfPossible();
       // if (!_enableControlFinish) {
       //   _controller.resetLoadState();
@@ -175,144 +164,67 @@ class _NotificationState extends State<NotificationStatefulWidget> {
       // catch (e){
       //
       // }
-
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
 
-    return Consumer<DiscuzAndUserNotifier>(builder: (context,discuzAndUser, child){
-      if(discuzAndUser.discuz == null){
+    return Consumer<DiscuzAndUserNotifier>(
+        builder: (context, discuzAndUser, child) {
+      if (discuzAndUser.discuz == null) {
         return NullDiscuzScreen();
-      }
-      else if(discuzAndUser.user == null){
+      } else if (discuzAndUser.user == null) {
         return NullUserScreen();
-      }
-      else{
+      } else {
         return Column(
           children: [
-            if(_error!=null)
-              ErrorCard(_error!.key, _error!.content,(){
+            if (_error != null)
+              ErrorCard(_error!.key, _error!.content, () {
                 _controller.callRefresh();
-              }
-              ),
-              Expanded(
-                  child: getEasyRefreshWidget(discuzAndUser.discuz!,discuzAndUser.user)
-              )
+              }),
+            Expanded(
+                child: getEasyRefreshWidget(
+                    discuzAndUser.discuz!, discuzAndUser.user))
           ],
         );
       }
     });
   }
 
-  Widget getEasyRefreshWidget(Discuz discuz, User? user){
-    return EasyRefresh.custom(
-
-      enableControlFinishRefresh: true,
-      enableControlFinishLoad: true,
-      taskIndependence: _taskIndependence,
+  Widget getEasyRefreshWidget(Discuz discuz, User? user) {
+    return EasyRefresh(
+      header: EasyRefreshUtils.i18nClassicHeader(context),
+      footer: EasyRefreshUtils.i18nClassicFooter(context),
+      refreshOnStart: true,
       controller: _controller,
-      scrollController: _scrollController,
-      reverse: _reverse,
-      scrollDirection: _direction,
-      topBouncing: _topBouncing,
-      bottomBouncing: _bottomBouncing,
-      emptyWidget: _noteList.length == 0? EmptyScreen(): null,
-      header: _enableRefresh? ClassicalHeader(
-        enableInfiniteRefresh: false,
-        bgColor:
-        _headerFloat ? Theme.of(context).primaryColor : Colors.transparent,
-        // infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
-        textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
-        float: _headerFloat,
-        enableHapticFeedback: _vibration,
-        refreshText: S.of(context).pullToRefresh,
-        refreshReadyText: S.of(context).releaseToRefresh,
-        refreshingText: S.of(context).refreshing,
-        refreshedText: S.of(context).refreshed,
-        refreshFailedText: S.of(context).refreshFailed,
-        noMoreText: S.of(context).noMore,
-        infoText: S.of(context).updateAt,
-      )
-          : null,
-      footer: _enableLoad
-          ? ClassicalFooter(
-        textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
-        enableInfiniteLoad: _enableInfiniteLoad,
-        enableHapticFeedback: _vibration,
-        loadText: S.of(context).pushToLoad,
-        loadReadyText: S.of(context).releaseToLoad,
-        loadingText: S.of(context).loading,
-        loadedText: S.of(context).loaded,
-        loadFailedText: S.of(context).loadFailed,
-        noMoreText: S.of(context).noMore,
-        infoText: S.of(context).updateAt,
-      )
-          : null,
       onRefresh: _enableRefresh
           ? () async {
-        _invalidateNotificationContent(discuz);
-        if (!_enableControlFinish) {
-          _controller.resetLoadState();
-          _controller.finishRefresh();
-        }
-
-      } : null,
+              _invalidateNotificationContent(discuz);
+              if (!_enableControlFinish) {
+                //_controller.resetLoadState();
+                _controller.finishRefresh();
+              }
+            }
+          : null,
       onLoad: _enableLoad
           ? () async {
-        _loadNotificationContent(discuz);
-      }
+              _loadNotificationContent(discuz);
+            }
           : null,
-      firstRefresh: true,
-      firstRefreshWidget: Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: Center(
-            child: SizedBox(
-              height: 200.0,
-              width: 300.0,
-              child: Card(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      width: 50.0,
-                      height: 50.0,
-                      child: SpinKitFadingCube(
-                        color: Theme.of(context).primaryColor,
-                        size: 25.0,
-                      ),
-                    ),
-                    Container(
-                      child: Text(S.of(context).loading),
-                    )
-                  ],
-                ),
-              ),
-            )),
+      child: ListView.builder(
+        itemBuilder: (context, index) {
+          return DiscuzNotificationWidget(discuz, _noteList[index]);
+        },
+        itemCount: _noteList.length,
       ),
-      slivers: <Widget>[
-
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-                (context, index) {
-              return DiscuzNotificationWidget(discuz, _noteList[index]);
-            },
-            childCount: _noteList.length
-          ),
-        ),
-      ],
     );
   }
 
   @override
   void setState(fn) {
-    if(this.mounted) {
+    if (this.mounted) {
       super.setState(fn);
     }
   }

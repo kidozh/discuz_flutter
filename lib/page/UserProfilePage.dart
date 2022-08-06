@@ -17,8 +17,8 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/UserProfileListItem.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
@@ -157,600 +157,604 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
               ],
             ),
           ),
-          EasyRefresh.custom(slivers: [
-            SliverList(
-                delegate: SliverChildListDelegate([
-              Stack(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    height: 220.0,
-                    color: Theme.of(context).brightness == Brightness.light
-                        ? Colors.white
-                        : Colors.grey.shade900,
-                  ),
-                  ClipPath(
-                    clipper:
-                        TopBarClipper(MediaQuery.of(context).size.width, 200),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 200,
-                      child: Container(
-                        width: double.infinity,
-                        height: 240.0,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ),
-                  // username
-                  Container(
-                    margin: new EdgeInsets.only(top: 40.0),
-                    child: new Center(
-                      child: Text(
-                        _userProfileResult!.variables.getSpace().username,
-                        style: TextStyle(fontSize: 30.0, color: Colors.white),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 100.0),
-                    child: Center(
-                      child: Container(
-                        width: 100.0,
-                        height: 100.0,
-                        child: CircleAvatar(
-                          child: CachedNetworkImage(
-                            imageUrl:
-                                URLUtils.getLargeAvatarURL(discuz, uid.toString()),
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) =>
-                                    CircularProgressIndicator(
-                                        value: downloadProgress.progress),
-                            errorWidget: (context, url, error) => Container(
-                              width: 100.0,
-                              height: 100.0,
-                              child: CircleAvatar(
-                                backgroundColor:
-                                    CustomizeColor.getColorBackgroundById(uid),
-                                child: Text(
-                                  _userProfileResult!.variables
-                                              .getSpace()
-                                              .username
-                                              .length !=
-                                          0
-                                      ? _userProfileResult!.variables
-                                          .getSpace()
-                                          .username[0]
-                                          .toUpperCase()
-                                      : S.of(context).anonymous,
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 45),
+          EasyRefresh(
+            child: CustomScrollView(
+                slivers: [
+                  SliverList(
+                      delegate: SliverChildListDelegate([
+                        Stack(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              height: 220.0,
+                              color: Theme.of(context).brightness == Brightness.light
+                                  ? Colors.white
+                                  : Colors.grey.shade900,
+                            ),
+                            ClipPath(
+                              clipper:
+                              TopBarClipper(MediaQuery.of(context).size.width, 200),
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: 200,
+                                child: Container(
+                                  width: double.infinity,
+                                  height: 240.0,
+                                  color: Theme.of(context).primaryColor,
                                 ),
                               ),
                             ),
-                            imageBuilder: (context, imageProvider) => Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                    image: imageProvider, fit: BoxFit.cover),
+                            // username
+                            Container(
+                              margin: new EdgeInsets.only(top: 40.0),
+                              child: new Center(
+                                child: Text(
+                                  _userProfileResult!.variables.getSpace().username,
+                                  style: TextStyle(fontSize: 30.0, color: Colors.white),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(10.0),
-                color: Theme.of(context).brightness == Brightness.light
-                    ? Colors.white
-                    : Colors.grey.shade900,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    InkWell(
-                      child: Card(
-
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          child: Column(
-                            children: [
-                              Text(S.of(context).userThread, style: Theme.of(context).textTheme.caption,),
-                              Text(_userProfileResult!.variables.getSpace().threads.toString(),
-                                style: Theme.of(context).textTheme.headline4?.copyWith(color: Theme.of(context).primaryColor),)
-                            ],
-                          ),
-                        ),
-                      ),
-                      onTap: (){
-                        VibrationUtils.vibrateWithClickIfPossible();
-                        Navigator.push(
-                            context,
-                            platformPageRoute(
-                                context: context,
-                                builder: (context) => ExploreWebsiteScaffordPage(initialURL: discuz.baseURL+"/home.php?mod=space&uid=${uid}&do=thread&view=me&type=thread&from=space")));
-                      },
-                    ),
-                    InkWell(
-                      child: Card(
-
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          child: Column(
-                            children: [
-                              Text(S.of(context).userPost, style: Theme.of(context).textTheme.caption,),
-                              Text(_userProfileResult!.variables.getSpace().posts.toString(),
-                                style: Theme.of(context).textTheme.headline4?.copyWith(color: Theme.of(context).primaryColor),)
-                            ],
-                          ),
-                        ),
-                      ),
-                      onTap: (){
-                        VibrationUtils.vibrateWithClickIfPossible();
-                        Navigator.push(
-                            context,
-                            platformPageRoute(
-                                context: context,
-                                builder: (context) => ExploreWebsiteScaffordPage(initialURL: discuz.baseURL+"/home.php?mod=space&uid=${uid}&do=thread&view=me&type=reply&from=space")));
-                      },
-                    ),
-                    Card(
-                      
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        child: Column(
-                          children: [
-                            Text(S.of(context).userCredit, style: Theme.of(context).textTheme.caption,),
-                            Text(_userProfileResult!.variables.getSpace().credits.toString(),
-                              style: Theme.of(context).textTheme.headline4?.copyWith(color: Theme.of(context).primaryColor),)
+                            Container(
+                              margin: EdgeInsets.only(top: 100.0),
+                              child: Center(
+                                child: Container(
+                                  width: 100.0,
+                                  height: 100.0,
+                                  child: CircleAvatar(
+                                    child: CachedNetworkImage(
+                                      imageUrl:
+                                      URLUtils.getLargeAvatarURL(discuz, uid.toString()),
+                                      progressIndicatorBuilder:
+                                          (context, url, downloadProgress) =>
+                                          CircularProgressIndicator(
+                                              value: downloadProgress.progress),
+                                      errorWidget: (context, url, error) => Container(
+                                        width: 100.0,
+                                        height: 100.0,
+                                        child: CircleAvatar(
+                                          backgroundColor:
+                                          CustomizeColor.getColorBackgroundById(uid),
+                                          child: Text(
+                                            _userProfileResult!.variables
+                                                .getSpace()
+                                                .username
+                                                .length !=
+                                                0
+                                                ? _userProfileResult!.variables
+                                                .getSpace()
+                                                .username[0]
+                                                .toUpperCase()
+                                                : S.of(context).anonymous,
+                                            style: TextStyle(
+                                                color: Colors.white, fontSize: 45),
+                                          ),
+                                        ),
+                                      ),
+                                      imageBuilder: (context, imageProvider) => Container(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                              image: imageProvider, fit: BoxFit.cover),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                width: double.infinity,
-                color: Theme.of(context).brightness == Brightness.light
-                    ? Colors.white
-                    : Colors.grey.shade900,
-                padding: EdgeInsets.all(10.0),
-                child: DiscuzHtmlWidget(discuz,
-                    _userProfileResult!.variables.getSpace().signatureHtml),
-              ),
-              // custom title
-              Container(
-                  width: double.infinity,
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.white
-                      : Colors.grey.shade900,
-                  padding: EdgeInsets.all(4),
-                  child: Card(
-                    color: Colors.blueGrey,
-                    child: Container(
-                      padding: EdgeInsets.all(4.0),
-                      child: Column(
-                        children: [
-                          if (_userProfileResult!.variables
-                              .getSpace()
-                              .customStatus
-                              .isNotEmpty)
-                            UserProfileListItem(
-                              icon: Icon(
-                                Icons.category,
-                                color: Colors.white,
-                              ),
-                              title: S.of(context).customStatusTitle,
-                              titleColor: Colors.white,
-                              describe: _userProfileResult!.variables
-                                  .getSpace()
-                                  .customStatus,
-                              describeColor: Colors.white,
-                            ),
-                          if (_userProfileResult!.variables
-                              .getSpace()
-                              .bio
-                              .isNotEmpty)
-                            UserProfileListItem(
-                              icon: Icon(
-                                Icons.edit,
-                                color: Colors.white,
-                              ),
-                              title: S.of(context).bio,
-                              titleColor: Colors.white,
-                              describe:
-                                  _userProfileResult!.variables.getSpace().bio,
-                              describeColor: Colors.white,
-                            ),
-                          if (_userProfileResult!.variables
-                              .getSpace()
-                              .recentNote
-                              .isNotEmpty)
-                            UserProfileListItem(
-                              icon: Icon(
-                                Icons.message_outlined,
-                                color: Colors.white,
-                              ),
-                              title: S.of(context).recentNote,
-                              titleColor: Colors.white,
-                              describe: _userProfileResult!.variables
-                                  .getSpace()
-                                  .recentNote,
-                              describeColor: Colors.white,
-                            )
-                        ],
-                      ),
-                    ),
-                  )),
-
-              // admin group
-              Container(
-                  width: double.infinity,
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.white
-                      : Colors.grey.shade900,
-                  padding: EdgeInsets.all(4),
-                  child: Card(
-                    color: Colors.blue,
-                    child: Container(
-                      padding: EdgeInsets.all(4.0),
-                      child: Column(
-                        children: [
-                          if (_userProfileResult!.variables
-                              .getSpace()
-                              .adminGroupInfo
-                              .groupTitle
-                              .isNotEmpty)
-                            UserProfileListItem(
-                              icon: Icon(
-                                Icons.verified_user_rounded,
-                                color: Colors.white,
-                              ),
-                              title: _userProfileResult!.variables
-                                  .getSpace()
-                                  .adminGroupInfo
-                                  .groupTitle
-                                  .replaceAll(RegExp(r'<.*?>'), ""),
-                              titleColor: Colors.white,
-                              describe: S.of(context).groupInfoDescription(
-                                  _userProfileResult!.variables
-                                      .getSpace()
-                                      .adminGroupInfo
-                                      .readAccess,
-                                  _userProfileResult!.variables
-                                      .getSpace()
-                                      .adminGroupInfo
-                                      .stars),
-                              describeColor: Colors.white,
-                            ),
-                          UserProfileListItem(
-                            icon: Icon(
-                              Icons.group,
-                              color: Colors.white,
-                            ),
-                            title: _userProfileResult!.variables
-                                .getSpace()
-                                .groupInfo
-                                .groupTitle
-                                .replaceAll(RegExp(r'<.*?>'), ""),
-                            titleColor: Colors.white,
-                            describe: S.of(context).groupInfoDescription(
-                                _userProfileResult!.variables
-                                    .getSpace()
-                                    .groupInfo
-                                    .readAccess,
-                                _userProfileResult!.variables
-                                    .getSpace()
-                                    .groupInfo
-                                    .stars),
-                            describeColor: Colors.white,
-                          )
-                        ],
-                      ),
-                    ),
-                  )),
-              // register time
-              Container(
-                  width: double.infinity,
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.white
-                      : Colors.grey.shade900,
-                  padding: EdgeInsets.all(4),
-                  child: Card(
-                    color: Colors.green,
-                    child: Container(
-                      padding: EdgeInsets.all(4.0),
-                      child: Column(
-                        children: [
-                          UserProfileListItem(
-                            icon: Icon(
-                              Icons.add_circle_outline_outlined,
-                              color: Colors.white,
-                            ),
-                            title: S.of(context).registerAccountTime,
-                            titleColor: Colors.white,
-                            describe: _userProfileResult!.variables
-                                .getSpace()
-                                .registerDateString,
-                            describeColor: Colors.white,
-                          ),
-                          UserProfileListItem(
-                            icon: Icon(
-                              Icons.history,
-                              color: Colors.white,
-                            ),
-                            title: S.of(context).lastVisitTime,
-                            titleColor: Colors.white,
-                            describe: _userProfileResult!.variables
-                                .getSpace()
-                                .lastvisit,
-                            describeColor: Colors.white,
-                          ),
-                          UserProfileListItem(
-                            icon: Icon(
-                              Icons.access_time,
-                              color: Colors.white,
-                            ),
-                            title: S.of(context).onlineHoursTitle,
-                            titleColor: Colors.white,
-                            describe: S.of(context).onlineHours(
-                                _userProfileResult!.variables
-                                    .getSpace()
-                                    .oltime),
-                            describeColor: Colors.white,
-                          ),
-                          UserProfileListItem(
-                            icon: Icon(
-                              Icons.timelapse,
-                              color: Colors.white,
-                            ),
-                            title: S.of(context).lastActivityTime,
-                            titleColor: Colors.white,
-                            describe: _userProfileResult!.variables
-                                .getSpace()
-                                .lastactivity,
-                            describeColor: Colors.white,
-                          ),
-                          UserProfileListItem(
-                            icon: Icon(
-                              Icons.av_timer,
-                              color: Colors.white,
-                            ),
-                            title: S.of(context).lastPostTime,
-                            titleColor: Colors.white,
-                            describe: _userProfileResult!.variables
-                                .getSpace()
-                                .lastpost,
-                            describeColor: Colors.white,
-                          ),
-                          if (_userProfileResult!.variables
-                                  .getSpace()
-                                  .birthYear !=
-                              0)
-                            UserProfileListItem(
-                              icon: Icon(
-                                Icons.cake_outlined,
-                                color: Colors.white,
-                              ),
-                              title:
-                                  "${_userProfileResult!.variables.getSpace().zodiac} · ${_userProfileResult!.variables.getSpace().constellation}",
-                              titleColor: Colors.white,
-                              describe: _userProfileResult!.variables
-                                  .getSpace()
-                                  .getBirthDay(),
-                              describeColor: Colors.white,
-                            ),
-                        ],
-                      ),
-                    ),
-                  )),
-              // birthplace and habits
-              Container(
-                  width: double.infinity,
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.white
-                      : Colors.grey.shade900,
-                  padding: EdgeInsets.all(4),
-                  child: Card(
-                    color: Colors.pink,
-                    child: Container(
-                      padding: EdgeInsets.all(4.0),
-                      child: Column(
-                        children: [
-                          if (_userProfileResult!.variables
-                              .getSpace()
-                              .site
-                              .isNotEmpty)
-                            UserProfileListItem(
-                              icon: Icon(
-                                Icons.work_outline,
-                                color: Colors.white,
-                              ),
-                              title: S.of(context).homepage,
-                              titleColor: Colors.white,
-                              describe:
-                                  _userProfileResult!.variables.getSpace().site,
-                              describeColor: Colors.white,
-                            ),
-                          if (_userProfileResult!.variables
-                              .getSpace()
-                              .interest
-                              .isNotEmpty)
-                            UserProfileListItem(
-                              icon: Icon(
-                                Icons.whatshot_rounded,
-                                color: Colors.white,
-                              ),
-                              title: S.of(context).habit,
-                              titleColor: Colors.white,
-                              describe: _userProfileResult!.variables
-                                  .getSpace()
-                                  .interest,
-                              describeColor: Colors.white,
-                            ),
-                        ],
-                      ),
-                    ),
-                  )
-              ),
-              // birthplace
-              Container(
-                  width: double.infinity,
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.white
-                      : Colors.grey.shade900,
-                  padding: EdgeInsets.all(4),
-                  child: Card(
-                    color: Colors.orange,
-                    child: Container(
-                      padding: EdgeInsets.all(4.0),
-                      child: Column(
-                        children: [
-                          if (_userProfileResult!.variables
-                              .getSpace()
-                              .getBirthPlace()
-                              .isNotEmpty)
-                            UserProfileListItem(
-                              icon: Icon(
-                                Icons.child_care,
-                                color: Colors.white,
-                              ),
-                              title: S.of(context).birthPlace,
-                              titleColor: Colors.white,
-                              describe: _userProfileResult!.variables
-                                  .getSpace()
-                                  .getBirthPlace(),
-                              describeColor: Colors.white,
-                            ),
-                          if (_userProfileResult!.variables
-                              .getSpace()
-                              .getResidentPlace()
-                              .isNotEmpty)
-                            UserProfileListItem(
-                              icon: Icon(
-                                Icons.location_city_outlined,
-                                color: Colors.white,
-                              ),
-                              title: S.of(context).residentPlace,
-                              titleColor: Colors.white,
-                              describe: _userProfileResult!.variables
-                                  .getSpace()
-                                  .getResidentPlace(),
-                              describeColor: Colors.white,
-                            ),
-                          if (_userProfileResult!.variables
-                                  .getSpace()
-                                  .graduateschool
-                                  .isNotEmpty ||
-                              _userProfileResult!.variables
-                                  .getSpace()
-                                  .education
-                                  .isNotEmpty)
-                            UserProfileListItem(
-                              icon: Icon(
-                                Icons.history_edu,
-                                color: Colors.white,
-                              ),
-                              title: _userProfileResult!.variables
-                                  .getSpace()
-                                  .education,
-                              titleColor: Colors.white,
-                              describe: _userProfileResult!.variables
-                                  .getSpace()
-                                  .graduateschool,
-                              describeColor: Colors.white,
-                            ),
-                          if (_userProfileResult!.variables
-                                  .getSpace()
-                                  .company
-                                  .isNotEmpty ||
-                              _userProfileResult!.variables
-                                  .getSpace()
-                                  .occupation
-                                  .isNotEmpty)
-                            UserProfileListItem(
-                              icon: Icon(
-                                Icons.work_outline,
-                                color: Colors.white,
-                              ),
-                              title: _userProfileResult!.variables
-                                  .getSpace()
-                                  .occupation,
-                              titleColor: Colors.white,
-                              describe: _userProfileResult!.variables
-                                  .getSpace()
-                                  .company,
-                              describeColor: Colors.white,
-                            )
-                        ],
-                      ),
-                    ),
-                  )
-              ),
-
-              // credit
-              Container(
-                width: double.infinity,
-                color: Theme.of(context).brightness == Brightness.light
-                    ? Colors.white
-                    : Colors.grey.shade900,
-                padding: EdgeInsets.all(4),
-                child: Card(
-                  color: Colors.purple,
-                  child: Container(
-                    padding: EdgeInsets.all(4.0),
-                    child: Column(
-                      children: getCreditList(),
-                    ),
-                  ),
-                ),
-              ),
-              // medal list
-                  if (_userProfileResult!.variables
-                      .getSpace()
-                      .medalList
-                      .isNotEmpty)
-                  Container(
-                      width: double.infinity,
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.white
-                          : Colors.grey.shade900,
-                      padding: EdgeInsets.all(4),
-                      child: Card(
-                        color: Theme.of(context).brightness == Brightness.light
-                            ? Colors.white
-                            : Colors.grey.shade900,
-                        child: Container(
-                          padding: EdgeInsets.all(4.0),
-                          child: Column(
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(10.0),
+                          color: Theme.of(context).brightness == Brightness.light
+                              ? Colors.white
+                              : Colors.grey.shade900,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              for(var medal in _userProfileResult!.variables.getSpace().medalList)
-                                UserProfileListItem(
-                                  icon: CachedNetworkImage(
-                                    imageUrl: discuz.baseURL+'/static/image/common/${medal.image}',
+                              InkWell(
+                                child: Card(
 
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    child: Column(
+                                      children: [
+                                        Text(S.of(context).userThread, style: Theme.of(context).textTheme.caption,),
+                                        Text(_userProfileResult!.variables.getSpace().threads.toString(),
+                                          style: Theme.of(context).textTheme.headline4?.copyWith(color: Theme.of(context).primaryColor),)
+                                      ],
+                                    ),
                                   ),
-                                  title: medal.name,
-                                  titleColor: Theme.of(context).primaryColor,
-                                  describe: medal.description,
-                                  describeColor: Theme.of(context).brightness == Brightness.light
-                                      ? Colors.black45
-                                      : Colors.white60,
-                                )
+                                ),
+                                onTap: (){
+                                  VibrationUtils.vibrateWithClickIfPossible();
+                                  Navigator.push(
+                                      context,
+                                      platformPageRoute(
+                                          context: context,
+                                          builder: (context) => ExploreWebsiteScaffordPage(initialURL: discuz.baseURL+"/home.php?mod=space&uid=${uid}&do=thread&view=me&type=thread&from=space")));
+                                },
+                              ),
+                              InkWell(
+                                child: Card(
+
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    child: Column(
+                                      children: [
+                                        Text(S.of(context).userPost, style: Theme.of(context).textTheme.caption,),
+                                        Text(_userProfileResult!.variables.getSpace().posts.toString(),
+                                          style: Theme.of(context).textTheme.headline4?.copyWith(color: Theme.of(context).primaryColor),)
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                onTap: (){
+                                  VibrationUtils.vibrateWithClickIfPossible();
+                                  Navigator.push(
+                                      context,
+                                      platformPageRoute(
+                                          context: context,
+                                          builder: (context) => ExploreWebsiteScaffordPage(initialURL: discuz.baseURL+"/home.php?mod=space&uid=${uid}&do=thread&view=me&type=reply&from=space")));
+                                },
+                              ),
+                              Card(
+
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  child: Column(
+                                    children: [
+                                      Text(S.of(context).userCredit, style: Theme.of(context).textTheme.caption,),
+                                      Text(_userProfileResult!.variables.getSpace().credits.toString(),
+                                        style: Theme.of(context).textTheme.headline4?.copyWith(color: Theme.of(context).primaryColor),)
+                                    ],
+                                  ),
+                                ),
+                              )
                             ],
                           ),
                         ),
-                      )
-                  ),
+                        Container(
+                          width: double.infinity,
+                          color: Theme.of(context).brightness == Brightness.light
+                              ? Colors.white
+                              : Colors.grey.shade900,
+                          padding: EdgeInsets.all(10.0),
+                          child: DiscuzHtmlWidget(discuz,
+                              _userProfileResult!.variables.getSpace().signatureHtml),
+                        ),
+                        // custom title
+                        Container(
+                            width: double.infinity,
+                            color: Theme.of(context).brightness == Brightness.light
+                                ? Colors.white
+                                : Colors.grey.shade900,
+                            padding: EdgeInsets.all(4),
+                            child: Card(
+                              color: Colors.blueGrey,
+                              child: Container(
+                                padding: EdgeInsets.all(4.0),
+                                child: Column(
+                                  children: [
+                                    if (_userProfileResult!.variables
+                                        .getSpace()
+                                        .customStatus
+                                        .isNotEmpty)
+                                      UserProfileListItem(
+                                        icon: Icon(
+                                          Icons.category,
+                                          color: Colors.white,
+                                        ),
+                                        title: S.of(context).customStatusTitle,
+                                        titleColor: Colors.white,
+                                        describe: _userProfileResult!.variables
+                                            .getSpace()
+                                            .customStatus,
+                                        describeColor: Colors.white,
+                                      ),
+                                    if (_userProfileResult!.variables
+                                        .getSpace()
+                                        .bio
+                                        .isNotEmpty)
+                                      UserProfileListItem(
+                                        icon: Icon(
+                                          Icons.edit,
+                                          color: Colors.white,
+                                        ),
+                                        title: S.of(context).bio,
+                                        titleColor: Colors.white,
+                                        describe:
+                                        _userProfileResult!.variables.getSpace().bio,
+                                        describeColor: Colors.white,
+                                      ),
+                                    if (_userProfileResult!.variables
+                                        .getSpace()
+                                        .recentNote
+                                        .isNotEmpty)
+                                      UserProfileListItem(
+                                        icon: Icon(
+                                          Icons.message_outlined,
+                                          color: Colors.white,
+                                        ),
+                                        title: S.of(context).recentNote,
+                                        titleColor: Colors.white,
+                                        describe: _userProfileResult!.variables
+                                            .getSpace()
+                                            .recentNote,
+                                        describeColor: Colors.white,
+                                      )
+                                  ],
+                                ),
+                              ),
+                            )),
+
+                        // admin group
+                        Container(
+                            width: double.infinity,
+                            color: Theme.of(context).brightness == Brightness.light
+                                ? Colors.white
+                                : Colors.grey.shade900,
+                            padding: EdgeInsets.all(4),
+                            child: Card(
+                              color: Colors.blue,
+                              child: Container(
+                                padding: EdgeInsets.all(4.0),
+                                child: Column(
+                                  children: [
+                                    if (_userProfileResult!.variables
+                                        .getSpace()
+                                        .adminGroupInfo
+                                        .groupTitle
+                                        .isNotEmpty)
+                                      UserProfileListItem(
+                                        icon: Icon(
+                                          Icons.verified_user_rounded,
+                                          color: Colors.white,
+                                        ),
+                                        title: _userProfileResult!.variables
+                                            .getSpace()
+                                            .adminGroupInfo
+                                            .groupTitle
+                                            .replaceAll(RegExp(r'<.*?>'), ""),
+                                        titleColor: Colors.white,
+                                        describe: S.of(context).groupInfoDescription(
+                                            _userProfileResult!.variables
+                                                .getSpace()
+                                                .adminGroupInfo
+                                                .readAccess,
+                                            _userProfileResult!.variables
+                                                .getSpace()
+                                                .adminGroupInfo
+                                                .stars),
+                                        describeColor: Colors.white,
+                                      ),
+                                    UserProfileListItem(
+                                      icon: Icon(
+                                        Icons.group,
+                                        color: Colors.white,
+                                      ),
+                                      title: _userProfileResult!.variables
+                                          .getSpace()
+                                          .groupInfo
+                                          .groupTitle
+                                          .replaceAll(RegExp(r'<.*?>'), ""),
+                                      titleColor: Colors.white,
+                                      describe: S.of(context).groupInfoDescription(
+                                          _userProfileResult!.variables
+                                              .getSpace()
+                                              .groupInfo
+                                              .readAccess,
+                                          _userProfileResult!.variables
+                                              .getSpace()
+                                              .groupInfo
+                                              .stars),
+                                      describeColor: Colors.white,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            )),
+                        // register time
+                        Container(
+                            width: double.infinity,
+                            color: Theme.of(context).brightness == Brightness.light
+                                ? Colors.white
+                                : Colors.grey.shade900,
+                            padding: EdgeInsets.all(4),
+                            child: Card(
+                              color: Colors.green,
+                              child: Container(
+                                padding: EdgeInsets.all(4.0),
+                                child: Column(
+                                  children: [
+                                    UserProfileListItem(
+                                      icon: Icon(
+                                        Icons.add_circle_outline_outlined,
+                                        color: Colors.white,
+                                      ),
+                                      title: S.of(context).registerAccountTime,
+                                      titleColor: Colors.white,
+                                      describe: _userProfileResult!.variables
+                                          .getSpace()
+                                          .registerDateString,
+                                      describeColor: Colors.white,
+                                    ),
+                                    UserProfileListItem(
+                                      icon: Icon(
+                                        Icons.history,
+                                        color: Colors.white,
+                                      ),
+                                      title: S.of(context).lastVisitTime,
+                                      titleColor: Colors.white,
+                                      describe: _userProfileResult!.variables
+                                          .getSpace()
+                                          .lastvisit,
+                                      describeColor: Colors.white,
+                                    ),
+                                    UserProfileListItem(
+                                      icon: Icon(
+                                        Icons.access_time,
+                                        color: Colors.white,
+                                      ),
+                                      title: S.of(context).onlineHoursTitle,
+                                      titleColor: Colors.white,
+                                      describe: S.of(context).onlineHours(
+                                          _userProfileResult!.variables
+                                              .getSpace()
+                                              .oltime),
+                                      describeColor: Colors.white,
+                                    ),
+                                    UserProfileListItem(
+                                      icon: Icon(
+                                        Icons.timelapse,
+                                        color: Colors.white,
+                                      ),
+                                      title: S.of(context).lastActivityTime,
+                                      titleColor: Colors.white,
+                                      describe: _userProfileResult!.variables
+                                          .getSpace()
+                                          .lastactivity,
+                                      describeColor: Colors.white,
+                                    ),
+                                    UserProfileListItem(
+                                      icon: Icon(
+                                        Icons.av_timer,
+                                        color: Colors.white,
+                                      ),
+                                      title: S.of(context).lastPostTime,
+                                      titleColor: Colors.white,
+                                      describe: _userProfileResult!.variables
+                                          .getSpace()
+                                          .lastpost,
+                                      describeColor: Colors.white,
+                                    ),
+                                    if (_userProfileResult!.variables
+                                        .getSpace()
+                                        .birthYear !=
+                                        0)
+                                      UserProfileListItem(
+                                        icon: Icon(
+                                          Icons.cake_outlined,
+                                          color: Colors.white,
+                                        ),
+                                        title:
+                                        "${_userProfileResult!.variables.getSpace().zodiac} · ${_userProfileResult!.variables.getSpace().constellation}",
+                                        titleColor: Colors.white,
+                                        describe: _userProfileResult!.variables
+                                            .getSpace()
+                                            .getBirthDay(),
+                                        describeColor: Colors.white,
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            )),
+                        // birthplace and habits
+                        Container(
+                            width: double.infinity,
+                            color: Theme.of(context).brightness == Brightness.light
+                                ? Colors.white
+                                : Colors.grey.shade900,
+                            padding: EdgeInsets.all(4),
+                            child: Card(
+                              color: Colors.pink,
+                              child: Container(
+                                padding: EdgeInsets.all(4.0),
+                                child: Column(
+                                  children: [
+                                    if (_userProfileResult!.variables
+                                        .getSpace()
+                                        .site
+                                        .isNotEmpty)
+                                      UserProfileListItem(
+                                        icon: Icon(
+                                          Icons.work_outline,
+                                          color: Colors.white,
+                                        ),
+                                        title: S.of(context).homepage,
+                                        titleColor: Colors.white,
+                                        describe:
+                                        _userProfileResult!.variables.getSpace().site,
+                                        describeColor: Colors.white,
+                                      ),
+                                    if (_userProfileResult!.variables
+                                        .getSpace()
+                                        .interest
+                                        .isNotEmpty)
+                                      UserProfileListItem(
+                                        icon: Icon(
+                                          Icons.whatshot_rounded,
+                                          color: Colors.white,
+                                        ),
+                                        title: S.of(context).habit,
+                                        titleColor: Colors.white,
+                                        describe: _userProfileResult!.variables
+                                            .getSpace()
+                                            .interest,
+                                        describeColor: Colors.white,
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            )
+                        ),
+                        // birthplace
+                        Container(
+                            width: double.infinity,
+                            color: Theme.of(context).brightness == Brightness.light
+                                ? Colors.white
+                                : Colors.grey.shade900,
+                            padding: EdgeInsets.all(4),
+                            child: Card(
+                              color: Colors.orange,
+                              child: Container(
+                                padding: EdgeInsets.all(4.0),
+                                child: Column(
+                                  children: [
+                                    if (_userProfileResult!.variables
+                                        .getSpace()
+                                        .getBirthPlace()
+                                        .isNotEmpty)
+                                      UserProfileListItem(
+                                        icon: Icon(
+                                          Icons.child_care,
+                                          color: Colors.white,
+                                        ),
+                                        title: S.of(context).birthPlace,
+                                        titleColor: Colors.white,
+                                        describe: _userProfileResult!.variables
+                                            .getSpace()
+                                            .getBirthPlace(),
+                                        describeColor: Colors.white,
+                                      ),
+                                    if (_userProfileResult!.variables
+                                        .getSpace()
+                                        .getResidentPlace()
+                                        .isNotEmpty)
+                                      UserProfileListItem(
+                                        icon: Icon(
+                                          Icons.location_city_outlined,
+                                          color: Colors.white,
+                                        ),
+                                        title: S.of(context).residentPlace,
+                                        titleColor: Colors.white,
+                                        describe: _userProfileResult!.variables
+                                            .getSpace()
+                                            .getResidentPlace(),
+                                        describeColor: Colors.white,
+                                      ),
+                                    if (_userProfileResult!.variables
+                                        .getSpace()
+                                        .graduateschool
+                                        .isNotEmpty ||
+                                        _userProfileResult!.variables
+                                            .getSpace()
+                                            .education
+                                            .isNotEmpty)
+                                      UserProfileListItem(
+                                        icon: Icon(
+                                          Icons.history_edu,
+                                          color: Colors.white,
+                                        ),
+                                        title: _userProfileResult!.variables
+                                            .getSpace()
+                                            .education,
+                                        titleColor: Colors.white,
+                                        describe: _userProfileResult!.variables
+                                            .getSpace()
+                                            .graduateschool,
+                                        describeColor: Colors.white,
+                                      ),
+                                    if (_userProfileResult!.variables
+                                        .getSpace()
+                                        .company
+                                        .isNotEmpty ||
+                                        _userProfileResult!.variables
+                                            .getSpace()
+                                            .occupation
+                                            .isNotEmpty)
+                                      UserProfileListItem(
+                                        icon: Icon(
+                                          Icons.work_outline,
+                                          color: Colors.white,
+                                        ),
+                                        title: _userProfileResult!.variables
+                                            .getSpace()
+                                            .occupation,
+                                        titleColor: Colors.white,
+                                        describe: _userProfileResult!.variables
+                                            .getSpace()
+                                            .company,
+                                        describeColor: Colors.white,
+                                      )
+                                  ],
+                                ),
+                              ),
+                            )
+                        ),
+
+                        // credit
+                        Container(
+                          width: double.infinity,
+                          color: Theme.of(context).brightness == Brightness.light
+                              ? Colors.white
+                              : Colors.grey.shade900,
+                          padding: EdgeInsets.all(4),
+                          child: Card(
+                            color: Colors.purple,
+                            child: Container(
+                              padding: EdgeInsets.all(4.0),
+                              child: Column(
+                                children: getCreditList(),
+                              ),
+                            ),
+                          ),
+                        ),
+                        // medal list
+                        if (_userProfileResult!.variables
+                            .getSpace()
+                            .medalList
+                            .isNotEmpty)
+                          Container(
+                              width: double.infinity,
+                              color: Theme.of(context).brightness == Brightness.light
+                                  ? Colors.white
+                                  : Colors.grey.shade900,
+                              padding: EdgeInsets.all(4),
+                              child: Card(
+                                color: Theme.of(context).brightness == Brightness.light
+                                    ? Colors.white
+                                    : Colors.grey.shade900,
+                                child: Container(
+                                  padding: EdgeInsets.all(4.0),
+                                  child: Column(
+                                    children: [
+                                      for(var medal in _userProfileResult!.variables.getSpace().medalList)
+                                        UserProfileListItem(
+                                          icon: CachedNetworkImage(
+                                            imageUrl: discuz.baseURL+'/static/image/common/${medal.image}',
+
+                                          ),
+                                          title: medal.name,
+                                          titleColor: Theme.of(context).primaryColor,
+                                          describe: medal.description,
+                                          describeColor: Theme.of(context).brightness == Brightness.light
+                                              ? Colors.black45
+                                              : Colors.white60,
+                                        )
+                                    ],
+                                  ),
+                                ),
+                              )
+                          ),
 
 
-            ]))
-          ])
+                      ]))
+                ]
+            ),
+          )
         ],
       ),
 

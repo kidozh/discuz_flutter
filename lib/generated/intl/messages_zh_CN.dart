@@ -211,6 +211,38 @@ class MessageLookup extends MessageLookupByLibrary {
         "downloadAttachment": MessageLookupByLibrary.simpleMessage("下载附件"),
         "downloadingFiles": m9,
         "duplicatedPost": MessageLookupByLibrary.simpleMessage("重复发帖"),
+        "easyRefreshClassicFooterArmedText":
+            MessageLookupByLibrary.simpleMessage("释放开始"),
+        "easyRefreshClassicFooterDragText":
+            MessageLookupByLibrary.simpleMessage("上拉加载"),
+        "easyRefreshClassicFooterFailedText":
+            MessageLookupByLibrary.simpleMessage("加载失败"),
+        "easyRefreshClassicFooterMessageText":
+            MessageLookupByLibrary.simpleMessage("最后更新于 %T"),
+        "easyRefreshClassicFooterNoMoreText":
+            MessageLookupByLibrary.simpleMessage("没有更多的内容了"),
+        "easyRefreshClassicFooterProcessedText":
+            MessageLookupByLibrary.simpleMessage("加载成功"),
+        "easyRefreshClassicFooterProcessingText":
+            MessageLookupByLibrary.simpleMessage("加载中..."),
+        "easyRefreshClassicFooterReadyText":
+            MessageLookupByLibrary.simpleMessage("加载中..."),
+        "easyRefreshClassicHeaderArmedText":
+            MessageLookupByLibrary.simpleMessage("释放开始"),
+        "easyRefreshClassicHeaderDragText":
+            MessageLookupByLibrary.simpleMessage("下拉刷新"),
+        "easyRefreshClassicHeaderFailedText":
+            MessageLookupByLibrary.simpleMessage("访问失败"),
+        "easyRefreshClassicHeaderMessageText":
+            MessageLookupByLibrary.simpleMessage("最后更新于 %T"),
+        "easyRefreshClassicHeaderNoMoreText":
+            MessageLookupByLibrary.simpleMessage("没有更多内容了"),
+        "easyRefreshClassicHeaderProcessedText":
+            MessageLookupByLibrary.simpleMessage("成功加载"),
+        "easyRefreshClassicHeaderProcessingText":
+            MessageLookupByLibrary.simpleMessage("刷新中..."),
+        "easyRefreshClassicHeaderReadyText":
+            MessageLookupByLibrary.simpleMessage("刷新中..."),
         "editedPost": MessageLookupByLibrary.simpleMessage("已编辑"),
         "emptyListDescription": MessageLookupByLibrary.simpleMessage("当前列表为空。"),
         "emptyScreenTitle": MessageLookupByLibrary.simpleMessage("当前列表为空。"),
@@ -268,6 +300,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "hourAgo": m14,
         "hourLater": m15,
         "httpBrowseWarn": MessageLookupByLibrary.simpleMessage("不安全的HTTP协议"),
+        "iframeUrlNull": MessageLookupByLibrary.simpleMessage("无法解析嵌入视图的来源。"),
         "illegalContent": MessageLookupByLibrary.simpleMessage("违法内容"),
         "incognitoSubtitle": MessageLookupByLibrary.simpleMessage("某些功能可能不可用"),
         "incognitoTitle": MessageLookupByLibrary.simpleMessage("匿名模式"),

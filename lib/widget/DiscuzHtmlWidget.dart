@@ -1,6 +1,5 @@
 
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:discuz_flutter/dao/TrustHostDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
@@ -21,10 +20,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
+import 'package:flutter_html_iframe/flutter_html_iframe.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_countdown/slide_countdown.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../utility/URLUtils.dart';
 
 typedef void JumpToPidCallback(int pid);
 
@@ -103,9 +105,6 @@ class DiscuzHtmlWidget extends StatelessWidget{
         return Html(
 
           data: "<p>${this.getDecodedString()}</p>",
-          navigationDelegateForIframe: (NavigationRequest request) {
-            return NavigationDecision.navigate;
-          },
           style: {
             "*": Style(
               fontSize: FontSize(paragraphFontSize*scalingParameter),
@@ -153,70 +152,8 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 Uri uri = Uri.parse(urlString);
                 // check host
                 if(uri.host != Uri.parse(discuz.baseURL).host){
-                  // check if database exists
-
-                  TrustHostDao trustHostDao = await AppDatabase.getTrustHostDao();
-                  TrustHost? trustHostInDb = await trustHostDao.findTrustHostByName(uri.host);
-                  if(trustHostInDb == null){
-                    showPlatformDialog(context: context.buildContext, builder: (context){
-                      return PlatformAlertDialog(
-                        title: Text(S.of(context).outerlinkOpenTitle,),
-                        content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children:[
-                              Container(
-                                color: Colors.red.shade50,
-                                padding: EdgeInsets.symmetric(vertical: 4.0,horizontal: 4.0),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.link,color: Colors.red,),
-                                    SizedBox(width: 8.0),
-                                    Expanded(
-                                        child: Text(urlString!,softWrap: true,style: TextStyle(color: Colors.red,),)
-
-                                    )
-
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 16.0,),
-                              Text(S.of(context).outerlinkOpenMessage,style: Theme.of(context).textTheme.bodyText1,),
-
-
-                            ]
-                        ),
-                        actions: [
-                          TextButton(
-                              onPressed: () async{
-                                String host = uri.host;
-                                await _trustHost(host);
-
-                                launchUrl(Uri.parse(urlString!), mode: Platform.isIOS? LaunchMode.inAppWebView: LaunchMode.externalApplication);
-                                Navigator.pop(context);
-                              },
-                              child: Text(S.of(context).trustHostActionText)
-                          ),
-                          TextButton(
-                              onPressed: (){
-                                launchUrl(Uri.parse(urlString!), mode: Platform.isIOS? LaunchMode.inAppWebView: LaunchMode.externalApplication);
-                                Navigator.pop(context);
-                              },
-                              child: Text(S.of(context).openInBrowser)
-                          ),
-                          TextButton(onPressed: (){
-                            Navigator.pop(context);
-                          }, child: Text(S.of(context).cancel))
-                        ],
-                      );
-                    });
-                  }
-                  else{
-                    // direct open it
-                    launchUrl(Uri.parse(urlString), mode: Platform.isIOS? LaunchMode.inAppWebView: LaunchMode.externalApplication);
-                  }
-                  return ;
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  checkWithDbAndOpenURL(context, urlString);
                 }
 
                 // check query parameters for full url
@@ -337,7 +274,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 }
 
 
-                await launchUrl(Uri.parse(urlString), mode: Platform.isIOS? LaunchMode.inAppWebView: LaunchMode.externalApplication);
+                await URLUtils.launchURL(urlString);
               }
               else{
                 // show the link
@@ -359,26 +296,28 @@ class DiscuzHtmlWidget extends StatelessWidget{
               );
             }
           },
-          customRender: {
-            "collapse":(RenderContext context, Widget child){
-              String title = S.of(context.buildContext).collapseItem;
-              if(context.tree.element?.attributes["title"] != null){
-                title = context.tree.element!.attributes["title"]!;
-              }
+          customRenders: {
+            collapseMatcher(): CustomRender.widget(
+                widget: (context, buildChild){
+                  String title = S.of(context.buildContext).collapseItem;
+                  if(context.tree.element?.attributes["title"] != null){
+                    title = context.tree.element!.attributes["title"]!;
+                  }
 
-              return ExpansionTile(
-                  title: Text(title),
-                  controlAffinity: ListTileControlAffinity.platform,
-                  children: [
-                    child
-                  ],
-                  collapsedBackgroundColor: Theme.of(context.buildContext).colorScheme.primary,
-                  collapsedTextColor: Theme.of(context.buildContext).colorScheme.onPrimary,
-                  collapsedIconColor: Theme.of(context.buildContext).colorScheme.onPrimary,
-              );
-            },
-            "spoil":(RenderContext context, Widget child){
-              log("get spoil tag ${child}");
+                  return ExpansionTile(
+                    title: Text(title),
+                    controlAffinity: ListTileControlAffinity.platform,
+                    children: [
+                      DiscuzHtmlWidget(discuz, context.tree.element!.innerHtml)
+                    ],
+                    collapsedBackgroundColor: Theme.of(context.buildContext).colorScheme.primary,
+                    collapsedTextColor: Theme.of(context.buildContext).colorScheme.onPrimary,
+                    collapsedIconColor: Theme.of(context.buildContext).colorScheme.onPrimary,
+                  );
+                }
+
+            ),
+            spoilMatcher(): CustomRender.widget(widget: (context, buildChild){
               String title = S.of(context.buildContext).collapseItem;
               if(context.tree.element?.attributes["title"] != null){
                 title = context.tree.element!.attributes["title"]!;
@@ -388,14 +327,15 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 title: Text(title),
                 controlAffinity: ListTileControlAffinity.platform,
                 children: [
-                  child
+                  DiscuzHtmlWidget(discuz, context.tree.element!.innerHtml)
                 ],
                 collapsedBackgroundColor: Theme.of(context.buildContext).colorScheme.primary,
                 collapsedTextColor: Theme.of(context.buildContext).colorScheme.onPrimary,
                 collapsedIconColor: Theme.of(context.buildContext).colorScheme.onPrimary,
               );
-            },
-            "countdown": (RenderContext renderContext, Widget child){
+            }),
+
+            countDownMatcher(): CustomRender.widget(widget: (renderContext, buildChild){
               String timeString = "";
               if(renderContext.tree.element?.attributes["time"] != null){
                 timeString = renderContext.tree.element!.attributes["time"]!;
@@ -442,14 +382,121 @@ class DiscuzHtmlWidget extends StatelessWidget{
               else{
                 return Text(S.of(renderContext.buildContext).brokenCountDown);
               }
-            }
+            }),
+            iframeMatcher(): CustomRender.widget(widget: (context, buildChild){
+              String? url = context.tree.element?.attributes["src"];
+
+              return InkWell(
+                child: Card(
+                  color: Theme.of(context.buildContext).primaryColor,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Icon(url == null? Icons.error_outline: Icons.link_rounded, color: Theme.of(context.buildContext).primaryIconTheme.color,),
+                        Center(
+                          child: Text(
+                            url == null? S.of(context.buildContext).iframeUrlNull: url,
+                            style: Theme.of(context.buildContext).primaryTextTheme.bodyText1,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+
+                ),
+                onTap: (){
+                  if(url != null){
+
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    checkWithDbAndOpenURL(context, url);
+                  }
+                },
+              );
+            })
+
           },
           tagsList: Html.tags..addAll(["collapse", "spoil","countdown"]),
         );
       }),
 
+
     );
   }
 
+  CustomRenderMatcher collapseMatcher() => (context) => context.tree.element?.localName == "collapse";
+  CustomRenderMatcher spoilMatcher() => (context) => context.tree.element?.localName == "spoil";
+  CustomRenderMatcher countDownMatcher() => (context) => context.tree.element?.localName == "countdown";
+
+  void checkWithDbAndOpenURL(RenderContext context, String urlString) async{
+    Uri uri = Uri.parse(urlString);
+    // check host
+    if(uri.host != Uri.parse(discuz.baseURL).host){
+      // check if database exists
+
+      TrustHostDao trustHostDao = await AppDatabase.getTrustHostDao();
+      TrustHost? trustHostInDb = await trustHostDao.findTrustHostByName(uri.host);
+      if(trustHostInDb == null){
+        showPlatformDialog(context: context.buildContext, builder: (context){
+          return PlatformAlertDialog(
+            title: Text(S.of(context).outerlinkOpenTitle,),
+            content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children:[
+                  Container(
+                    color: Colors.red.shade50,
+                    padding: EdgeInsets.symmetric(vertical: 4.0,horizontal: 4.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.link,color: Colors.red,),
+                        SizedBox(width: 8.0),
+                        Expanded(
+                            child: Text(urlString,softWrap: true,style: TextStyle(color: Colors.red,),)
+
+                        )
+
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 16.0,),
+                  Text(S.of(context).outerlinkOpenMessage,style: Theme.of(context).textTheme.bodyText1,),
+
+
+                ]
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () async{
+                    String host = uri.host;
+                    await _trustHost(host);
+
+                    URLUtils.launchURL(urlString);
+                    Navigator.pop(context);
+                  },
+                  child: Text(S.of(context).trustHostActionText)
+              ),
+              TextButton(
+                  onPressed: (){
+                    URLUtils.launchURL(urlString);
+                    Navigator.pop(context);
+                  },
+                  child: Text(S.of(context).openInBrowser)
+              ),
+              TextButton(onPressed: (){
+                Navigator.pop(context);
+              }, child: Text(S.of(context).cancel))
+            ],
+          );
+        });
+      }
+      else{
+        // direct open it
+        URLUtils.launchURL(urlString);
+      }
+      return ;
+    }
+  }
 
 }

@@ -3791,6 +3791,176 @@ class S {
       args: [version, number],
     );
   }
+
+  /// `Can't parse URL in the iframe.`
+  String get iframeUrlNull {
+    return Intl.message(
+      'Can\'t parse URL in the iframe.',
+      name: 'iframeUrlNull',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pull to refresh`
+  String get easyRefreshClassicHeaderDragText {
+    return Intl.message(
+      'Pull to refresh',
+      name: 'easyRefreshClassicHeaderDragText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Release ready`
+  String get easyRefreshClassicHeaderArmedText {
+    return Intl.message(
+      'Release ready',
+      name: 'easyRefreshClassicHeaderArmedText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Refreshing...`
+  String get easyRefreshClassicHeaderReadyText {
+    return Intl.message(
+      'Refreshing...',
+      name: 'easyRefreshClassicHeaderReadyText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Refreshing...`
+  String get easyRefreshClassicHeaderProcessingText {
+    return Intl.message(
+      'Refreshing...',
+      name: 'easyRefreshClassicHeaderProcessingText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Succeeded`
+  String get easyRefreshClassicHeaderProcessedText {
+    return Intl.message(
+      'Succeeded',
+      name: 'easyRefreshClassicHeaderProcessedText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No more`
+  String get easyRefreshClassicHeaderNoMoreText {
+    return Intl.message(
+      'No more',
+      name: 'easyRefreshClassicHeaderNoMoreText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed`
+  String get easyRefreshClassicHeaderFailedText {
+    return Intl.message(
+      'Failed',
+      name: 'easyRefreshClassicHeaderFailedText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last updated at %T`
+  String get easyRefreshClassicHeaderMessageText {
+    return Intl.message(
+      'Last updated at %T',
+      name: 'easyRefreshClassicHeaderMessageText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pull to load`
+  String get easyRefreshClassicFooterDragText {
+    return Intl.message(
+      'Pull to load',
+      name: 'easyRefreshClassicFooterDragText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Release ready`
+  String get easyRefreshClassicFooterArmedText {
+    return Intl.message(
+      'Release ready',
+      name: 'easyRefreshClassicFooterArmedText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Loading...`
+  String get easyRefreshClassicFooterReadyText {
+    return Intl.message(
+      'Loading...',
+      name: 'easyRefreshClassicFooterReadyText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Loading...`
+  String get easyRefreshClassicFooterProcessingText {
+    return Intl.message(
+      'Loading...',
+      name: 'easyRefreshClassicFooterProcessingText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Succeeded`
+  String get easyRefreshClassicFooterProcessedText {
+    return Intl.message(
+      'Succeeded',
+      name: 'easyRefreshClassicFooterProcessedText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No more`
+  String get easyRefreshClassicFooterNoMoreText {
+    return Intl.message(
+      'No more',
+      name: 'easyRefreshClassicFooterNoMoreText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed`
+  String get easyRefreshClassicFooterFailedText {
+    return Intl.message(
+      'Failed',
+      name: 'easyRefreshClassicFooterFailedText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last updated at %T`
+  String get easyRefreshClassicFooterMessageText {
+    return Intl.message(
+      'Last updated at %T',
+      name: 'easyRefreshClassicFooterMessageText',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

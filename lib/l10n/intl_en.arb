@@ -582,5 +582,22 @@
       "version": {},
       "number": {}
     }
-  }
+  },
+  "iframeUrlNull": "Can't parse URL in the iframe.",
+  "easyRefreshClassicHeaderDragText": "Pull to refresh",
+  "easyRefreshClassicHeaderArmedText": "Release ready",
+  "easyRefreshClassicHeaderReadyText": "Refreshing...",
+  "easyRefreshClassicHeaderProcessingText": "Refreshing...",
+  "easyRefreshClassicHeaderProcessedText": "Succeeded",
+  "easyRefreshClassicHeaderNoMoreText": "No more",
+  "easyRefreshClassicHeaderFailedText": "Failed",
+  "easyRefreshClassicHeaderMessageText": "Last updated at %T",
+  "easyRefreshClassicFooterDragText": "Pull to load",
+  "easyRefreshClassicFooterArmedText": "Release ready",
+  "easyRefreshClassicFooterReadyText": "Loading...",
+  "easyRefreshClassicFooterProcessingText": "Loading...",
+  "easyRefreshClassicFooterProcessedText": "Succeeded",
+  "easyRefreshClassicFooterNoMoreText": "No more",
+  "easyRefreshClassicFooterFailedText": "Failed",
+  "easyRefreshClassicFooterMessageText": "Last updated at %T"
 }

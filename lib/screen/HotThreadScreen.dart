@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -10,22 +9,19 @@ import 'package:discuz_flutter/entity/HotThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/screen/EmptyScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
-import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/HotThreadWidget.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
+import '../utility/EasyRefreshUtils.dart';
+
 class HotThreadScreen extends StatelessWidget {
-
-
-  HotThreadScreen({required Key key}): super(key: key);
+  HotThreadScreen({required Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +30,7 @@ class HotThreadScreen extends StatelessWidget {
 }
 
 class HotThreadStatefulWidget extends StatefulWidget {
-
-
-  HotThreadStatefulWidget({required Key key}):super(key: key);
+  HotThreadStatefulWidget({required Key key}) : super(key: key);
 
   _HotThreadState createState() {
     return _HotThreadState();
@@ -44,7 +38,6 @@ class HotThreadStatefulWidget extends StatefulWidget {
 }
 
 class _HotThreadState extends State<HotThreadStatefulWidget> {
-
   late Dio _dio;
   late MobileApiClient _client;
   HotThreadResult result = HotThreadResult();
@@ -80,24 +73,22 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
 
   _HotThreadState();
 
-
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller = EasyRefreshController();
+    _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
     _scrollController = ScrollController();
-
   }
 
-  _invalidateHotThreadContent(Discuz discuz) async{
+  _invalidateHotThreadContent(Discuz discuz) async {
     _page = 1;
     await _loadHotThreadContent(discuz);
   }
 
   Future<void> _loadHotThreadContent(Discuz discuz) async {
-    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
 
@@ -107,7 +98,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
     //
     // });
 
-    _client.hotThreadResult(_page).then((value){
+    _client.hotThreadResult(_page).then((value) {
       setState(() {
         result = value;
         _error = null;
@@ -119,19 +110,21 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       });
       _page += 1;
       if (!_enableControlFinish) {
-        _controller.resetLoadState();
         _controller.finishRefresh();
       }
       // check for loaded all?
       log("Get HotThread ${_hotThreadList.length} ${value.variables.perPage}");
       if (!_enableControlFinish) {
         _controller.finishLoad(
-            noMore: value.variables.hotThreadList.length < value.variables.perPage);
+            value.variables.hotThreadList.length < value.variables.perPage
+                ? IndicatorResult.noMore
+                : IndicatorResult.success);
       }
 
-      if(user != null && value.variables.member_uid != user.uid){
+      if (user != null && value.variables.member_uid != user.uid) {
         setState(() {
-          _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle);
+          _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
+              S.of(context).userExpiredSubtitle);
         });
       }
 
@@ -139,20 +132,17 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
         EasyLoading.showError(value.getErrorString()!);
       }
 
-      if(value.errorResult!= null){
+      if (value.errorResult != null) {
         setState(() {
-          _error = DiscuzError(value.errorResult!.key, value.errorResult!.content);
+          _error =
+              DiscuzError(value.errorResult!.key, value.errorResult!.content);
         });
-      }
-      else{
+      } else {
         setState(() {
           _error = null;
         });
       }
-
-
-    })
-    .catchError((onError){
+    }).catchError((onError) {
       // VibrationUtils.vibrateErrorIfPossible();
       // // EasyLoading.showError('${onError}');
       // if (!_enableControlFinish) {
@@ -169,139 +159,63 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       //   }
       //
       // }
-
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
 
-    return Consumer<DiscuzAndUserNotifier>(builder: (context,discuzAndUser, child){
-      if(discuzAndUser.discuz == null){
+    return Consumer<DiscuzAndUserNotifier>(
+        builder: (context, discuzAndUser, child) {
+      if (discuzAndUser.discuz == null) {
         return NullDiscuzScreen();
       }
       return Column(
         children: [
-          if(_error!=null)
-            ErrorCard(_error!.key, _error!.content,(){
+          if (_error != null)
+            ErrorCard(_error!.key, _error!.content, () {
               _controller.callRefresh();
-            }
-            ),
+            }),
           Expanded(
-              child: getEasyRefreshWidget(discuzAndUser.discuz!,discuzAndUser.user)
-          )
+              child: getEasyRefreshWidget(
+                  discuzAndUser.discuz!, discuzAndUser.user))
         ],
       );
     });
   }
 
-  Widget getEasyRefreshWidget(Discuz discuz, User? user){
-    return EasyRefresh.custom(
-
-      enableControlFinishRefresh: true,
-      enableControlFinishLoad: true,
-      taskIndependence: _taskIndependence,
+  Widget getEasyRefreshWidget(Discuz discuz, User? user) {
+    return EasyRefresh(
+      header: EasyRefreshUtils.i18nClassicHeader(context),
+      footer: EasyRefreshUtils.i18nClassicFooter(context),
+      refreshOnStart: true,
       controller: _controller,
-      scrollController: _scrollController,
-      reverse: _reverse,
-      scrollDirection: _direction,
-      topBouncing: _topBouncing,
-      bottomBouncing: _bottomBouncing,
-      emptyWidget: _hotThreadList.length == 0? EmptyScreen(): null,
-      header: _enableRefresh? ClassicalHeader(
-        enableInfiniteRefresh: false,
-        bgColor:
-        _headerFloat ? Theme.of(context).primaryColor : Colors.transparent,
-        // infoColor: _headerFloat ? Colors.black87 : Theme.of(context).primaryColor,
-        textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
-        float: _headerFloat,
-        enableHapticFeedback: _vibration,
-        refreshText: S.of(context).pullToRefresh,
-        refreshReadyText: S.of(context).releaseToRefresh,
-        refreshingText: S.of(context).refreshing,
-        refreshedText: S.of(context).refreshed,
-        refreshFailedText: S.of(context).refreshFailed,
-        noMoreText: S.of(context).noMore,
-        infoText: S.of(context).updateAt,
-      )
-          : null,
-      footer: _enableLoad
-          ? ClassicalFooter(
-        textColor: Theme.of(context).textTheme.headline1!.color == null? Theme.of(context).primaryColorDark: Theme.of(context).textTheme.headline1!.color!,
-        enableInfiniteLoad: _enableInfiniteLoad,
-        enableHapticFeedback: _vibration,
-        loadText: S.of(context).pushToLoad,
-        loadReadyText: S.of(context).releaseToLoad,
-        loadingText: S.of(context).loading,
-        loadedText: S.of(context).loaded,
-        loadFailedText: S.of(context).loadFailed,
-        noMoreText: S.of(context).noMore,
-        infoText: S.of(context).updateAt,
-      )
-          : null,
       onRefresh: _enableRefresh
           ? () async {
-        _invalidateHotThreadContent(discuz);
-        if (!_enableControlFinish) {
-          _controller.resetLoadState();
-          _controller.finishRefresh();
-        }
-
-      } : null,
+              _invalidateHotThreadContent(discuz);
+              if (!_enableControlFinish) {
+                _controller.finishRefresh();
+              }
+            }
+          : null,
       onLoad: _enableLoad
           ? () async {
-        _loadHotThreadContent(discuz);
-      }
+              _loadHotThreadContent(discuz);
+            }
           : null,
-      firstRefresh: true,
-      firstRefreshWidget: Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: Center(
-            child: SizedBox(
-              height: 200.0,
-              width: 300.0,
-              child: Card(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      width: 50.0,
-                      height: 50.0,
-                      child: SpinKitFadingCube(
-                        color: Theme.of(context).primaryColor,
-                        size: 25.0,
-                      ),
-                    ),
-                    Container(
-                      child: Text(S.of(context).loading),
-                    )
-                  ],
-                ),
-              ),
-            )),
+      child: ListView.builder(
+        itemBuilder: (context, index) {
+          return HotThreadWidget(discuz, user, _hotThreadList[index]);
+        },
+        itemCount: _hotThreadList.length,
       ),
-      slivers: <Widget>[
-
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-                (context, index) {
-              return HotThreadWidget(discuz,user, _hotThreadList[index]);
-            },
-            childCount: _hotThreadList.length
-          ),
-        ),
-      ],
     );
   }
 
   @override
   void setState(fn) {
-    if(this.mounted) {
+    if (this.mounted) {
       super.setState(fn);
     }
   }

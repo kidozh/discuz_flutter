@@ -1,5 +1,8 @@
 
+import 'dart:io';
+
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class URLUtils{
   static String getAvatarURL(Discuz discuz, String uid){
@@ -25,4 +28,8 @@ class URLUtils{
   static String getForumDisplayURL(Discuz discuz, int fid){
     return "${discuz.baseURL}/forum.php?mod=forumdisplay&fid=${fid}";
   }
+
+  static Future<void> launchURL(String url) async => await canLaunchUrl(Uri.parse(url))
+      ? await launchUrl(Uri.parse(url), mode: Platform.isIOS? LaunchMode.inAppWebView: LaunchMode.externalApplication)
+      : throw 'Could not launch $url';
 }

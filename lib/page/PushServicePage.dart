@@ -13,17 +13,17 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 import '../client/MobileApiClient.dart';
-import '../screen/EmptyScreen.dart';
+import '../utility/EasyRefreshUtils.dart';
 import '../utility/NetworkUtils.dart';
 import '../utility/PostTextFieldUtils.dart';
 
@@ -56,43 +56,21 @@ class PushServiceState extends State<PushServiceStateWidget>{
   PushServiceState();
 
   late EasyRefreshController _controller;
-  late ScrollController _scrollController;
   late Dio _dio;
   late MobileApiClient _client;
 
   PushTokenListResult result = PushTokenListResult();
 
-  // 反向
-  bool _reverse = false;
-  // 方向
-  Axis _direction = Axis.vertical;
-  // Header浮动
-  bool _headerFloat = false;
-  // 无限加载
-  bool _enableInfiniteLoad = true;
   // 控制结束
   bool _enableControlFinish = false;
-  // 任务独立
-  bool _taskIndependence = false;
-  // 震动
-  bool _vibration = true;
-  // 是否开启刷新
   bool _enableRefresh = true;
-  // 是否开启加载
-  bool _enableLoad = true;
-  // 顶部回弹
-  bool _topBouncing = true;
-  // 底部回弹
-  bool _bottomBouncing = true;
-
   String deviceToken = "";
 
 
   @override
   void initState() {
     super.initState();
-    _controller = EasyRefreshController();
-    _scrollController = ScrollController();
+    _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
     _loadTokenInfo();
   }
 
@@ -142,46 +120,35 @@ class PushServiceState extends State<PushServiceStateWidget>{
             User user = discuzAndUser.user!;
 
             // start to trigger
-            return EasyRefresh.custom(
-              enableControlFinishRefresh: true,
-              enableControlFinishLoad: true,
-              taskIndependence: _taskIndependence,
+            return EasyRefresh(
+              header: EasyRefreshUtils.i18nClassicHeader(context),
+              footer: EasyRefreshUtils.i18nClassicFooter(context),
+              refreshOnStart: true,
               controller: _controller,
-              scrollController: _scrollController,
-              reverse: _reverse,
-              scrollDirection: _direction,
-              topBouncing: _topBouncing,
-              bottomBouncing: _bottomBouncing,
-              emptyWidget: result.list.length == 0? EmptyScreen(): null,
-              firstRefresh: true,
-              slivers: [
-                SliverList(delegate: SliverChildBuilderDelegate(
-                    (context, index){
+              child: ListView.builder(itemBuilder: (context, index){
 
-                      if(result.list[index].token != deviceToken){
-                        return ListTile(
-                          title: Text(result.list[index].deviceName),
-                          subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, result.list[index].updateAt)),
-                          trailing: result.list[index].token == deviceToken? Icon(AppPlatformIcons(context).thisDeviceSolid): null,
-                        );
-                      }
-                      else{
-                        return Card(
-                          color: Theme.of(context).primaryColor,
-                          child: ListTile(
-                            textColor: Theme.of(context).primaryTextTheme.bodyText1?.color,
-                            title: Text(result.list[index].deviceName),
-                            subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, result.list[index].updateAt)),
-                            trailing: result.list[index].token == deviceToken? Icon(AppPlatformIcons(context).thisDeviceSolid, color: Theme.of(context).primaryTextTheme.bodyText1?.color,): null,
-                          ),
-                        );
-                      }
+                if(result.list[index].token != deviceToken){
+                  return ListTile(
+                    title: Text(result.list[index].deviceName),
+                    subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, result.list[index].updateAt)),
+                    trailing: result.list[index].token == deviceToken? Icon(AppPlatformIcons(context).thisDeviceSolid): null,
+                  );
+                }
+                else{
+                  return Card(
+                    color: Theme.of(context).primaryColor,
+                    child: ListTile(
+                      textColor: Theme.of(context).primaryTextTheme.bodyText1?.color,
+                      title: Text(result.list[index].deviceName),
+                      subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, result.list[index].updateAt)),
+                      trailing: result.list[index].token == deviceToken? Icon(AppPlatformIcons(context).thisDeviceSolid, color: Theme.of(context).primaryTextTheme.bodyText1?.color,): null,
+                    ),
+                  );
+                }
 
-                    },
-                  childCount: result.list.length
-                )
-                )
-              ],
+              },
+                itemCount: result.list.length,
+              ),
               onRefresh: _enableRefresh? () async{
                 await _loadTokenList(discuz, user);
               }: null,
@@ -203,9 +170,9 @@ class PushServiceState extends State<PushServiceStateWidget>{
         result = value;
       });
       if (!_enableControlFinish) {
-        _controller.resetLoadState();
+        //_controller.resetLoadState();
         _controller.finishRefresh();
-        _controller.finishLoad(noMore: true);
+        _controller.finishRefresh(IndicatorResult.noMore);
       }
       // check with token
       String token = "";
