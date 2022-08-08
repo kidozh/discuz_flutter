@@ -1,6 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -3956,6 +3957,66 @@ class S {
     return Intl.message(
       'Last updated at %T',
       name: 'easyRefreshClassicFooterMessageText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Forum info.`
+  String get forumInformation {
+    return Intl.message(
+      'Forum info.',
+      name: 'forumInformation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Filter and sort`
+  String get forumSortPosts {
+    return Intl.message(
+      'Filter and sort',
+      name: 'forumSortPosts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Publish`
+  String get pushThreadTitle {
+    return Intl.message(
+      'Publish',
+      name: 'pushThreadTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Bold`
+  String get insertBoldText {
+    return Intl.message(
+      'Bold',
+      name: 'insertBoldText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Italic`
+  String get insertItalicText {
+    return Intl.message(
+      'Italic',
+      name: 'insertItalicText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Quote`
+  String get insertQuoteText {
+    return Intl.message(
+      'Quote',
+      name: 'insertQuoteText',
       desc: '',
       args: [],
     );

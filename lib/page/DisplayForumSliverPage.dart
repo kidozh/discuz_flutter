@@ -13,7 +13,9 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/InternalWebviewBrowserPage.dart';
+import 'package:discuz_flutter/page/PushThreadPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -367,22 +369,33 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 }
               },
             ),
+          IconButton(
+              icon: Icon(AppPlatformIcons(context).publishPostOutlined,size: 24),
+              onPressed: () {
+                if(_displayForumResult.discuzIndexVariables.forum.fid != 0){
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  Navigator.push(
+                      context,
+                      platformPageRoute(
+                          context: context,
+                          builder: (context) => PushThreadPage(discuz,_displayForumResult.discuzIndexVariables.forum.fid, 0)));
+                }
+                else{
+                  EasyLoading.showInfo(S.of(context).loading);
+                }
 
-          IconButton(
-              icon: Icon(Icons.filter_alt_outlined,size: 24),
-              onPressed: () {
-                VibrationUtils.vibrateWithClickIfPossible();
-                _showForumFilterBottomSheet(context);
-              }),
-          IconButton(
-              icon: Icon(PlatformIcons(context).helpOutline,size: 24),
-              onPressed: () {
-                VibrationUtils.vibrateWithClickIfPossible();
-                _showInformationBottomSheet(context);
               }),
           PopupMenuButton(
             icon: Icon(PlatformIcons(context).ellipsis, size: 24,),
             itemBuilder: (context) => [
+              PopupMenuItem<int>(
+                child: Text(S.of(context).forumInformation),
+                value: 3,
+              ),
+              PopupMenuItem<int>(
+                child: Text(S.of(context).forumSortPosts),
+                value: 4,
+              ),
               PopupMenuItem<int>(
                 child: Text(S.of(context).openViaInternalBrowser),
                 value: 0,
@@ -409,6 +422,16 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                   }
                 case 1:{
                   Share.share(URLUtils.getForumDisplayURL(discuz, fid), subject: _displayForumResult.discuzIndexVariables.forum.name);
+                  break;
+                }
+                case 3:{
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  _showInformationBottomSheet(context);
+                  break;
+                }
+                case 4:{
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  _showForumFilterBottomSheet(context);
                   break;
                 }
               }

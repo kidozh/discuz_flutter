@@ -325,6 +325,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "forumFilterTimeToday": MessageLookupByLibrary.simpleMessage("Today"),
         "forumFilterTypeIdTitle":
             MessageLookupByLibrary.simpleMessage("Category"),
+        "forumInformation": MessageLookupByLibrary.simpleMessage("Forum info."),
+        "forumSortPosts":
+            MessageLookupByLibrary.simpleMessage("Filter and sort"),
         "friendNumber": MessageLookupByLibrary.simpleMessage("Friends"),
         "fromDeviceSignature": m12,
         "fuchsia": MessageLookupByLibrary.simpleMessage("Fuchsia"),
@@ -351,6 +354,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "incorrectDiscuzAddress":
             MessageLookupByLibrary.simpleMessage("Invalid discuz address."),
         "index": MessageLookupByLibrary.simpleMessage("Index"),
+        "insertBoldText": MessageLookupByLibrary.simpleMessage("Bold"),
+        "insertItalicText": MessageLookupByLibrary.simpleMessage("Italic"),
+        "insertQuoteText": MessageLookupByLibrary.simpleMessage("Quote"),
         "insertSignatureAtTheEndTitle":
             MessageLookupByLibrary.simpleMessage("Enable signature"),
         "interfaceBrightness":
@@ -517,6 +523,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushNotificationSubmittedContent": MessageLookupByLibrary.simpleMessage(
             "Push service relies on Firebase and APNs, which needs token, device information. You should agree with terms of service and privacy policy of push service to use it."),
         "pushPackageId": MessageLookupByLibrary.simpleMessage("Package ID"),
+        "pushThreadTitle": MessageLookupByLibrary.simpleMessage("Publish"),
         "pushToLoad": MessageLookupByLibrary.simpleMessage("Push to load"),
         "pushToken": MessageLookupByLibrary.simpleMessage("Firebase token"),
         "recentNote": MessageLookupByLibrary.simpleMessage("Recent note"),

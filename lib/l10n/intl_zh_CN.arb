@@ -600,5 +600,11 @@
   "easyRefreshClassicFooterProcessedText": "加载成功",
   "easyRefreshClassicFooterNoMoreText": "没有更多的内容了",
   "easyRefreshClassicFooterFailedText": "加载失败",
-  "easyRefreshClassicFooterMessageText": "最后更新于 %T"
+  "easyRefreshClassicFooterMessageText": "最后更新于 %T",
+  "forumInformation": "板块信息",
+  "forumSortPosts": "过滤排序帖子",
+  "pushThreadTitle": "发帖",
+  "insertBoldText": "粗体文字",
+  "insertItalicText": "斜体文字",
+  "insertQuoteText": "引用文字"
 }

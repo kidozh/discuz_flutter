@@ -599,5 +599,11 @@
   "easyRefreshClassicFooterProcessedText": "Succeeded",
   "easyRefreshClassicFooterNoMoreText": "No more",
   "easyRefreshClassicFooterFailedText": "Failed",
-  "easyRefreshClassicFooterMessageText": "Last updated at %T"
+  "easyRefreshClassicFooterMessageText": "Last updated at %T",
+  "forumInformation": "Forum info.",
+  "forumSortPosts": "Filter and sort",
+  "pushThreadTitle": "Publish",
+  "insertBoldText": "Bold",
+  "insertItalicText": "Italic",
+  "insertQuoteText": "Quote"
 }

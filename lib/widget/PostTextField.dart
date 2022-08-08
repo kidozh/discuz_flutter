@@ -3,7 +3,6 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:discuz_flutter/JsonResult/SmileyResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/Smiley.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
@@ -17,14 +16,15 @@ class PostTextField extends StatefulWidget{
   Discuz _discuz;
   TextEditingController _controller;
   FocusNode focusNode;
+  bool? expanded;
 
-  PostTextField(this._discuz,this._controller,{required this.focusNode});
+  PostTextField(this._discuz,this._controller,{required this.focusNode, this.expanded});
 
 
 
   @override
   PostTextFieldState createState() {
-    return PostTextFieldState(this._discuz,this._controller,focusNode: focusNode);
+    return PostTextFieldState(this._discuz,this._controller,focusNode: focusNode, expanded: this.expanded);
   }
 }
 
@@ -33,8 +33,9 @@ class PostTextFieldState extends State<PostTextField>{
 
   Discuz _discuz;
   FocusNode focusNode;
+  bool? expanded;
 
-  PostTextFieldState(this._discuz, this._controller,{required this.focusNode});
+  PostTextFieldState(this._discuz, this._controller,{required this.focusNode, this.expanded});
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +44,9 @@ class PostTextFieldState extends State<PostTextField>{
       specialTextSpanBuilder: PostSpecialTextSpanBuilder(_discuz),
       selectionControls: MaterialTextSelectionControls(),
       focusNode: focusNode,
-      minLines: 1,
-      maxLines: 3,
+      minLines: expanded  == null? 1: null,
+      maxLines: expanded  == null?3:null,
+      expands: expanded == null? false: true,
       decoration: InputDecoration(
         hintText: S.of(context).sendReplyHint,
       ),
@@ -87,6 +89,72 @@ class SmileyText extends SpecialText{
   
 }
 
+class BoldText extends SpecialText{
+  Discuz _discuz;
+  static String textStartFlag = "[b]";
+  static String textEndFlag = "[/b]";
+  int start;
+
+  BoldText(this._discuz, TextStyle textStyle,{required this.start}) : super(textStartFlag, textEndFlag, textStyle);
+
+
+
+  @override
+  InlineSpan finishText() {
+    return SpecialTextSpan(
+        text: getContent(),
+        actualText: getContent(),
+        start: this.start,
+        style: textStyle?.copyWith(fontWeight: FontWeight.bold),
+        //deleteAll: true
+    );
+  }
+}
+
+class ItalicText extends SpecialText{
+  Discuz _discuz;
+  static String textStartFlag = "[i]";
+  static String textEndFlag = "[/i]";
+  int start;
+
+  ItalicText(this._discuz, TextStyle textStyle,{required this.start}) : super(textStartFlag, textEndFlag, textStyle);
+
+
+
+  @override
+  InlineSpan finishText() {
+    return SpecialTextSpan(text: getContent(),
+        actualText: getContent(),
+        start: this.start,
+        style: textStyle?.copyWith(fontStyle: FontStyle.italic),
+        //deleteAll: true
+    );
+  }
+}
+
+class QuoteText extends SpecialText{
+  Discuz _discuz;
+  static String textStartFlag = "[quote]";
+  static String textEndFlag = "[/quote]";
+  int start;
+
+  QuoteText(this._discuz, TextStyle textStyle,{required this.start}) : super(textStartFlag, textEndFlag, textStyle);
+
+
+
+  @override
+  InlineSpan finishText() {
+    return BackgroundTextSpan(text: getContent(),
+        actualText: getContent(),
+        start: this.start,
+        background: Paint()..color = Colors.blue.withOpacity(0.15),
+        style: textStyle?.copyWith(color: Colors.blue),
+        //deleteAll: true
+
+    );
+  }
+}
+
 class AttachImageText extends SpecialText{
   Discuz _discuz;
   static String attachStartFlag = "[attachimg]";
@@ -107,7 +175,8 @@ class AttachImageText extends SpecialText{
       actualText: toString(),
       deleteAll: true,
       start: start,
-      style: TextStyle(color: Colors.blue)
+      style: TextStyle(color: Colors.blue),
+
     );
 
   }
@@ -126,12 +195,25 @@ class PostSpecialTextSpanBuilder extends SpecialTextSpanBuilder{
       return null;
     }
     else{
-      if(isStart(flag, SmileyText.smileyStartFlag)){
-        return SmileyText(_discuz, textStyle!,start: index-(SmileyText.smileyStartFlag.length-1));
-      }
       if(isStart(flag, AttachImageText.attachStartFlag)){
         return AttachImageText(_discuz, textStyle!,start: index-(AttachImageText.attachStartFlag.length-1));
       }
+      else if(isStart(flag, BoldText.textStartFlag)){
+        return BoldText(_discuz, textStyle!,start: index-(BoldText.textStartFlag.length-1));
+      }
+      else if(isStart(flag, ItalicText.textStartFlag)){
+        return ItalicText(_discuz, textStyle!,start: index-(ItalicText.textStartFlag.length-1));
+      }
+      else if(isStart(flag, QuoteText.textStartFlag)){
+        return QuoteText(_discuz, textStyle!,start: index-(QuoteText.textStartFlag.length-1));
+      }
+      else if(isStart(flag, SmileyText.smileyStartFlag)){
+        return SmileyText(_discuz, textStyle!,start: index-(SmileyText.smileyStartFlag.length-1));
+      }
+      else{
+        return null;
+      }
+
 
     }
 

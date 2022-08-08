@@ -286,6 +286,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "forumFilterTimeTitle": MessageLookupByLibrary.simpleMessage("时间过滤"),
         "forumFilterTimeToday": MessageLookupByLibrary.simpleMessage("今天"),
         "forumFilterTypeIdTitle": MessageLookupByLibrary.simpleMessage("主题分类"),
+        "forumInformation": MessageLookupByLibrary.simpleMessage("板块信息"),
+        "forumSortPosts": MessageLookupByLibrary.simpleMessage("过滤排序帖子"),
         "friendNumber": MessageLookupByLibrary.simpleMessage("好友数"),
         "fromDeviceSignature": m12,
         "fuchsia": MessageLookupByLibrary.simpleMessage("Fuchsia"),
@@ -307,6 +309,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "incorrectDiscuzAddress":
             MessageLookupByLibrary.simpleMessage("无效的论坛地址."),
         "index": MessageLookupByLibrary.simpleMessage("索引"),
+        "insertBoldText": MessageLookupByLibrary.simpleMessage("粗体文字"),
+        "insertItalicText": MessageLookupByLibrary.simpleMessage("斜体文字"),
+        "insertQuoteText": MessageLookupByLibrary.simpleMessage("引用文字"),
         "insertSignatureAtTheEndTitle":
             MessageLookupByLibrary.simpleMessage("启用结尾签名"),
         "interfaceBrightness": MessageLookupByLibrary.simpleMessage("显示模式"),
@@ -449,6 +454,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushNotificationSubmittedContent": MessageLookupByLibrary.simpleMessage(
             "推送服务依赖Firebase以及APNs，需要您的设备型号、操作系统类别以及偏好渠道等信息。您需要同意我们的推送服务使用条款和隐私政策后使用本服务。"),
         "pushPackageId": MessageLookupByLibrary.simpleMessage("应用包名"),
+        "pushThreadTitle": MessageLookupByLibrary.simpleMessage("发帖"),
         "pushToLoad": MessageLookupByLibrary.simpleMessage("拉动加载"),
         "pushToken": MessageLookupByLibrary.simpleMessage("Firebase令牌"),
         "recentNote": MessageLookupByLibrary.simpleMessage("最近的帖子"),

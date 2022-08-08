@@ -64,4 +64,10 @@ class AppPlatformIcons{
   IconData get contactUserSolid => isMaterial(context)? Icons.message : CupertinoIcons.chat_bubble_fill;
 
   IconData get shortcutSolid => isMaterial(context)? Icons.location_pin : CupertinoIcons.compass_fill;
+
+  IconData get filterSolid => isMaterial(context)? Icons.filter_alt : CupertinoIcons.square_stack_3d_up_fill;
+
+  IconData get filterOutlined => isMaterial(context)? Icons.filter_alt_outlined : CupertinoIcons.square_stack_3d_up;
+
+  IconData get publishPostOutlined => isMaterial(context)? Icons.add_circle_outline : CupertinoIcons.add_circled;
 }

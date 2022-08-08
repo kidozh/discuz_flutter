@@ -1077,11 +1077,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     } else {
       String newText = "";
       newText = _replyController.text + text;
-      // if (end > 0) {
-      //   newText += value.text.substring(0, end);
-      // }
-      // newText += text;
-
       _replyController.value = TextEditingValue(
           text: newText,
           selection:
