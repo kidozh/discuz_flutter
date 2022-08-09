@@ -17,7 +17,7 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:open_file/open_file.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -79,7 +79,7 @@ class AttachmentWidget extends StatelessWidget{
               TextButton(
                 onPressed: () async{
                   VibrationUtils.vibrateWithClickIfPossible();
-                  final result = await OpenFile.open(savePath);
+                  final result = await OpenFilex.open(savePath);
                   if(result.type != ResultType.done){
                     EasyLoading.showError("${result.message}(${result.type})");
                   }
