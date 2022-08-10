@@ -2,7 +2,6 @@
 
 import 'dart:developer';
 
-import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
@@ -80,7 +79,7 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
               SettingsSection(
                 tiles: [
 
-                  SettingsTile(
+                  SettingsTile.navigation(
                     title: Text(S.of(context).noSignature),
                     trailing: signature == PostTextFieldUtils.NO_SIGNATURE ?Icon(PlatformIcons(context).checkMark, color: Theme.of(context).primaryColor,): Icon(null),
                     onPressed: (BuildContext context){
@@ -88,16 +87,16 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
                       setSignature(PostTextFieldUtils.NO_SIGNATURE);
                     },
                   ),
-                  SettingsTile(
-                    title: Text(S.of(context).deviceNameSignature),
-                    description: Text(deviceSignature),
+                  SettingsTile.navigation(
+                    title: Text(S.of(context).deviceNameSignature+" (${deviceSignature})"),
+                    //value: Text(deviceSignature),
                     trailing: signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE?Icon(PlatformIcons(context).checkMark, color: Theme.of(context).primaryColor):Icon(null),
                     onPressed: (BuildContext context){
                       VibrationUtils.vibrateWithClickIfPossible();
                       setSignature(PostTextFieldUtils.USE_DEVICE_SIGNATURE);
                     },
                   ),
-                  SettingsTile(
+                  SettingsTile.navigation(
                     title: Text(S.of(context).customSignature),
                     trailing: (signature != PostTextFieldUtils.NO_SIGNATURE && signature != PostTextFieldUtils.USE_DEVICE_SIGNATURE)?
                     Icon(PlatformIcons(context).checkMark, color: Theme.of(context).primaryColor):
