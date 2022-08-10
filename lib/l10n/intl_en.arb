@@ -104,7 +104,7 @@
   },
   "outerlinkOpenTitle": "The link doesn't belong to the BBS",
   "outerlinkOpenMessage": "Host of the link is not the same as the BBS. It would be dangerous to browse.",
-  "ok": "ok",
+  "ok": "OK",
   "savePictureToDevice": "Save",
   "openInBrowser": "Open in browser",
   "writeStorageDenied": "Write storage permission denied.",

@@ -1,5 +1,5 @@
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
@@ -49,7 +49,7 @@ class ShortcutState extends State<ShortcutStatefulWidget> {
         Discuz _discuz = discuzAndUser.discuz!;
         User? _user = discuzAndUser.user;
         return Padding(
-          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+          padding: EdgeInsets.symmetric(vertical: 64.0, horizontal: 16.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -60,13 +60,19 @@ class ShortcutState extends State<ShortcutStatefulWidget> {
                       child: PlatformTextField(
                     controller: _fidTextController,
                     hintText: S.of(context).shortcutFidHint,
+                    keyboardType: TextInputType.numberWithOptions(
+                        signed: false, decimal: false),
                   )),
+                  SizedBox(
+                    width: 16.0,
+                  ),
                   ValueListenableBuilder(
                       valueListenable: _fidTextController,
                       builder: (context, TextEditingValue value, child) {
                         if (value.text.isNotEmpty) {
-                          return ElevatedButton(
-                            child: Text(S.of(context).shortcutGo),
+                          return PlatformIconButton(
+                            //child: Text(S.of(context).shortcutGo),
+                            icon: Icon(AppPlatformIcons(context).goToSolid),
                             onPressed: () async {
                               int fid = int.parse(value.text);
                               await Navigator.push(
@@ -85,20 +91,29 @@ class ShortcutState extends State<ShortcutStatefulWidget> {
                 ],
               ),
               // for tid
+              SizedBox(
+                height: 16.0,
+              ),
               Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Expanded(
                       child: PlatformTextField(
-                        controller: _tidTextController,
-                        hintText: S.of(context).shortcutTidHint,
-                      )),
+                    controller: _tidTextController,
+                    hintText: S.of(context).shortcutTidHint,
+                    keyboardType: TextInputType.numberWithOptions(
+                        signed: false, decimal: false),
+                  )),
+                  SizedBox(
+                    height: 16.0,
+                  ),
                   ValueListenableBuilder(
                       valueListenable: _tidTextController,
                       builder: (context, TextEditingValue value, child) {
                         if (value.text.isNotEmpty) {
-                          return ElevatedButton(
-                            child: Text(S.of(context).shortcutGo),
+                          return PlatformIconButton(
+                            icon: Icon(AppPlatformIcons(context).goToSolid),
+                            //child: Text(S.of(context).shortcutGo),
                             onPressed: () async {
                               int tid = int.parse(value.text);
                               await Navigator.push(
@@ -117,29 +132,37 @@ class ShortcutState extends State<ShortcutStatefulWidget> {
                 ],
               ),
               // for uid
+              SizedBox(
+                height: 16.0,
+              ),
               Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Expanded(
                       child: PlatformTextField(
-                        controller: _uidTextController,
-                        hintText: S.of(context).shortcutUidHint,
-                      )),
+                    controller: _uidTextController,
+                    hintText: S.of(context).shortcutUidHint,
+                    keyboardType: TextInputType.numberWithOptions(
+                        signed: false, decimal: false),
+                  )),
+                  SizedBox(
+                    height: 16.0,
+                  ),
                   ValueListenableBuilder(
                       valueListenable: _uidTextController,
                       builder: (context, TextEditingValue value, child) {
                         if (value.text.isNotEmpty) {
-                          return ElevatedButton(
-                            child: Text(S.of(context).shortcutGo),
+                          return PlatformIconButton(
+                            //child: Text(S.of(context).shortcutGo),
+                            icon: Icon(AppPlatformIcons(context).goToSolid),
                             onPressed: () async {
                               int uid = int.parse(value.text);
                               await Navigator.push(
                                   context,
                                   platformPageRoute(
                                       context: context,
-                                      builder: (context) =>
-                                          UserProfilePage(
-                                              _discuz, _user, uid)));
+                                      builder: (context) => UserProfilePage(
+                                          _discuz, _user, uid)));
                             },
                           );
                         } else {

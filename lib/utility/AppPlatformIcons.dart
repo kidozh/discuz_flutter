@@ -70,4 +70,6 @@ class AppPlatformIcons{
   IconData get filterOutlined => isMaterial(context)? Icons.filter_alt_outlined : CupertinoIcons.square_stack_3d_up;
 
   IconData get publishPostOutlined => isMaterial(context)? Icons.add_circle_outline : CupertinoIcons.add_circled;
+
+  IconData get goToSolid => isMaterial(context)? Icons.arrow_forward : CupertinoIcons.arrow_right;
 }

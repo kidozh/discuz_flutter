@@ -429,7 +429,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Why not consider add a discuz forum?"),
         "nullDiscuzTitle":
             MessageLookupByLibrary.simpleMessage("No Discuz! BBS is selected"),
-        "ok": MessageLookupByLibrary.simpleMessage("ok"),
+        "ok": MessageLookupByLibrary.simpleMessage("OK"),
         "onlineHours": m21,
         "onlineHoursTitle": MessageLookupByLibrary.simpleMessage("Online Time"),
         "onlyViewAuthor": MessageLookupByLibrary.simpleMessage("OP mode"),
