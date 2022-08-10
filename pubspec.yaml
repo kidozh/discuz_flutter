@@ -81,7 +81,7 @@ dependencies:
   font_awesome_flutter: ^10.1.0
   firebase_analytics: ^9.1.9
   flutter_local_notifications: ^9.6.0
-  # flutter_apns: ^1.6.0
+  flutter_apns: ^1.6.0
   scroll_to_index: any
   easy_refresh: ^3.0.2+2
   flutter_html_all: ^3.0.0-alpha.3
