@@ -368,7 +368,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       context,
                       platformPageRoute(
                           context: context,
-                          builder: (context) => PushThreadPage(discuz,_displayForumResult.discuzIndexVariables.forum.fid, 0)));
+                          builder: (context) => PostThreadPage(discuz,_displayForumResult.discuzIndexVariables.forum.fid, 0)));
                 }
                 else{
                   EasyLoading.showInfo(S.of(context).loading);

@@ -25,37 +25,37 @@ import '../screen/ExtraFuncInThreadScreen.dart';
 import '../utility/NetworkUtils.dart';
 import '../utility/UserPreferencesUtils.dart';
 
-class PushThreadPage extends StatelessWidget{
+class PostThreadPage extends StatelessWidget{
   int fid;
   int tid;
   Discuz discuz;
   Draft? draft;
 
-  PushThreadPage(this.discuz,this.fid, this.tid,{this.draft});
+  PostThreadPage(this.discuz,this.fid, this.tid,{this.draft});
 
   @override
   Widget build(BuildContext context) {
-    return PushThreadStatefulWidget(this.discuz,this.fid, this.tid, draft:draft);
+    return PostThreadStatefulWidget(this.discuz,this.fid, this.tid, draft:draft);
   }
 
 }
 
-class PushThreadStatefulWidget extends StatefulWidget{
+class PostThreadStatefulWidget extends StatefulWidget{
   int fid;
   Discuz discuz;
   int tid;
   Draft? draft;
 
-  PushThreadStatefulWidget(this.discuz,this.fid, this.tid, {this.draft});
+  PostThreadStatefulWidget(this.discuz,this.fid, this.tid, {this.draft});
 
   @override
-  PushThreadState createState() {
-    return PushThreadState(this.discuz,this.fid, this.tid, draft: draft);
+  PostThreadState createState() {
+    return PostThreadState(this.discuz,this.fid, this.tid, draft: draft);
   }
 
 }
 
-class PushThreadState extends State<PushThreadStatefulWidget>{
+class PostThreadState extends State<PostThreadStatefulWidget>{
   Discuz discuz;
   int fid;
   int tid;
@@ -67,7 +67,7 @@ class PushThreadState extends State<PushThreadStatefulWidget>{
   // dropdown menu status
   String? selectedTypeId;
 
-  PushThreadState(this.discuz,this.fid, this.tid,{this.draft});
+  PostThreadState(this.discuz,this.fid, this.tid,{this.draft});
 
   @override
   void initState() {
