@@ -142,7 +142,7 @@ class AppDatabase{
 
   static Future<DraftDao> getDraftDao() async {
     if(draftBox == null){
-      draftBox =  await Hive.openBox<Draft>('${hiveBoxPrefix}_draft_1');
+      draftBox =  await Hive.openBox<Draft>('${hiveBoxPrefix}_draft_v1');
     }
 
     return DraftDao(draftBox!);

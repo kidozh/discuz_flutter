@@ -386,6 +386,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "loadMore": MessageLookupByLibrary.simpleMessage("LoadMore"),
         "loaded": MessageLookupByLibrary.simpleMessage("Load completed"),
         "loading": MessageLookupByLibrary.simpleMessage("Loading..."),
+        "loadingForumInformation": MessageLookupByLibrary.simpleMessage(
+            "Loading configuration for publish a thread in the forum."),
         "loginByWebHttpWarn": MessageLookupByLibrary.simpleMessage(
             "Please be aware that you are browsing a HTTP-served webpage, and it may be modified by a third-party entity. You should take caution in sending your information via the protocol. Consider using HTTPS for safety."),
         "loginByWebMessage": MessageLookupByLibrary.simpleMessage(
@@ -524,6 +526,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Push service relies on Firebase and APNs, which needs token, device information. You should agree with terms of service and privacy policy of push service to use it."),
         "pushPackageId": MessageLookupByLibrary.simpleMessage("Package ID"),
         "pushThreadTitle": MessageLookupByLibrary.simpleMessage("Publish"),
+        "pushThreadTitleHint": MessageLookupByLibrary.simpleMessage("Title"),
         "pushToLoad": MessageLookupByLibrary.simpleMessage("Push to load"),
         "pushToken": MessageLookupByLibrary.simpleMessage("Firebase token"),
         "recentNote": MessageLookupByLibrary.simpleMessage("Recent note"),

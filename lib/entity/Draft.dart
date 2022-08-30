@@ -22,7 +22,7 @@ class Draft extends HiveObject{
   @HiveField(6)
   int fid = 0;
   @HiveField(7)
-  int typeid = 0;
+  String typeid;
 
 
   Draft(this.title, this.text, this.fid, this.typeid, this.updateTime, this.discuz);

@@ -337,6 +337,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "loadMore": MessageLookupByLibrary.simpleMessage("加载"),
         "loaded": MessageLookupByLibrary.simpleMessage("加载完成"),
         "loading": MessageLookupByLibrary.simpleMessage("正在加载..."),
+        "loadingForumInformation":
+            MessageLookupByLibrary.simpleMessage("正在加载发表帖子的设置。。。"),
         "loginByWebHttpWarn": MessageLookupByLibrary.simpleMessage(
             "您正在使用不安全的HTTP连接，此界面有可能被第三方所劫持。您在此界面输入的信息有可能泄露。强烈建议您使用HTTPS协议访问此界面。"),
         "loginByWebMessage": MessageLookupByLibrary.simpleMessage(
@@ -455,6 +457,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "推送服务依赖Firebase以及APNs，需要您的设备型号、操作系统类别以及偏好渠道等信息。您需要同意我们的推送服务使用条款和隐私政策后使用本服务。"),
         "pushPackageId": MessageLookupByLibrary.simpleMessage("应用包名"),
         "pushThreadTitle": MessageLookupByLibrary.simpleMessage("发帖"),
+        "pushThreadTitleHint": MessageLookupByLibrary.simpleMessage("帖子标题"),
         "pushToLoad": MessageLookupByLibrary.simpleMessage("拉动加载"),
         "pushToken": MessageLookupByLibrary.simpleMessage("Firebase令牌"),
         "recentNote": MessageLookupByLibrary.simpleMessage("最近的帖子"),

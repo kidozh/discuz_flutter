@@ -605,5 +605,7 @@
   "pushThreadTitle": "Publish",
   "insertBoldText": "Bold",
   "insertItalicText": "Italic",
-  "insertQuoteText": "Quote"
+  "insertQuoteText": "Quote",
+  "loadingForumInformation": "Loading configuration for publish a thread in the forum.",
+  "pushThreadTitleHint": "Title"
 }

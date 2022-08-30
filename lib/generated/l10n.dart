@@ -4021,6 +4021,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Loading configuration for publish a thread in the forum.`
+  String get loadingForumInformation {
+    return Intl.message(
+      'Loading configuration for publish a thread in the forum.',
+      name: 'loadingForumInformation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Title`
+  String get pushThreadTitleHint {
+    return Intl.message(
+      'Title',
+      name: 'pushThreadTitleHint',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

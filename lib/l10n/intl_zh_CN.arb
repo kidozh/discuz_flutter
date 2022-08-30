@@ -606,5 +606,7 @@
   "pushThreadTitle": "发帖",
   "insertBoldText": "粗体文字",
   "insertItalicText": "斜体文字",
-  "insertQuoteText": "引用文字"
+  "insertQuoteText": "引用文字",
+  "loadingForumInformation": "正在加载发表帖子的设置。。。",
+  "pushThreadTitleHint": "帖子标题"
 }

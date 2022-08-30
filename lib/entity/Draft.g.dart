@@ -20,7 +20,7 @@ class DraftAdapter extends TypeAdapter<Draft> {
       fields[1] as String,
       fields[2] as String,
       fields[6] as int,
-      fields[7] as int,
+      fields[7] as String,
       fields[4] as DateTime,
       fields[5] as Discuz,
     )..insertTime = fields[3] as DateTime;

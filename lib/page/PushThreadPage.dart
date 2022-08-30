@@ -1,30 +1,41 @@
 
+import 'package:dio/dio.dart';
+import 'package:discuz_flutter/client/MobileApiClient.dart';
+import 'package:discuz_flutter/screen/LoadingScreen.dart';
 import 'package:discuz_flutter/screen/SmileyListScreen.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/PostTextField.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:provider/provider.dart';
 
+import '../JsonResult/DisplayForumResult.dart';
+import '../dao/DraftDao.dart';
 import '../dao/ImageAttachmentDao.dart';
 import '../database/AppDatabase.dart';
 import '../entity/Discuz.dart';
+import '../entity/Draft.dart';
 import '../entity/ImageAttachment.dart';
 import '../entity/Smiley.dart';
+import '../entity/User.dart';
 import '../generated/l10n.dart';
+import '../provider/DiscuzAndUserNotifier.dart';
 import '../screen/ExtraFuncInThreadScreen.dart';
+import '../utility/NetworkUtils.dart';
 import '../utility/UserPreferencesUtils.dart';
 
 class PushThreadPage extends StatelessWidget{
   int fid;
   int tid;
   Discuz discuz;
+  Draft? draft;
 
-  PushThreadPage(this.discuz,this.fid, this.tid);
+  PushThreadPage(this.discuz,this.fid, this.tid,{this.draft});
 
   @override
   Widget build(BuildContext context) {
-    return PushThreadStatefulWidget(this.discuz,this.fid, this.tid);
+    return PushThreadStatefulWidget(this.discuz,this.fid, this.tid, draft:draft);
   }
 
 }
@@ -33,12 +44,13 @@ class PushThreadStatefulWidget extends StatefulWidget{
   int fid;
   Discuz discuz;
   int tid;
+  Draft? draft;
 
-  PushThreadStatefulWidget(this.discuz,this.fid, this.tid);
+  PushThreadStatefulWidget(this.discuz,this.fid, this.tid, {this.draft});
 
   @override
   PushThreadState createState() {
-    return PushThreadState(this.discuz,this.fid, this.tid);
+    return PushThreadState(this.discuz,this.fid, this.tid, draft: draft);
   }
 
 }
@@ -48,120 +60,181 @@ class PushThreadState extends State<PushThreadStatefulWidget>{
   int fid;
   int tid;
   TextEditingController _controller = TextEditingController();
+  TextEditingController _titleEditingController = TextEditingController();
   FocusNode focusNode = FocusNode();
   List<String> insertedAidList = [];
+  Draft? draft;
+  // dropdown menu status
+  String? selectedTypeId;
 
-  PushThreadState(this.discuz,this.fid, this.tid);
+  PushThreadState(this.discuz,this.fid, this.tid,{this.draft});
+
+  @override
+  void initState() {
+    super.initState();
+    _loadForumInfo();
+    // add backup option
+    backupDraftIfPossible();
+  }
 
   @override
   Widget build(BuildContext context) {
+    if(_displayForumResult == null){
+      return LoadingScreen(loadingText: S.of(context).loadingForumInformation,);
+    }
+
+
     return PlatformScaffold(
       iosContentBottomPadding: true,
       iosContentPadding: true,
       appBar: PlatformAppBar(
         title: Text(S.of(context).pushThreadTitle),
       ),
-      body: Column(
-        children: [
-          // for the button groups
-          Row(
-            children: [
-              PlatformIconButton(
-                icon: Icon(Icons.format_bold_outlined),
-                onPressed: (){
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  String insertedText = "[b][/b]";
-                  insertString(insertedText);
-                },
-              ),
-              PlatformIconButton(
-                icon: Icon(Icons.format_italic_outlined),
-                onPressed: (){
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  String insertedText = "[i][/i]";
-                  insertString(insertedText);
-                },
-              ),
-              PlatformIconButton(
-                icon: Icon(Icons.format_quote_outlined),
-                onPressed: (){
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  String insertedText = "[quote][/quote]";
-                  insertString(insertedText);
-                },
-              ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(vertical: 0, horizontal: 4),
+        child: Column(
+          children: [
+            // for the button groups
+            Row(
+              children: [
+                if(getOptionalDropdownMenuItem().isNotEmpty)
+                  DropdownButton<String>(items: getOptionalDropdownMenuItem(),
+                      onChanged: (item){
+                        if(item != null){
+                          setState((){
+                            selectedTypeId = item;
+                          });
 
-              PlatformIconButton(
-                icon: Icon(Icons.emoji_emotions_outlined),
-                onPressed: (){
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  // popup a smiley dialog
-                  showPlatformModalSheet(context: context, builder: (context) => SmileyListScreen((p0) {insertSmiley(p0);}));
-                },
-              ),
-              PlatformIconButton(
-                icon: Icon(Icons.image_outlined),
-                onPressed: (){
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  showPlatformModalSheet(context: context, builder: (context) =>
-                      ExtraFuncInThreadScreen(
-                        discuz,
-                        tid,
-                        fid,
-                        onReplyWithImage: (aid, path) async {
-                          // fill with text first
-                          // refresh the layout
-                          // insertedAidList.clear();
-                          if (aid.isNotEmpty) {
-                            String insertedAidString = "[attachimg]${aid}[/attachimg]";
-                            insertString(insertedAidString);
-                            // add aid to list
-                            insertedAidList.add(aid);
-                            // add to historical attachment
-                            bool savedInDatabase = await UserPreferencesUtils.getRecordHistoryEnabled();
-                            if (savedInDatabase) {
-                              // save it to database
-                              ImageAttachmentDao imageAttachmentDao = await AppDatabase.getImageAttachmentDao();
-                              ImageAttachment? imageAttachment = imageAttachmentDao.findImageAttachmentByDiscuzAndAid(discuz, aid);
-                              if (imageAttachment != null) {
-                                imageAttachment.updateAt =
-                                    DateTime.now();
-                                imageAttachmentDao
-                                    .insertImageAttachmentWithKey(
-                                    imageAttachment.key,
-                                    imageAttachment);
-                              } else {
-                                imageAttachmentDao
-                                    .insertImageAttachment(
-                                    ImageAttachment(
-                                        aid, discuz, path));
-                              }
-                            }
-                          } else {}
-                        },
-                      )
-                  );
-                },
-              ),
-              PlatformIconButton(
-                icon: Icon(Icons.settings_backup_restore),
-              ),
-            ],
+                        }
+                  },
+                    value: selectedTypeId,
+                  ),
+                Expanded(
+                    child: TextFormField(
+                      controller: _titleEditingController,
+                      expands: false,
+                      decoration: InputDecoration(
+                          hintText: S.of(context).pushThreadTitle
+                      ),
+                    )
+                )
 
-          ),
-          Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(4.0),
-                child: PostTextField(
-                  discuz, _controller,
-                  focusNode: focusNode,
-                  expanded: true,
+              ],
+            ),
+            Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(4.0),
+                  child: PostTextField(
+                    discuz, _controller,
+                    focusNode: focusNode,
+                    expanded: true,
+                  ),
+                )
+            ),
+            Row(
+              children: [
+                PlatformIconButton(
+                  icon: Icon(Icons.format_bold_outlined),
+                  onPressed: (){
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    String insertedText = "[b][/b]";
+                    insertString(insertedText);
+                  },
                 ),
-              )
-          )
-        ],
+                PlatformIconButton(
+                  icon: Icon(Icons.format_italic_outlined),
+                  onPressed: (){
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    String insertedText = "[i][/i]";
+                    insertString(insertedText);
+                  },
+                ),
+                PlatformIconButton(
+                  icon: Icon(Icons.format_quote_outlined),
+                  onPressed: (){
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    String insertedText = "[quote][/quote]";
+                    insertString(insertedText);
+                  },
+                ),
+
+                PlatformIconButton(
+                  icon: Icon(Icons.emoji_emotions_outlined),
+                  onPressed: (){
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    // popup a smiley dialog
+                    showPlatformModalSheet(context: context, builder: (context) => SmileyListScreen((p0) {insertSmiley(p0);}));
+                  },
+                ),
+                PlatformIconButton(
+                  icon: Icon(Icons.image_outlined),
+                  onPressed: (){
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    showPlatformModalSheet(context: context, builder: (context) =>
+                        ExtraFuncInThreadScreen(
+                          discuz,
+                          tid,
+                          fid,
+                          onReplyWithImage: (aid, path) async {
+                            // fill with text first
+                            // refresh the layout
+                            // insertedAidList.clear();
+                            if (aid.isNotEmpty) {
+                              String insertedAidString = "[attachimg]${aid}[/attachimg]";
+                              insertString(insertedAidString);
+                              // add aid to list
+                              insertedAidList.add(aid);
+                              // add to historical attachment
+                              bool savedInDatabase = await UserPreferencesUtils.getRecordHistoryEnabled();
+                              if (savedInDatabase) {
+                                // save it to database
+                                ImageAttachmentDao imageAttachmentDao = await AppDatabase.getImageAttachmentDao();
+                                ImageAttachment? imageAttachment = imageAttachmentDao.findImageAttachmentByDiscuzAndAid(discuz, aid);
+                                if (imageAttachment != null) {
+                                  imageAttachment.updateAt =
+                                      DateTime.now();
+                                  imageAttachmentDao
+                                      .insertImageAttachmentWithKey(
+                                      imageAttachment.key,
+                                      imageAttachment);
+                                } else {
+                                  imageAttachmentDao
+                                      .insertImageAttachment(
+                                      ImageAttachment(
+                                          aid, discuz, path));
+                                }
+                              }
+                            } else {}
+                          },
+                        )
+                    );
+                  },
+                ),
+                PlatformIconButton(
+                  icon: Icon(Icons.settings_backup_restore),
+                ),
+              ],
+
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  DisplayForumResult? _displayForumResult = null;
+
+  Future<void> _loadForumInfo() async{
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
+    // fetch the information soon
+    client.displayForumResult(fid.toString(), 0, {}).then((value) {
+      setState(() {
+        _displayForumResult = value;
+      });
+    });
   }
 
   // utilities
@@ -242,6 +315,49 @@ class PushThreadState extends State<PushThreadStatefulWidget>{
     }
   }
 
-  void
+  List<DropdownMenuItem<String>> getOptionalDropdownMenuItem(){
+    List<DropdownMenuItem<String>> dropdownMenuItemList = [];
+    if(_displayForumResult?.discuzIndexVariables.threadType == null){
+      return dropdownMenuItemList;
+    }
+    else{
+      bool typeRequired = _displayForumResult!.discuzIndexVariables.threadType!.typeRequired();
+
+      // traverse it
+      for(var entry in _displayForumResult!.discuzIndexVariables.threadType!.idNameMap.entries){
+        dropdownMenuItemList.add(DropdownMenuItem<String>(child: Text(entry.value.toString()), value: entry.key,));
+      }
+    }
+
+    return dropdownMenuItemList;
+  }
+
+  void backupDraftIfPossible(){
+    if(draft == null){
+      // shall create a new one
+      _titleEditingController.addListener(() {
+        backupDraft();
+      });
+
+      _controller.addListener(() {
+        backupDraft();
+      });
+    }
+  }
+
+
+
+  Future<void> backupDraft() async{
+    // start to collect edittext
+    String title = _titleEditingController.text;
+    String content = _titleEditingController.text;
+
+    if(draft == null){
+      draft = Draft(title, content, fid, selectedTypeId == null? "": selectedTypeId!, DateTime.now(), discuz);
+    }
+    // start to save it
+    DraftDao draftDao = await AppDatabase.getDraftDao();
+    draft = await draftDao.insertDraftAndReturnInsertObj(draft!);
+  }
 
 }
