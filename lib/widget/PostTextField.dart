@@ -89,71 +89,6 @@ class SmileyText extends SpecialText{
   
 }
 
-class BoldText extends SpecialText{
-  Discuz _discuz;
-  static String textStartFlag = "[b]";
-  static String textEndFlag = "[/b]";
-  int start;
-
-  BoldText(this._discuz, TextStyle textStyle,{required this.start}) : super(textStartFlag, textEndFlag, textStyle);
-
-
-
-  @override
-  InlineSpan finishText() {
-    return SpecialTextSpan(
-        text: getContent(),
-        actualText: getContent(),
-        start: this.start,
-        style: textStyle?.copyWith(fontWeight: FontWeight.bold),
-        //deleteAll: true
-    );
-  }
-}
-
-class ItalicText extends SpecialText{
-  Discuz _discuz;
-  static String textStartFlag = "[i]";
-  static String textEndFlag = "[/i]";
-  int start;
-
-  ItalicText(this._discuz, TextStyle textStyle,{required this.start}) : super(textStartFlag, textEndFlag, textStyle);
-
-
-
-  @override
-  InlineSpan finishText() {
-    return SpecialTextSpan(text: getContent(),
-        actualText: getContent(),
-        start: this.start,
-        style: textStyle?.copyWith(fontStyle: FontStyle.italic),
-        //deleteAll: true
-    );
-  }
-}
-
-class QuoteText extends SpecialText{
-  Discuz _discuz;
-  static String textStartFlag = "[quote]";
-  static String textEndFlag = "[/quote]";
-  int start;
-
-  QuoteText(this._discuz, TextStyle textStyle,{required this.start}) : super(textStartFlag, textEndFlag, textStyle);
-
-
-
-  @override
-  InlineSpan finishText() {
-    return BackgroundTextSpan(text: getContent(),
-        actualText: getContent(),
-        start: this.start,
-        background: Paint()..color = Colors.blue.withOpacity(0.15),
-        style: textStyle?.copyWith(color: Colors.blue),
-        //deleteAll: true
-
-    );
-  }
-}
 
 class AttachImageText extends SpecialText{
   Discuz _discuz;
@@ -197,15 +132,6 @@ class PostSpecialTextSpanBuilder extends SpecialTextSpanBuilder{
     else{
       if(isStart(flag, AttachImageText.attachStartFlag)){
         return AttachImageText(_discuz, textStyle!,start: index-(AttachImageText.attachStartFlag.length-1));
-      }
-      else if(isStart(flag, BoldText.textStartFlag)){
-        return BoldText(_discuz, textStyle!,start: index-(BoldText.textStartFlag.length-1));
-      }
-      else if(isStart(flag, ItalicText.textStartFlag)){
-        return ItalicText(_discuz, textStyle!,start: index-(ItalicText.textStartFlag.length-1));
-      }
-      else if(isStart(flag, QuoteText.textStartFlag)){
-        return QuoteText(_discuz, textStyle!,start: index-(QuoteText.textStartFlag.length-1));
       }
       else if(isStart(flag, SmileyText.smileyStartFlag)){
         return SmileyText(_discuz, textStyle!,start: index-(SmileyText.smileyStartFlag.length-1));

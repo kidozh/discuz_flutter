@@ -226,11 +226,11 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     historySaved = true;
   }
 
-  void _invalidateContent() {
+  Future<void> _invalidateContent() async{
     setState(() {
       _page = 1;
     });
-    _loadForumContent();
+    await _loadForumContent();
   }
 
   void setNewViewThreadQuery(ViewThreadQuery viewThreadQuery) {
@@ -656,7 +656,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             controller: _controller,
             onRefresh: _enableRefresh
                 ? () async {
-                    _invalidateContent();
+                    await _invalidateContent();
                     if (!_enableControlFinish) {
                       //_controller.resetLoadState();
                       _controller.finishRefresh();
@@ -665,7 +665,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                 : null,
             onLoad: _enableLoad
                 ? () async {
-                    _loadForumContent();
+                    await _loadForumContent();
                   }
                 : null,
             child: CustomScrollView(

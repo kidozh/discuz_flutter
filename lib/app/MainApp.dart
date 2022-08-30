@@ -1,8 +1,15 @@
 import 'dart:developer';
 import 'dart:io';
+
+import 'package:discuz_flutter/dao/DiscuzDao.dart';
+import 'package:discuz_flutter/dao/UserDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
-import 'package:discuz_flutter/page/DrawerPage.dart';
 import 'package:discuz_flutter/dialog/SwitchDiscuzDialog.dart';
+import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/User.dart';
+import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/page/AddDiscuzPage.dart';
+import 'package:discuz_flutter/page/DrawerPage.dart';
 import 'package:discuz_flutter/page/ExploreWebsitePage.dart';
 import 'package:discuz_flutter/page/TestFlightBannerPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
@@ -11,29 +18,19 @@ import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
 import 'package:discuz_flutter/screen/DashboardScreen.dart';
 import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
-import 'package:discuz_flutter/screen/HotThreadScreen.dart';
+import 'package:discuz_flutter/screen/DiscuzPortalScreen.dart';
 import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
-import 'package:discuz_flutter/page/AddDiscuzPage.dart';
-import 'package:discuz_flutter/screen/DiscuzPortalScreen.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-
-import 'package:discuz_flutter/dao/DiscuzDao.dart';
-import 'package:discuz_flutter/dao/UserDao.dart';
-import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:discuz_flutter/generated/l10n.dart';
-
-import 'package:discuz_flutter/entity/User.dart';
 
 import '../main.dart';
 
@@ -225,7 +222,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     _checkAcceptVersionFlag(context);
   }
 
-  _checkAcceptVersionFlag(BuildContext context) async{
+  Future<void> _checkAcceptVersionFlag(BuildContext context) async{
     String flag = await UserPreferencesUtils.getAcceptVersionCodeFlag();
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     String version = packageInfo.version;
@@ -269,7 +266,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   }
 
-  void _triggerSwitchDiscuzDialog() async {
+  Future<void> _triggerSwitchDiscuzDialog() async {
     await _getDiscuzList();
     List<Widget> widgetList = [];
     for (int i = 0; i < _allDiscuzs.length; i++) {
@@ -296,27 +293,63 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       ));
     }
 
-    widgetList.add(SimpleDialogItem(
-        key: UniqueKey(),
-        icon: PlatformIcons(context).addCircled,
-        color: Theme.of(context).primaryColor,
-        text: S.of(context).addNewDiscuz,
-        onPressed: () {
-          VibrationUtils.vibrateWithClickIfPossible();
-          Navigator.of(context).pop();
-          Navigator.push(
-              context,
-              platformPageRoute(
-                  context: context,
-                  builder: (context) => AddDiscuzPage()));
-        }));
+    widgetList.add(
+      Padding(
+        padding: EdgeInsets.fromLTRB(24.0, 12.0, 24.0, 16.0),
+        child: PlatformElevatedButton(
+          child: Text(S.of(context).addNewDiscuz, style: TextStyle(color: Theme.of(context).primaryTextTheme.button?.color),),
+          color: Theme.of(context).primaryColor,
+          onPressed: (){
+            VibrationUtils.vibrateWithClickIfPossible();
+            Navigator.of(context).pop();
+            Navigator.push(
+                context,
+                platformPageRoute(
+                    context: context,
+                    builder: (context) => AddDiscuzPage()));
+          },
+        ),
+      )
 
-    await showPlatformDialog<Null>(
-        context: context, //BuildContext对象
-        builder: (BuildContext context) {
-          return SimpleDialog(
-              title: Text(S.of(context).chooseDiscuz), children: widgetList);
-        });
+    );
+
+    // widgetList.add(SimpleDialogItem(
+    //     key: UniqueKey(),
+    //     icon: PlatformIcons(context).addCircled,
+    //     color: Theme.of(context).primaryColor,
+    //     text: S.of(context).addNewDiscuz,
+    //     onPressed: () {
+    //       VibrationUtils.vibrateWithClickIfPossible();
+    //       Navigator.of(context).pop();
+    //       Navigator.push(
+    //           context,
+    //           platformPageRoute(
+    //               context: context,
+    //               builder: (context) => AddDiscuzPage()));
+    //     }));
+    if(isCupertino(context)){
+      await showPlatformModalSheet(
+          context: context, //BuildContext对象
+          builder: (BuildContext context) {
+
+            return SimpleDialog(
+                title: Text(S.of(context).chooseDiscuz),
+                children: widgetList
+            );
+          });
+    }
+    else{
+      await showPlatformDialog(
+          context: context, //BuildContext对象
+          builder: (BuildContext context) {
+
+            return SimpleDialog(
+                title: Text(S.of(context).chooseDiscuz),
+                children: widgetList
+            );
+          });
+    }
+
   }
 
   Future<void> _getDiscuzList() async {

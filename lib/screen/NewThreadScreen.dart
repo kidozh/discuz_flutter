@@ -80,7 +80,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
     _scrollController = ScrollController();
   }
 
-  _invalidateNewThreadContent(Discuz discuz) async {
+  Future<void> _invalidateNewThreadContent(Discuz discuz) async {
     _page = 1;
     await _loadNewThreadContent(discuz);
   }
@@ -192,7 +192,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
       controller: _controller,
       onRefresh: _enableRefresh
           ? () async {
-              _invalidateNewThreadContent(discuz);
+              await _invalidateNewThreadContent(discuz);
               if (!_enableControlFinish) {
                 //_controller.resetLoadState();
                 _controller.finishRefresh();
@@ -201,7 +201,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
           : null,
       onLoad: _enableLoad
           ? () async {
-              _loadNewThreadContent(discuz);
+              await _loadNewThreadContent(discuz);
             }
           : null,
       child: ListView.builder(

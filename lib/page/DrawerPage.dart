@@ -50,7 +50,6 @@ class DrawerState extends State<DrawerStatefulWidget>{
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _initDb();
   }

@@ -82,7 +82,7 @@ class FavoriteThreadState extends State<FavoriteThreadStatefulWidget>{
 
   }
 
-  void _loadDb() async{
+  Future<void> _loadDb() async{
 
     _favoriteThreadDao = await AppDatabase.getFavoriteThreadDao();
     setState(() {
@@ -97,7 +97,7 @@ class FavoriteThreadState extends State<FavoriteThreadStatefulWidget>{
 
   }
 
-  void _loadDataFromServer() async{
+  Future<void> _loadDataFromServer() async{
     // initial trial
     int page = 1;
     await fetchDataByPage(page, []);

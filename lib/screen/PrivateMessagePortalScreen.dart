@@ -83,7 +83,7 @@ class _PrivateMessagePortalState
     _scrollController = ScrollController();
   }
 
-  _invalidateHotThreadContent(Discuz discuz) async {
+  Future<void> _invalidateHotThreadContent(Discuz discuz) async {
     _page = 1;
     await _loadPortalPrivateMessage(discuz);
   }
@@ -162,7 +162,6 @@ class _PrivateMessagePortalState
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
 
     return Consumer<DiscuzAndUserNotifier>(
         builder: (context, discuzAndUser, child) {
@@ -193,7 +192,7 @@ class _PrivateMessagePortalState
       controller: _controller,
       onRefresh: _enableRefresh
           ? () async {
-              _invalidateHotThreadContent(discuz);
+              await _invalidateHotThreadContent(discuz);
               if (!_enableControlFinish) {
                 //_controller.resetLoadState();
                 _controller.finishRefresh();
@@ -202,7 +201,7 @@ class _PrivateMessagePortalState
           : null,
       onLoad: _enableLoad
           ? () async {
-              _loadPortalPrivateMessage(discuz);
+              await _loadPortalPrivateMessage(discuz);
             }
           : null,
       child: ListView.builder(

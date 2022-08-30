@@ -161,7 +161,6 @@ class _PublicMessagePortalState
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
 
     return Consumer<DiscuzAndUserNotifier>(
         builder: (context, discuzAndUser, child) {
@@ -192,7 +191,7 @@ class _PublicMessagePortalState
       controller: _controller,
       onRefresh: _enableRefresh
           ? () async {
-              _invalidateHotThreadContent(discuz);
+              await _invalidateHotThreadContent(discuz);
               if (!_enableControlFinish) {
                 //_controller.resetLoadState();
                 _controller.finishRefresh();
@@ -201,7 +200,7 @@ class _PublicMessagePortalState
           : null,
       onLoad: _enableLoad
           ? () async {
-              _loadPortalPublicMessage(discuz);
+              await _loadPortalPublicMessage(discuz);
             }
           : null,
       child: ListView.builder(

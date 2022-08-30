@@ -82,7 +82,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
     _scrollController = ScrollController();
   }
 
-  _invalidateNotificationContent(Discuz discuz) async {
+  Future<void> _invalidateNotificationContent(Discuz discuz) async {
     _page = 1;
     await _loadNotificationContent(discuz);
   }
@@ -201,7 +201,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
       controller: _controller,
       onRefresh: _enableRefresh
           ? () async {
-              _invalidateNotificationContent(discuz);
+              await _invalidateNotificationContent(discuz);
               if (!_enableControlFinish) {
                 //_controller.resetLoadState();
                 _controller.finishRefresh();
@@ -210,7 +210,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
           : null,
       onLoad: _enableLoad
           ? () async {
-              _loadNotificationContent(discuz);
+              await _loadNotificationContent(discuz);
             }
           : null,
       child: ListView.builder(

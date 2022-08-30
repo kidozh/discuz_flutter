@@ -131,22 +131,22 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     client = MobileApiClient(dio, baseUrl: discuz.baseURL);
   }
 
-  void _loadFavoriteDao() async{
+  Future<void> _loadFavoriteDao() async{
     setState(() async{
       favoriteForumDao = await AppDatabase.getFavoriteForumDao();
     });
 
   }
 
-  void _invalidateContent() {
+  Future<void> _invalidateContent() async {
     setState(() {
       _page = 1;
 
     });
-    _loadForumContent();
+    await _loadForumContent();
   }
 
-  void favoriteForum() async{
+  Future<void> favoriteForum() async{
     FavoriteForumDao favoriteForumDao = await AppDatabase.getFavoriteForumDao();
     favoriteForumDao.insertFavoriteForum(
       FavoriteForumInDatabase(0, _displayForumResult.discuzIndexVariables.member_uid,
@@ -165,7 +165,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     });
   }
 
-  void unfavoriteForum() async{
+  Future<void> unfavoriteForum() async{
     FavoriteForumDao favoriteForumDao = await AppDatabase.getFavoriteForumDao();
 
     FavoriteForumInDatabase? favoriteForumInDatabase = favoriteForumDao.getFavoriteForumByFid(fid, discuz);
@@ -184,7 +184,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
   }
 
-  void _saveViewHistory(ForumDetail forumDetail) async {
+  Future<void> _saveViewHistory(ForumDetail forumDetail) async {
     // check if needed
     bool allowViewHistory =
         await UserPreferencesUtils.getRecordHistoryEnabled();
@@ -264,7 +264,6 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
           _forumThreadList.addAll(value.discuzIndexVariables.forumThreadList);
         });
 
-        //_forumThreadList = _forumThreadList;
       }
       _page += 1;
 
@@ -272,6 +271,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         //_controller.resetLoadState();
 
         _controller.finishRefresh();
+        _controller.resetFooter();
       }
       // check for loaded all?
       if (!_enableControlFinish) {
@@ -369,6 +369,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 }
               },
             ),
+          if(user != null)
           IconButton(
               icon: Icon(AppPlatformIcons(context).publishPostOutlined,size: 24),
               onPressed: () {
@@ -448,20 +449,16 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         header: EasyRefreshUtils.i18nClassicHeader(context),
         footer: EasyRefreshUtils.i18nClassicFooter(context),
         refreshOnStart: true,
-        onRefresh: _enableRefresh
-            ? () async {
-                _invalidateContent();
+        onRefresh: () async {
+                await _invalidateContent();
                 if (!_enableControlFinish) {
                   // _controller.resetLoadState();
                   _controller.finishRefresh();
                 }
-              }
-            : null,
-        onLoad: _enableLoad
-            ? () async {
-                _loadForumContent();
-              }
-            : null,
+              },
+        onLoad: () async {
+                await _loadForumContent();
+              },
         child: CustomScrollView(
           slivers: <Widget>[
             if (_error != null)
@@ -475,7 +472,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                     childCount: 1,
                   )),
             // check with sub forum
-            if(_displayForumResult!= null && _displayForumResult.discuzIndexVariables.subForumList.isNotEmpty)
+            if(_displayForumResult.discuzIndexVariables.subForumList.isNotEmpty)
               SliverList(delegate: SliverChildBuilderDelegate(
                       (context, index){
                     var subForum = _displayForumResult.discuzIndexVariables.subForumList[index];
@@ -521,53 +518,51 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   }
 
   void _showInformationBottomSheet(BuildContext context) {
-    if (_displayForumResult != null) {
-      showModalBottomSheet(
-          isScrollControlled: false,
-          context: context,
-          builder: (context) {
-            return Scrollable(
-              viewportBuilder: (BuildContext context, ViewportOffset position) {
-                return ListView(
-                  children: [
-                    Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.description_outlined,
-                            color: Colors.blue,
-                          ),
+    showModalBottomSheet(
+        isScrollControlled: false,
+        context: context,
+        builder: (context) {
+          return Scrollable(
+            viewportBuilder: (BuildContext context, ViewportOffset position) {
+              return ListView(
+                children: [
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Icon(
+                          Icons.description_outlined,
+                          color: Colors.blue,
                         ),
-                        Expanded(
-                            child: DiscuzHtmlWidget(
-                                discuz,
-                                _displayForumResult
-                                    .discuzIndexVariables.forum.description))
-                      ],
-                    ),
-                    Divider(),
-                    Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.rule,
-                            color: Colors.redAccent,
-                          ),
+                      ),
+                      Expanded(
+                          child: DiscuzHtmlWidget(
+                              discuz,
+                              _displayForumResult
+                                  .discuzIndexVariables.forum.description))
+                    ],
+                  ),
+                  Divider(),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Icon(
+                          Icons.rule,
+                          color: Colors.redAccent,
                         ),
-                        Expanded(
-                            child: DiscuzHtmlWidget(
-                                discuz,
-                                _displayForumResult.discuzIndexVariables.forum.rules))
-                      ],
-                    )
-                  ],
-                );
-              },
-            );
-          });
-    }
+                      ),
+                      Expanded(
+                          child: DiscuzHtmlWidget(
+                              discuz,
+                              _displayForumResult.discuzIndexVariables.forum.rules))
+                    ],
+                  )
+                ],
+              );
+            },
+          );
+        });
   }
 
   void _showForumFilterBottomSheet(BuildContext context) {

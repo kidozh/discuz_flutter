@@ -81,7 +81,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
     _scrollController = ScrollController();
   }
 
-  _invalidateHotThreadContent(Discuz discuz) async {
+  Future<void> _invalidateHotThreadContent(Discuz discuz) async {
     _page = 1;
     await _loadHotThreadContent(discuz);
   }
@@ -164,8 +164,6 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-
     return Consumer<DiscuzAndUserNotifier>(
         builder: (context, discuzAndUser, child) {
       if (discuzAndUser.discuz == null) {
@@ -193,7 +191,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       controller: _controller,
       onRefresh: _enableRefresh
           ? () async {
-              _invalidateHotThreadContent(discuz);
+              await _invalidateHotThreadContent(discuz);
               if (!_enableControlFinish) {
                 _controller.finishRefresh();
               }
@@ -201,7 +199,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
           : null,
       onLoad: _enableLoad
           ? () async {
-              _loadHotThreadContent(discuz);
+              await _loadHotThreadContent(discuz);
             }
           : null,
       child: ListView.builder(
