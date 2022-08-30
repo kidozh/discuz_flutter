@@ -13,7 +13,7 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/InternalWebviewBrowserPage.dart';
-import 'package:discuz_flutter/page/PushThreadPage.dart';
+import 'package:discuz_flutter/page/PostThreadPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
@@ -78,7 +78,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   _DisplayForumSliverState(this.discuz, this.user, this.fid);
 
   late EasyRefreshController _controller;
-  late ScrollController _scrollController;
+
 
   // 反向
   bool _reverse = false;
@@ -93,7 +93,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   bool _enableInfiniteLoad = true;
 
   // 控制结束
-  bool _enableControlFinish = false;
+  bool _enableControlFinish = true;
 
   // 任务独立
   bool _taskIndependence = false;
@@ -119,7 +119,6 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   void initState() {
     super.initState();
     _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
-    _scrollController = ScrollController();
     _loadClient();
     _loadFavoriteDao();
   }
@@ -266,21 +265,13 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
       }
       _page += 1;
+      _controller.finishRefresh();
+      _controller.resetFooter();
+      _controller.finishLoad(
+          _forumThreadList.length >= value.discuzIndexVariables.forum.getThreadCount()?
+          IndicatorResult.noMore:
+          IndicatorResult.success);
 
-      if (!_enableControlFinish) {
-        //_controller.resetLoadState();
-
-        _controller.finishRefresh();
-        _controller.resetFooter();
-      }
-      // check for loaded all?
-      if (!_enableControlFinish) {
-        _controller.finishLoad(
-            _forumThreadList.length >= value.discuzIndexVariables.forum.getThreadCount()?
-        IndicatorResult.noMore:
-        IndicatorResult.success);
-
-      }
 
       if (value.getErrorString() != null) {
         EasyLoading.showError(value.getErrorString()!);
@@ -311,10 +302,8 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       VibrationUtils.vibrateErrorIfPossible();
       //log(onError);
       EasyLoading.showError('${onError}');
-      if (!_enableControlFinish) {
-        //_controller.resetLoadState();
-        _controller.finishRefresh();
-      }
+      _controller.finishRefresh();
+
       switch (onError.runtimeType) {
         case DioError:
           {
@@ -451,10 +440,8 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         refreshOnStart: true,
         onRefresh: () async {
                 await _invalidateContent();
-                if (!_enableControlFinish) {
-                  // _controller.resetLoadState();
-                  _controller.finishRefresh();
-                }
+                _controller.finishRefresh();
+
               },
         onLoad: () async {
                 await _loadForumContent();

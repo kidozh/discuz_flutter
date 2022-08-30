@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart' hide Headers;
 import 'package:discuz_flutter/JsonResult/ApiResult.dart';
 import 'package:discuz_flutter/JsonResult/CaptchaResult.dart';
 import 'package:discuz_flutter/JsonResult/CheckLoginResult.dart';
@@ -18,10 +19,6 @@ import 'package:discuz_flutter/JsonResult/SmileyResult.dart';
 import 'package:discuz_flutter/JsonResult/UserDiscuzNotificationResult.dart';
 import 'package:discuz_flutter/JsonResult/UserProfileResult.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
-import 'package:discuz_flutter/entity/HotThread.dart';
-import 'package:discuz_flutter/entity/Post.dart';
-import 'package:json_annotation/json_annotation.dart';
-import 'package:dio/dio.dart' hide Headers;
 import 'package:retrofit/retrofit.dart';
 
 import '../JsonResult/NewThreadResult.dart';
@@ -266,4 +263,14 @@ abstract class MobileApiClient {
       @Field("deviceName") String deviceName,
       @Field("packageId") String packageId,
       @Field("channel") String pushChannel);
+
+  @POST("/api/mobile/index.php?version=4&module=newthread&topicsubmit=yes&usesig=1")
+  @FormUrlEncoded()
+  Future<ApiResult> postNewThread(
+      @Field("formhash") String formhash,
+      @Field("fid") int fid,
+      @Field("subject") String subject,
+      @Field("message") String message,
+      @Queries() Map<String, dynamic> formMap
+      );
 }

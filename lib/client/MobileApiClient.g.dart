@@ -789,6 +789,33 @@ class _MobileApiClient implements MobileApiClient {
     return value;
   }
 
+  @override
+  Future<ApiResult> postNewThread(
+      formhash, fid, subject, message, formMap) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.addAll(formMap);
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'formhash': formhash,
+      'fid': fid,
+      'subject': subject,
+      'message': message
+    };
+    final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
+        ApiResult>(Options(
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded')
+        .compose(_dio.options,
+            '/api/mobile/index.php?version=4&module=newthread&topicsubmit=yes&usesig=1',
+            queryParameters: queryParameters, data: _data)
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ApiResult.fromJson(_result.data!);
+    return value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||
