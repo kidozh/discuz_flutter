@@ -70,7 +70,7 @@ class PushThreadState extends State<PushThreadStatefulWidget>{
                 icon: Icon(Icons.format_bold_outlined),
                 onPressed: (){
                   VibrationUtils.vibrateWithClickIfPossible();
-                  String insertedText = "[b]${S.of(context).insertBoldText}[/b]";
+                  String insertedText = "[b][/b]";
                   insertString(insertedText);
                 },
               ),
@@ -78,7 +78,7 @@ class PushThreadState extends State<PushThreadStatefulWidget>{
                 icon: Icon(Icons.format_italic_outlined),
                 onPressed: (){
                   VibrationUtils.vibrateWithClickIfPossible();
-                  String insertedText = "[i]${S.of(context).insertItalicText}[/i]";
+                  String insertedText = "[i][/i]";
                   insertString(insertedText);
                 },
               ),
@@ -86,7 +86,7 @@ class PushThreadState extends State<PushThreadStatefulWidget>{
                 icon: Icon(Icons.format_quote_outlined),
                 onPressed: (){
                   VibrationUtils.vibrateWithClickIfPossible();
-                  String insertedText = "[quote]${S.of(context).insertQuoteText}[/quote]";
+                  String insertedText = "[quote][/quote]";
                   insertString(insertedText);
                 },
               ),
@@ -144,7 +144,7 @@ class PushThreadState extends State<PushThreadStatefulWidget>{
                 },
               ),
               PlatformIconButton(
-                icon: Icon(Icons.attachment_outlined),
+                icon: Icon(Icons.settings_backup_restore),
               ),
             ],
 
@@ -241,5 +241,7 @@ class PushThreadState extends State<PushThreadStatefulWidget>{
           TextSelection.fromPosition(TextPosition(offset: newText.length)));
     }
   }
+
+  void
 
 }

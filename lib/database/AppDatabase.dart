@@ -6,6 +6,7 @@ import 'package:discuz_flutter/dao/ImageAttachmentDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/entity/BlockUser.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/Draft.dart';
 import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
 import 'package:discuz_flutter/entity/ImageAttachment.dart';
@@ -14,6 +15,7 @@ import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:hive/hive.dart';
 
 import '../dao/BlockUserDao.dart';
+import '../dao/DraftDao.dart';
 import '../dao/FavoriteForumDao.dart';
 import '../dao/FavoriteThreadDao.dart';
 import '../dao/SmileyDao.dart';
@@ -33,6 +35,7 @@ class AppDatabase{
   static Box<ViewHistory>? viewHistoryBox;
   static Box<Smiley>? smileyBox;
   static Box<ImageAttachment>? imageAttachmentBox;
+  static Box<Draft>? draftBox;
 
   static Future<void> initBoxes() async {
     Hive
@@ -45,6 +48,7 @@ class AppDatabase{
       ..registerAdapter(SmileyAdapter())
       ..registerAdapter(ViewHistoryAdapter())
       ..registerAdapter(ImageAttachmentAdapter())
+      ..registerAdapter(DraftAdapter())
     ;
 
 
@@ -59,6 +63,7 @@ class AppDatabase{
     await getUserDao();
     await getViewHistoryDao();
     await getImageAttachmentDao();
+    await getDraftDao();
   }
 
 
@@ -133,6 +138,14 @@ class AppDatabase{
     }
 
     return ImageAttachmentDao(imageAttachmentBox!);
+  }
+
+  static Future<DraftDao> getDraftDao() async {
+    if(draftBox == null){
+      draftBox =  await Hive.openBox<Draft>('${hiveBoxPrefix}_draft_1');
+    }
+
+    return DraftDao(draftBox!);
   }
 
 

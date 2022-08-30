@@ -9,11 +9,9 @@ part 'Draft.g.dart';
 @HiveType(typeId: ConstUtils.HIVE_TYPE_ID_DRAFT)
 class Draft extends HiveObject{
   @HiveField(1)
-  String text;
-  @HiveField(6)
-  int fid = 0;
+  String title;
   @HiveField(2)
-  int replyPid = 0;
+  String text;
   @HiveField(3)
   DateTime insertTime = DateTime.now();
   @HiveField(4)
@@ -21,6 +19,11 @@ class Draft extends HiveObject{
 
   @HiveField(5)
   Discuz discuz;
+  @HiveField(6)
+  int fid = 0;
+  @HiveField(7)
+  int typeid = 0;
 
-  Draft(this.text, this.fid, this.replyPid, this.updateTime, this.discuz);
+
+  Draft(this.title, this.text, this.fid, this.typeid, this.updateTime, this.discuz);
 }
