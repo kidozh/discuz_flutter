@@ -99,6 +99,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
     // });
 
     _client.hotThreadResult(_page).then((value) {
+      _controller.finishRefresh();
       setState(() {
         result = value;
         _error = null;
@@ -109,9 +110,8 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
         }
       });
       _page += 1;
-      if (!_enableControlFinish) {
-        _controller.finishRefresh();
-      }
+      _controller.finishRefresh();
+
       // check for loaded all?
       log("Get HotThread ${_hotThreadList.length} ${value.variables.perPage}");
       if (!_enableControlFinish) {
@@ -192,9 +192,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       onRefresh: _enableRefresh
           ? () async {
               await _invalidateHotThreadContent(discuz);
-              if (!_enableControlFinish) {
-                _controller.finishRefresh();
-              }
+              _controller.finishRefresh();
             }
           : null,
       onLoad: _enableLoad
