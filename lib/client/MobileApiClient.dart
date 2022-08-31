@@ -269,8 +269,14 @@ abstract class MobileApiClient {
   Future<ApiResult> postNewThread(
       @Field("formhash") String formhash,
       @Field("fid") int fid,
+      @Field("typeid") String typeId,
       @Field("subject") String subject,
       @Field("message") String message,
+      // for captcha services
+      @Field("seccodehash") String captchaHash,
+      @Field("seccodemodid") String captchaType,
+      @Field("seccodeverify") String verification,
+      @Field("unused[]") List<String> attachAid,
       @Queries() Map<String, dynamic> formMap
       );
 }

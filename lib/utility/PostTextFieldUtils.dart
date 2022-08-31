@@ -5,9 +5,7 @@ import 'dart:developer';
 import 'dart:io' show Platform;
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:discuz_flutter/JsonResult/SmileyResult.dart';
 import 'package:discuz_flutter/entity/Smiley.dart';
-import 'package:discuz_flutter/widget/PostTextField.dart';
 import 'package:flutter/widgets.dart';
 
 import '../generated/l10n.dart';
@@ -36,6 +34,26 @@ class PostTextFieldUtils{
       message = replacementString;
     }
     return message;
+  }
+
+  static List<String> getAttachmentAidList(String message){
+    List<String> aidList = [];
+    RegExp replaceRegex = RegExp(r"\[attachimg\](\d*?)\[/attachimg\]",multiLine: true);
+    if(replaceRegex.hasMatch(message)){
+      // contain
+      log("contains attach aid regex ${message}");
+      for(var matchCase in replaceRegex.allMatches(message)){
+        log("Match Case -> ${matchCase}");
+        if(matchCase.groupCount == 1){
+          //String actualString = matchCase.group(0)!;
+          String aid = matchCase.group(1)!;
+          log("Obtain aid -> ${aid}");
+          aidList.add(aid);
+        }
+
+      }
+    }
+    return aidList;
   }
 
   static Future<String> getDeviceName(BuildContext context) async{

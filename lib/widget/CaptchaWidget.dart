@@ -6,7 +6,7 @@ import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
-import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,16 +17,17 @@ class CaptchaWidget extends StatelessWidget {
   User? _user;
   String captchaType;
   Dio dio;
+  bool? showProgress;
 
   CaptchaWidget(this.dio, this._discuz, this._user, this.captchaType,
-      {this.captchaController});
+      {this.captchaController, this.showProgress});
 
   CaptchaController? captchaController;
 
   @override
   Widget build(BuildContext context) {
     return CaptchaStatefulWidget(
-        this.dio, _discuz, _user, captchaType, captchaController);
+        this.dio, _discuz, _user, captchaType, captchaController, this.showProgress);
   }
 }
 
@@ -36,15 +37,16 @@ class CaptchaStatefulWidget extends StatefulWidget {
   String captchaType;
 
   CaptchaController? captchaController;
+  bool? showProgress;
 
   CaptchaStatefulWidget(this.dio, this._discuz, this._user, this.captchaType,
-      this.captchaController);
+      this.captchaController, this.showProgress);
 
   Dio dio;
 
   @override
   State<StatefulWidget> createState() {
-    return CaptchaState(dio, _discuz, _user, captchaType, captchaController);
+    return CaptchaState(dio, _discuz, _user, captchaType, captchaController, showProgress);
   }
 }
 
@@ -60,9 +62,12 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
   Uint8List? imageByte;
 
   TextEditingController _textEditingController = new TextEditingController();
+  bool? showProgress;
+  bool loaded = false;
 
   CaptchaState(this._dio, this._discuz, this._user, this.captchaType,
-      this.captchaController);
+      this.captchaController, this.showProgress);
+
 
   @override
   void initState() {
@@ -125,6 +130,7 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
       // the captcha html
       setState(() {
         captchaVariable = value.variables;
+        loaded = true;
       });
       // refresh controller parameters
       if (captchaController != null) {
@@ -145,6 +151,10 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
         });
 
       }
+    }).onError((error, stackTrace){
+      setState(() {
+        loaded = true;
+      });
     });
   }
 
@@ -152,10 +162,38 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
   Widget build(BuildContext context) {
     if (captchaVariable == null) {
       // an empty container
-      return Container(
-        width: 0,
-        height: 0,
-      );
+      if(showProgress == true){
+        if(loaded == false){
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+            child: Row(
+              children: [
+                PlatformCircularProgressIndicator(),
+                Expanded(child: Text(S.of(context).loadingCaptchaInformation))
+              ],
+            ),
+          );
+        }
+        else{
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+            child: Row(
+              children: [
+                Icon(AppPlatformIcons(context).checkCircleSolid, color: Colors.green,),
+                Expanded(child: Text(S.of(context).noCaptachaRequired))
+              ],
+            ),
+          );
+        }
+
+      }
+      else{
+        return Container(
+          width: 0,
+          height: 0,
+        );
+      }
+
     } else {
       return Padding(
         padding: EdgeInsets.all(4.0),

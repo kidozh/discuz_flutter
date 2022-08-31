@@ -16,11 +16,11 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import '../entity/ImageAttachment.dart';
 
@@ -32,13 +32,14 @@ class ExtraFuncInThreadScreen extends StatefulWidget{
   int fid = 0;
   StringToVoidFunc onReplyWithImage;
   Discuz discuz;
+  bool? showHistoricalAttachment;
 
 
-  ExtraFuncInThreadScreen(this.discuz,this.tid, this.fid,{required this.onReplyWithImage});
+  ExtraFuncInThreadScreen(this.discuz,this.tid, this.fid,{required this.onReplyWithImage, this.showHistoricalAttachment});
 
   @override
   ExtraFuncInThreadState createState() {
-    return ExtraFuncInThreadState(this.discuz,this.tid, this.fid, this.onReplyWithImage);
+    return ExtraFuncInThreadState(this.discuz,this.tid, this.fid, this.onReplyWithImage, this.showHistoricalAttachment);
   }
 
 }
@@ -48,6 +49,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
 
   CheckPostResult _checkPostResult = CheckPostResult();
   DiscuzError? _discuzError;
+  bool? showHistoricalAttachment;
 
   int tid = 0;
   int fid = 0;
@@ -56,7 +58,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
   Discuz discuz;
 
 
-  ExtraFuncInThreadState(this.discuz,this.tid, this.fid, this.onReplyWithImage);
+  ExtraFuncInThreadState(this.discuz,this.tid, this.fid, this.onReplyWithImage, this.showHistoricalAttachment);
 
   @override
   void initState() {
@@ -309,6 +311,9 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
     ];
 
     // append all saved image
+    if(showHistoricalAttachment == false){
+      return widgetList;
+    }
     for(var imageAttachment in imageAttachmentList){
       widgetList.add(
         InkWell(

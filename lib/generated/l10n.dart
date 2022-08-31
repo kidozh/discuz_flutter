@@ -4041,6 +4041,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Loading captcha information.`
+  String get loadingCaptchaInformation {
+    return Intl.message(
+      'Loading captcha information.',
+      name: 'loadingCaptchaInformation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No captcha needed.`
+  String get noCaptachaRequired {
+    return Intl.message(
+      'No captcha needed.',
+      name: 'noCaptachaRequired',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

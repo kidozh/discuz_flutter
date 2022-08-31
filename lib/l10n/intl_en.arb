@@ -607,5 +607,8 @@
   "insertItalicText": "Italic",
   "insertQuoteText": "Quote",
   "loadingForumInformation": "Loading configuration for publish a thread in the forum.",
-  "pushThreadTitleHint": "Title"
+  "pushThreadTitleHint": "Title",
+  "loadingCaptchaInformation": "Loading captcha information.",
+  "noCaptachaRequired": "No captcha needed."
+
 }

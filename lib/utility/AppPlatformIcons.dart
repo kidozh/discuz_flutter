@@ -72,4 +72,8 @@ class AppPlatformIcons{
   IconData get publishPostOutlined => isMaterial(context)? Icons.add_circle_outline : CupertinoIcons.add_circled;
 
   IconData get goToSolid => isMaterial(context)? Icons.arrow_forward : CupertinoIcons.arrow_right;
+
+  IconData get postThreadSolid => isMaterial(context)? Icons.send : CupertinoIcons.arrowshape_turn_up_right_fill;
+
+  IconData get checkCircleSolid => isMaterial(context)? Icons.check_circle : CupertinoIcons.check_mark_circled_solid;
 }

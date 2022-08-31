@@ -790,8 +790,8 @@ class _MobileApiClient implements MobileApiClient {
   }
 
   @override
-  Future<ApiResult> postNewThread(
-      formhash, fid, subject, message, formMap) async {
+  Future<ApiResult> postNewThread(formhash, fid, typeId, subject, message,
+      captchaHash, captchaType, verification, attachAid, formMap) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.addAll(formMap);
@@ -799,8 +799,13 @@ class _MobileApiClient implements MobileApiClient {
     final _data = {
       'formhash': formhash,
       'fid': fid,
+      'typeid': typeId,
       'subject': subject,
-      'message': message
+      'message': message,
+      'seccodehash': captchaHash,
+      'seccodemodid': captchaType,
+      'seccodeverify': verification,
+      'unused[]': attachAid
     };
     final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
         ApiResult>(Options(

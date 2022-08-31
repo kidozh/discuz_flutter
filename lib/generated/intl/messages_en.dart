@@ -386,6 +386,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "loadMore": MessageLookupByLibrary.simpleMessage("LoadMore"),
         "loaded": MessageLookupByLibrary.simpleMessage("Load completed"),
         "loading": MessageLookupByLibrary.simpleMessage("Loading..."),
+        "loadingCaptchaInformation": MessageLookupByLibrary.simpleMessage(
+            "Loading captcha information."),
         "loadingForumInformation": MessageLookupByLibrary.simpleMessage(
             "Loading configuration for publish a thread in the forum."),
         "loginByWebHttpWarn": MessageLookupByLibrary.simpleMessage(
@@ -418,6 +420,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "networkFailed":
             MessageLookupByLibrary.simpleMessage("Network failed."),
         "newThread": MessageLookupByLibrary.simpleMessage("New"),
+        "noCaptachaRequired":
+            MessageLookupByLibrary.simpleMessage("No captcha needed."),
         "noFavoriteThreadInDb": MessageLookupByLibrary.simpleMessage(
             "No favorite thread is stored in your device"),
         "noImagePicked":

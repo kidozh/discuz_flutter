@@ -337,6 +337,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "loadMore": MessageLookupByLibrary.simpleMessage("加载"),
         "loaded": MessageLookupByLibrary.simpleMessage("加载完成"),
         "loading": MessageLookupByLibrary.simpleMessage("正在加载..."),
+        "loadingCaptchaInformation":
+            MessageLookupByLibrary.simpleMessage("正在加载验证码信息。。。"),
         "loadingForumInformation":
             MessageLookupByLibrary.simpleMessage("正在加载发表帖子的设置。。。"),
         "loginByWebHttpWarn": MessageLookupByLibrary.simpleMessage(
@@ -364,6 +366,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "networkFail": MessageLookupByLibrary.simpleMessage("连接服务器时出错。"),
         "networkFailed": MessageLookupByLibrary.simpleMessage("网络访问失败。"),
         "newThread": MessageLookupByLibrary.simpleMessage("最新发表"),
+        "noCaptachaRequired":
+            MessageLookupByLibrary.simpleMessage("不需要验证码验证信息。"),
         "noFavoriteThreadInDb":
             MessageLookupByLibrary.simpleMessage("还没有收藏一个帖子"),
         "noImagePicked": MessageLookupByLibrary.simpleMessage("您可能没有选择任何一张图片。"),

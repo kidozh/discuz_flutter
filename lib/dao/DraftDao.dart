@@ -14,10 +14,18 @@ class DraftDao{
   }
 
   Future<Draft?> insertDraftAndReturnInsertObj(Draft draft) async{
+    if(draft.key == null){
+      int index = await draftBox.add(draft);
+      Draft? savedDraft = await draftBox.getAt(index);
+      return savedDraft;
+    }
+    else{
+      await draftBox.put(draft.key, draft);
+      return draft;
+    }
 
-    int index = await draftBox.add(draft);
-    Draft? savedDraft = await draftBox.getAt(index);
-    return savedDraft;
+
+
   }
 
   Draft? getDraftByIndex(int index){

@@ -608,5 +608,7 @@
   "insertItalicText": "斜体文字",
   "insertQuoteText": "引用文字",
   "loadingForumInformation": "正在加载发表帖子的设置。。。",
-  "pushThreadTitleHint": "帖子标题"
+  "pushThreadTitleHint": "帖子标题",
+  "loadingCaptchaInformation": "正在加载验证码信息。。。",
+  "noCaptachaRequired": "不需要验证码验证信息。"
 }
