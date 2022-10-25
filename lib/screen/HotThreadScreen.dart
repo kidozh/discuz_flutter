@@ -46,30 +46,6 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
   List<HotThread> _hotThreadList = [];
 
   late EasyRefreshController _controller;
-  late ScrollController _scrollController;
-
-  // 反向
-  bool _reverse = false;
-  // 方向
-  Axis _direction = Axis.vertical;
-  // Header浮动
-  bool _headerFloat = false;
-  // 无限加载
-  bool _enableInfiniteLoad = true;
-  // 控制结束
-  bool _enableControlFinish = false;
-  // 任务独立
-  bool _taskIndependence = false;
-  // 震动
-  bool _vibration = true;
-  // 是否开启刷新
-  bool _enableRefresh = true;
-  // 是否开启加载
-  bool _enableLoad = true;
-  // 顶部回弹
-  bool _topBouncing = true;
-  // 底部回弹
-  bool _bottomBouncing = true;
 
   _HotThreadState();
 
@@ -78,27 +54,20 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
     // TODO: implement initState
     super.initState();
     _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
-    _scrollController = ScrollController();
   }
 
-  Future<void> _invalidateHotThreadContent(Discuz discuz) async {
+  Future<IndicatorResult> _invalidateHotThreadContent(Discuz discuz) async {
     _page = 1;
-    await _loadHotThreadContent(discuz);
+    return await _loadHotThreadContent(discuz);
   }
 
-  Future<void> _loadHotThreadContent(Discuz discuz) async {
+  Future<IndicatorResult> _loadHotThreadContent(Discuz discuz) async {
     User? user =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
 
-    // _client.hotThreadRaw(_page).then((value){
-    //   log(value);
-    //   result = HotThreadResult.fromJson(jsonDecode(value));
-    //
-    // });
-
-    _client.hotThreadResult(_page).then((value) {
+    return await _client.hotThreadResult(_page).then((value) {
       _controller.finishRefresh();
       setState(() {
         result = value;
@@ -114,12 +83,10 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
 
       // check for loaded all?
       log("Get HotThread ${_hotThreadList.length} ${value.variables.perPage}");
-      if (!_enableControlFinish) {
-        _controller.finishLoad(
-            value.variables.hotThreadList.length < value.variables.perPage
-                ? IndicatorResult.noMore
-                : IndicatorResult.success);
-      }
+      _controller.finishLoad(
+          value.variables.hotThreadList.length < value.variables.perPage
+              ? IndicatorResult.noMore
+              : IndicatorResult.success);
 
       if (user != null && value.variables.member_uid != user.uid) {
         setState(() {
@@ -142,7 +109,15 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
           _error = null;
         });
       }
+      if(value.variables.hotThreadList.length < value.variables.perPage){
+        return IndicatorResult.noMore;
+      }
+      else{
+        return IndicatorResult.success;
+      }
+
     }).catchError((onError) {
+      return IndicatorResult.fail;
       // VibrationUtils.vibrateErrorIfPossible();
       // // EasyLoading.showError('${onError}');
       // if (!_enableControlFinish) {
@@ -189,17 +164,15 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       footer: EasyRefreshUtils.i18nClassicFooter(context),
       refreshOnStart: true,
       controller: _controller,
-      onRefresh: _enableRefresh
-          ? () async {
-              await _invalidateHotThreadContent(discuz);
+      onRefresh: () async {
+              IndicatorResult indicatorResult = await _invalidateHotThreadContent(discuz);
               _controller.finishRefresh();
+              return indicatorResult;
+            },
+      onLoad: () async {
+              return await _loadHotThreadContent(discuz);
             }
-          : null,
-      onLoad: _enableLoad
-          ? () async {
-              await _loadHotThreadContent(discuz);
-            }
-          : null,
+          ,
       child: ListView.builder(
         itemBuilder: (context, index) {
           return HotThreadWidget(discuz, user, _hotThreadList[index]);

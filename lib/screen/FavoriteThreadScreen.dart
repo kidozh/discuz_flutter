@@ -35,7 +35,6 @@ class FavoriteThreadScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return FavoriteThreadStatefulWidget();
   }
 }
@@ -60,15 +59,10 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
   List<FavoriteThread> _pmList = [];
 
   late EasyRefreshController _controller;
-  late ScrollController _scrollController;
 
 
   // 控制结束
   bool _enableControlFinish = false;
-
-  bool _enableRefresh = true;
-  // 是否开启加载
-  bool _enableLoad = true;
 
   _FavoriteThreadState();
 
@@ -79,16 +73,15 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
     // TODO: implement initState
     super.initState();
     _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
-    _scrollController = ScrollController();
 
   }
 
-  _invalidateHotThreadContent(Discuz discuz) async{
+  Future<IndicatorResult> _invalidateHotThreadContent(Discuz discuz) async{
     _page = 1;
-    await _loadPortalPrivateMessage(discuz);
+    return await _loadPortalPrivateMessage(discuz);
   }
 
-  Future<void> _loadPortalPrivateMessage(Discuz discuz) async {
+  Future<IndicatorResult> _loadPortalPrivateMessage(Discuz discuz) async {
     User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
@@ -99,7 +92,7 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
     //
     // });
 
-    _client.favoriteThreadResult(_page).then((value){
+    return await _client.favoriteThreadResult(_page).then((value){
       setState(() {
         result = value;
         _error = null;
@@ -139,7 +132,12 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
           _error = null;
         });
       }
-
+      if(_pmList.length >= value.variables.count){
+        return IndicatorResult.noMore;
+      }
+      else{
+        return IndicatorResult.success;
+      }
 
     })
     .catchError((onError,stacktrace){
@@ -154,6 +152,7 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
         _error = DiscuzError(
             onError.runtimeType.toString(), onError.toString());
       });
+      return IndicatorResult.fail;
       throw(onError);
     });
   }
@@ -187,26 +186,19 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
   }
 
   Widget getEasyRefreshWidget(Discuz discuz, User? user){
-    Locale locale = Localizations.localeOf(context);
     return EasyRefresh(
 
       header: EasyRefreshUtils.i18nClassicHeader(context),
       footer: EasyRefreshUtils.i18nClassicFooter(context),
       refreshOnStart: true,
       controller: _controller,
-      onRefresh: _enableRefresh
-          ? () async {
-        _invalidateHotThreadContent(discuz);
-        if (!_enableControlFinish) {
-          _controller.finishRefresh();
-        }
+      onRefresh: () async {
+        return await _invalidateHotThreadContent(discuz);
 
-      } : null,
-      onLoad: _enableLoad
-          ? () async {
-        _loadPortalPrivateMessage(discuz);
-      }
-          : null,
+      } ,
+      onLoad:  () async {
+        return await _loadPortalPrivateMessage(discuz);
+      },
       child: CustomScrollView(
         slivers: [
           SliverList(

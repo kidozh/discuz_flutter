@@ -48,44 +48,19 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
   List<NewThread> _newThreadList = [];
 
   late EasyRefreshController _controller;
-  late ScrollController _scrollController;
-
-  // 反向
-  bool _reverse = false;
-  // 方向
-  Axis _direction = Axis.vertical;
-  // Header浮动
-  bool _headerFloat = false;
-  // 无限加载
-  bool _enableInfiniteLoad = true;
-  // 控制结束
-  bool _enableControlFinish = false;
-  // 任务独立
-  bool _taskIndependence = false;
-  // 震动
-  bool _vibration = true;
-  // 是否开启刷新
-  bool _enableRefresh = true;
-  // 是否开启加载
-  bool _enableLoad = true;
-  // 顶部回弹
-  bool _topBouncing = true;
-  // 底部回弹
-  bool _bottomBouncing = true;
 
   @override
   void initState() {
     super.initState();
     _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
-    _scrollController = ScrollController();
   }
 
-  Future<void> _invalidateNewThreadContent(Discuz discuz) async {
+  Future<IndicatorResult> _invalidateNewThreadContent(Discuz discuz) async {
     _page = 1;
-    await _loadNewThreadContent(discuz);
+    return await _loadNewThreadContent(discuz);
   }
 
-  Future<void> _loadNewThreadContent(Discuz discuz) async {
+  Future<IndicatorResult> _loadNewThreadContent(Discuz discuz) async {
     User? user =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
@@ -99,7 +74,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
     String fids = await UserPreferencesUtils.getDiscuzForumFids(discuz);
     log("Recv fids ${fids}");
 
-    _client.newThreadsResult(fids, (_page - 1) * 20).then((value) {
+    return await _client.newThreadsResult(fids, (_page - 1) * 20).then((value) {
       setState(() {
         result = value;
         _error = null;
@@ -110,17 +85,13 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
         }
       });
       _page += 1;
-      if (!_enableControlFinish) {
-        //_controller.resetLoadState();
-        _controller.finishRefresh();
-      }
+      _controller.finishRefresh();
+      _controller.finishLoad(value.variables.newThreadList.isEmpty
+          ? IndicatorResult.noMore
+          : IndicatorResult.success);
       // check for loaded all?
       log("Get NewThread ${_newThreadList.length}");
-      if (!_enableControlFinish) {
-        _controller.finishLoad(value.variables.newThreadList.isEmpty
-            ? IndicatorResult.noMore
-            : IndicatorResult.success);
-      }
+
 
       if (user != null && value.variables.member_uid != user.uid) {
         setState(() {
@@ -143,7 +114,14 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
           _error = null;
         });
       }
+      if(value.variables.newThreadList.isEmpty){
+        return IndicatorResult.noMore;
+      }
+      else{
+        return IndicatorResult.success;
+      }
     }).catchError((onError) {
+      return IndicatorResult.fail;
       // VibrationUtils.vibrateErrorIfPossible();
       // // EasyLoading.showError('${onError}');
       // if (!_enableControlFinish) {
@@ -190,20 +168,12 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
       footer: EasyRefreshUtils.i18nClassicFooter(context),
       refreshOnStart: true,
       controller: _controller,
-      onRefresh: _enableRefresh
-          ? () async {
-              await _invalidateNewThreadContent(discuz);
-              if (!_enableControlFinish) {
-                //_controller.resetLoadState();
-                _controller.finishRefresh();
-              }
-            }
-          : null,
-      onLoad: _enableLoad
-          ? () async {
-              await _loadNewThreadContent(discuz);
-            }
-          : null,
+      onRefresh: () async {
+              return await _invalidateNewThreadContent(discuz);
+            },
+      onLoad: () async {
+              return await _loadNewThreadContent(discuz);
+            },
       child: ListView.builder(
         itemBuilder: (context, index) {
           return NewThreadWidget(discuz, user, _newThreadList[index]);

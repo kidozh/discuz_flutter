@@ -59,30 +59,12 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
   DiscuzIndexResult? result = null;
   DiscuzError? _error;
   late EasyRefreshController _controller;
-  late ScrollController _scrollController;
 
-  // 反向
-  bool _reverse = false;
-  // 方向
-  Axis _direction = Axis.vertical;
-  // Header浮动
-  bool _headerFloat = false;
-  // 无限加载
-  bool _enableInfiniteLoad = false;
   // 控制结束
   bool _enableControlFinish = false;
-  // 任务独立
-  bool _taskIndependence = false;
-  // 震动
-  bool _vibration = true;
+
   // 是否开启刷新
   bool _enableRefresh = true;
-  // 是否开启加载
-  bool _enableLoad = false;
-  // 顶部回弹
-  bool _topBouncing = true;
-  // 底部回弹
-  bool _bottomBouncing = true;
 
   _DiscuzPortalState();
 
@@ -91,7 +73,6 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
     // TODO: implement initState
     super.initState();
     _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
-    _scrollController = ScrollController();
     _loadFavoriteForum();
   }
 
@@ -105,12 +86,12 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
 
   }
 
-  Future<void> _loadPortalContent(Discuz discuz) async {
+  Future<IndicatorResult> _loadPortalContent(Discuz discuz) async {
     User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
 
-    _client.getDiscuzPortalResult().then((value) {
+    IndicatorResult indictaorResult = await _client.getDiscuzPortalResult().then((value) {
       // render page
       setState(() {
         result = value;
@@ -133,6 +114,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       }
       if (!_enableControlFinish) {
         _controller.finishLoad(IndicatorResult.noMore);
+
       }
 
       // check with user
@@ -142,10 +124,13 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
           _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle);
         });
       }
+      return IndicatorResult.noMore;
 
     }).catchError((onError) {
       _controller.finishLoad(IndicatorResult.fail);
+      return IndicatorResult.fail;
     });
+    return indictaorResult;
   }
 
 
@@ -182,15 +167,15 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       refreshOnStart: true,
       controller: _controller,
 
-      onRefresh: _enableRefresh
-          ? () async {
-        _loadPortalContent(discuz);
+      onRefresh: () async {
+        IndicatorResult indicatorResult = await _loadPortalContent(discuz);
         if (!_enableControlFinish) {
           //_controller.resetLoadState();
           _controller.finishRefresh();
         }
+        return indicatorResult;
 
-      } : null,
+      },
       child: CustomScrollView(
         slivers: [if(favoriteForumDao != null)
           ValueListenableBuilder(

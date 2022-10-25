@@ -209,7 +209,7 @@
   "forumFilterStatusTitle": "Thread Status",
   "forumFilterStatusAll": "All",
   "forumFilterStatusDigest": "Digest",
-  "forumFilterStatusHot": "Hot",
+  "forumFilterStatusHot": "Popular",
   "emptyScreenTitle": "The content here is empty.",
   "userProfileTitle": "User Profiles",
   "groupInfoDescription": "Read Access: {readAccess} and Star: {star}",
@@ -543,7 +543,7 @@
       "device": {}
     }
   },
-  "hotThread": "Hot",
+  "hotThread": "Popular",
   "newThread": "New",
   "editedPost": "Edited",
   "pushNotification": "Push notification service",

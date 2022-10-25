@@ -59,40 +59,7 @@ class _PrivateMessageDetailState
   List<PrivateMessageDetail> _pmList = [];
 
   late EasyRefreshController _controller;
-  late ScrollController _scrollController;
 
-  // 反向
-  bool _reverse = true;
-
-  // 方向
-  Axis _direction = Axis.vertical;
-
-  // Header浮动
-  bool _headerFloat = false;
-
-  // 无限加载
-  bool _enableInfiniteLoad = true;
-
-  // 控制结束
-  bool _enableControlFinish = false;
-
-  // 任务独立
-  bool _taskIndependence = false;
-
-  // 震动
-  bool _vibration = true;
-
-  // 是否开启刷新
-  bool _enableRefresh = true;
-
-  // 是否开启加载
-  bool _enableLoad = true;
-
-  // 顶部回弹
-  bool _topBouncing = true;
-
-  // 底部回弹
-  bool _bottomBouncing = true;
   String toUsername;
 
   bool showSmiley = false;
@@ -107,7 +74,7 @@ class _PrivateMessageDetailState
     // TODO: implement initState
     super.initState();
     _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
-    _scrollController = ScrollController();
+
     _textEditingController = TextEditingController();
   }
 
@@ -115,16 +82,16 @@ class _PrivateMessageDetailState
   void dispose() {
     super.dispose();
     _textEditingController.dispose();
-    _scrollController.dispose();
+
   }
 
-  _invalidateHotThreadContent(Discuz discuz) async {
+  Future<IndicatorResult> _invalidateHotThreadContent(Discuz discuz) async {
     _page = 0;
     setState(() {
       _pmList = [];
     });
 
-    await _loadPortalPrivateMessage(discuz);
+    return await _loadPortalPrivateMessage(discuz);
   }
 
   Future<void> _sendMessage(String message) async{
@@ -157,7 +124,7 @@ class _PrivateMessageDetailState
     });
   }
 
-  Future<void> _loadPortalPrivateMessage(Discuz discuz) async {
+  Future<IndicatorResult> _loadPortalPrivateMessage(Discuz discuz) async {
     User? user =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
@@ -169,7 +136,7 @@ class _PrivateMessageDetailState
     //
     // });
 
-    _client.privateMessageDetailResult(toUid, _page).then((value) {
+    return await _client.privateMessageDetailResult(toUid, _page).then((value) {
       setState(() {
         result = value;
         _error = null;
@@ -181,15 +148,11 @@ class _PrivateMessageDetailState
         // }
       });
       _page = value.variables.page-1;
-      if (!_enableControlFinish) {
-        //_controller.resetLoadState();
-        _controller.finishRefresh();
-      }
+      _controller.finishRefresh();
+
       // check for loaded all?
       log("Get HotThread ${_pmList.length} ${value.variables.count}");
-      if (!_enableControlFinish) {
-        _controller.finishLoad(_pmList.length >= value.variables.count? IndicatorResult.noMore: IndicatorResult.success);
-      }
+      _controller.finishLoad(_pmList.length >= value.variables.count? IndicatorResult.noMore: IndicatorResult.success);
 
       if (user != null && value.variables.member_uid != user.uid) {
         setState(() {
@@ -212,17 +175,21 @@ class _PrivateMessageDetailState
           _error = null;
         });
       }
+      if(_pmList.length >= value.variables.count){
+        return IndicatorResult.noMore;
+      }
+      else{
+        return IndicatorResult.success;
+      }
     }).catchError((onError) {
       VibrationUtils.vibrateErrorIfPossible();
       EasyLoading.showError('${onError}');
-      if (!_enableControlFinish) {
-        //_controller.resetLoadState();
-        _controller.finishRefresh();
-      }
+      _controller.finishRefresh();
       setState(() {
         _error =
             DiscuzError(onError.runtimeType.toString(), onError.toString());
       });
+      return IndicatorResult.fail;
     });
   }
 
@@ -281,17 +248,13 @@ class _PrivateMessageDetailState
                   return EasyRefresh(
 
                     onRefresh:  () async {
-                            _invalidateHotThreadContent(discuz);
-                            if (!_enableControlFinish) {
-                              //_controller.resetLoadState();
-                              _controller.finishRefresh();
-                            }
+                            return await _invalidateHotThreadContent(discuz);
+
                           },
-                    onLoad: _enableLoad
-                        ? () async {
-                            _loadPortalPrivateMessage(discuz);
+                    onLoad:  () async {
+                            return await _loadPortalPrivateMessage(discuz);
                           }
-                        : null,
+                        ,
                     child: ListView.builder(itemBuilder: (context, index){
                       return PrivateMessageDetailWidget(
                           discuz, user, _pmList[index]);
@@ -432,20 +395,14 @@ class _PrivateMessageDetailState
       footer: EasyRefreshUtils.i18nClassicFooter(context),
       refreshOnStart: true,
       controller: _controller,
-      onRefresh: _enableRefresh
-          ? () async {
-              _invalidateHotThreadContent(discuz);
-              if (!_enableControlFinish) {
-                //_controller.resetLoadState();
-                _controller.finishRefresh();
-              }
-            }
-          : null,
-      onLoad: _enableLoad
-          ? () async {
-              _loadPortalPrivateMessage(discuz);
-            }
-          : null,
+      onRefresh: () async {
+              return _invalidateHotThreadContent(discuz);
+
+
+            },
+      onLoad:() async {
+              return await _loadPortalPrivateMessage(discuz);
+            },
       child: ListView.builder(
           itemBuilder: (context, index){
             return PrivateMessageDetailWidget(discuz, user, _pmList[index]);

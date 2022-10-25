@@ -104,7 +104,7 @@
   },
   "outerlinkOpenTitle": "你正要打开外链",
   "outerlinkOpenMessage": "链接使用的域名与此论坛不一致，其很有可能不是论坛所有的。谨防钓鱼、木马和诈骗。",
-  "ok": "好",
+  "ok": "确定",
   "savePictureToDevice": "保存图片至此设备",
   "openInBrowser": "在浏览器中打开",
   "writeStorageDenied": "无法获得写入权限。",

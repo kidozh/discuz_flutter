@@ -49,30 +49,7 @@ class _PublicMessagePortalState
   List<PublicMessagePortal> _pmList = [];
 
   late EasyRefreshController _controller;
-  late ScrollController _scrollController;
 
-  // 反向
-  bool _reverse = false;
-  // 方向
-  Axis _direction = Axis.vertical;
-  // Header浮动
-  bool _headerFloat = false;
-  // 无限加载
-  bool _enableInfiniteLoad = true;
-  // 控制结束
-  bool _enableControlFinish = false;
-  // 任务独立
-  bool _taskIndependence = false;
-  // 震动
-  bool _vibration = true;
-  // 是否开启刷新
-  bool _enableRefresh = true;
-  // 是否开启加载
-  bool _enableLoad = true;
-  // 顶部回弹
-  bool _topBouncing = true;
-  // 底部回弹
-  bool _bottomBouncing = true;
 
   _PublicMessagePortalState();
 
@@ -81,7 +58,6 @@ class _PublicMessagePortalState
     // TODO: implement initState
     super.initState();
     _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
-    _scrollController = ScrollController();
   }
 
   _invalidateHotThreadContent(Discuz discuz) async {
@@ -112,17 +88,14 @@ class _PublicMessagePortalState
         }
       });
       _page += 1;
-      if (!_enableControlFinish) {
-        //_controller.resetLoadState();
-        _controller.finishRefresh();
-      }
+      _controller.finishRefresh();
+
       // check for loaded all?
       log("Get HotThread ${_pmList.length} ${value.variables.count}");
-      if (!_enableControlFinish) {
-        _controller.finishLoad(_pmList.length >= value.variables.count
-            ? IndicatorResult.noMore
-            : IndicatorResult.success);
-      }
+      _controller.finishLoad(_pmList.length >= value.variables.count
+          ? IndicatorResult.noMore
+          : IndicatorResult.success);
+
 
       if (user != null && value.variables.member_uid != user.uid) {
         setState(() {
@@ -145,16 +118,22 @@ class _PublicMessagePortalState
           _error = null;
         });
       }
-    }).catchError((onError, stacktrace) {
-      EasyLoading.showError('${onError}');
-      if (!_enableControlFinish) {
-        //_controller.resetLoadState();
-        _controller.finishRefresh();
+      if(_pmList.length >= value.variables.count){
+        return IndicatorResult.noMore;
       }
+      else{
+        return IndicatorResult.success;
+      }
+    }).catchError((onError, stacktrace) {
+      return IndicatorResult.fail;
+      EasyLoading.showError('${onError}');
+      _controller.finishRefresh();
+
       setState(() {
         _error =
             DiscuzError(onError.runtimeType.toString(), onError.toString());
       });
+      return IndicatorResult.fail;
       throw (onError);
     });
   }
@@ -189,20 +168,13 @@ class _PublicMessagePortalState
       footer: EasyRefreshUtils.i18nClassicFooter(context),
       refreshOnStart: true,
       controller: _controller,
-      onRefresh: _enableRefresh
-          ? () async {
-              await _invalidateHotThreadContent(discuz);
-              if (!_enableControlFinish) {
-                //_controller.resetLoadState();
-                _controller.finishRefresh();
-              }
-            }
-          : null,
-      onLoad: _enableLoad
-          ? () async {
-              await _loadPortalPublicMessage(discuz);
-            }
-          : null,
+      onRefresh:  () async {
+              return await _invalidateHotThreadContent(discuz);
+
+            },
+      onLoad: () async {
+             return await _loadPortalPublicMessage(discuz);
+            },
       child: ListView.builder(
         itemBuilder: (context, index) {
           return ListTile(

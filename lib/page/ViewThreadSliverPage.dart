@@ -120,22 +120,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   final int SHOW_EXTRA_DIALOG = 2;
   final int SHOW_NONE_DIALOG = 0;
 
-  // 控制结束
-  bool _enableControlFinish = false;
-
-  // 是否开启刷新
-  bool _enableRefresh = true;
-
-  // 是否开启加载
-  bool _enableLoad = true;
-
   @override
   void initState() {
     super.initState();
     _loadClient();
-    _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
+    _controller = EasyRefreshController(
+        controlFinishLoad: true, controlFinishRefresh: true);
     _scrollController = ScrollController();
-
 
     _loadPreference();
     //_invalidateContent();
@@ -226,11 +217,11 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     historySaved = true;
   }
 
-  Future<void> _invalidateContent() async{
+  Future<IndicatorResult> _invalidateContent() async {
     setState(() {
       _page = 1;
     });
-    await _loadForumContent();
+    return await _loadForumContent();
   }
 
   void setNewViewThreadQuery(ViewThreadQuery viewThreadQuery) {
@@ -429,7 +420,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
   FavoriteThreadDao? favoriteThreadDao;
 
-  Future<void> _loadForumContent() async {
+  Future<IndicatorResult> _loadForumContent() async {
     // check the availability
     log("Base url ${discuz.baseURL} ${_page}");
     User? user =
@@ -437,7 +428,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
-    client
+    return await client
         .viewThreadResult(tid, _page, viewThreadQuery.generateForumQueriesMap())
         .then((value) {
       if (!historySaved &&
@@ -459,19 +450,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         postCommentList.addAll(value.threadVariables.commentList);
       });
       _page += 1;
+      _controller.finishRefresh();
 
-      if (!_enableControlFinish) {
-        //_controller.resetLoadState();
-        _controller.finishRefresh();
-      }
       // check for loaded all?
       log("Get list ${value.threadVariables.threadInfo.allreplies} ${_postList.length} ${value.threadVariables.threadInfo.replies}");
-      if (!_enableControlFinish) {
-        _controller.finishLoad(
-            _postList.length >= value.threadVariables.threadInfo.replies + 1
-                ? IndicatorResult.noMore
-                : IndicatorResult.success);
-      }
+      _controller.finishLoad(
+          _postList.length >= value.threadVariables.threadInfo.replies + 1
+              ? IndicatorResult.noMore
+              : IndicatorResult.success);
 
       if (value.getErrorString() != null) {
         EasyLoading.showError(value.getErrorString()!);
@@ -495,7 +481,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         });
       }
 
-      log("set successful result ${_viewThreadResult} ${_postList.length}");
+      log("set successful result ${_viewThreadResult.threadVariables.threadInfo.replies} ${_postList.length}");
 
       // save rewrite rule
       if (value.threadVariables.rewriteRule != null) {
@@ -514,14 +500,19 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
           RewriteRuleUtils.putUserProfileRule(discuz, rewriteRule.userSpace);
         }
       }
+
+      if (_postList.length >= value.threadVariables.threadInfo.replies + 1) {
+        log("No more posts ${_postList.length} ${value.threadVariables.threadInfo.replies}");
+        return IndicatorResult.noMore;
+      } else {
+        return IndicatorResult.success;
+      }
     }).catchError((onError, stack) {
       VibrationUtils.vibrateErrorIfPossible();
       EasyLoading.showError('${onError}');
       log("${onError} ${stack}");
-      if (!_enableControlFinish) {
-        //_controller.resetLoadState();
-        _controller.finishRefresh();
-      }
+      _controller.finishRefresh();
+
       switch (onError.runtimeType) {
         case DioError:
           {
@@ -537,6 +528,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             });
           }
       }
+      return IndicatorResult.fail;
     });
   }
 
@@ -654,20 +646,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             footer: EasyRefreshUtils.i18nClassicFooter(context),
             refreshOnStart: true,
             controller: _controller,
-            onRefresh: _enableRefresh
-                ? () async {
-                    await _invalidateContent();
-                    if (!_enableControlFinish) {
-                      //_controller.resetLoadState();
-                      _controller.finishRefresh();
-                    }
-                  }
-                : null,
-            onLoad: _enableLoad
-                ? () async {
-                    await _loadForumContent();
-                  }
-                : null,
+            onRefresh: () async {
+              await _invalidateContent();
+            },
+            onLoad: () async {
+              await _loadForumContent();
+            },
             child: CustomScrollView(
               slivers: [
                 SliverList(
@@ -705,63 +689,50 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                     childCount: 1,
                   )),
                 SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                  return PollWidget(
+                    _viewThreadResult.threadVariables.poll!,
+                    _viewThreadResult.threadVariables.formHash,
+                    tid,
+                    _viewThreadResult.threadVariables.fid,
+                  );
+                }, childCount: _viewThreadResult.threadVariables.poll != null ? 1 : 0)
+                ),
+                SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      return AutoScrollTag(
-                        key: ValueKey(index),
-                        controller: _postAutoScrollController,
-                        index: index,
-                        highlightColor:
-                            Theme.of(context).primaryColor.withOpacity(0.1),
-                        child: Column(
-                          children: [
-                            // insert poll here
-                            if (index == 0 &&
-                                _viewThreadResult.threadVariables.poll != null)
-                              PollWidget(
-                                _viewThreadResult.threadVariables.poll!,
-                                _viewThreadResult.threadVariables.formHash,
-                                tid,
-                                _viewThreadResult.threadVariables.fid,
-                              ),
-
-                            PostWidget(
-                              discuz,
-                              _postList[index],
-                              _viewThreadResult
-                                  .threadVariables.threadInfo.authorId,
-                              _viewThreadResult.threadVariables.formHash,
-                              tid: tid,
-                              onAuthorSelectedCallback: () {
-                                if (viewThreadQuery.authorId == 0) {
-                                  viewThreadQuery.authorId =
-                                      _postList[index].authorId;
-                                } else {
-                                  viewThreadQuery.authorId = 0;
-                                }
-                                setNewViewThreadQuery(viewThreadQuery);
-                              },
-                              postCommentList: postCommentList,
-                              ignoreFontCustomization: ignoreFontCustomization,
-                              jumpToPidCallback: (pid) {
-                                // need to find the pid and scroll to it
-                                log("jump to pid ${pid} and we are looking it");
-                                int cnt = 0;
-                                for (var post in _postList) {
-                                  log("find it: ${post.pid} in ${cnt}");
-                                  if (post.pid == pid) {
-                                    log("!find it: ${pid} in ${cnt}");
-                                    _postAutoScrollController
-                                        .scrollToIndex(cnt);
-                                    break;
-                                  }
-                                  cnt += 1;
-                                }
-                                // check whether it's the end of the scroll
-                              },
-                            )
-                          ],
-                        ),
+                      return PostWidget(
+                        discuz,
+                        _postList[index],
+                        _viewThreadResult.threadVariables.threadInfo.authorId,
+                        _viewThreadResult.threadVariables.formHash,
+                        tid: tid,
+                        onAuthorSelectedCallback: () {
+                          if (viewThreadQuery.authorId == 0) {
+                            viewThreadQuery.authorId =
+                                _postList[index].authorId;
+                          } else {
+                            viewThreadQuery.authorId = 0;
+                          }
+                          setNewViewThreadQuery(viewThreadQuery);
+                        },
+                        postCommentList: postCommentList,
+                        ignoreFontCustomization: ignoreFontCustomization,
+                        jumpToPidCallback: (pid) {
+                          // need to find the pid and scroll to it
+                          log("jump to pid ${pid} and we are looking it");
+                          int cnt = 0;
+                          for (var post in _postList) {
+                            log("find it: ${post.pid} in ${cnt}");
+                            if (post.pid == pid) {
+                              log("!find it: ${pid} in ${cnt}");
+                              _postAutoScrollController.scrollToIndex(cnt);
+                              break;
+                            }
+                            cnt += 1;
+                          }
+                          // check whether it's the end of the scroll
+                        },
                       );
                     },
                     childCount: _postList.length,
@@ -958,14 +929,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                     })
                               ],
                             ),
-                            if(dioLoaded)
-                            CaptchaWidget(
-                              dio,
-                              discuz,
-                              user,
-                              "post",
-                              captchaController: _captchaController,
-                            ),
+                            if (dioLoaded)
+                              CaptchaWidget(
+                                dio,
+                                discuz,
+                                user,
+                                "post",
+                                captchaController: _captchaController,
+                              ),
                             if (dialogStatus == SHOW_SMILEY_DIALOG)
                               Column(
                                 mainAxisSize: MainAxisSize.min,

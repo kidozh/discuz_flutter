@@ -113,9 +113,9 @@ class DiscuzHtmlWidget extends StatelessWidget{
               //backgroundColor: MediaQuery.of(context).platformBrightness == Brightness.light ? Colors.grey.shade200: Colors.grey.shade600,
               backgroundColor: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade200: Colors.grey.shade600,
               padding: const EdgeInsets.all(8),
-              margin: const EdgeInsets.only(bottom: 8.0),
+              margin: Margins(bottom: Margin(8.0)),
               border: Border(left: BorderSide(color: Theme.of(context).primaryColor, width: 4)),
-              width: double.infinity
+              width: Width(double.infinity)
             ),
             "p":Style(
               fontStyle: Theme.of(context).textTheme.bodyText2?.fontStyle,
@@ -144,6 +144,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 urlString = discuz.baseURL+ "/" + urlString;
                 log("Press after link ${urlString} ");
                 urlLauchable = await canLaunchUrl(Uri.parse(urlString));
+                //return;
               }
 
 
@@ -154,6 +155,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 if(uri.host != Uri.parse(discuz.baseURL).host){
                   VibrationUtils.vibrateWithClickIfPossible();
                   checkWithDbAndOpenURL(context, urlString);
+                  return;
                 }
 
                 // check query parameters for full url

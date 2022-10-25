@@ -108,7 +108,7 @@ class ManageAccountState extends State<ManageAccountStateWidget>{
           ),
           endActionPane: ActionPane(
             motion: DrawerMotion(),
-            extentRatio: 0.25,
+            extentRatio: 0.4,
             children: [
               SlidableAction(
                   label: S.of(context).deleteAccount,

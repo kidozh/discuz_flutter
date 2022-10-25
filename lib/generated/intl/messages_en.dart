@@ -309,7 +309,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "forumFilterStatusAll": MessageLookupByLibrary.simpleMessage("All"),
         "forumFilterStatusDigest":
             MessageLookupByLibrary.simpleMessage("Digest"),
-        "forumFilterStatusHot": MessageLookupByLibrary.simpleMessage("Hot"),
+        "forumFilterStatusHot": MessageLookupByLibrary.simpleMessage("Popular"),
         "forumFilterStatusTitle":
             MessageLookupByLibrary.simpleMessage("Thread Status"),
         "forumFilterTimeThisMonth":
@@ -337,7 +337,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "groupInfoDescription": m13,
         "habit": MessageLookupByLibrary.simpleMessage("Habits"),
         "homepage": MessageLookupByLibrary.simpleMessage("Homepage"),
-        "hotThread": MessageLookupByLibrary.simpleMessage("Hot"),
+        "hotThread": MessageLookupByLibrary.simpleMessage("Popular"),
         "hour": MessageLookupByLibrary.simpleMessage("H"),
         "hourAgo": m14,
         "hourLater": m15,

@@ -81,8 +81,6 @@ class SmileyText extends SpecialText{
         imageHeight: 20,
         start: this.start,
         actualText: toString(),
-
-
     );
   }
   
@@ -108,7 +106,6 @@ class AttachImageText extends SpecialText{
       text: " 📃 ${aid} ",
       background: Paint()..color = Colors.blue.withOpacity(0.15),
       actualText: toString(),
-      deleteAll: true,
       start: start,
       style: TextStyle(color: Colors.blue),
 

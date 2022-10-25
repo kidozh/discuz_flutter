@@ -378,7 +378,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "nullDiscuzSubTitle":
             MessageLookupByLibrary.simpleMessage("现在就添加一个论坛吗？"),
         "nullDiscuzTitle": MessageLookupByLibrary.simpleMessage("还没有指定一个论坛"),
-        "ok": MessageLookupByLibrary.simpleMessage("好"),
+        "ok": MessageLookupByLibrary.simpleMessage("确定"),
         "onlineHours": m21,
         "onlineHoursTitle": MessageLookupByLibrary.simpleMessage("在线时间"),
         "onlyViewAuthor": MessageLookupByLibrary.simpleMessage("只看作者"),

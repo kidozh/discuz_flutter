@@ -1431,10 +1431,10 @@ class S {
     );
   }
 
-  /// `Hot`
+  /// `Popular`
   String get forumFilterStatusHot {
     return Intl.message(
-      'Hot',
+      'Popular',
       name: 'forumFilterStatusHot',
       desc: '',
       args: [],
@@ -3452,10 +3452,10 @@ class S {
     );
   }
 
-  /// `Hot`
+  /// `Popular`
   String get hotThread {
     return Intl.message(
-      'Hot',
+      'Popular',
       name: 'hotThread',
       desc: '',
       args: [],

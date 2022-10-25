@@ -137,12 +137,12 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
   }
 
-  Future<void> _invalidateContent() async {
+  Future<IndicatorResult> _invalidateContent() async {
     setState(() {
       _page = 1;
 
     });
-    await _loadForumContent();
+    return await _loadForumContent();
   }
 
   Future<void> favoriteForum() async{
@@ -217,7 +217,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     historySaved = true;
   }
 
-  Future<void> _loadForumContent() async {
+  Future<IndicatorResult> _loadForumContent() async {
     // check the availability
     log("Base url ${discuz.baseURL} ${_page}");
     User? user =
@@ -232,7 +232,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
     print("Request display forum map ${_displayForumQuery.generateForumQueriesMap()}");
 
-    client
+    IndicatorResult result = await client
         .displayForumResult(
             fid.toString(), _page, _displayForumQuery.generateForumQueriesMap())
         .then((value) {
@@ -273,6 +273,8 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
           IndicatorResult.success);
 
 
+
+
       if (value.getErrorString() != null) {
         EasyLoading.showError(value.getErrorString()!);
 
@@ -295,7 +297,15 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
           _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
               S.of(context).userExpiredSubtitle);
         });
+
       }
+      if(_forumThreadList.length >= value.discuzIndexVariables.forum.getThreadCount()){
+        return IndicatorResult.noMore;
+      }
+      else{
+        return IndicatorResult.success;
+      }
+
 
       //log("set successful result ${_displayForumResult} ${_forumThreadList.length}");
     }).catchError((onError) {
@@ -303,6 +313,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       //log(onError);
       EasyLoading.showError('${onError}');
       _controller.finishRefresh();
+
 
       switch (onError.runtimeType) {
         case DioError:
@@ -319,8 +330,13 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
             });
           }
       }
-      throw (onError);
+
+      return IndicatorResult.fail;
+
+
     });
+    return result;
+
   }
 
   FavoriteForumDao? favoriteForumDao;
@@ -439,12 +455,12 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         footer: EasyRefreshUtils.i18nClassicFooter(context),
         refreshOnStart: true,
         onRefresh: () async {
-                await _invalidateContent();
+                return await _invalidateContent();
                 _controller.finishRefresh();
 
               },
         onLoad: () async {
-                await _loadForumContent();
+                return await _loadForumContent();
               },
         child: CustomScrollView(
           slivers: <Widget>[

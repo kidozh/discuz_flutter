@@ -47,30 +47,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
   List<DiscuzNotification> _noteList = [];
 
   late EasyRefreshController _controller;
-  late ScrollController _scrollController;
 
-  // 反向
-  bool _reverse = false;
-  // 方向
-  Axis _direction = Axis.vertical;
-  // Header浮动
-  bool _headerFloat = false;
-  // 无限加载
-  bool _enableInfiniteLoad = true;
-  // 控制结束
-  bool _enableControlFinish = false;
-  // 任务独立
-  bool _taskIndependence = false;
-  // 震动
-  bool _vibration = true;
-  // 是否开启刷新
-  bool _enableRefresh = true;
-  // 是否开启加载
-  bool _enableLoad = true;
-  // 顶部回弹
-  bool _topBouncing = true;
-  // 底部回弹
-  bool _bottomBouncing = true;
 
   _NotificationState();
 
@@ -79,15 +56,15 @@ class _NotificationState extends State<NotificationStatefulWidget> {
     // TODO: implement initState
     super.initState();
     _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
-    _scrollController = ScrollController();
+
   }
 
-  Future<void> _invalidateNotificationContent(Discuz discuz) async {
+  Future<IndicatorResult> _invalidateNotificationContent(Discuz discuz) async {
     _page = 1;
-    await _loadNotificationContent(discuz);
+    return await _loadNotificationContent(discuz);
   }
 
-  Future<void> _loadNotificationContent(Discuz discuz) async {
+  Future<IndicatorResult> _loadNotificationContent(Discuz discuz) async {
     User? user =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
@@ -99,7 +76,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
     //
     // });
 
-    _client.userNotificationResult(_page).then((value) {
+    return await _client.userNotificationResult(_page).then((value) {
       setState(() {
         result = value;
         _error = null;
@@ -110,17 +87,13 @@ class _NotificationState extends State<NotificationStatefulWidget> {
         }
       });
       _page += 1;
-      if (!_enableControlFinish) {
-        //_controller.resetLoadState();
-        _controller.finishRefresh();
-      }
+      _controller.finishRefresh();
+      _controller.finishLoad(_noteList.length >= value.variables.count
+          ? IndicatorResult.noMore
+          : IndicatorResult.success);
       // check for loaded all?
       log("Get Notification ${_noteList.length} ${value.variables.count}");
-      if (!_enableControlFinish) {
-        _controller.finishLoad(_noteList.length >= value.variables.count
-            ? IndicatorResult.noMore
-            : IndicatorResult.success);
-      }
+
 
       if (user != null && value.variables.member_uid != user.uid) {
         setState(() {
@@ -143,7 +116,14 @@ class _NotificationState extends State<NotificationStatefulWidget> {
           _error = null;
         });
       }
+      if(_noteList.length >= value.variables.count){
+        return IndicatorResult.noMore;
+      }
+      else{
+        return IndicatorResult.success;
+      }
     }).catchError((onError) {
+      return IndicatorResult.fail;
       // VibrationUtils.vibrateErrorIfPossible();
       // if (!_enableControlFinish) {
       //   _controller.resetLoadState();
@@ -199,20 +179,12 @@ class _NotificationState extends State<NotificationStatefulWidget> {
       footer: EasyRefreshUtils.i18nClassicFooter(context),
       refreshOnStart: true,
       controller: _controller,
-      onRefresh: _enableRefresh
-          ? () async {
-              await _invalidateNotificationContent(discuz);
-              if (!_enableControlFinish) {
-                //_controller.resetLoadState();
-                _controller.finishRefresh();
-              }
-            }
-          : null,
-      onLoad: _enableLoad
-          ? () async {
-              await _loadNotificationContent(discuz);
-            }
-          : null,
+      onRefresh: () async {
+              return await _invalidateNotificationContent(discuz);
+            },
+      onLoad: () async {
+              return await _loadNotificationContent(discuz);
+            },
       child: ListView.builder(
         itemBuilder: (context, index) {
           return DiscuzNotificationWidget(discuz, _noteList[index]);
