@@ -274,15 +274,13 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
         name: 'Toaster',
         onMessageReceived: (JavascriptMessage message) {
           // ignore: deprecated_member_use
-          Scaffold.of(context).showSnackBar(
-            SnackBar(content: Text(message.message)),
-          );
+
         });
   }
 
   void checkIfLinkIsParsable(BuildContext context,String urlString) async{
     urlString = urlString.replaceAll("&amp;", "&");
-    bool urlLauchable = await canLaunch(urlString);
+    bool urlLauchable = await canLaunchUrl(Uri.parse(urlString));
     User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     Discuz discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
     // judge if it is a path

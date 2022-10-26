@@ -1,17 +1,19 @@
-import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
+import 'dart:developer';
+
+import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart' as PollOptionInResult;
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
-import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
-import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:flutter_polls/flutter_polls.dart' as FlutterPolls;
 import 'package:provider/provider.dart';
+
+import '../JsonResult/ViewThreadResult.dart';
 
 class PollWidget extends StatelessWidget {
   Poll poll;
@@ -52,8 +54,8 @@ class PollState extends State<PollStatefulWidget>{
 
 
 
-  List<PollOption> getPollOptions() {
-    List<PollOption> pollOptions = [];
+  List<PollOptionInResult.PollOption> getPollOptions() {
+    List<PollOptionInResult.PollOption> pollOptions = [];
     for (var entry in poll.pollOptionsMap.entries) {
       pollOptions.add(entry.value);
     }
@@ -70,190 +72,95 @@ class PollState extends State<PollStatefulWidget>{
       return 0.0;
     }
     else{
-      List<PollOption> pollOption = getPollOptions();
-      PollOption option = pollOption[index];
+      List<PollOptionInResult.PollOption> pollOption = getPollOptions();
+      PollOptionInResult.PollOption option = pollOption[index];
       return option.voteNumber.toDouble() / totalVote;
     }
   }
 
-  void _vote() async{
-    List<PollOption> options = getPollOptions();
-    List<int> checkedPosition = checkedOption;
-    if(checkedPosition.length> poll.maxChoice || checkedOption.isEmpty){
-      return;
-    }
+  Future<bool> vote(FlutterPolls.PollOption pollOption) async{
     List<int> checkedOptionIds = [];
-    for(var i in checkedPosition){
-      checkedOptionIds.add(options[i].id);
+    if(pollOption.id == null){
+      return false;
     }
-    // send it
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    Discuz discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
-    final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-    final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
-    print("Checked id ${checkedOptionIds}");
-    // client.votePollRaw(tid, this.formhash, checkedOptionIds).then((value){
-    //   print(value);
-    // });
+    else{
+      checkedOptionIds.add(pollOption.id!);
+    }
 
-    client.votePoll(fid,tid, this.formhash, checkedOptionIds).then((value){
-      if(value.errorResult != null && value.errorResult!.key == "thread_poll_succeed"){
+    // for(var i in checkedPosition){
+    //   checkedOptionIds.add(options[i].id);
+      User? user =
+          Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+      Discuz discuz =
+      Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
+      return await client.votePoll(fid,tid, this.formhash, checkedOptionIds).then((value){
+        if(value.errorResult != null && value.errorResult!.key == "thread_poll_succeed"){
 
-        // it's a success
-        // add proportion
-        Map<String, PollOption> pollOptionMap = poll.pollOptionsMap;
-        for(var entry in pollOptionMap.entries){
-          PollOption pollOption = entry.value;
-          if(checkedOptionIds.contains(pollOption.id)){
-            pollOption.voteNumber += 1;
+          // it's a success
+          // add proportion
+          Map<String, PollOptionInResult.PollOption> pollOptionMap = poll.pollOptionsMap;
+          for(var entry in pollOptionMap.entries){
+            PollOptionInResult.PollOption pollOption = entry.value;
+            if(checkedOptionIds.contains(pollOption.id)){
+              pollOption.voteNumber += 1;
+            }
+
           }
 
-        }
+          setState(() {
+            // refresh it
+            poll.allowVote = false;
+            poll = poll;
 
-        setState(() {
-          // refresh it
-          poll.allowVote = false;
-          poll = poll;
-
-        });
-        EasyLoading.showSuccess("${value.errorResult!.content} (${value.errorResult!.key})");
-      }
-      else{
-        if(value.errorResult!= null){
-          EasyLoading.showError("${value.errorResult!.content} (${value.errorResult!.key})");
+          });
+          EasyLoading.showSuccess("${value.errorResult!.content} (${value.errorResult!.key})");
+          return true;
         }
         else{
-          EasyLoading.showError(S.of(context).error);
+          if(value.errorResult!= null){
+            EasyLoading.showError("${value.errorResult!.content} (${value.errorResult!.key})");
+          }
+          else{
+            EasyLoading.showError(S.of(context).error);
+          }
+          return false;
+
         }
-
-      }
-    });
-
-  }
+      }).catchError((e,s){
+        return false;
+      });
+    }
 
   @override
   Widget build(BuildContext context) {
-    List<PollOption> pollOption = getPollOptions();
+    List<PollOptionInResult.PollOption> pollOptionList = getPollOptions();
+    List<FlutterPolls.PollOption> flutterPollOptionList = pollOptionList.map(
+            (e) => FlutterPolls.PollOption(title: Text(e.name), votes: e.voteNumber, id:e.id)
+    ).toList();
+    log("The poll option: ${flutterPollOptionList}");
+    if(flutterPollOptionList.isNotEmpty){
+      return FlutterPolls.FlutterPolls(
+        pollId: this.fid.toString(),
+        onVoted: (FlutterPolls.PollOption pollOption, int newTotalVoters) async {
+          return await vote(pollOption);
+        },
+        hasVoted: !poll.allowVote,
+        pollTitle: Text(this.fid.toString()),
+        pollOptions: flutterPollOptionList,
+        pollEnded: poll.expiredAt.isBefore(DateTime.now()),
+        metaWidget: Row(
+          children: [
 
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // functionality row
-          ListView.builder(
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              PollOption option = pollOption[index];
-              return GestureDetector(
-                child: Container(
-                    margin: EdgeInsets.fromLTRB(4, 4, 16, 4),
-                    // padding: EdgeInsets.symmetric(vertical: 4.0),
-                    width: double.infinity,
-                    child: GestureDetector(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          LinearPercentIndicator(
-                            width: MediaQuery.of(context).size.width*0.9,
-                            lineHeight: 36.0,
-                            animation: true,
-                            animationDuration: 500,
-                            percent: getOptionPercent(index),
-                            backgroundColor: Theme.of(context).brightness == Brightness.dark? Colors.white24: Colors.grey.shade300,
-                            progressColor: Theme.of(context).primaryColor,
-                            center: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                if(checkedOption.contains(index))
-                                  Icon(Icons.check),
-                                Text(
-                                  option.name,
-                                  style: new TextStyle(fontSize: 14.0),
-                                )
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                      onTap: (){
-                        // check whether it's simple choice
-                        VibrationUtils.vibrateWithClickIfPossible();
-                        if(!poll.allowVote){
-                          return;
-                        }
-                        if(checkedOption.contains(index)){
-                          // remove it
-                          setState(() {
-                            checkedOption.remove(index);
-                          });
-                        }
-                        else{
-                          setState(() {
-                            checkedOption.add(index);
-                          });
-                        }
-                        // check if options is multiple
-                        if (poll.maxChoice == 1){
-                          _vote();
-                        }
+          ],
+        ),
+      );
+    }
+    else{
+      return Container();
+    }
 
-                        print("object");
-                      },
-                    )
-                ),
-              );
-            },
-            itemCount: pollOption.length,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // visible
-                        Row(
-                          children: [
-                            Icon(Icons.access_time, size: 12),
-                            SizedBox(
-                              width: 8.0,
-                            ),
-                            Text(S.of(context).pollExpireAt(TimeDisplayUtils.getLocaledTimeDisplay(context,poll.expiredAt)), style: TextStyle(fontSize: 12))
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Icon(Icons.how_to_vote_outlined, size: 12),
-                            SizedBox(
-                              width: 8.0,
-                            ),
-                            Text(
-                              S.of(context).pollVoterNumber(poll.votersCount), style: TextStyle(fontSize: 12),
-                            )
-                          ],
-                        ),
-                      ],
-                    )),
-                if(poll.allowVote && poll.maxChoice > 1)
-                ElevatedButton(
-                    onPressed: checkedOption.length > poll.maxChoice || checkedOption.isEmpty? null :() {
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      _vote();
-                    },
-                    child: Text(S.of(context).submitPoll(checkedOption.length, poll.maxChoice)))
-              ],
-            ),
-          )
-        ],
-      ),
-    );
   }
 
 }

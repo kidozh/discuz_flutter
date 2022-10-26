@@ -60,7 +60,7 @@ class PostTextFieldUtils{
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     if(Platform.isAndroid){
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      return androidInfo.model == null? "": androidInfo.model!;
+      return androidInfo.model;
     }
     else if(Platform.isIOS){
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;

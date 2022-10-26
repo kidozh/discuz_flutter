@@ -1,6 +1,5 @@
 
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -77,26 +76,24 @@ class PushServiceUtils{
     FlutterLocalNotificationsPlugin();
     // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('launcher_icon');
-    final IOSInitializationSettings initializationSettingsIOS = IOSInitializationSettings(
+    final DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings(
         requestAlertPermission: false,
         requestBadgePermission: false,
         requestSoundPermission: false,
         onDidReceiveLocalNotification: PushServiceUtils.onDidReceiveLocalNotification
     );
-    final MacOSInitializationSettings initializationSettingsMacOS = MacOSInitializationSettings();
     final InitializationSettings initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid,
         iOS: initializationSettingsIOS,
-        macOS: initializationSettingsMacOS);
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: PushServiceUtils.selectNotification);
+        macOS: initializationSettingsIOS);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
     return flutterLocalNotificationsPlugin;
   }
 
 
 
   static Future<void> makeThreadReplyNotification(Discuz discuz, User user, RemoteMessage remoteMessage, Map<String, dynamic> data) async{
-    IOSNotificationDetails iOSPlatformChannelSpecifics = IOSNotificationDetails(
+    DarwinNotificationDetails iOSPlatformChannelSpecifics = DarwinNotificationDetails(
         presentAlert: true,  // Present an alert when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
         presentBadge: true,  // Present the badge number when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
         presentSound: false,  // Play a sound when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)

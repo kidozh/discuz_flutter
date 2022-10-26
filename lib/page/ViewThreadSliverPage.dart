@@ -707,16 +707,17 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                   SliverList(delegate: SliverChildBuilderDelegate((context, index){
                     return EmptyListScreen(EmptyItemType.post);
                   }, childCount:1)),
-                SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                  return PollWidget(
-                    _viewThreadResult.threadVariables.poll!,
-                    _viewThreadResult.threadVariables.formHash,
-                    tid,
-                    _viewThreadResult.threadVariables.fid,
-                  );
-                }, childCount: _viewThreadResult.threadVariables.poll != null ? 1 : 0)
-                ),
+                if(_viewThreadResult.threadVariables.poll != null)
+                  SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                    return PollWidget(
+                      _viewThreadResult.threadVariables.poll!,
+                      _viewThreadResult.threadVariables.formHash,
+                      tid,
+                      _viewThreadResult.threadVariables.fid,
+                    );
+                  }, childCount: _viewThreadResult.threadVariables.poll != null ? 1 : 0)
+                  ),
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
