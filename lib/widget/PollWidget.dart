@@ -141,19 +141,26 @@ class PollState extends State<PollStatefulWidget>{
     ).toList();
     log("The poll option: ${flutterPollOptionList}");
     if(flutterPollOptionList.isNotEmpty){
-      return FlutterPolls.FlutterPolls(
-        pollId: this.fid.toString(),
-        onVoted: (FlutterPolls.PollOption pollOption, int newTotalVoters) async {
-          return await vote(pollOption);
-        },
-        hasVoted: !poll.allowVote,
-        pollTitle: Text(this.fid.toString()),
-        pollOptions: flutterPollOptionList,
-        pollEnded: poll.expiredAt.isBefore(DateTime.now()),
-        metaWidget: Row(
-          children: [
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 0, horizontal: 8.0),
+        child: FlutterPolls.FlutterPolls(
+          pollId: this.fid.toString(),
+          onVoted: (FlutterPolls.PollOption pollOption, int newTotalVoters) async {
+            return await vote(pollOption);
+          },
+          hasVoted: !poll.allowVote,
+          userVotedOptionId: flutterPollOptionList.first.id,
+          pollTitle: Text(this.fid.toString()),
+          pollOptions: flutterPollOptionList,
+          pollEnded: poll.expiredAt.isBefore(DateTime.now()),
+          metaWidget: Row(
+            children: [
 
-          ],
+            ],
+          ),
+          votedBackgroundColor: Theme.of(context).backgroundColor,
+          votedProgressColor: Theme.of(context).primaryColor.withOpacity(0.3),
+          votedCheckmark: Icon(Icons.check_circle_outline, color: Theme.of(context).textTheme.bodyText1?.color,),
         ),
       );
     }
