@@ -76,6 +76,10 @@ class _PrivateMessagePortalState
     //   result = HotThreadResult.fromJson(jsonDecode(value));
     //
     // });
+    if(result.variables.count != 0 && _pmList.length >= result.variables.count){
+      _controller.finishLoad(IndicatorResult.noMore);
+      return IndicatorResult.noMore;
+    }
 
     return await _client.privateMessagePortalResult(_page).then((value) {
       setState(() {

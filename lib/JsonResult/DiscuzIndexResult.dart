@@ -1,12 +1,9 @@
-import 'dart:developer';
-
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
+import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'BaseResult.dart';
 import 'ErrorResult.dart';
-import 'package:discuz_flutter/converter/StringToIntConverter.dart';
-
 
 part 'DiscuzIndexResult.g.dart';
 
@@ -14,7 +11,7 @@ part 'DiscuzIndexResult.g.dart';
 class DiscuzIndexResult extends BaseResult{
 
   @JsonKey(name: "Variables")
-  late DiscuzIndexVariables discuzIndexVariables;
+  DiscuzIndexVariables discuzIndexVariables = DiscuzIndexVariables();
 
   DiscuzIndexResult(){}
 

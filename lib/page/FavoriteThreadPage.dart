@@ -165,7 +165,7 @@ class FavoriteThreadState extends State<FavoriteThreadStatefulWidget>{
             );
           }
           else{
-            return EmptyListScreen();
+            return EmptyListScreen(EmptyItemType.thread);
           }
         },
       );

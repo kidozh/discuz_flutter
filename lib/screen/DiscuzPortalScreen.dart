@@ -13,6 +13,7 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/DisplayForumSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/ConstUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
@@ -56,7 +57,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
 
   late Dio _dio;
   late MobileApiClient _client;
-  DiscuzIndexResult? result = null;
+  DiscuzIndexResult result = DiscuzIndexResult();
   DiscuzError? _error;
   late EasyRefreshController _controller;
 
@@ -194,20 +195,24 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
                 );
               }
           ),
+          if(result.discuzIndexVariables.forumPartitionList.isEmpty)
+            SliverList(delegate: SliverChildBuilderDelegate((context, index){
+              return EmptyListScreen(EmptyItemType.forum);
+            }, childCount: 1)),
           SliverList(
             delegate: SliverChildBuilderDelegate(
                   (context, index) {
                 List<ForumPartition> forumPartitionList =
-                    result!.discuzIndexVariables.forumPartitionList;
+                    result.discuzIndexVariables.forumPartitionList;
                 List<Forum> _allForumList =
-                    result!.discuzIndexVariables.forumList;
+                    result.discuzIndexVariables.forumList;
                 ForumPartition forumPartition = forumPartitionList[index];
                 //log("Forum partition length ${result!.discuzIndexVariables.forumPartitionList.length} all ${_allForumList.length}" );
                 return ForumPartitionWidget(discuz,user,forumPartition, _allForumList);
               },
               childCount: result == null
                   ? 0
-                  : result!.discuzIndexVariables.forumPartitionList.length,
+                  : result.discuzIndexVariables.forumPartitionList.length,
             ),
           ),
         ],

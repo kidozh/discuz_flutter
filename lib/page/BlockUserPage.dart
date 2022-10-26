@@ -2,14 +2,14 @@
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/BlockUser.dart';
+import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
+import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class BlockUserPage extends StatelessWidget {
@@ -76,7 +76,7 @@ class _BlockUserState extends State<BlockUserStatefulWidget> {
           builder: (BuildContext context, value, Widget? child) {
             List<BlockUser> blockUserList = _blockUserDao!.getBlockUserListByDiscuz(_discuz);
             if ( blockUserList.isEmpty){
-              return EmptyListScreen();
+              return EmptyListScreen(EmptyItemType.user);
             }
             else{
               return ListView.builder(

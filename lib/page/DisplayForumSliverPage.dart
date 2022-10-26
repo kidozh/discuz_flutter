@@ -15,6 +15,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/InternalWebviewBrowserPage.dart';
 import 'package:discuz_flutter/page/PostThreadPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
@@ -230,6 +231,10 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     //   DisplayForumResult result = DisplayForumResult.fromJson(jsonDecode(value));
     // });
 
+    if(_displayForumResult.discuzIndexVariables.forum.getThreadCount()!= 0 && _forumThreadList.length >= _displayForumResult.discuzIndexVariables.forum.getThreadCount()){
+      _controller.finishLoad(IndicatorResult.noMore);
+    }
+
     print("Request display forum map ${_displayForumQuery.generateForumQueriesMap()}");
 
     IndicatorResult result = await client
@@ -271,9 +276,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
           _forumThreadList.length >= value.discuzIndexVariables.forum.getThreadCount()?
           IndicatorResult.noMore:
           IndicatorResult.success);
-
-
-
+      log("Give finishload ${_forumThreadList.length >= value.discuzIndexVariables.forum.getThreadCount()?
+      IndicatorResult.noMore:
+      IndicatorResult.success}");
 
       if (value.getErrorString() != null) {
         EasyLoading.showError(value.getErrorString()!);
@@ -295,7 +300,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       if (user != null && value.discuzIndexVariables.member_uid != user.uid) {
         setState(() {
           _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
-              S.of(context).userExpiredSubtitle);
+              S.of(context).userExpiredSubtitle,);
         });
 
       }
@@ -318,8 +323,14 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       switch (onError.runtimeType) {
         case DioError:
           {
-            _error =
-                DiscuzError(onError.runtimeType.toString(), onError.toString());
+            DioError dioError = onError;
+            log("${dioError.message} >-> ${dioError.type}");
+            EasyLoading.showError("${dioError.message} (${dioError})");
+            setState((){
+              _error =
+                  DiscuzError(dioError.message,dioError.type.name, dioError: dioError);
+            });
+
             break;
           }
         default:
@@ -456,7 +467,6 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         refreshOnStart: true,
         onRefresh: () async {
                 return await _invalidateContent();
-                _controller.finishRefresh();
 
               },
         onLoad: () async {
@@ -464,13 +474,14 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
               },
         child: CustomScrollView(
           slivers: <Widget>[
+
             if (_error != null)
               SliverList(
                   delegate: SliverChildBuilderDelegate(
                         (context, _) {
                       return ErrorCard(_error!.key, _error!.content, () {
                         _controller.callRefresh();
-                      });
+                      }, errorType: _error!.errorType,);
                     },
                     childCount: 1,
                   )),
@@ -498,6 +509,14 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                   childCount: _displayForumResult.discuzIndexVariables.subForumList.length
               )
               ),
+            if(_forumThreadList.isEmpty)
+              SliverList(
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    return EmptyListScreen(EmptyItemType.thread);
+                  }, childCount: 1),
+
+              ),
+
             SliverList(
               delegate: SliverChildBuilderDelegate(
                     (context, index) {

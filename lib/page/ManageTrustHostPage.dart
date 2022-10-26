@@ -81,7 +81,7 @@ class ManageTrustHostState extends State<ManageTrustHostStateWidget>{
         builder: (BuildContext context, Box<TrustHost> value, Widget? child) {
             List<TrustHost> list = _trustHostDao!.findAllTrustHosts();
             if(list == null || list.isEmpty){
-              return EmptyListScreen();
+              return EmptyListScreen(EmptyItemType.trustHost);
             }
             else {
               return ListView.builder(

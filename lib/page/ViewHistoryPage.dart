@@ -173,7 +173,7 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
           builder: (context, Box<ViewHistory> box, widget){
             List<ViewHistory> viewHistoryList = _viewHistoryDao!.findAllViewHistoriesByDiscuz(discuz);
             if(viewHistoryList == null || viewHistoryList.isEmpty){
-              return EmptyListScreen();
+              return EmptyListScreen(EmptyItemType.history);
             }
             else {
               return ListView.builder(

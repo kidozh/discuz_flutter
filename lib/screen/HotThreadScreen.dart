@@ -19,6 +19,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 import '../utility/EasyRefreshUtils.dart';
+import 'EmptyListScreen.dart';
 
 class HotThreadScreen extends StatelessWidget {
   HotThreadScreen({required Key key}) : super(key: key);
@@ -91,7 +92,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       if (user != null && value.variables.member_uid != user.uid) {
         setState(() {
           _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
-              S.of(context).userExpiredSubtitle);
+              S.of(context).userExpiredSubtitle, errorType: ErrorType.userExpired);
         });
       }
 
@@ -149,10 +150,13 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
           if (_error != null)
             ErrorCard(_error!.key, _error!.content, () {
               _controller.callRefresh();
-            }),
+            }, errorType: _error!.errorType,),
+
           Expanded(
               child: getEasyRefreshWidget(
-                  discuzAndUser.discuz!, discuzAndUser.user))
+                  discuzAndUser.discuz!, discuzAndUser.user)),
+          if(_hotThreadList.isEmpty)
+            EmptyListScreen(EmptyItemType.thread),
         ],
       );
     });

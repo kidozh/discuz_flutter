@@ -9,7 +9,10 @@ part of 'MobileApiClient.dart';
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers
 
 class _MobileApiClient implements MobileApiClient {
-  _MobileApiClient(this._dio, {this.baseUrl}) {
+  _MobileApiClient(
+    this._dio, {
+    this.baseUrl,
+  }) {
     baseUrl ??= 'https://keylol.com/';
   }
 
@@ -24,15 +27,19 @@ class _MobileApiClient implements MobileApiClient {
     final _headers = <String, dynamic>{r'Content-Type': 'application/json'};
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<CheckResult>(Options(
-                method: 'GET',
-                headers: _headers,
-                extra: _extra,
-                contentType: 'application/json')
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CheckResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json',
+    )
             .compose(
-                _dio.options, '/api/mobile/index.php?version=4&module=check',
-                queryParameters: queryParameters, data: _data)
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=check',
+              queryParameters: queryParameters,
+              data: _data,
+            )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = CheckResult.fromJson(_result.data!);
     return value;
@@ -46,12 +53,17 @@ class _MobileApiClient implements MobileApiClient {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'GET',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/json')
-        .compose(_dio.options, '/api/mobile/index.php?version=4&module=check',
-            queryParameters: queryParameters, data: _data)
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/json',
+    )
+        .compose(
+          _dio.options,
+          '/api/mobile/index.php?version=4&module=check',
+          queryParameters: queryParameters,
+          data: _data,
+        )
         .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
@@ -59,7 +71,12 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<LoginResult> sendLoginRequest(
-      username, password, captchaHash, captchaType, verification) async {
+    username,
+    password,
+    captchaHash,
+    captchaType,
+    verification,
+  ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -68,25 +85,34 @@ class _MobileApiClient implements MobileApiClient {
       'password': password,
       'seccodehash': captchaHash,
       'seccodemodid': captchaType,
-      'seccodeverify': verification
+      'seccodeverify': verification,
     };
-    final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
-        LoginResult>(Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded')
-        .compose(_dio.options,
-            '/api/mobile/index.php?version=4&module=login&mod=logging&action=login&loginfield=username&loginsubmit=yes&cookietime=2592000',
-            queryParameters: queryParameters, data: _data)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<LoginResult>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=login&mod=logging&action=login&loginfield=username&loginsubmit=yes&cookietime=2592000',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = LoginResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<String> sendLoginRequestInString(
-      username, password, captchaHash, captchaType, verification) async {
+    username,
+    password,
+    captchaHash,
+    captchaType,
+    verification,
+  ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -95,16 +121,20 @@ class _MobileApiClient implements MobileApiClient {
       'password': password,
       'seccodehash': captchaHash,
       'seccodemodid': captchaType,
-      'seccodeverify': verification
+      'seccodeverify': verification,
     };
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded')
-        .compose(_dio.options,
-            '/api/mobile/index.php?version=4&module=login&mod=logging&action=login&loginfield=username&loginsubmit=yes&cookietime=2592000',
-            queryParameters: queryParameters, data: _data)
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+        .compose(
+          _dio.options,
+          '/api/mobile/index.php?version=4&module=login&mod=logging&action=login&loginfield=username&loginsubmit=yes&cookietime=2592000',
+          queryParameters: queryParameters,
+          data: _data,
+        )
         .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
@@ -116,13 +146,19 @@ class _MobileApiClient implements MobileApiClient {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<DiscuzIndexResult>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options,
-                    '/api/mobile/index.php?version=4&module=forumindex',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<DiscuzIndexResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=forumindex',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = DiscuzIndexResult.fromJson(_result.data!);
     return value;
   }
@@ -134,88 +170,154 @@ class _MobileApiClient implements MobileApiClient {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'GET', headers: _headers, extra: _extra)
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
         .compose(
-            _dio.options, '/api/mobile/index.php?version=4&module=forumindex',
-            queryParameters: queryParameters, data: _data)
+          _dio.options,
+          '/api/mobile/index.php?version=4&module=forumindex',
+          queryParameters: queryParameters,
+          data: _data,
+        )
         .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }
 
   @override
-  Future<DisplayForumResult> displayForumResult(fid, page, queries) async {
+  Future<DisplayForumResult> displayForumResult(
+    fid,
+    page,
+    queries,
+  ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'fid': fid, r'page': page};
+    final queryParameters = <String, dynamic>{
+      r'fid': fid,
+      r'page': page,
+    };
     queryParameters.addAll(queries);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<DisplayForumResult>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options,
-                    '/api/mobile/index.php?version=4&module=forumdisplay',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<DisplayForumResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=forumdisplay',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = DisplayForumResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<String> displayForumRaw(fid, page, queries) async {
+  Future<String> displayForumRaw(
+    fid,
+    page,
+    queries,
+  ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'fid': fid, r'page': page};
+    final queryParameters = <String, dynamic>{
+      r'fid': fid,
+      r'page': page,
+    };
     queryParameters.addAll(queries);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'GET', headers: _headers, extra: _extra)
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
         .compose(
-            _dio.options, '/api/mobile/index.php?version=4&module=forumdisplay',
-            queryParameters: queryParameters, data: _data)
+          _dio.options,
+          '/api/mobile/index.php?version=4&module=forumdisplay',
+          queryParameters: queryParameters,
+          data: _data,
+        )
         .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }
 
   @override
-  Future<ViewThreadResult> viewThreadResult(tid, page, queries) async {
+  Future<ViewThreadResult> viewThreadResult(
+    tid,
+    page,
+    queries,
+  ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'tid': tid, r'page': page};
+    final queryParameters = <String, dynamic>{
+      r'tid': tid,
+      r'page': page,
+    };
     queryParameters.addAll(queries);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<ViewThreadResult>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options,
-                    '/api/mobile/index.php?version=4&module=viewthread&ppp=15',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<ViewThreadResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=viewthread&ppp=15',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ViewThreadResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<String> viewThreadRaw(tid, page, queries) async {
+  Future<String> viewThreadRaw(
+    tid,
+    page,
+    queries,
+  ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'tid': tid, r'page': page};
+    final queryParameters = <String, dynamic>{
+      r'tid': tid,
+      r'page': page,
+    };
     queryParameters.addAll(queries);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'GET', headers: _headers, extra: _extra)
-            .compose(_dio.options,
-                '/api/mobile/index.php?version=4&module=viewthread&ppp=15',
-                queryParameters: queryParameters, data: _data)
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/api/mobile/index.php?version=4&module=viewthread&ppp=15',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }
 
   @override
-  Future<String> sendReplyRaw(fid, tid, formhash, message, captchaHash,
-      captchaType, verification, queries) async {
+  Future<String> sendReplyRaw(
+    fid,
+    tid,
+    formhash,
+    message,
+    captchaHash,
+    captchaType,
+    verification,
+    queries,
+  ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.addAll(queries);
@@ -227,16 +329,20 @@ class _MobileApiClient implements MobileApiClient {
       'message': message,
       'seccodehash': captchaHash,
       'seccodemodid': captchaType,
-      'seccodeverify': verification
+      'seccodeverify': verification,
     };
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded')
-        .compose(_dio.options,
-            '/api/mobile/index.php?version=4&module=sendreply&action=reply&replysubmit=yes&usesig=1&seccodemodid=forum::viewthread',
-            queryParameters: queryParameters, data: _data)
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+        .compose(
+          _dio.options,
+          '/api/mobile/index.php?version=4&module=sendreply&action=reply&replysubmit=yes&usesig=1&seccodemodid=forum::viewthread',
+          queryParameters: queryParameters,
+          data: _data,
+        )
         .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
@@ -244,17 +350,18 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<ApiResult> sendReplyResult(
-      fid,
-      tid,
-      formhash,
-      replyPostId,
-      replyPId,
-      notifyTriPostMessage,
-      message,
-      captchaHash,
-      captchaType,
-      verification,
-      queries) async {
+    fid,
+    tid,
+    formhash,
+    replyPostId,
+    replyPId,
+    notifyTriPostMessage,
+    message,
+    captchaHash,
+    captchaType,
+    verification,
+    queries,
+  ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'repquote': replyPId};
     queryParameters.addAll(queries);
@@ -269,19 +376,23 @@ class _MobileApiClient implements MobileApiClient {
       'message': message,
       'seccodehash': captchaHash,
       'seccodemodid': captchaType,
-      'seccodeverify': verification
+      'seccodeverify': verification,
     };
     _data.removeWhere((k, v) => v == null);
-    final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
-        ApiResult>(Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded')
-        .compose(_dio.options,
-            '/api/mobile/index.php?version=4&module=sendreply&action=reply&replysubmit=yes&usesig=1&seccodemodid=forum::viewthread',
-            queryParameters: queryParameters, data: _data)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<ApiResult>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=sendreply&action=reply&replysubmit=yes&usesig=1&seccodemodid=forum::viewthread',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ApiResult.fromJson(_result.data!);
     return value;
   }
@@ -293,10 +404,16 @@ class _MobileApiClient implements MobileApiClient {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'GET', headers: _headers, extra: _extra)
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
         .compose(
-            _dio.options, '/api/mobile/index.php?version=4&module=mynotelist',
-            queryParameters: queryParameters, data: _data)
+          _dio.options,
+          '/api/mobile/index.php?version=4&module=mynotelist',
+          queryParameters: queryParameters,
+          data: _data,
+        )
         .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
@@ -309,12 +426,18 @@ class _MobileApiClient implements MobileApiClient {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<UserDiscuzNotificationResult>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options,
-                    '/api/mobile/index.php?version=4&module=mynotelist',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        _setStreamType<UserDiscuzNotificationResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=mynotelist',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = UserDiscuzNotificationResult.fromJson(_result.data!);
     return value;
   }
@@ -326,10 +449,16 @@ class _MobileApiClient implements MobileApiClient {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'GET', headers: _headers, extra: _extra)
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
         .compose(
-            _dio.options, '/api/mobile/index.php?version=4&module=hotthread',
-            queryParameters: queryParameters, data: _data)
+          _dio.options,
+          '/api/mobile/index.php?version=4&module=hotthread',
+          queryParameters: queryParameters,
+          data: _data,
+        )
         .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
@@ -341,13 +470,19 @@ class _MobileApiClient implements MobileApiClient {
     final queryParameters = <String, dynamic>{r'page': page};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<HotThreadResult>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options,
-                    '/api/mobile/index.php?version=4&module=hotthread',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<HotThreadResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=hotthread',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = HotThreadResult.fromJson(_result.data!);
     return value;
   }
@@ -358,51 +493,87 @@ class _MobileApiClient implements MobileApiClient {
     final queryParameters = <String, dynamic>{r'type': type};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<CaptchaResult>(Options(
-                method: 'GET', headers: _headers, extra: _extra)
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CaptchaResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
             .compose(
-                _dio.options, '/api/mobile/index.php?version=4&module=secure',
-                queryParameters: queryParameters, data: _data)
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=secure',
+              queryParameters: queryParameters,
+              data: _data,
+            )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = CaptchaResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<ApiResult> votePoll(fid, tid, formHash, checkedOptionId) async {
+  Future<ApiResult> votePoll(
+    fid,
+    tid,
+    formHash,
+    checkedOptionId,
+  ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'fid': fid, r'tid': tid};
+    final queryParameters = <String, dynamic>{
+      r'fid': fid,
+      r'tid': tid,
+    };
     final _headers = <String, dynamic>{};
-    final _data = {'formhash': formHash, 'pollanswers[]': checkedOptionId};
-    final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
-        ApiResult>(Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded')
-        .compose(_dio.options,
-            '/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes&action=votepoll',
-            queryParameters: queryParameters, data: _data)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _data = {
+      'formhash': formHash,
+      'pollanswers[]': checkedOptionId,
+    };
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<ApiResult>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes&action=votepoll',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ApiResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<String> votePollRaw(fid, tid, formHash, checkedOptionId) async {
+  Future<String> votePollRaw(
+    fid,
+    tid,
+    formHash,
+    checkedOptionId,
+  ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'fid': fid, r'tid': tid};
+    final queryParameters = <String, dynamic>{
+      r'fid': fid,
+      r'tid': tid,
+    };
     final _headers = <String, dynamic>{};
-    final _data = {'formhash': formHash, 'pollanswers[]': checkedOptionId};
+    final _data = {
+      'formhash': formHash,
+      'pollanswers[]': checkedOptionId,
+    };
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded')
-        .compose(_dio.options,
-            '/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes&action=votepoll',
-            queryParameters: queryParameters, data: _data)
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+        .compose(
+          _dio.options,
+          '/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes&action=votepoll',
+          queryParameters: queryParameters,
+          data: _data,
+        )
         .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
@@ -414,12 +585,18 @@ class _MobileApiClient implements MobileApiClient {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<CheckLoginResult>(Options(
-                method: 'GET', headers: _headers, extra: _extra)
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CheckLoginResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
             .compose(
-                _dio.options, '/api/mobile/index.php?version=4&module=login',
-                queryParameters: queryParameters, data: _data)
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=login',
+              queryParameters: queryParameters,
+              data: _data,
+            )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = CheckLoginResult.fromJson(_result.data!);
     return value;
@@ -431,12 +608,18 @@ class _MobileApiClient implements MobileApiClient {
     final queryParameters = <String, dynamic>{r'uid': uid};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<UserProfileResult>(Options(
-                method: 'GET', headers: _headers, extra: _extra)
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<UserProfileResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
             .compose(
-                _dio.options, '/api/mobile/index.php?version=4&module=profile',
-                queryParameters: queryParameters, data: _data)
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=profile',
+              queryParameters: queryParameters,
+              data: _data,
+            )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = UserProfileResult.fromJson(_result.data!);
     return value;
@@ -448,12 +631,18 @@ class _MobileApiClient implements MobileApiClient {
     final queryParameters = <String, dynamic>{r'uid': uid};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'GET', headers: _headers, extra: _extra)
-            .compose(
-                _dio.options, '/api/mobile/index.php?version=4&module=profile',
-                queryParameters: queryParameters, data: _data)
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/api/mobile/index.php?version=4&module=profile',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }
@@ -464,12 +653,18 @@ class _MobileApiClient implements MobileApiClient {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<SmileyResult>(Options(
-                method: 'GET', headers: _headers, extra: _extra)
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<SmileyResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
             .compose(
-                _dio.options, '/api/mobile/index.php?version=4&module=smiley',
-                queryParameters: queryParameters, data: _data)
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=smiley',
+              queryParameters: queryParameters,
+              data: _data,
+            )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = SmileyResult.fromJson(_result.data!);
     return value;
@@ -482,50 +677,79 @@ class _MobileApiClient implements MobileApiClient {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<PrivateMessagePortalResult>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(
-                    _dio.options, '/api/mobile/index.php?version=4&module=mypm',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        _setStreamType<PrivateMessagePortalResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=mypm',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = PrivateMessagePortalResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<PrivateMessageDetailResult> privateMessageDetailResult(
-      toUid, page) async {
+    toUid,
+    page,
+  ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'touid': toUid, r'page': page};
+    final queryParameters = <String, dynamic>{
+      r'touid': toUid,
+      r'page': page,
+    };
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<PrivateMessageDetailResult>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options,
-                    '/api/mobile/index.php?version=4&module=mypm&subop=view',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        _setStreamType<PrivateMessageDetailResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=mypm&subop=view',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = PrivateMessageDetailResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<ApiResult> sendPrivateMessageResult(formHash, message, toUid) async {
+  Future<ApiResult> sendPrivateMessageResult(
+    formHash,
+    message,
+    toUid,
+  ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = {'formhash': formHash, 'message': message, 'touid': toUid};
-    final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
-        ApiResult>(Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded')
-        .compose(_dio.options,
-            '/api/mobile/index.php?version=4&ac=pm&op=send&daterange=0&module=sendpm&pmsubmit=yes',
-            queryParameters: queryParameters, data: _data)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _data = {
+      'formhash': formHash,
+      'message': message,
+      'touid': toUid,
+    };
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<ApiResult>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&ac=pm&op=send&daterange=0&module=sendpm&pmsubmit=yes',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ApiResult.fromJson(_result.data!);
     return value;
   }
@@ -538,10 +762,16 @@ class _MobileApiClient implements MobileApiClient {
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<PublicMessagePortalResult>(Options(
-                method: 'GET', headers: _headers, extra: _extra)
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
             .compose(
-                _dio.options, '/api/mobile/index.php?version=4&module=publicpm',
-                queryParameters: queryParameters, data: _data)
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=publicpm',
+              queryParameters: queryParameters,
+              data: _data,
+            )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = PublicMessagePortalResult.fromJson(_result.data!);
     return value;
@@ -554,62 +784,102 @@ class _MobileApiClient implements MobileApiClient {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<FavoriteThreadResult>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options,
-                    '/api/mobile/index.php?version=4&module=myfavthread',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        _setStreamType<FavoriteThreadResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=myfavthread',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = FavoriteThreadResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<String> uploadImage(uid, uploadHash, file) async {
+  Future<String> uploadImage(
+    uid,
+    uploadHash,
+    file,
+  ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = FormData();
-    _data.fields.add(MapEntry('uid', uid.toString()));
-    _data.fields.add(MapEntry('hash', uploadHash));
+    _data.fields.add(MapEntry(
+      'uid',
+      uid.toString(),
+    ));
+    _data.fields.add(MapEntry(
+      'hash',
+      uploadHash,
+    ));
     _data.files.add(MapEntry(
-        'Filedata',
-        MultipartFile.fromFileSync(file.path,
-            filename: file.path.split(Platform.pathSeparator).last)));
+      'Filedata',
+      MultipartFile.fromFileSync(
+        file.path,
+        filename: file.path.split(Platform.pathSeparator).last,
+      ),
+    ));
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'multipart/form-data')
-        .compose(_dio.options,
-            '/api/mobile/index.php?version=4&module=forumupload&type=image',
-            queryParameters: queryParameters, data: _data)
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'multipart/form-data',
+    )
+        .compose(
+          _dio.options,
+          '/api/mobile/index.php?version=4&module=forumupload&type=image',
+          queryParameters: queryParameters,
+          data: _data,
+        )
         .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }
 
   @override
-  Future<CheckPostResult> checkPost(fid, tid) async {
+  Future<CheckPostResult> checkPost(
+    fid,
+    tid,
+  ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'fid': fid, r'tid': tid};
+    final queryParameters = <String, dynamic>{
+      r'fid': fid,
+      r'tid': tid,
+    };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<CheckPostResult>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options,
-                    '/api/mobile/index.php?version=4&module=checkpost',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CheckPostResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=checkpost',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = CheckPostResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<String> reportContent(
-      formHash, report_select, message, rtype, rid) async {
+    formHash,
+    report_select,
+    message,
+    rtype,
+    rid,
+  ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -618,57 +888,81 @@ class _MobileApiClient implements MobileApiClient {
       'report_select': report_select,
       'message': message,
       'rtype': rtype,
-      'rid': rid
+      'rid': rid,
     };
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded')
-        .compose(_dio.options,
-            '/misc.php?mod=report&inajax=1&handlekey=miscreport120&reportsubmit=true',
-            queryParameters: queryParameters, data: _data)
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+        .compose(
+          _dio.options,
+          '/misc.php?mod=report&inajax=1&handlekey=miscreport120&reportsubmit=true',
+          queryParameters: queryParameters,
+          data: _data,
+        )
         .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = _result.data!;
     return value;
   }
 
   @override
-  Future<ApiResult> favoriteThreadActionResult(formhash, tid) async {
+  Future<ApiResult> favoriteThreadActionResult(
+    formhash,
+    tid,
+  ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = {'formhash': formhash, 'id': tid};
-    final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
-        ApiResult>(Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded')
-        .compose(_dio.options,
-            '/api/mobile/index.php?version=4&module=favthread&type=thread&ac=favorite&favoritesubmit=true',
-            queryParameters: queryParameters, data: _data)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _data = {
+      'formhash': formhash,
+      'id': tid,
+    };
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<ApiResult>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=favthread&type=thread&ac=favorite&favoritesubmit=true',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ApiResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<ApiResult> unfavoriteThreadActionResult(formhash, favid) async {
+  Future<ApiResult> unfavoriteThreadActionResult(
+    formhash,
+    favid,
+  ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = {'formhash': formhash, 'favid': favid};
-    final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
-        ApiResult>(Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded')
-        .compose(_dio.options,
-            '/api/mobile/index.php?version=4&module=favthread&type=thread&ac=favorite&deletesubmit=true&op=delete',
-            queryParameters: queryParameters, data: _data)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _data = {
+      'formhash': formhash,
+      'favid': favid,
+    };
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<ApiResult>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=favthread&type=thread&ac=favorite&deletesubmit=true&op=delete',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ApiResult.fromJson(_result.data!);
     return value;
   }
@@ -680,68 +974,106 @@ class _MobileApiClient implements MobileApiClient {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<FavoriteForumResult>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options,
-                    '/api/mobile/index.php?version=4&module=myfavforum',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        _setStreamType<FavoriteForumResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=myfavforum',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = FavoriteForumResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<ApiResult> favoriteForumActionResult(formhash, fid) async {
+  Future<ApiResult> favoriteForumActionResult(
+    formhash,
+    fid,
+  ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = {'formhash': formhash, 'id': fid};
-    final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
-        ApiResult>(Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded')
-        .compose(_dio.options,
-            '/api/mobile/index.php?version=4&module=favforum&type=thread&ac=favorite&favoritesubmit=true',
-            queryParameters: queryParameters, data: _data)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _data = {
+      'formhash': formhash,
+      'id': fid,
+    };
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<ApiResult>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=favforum&type=thread&ac=favorite&favoritesubmit=true',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ApiResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<ApiResult> unfavoriteForumActionResult(formhash, favid) async {
+  Future<ApiResult> unfavoriteForumActionResult(
+    formhash,
+    favid,
+  ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = {'formhash': formhash, 'favid': favid};
-    final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
-        ApiResult>(Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded')
-        .compose(_dio.options,
-            '/api/mobile/index.php?version=4&module=favforum&type=thread&ac=favorite&deletesubmit=true&op=delete',
-            queryParameters: queryParameters, data: _data)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _data = {
+      'formhash': formhash,
+      'favid': favid,
+    };
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<ApiResult>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=favforum&type=thread&ac=favorite&deletesubmit=true&op=delete',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ApiResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<NewThreadResult> newThreadsResult(fids, start) async {
+  Future<NewThreadResult> newThreadsResult(
+    fids,
+    start,
+  ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'fids': fids, r'start': start};
+    final queryParameters = <String, dynamic>{
+      r'fids': fids,
+      r'start': start,
+    };
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<NewThreadResult>(Options(
-                method: 'GET', headers: _headers, extra: _extra)
-            .compose(_dio.options,
-                '/api/mobile/index.php?version=4&module=newthreads&limit=20',
-                queryParameters: queryParameters, data: _data)
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<NewThreadResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=newthreads&limit=20',
+              queryParameters: queryParameters,
+              data: _data,
+            )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = NewThreadResult.fromJson(_result.data!);
     return value;
@@ -754,18 +1086,30 @@ class _MobileApiClient implements MobileApiClient {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<PushTokenListResult>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options, '/plugin.php?id=dhpush:token',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        _setStreamType<PushTokenListResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/plugin.php?id=dhpush:token',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = PushTokenListResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<PostTokenResult> sendToken(
-      formHash, token, deviceName, packageId, pushChannel) async {
+    formHash,
+    token,
+    deviceName,
+    packageId,
+    pushChannel,
+  ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -774,24 +1118,39 @@ class _MobileApiClient implements MobileApiClient {
       'token': token,
       'deviceName': deviceName,
       'packageId': packageId,
-      'channel': pushChannel
+      'channel': pushChannel,
     };
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<PostTokenResult>(Options(
-                method: 'POST',
-                headers: _headers,
-                extra: _extra,
-                contentType: 'application/x-www-form-urlencoded')
-            .compose(_dio.options, '/plugin.php?id=dhpush:token',
-                queryParameters: queryParameters, data: _data)
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<PostTokenResult>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+            .compose(
+              _dio.options,
+              '/plugin.php?id=dhpush:token',
+              queryParameters: queryParameters,
+              data: _data,
+            )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = PostTokenResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<ApiResult> postNewThread(formhash, fid, typeId, subject, message,
-      captchaHash, captchaType, verification, attachAid, formMap) async {
+  Future<ApiResult> postNewThread(
+    formhash,
+    fid,
+    typeId,
+    subject,
+    message,
+    captchaHash,
+    captchaType,
+    verification,
+    attachAid,
+    formMap,
+  ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.addAll(formMap);
@@ -805,18 +1164,22 @@ class _MobileApiClient implements MobileApiClient {
       'seccodehash': captchaHash,
       'seccodemodid': captchaType,
       'seccodeverify': verification,
-      'unused[]': attachAid
+      'unused[]': attachAid,
     };
-    final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
-        ApiResult>(Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded')
-        .compose(_dio.options,
-            '/api/mobile/index.php?version=4&module=newthread&topicsubmit=yes&usesig=1',
-            queryParameters: queryParameters, data: _data)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<ApiResult>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=newthread&topicsubmit=yes&usesig=1',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ApiResult.fromJson(_result.data!);
     return value;
   }

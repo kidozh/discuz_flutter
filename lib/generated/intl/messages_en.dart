@@ -268,10 +268,22 @@ class MessageLookup extends MessageLookupByLibrary {
         "easyRefreshClassicHeaderReadyText":
             MessageLookupByLibrary.simpleMessage("Refreshing..."),
         "editedPost": MessageLookupByLibrary.simpleMessage("Edited"),
+        "emptyForum": MessageLookupByLibrary.simpleMessage("No fourm here"),
+        "emptyHistory": MessageLookupByLibrary.simpleMessage(
+            "No history is found in your device. Have you ever browse anything or never open the history recording in the setting?"),
         "emptyListDescription":
             MessageLookupByLibrary.simpleMessage("The content is empty"),
+        "emptyNotification":
+            MessageLookupByLibrary.simpleMessage("No notification here."),
+        "emptyPosts": MessageLookupByLibrary.simpleMessage(
+            "No post is currently listed."),
         "emptyScreenTitle":
             MessageLookupByLibrary.simpleMessage("The content here is empty."),
+        "emptyThreads": MessageLookupByLibrary.simpleMessage(
+            "No thread is currently fetched."),
+        "emptyTrustHost": MessageLookupByLibrary.simpleMessage(
+            "You haven\'t trusted any hosts."),
+        "emptyUser": MessageLookupByLibrary.simpleMessage("No user here."),
         "error": MessageLookupByLibrary.simpleMessage("Error"),
         "favoriteForum":
             MessageLookupByLibrary.simpleMessage("Favorite forums"),
@@ -560,7 +572,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Type to report other reason"),
         "reportSuccessfully": m27,
         "residentPlace": MessageLookupByLibrary.simpleMessage("Resident place"),
-        "retry": MessageLookupByLibrary.simpleMessage("retry"),
+        "retry": MessageLookupByLibrary.simpleMessage("Retry"),
         "revisedPost": MessageLookupByLibrary.simpleMessage(
             "The post is revised to prevent duplicated scoring."),
         "sample": MessageLookupByLibrary.simpleMessage("Sample"),

@@ -20,6 +20,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 import '../utility/EasyRefreshUtils.dart';
+import 'EmptyListScreen.dart';
 
 class NotificationScreen extends StatelessWidget {
   NotificationScreen({required Key key}) : super(key: key);
@@ -164,9 +165,12 @@ class _NotificationState extends State<NotificationStatefulWidget> {
               ErrorCard(_error!.key, _error!.content, () {
                 _controller.callRefresh();
               }),
+
             Expanded(
                 child: getEasyRefreshWidget(
-                    discuzAndUser.discuz!, discuzAndUser.user))
+                    discuzAndUser.discuz!, discuzAndUser.user)),
+            if(_noteList.isEmpty)
+              EmptyListScreen(EmptyItemType.notification),
           ],
         );
       }

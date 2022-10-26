@@ -115,7 +115,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
               padding: const EdgeInsets.all(8),
               margin: Margins(bottom: Margin(8.0)),
               border: Border(left: BorderSide(color: Theme.of(context).primaryColor, width: 4)),
-              width: Width(double.infinity)
+              width: Width.auto()
             ),
             "p":Style(
               fontStyle: Theme.of(context).textTheme.bodyText2?.fontStyle,

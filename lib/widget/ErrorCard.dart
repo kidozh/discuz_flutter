@@ -5,10 +5,13 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
+import '../entity/DiscuzError.dart';
+
 class ErrorCard extends StatelessWidget{
 
   String errorTitle = "";
   String errorDescription = "";
+  ErrorType? errorType;
 
   final VoidCallback? onRefreshCallback;
   bool? largeSize = true;
@@ -16,7 +19,7 @@ class ErrorCard extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    if(largeSize == null || largeSize == true){
+    if(errorType!= ErrorType.userExpired && (largeSize == null || largeSize == true )){
       return Padding(padding: EdgeInsets.symmetric(vertical: 32.0, horizontal: 8.0),
         child: Container(
           alignment: Alignment.center,
@@ -69,5 +72,6 @@ class ErrorCard extends StatelessWidget{
 
   }
 
-  ErrorCard(this.errorTitle, this.errorDescription,this.onRefreshCallback, {this.largeSize});
+  ErrorCard(this.errorTitle, this.errorDescription,this.onRefreshCallback, {this.largeSize, this.errorType});
 }
+

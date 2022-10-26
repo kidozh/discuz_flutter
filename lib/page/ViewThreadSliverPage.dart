@@ -19,6 +19,7 @@ import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
+import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/screen/ExtraFuncInThreadScreen.dart';
 import 'package:discuz_flutter/screen/SmileyListScreen.dart';
 import 'package:discuz_flutter/utility/ConstUtils.dart';
@@ -344,10 +345,17 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       }
     }).catchError((onError) {
       VibrationUtils.vibrateErrorIfPossible();
-      EasyLoading.showError('${onError}');
+
       setState(() {
         _sendReplyStatus = ButtonState.fail;
       });
+      if(onError is DioError){
+        DioError dioError = onError;
+        EasyLoading.showError("${dioError.message}");
+      }
+      else{
+        EasyLoading.showError('${onError}');
+      }
     });
   }
 
@@ -428,6 +436,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
+    if(_postList.length >= _viewThreadResult.threadVariables.threadInfo.replies + 1){
+      _controller.finishLoad(IndicatorResult.noMore);
+      _page -= 1;
+      return IndicatorResult.noMore;
+    }
+
     return await client
         .viewThreadResult(tid, _page, viewThreadQuery.generateForumQueriesMap())
         .then((value) {
@@ -477,7 +491,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         log("recv user uid different! ${user.uid} ${value.threadVariables.member_uid} ${value.threadVariables.member_username}");
         setState(() {
           _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
-              S.of(context).userExpiredSubtitle);
+              S.of(context).userExpiredSubtitle, errorType: ErrorType.userExpired);
         });
       }
 
@@ -509,25 +523,26 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       }
     }).catchError((onError, stack) {
       VibrationUtils.vibrateErrorIfPossible();
-      EasyLoading.showError('${onError}');
+
       log("${onError} ${stack}");
       _controller.finishRefresh();
-
-      switch (onError.runtimeType) {
-        case DioError:
-          {
-            _error =
-                DiscuzError(onError.runtimeType.toString(), onError.toString());
-            break;
-          }
-        default:
-          {
-            setState(() {
-              _error = DiscuzError(
-                  onError.runtimeType.toString(), onError.toString());
-            });
-          }
+      if(onError is DioError){
+        DioError dioError = onError;
+        log("${dioError.message} >-> ${dioError.type}");
+        EasyLoading.showError("${dioError.message} (${dioError})");
+        setState((){
+          _error =
+              DiscuzError(dioError.message,dioError.type.name, dioError: dioError);
+        });
       }
+      else{
+          setState(() {
+            _error = DiscuzError(
+                onError.runtimeType.toString(), onError.toString());
+          });
+          EasyLoading.showError('${onError}');
+      }
+
       return IndicatorResult.fail;
     });
   }
@@ -647,10 +662,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             refreshOnStart: true,
             controller: _controller,
             onRefresh: () async {
-              await _invalidateContent();
+              return await _invalidateContent();
             },
             onLoad: () async {
-              await _loadForumContent();
+              return await _loadForumContent();
             },
             child: CustomScrollView(
               slivers: [
@@ -684,10 +699,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                     (context, _) {
                       return ErrorCard(_error!.key, _error!.content, () {
                         _controller.callRefresh();
-                      });
+                      }, errorType: _error!.errorType);
                     },
                     childCount: 1,
                   )),
+                if(_postList.isEmpty && _error == null)
+                  SliverList(delegate: SliverChildBuilderDelegate((context, index){
+                    return EmptyListScreen(EmptyItemType.post);
+                  }, childCount:1)),
                 SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
                   return PollWidget(

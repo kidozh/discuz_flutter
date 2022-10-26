@@ -461,10 +461,10 @@ class S {
     );
   }
 
-  /// `retry`
+  /// `Retry`
   String get retry {
     return Intl.message(
-      'retry',
+      'Retry',
       name: 'retry',
       desc: '',
       args: [],
@@ -4057,6 +4057,76 @@ class S {
     return Intl.message(
       'No captcha needed.',
       name: 'noCaptachaRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You haven't trusted any hosts.`
+  String get emptyTrustHost {
+    return Intl.message(
+      'You haven\'t trusted any hosts.',
+      name: 'emptyTrustHost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No post is currently listed.`
+  String get emptyPosts {
+    return Intl.message(
+      'No post is currently listed.',
+      name: 'emptyPosts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No thread is currently fetched.`
+  String get emptyThreads {
+    return Intl.message(
+      'No thread is currently fetched.',
+      name: 'emptyThreads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No user here.`
+  String get emptyUser {
+    return Intl.message(
+      'No user here.',
+      name: 'emptyUser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No history is found in your device. Have you ever browse anything or never open the history recording in the setting?`
+  String get emptyHistory {
+    return Intl.message(
+      'No history is found in your device. Have you ever browse anything or never open the history recording in the setting?',
+      name: 'emptyHistory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No fourm here`
+  String get emptyForum {
+    return Intl.message(
+      'No fourm here',
+      name: 'emptyForum',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No notification here.`
+  String get emptyNotification {
+    return Intl.message(
+      'No notification here.',
+      name: 'emptyNotification',
       desc: '',
       args: [],
     );

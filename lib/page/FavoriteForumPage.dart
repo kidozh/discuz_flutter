@@ -152,7 +152,7 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget>{
             );
           }
           else{
-            return EmptyListScreen();
+            return EmptyListScreen(EmptyItemType.forum);
           }
         },
 

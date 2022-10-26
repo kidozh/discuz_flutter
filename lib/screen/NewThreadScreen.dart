@@ -20,6 +20,7 @@ import '../utility/EasyRefreshUtils.dart';
 import '../utility/NetworkUtils.dart';
 import '../widget/ErrorCard.dart';
 import '../widget/NewThreadWidget.dart';
+import 'EmptyListScreen.dart';
 import 'NullDiscuzScreen.dart';
 
 class NewThreadScreen extends StatelessWidget {
@@ -96,7 +97,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
       if (user != null && value.variables.member_uid != user.uid) {
         setState(() {
           _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
-              S.of(context).userExpiredSubtitle);
+              S.of(context).userExpiredSubtitle, errorType: ErrorType.userExpired);
         });
       }
 
@@ -153,10 +154,13 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
           if (_error != null)
             ErrorCard(_error!.key, _error!.content, () {
               _controller.callRefresh();
-            }),
+            }, errorType: _error!.errorType,),
+
           Expanded(
               child: getEasyRefreshWidget(
-                  discuzAndUser.discuz!, discuzAndUser.user))
+                  discuzAndUser.discuz!, discuzAndUser.user)),
+          if(_newThreadList.isEmpty)
+            EmptyListScreen(EmptyItemType.thread),
         ],
       );
     });

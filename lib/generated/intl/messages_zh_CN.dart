@@ -244,8 +244,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "easyRefreshClassicHeaderReadyText":
             MessageLookupByLibrary.simpleMessage("刷新中..."),
         "editedPost": MessageLookupByLibrary.simpleMessage("已编辑"),
+        "emptyForum": MessageLookupByLibrary.simpleMessage("当前板块列表为空。"),
+        "emptyHistory": MessageLookupByLibrary.simpleMessage(
+            "这里还没有历史记录。您未曾浏览论坛或者没有打开历史记录功能。"),
         "emptyListDescription": MessageLookupByLibrary.simpleMessage("当前列表为空。"),
+        "emptyNotification": MessageLookupByLibrary.simpleMessage("当前通知列表为空。"),
+        "emptyPosts": MessageLookupByLibrary.simpleMessage("目前没有贴文显示。"),
         "emptyScreenTitle": MessageLookupByLibrary.simpleMessage("当前列表为空。"),
+        "emptyThreads": MessageLookupByLibrary.simpleMessage("当前帖子列表为空。"),
+        "emptyTrustHost": MessageLookupByLibrary.simpleMessage("你还没有信任一个主机地址。"),
+        "emptyUser": MessageLookupByLibrary.simpleMessage("这里还没有用户。"),
         "error": MessageLookupByLibrary.simpleMessage("出错了"),
         "favoriteForum": MessageLookupByLibrary.simpleMessage("收藏的板块"),
         "favoriteThread": MessageLookupByLibrary.simpleMessage("收藏的帖子"),

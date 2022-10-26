@@ -45,7 +45,7 @@
   "addNewDiscuz": "Add a new Discuz! forum",
   "nullDiscuzTitle": "No Discuz! BBS is selected",
   "nullDiscuzSubTitle": "Why not consider add a discuz forum?",
-  "retry": "retry",
+  "retry": "Retry",
   "chooseDiscuz": "Choose a BBS",
   "googleAdTitle": "AD",
   "googleAdSubTitle": "Advertisement provided by Google",
@@ -609,6 +609,12 @@
   "loadingForumInformation": "Loading configuration for publish a thread in the forum.",
   "pushThreadTitleHint": "Title",
   "loadingCaptchaInformation": "Loading captcha information.",
-  "noCaptachaRequired": "No captcha needed."
-
+  "noCaptachaRequired": "No captcha needed.",
+  "emptyTrustHost": "You haven't trusted any hosts.",
+  "emptyPosts": "No post is currently listed.",
+  "emptyThreads": "No thread is currently fetched.",
+  "emptyUser": "No user here.",
+  "emptyHistory": "No history is found in your device. Have you ever browse anything or never open the history recording in the setting?",
+  "emptyForum": "No fourm here",
+  "emptyNotification": "No notification here."
 }
