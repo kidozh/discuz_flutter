@@ -17,6 +17,8 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:provider/provider.dart';
 
+import '../entity/DiscuzError.dart';
+
 class AddDiscuzPage extends StatelessWidget {
 
   @override
@@ -43,7 +45,7 @@ class _AddDiscuzFormFieldState
     extends State<AddDiscuzForumFieldStatefulWidget> {
   final _formKey = GlobalKey<FormState>();
   CheckResult? _checkResult;
-  String error = "";
+  DiscuzError? error = null;
   bool _isLoading = false;
   final TextEditingController _urlController = new TextEditingController(text: "https://");
 
@@ -82,7 +84,7 @@ class _AddDiscuzFormFieldState
       log(checkResult.toString());
       setState(() {
         _checkResult = _checkResult;
-        error = "";
+        error = null;
       });
       _saveDiscuzInDb(checkResult.toDiscuz(discuzUrl));
     }).catchError((onError) {
@@ -90,16 +92,17 @@ class _AddDiscuzFormFieldState
       setState(() {
         _isLoading = false;
       });
-      switch (onError.runtimeType) {
+      switch (onError) {
         case DioError:
           {
-            error = onError.message;
+            DioError dioError = onError;
+            error = DiscuzError(dioError.type.name, dioError.message, dioError: dioError);
             break;
           }
         default:
           {
             setState(() {
-              error = onError.toString();
+              error = DiscuzError("", onError.toString());
             });
           }
       }
@@ -143,10 +146,10 @@ class _AddDiscuzFormFieldState
                   ),
                   validator: ValidationBuilder().url().build(),
                 ),
-                if (error.isNotEmpty)
+                if (error!=null)
                   Column(
                     children: [
-                      ErrorCard(error.hashCode.toString(), error,(){
+                      ErrorCard(error!,(){
                         _checkApiAvailable();
                       }, largeSize: false,),
                     ],

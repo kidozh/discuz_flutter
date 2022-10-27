@@ -122,13 +122,36 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       if(user != null && value.discuzIndexVariables.member_uid != user.uid){
         log("Recv user ${value.discuzIndexVariables.member_uid} ${user.uid}");
         setState(() {
-          _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle);
+          _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle, errorType: ErrorType.userExpired);
         });
       }
       return IndicatorResult.noMore;
 
     }).catchError((onError) {
+
       _controller.finishLoad(IndicatorResult.fail);
+      switch (onError.runtimeType) {
+        case DioError:
+          {
+            DioError dioError = onError;
+            log("${dioError.message} >-> ${dioError.type}");
+            EasyLoading.showError("${dioError.message} (${dioError})");
+            setState((){
+              _error =
+                  DiscuzError(dioError.message,dioError.type.name, dioError: dioError);
+            });
+
+            break;
+          }
+        default:
+          {
+            setState(() {
+              _error = DiscuzError(
+                  onError.runtimeType.toString(), onError.toString());
+            });
+          }
+      }
+
       return IndicatorResult.fail;
     });
     return indictaorResult;
@@ -147,9 +170,9 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
         return Column(
           children: [
             if(_error!=null)
-              ErrorCard(_error!.key, _error!.content,(){
+              ErrorCard(_error!,(){
                 _controller.callRefresh();
-              }
+              }, errorType: _error!.errorType,
               ),
               Expanded(
                   child: getEasyRefreshWidget(discuzAndUser.discuz!,discuzAndUser.user)

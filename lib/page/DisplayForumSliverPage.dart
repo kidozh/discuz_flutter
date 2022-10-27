@@ -300,7 +300,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       if (user != null && value.discuzIndexVariables.member_uid != user.uid) {
         setState(() {
           _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
-              S.of(context).userExpiredSubtitle,);
+              S.of(context).userExpiredSubtitle, errorType: ErrorType.userExpired);
         });
 
       }
@@ -479,7 +479,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
               SliverList(
                   delegate: SliverChildBuilderDelegate(
                         (context, _) {
-                      return ErrorCard(_error!.key, _error!.content, () {
+                      return ErrorCard(_error!, () {
                         _controller.callRefresh();
                       }, errorType: _error!.errorType,);
                     },
@@ -589,8 +589,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
   void _showForumFilterBottomSheet(BuildContext context) {
     List<ThreadTypeInfo> threadTypeList = [];
-    if (_displayForumResult != null &&
-        _displayForumResult.discuzIndexVariables.threadType != null) {
+    if (_displayForumResult.discuzIndexVariables.threadType != null) {
       ThreadType threadType =
           _displayForumResult.discuzIndexVariables.threadType!;
       //Map<String, String> idNameMap = threadType.idNameMap;

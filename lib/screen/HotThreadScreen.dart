@@ -118,6 +118,27 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       }
 
     }).catchError((onError) {
+      switch (onError.runtimeType) {
+        case DioError:
+          {
+            DioError dioError = onError;
+            log("${dioError.message} >-> ${dioError.type}");
+            EasyLoading.showError("${dioError.message} (${dioError})");
+            setState((){
+              _error =
+                  DiscuzError(dioError.message,dioError.type.name, dioError: dioError);
+            });
+
+            break;
+          }
+        default:
+          {
+            setState(() {
+              _error = DiscuzError(
+                  onError.runtimeType.toString(), onError.toString());
+            });
+          }
+      }
       return IndicatorResult.fail;
       // VibrationUtils.vibrateErrorIfPossible();
       // // EasyLoading.showError('${onError}');
@@ -148,7 +169,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       return Column(
         children: [
           if (_error != null)
-            ErrorCard(_error!.key, _error!.content, () {
+            ErrorCard(_error!, () {
               _controller.callRefresh();
             }, errorType: _error!.errorType,),
 

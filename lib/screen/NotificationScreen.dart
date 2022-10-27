@@ -124,6 +124,27 @@ class _NotificationState extends State<NotificationStatefulWidget> {
         return IndicatorResult.success;
       }
     }).catchError((onError) {
+      switch (onError.runtimeType) {
+        case DioError:
+          {
+            DioError dioError = onError;
+            log("${dioError.message} >-> ${dioError.type}");
+            EasyLoading.showError("${dioError.message} (${dioError})");
+            setState((){
+              _error =
+                  DiscuzError(dioError.message,dioError.type.name, dioError: dioError);
+            });
+
+            break;
+          }
+        default:
+          {
+            setState(() {
+              _error = DiscuzError(
+                  onError.runtimeType.toString(), onError.toString());
+            });
+          }
+      }
       return IndicatorResult.fail;
       // VibrationUtils.vibrateErrorIfPossible();
       // if (!_enableControlFinish) {
@@ -162,7 +183,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
         return Column(
           children: [
             if (_error != null)
-              ErrorCard(_error!.key, _error!.content, () {
+              ErrorCard(_error!, () {
                 _controller.callRefresh();
               }),
 

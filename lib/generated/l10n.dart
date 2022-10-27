@@ -4131,6 +4131,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Poll (single selection)`
+  String get pollTitle {
+    return Intl.message(
+      'Poll (single selection)',
+      name: 'pollTitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

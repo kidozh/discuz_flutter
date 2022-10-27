@@ -8,6 +8,7 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/LoginByWebviewPage.dart';
@@ -60,7 +61,7 @@ class _LoginFormFieldState
   String? accountName;
 
   final _formKey = GlobalKey<FormState>();
-  String error = "";
+  DiscuzError? error = null;
   ButtonState _loginState = ButtonState.idle;
   final TextEditingController _accountController = new TextEditingController();
   final TextEditingController _passwdController = new TextEditingController();
@@ -122,7 +123,7 @@ class _LoginFormFieldState
     client.sendLoginRequest(account,password,captchaHash,captchaMod,verification).then((value) async {
       setState(() {
 
-        error = "";
+        error = null;
       });
       // check if the
       log("Recv a result ${value} ${value.toJson().toString()}");
@@ -166,7 +167,7 @@ class _LoginFormFieldState
       else{
         _captchaController.reloadCaptcha();
         setState(() {
-          error = value.errorResult!.content;
+          error = DiscuzError(value.errorResult!.key, value.errorResult!.content);
           _loginState = ButtonState.fail;
         });
       }
@@ -175,7 +176,7 @@ class _LoginFormFieldState
       VibrationUtils.vibrateErrorIfPossible();
       _captchaController.reloadCaptcha();
       setState(() {
-        error = onError.toString();
+
         _loginState = ButtonState.fail;
       });
 
@@ -184,14 +185,18 @@ class _LoginFormFieldState
 
         case DioError:
           {
-            error = onError.message;
-
+            DioError dioError = onError;
+            setState((){
+              error =
+                  DiscuzError(dioError.message,dioError.type.name, dioError: dioError);
+            });
             break;
           }
         default:
           {
             setState(() {
-              error = onError.toString();
+              error = DiscuzError(
+                  onError.runtimeType.toString(), onError.toString());
             });
           }
       }
@@ -255,10 +260,10 @@ class _LoginFormFieldState
                     validator: ValidationBuilder().required().build()
                 ),
                 CaptchaWidget(_dio, discuz, null, "login",captchaController: _captchaController,),
-                if (error.isNotEmpty)
+                if (error != null)
                   Column(
                     children: [
-                      ErrorCard(S.of(context).error, error,(){
+                      ErrorCard(error!,(){
                         _verifyAccountAndPassword();
                       },
                         largeSize: false,),

@@ -616,5 +616,6 @@
   "emptyUser": "No user here.",
   "emptyHistory": "No history is found in your device. Have you ever browse anything or never open the history recording in the setting?",
   "emptyForum": "No fourm here",
-  "emptyNotification": "No notification here."
+  "emptyNotification": "No notification here.",
+  "pollTitle": "Poll (single selection)"
 }

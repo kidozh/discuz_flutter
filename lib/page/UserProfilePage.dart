@@ -22,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../entity/DiscuzError.dart';
 import 'ExploreWebsiteScaffordPage.dart';
 import 'PrivateMessageDetailPage.dart';
 
@@ -102,8 +103,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
         iosContentPadding: true,
         iosContentBottomPadding: true,
         appBar: PlatformAppBar(title: Text(S.of(context).userProfile)),
-        body: ErrorCard(_userProfileResult!.errorResult!.key,
-            _userProfileResult!.errorResult!.content, () {
+        body: ErrorCard(DiscuzError(_userProfileResult!.errorResult!.key,_userProfileResult!.errorResult!.content), () {
           _loadUserProfile();
         }),
       );

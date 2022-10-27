@@ -6,6 +6,7 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -150,7 +151,7 @@ class PollState extends State<PollStatefulWidget>{
           },
           hasVoted: !poll.allowVote,
           userVotedOptionId: flutterPollOptionList.first.id,
-          pollTitle: Text(this.fid.toString()),
+          pollTitle: Text(S.of(context).pollTitle),
           pollOptions: flutterPollOptionList,
           pollEnded: poll.expiredAt.isBefore(DateTime.now()),
           metaWidget: Row(
@@ -160,7 +161,8 @@ class PollState extends State<PollStatefulWidget>{
           ),
           votedBackgroundColor: Theme.of(context).backgroundColor,
           votedProgressColor: Theme.of(context).primaryColor.withOpacity(0.3),
-          votedCheckmark: Icon(Icons.check_circle_outline, color: Theme.of(context).textTheme.bodyText1?.color,),
+          leadingVotedProgessColor: Theme.of(context).primaryColor.withOpacity(0.6),
+          votedCheckmark: Icon(AppPlatformIcons(context).checkCircleOutlined, color: Theme.of(context).textTheme.bodyText1?.color,),
         ),
       );
     }

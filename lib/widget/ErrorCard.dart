@@ -1,5 +1,6 @@
 
 
+import 'package:dio/dio.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +10,9 @@ import '../entity/DiscuzError.dart';
 
 class ErrorCard extends StatelessWidget{
 
-  String errorTitle = "";
-  String errorDescription = "";
+  DiscuzError discuzError;
   ErrorType? errorType;
+  DioError? dioError;
 
   final VoidCallback? onRefreshCallback;
   bool? largeSize = true;
@@ -19,6 +20,7 @@ class ErrorCard extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+
     if(errorType!= ErrorType.userExpired && (largeSize == null || largeSize == true )){
       return Padding(padding: EdgeInsets.symmetric(vertical: 32.0, horizontal: 8.0),
         child: Container(
@@ -28,14 +30,14 @@ class ErrorCard extends StatelessWidget{
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline,color: Theme.of(context).errorColor,size: 64,),
+              Icon(getErrorIcon(context),color: Theme.of(context).errorColor,size: 64,),
               SizedBox(height: 6.0,),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(errorDescription, style: Theme.of(context).textTheme.headline5),
-                  Text(errorTitle, style: Theme.of(context).textTheme.bodyText2,),
+                  Text(discuzError.content, style: Theme.of(context).textTheme.headline5),
+                  Text(discuzError.key, style: Theme.of(context).textTheme.bodyText2,),
 
                 ],
               ),
@@ -55,8 +57,8 @@ class ErrorCard extends StatelessWidget{
     }
     else{
       return MaterialBanner(
-        leading: Icon(Icons.error_outline, color: Theme.of(context).errorColor,),
-        content: Text("${errorDescription}(${errorTitle})"),
+        leading: Icon(getErrorIcon(context), color: Theme.of(context).errorColor,),
+        content: Text("${discuzError.content}(${discuzError.key})"),
         actions: [
           if(onRefreshCallback!=null)
             TextButton(
@@ -72,6 +74,31 @@ class ErrorCard extends StatelessWidget{
 
   }
 
-  ErrorCard(this.errorTitle, this.errorDescription,this.onRefreshCallback, {this.largeSize, this.errorType});
+  ErrorCard(this.discuzError,this.onRefreshCallback, {this.largeSize, this.errorType});
+
+  IconData getErrorIcon(BuildContext buildContext){
+    if(errorType == ErrorType.userExpired){
+      return Icons.person_add_disabled;
+    }
+    if(dioError!=null){
+      switch (dioError!.type){
+        case DioErrorType.connectTimeout:
+          return Icons.explore_off_outlined;
+        case DioErrorType.sendTimeout:
+          return Icons.access_time;
+        case DioErrorType.receiveTimeout:
+          return Icons.history_toggle_off_outlined;
+        case DioErrorType.response:
+          return Icons.sms_failed_outlined;
+        case DioErrorType.cancel:
+          return Icons.cancel_outlined;
+        case DioErrorType.other:
+          return Icons.error_outline;
+      }
+    }
+    else{
+      return Icons.error_outline;
+    }
+  }
 }
 

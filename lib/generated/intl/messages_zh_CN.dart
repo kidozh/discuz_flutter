@@ -410,6 +410,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pictureTagInMessage": MessageLookupByLibrary.simpleMessage("[图片]"),
         "policy": MessageLookupByLibrary.simpleMessage("条款"),
         "pollExpireAt": m22,
+        "pollTitle": MessageLookupByLibrary.simpleMessage("投票（目前我们只支持单选）"),
         "pollVoterNumber": m23,
         "post": MessageLookupByLibrary.simpleMessage("发帖"),
         "postAuthorLabel": MessageLookupByLibrary.simpleMessage("楼主"),

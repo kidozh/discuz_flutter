@@ -151,7 +151,7 @@ class _PublicMessagePortalState
       return Column(
         children: [
           if (_error != null)
-            ErrorCard(_error!.key, _error!.content, () {
+            ErrorCard(_error!, () {
               _controller.callRefresh();
             }),
           Expanded(

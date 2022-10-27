@@ -697,7 +697,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                   SliverList(
                       delegate: SliverChildBuilderDelegate(
                     (context, _) {
-                      return ErrorCard(_error!.key, _error!.content, () {
+                      return ErrorCard(_error!, () {
                         _controller.callRefresh();
                       }, errorType: _error!.errorType);
                     },
