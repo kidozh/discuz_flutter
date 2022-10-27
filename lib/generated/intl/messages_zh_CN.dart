@@ -64,7 +64,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m21(hour) => "${hour}小时";
 
-  static String m22(time) => "该投票将于${time}过期.";
+  static String m22(time) => "该投票于${time}过期.";
 
   static String m23(people) => "共有${people}人已投票.";
 
@@ -410,6 +410,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "pictureTagInMessage": MessageLookupByLibrary.simpleMessage("[图片]"),
         "policy": MessageLookupByLibrary.simpleMessage("条款"),
         "pollExpireAt": m22,
+        "pollNotAllowed": MessageLookupByLibrary.simpleMessage(
+            "目前您无法参与投票。(显示的投中的选项与真实结果不符合)"),
         "pollTitle": MessageLookupByLibrary.simpleMessage("投票（目前我们只支持单选）"),
         "pollVoterNumber": m23,
         "post": MessageLookupByLibrary.simpleMessage("发帖"),

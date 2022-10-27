@@ -173,7 +173,7 @@
       "allowed": {}
     }
   },
-  "pollExpireAt": "该投票将于{time}过期.",
+  "pollExpireAt": "该投票于{time}过期.",
   "@pollExpireAt": {
     "placeholders": {
       "time": {}
@@ -618,5 +618,6 @@
   "emptyHistory": "这里还没有历史记录。您未曾浏览论坛或者没有打开历史记录功能。",
   "emptyForum": "当前板块列表为空。",
   "emptyNotification": "当前通知列表为空。",
-  "pollTitle": "投票（目前我们只支持单选）"
+  "pollTitle": "投票（目前我们只支持单选）",
+  "pollNotAllowed": "目前您无法参与投票。(显示的投中的选项与真实结果不符合)"
 }

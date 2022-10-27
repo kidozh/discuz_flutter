@@ -34,7 +34,7 @@ class TimeDisplayUtils{
         return S.of(context).dayAgo(day);
       }
       else{
-        return DateFormat().format(dateTime);
+        return DateFormat.yMd().format(dateTime);
       }
 
 
@@ -58,7 +58,7 @@ class TimeDisplayUtils{
         return S.of(context).dayLater(day);
       }
       else{
-        return DateFormat().format(dateTime);
+        return DateFormat.yMd().format(dateTime);
       }
     }
   }

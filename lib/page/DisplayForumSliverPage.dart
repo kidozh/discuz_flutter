@@ -141,7 +141,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   Future<IndicatorResult> _invalidateContent() async {
     setState(() {
       _page = 1;
-
+      _forumThreadList = [];
     });
     return await _loadForumContent();
   }

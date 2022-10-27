@@ -8,6 +8,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -137,10 +138,22 @@ class PollState extends State<PollStatefulWidget>{
   @override
   Widget build(BuildContext context) {
     List<PollOptionInResult.PollOption> pollOptionList = getPollOptions();
-    List<FlutterPolls.PollOption> flutterPollOptionList = pollOptionList.map(
-            (e) => FlutterPolls.PollOption(title: Text(e.name), votes: e.voteNumber, id:e.id)
+    List<FlutterPolls.PollOption> flutterPollOptionList = [];
+
+    flutterPollOptionList = pollOptionList.map(
+            (e) => FlutterPolls.PollOption(id:e.id,title: Text(e.name), votes: e.voteNumber)
     ).toList();
     log("The poll option: ${flutterPollOptionList}");
+    int maxVote = 0;
+    int? maxOptionId = null;
+    for(int i=0;i<flutterPollOptionList.length; i++){
+      if(flutterPollOptionList[i].votes> maxVote){
+        maxVote = flutterPollOptionList[i].votes;
+        maxOptionId = flutterPollOptionList[i].id!;
+      }
+      log("Print ${i} -> ${flutterPollOptionList[i].votes} ${flutterPollOptionList[i].id}");
+    }
+
     if(flutterPollOptionList.isNotEmpty){
       return Padding(
         padding: EdgeInsets.symmetric(vertical: 0, horizontal: 8.0),
@@ -150,19 +163,25 @@ class PollState extends State<PollStatefulWidget>{
             return await vote(pollOption);
           },
           hasVoted: !poll.allowVote,
-          userVotedOptionId: flutterPollOptionList.first.id,
-          pollTitle: Text(S.of(context).pollTitle),
+          userVotedOptionId: !poll.allowVote? maxOptionId: null,
+          pollTitle: poll.allowVote?Text(S.of(context).pollTitle):Text(S.of(context).pollNotAllowed),
           pollOptions: flutterPollOptionList,
           pollEnded: poll.expiredAt.isBefore(DateTime.now()),
-          metaWidget: Row(
-            children: [
-
-            ],
-          ),
           votedBackgroundColor: Theme.of(context).backgroundColor,
           votedProgressColor: Theme.of(context).primaryColor.withOpacity(0.3),
           leadingVotedProgessColor: Theme.of(context).primaryColor.withOpacity(0.6),
           votedCheckmark: Icon(AppPlatformIcons(context).checkCircleOutlined, color: Theme.of(context).textTheme.bodyText1?.color,),
+          metaWidget: Row(
+            children: [
+              RichText(
+                text: TextSpan(
+                    text: ' · ' + S.of(context).pollExpireAt(TimeDisplayUtils.getLocaledTimeDisplay(context, poll.expiredAt)),
+                ),
+
+
+              )
+            ],
+          ),
         ),
       );
     }

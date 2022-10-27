@@ -475,6 +475,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "pictureTagInMessage": MessageLookupByLibrary.simpleMessage("[Pic]"),
         "policy": MessageLookupByLibrary.simpleMessage("Our policy"),
         "pollExpireAt": m22,
+        "pollNotAllowed": MessageLookupByLibrary.simpleMessage(
+            "You can\'t join in the polls."),
         "pollTitle":
             MessageLookupByLibrary.simpleMessage("Poll (single selection)"),
         "pollVoterNumber": m23,

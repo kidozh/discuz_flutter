@@ -4141,6 +4141,16 @@ class S {
       args: [],
     );
   }
+
+  /// `You can't join in the polls.`
+  String get pollNotAllowed {
+    return Intl.message(
+      'You can\'t join in the polls.',
+      name: 'pollNotAllowed',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
