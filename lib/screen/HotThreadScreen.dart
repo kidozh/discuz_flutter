@@ -176,8 +176,6 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
           Expanded(
               child: getEasyRefreshWidget(
                   discuzAndUser.discuz!, discuzAndUser.user)),
-          if(_hotThreadList.isEmpty)
-            EmptyListScreen(EmptyItemType.thread),
         ],
       );
     });
@@ -198,11 +196,18 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
               return await _loadHotThreadContent(discuz);
             }
           ,
-      child: ListView.builder(
-        itemBuilder: (context, index) {
-          return HotThreadWidget(discuz, user, _hotThreadList[index]);
-        },
-        itemCount: _hotThreadList.length,
+      child: CustomScrollView(
+        slivers: [
+          if(_hotThreadList.isEmpty)
+            SliverList(delegate: SliverChildBuilderDelegate(
+                    (context, index) => EmptyListScreen(EmptyItemType.thread),
+                childCount: 1
+            )),
+          SliverList(delegate: SliverChildBuilderDelegate(
+                  (context, index) => HotThreadWidget(discuz, user, _hotThreadList[index]),
+            childCount: _hotThreadList.length
+          ))
+        ],
       ),
     );
   }

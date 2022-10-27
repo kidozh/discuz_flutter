@@ -53,7 +53,8 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
   @override
   void initState() {
     super.initState();
-    _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
+    _controller = EasyRefreshController(
+        controlFinishLoad: true, controlFinishRefresh: true);
   }
 
   Future<IndicatorResult> _invalidateNewThreadContent(Discuz discuz) async {
@@ -93,11 +94,11 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
       // check for loaded all?
       log("Get NewThread ${_newThreadList.length}");
 
-
       if (user != null && value.variables.member_uid != user.uid) {
         setState(() {
           _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
-              S.of(context).userExpiredSubtitle, errorType: ErrorType.userExpired);
+              S.of(context).userExpiredSubtitle,
+              errorType: ErrorType.userExpired);
         });
       }
 
@@ -115,10 +116,9 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
           _error = null;
         });
       }
-      if(value.variables.newThreadList.isEmpty){
+      if (value.variables.newThreadList.isEmpty) {
         return IndicatorResult.noMore;
-      }
-      else{
+      } else {
         return IndicatorResult.success;
       }
     }).catchError((onError) {
@@ -128,9 +128,9 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
             DioError dioError = onError;
             log("${dioError.message} >-> ${dioError.type}");
             EasyLoading.showError("${dioError.message} (${dioError})");
-            setState((){
-              _error =
-                  DiscuzError(dioError.message,dioError.type.name, dioError: dioError);
+            setState(() {
+              _error = DiscuzError(dioError.message, dioError.type.name,
+                  dioError: dioError);
             });
 
             break;
@@ -144,22 +144,6 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
           }
       }
       return IndicatorResult.fail;
-      // VibrationUtils.vibrateErrorIfPossible();
-      // // EasyLoading.showError('${onError}');
-      // if (!_enableControlFinish) {
-      //   _controller.resetLoadState();
-      //   try{
-      //     _controller.finishRefresh();
-      //     setState(() {
-      //       _error = DiscuzError(
-      //           onError.runtimeType.toString(), onError.toString());
-      //     });
-      //   }
-      //   catch(e){
-      //
-      //   }
-      //
-      // }
     });
   }
 
@@ -173,15 +157,16 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
       return Column(
         children: [
           if (_error != null)
-            ErrorCard(_error!, () {
-              _controller.callRefresh();
-            }, errorType: _error!.errorType,),
-
+            ErrorCard(
+              _error!,
+              () {
+                _controller.callRefresh();
+              },
+              errorType: _error!.errorType,
+            ),
           Expanded(
               child: getEasyRefreshWidget(
                   discuzAndUser.discuz!, discuzAndUser.user)),
-          if(_newThreadList.isEmpty)
-            EmptyListScreen(EmptyItemType.thread),
         ],
       );
     });
@@ -194,16 +179,25 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
       refreshOnStart: true,
       controller: _controller,
       onRefresh: () async {
-              return await _invalidateNewThreadContent(discuz);
-            },
+        return await _invalidateNewThreadContent(discuz);
+      },
       onLoad: () async {
-              return await _loadNewThreadContent(discuz);
-            },
-      child: ListView.builder(
-        itemBuilder: (context, index) {
-          return NewThreadWidget(discuz, user, _newThreadList[index]);
-        },
-        itemCount: _newThreadList.length,
+        return await _loadNewThreadContent(discuz);
+      },
+      child: CustomScrollView(
+        slivers: [
+          if (_newThreadList.isEmpty)
+            SliverList(
+                delegate: SliverChildBuilderDelegate(
+                    (context, index) => EmptyListScreen(EmptyItemType.thread),
+                    childCount: 1)),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+                (context, index) =>
+                    NewThreadWidget(discuz, user, _newThreadList[index]),
+                childCount: _newThreadList.length),
+          )
+        ],
       ),
     );
   }

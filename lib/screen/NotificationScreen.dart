@@ -190,8 +190,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
             Expanded(
                 child: getEasyRefreshWidget(
                     discuzAndUser.discuz!, discuzAndUser.user)),
-            if(_noteList.isEmpty)
-              EmptyListScreen(EmptyItemType.notification),
+
           ],
         );
       }
@@ -210,11 +209,18 @@ class _NotificationState extends State<NotificationStatefulWidget> {
       onLoad: () async {
               return await _loadNotificationContent(discuz);
             },
-      child: ListView.builder(
-        itemBuilder: (context, index) {
-          return DiscuzNotificationWidget(discuz, _noteList[index]);
-        },
-        itemCount: _noteList.length,
+      child: CustomScrollView(
+        slivers: [
+          if(_noteList.isEmpty)
+            SliverList(delegate: SliverChildBuilderDelegate(
+                    (context, index)=> EmptyListScreen(EmptyItemType.notification),
+                childCount: 1
+            )),
+          SliverList(delegate: SliverChildBuilderDelegate(
+                  (context, index)=> DiscuzNotificationWidget(discuz, _noteList[index]),
+            childCount: _noteList.length
+          )),
+        ],
       ),
     );
   }

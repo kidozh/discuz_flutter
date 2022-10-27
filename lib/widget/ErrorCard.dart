@@ -21,7 +21,7 @@ class ErrorCard extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    if(errorType!= ErrorType.userExpired && (largeSize == null || largeSize == true )){
+    if(errorType!= ErrorType.userExpired && (largeSize == null || largeSize == true ) && (discuzError.key!= "mobile_template_no_found")){
       return Padding(padding: EdgeInsets.symmetric(vertical: 32.0, horizontal: 8.0),
         child: Container(
           alignment: Alignment.center,
@@ -80,7 +80,7 @@ class ErrorCard extends StatelessWidget{
     if(errorType == ErrorType.userExpired){
       return Icons.person_add_disabled;
     }
-    if(dioError!=null){
+    else if(dioError!=null){
       switch (dioError!.type){
         case DioErrorType.connectTimeout:
           return Icons.explore_off_outlined;
@@ -95,6 +95,9 @@ class ErrorCard extends StatelessWidget{
         case DioErrorType.other:
           return Icons.error_outline;
       }
+    }
+    else if(discuzError.key == "mobile_template_no_found"){
+      return Icons.explore_outlined;
     }
     else{
       return Icons.error_outline;
