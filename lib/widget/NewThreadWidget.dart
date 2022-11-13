@@ -25,6 +25,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/ViewHistory.dart';
+import '../utility/PlatformListTile.dart';
 
 // ignore: must_be_immutable
 class NewThreadWidget extends StatelessWidget{
@@ -135,12 +136,14 @@ class NewThreadState extends State<NewThreadStatefulWidget>{
 
     return Card(
       elevation: 2.0,
-      child: ListTile(
+      child: PlatformListTile(
         leading: InkWell(
           child: ClipRRect(
 
             borderRadius: BorderRadius.circular(10000.0),
             child: CachedNetworkImage(
+              width: 48,
+              height: 48,
               imageUrl: URLUtils.getAvatarURL(_discuz, _newThread.authorId.toString()),
               progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
               errorWidget: (context, url, error) =>

@@ -67,6 +67,8 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
   // 是否开启刷新
   bool _enableRefresh = true;
 
+  bool _isFirstlyRefreshing = true;
+
   _DiscuzPortalState();
 
   @override
@@ -96,6 +98,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       // render page
       setState(() {
         result = value;
+        _isFirstlyRefreshing = false;
       });
       // get fids;
       if(value.discuzIndexVariables.forumList.isNotEmpty){
@@ -218,6 +221,9 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
                 );
               }
           ),
+
+
+
           if(result.discuzIndexVariables.forumPartitionList.isEmpty)
             SliverList(delegate: SliverChildBuilderDelegate((context, index){
               return EmptyListScreen(EmptyItemType.forum);

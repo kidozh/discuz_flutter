@@ -122,12 +122,18 @@ class TestFlightBannerContent extends StatelessWidget{
               Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Expanded(child: PlatformElevatedButton(child: Text(S.of(context).continueToDo), onPressed: () async {
+                  Expanded(child: PlatformElevatedButton(
+                      child: Text(S.of(context).continueToDo, style: TextStyle(color: Theme.of(context).primaryTextTheme.bodyText1?.color),),
+                      onPressed: () async {
                     PackageInfo packageInfo = await PackageInfo.fromPlatform();
                     String version = packageInfo.version;
                     await UserPreferencesUtils.putAcceptVersionCodeFlag(version);
                     Navigator.pop(context);
-                  }))
+                  },
+                    color: Theme.of(context).primaryColor,
+
+
+                  ))
 
                 ],
               ),

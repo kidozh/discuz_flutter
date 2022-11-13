@@ -86,6 +86,9 @@ dependencies:
   flutter_html_all: ^3.0.0-alpha.3
   open_filex: ^4.0.1
   flutter_polls: ^0.1.0
+  skeletons: ^0.0.3
+  cupertino_list_tile: ^0.2.1
+
 
 
 

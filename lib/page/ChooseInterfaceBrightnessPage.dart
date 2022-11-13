@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -76,16 +74,16 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
             ),
             
           ]),
-          CustomSettingsSection(child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 16.0),
-                child: Text(S.of(context).iosDarkModeDisabledText, style: Theme.of(context).textTheme.bodyText2),
-
-              )
-
-            ],
-          ))
+          // CustomSettingsSection(child: Column(
+          //   children: [
+          //     Padding(
+          //       padding: EdgeInsets.symmetric(vertical: 0, horizontal: 16.0),
+          //       child: Text(S.of(context).iosDarkModeDisabledText, style: Theme.of(context).textTheme.bodyText2),
+          //
+          //     )
+          //
+          //   ],
+          // ))
         ],
       ),
     );
