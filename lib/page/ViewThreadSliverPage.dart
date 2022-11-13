@@ -594,7 +594,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                       );
                     } else {
                       return Icon(PlatformIcons(context).favoriteSolid,
-                          size: 24);
+                          size: 24,
+                        color: Theme.of(context).primaryColor,
+                      );
                     }
                   },
                 )),

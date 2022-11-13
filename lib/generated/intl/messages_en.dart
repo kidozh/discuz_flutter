@@ -113,7 +113,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "addDiscuzTitle":
             MessageLookupByLibrary.simpleMessage("Add a discuz! BBS"),
         "addNewDiscuz":
-            MessageLookupByLibrary.simpleMessage("Add a new Discuz! forum"),
+            MessageLookupByLibrary.simpleMessage("Add a new Discuz! site"),
         "anonymous": MessageLookupByLibrary.simpleMessage("A"),
         "appName": MessageLookupByLibrary.simpleMessage("DisFly"),
         "appearanceOptimizedPlatform":
@@ -372,7 +372,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "insertSignatureAtTheEndTitle":
             MessageLookupByLibrary.simpleMessage("Enable signature"),
         "interfaceBrightness":
-            MessageLookupByLibrary.simpleMessage("Interface Brightness"),
+            MessageLookupByLibrary.simpleMessage("Brightness"),
         "invalidCookie": MessageLookupByLibrary.simpleMessage(
             "Invalid cookie from response."),
         "ios": MessageLookupByLibrary.simpleMessage("iOS"),

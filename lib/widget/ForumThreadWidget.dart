@@ -154,6 +154,8 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
             borderRadius: BorderRadius.circular(10000.0),
             child: CachedNetworkImage(
               imageUrl: URLUtils.getAvatarURL(_discuz, _forumThread.authorId),
+              width: 48,
+              height: 48,
               progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
               errorWidget: (context, url, error) =>
                   CircleAvatar(

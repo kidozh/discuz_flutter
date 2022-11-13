@@ -431,10 +431,10 @@ class S {
     );
   }
 
-  /// `Add a new Discuz! forum`
+  /// `Add a new Discuz! site`
   String get addNewDiscuz {
     return Intl.message(
-      'Add a new Discuz! forum',
+      'Add a new Discuz! site',
       name: 'addNewDiscuz',
       desc: '',
       args: [],
@@ -2332,10 +2332,10 @@ class S {
     );
   }
 
-  /// `Interface Brightness`
+  /// `Brightness`
   String get interfaceBrightness {
     return Intl.message(
-      'Interface Brightness',
+      'Brightness',
       name: 'interfaceBrightness',
       desc: '',
       args: [],

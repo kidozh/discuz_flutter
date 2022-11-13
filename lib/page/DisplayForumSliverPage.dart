@@ -376,7 +376,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 }
                 else{
                   return IconButton(
-                    icon: Icon(PlatformIcons(context).favoriteSolid,size: 24),
+                    icon: Icon(PlatformIcons(context).favoriteSolid,size: 24, color: Theme.of(context).primaryColor,),
                     onPressed: () {
                       VibrationUtils.vibrateWithClickIfPossible();
                       unfavoriteForum();

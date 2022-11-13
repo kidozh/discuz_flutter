@@ -42,7 +42,7 @@
   "index": "Index",
   "dashboard": "Dashboard",
   "notification": "Notification",
-  "addNewDiscuz": "Add a new Discuz! forum",
+  "addNewDiscuz": "Add a new Discuz! site",
   "nullDiscuzTitle": "No Discuz! BBS is selected",
   "nullDiscuzSubTitle": "Why not consider add a discuz forum?",
   "retry": "Retry",
@@ -369,7 +369,7 @@
       "day": {}
     }
   },
-  "interfaceBrightness": "Interface Brightness",
+  "interfaceBrightness": "Brightness",
   "brightnessLight": "Light",
   "brightnessDark": "Dark",
   "openViaInternalBrowser": "Open Website in webview",
