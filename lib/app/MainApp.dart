@@ -256,17 +256,54 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   Future<void> setupInteractedMessage() async {
     // Get any messages which caused the application to open from
     // a terminated state.
-    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    // RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+
+    Push.Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data){
+      if (data == null) {
+        print("App was not launched by tapping a notification");
+      } else {
+        _handleMessageByPush(data);
+        print('Notification tap launched app from terminated state:\n'
+            'RemoteMessage: ${data} \n');
+      }
+
+    });
+
 
     // If the message also contains a data property with a "type" of "chat",
     // navigate to a chat screen
-    if (initialMessage != null) {
-      _handleMessage(initialMessage);
-    }
+    // if (initialMessage != null) {
+    //   _handleMessage(initialMessage);
+    // }
+    //
+    // // Also handle any interaction when the app is in the background via a
+    // // Stream listener
+    // FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+  }
 
-    // Also handle any interaction when the app is in the background via a
-    // Stream listener
-    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+  Future<void> _handleMessageByPush(Map<String?, Object?> message) async {
+    Map<String, String> data = message.cast<String, String>();
+    if (data['type'] == 'thread_reply' && data.containsKey("tid")) {
+      int tid = int.parse(data["tid"]!);
+      String site_url = data["site_url"]!;
+      int uid = int.parse(data["uid"]!);
+      // find it in discuz or uid
+      _userDao = await AppDatabase.getUserDao();
+      _discuzDao = await AppDatabase.getDiscuzDao();
+      Discuz? _discuz = _discuzDao.findDiscuzByHost(site_url);
+      if(_discuz!=null){
+        User? _user = _userDao.findUsersByDiscuzAndUid(_discuz, uid);
+        if(_user != null){
+          Navigator.push(
+              context,
+              platformPageRoute(
+                  context: context,
+                  builder: (context) => ViewThreadSliverPage(_discuz, _user, tid)));
+        }
+      }
+
+
+    }
   }
 
   Future<void> _handleMessage(RemoteMessage message) async {
