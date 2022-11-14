@@ -191,6 +191,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "completeRefresh": MessageLookupByLibrary.simpleMessage("Refresh done"),
         "connectServerWhenAdding": MessageLookupByLibrary.simpleMessage(
             "Connect to BBS server for verification."),
+        "contactUsViaEmail":
+            MessageLookupByLibrary.simpleMessage("Contact us (Email)"),
+        "contactUsViaWeibo":
+            MessageLookupByLibrary.simpleMessage("Contact us (Weibo)"),
         "contentPostByBlockUserTitle": m3,
         "continueAdding": MessageLookupByLibrary.simpleMessage("Continue"),
         "continueToDo": MessageLookupByLibrary.simpleMessage("Continue"),

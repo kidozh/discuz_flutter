@@ -244,6 +244,24 @@ class _SettingPageState extends State<SettingPage> {
                     _launchURL("https://discuzhub.kidozh.com/privacy_policy/");
                   },
                 ),
+                SettingsTile.navigation(
+                  title: Text(S.of(context).contactUsViaEmail),
+                  leading: Icon(AppPlatformIcons(context).termsOfServiceOutlined),
+
+                  onPressed: (_) {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    _launchURL("mailto:kidozh@gmail.com");
+                  },
+                ),
+                SettingsTile.navigation(
+                  title: Text(S.of(context).contactUsViaWeibo),
+                  leading: Icon(AppPlatformIcons(context).termsOfServiceOutlined),
+
+                  onPressed: (_) {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    _launchURL("https://weibo.com/u/7436177109");
+                  },
+                ),
               ],
             ),
             CustomSettingsSection(

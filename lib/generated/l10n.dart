@@ -4151,6 +4151,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Contact us (Email)`
+  String get contactUsViaEmail {
+    return Intl.message(
+      'Contact us (Email)',
+      name: 'contactUsViaEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Contact us (Weibo)`
+  String get contactUsViaWeibo {
+    return Intl.message(
+      'Contact us (Weibo)',
+      name: 'contactUsViaWeibo',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

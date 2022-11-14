@@ -174,6 +174,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "completeRefresh": MessageLookupByLibrary.simpleMessage("完成刷新"),
         "connectServerWhenAdding":
             MessageLookupByLibrary.simpleMessage("正在连接论坛地址以验证兼容性。"),
+        "contactUsViaEmail": MessageLookupByLibrary.simpleMessage("邮件联系我们"),
+        "contactUsViaWeibo": MessageLookupByLibrary.simpleMessage("在微博关注我们"),
         "contentPostByBlockUserTitle": m3,
         "continueAdding": MessageLookupByLibrary.simpleMessage("继续"),
         "continueToDo": MessageLookupByLibrary.simpleMessage("继续"),

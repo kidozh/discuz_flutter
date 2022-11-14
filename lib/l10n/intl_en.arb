@@ -618,5 +618,7 @@
   "emptyForum": "No fourm here",
   "emptyNotification": "No notification here.",
   "pollTitle": "Poll (single selection)",
-  "pollNotAllowed": "You can't join in the polls."
+  "pollNotAllowed": "You can't join in the polls.",
+  "contactUsViaEmail": "Contact us (Email)",
+  "contactUsViaWeibo": "Contact us (Weibo)"
 }

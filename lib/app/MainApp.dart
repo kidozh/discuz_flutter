@@ -327,10 +327,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   void didChangePlatformBrightness() {
     super.didChangePlatformBrightness();
-    final Brightness? brightness = WidgetsBinding.instance.window.platformBrightness;
-    if (brightness != null && Provider.of<ThemeNotifierProvider>(context,listen:false).brightness == null){
-      Provider.of<ThemeNotifierProvider>(context, listen: false).setBrightness(brightness);
-    }
+    // final Brightness? brightness = WidgetsBinding.instance.window.platformBrightness;
+    // if (brightness != null && Provider.of<ThemeNotifierProvider>(context,listen:false).brightness == null){
+    //   Provider.of<ThemeNotifierProvider>(context, listen: false).setBrightness(brightness);
+    // }
   }
 
   void _initDb() async {

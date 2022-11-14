@@ -619,5 +619,7 @@
   "emptyForum": "当前板块列表为空。",
   "emptyNotification": "当前通知列表为空。",
   "pollTitle": "投票（目前我们只支持单选）",
-  "pollNotAllowed": "目前您无法参与投票。(显示的投中的选项与真实结果不符合)"
+  "pollNotAllowed": "目前您无法参与投票。(显示的投中的选项与真实结果不符合)",
+  "contactUsViaEmail": "邮件联系我们",
+  "contactUsViaWeibo": "在微博关注我们"
 }

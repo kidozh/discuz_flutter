@@ -61,9 +61,9 @@ class PushServiceUtils{
 
   static Future<void> _handleMessage(Map<String?, Object?> msgData, GlobalKey<NavigatorState> navigatorKey) async {
 
-    Map<String, dynamic> msg = msgData.cast<String, dynamic>();
-    print("Receive discuz ${msg}} ");
-    Map<String, String>? data = msg["payload"];
+    Map<String, dynamic> data = msgData.cast<String, dynamic>();
+    //print("Receive discuz ${msg}} ");
+    //Map<String, String>? data = msg;
     if (data!=null && data['type'] == 'thread_reply') {
       int tid = int.parse(data["tid"].toString());
       String site_url = data["site_url"].toString();
