@@ -12,6 +12,7 @@ import 'package:discuz_flutter/page/AddDiscuzPage.dart';
 import 'package:discuz_flutter/page/DrawerPage.dart';
 import 'package:discuz_flutter/page/ExploreWebsitePage.dart';
 import 'package:discuz_flutter/page/TestFlightBannerPage.dart';
+import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
@@ -23,6 +24,7 @@ import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,14 +33,16 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:push/push.dart' as Push;
 
 import '../main.dart';
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   String platformName = "";
+  GlobalKey<NavigatorState> navigatorKey;
 
-  MyApp(this.platformName);
+  MyApp(this.platformName, this.navigatorKey);
 
   _loadPreference(BuildContext context) async{
 
@@ -62,6 +66,37 @@ class MyApp extends StatelessWidget {
 
   }
 
+  Future<void> _listenToChanges(BuildContext buildContext) async{
+    Push.Push.instance.onNotificationTap.listen((data) {
+      _handleMessage(data,buildContext);
+
+
+    });
+  }
+
+  Future<void> _handleMessage(Map<String?, Object?> msgData, BuildContext context) async {
+    Map<String, dynamic>? data = msgData.cast<String, dynamic>();
+    if (data['type'] == 'thread_reply') {
+      int tid = int.parse(data["tid"].toString());
+      String site_url = data["site_url"].toString();
+      int uid = int.parse(data["uid"].toString());
+      // find it in discuz or uid
+      UserDao _userDao = await AppDatabase.getUserDao();
+      DiscuzDao _discuzDao = await AppDatabase.getDiscuzDao();
+      Discuz? _discuz = _discuzDao.findDiscuzByHost(site_url);
+      if(_discuz!=null){
+        User? _user = _userDao.findUsersByDiscuzAndUid(_discuz, uid);
+        if(_user != null){
+          Navigator.push(
+              context,
+              platformPageRoute(
+                  builder: (context) => ViewThreadSliverPage(_discuz, _user, tid), context: context));
+        }
+      }
+
+
+    }
+  }
 
 
   TargetPlatform? getTargetPlatformByName(String name){
@@ -87,6 +122,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _loadPreference(context);
+    //_listenToChanges(context);
     return Consumer<ThemeNotifierProvider>(
       builder: (context, themeColorEntity, _){
         print("Change brightness ${themeColorEntity.brightness}");
@@ -139,6 +175,7 @@ class MyApp extends StatelessWidget {
               builder: (context){
                 return  PlatformApp(
                   //title: S.of(context).appName,
+                  navigatorKey: navigatorKey,
                   debugShowCheckedModeBanner: false,
                   material: (_,__)=> MaterialAppData(
                       theme: materialTheme,
@@ -216,12 +253,53 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     _queryDiscuzList();
   }
 
+  Future<void> setupInteractedMessage() async {
+    // Get any messages which caused the application to open from
+    // a terminated state.
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+
+    // If the message also contains a data property with a "type" of "chat",
+    // navigate to a chat screen
+    if (initialMessage != null) {
+      _handleMessage(initialMessage);
+    }
+
+    // Also handle any interaction when the app is in the background via a
+    // Stream listener
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+  }
+
+  Future<void> _handleMessage(RemoteMessage message) async {
+    if (message.data['type'] == 'thread_reply') {
+      int tid = int.parse(message.data["tid"]);
+      String site_url = message.data["site_url"];
+      int uid = int.parse(message.data["uid"]);
+      // find it in discuz or uid
+      _userDao = await AppDatabase.getUserDao();
+      _discuzDao = await AppDatabase.getDiscuzDao();
+      Discuz? _discuz = _discuzDao.findDiscuzByHost(site_url);
+      if(_discuz!=null){
+        User? _user = _userDao.findUsersByDiscuzAndUid(_discuz, uid);
+        if(_user != null){
+          Navigator.push(
+              context,
+              platformPageRoute(
+                  context: context,
+                  builder: (context) => ViewThreadSliverPage(_discuz, _user, tid)));
+        }
+      }
+
+
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _initDb();
     WidgetsBinding.instance.addObserver(this);
     _checkAcceptVersionFlag(context);
+    setupInteractedMessage();
   }
 
   Future<void> _checkAcceptVersionFlag(BuildContext context) async{
@@ -251,7 +329,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     super.didChangePlatformBrightness();
     final Brightness? brightness = WidgetsBinding.instance.window.platformBrightness;
     if (brightness != null && Provider.of<ThemeNotifierProvider>(context,listen:false).brightness == null){
-      Provider.of<ThemeNotifierProvider>(context).setBrightness(brightness);
+      Provider.of<ThemeNotifierProvider>(context, listen: false).setBrightness(brightness);
     }
   }
 
@@ -493,6 +571,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     );
   }
+
+
 }
 
 

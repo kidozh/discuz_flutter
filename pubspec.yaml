@@ -88,6 +88,7 @@ dependencies:
   flutter_polls: ^0.1.0
   skeletons: ^0.0.3
   cupertino_list_tile: ^0.2.1
+  push: ^0.1.3
 
 
 

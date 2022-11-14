@@ -30,6 +30,8 @@ bool isExclusiveDiscuz = false;
 
 Discuz exclusiveDiscuz = Discuz("https://keylol.com", "X3.2", "utf-8", 4, "1.4.8", "register", true, "true", "true", "其乐 Keylol", "0", "https://keylol.com/uc_server", "161");
 
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async{
   // init google ads
 
@@ -48,10 +50,10 @@ void main() async{
   }
   // await messaging.getToken();
   await PushServiceUtils.initFirebaseLocalNotification();
-
+  await PushServiceUtils.initPushInformation(navigatorKey);
   // remote message recall
-  FirebaseMessaging.onBackgroundMessage(PushServiceUtils.firebaseMessagingBackgroundHandler);
-  FirebaseMessaging.onMessage.listen((event) => PushServiceUtils.firebaseMessagingBackgroundHandler(event));
+  // FirebaseMessaging.onBackgroundMessage(PushServiceUtils.firebaseMessagingBackgroundHandler);
+  // FirebaseMessaging.onMessage.listen((event) => PushServiceUtils.firebaseMessagingBackgroundHandler(event));
   if(Platform.isIOS){
     // final connector = createPushConnector();
     // connector.configure(
@@ -96,7 +98,7 @@ void main() async{
           ChangeNotifierProvider.value(value: TypeSettingNotifierProvider()),
           ChangeNotifierProvider.value(value: UserPreferenceNotifierProvider())
         ],
-        child: isExclusiveDiscuz? ExclusiveDiscuzApp(initialPlatform,discuz): MyApp(initialPlatform),
+        child: isExclusiveDiscuz? ExclusiveDiscuzApp(initialPlatform,discuz): MyApp(initialPlatform, navigatorKey),
       ));
 
 }

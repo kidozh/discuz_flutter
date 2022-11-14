@@ -232,9 +232,10 @@ class PushServiceState extends State<PushServiceStateWidget>{
         log("Get APNS ${apnToken}");
         if(apnToken != null){
           token = apnToken;
+          // to make sure apn get posted
+          channel = "APN";
         }
-        // to make sure apn get posted
-        channel = "APN";
+
       }
       else{
         FirebaseMessaging messaging = FirebaseMessaging.instance;
