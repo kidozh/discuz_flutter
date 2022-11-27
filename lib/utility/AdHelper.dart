@@ -4,7 +4,9 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdHelper {
 
-  static String get bannerAdUnitId {
+  static String get bannerAdUnitTestId {
+    return 'ca-app-pub-4589701606972085/2191589113';
+
     if (Platform.isAndroid) {
       return 'ca-app-pub-3940256099942544/6300978111';
     } else if (Platform.isIOS) {
@@ -24,7 +26,7 @@ class AdHelper {
 
   static NativeAd get forumThreadNativeAd{
     return NativeAd(adUnitId: nativeAdUnitTestId,
-        factoryId: "AppNativeAdFactory",
+        factoryId: "NativeAd",
         listener: NativeAdListener(),
         request: AdRequest());
   }

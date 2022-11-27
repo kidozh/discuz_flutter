@@ -18,6 +18,7 @@ import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../utility/EasyRefreshUtils.dart';
 import '../utility/NetworkUtils.dart';
+import '../widget/AppBannerAdWidget.dart';
 import '../widget/ErrorCard.dart';
 import '../widget/NewThreadWidget.dart';
 import 'EmptyListScreen.dart';
@@ -193,8 +194,12 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
                     childCount: 1)),
           SliverList(
             delegate: SliverChildBuilderDelegate(
-                (context, index) =>
-                    NewThreadWidget(discuz, user, _newThreadList[index]),
+                (context, index) => Column(
+                      children: [
+                        NewThreadWidget(discuz, user, _newThreadList[index]),
+                        if (index % 7 == 0 && index != 0) AppBannerAdWidget()
+                      ],
+                    ),
                 childCount: _newThreadList.length),
           )
         ],

@@ -105,6 +105,8 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("账号"),
+        "adLoadingText":
+            MessageLookupByLibrary.simpleMessage("由Google提供的广告，与论坛无关。"),
         "addAPhoto": MessageLookupByLibrary.simpleMessage("照片"),
         "addDiscuzSuccessfully": m0,
         "addDiscuzTitle": MessageLookupByLibrary.simpleMessage("添加Discuz! 论坛"),

@@ -48,6 +48,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../utility/EasyRefreshUtils.dart';
+import '../widget/AppBannerAdWidget.dart';
 import 'InternalWebviewBrowserPage.dart';
 
 class ViewThreadSliverPage extends StatelessWidget {
@@ -723,38 +724,44 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      return PostWidget(
-                        discuz,
-                        _postList[index],
-                        _viewThreadResult.threadVariables.threadInfo.authorId,
-                        _viewThreadResult.threadVariables.formHash,
-                        tid: tid,
-                        onAuthorSelectedCallback: () {
-                          if (viewThreadQuery.authorId == 0) {
-                            viewThreadQuery.authorId =
-                                _postList[index].authorId;
-                          } else {
-                            viewThreadQuery.authorId = 0;
-                          }
-                          setNewViewThreadQuery(viewThreadQuery);
-                        },
-                        postCommentList: postCommentList,
-                        ignoreFontCustomization: ignoreFontCustomization,
-                        jumpToPidCallback: (pid) {
-                          // need to find the pid and scroll to it
-                          log("jump to pid ${pid} and we are looking it");
-                          int cnt = 0;
-                          for (var post in _postList) {
-                            log("find it: ${post.pid} in ${cnt}");
-                            if (post.pid == pid) {
-                              log("!find it: ${pid} in ${cnt}");
-                              _postAutoScrollController.scrollToIndex(cnt);
-                              break;
-                            }
-                            cnt += 1;
-                          }
-                          // check whether it's the end of the scroll
-                        },
+                      return Column(
+                        children: [
+                          PostWidget(
+                            discuz,
+                            _postList[index],
+                            _viewThreadResult.threadVariables.threadInfo.authorId,
+                            _viewThreadResult.threadVariables.formHash,
+                            tid: tid,
+                            onAuthorSelectedCallback: () {
+                              if (viewThreadQuery.authorId == 0) {
+                                viewThreadQuery.authorId =
+                                    _postList[index].authorId;
+                              } else {
+                                viewThreadQuery.authorId = 0;
+                              }
+                              setNewViewThreadQuery(viewThreadQuery);
+                            },
+                            postCommentList: postCommentList,
+                            ignoreFontCustomization: ignoreFontCustomization,
+                            jumpToPidCallback: (pid) {
+                              // need to find the pid and scroll to it
+                              log("jump to pid ${pid} and we are looking it");
+                              int cnt = 0;
+                              for (var post in _postList) {
+                                log("find it: ${post.pid} in ${cnt}");
+                                if (post.pid == pid) {
+                                  log("!find it: ${pid} in ${cnt}");
+                                  _postAutoScrollController.scrollToIndex(cnt);
+                                  break;
+                                }
+                                cnt += 1;
+                              }
+                              // check whether it's the end of the scroll
+                            },
+                          ),
+                          if(index % 7 == 0 && index != 0)
+                            AppBannerAdWidget()
+                        ],
                       );
                     },
                     childCount: _postList.length,

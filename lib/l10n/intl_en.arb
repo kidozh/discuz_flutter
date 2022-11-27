@@ -620,5 +620,6 @@
   "pollTitle": "Poll (single selection)",
   "pollNotAllowed": "You can't join in the polls.",
   "contactUsViaEmail": "Contact us (Email)",
-  "contactUsViaWeibo": "Contact us (Weibo)"
+  "contactUsViaWeibo": "Contact us (Weibo)",
+  "adLoadingText": "AD provided by Google"
 }

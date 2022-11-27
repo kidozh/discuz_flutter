@@ -19,6 +19,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 import '../utility/EasyRefreshUtils.dart';
+import '../widget/AppBannerAdWidget.dart';
 import 'EmptyListScreen.dart';
 
 class HotThreadScreen extends StatelessWidget {
@@ -54,7 +55,8 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
+    _controller = EasyRefreshController(
+        controlFinishLoad: true, controlFinishRefresh: true);
   }
 
   Future<IndicatorResult> _invalidateHotThreadContent(Discuz discuz) async {
@@ -92,7 +94,8 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       if (user != null && value.variables.member_uid != user.uid) {
         setState(() {
           _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
-              S.of(context).userExpiredSubtitle, errorType: ErrorType.userExpired);
+              S.of(context).userExpiredSubtitle,
+              errorType: ErrorType.userExpired);
         });
       }
 
@@ -110,13 +113,11 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
           _error = null;
         });
       }
-      if(value.variables.hotThreadList.length < value.variables.perPage){
+      if (value.variables.hotThreadList.length < value.variables.perPage) {
         return IndicatorResult.noMore;
-      }
-      else{
+      } else {
         return IndicatorResult.success;
       }
-
     }).catchError((onError) {
       switch (onError.runtimeType) {
         case DioError:
@@ -124,9 +125,9 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
             DioError dioError = onError;
             log("${dioError.message} >-> ${dioError.type}");
             EasyLoading.showError("${dioError.message} (${dioError})");
-            setState((){
-              _error =
-                  DiscuzError(dioError.message,dioError.type.name, dioError: dioError);
+            setState(() {
+              _error = DiscuzError(dioError.message, dioError.type.name,
+                  dioError: dioError);
             });
 
             break;
@@ -169,10 +170,13 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       return Column(
         children: [
           if (_error != null)
-            ErrorCard(_error!, () {
-              _controller.callRefresh();
-            }, errorType: _error!.errorType,),
-
+            ErrorCard(
+              _error!,
+              () {
+                _controller.callRefresh();
+              },
+              errorType: _error!.errorType,
+            ),
           Expanded(
               child: getEasyRefreshWidget(
                   discuzAndUser.discuz!, discuzAndUser.user)),
@@ -188,25 +192,30 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       refreshOnStart: true,
       controller: _controller,
       onRefresh: () async {
-              IndicatorResult indicatorResult = await _invalidateHotThreadContent(discuz);
-              _controller.finishRefresh();
-              return indicatorResult;
-            },
+        IndicatorResult indicatorResult =
+            await _invalidateHotThreadContent(discuz);
+        _controller.finishRefresh();
+        return indicatorResult;
+      },
       onLoad: () async {
-              return await _loadHotThreadContent(discuz);
-            }
-          ,
+        return await _loadHotThreadContent(discuz);
+      },
       child: CustomScrollView(
         slivers: [
-          if(_hotThreadList.isEmpty)
-            SliverList(delegate: SliverChildBuilderDelegate(
+          if (_hotThreadList.isEmpty)
+            SliverList(
+                delegate: SliverChildBuilderDelegate(
                     (context, index) => EmptyListScreen(EmptyItemType.thread),
-                childCount: 1
-            )),
-          SliverList(delegate: SliverChildBuilderDelegate(
-                  (context, index) => HotThreadWidget(discuz, user, _hotThreadList[index]),
-            childCount: _hotThreadList.length
-          ))
+                    childCount: 1)),
+          SliverList(
+              delegate: SliverChildBuilderDelegate(
+                  (context, index) => Column(
+                        children: [
+                          HotThreadWidget(discuz, user, _hotThreadList[index]),
+                          if (index % 7 == 0 && index != 0) AppBannerAdWidget()
+                        ],
+                      ),
+                  childCount: _hotThreadList.length))
         ],
       ),
     );

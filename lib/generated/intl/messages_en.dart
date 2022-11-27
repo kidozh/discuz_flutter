@@ -108,6 +108,8 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("Account"),
+        "adLoadingText":
+            MessageLookupByLibrary.simpleMessage("AD provided by Google"),
         "addAPhoto": MessageLookupByLibrary.simpleMessage("Photo"),
         "addDiscuzSuccessfully": m0,
         "addDiscuzTitle":

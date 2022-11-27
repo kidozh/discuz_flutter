@@ -6,16 +6,19 @@ import io.flutter.plugins.googlemobileads.GoogleMobileAdsPlugin;
 
 class MainActivity: FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
-        flutterEngine.plugins.add(GoogleMobileAdsPlugin())
+
         super.configureFlutterEngine(flutterEngine)
+        // register the ad factory
+
+        flutterEngine.plugins.add(GoogleMobileAdsPlugin())
         GoogleMobileAdsPlugin.registerNativeAdFactory(
             flutterEngine,
-            "AppNativeAdFactory",
-            AppNativeAdFactory(layoutInflater)
+            "NativeAd",
+            AppNativeAdFactory(this)
         )
     }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
-        GoogleMobileAdsPlugin.unregisterNativeAdFactory(flutterEngine, "AppNativeAdFactory")
+        GoogleMobileAdsPlugin.unregisterNativeAdFactory(flutterEngine, "NativeAd")
     }
 }
