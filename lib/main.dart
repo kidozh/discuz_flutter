@@ -15,6 +15,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -36,6 +37,7 @@ void main() async{
   // init google ads
 
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   // init for hive
   await Hive.initFlutter();
