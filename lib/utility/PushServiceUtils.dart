@@ -27,7 +27,7 @@ class PushServiceUtils{
         firebaseMessagingBackgroundHandlerByMsg(data);
         print('Notification tap launched app from terminated state:\n'
             'RemoteMessage: ${data} \n');
-      }f
+      }
 
     });
 
