@@ -21,6 +21,7 @@ import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:discuz_flutter/widget/AppNativeAdWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
@@ -525,6 +526,8 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                     children: [
                       ForumThreadWidget(discuz, user, _forumThreadList[index],
                           _displayForumResult.discuzIndexVariables.threadType),
+                      if(index % 7 == 0)
+                        AppNativeAdWidget()
                     ],
                   );
                 },
