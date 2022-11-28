@@ -5,14 +5,14 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 class AdHelper {
 
   static String get bannerAdUnitTestId {
-    return 'ca-app-pub-4589701606972085/2191589113';
+    //return 'ca-app-pub-4589701606972085/2191589113';
 
     if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/6300978111';
+      return 'ca-app-pub-4589701606972085/2191589113';
     } else if (Platform.isIOS) {
-      return 'ca-app-pub-3940256099942544/2934735716';
+      return 'ca-app-pub-4589701606972085/6863168152';
     }
-    return 'ca-app-pub-3940256099942544/6300978111';
+    return 'ca-app-pub-4589701606972085/2191589113';
   }
 
   static String get nativeAdUnitTestId {
