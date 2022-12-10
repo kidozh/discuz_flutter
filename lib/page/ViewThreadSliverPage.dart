@@ -29,6 +29,7 @@ import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:discuz_flutter/widget/AppInlineAdaptiveAdWidget.dart';
 import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/PollWidget.dart';

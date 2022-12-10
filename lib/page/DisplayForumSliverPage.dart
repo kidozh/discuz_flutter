@@ -36,6 +36,7 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../utility/EasyRefreshUtils.dart';
+import '../widget/AppNativeAdWidget.dart';
 
 class DisplayForumSliverPage extends StatelessWidget {
   late final Discuz discuz;
@@ -527,7 +528,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       ForumThreadWidget(discuz, user, _forumThreadList[index],
                           _displayForumResult.discuzIndexVariables.threadType),
                       if(index % 7 == 0 && index != 0)
-                        AppBannerAdWidget()
+                        AppBannerAdWidget(),
                     ],
                   );
                 },
