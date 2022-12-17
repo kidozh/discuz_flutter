@@ -87,7 +87,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
     String decodedString = replaceCollapseTag(this.html);
     decodedString = replaceSpoilTag(decodedString);
     decodedString = replaceCountDownTag(decodedString);
-    log("decode string ${decodedString}");
+    //log("decode string ${decodedString}");
     return decodedString;
   }
 
