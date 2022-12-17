@@ -44,40 +44,40 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyA8d6brTx2iU-00YfJrzV24ONoCJFCgMgU',
-    appId: '1:7909980581:web:feb007a7996aa655c5904c',
-    messagingSenderId: '7909980581',
-    projectId: 'discuz-hub',
-    authDomain: 'discuz-hub.firebaseapp.com',
-    storageBucket: 'discuz-hub.appspot.com',
-    measurementId: 'G-NLTRJH9BZG',
+    apiKey: 'AIzaSyCh8fDb2WmYzS5aCh5UW87iN-iMOHE-h5s',
+    appId: '1:959949404332:web:abac5b1a3ccef59a234709',
+    messagingSenderId: '959949404332',
+    projectId: 'disflyandroid',
+    authDomain: 'disflyandroid.firebaseapp.com',
+    storageBucket: 'disflyandroid.appspot.com',
+    measurementId: 'G-ZB95YLCRER',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCbbdA8cssVh67IxupJk76ueGaIxpTPtHo',
-    appId: '1:7909980581:android:a25e7fa38e0af05ec5904c',
-    messagingSenderId: '7909980581',
-    projectId: 'discuz-hub',
-    storageBucket: 'discuz-hub.appspot.com',
+    apiKey: 'AIzaSyBs94WWNIFjuj4aD_rhsN2dNwy5_Ed0ofA',
+    appId: '1:959949404332:android:fdc7b253ff08ff98234709',
+    messagingSenderId: '959949404332',
+    projectId: 'disflyandroid',
+    storageBucket: 'disflyandroid.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDsnefPA_sGbr6jqwCPbEWtzeylHtGILsU',
-    appId: '1:7909980581:ios:3533283933f3b4f9c5904c',
-    messagingSenderId: '7909980581',
-    projectId: 'discuz-hub',
-    storageBucket: 'discuz-hub.appspot.com',
-    iosClientId: '7909980581-qibjv0bedppchiou9pbloarivckc9d4v.apps.googleusercontent.com',
+    apiKey: 'AIzaSyD2-BXqYn_v49MoYrrPudymJLRRO2yiJvE',
+    appId: '1:959949404332:ios:f190f01a41313305234709',
+    messagingSenderId: '959949404332',
+    projectId: 'disflyandroid',
+    storageBucket: 'disflyandroid.appspot.com',
+    iosClientId: '959949404332-d7p8dr61lklahce2i4vet89u2bltl5fn.apps.googleusercontent.com',
     iosBundleId: 'com.kidozh.discuz-flutter',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDsnefPA_sGbr6jqwCPbEWtzeylHtGILsU',
-    appId: '1:7909980581:ios:92717f8cc2d37f29c5904c',
-    messagingSenderId: '7909980581',
-    projectId: 'discuz-hub',
-    storageBucket: 'discuz-hub.appspot.com',
-    iosClientId: '7909980581-c022u0dgqmks81dbngfkrkg7ir0ic4kd.apps.googleusercontent.com',
+    apiKey: 'AIzaSyD2-BXqYn_v49MoYrrPudymJLRRO2yiJvE',
+    appId: '1:959949404332:ios:fa7bf33574de0788234709',
+    messagingSenderId: '959949404332',
+    projectId: 'disflyandroid',
+    storageBucket: 'disflyandroid.appspot.com',
+    iosClientId: '959949404332-uoo8n2o3nd016nvgb3mcd8digqji5mln.apps.googleusercontent.com',
     iosBundleId: 'com.kidozh.discuzFlutter',
   );
 }

@@ -720,6 +720,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "Unable to upload your token."),
         "uploadingImageToServer": MessageLookupByLibrary.simpleMessage(
             "Upload the file to the server..."),
+        "useGoogleAnalyticsContent": MessageLookupByLibrary.simpleMessage(
+            "The app use Google analytics to collect only basic information and we will not track your account according to our privacy policy."),
+        "useGoogleAnalyticsTitle":
+            MessageLookupByLibrary.simpleMessage("Google analytics used"),
         "useMaterial3NoSubtitle": MessageLookupByLibrary.simpleMessage(
             "App will use the Material 2 look and feel."),
         "useMaterial3Title":

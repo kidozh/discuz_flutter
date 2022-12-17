@@ -1,5 +1,6 @@
 
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
@@ -69,7 +70,7 @@ class TestFlightBannerContent extends StatelessWidget{
                     title: Text(S.of(context).upgrade_notification_subtitle, style: TextStyle(color: Colors.white)),
                     onTap: (){
                       VibrationUtils.vibrateWithClickIfPossible();
-                      _launchURL("https://discuzhub.kidozh.com/dev-blog/disfly-release-v1.1.0/");
+                      URLUtils.launchURL("https://discuzhub.kidozh.com/dev-blog/");
                     },
                   ),
                 ),
@@ -91,7 +92,19 @@ class TestFlightBannerContent extends StatelessWidget{
                 subtitle: Text(S.of(context).privacyProtectSubtitle),
                 onTap: (){
                   VibrationUtils.vibrateWithClickIfPossible();
-                  _launchURL("https://discuzhub.kidozh.com/privacy_policy/");
+                  URLUtils.launchURL("https://discuzhub.kidozh.com/privacy_policy/");
+                },
+              ),
+              ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: Colors.amber,
+                  child: Icon(Icons.query_stats,color: Colors.black,),
+                ),
+                title: Text(S.of(context).useGoogleAnalyticsTitle),
+                subtitle: Text(S.of(context).useGoogleAnalyticsContent),
+                onTap: (){
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  URLUtils.launchURL("https://policies.google.com/privacy");
                 },
               ),
               ListTile(
@@ -103,7 +116,7 @@ class TestFlightBannerContent extends StatelessWidget{
                 subtitle: Text(S.of(context).termsOfUseDescription),
                 onTap: (){
                   VibrationUtils.vibrateWithClickIfPossible();
-                  _launchURL("https://discuzhub.kidozh.com/zh/term_of_use/");
+                  URLUtils.launchURL("https://discuzhub.kidozh.com/zh/term_of_use/");
                 },
               ),
               ListTile(
@@ -115,7 +128,7 @@ class TestFlightBannerContent extends StatelessWidget{
                 subtitle: Text(S.of(context).openSoftwareSubtitle),
                 onTap: (){
                   VibrationUtils.vibrateWithClickIfPossible();
-                  _launchURL("https://github.com/kidozh/discuz_flutter");
+                  URLUtils.launchURL("https://github.com/kidozh/discuz_flutter");
                 },
               ),
               SizedBox(height: 24,),
@@ -143,8 +156,5 @@ class TestFlightBannerContent extends StatelessWidget{
       )
     );
   }
-
-  void _launchURL(String url) async =>
-      await canLaunchUrl(Uri.parse(url)) ? await launchUrl(Uri.parse(url)) : throw 'Could not launch $url';
 
 }

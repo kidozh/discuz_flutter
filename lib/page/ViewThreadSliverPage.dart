@@ -530,7 +530,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         EasyLoading.showError("${dioError.message} (${dioError})");
         setState((){
           _error =
-              DiscuzError(dioError.message,dioError.type.name, dioError: dioError);
+              DiscuzError(dioError.type.name,dioError.message, dioError: dioError);
         });
       }
       else{

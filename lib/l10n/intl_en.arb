@@ -630,5 +630,7 @@
   "dioErrorCancel": "Response cancelled.",
   "dioErrorOther": "Error.",
   "mobileTemplateNotFound": "This page is optimized for web view.",
-  "navigateToWebPage": "Go to web."
+  "navigateToWebPage": "Go to web.",
+  "useGoogleAnalyticsTitle": "Google analytics used",
+  "useGoogleAnalyticsContent": "The app use Google analytics to collect only basic information and we will not track your account according to our privacy policy."
 }

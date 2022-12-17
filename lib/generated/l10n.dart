@@ -4271,6 +4271,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Google analytics used`
+  String get useGoogleAnalyticsTitle {
+    return Intl.message(
+      'Google analytics used',
+      name: 'useGoogleAnalyticsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The app use Google analytics to collect only basic information and we will not track your account according to our privacy policy.`
+  String get useGoogleAnalyticsContent {
+    return Intl.message(
+      'The app use Google analytics to collect only basic information and we will not track your account according to our privacy policy.',
+      name: 'useGoogleAnalyticsContent',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

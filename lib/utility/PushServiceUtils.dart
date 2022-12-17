@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -53,8 +55,11 @@ class PushServiceUtils{
 
     // Handle notification taps
     Push.instance.onNotificationTap.listen((data) {
-      print("Handle the data ${data}");
-      _handleMessage(data,navigatorKey);
+      print("Handle the data ${data["payload"]}");
+      if(data["payload"] != null){
+        _handleMessage(jsonDecode(data["payload"] as String),navigatorKey);
+      }
+
     });
 
   }
@@ -244,7 +249,7 @@ class PushServiceUtils{
       data["title"],
       data["message"],
       platformChannelSpecifics,
-      payload: data.toString()
+      payload: jsonEncode(data)
     );
 
   }
