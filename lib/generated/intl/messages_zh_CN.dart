@@ -201,6 +201,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "deleteViewHistoryWarnContent":
             MessageLookupByLibrary.simpleMessage("清除历史记录是不可恢复的，确认要继续？"),
         "deviceNameSignature": MessageLookupByLibrary.simpleMessage("使用设备名称"),
+        "dioErrorCancel": MessageLookupByLibrary.simpleMessage("响应被取消"),
+        "dioErrorConnectionTimeout":
+            MessageLookupByLibrary.simpleMessage("连接超时"),
+        "dioErrorOther": MessageLookupByLibrary.simpleMessage("解析或者其他错误"),
+        "dioErrorReceiveTimeout":
+            MessageLookupByLibrary.simpleMessage("接收数据超市"),
+        "dioErrorResponse": MessageLookupByLibrary.simpleMessage("服务器响应错误"),
+        "dioErrorSendTimeout": MessageLookupByLibrary.simpleMessage("发送超时"),
         "disableFontCustomization":
             MessageLookupByLibrary.simpleMessage("停用自定义字体"),
         "disableFontCustomizationTitle":
@@ -259,6 +267,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "emptyTrustHost": MessageLookupByLibrary.simpleMessage("你还没有信任一个主机地址。"),
         "emptyUser": MessageLookupByLibrary.simpleMessage("这里还没有用户。"),
         "error": MessageLookupByLibrary.simpleMessage("出错了"),
+        "errorUserExpired": MessageLookupByLibrary.simpleMessage("用户登录信息已经失效。"),
         "favoriteForum": MessageLookupByLibrary.simpleMessage("收藏的板块"),
         "favoriteThread": MessageLookupByLibrary.simpleMessage("收藏的帖子"),
         "favorites": MessageLookupByLibrary.simpleMessage("收藏"),
@@ -374,7 +383,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "minute": MessageLookupByLibrary.simpleMessage("分"),
         "minuteAgo": m19,
         "minuteLater": m20,
+        "mobileTemplateNotFound":
+            MessageLookupByLibrary.simpleMessage("此界面更适合使用网页访问"),
         "more": MessageLookupByLibrary.simpleMessage("更多"),
+        "navigateToWebPage": MessageLookupByLibrary.simpleMessage("在网页中继续"),
         "networkFail": MessageLookupByLibrary.simpleMessage("连接服务器时出错。"),
         "networkFailed": MessageLookupByLibrary.simpleMessage("网络访问失败。"),
         "newThread": MessageLookupByLibrary.simpleMessage("最新发表"),

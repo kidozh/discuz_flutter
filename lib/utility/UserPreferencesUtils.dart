@@ -274,5 +274,18 @@ class UserPreferencesUtils{
     await prefs.setBool(pushPreferenceKey, value);
   }
 
+  static final String firstShowDiscuzKey = "firstShowDiscuzKey";
+
+  static Future<String?> getFirstShowDiscuzPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var pushPreference =  prefs.getString(firstShowDiscuzKey);
+    return pushPreference;
+  }
+
+  static Future<void> putFirstShowDiscuzPreference(String value) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(firstShowDiscuzKey, value);
+  }
+
 
 }

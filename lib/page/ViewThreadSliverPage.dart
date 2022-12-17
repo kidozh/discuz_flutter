@@ -29,7 +29,6 @@ import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
-import 'package:discuz_flutter/widget/AppInlineAdaptiveAdWidget.dart';
 import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/PollWidget.dart';
@@ -106,8 +105,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   _ViewThreadSliverState(this.discuz, this.user, this.tid,
       {this.passedSubject});
 
-  late EasyRefreshController _controller;
-  late ScrollController _scrollController;
+  EasyRefreshController _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
+  ScrollController _scrollController = ScrollController();
   ButtonState _sendReplyStatus = ButtonState.idle;
   ViewThreadQuery viewThreadQuery = ViewThreadQuery();
   Map<String, List<Comment>> postCommentList = {};
@@ -127,9 +126,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   void initState() {
     super.initState();
     _loadClient();
-    _controller = EasyRefreshController(
-        controlFinishLoad: true, controlFinishRefresh: true);
-    _scrollController = ScrollController();
 
     _loadPreference();
     //_invalidateContent();
@@ -530,7 +526,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       _controller.finishRefresh();
       if(onError is DioError){
         DioError dioError = onError;
-        log("${dioError.message} >-> ${dioError.type}");
+        log("DIOERROR ${dioError.message} >-> ${dioError.type}");
         EasyLoading.showError("${dioError.message} (${dioError})");
         setState((){
           _error =
@@ -538,6 +534,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         });
       }
       else{
+        log("${onError} >-> ${onError.runtimeType}");
           setState(() {
             _error = DiscuzError(
                 onError.runtimeType.toString(), onError.toString());
@@ -665,6 +662,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             footer: EasyRefreshUtils.i18nClassicFooter(context),
             refreshOnStart: true,
             controller: _controller,
+            //scrollController: _scrollController,
             onRefresh: () async {
               return await _invalidateContent();
             },
@@ -703,7 +701,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                     (context, _) {
                       return ErrorCard(_error!, () {
                         _controller.callRefresh();
-                      }, errorType: _error!.errorType);
+                      },
+                        errorType: _error!.errorType,
+                        webpageUrl: URLUtils.getViewThreadURL(discuz, tid),
+                      );
                     },
                     childCount: 1,
                   )),

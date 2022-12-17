@@ -36,6 +36,7 @@ class AppDatabase{
   static Box<Smiley>? smileyBox;
   static Box<ImageAttachment>? imageAttachmentBox;
   static Box<Draft>? draftBox;
+  static Box<String>? discuzConfigBox;
 
   static Future<void> initBoxes() async {
     Hive
@@ -64,6 +65,7 @@ class AppDatabase{
     await getViewHistoryDao();
     await getImageAttachmentDao();
     await getDraftDao();
+    await getDiscuzConfigBox();
   }
 
 
@@ -146,6 +148,14 @@ class AppDatabase{
     }
 
     return DraftDao(draftBox!);
+  }
+
+  static Future<Box<String>> getDiscuzConfigBox() async {
+    if(discuzConfigBox == null){
+      discuzConfigBox = await Hive.openBox<String>('${hiveBoxPrefix}_discuz_configuration');
+    }
+
+    return discuzConfigBox!;
   }
 
 

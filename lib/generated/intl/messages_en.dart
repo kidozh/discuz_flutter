@@ -225,6 +225,17 @@ class MessageLookup extends MessageLookupByLibrary {
             "Clearing operation is irrecoverable, please take care."),
         "deviceNameSignature":
             MessageLookupByLibrary.simpleMessage("Use device name"),
+        "dioErrorCancel":
+            MessageLookupByLibrary.simpleMessage("Response cancelled."),
+        "dioErrorConnectionTimeout":
+            MessageLookupByLibrary.simpleMessage("Connection timeout."),
+        "dioErrorOther": MessageLookupByLibrary.simpleMessage("Parse error."),
+        "dioErrorReceiveTimeout":
+            MessageLookupByLibrary.simpleMessage("Receive timeout."),
+        "dioErrorResponse":
+            MessageLookupByLibrary.simpleMessage("Response error."),
+        "dioErrorSendTimeout":
+            MessageLookupByLibrary.simpleMessage("Send timeout."),
         "disableFontCustomization":
             MessageLookupByLibrary.simpleMessage("Disable custom font"),
         "disableFontCustomizationTitle": MessageLookupByLibrary.simpleMessage(
@@ -291,6 +302,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "You haven\'t trusted any hosts."),
         "emptyUser": MessageLookupByLibrary.simpleMessage("No user here."),
         "error": MessageLookupByLibrary.simpleMessage("Error"),
+        "errorUserExpired": MessageLookupByLibrary.simpleMessage(
+            "User authentication expired."),
         "favoriteForum":
             MessageLookupByLibrary.simpleMessage("Favorite forums"),
         "favoriteThread":
@@ -432,7 +445,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "minute": MessageLookupByLibrary.simpleMessage("M"),
         "minuteAgo": m19,
         "minuteLater": m20,
+        "mobileTemplateNotFound": MessageLookupByLibrary.simpleMessage(
+            "This page is optimized for web view."),
         "more": MessageLookupByLibrary.simpleMessage("More"),
+        "navigateToWebPage": MessageLookupByLibrary.simpleMessage("Go to web."),
         "networkFail": MessageLookupByLibrary.simpleMessage(
             "Error in connecting with the server."),
         "networkFailed":

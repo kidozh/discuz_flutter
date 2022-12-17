@@ -622,5 +622,14 @@
   "pollNotAllowed": "目前您无法参与投票。(显示的投中的选项与真实结果不符合)",
   "contactUsViaEmail": "邮件联系我们",
   "contactUsViaWeibo": "在微博关注我们",
-  "adLoadingText": "由Google提供的广告，与论坛无关。"
+  "adLoadingText": "由Google提供的广告，与论坛无关。",
+  "errorUserExpired": "用户登录信息已经失效。",
+  "dioErrorConnectionTimeout": "连接超时",
+  "dioErrorSendTimeout": "发送超时",
+  "dioErrorReceiveTimeout": "接收数据超市",
+  "dioErrorResponse": "服务器响应错误",
+  "dioErrorCancel": "响应被取消",
+  "dioErrorOther": "解析或者其他错误",
+  "mobileTemplateNotFound": "此界面更适合使用网页访问",
+  "navigateToWebPage": "在网页中继续"
 }

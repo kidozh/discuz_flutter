@@ -621,5 +621,14 @@
   "pollNotAllowed": "You can't join in the polls.",
   "contactUsViaEmail": "Contact us (Email)",
   "contactUsViaWeibo": "Contact us (Weibo)",
-  "adLoadingText": "AD provided by Google"
+  "adLoadingText": "AD provided by Google",
+  "errorUserExpired": "User authentication expired.",
+  "dioErrorConnectionTimeout": "Connection timeout.",
+  "dioErrorSendTimeout": "Send timeout.",
+  "dioErrorReceiveTimeout": "Receive timeout.",
+  "dioErrorResponse": "Response error.",
+  "dioErrorCancel": "Response cancelled.",
+  "dioErrorOther": "Parse error.",
+  "mobileTemplateNotFound": "This page is optimized for web view.",
+  "navigateToWebPage": "Go to web."
 }

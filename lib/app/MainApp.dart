@@ -24,7 +24,6 @@ import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -306,30 +305,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _handleMessage(RemoteMessage message) async {
-    if (message.data['type'] == 'thread_reply') {
-      int tid = int.parse(message.data["tid"]);
-      String site_url = message.data["site_url"];
-      int uid = int.parse(message.data["uid"]);
-      // find it in discuz or uid
-      _userDao = await AppDatabase.getUserDao();
-      _discuzDao = await AppDatabase.getDiscuzDao();
-      Discuz? _discuz = _discuzDao.findDiscuzByHost(site_url);
-      if(_discuz!=null){
-        User? _user = _userDao.findUsersByDiscuzAndUid(_discuz, uid);
-        if(_user != null){
-          Navigator.push(
-              context,
-              platformPageRoute(
-                  context: context,
-                  builder: (context) => ViewThreadSliverPage(_discuz, _user, tid)));
-        }
-      }
-
-
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -361,15 +336,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   }
 
-  @override
-  void didChangePlatformBrightness() {
-    super.didChangePlatformBrightness();
-    // final Brightness? brightness = WidgetsBinding.instance.window.platformBrightness;
-    // if (brightness != null && Provider.of<ThemeNotifierProvider>(context,listen:false).brightness == null){
-    //   Provider.of<ThemeNotifierProvider>(context, listen: false).setBrightness(brightness);
-    // }
-  }
-
   void _initDb() async {
     _userDao = await AppDatabase.getUserDao();
     _discuzDao = await AppDatabase.getDiscuzDao();
@@ -397,11 +363,14 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         (_selecteddiscuz != null && _selecteddiscuz == discuz) ? PlatformIcons(context).checkMarkCircledSolid : Icons.amp_stories,
         color: (_selecteddiscuz != null && _selecteddiscuz == discuz) ? Theme.of(context).primaryColor : Theme.of(context).unselectedWidgetColor,
         text: discuz.siteName,
-        onPressed: () {
+        onPressed: () async{
+          await UserPreferencesUtils.putFirstShowDiscuzPreference(discuz.key.toString());
           setState(() {
             VibrationUtils.vibrateWithClickIfPossible();
             Provider.of<DiscuzAndUserNotifier>(context, listen: false)
                 .initDiscuz(discuz);
+            // save to user preference
+
             _setFirstUserInDiscuz(discuz);
             Navigator.of(context).pop();
           });
@@ -430,20 +399,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     );
 
-    // widgetList.add(SimpleDialogItem(
-    //     key: UniqueKey(),
-    //     icon: PlatformIcons(context).addCircled,
-    //     color: Theme.of(context).primaryColor,
-    //     text: S.of(context).addNewDiscuz,
-    //     onPressed: () {
-    //       VibrationUtils.vibrateWithClickIfPossible();
-    //       Navigator.of(context).pop();
-    //       Navigator.push(
-    //           context,
-    //           platformPageRoute(
-    //               context: context,
-    //               builder: (context) => AddDiscuzPage()));
-    //     }));
     if(isCupertino(context)){
       await showPlatformModalSheet(
           context: context, //BuildContext对象
@@ -482,13 +437,26 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     final dao = await AppDatabase.getDiscuzDao();
 
     _allDiscuzs = await dao.findAllDiscuzs();
-    log("recv discuz list ${_allDiscuzs.length}");
+
+    // query data
+    String? discuzKey = await UserPreferencesUtils.getFirstShowDiscuzPreference();
+    log("recv discuz list ${_allDiscuzs.length} -> selected discuz key ${discuzKey}");
     if(_allDiscuzs.isNotEmpty){
+      Discuz selectedDiscuz = _allDiscuzs.first;
+      if(discuzKey != null){
+        for(var discuz in _allDiscuzs){
+          if(discuz.key.toString() == discuzKey){
+            selectedDiscuz = discuz;
+            break;
+          }
+        }
+      }
       setState(() {
         // set
+
         Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-            .initDiscuz(_allDiscuzs.first);
-        _setFirstUserInDiscuz(_allDiscuzs.first);
+            .initDiscuz(selectedDiscuz);
+        _setFirstUserInDiscuz(selectedDiscuz);
       });
     }
 

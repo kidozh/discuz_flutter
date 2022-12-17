@@ -1,6 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -4176,6 +4177,96 @@ class S {
     return Intl.message(
       'AD provided by Google',
       name: 'adLoadingText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `User authentication expired.`
+  String get errorUserExpired {
+    return Intl.message(
+      'User authentication expired.',
+      name: 'errorUserExpired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connection timeout.`
+  String get dioErrorConnectionTimeout {
+    return Intl.message(
+      'Connection timeout.',
+      name: 'dioErrorConnectionTimeout',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Send timeout.`
+  String get dioErrorSendTimeout {
+    return Intl.message(
+      'Send timeout.',
+      name: 'dioErrorSendTimeout',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Receive timeout.`
+  String get dioErrorReceiveTimeout {
+    return Intl.message(
+      'Receive timeout.',
+      name: 'dioErrorReceiveTimeout',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Response error.`
+  String get dioErrorResponse {
+    return Intl.message(
+      'Response error.',
+      name: 'dioErrorResponse',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Response cancelled.`
+  String get dioErrorCancel {
+    return Intl.message(
+      'Response cancelled.',
+      name: 'dioErrorCancel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Parse error.`
+  String get dioErrorOther {
+    return Intl.message(
+      'Parse error.',
+      name: 'dioErrorOther',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This page is optimized for web view.`
+  String get mobileTemplateNotFound {
+    return Intl.message(
+      'This page is optimized for web view.',
+      name: 'mobileTemplateNotFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Go to web.`
+  String get navigateToWebPage {
+    return Intl.message(
+      'Go to web.',
+      name: 'navigateToWebPage',
       desc: '',
       args: [],
     );
