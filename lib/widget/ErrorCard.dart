@@ -19,7 +19,6 @@ class ErrorCard extends StatelessWidget{
 
   DiscuzError discuzError;
   ErrorType? errorType;
-  DioError? dioError;
 
 
   final VoidCallback? onRefreshCallback;
@@ -108,12 +107,12 @@ class ErrorCard extends StatelessWidget{
   ErrorCard(this.discuzError,this.onRefreshCallback, {this.largeSize, this.errorType, this.webpageUrl});
 
   String getErrorLocalizedKey(BuildContext context){
-    log("GET Dio ERROR ${dioError} ${discuzError.key}");
+    log("GET Dio ERROR ${discuzError.dioError} ${discuzError.key}");
     if(errorType == ErrorType.userExpired){
       return S.of(context).errorUserExpired;
     }
-    else if(dioError!=null){
-      switch (dioError!.type){
+    else if(discuzError.dioError!=null){
+      switch (discuzError.dioError!.type){
         case DioErrorType.connectTimeout:
           return S.of(context).dioErrorConnectionTimeout;
         case DioErrorType.sendTimeout:
@@ -140,8 +139,8 @@ class ErrorCard extends StatelessWidget{
     if(errorType == ErrorType.userExpired){
       return Icons.person_add_disabled;
     }
-    else if(dioError!=null){
-      switch (dioError!.type){
+    else if(discuzError.dioError!=null){
+      switch (discuzError.dioError!.type){
         case DioErrorType.connectTimeout:
           return Icons.explore_off_outlined;
         case DioErrorType.sendTimeout:

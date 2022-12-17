@@ -229,7 +229,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Response cancelled."),
         "dioErrorConnectionTimeout":
             MessageLookupByLibrary.simpleMessage("Connection timeout."),
-        "dioErrorOther": MessageLookupByLibrary.simpleMessage("Parse error."),
+        "dioErrorOther": MessageLookupByLibrary.simpleMessage("Error."),
         "dioErrorReceiveTimeout":
             MessageLookupByLibrary.simpleMessage("Receive timeout."),
         "dioErrorResponse":

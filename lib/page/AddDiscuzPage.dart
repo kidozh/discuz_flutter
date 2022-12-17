@@ -92,19 +92,16 @@ class _AddDiscuzFormFieldState
       setState(() {
         _isLoading = false;
       });
-      switch (onError) {
-        case DioError:
-          {
-            DioError dioError = onError;
-            error = DiscuzError(dioError.type.name, dioError.message, dioError: dioError);
-            break;
-          }
-        default:
-          {
-            setState(() {
-              error = DiscuzError("", onError.toString());
-            });
-          }
+      if(onError is DioError){
+        //log("GET ADD discuz error ${onError}");
+        DioError dioError = onError;
+        error = DiscuzError(dioError.type.name, dioError.message, dioError: dioError);
+      }
+      else{
+        //log("GET ADD discuz error NOT in DIO ${onError}");
+        setState(() {
+          error = DiscuzError("", onError.toString());
+        });
       }
     });
   }

@@ -628,7 +628,7 @@
   "dioErrorReceiveTimeout": "Receive timeout.",
   "dioErrorResponse": "Response error.",
   "dioErrorCancel": "Response cancelled.",
-  "dioErrorOther": "Parse error.",
+  "dioErrorOther": "Error.",
   "mobileTemplateNotFound": "This page is optimized for web view.",
   "navigateToWebPage": "Go to web."
 }

@@ -4242,10 +4242,10 @@ class S {
     );
   }
 
-  /// `Parse error.`
+  /// `Error.`
   String get dioErrorOther {
     return Intl.message(
-      'Parse error.',
+      'Error.',
       name: 'dioErrorOther',
       desc: '',
       args: [],
