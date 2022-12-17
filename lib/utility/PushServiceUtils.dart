@@ -6,6 +6,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:provider/provider.dart';
 import 'package:push/push.dart';
 
 import '../dao/DiscuzDao.dart';
@@ -14,6 +15,7 @@ import '../database/AppDatabase.dart';
 import '../entity/Discuz.dart';
 import '../entity/User.dart';
 import '../page/ViewThreadSliverPage.dart';
+import '../provider/DiscuzAndUserNotifier.dart';
 
 class PushServiceUtils{
 
@@ -82,6 +84,10 @@ class PushServiceUtils{
         User? _user = _userDao.findUsersByDiscuzAndUid(_discuz, uid);
         print("Receive user ${_user}");
         if(_user != null && navigatorKey.currentState!=null && navigatorKey.currentState?.context!=null){
+
+          // set to current discuz now
+          Provider.of<DiscuzAndUserNotifier>(navigatorKey.currentState!.context, listen: false)
+              .initDiscuz(_discuz);
           Navigator.push(
               navigatorKey.currentState!.context,
               platformPageRoute(

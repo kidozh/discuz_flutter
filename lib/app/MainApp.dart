@@ -65,38 +65,6 @@ class MyApp extends StatelessWidget {
 
   }
 
-  Future<void> _listenToChanges(BuildContext buildContext) async{
-    Push.Push.instance.onNotificationTap.listen((data) {
-      _handleMessage(data,buildContext);
-
-
-    });
-  }
-
-  Future<void> _handleMessage(Map<String?, Object?> msgData, BuildContext context) async {
-    Map<String, dynamic>? data = msgData.cast<String, dynamic>();
-    if (data['type'] == 'thread_reply') {
-      int tid = int.parse(data["tid"].toString());
-      String site_url = data["site_url"].toString();
-      int uid = int.parse(data["uid"].toString());
-      // find it in discuz or uid
-      UserDao _userDao = await AppDatabase.getUserDao();
-      DiscuzDao _discuzDao = await AppDatabase.getDiscuzDao();
-      Discuz? _discuz = _discuzDao.findDiscuzByHost(site_url);
-      if(_discuz!=null){
-        User? _user = _userDao.findUsersByDiscuzAndUid(_discuz, uid);
-        if(_user != null){
-          Navigator.push(
-              context,
-              platformPageRoute(
-                  builder: (context) => ViewThreadSliverPage(_discuz, _user, tid), context: context));
-        }
-      }
-
-
-    }
-  }
-
 
   TargetPlatform? getTargetPlatformByName(String name){
     switch (name){
