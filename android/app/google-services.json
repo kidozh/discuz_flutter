@@ -1,185 +1,34 @@
 {
   "project_info": {
-    "project_number": "7909980581",
-    "project_id": "discuz-hub",
-    "storage_bucket": "discuz-hub.appspot.com"
+    "project_number": "959949404332",
+    "project_id": "disflyandroid",
+    "storage_bucket": "disflyandroid.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:7909980581:android:a25e7fa38e0af05ec5904c",
+        "mobilesdk_app_id": "1:959949404332:android:fdc7b253ff08ff98234709",
         "android_client_info": {
           "package_name": "com.kidozh.discuz_flutter"
         }
       },
       "oauth_client": [
         {
-          "client_id": "7909980581-klr4dgum5bv45kum7fl3nrcqencjg531.apps.googleusercontent.com",
+          "client_id": "959949404332-1f06i87orhls3mgura53mnec5onhq80v.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCbbdA8cssVh67IxupJk76ueGaIxpTPtHo"
+          "current_key": "AIzaSyBs94WWNIFjuj4aD_rhsN2dNwy5_Ed0ofA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "7909980581-klr4dgum5bv45kum7fl3nrcqencjg531.apps.googleusercontent.com",
+              "client_id": "959949404332-1f06i87orhls3mgura53mnec5onhq80v.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "7909980581-aokp9v3v08vcj3p5cpqhre4teulcg2cb.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.kidozh.discu"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:7909980581:android:3769ae239379c971c5904c",
-        "android_client_info": {
-          "package_name": "com.kidozh.discuz_flutter.debug"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "7909980581-klr4dgum5bv45kum7fl3nrcqencjg531.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCbbdA8cssVh67IxupJk76ueGaIxpTPtHo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "7909980581-klr4dgum5bv45kum7fl3nrcqencjg531.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "7909980581-aokp9v3v08vcj3p5cpqhre4teulcg2cb.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.kidozh.discu"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:7909980581:android:b1ca062c195a5c6ec5904c",
-        "android_client_info": {
-          "package_name": "com.kidozh.discuzhub"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "7909980581-klr4dgum5bv45kum7fl3nrcqencjg531.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCbbdA8cssVh67IxupJk76ueGaIxpTPtHo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "7909980581-klr4dgum5bv45kum7fl3nrcqencjg531.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "7909980581-aokp9v3v08vcj3p5cpqhre4teulcg2cb.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.kidozh.discu"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:7909980581:android:c2828bf13b6bfa5cc5904c",
-        "android_client_info": {
-          "package_name": "com.kidozh.discuzhub.debug"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "7909980581-klr4dgum5bv45kum7fl3nrcqencjg531.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCbbdA8cssVh67IxupJk76ueGaIxpTPtHo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "7909980581-klr4dgum5bv45kum7fl3nrcqencjg531.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "7909980581-aokp9v3v08vcj3p5cpqhre4teulcg2cb.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.kidozh.discu"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:7909980581:android:5e454873e5c5932fc5904c",
-        "android_client_info": {
-          "package_name": "com.kidozh.discuzhub.keylol.bbs"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "7909980581-klr4dgum5bv45kum7fl3nrcqencjg531.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCbbdA8cssVh67IxupJk76ueGaIxpTPtHo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "7909980581-klr4dgum5bv45kum7fl3nrcqencjg531.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "7909980581-aokp9v3v08vcj3p5cpqhre4teulcg2cb.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.kidozh.discu"
-              }
             }
           ]
         }
