@@ -19,6 +19,13 @@ import '../provider/DiscuzAndUserNotifier.dart';
 
 class PushServiceUtils{
 
+  static Future<void> updateTokenToAllApplicableDiscuzes(BuildContext context) async{
+    final dao = await AppDatabase.getDiscuzDao();
+    List<Discuz> allDiscuzList = await dao.findAllDiscuzs();
+    // traverse it one by one
+
+  }
+
   static Future<void> initPushInformation(GlobalKey<NavigatorState> navigatorKey) async {
     Push.instance.onNewToken.listen((token) {
       print("Just got a new FCM registration token: ${token}");
