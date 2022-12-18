@@ -1,9 +1,7 @@
 
-import 'dart:developer';
-import 'dart:io';
-
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
+import 'package:discuz_flutter/utility/PushServiceUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -27,8 +25,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
   bool allowPush = false;
   String deviceName = "";
   String packageId = "";
-  String channel = "";
-  String token = "";
+  PushTokenChannel? pushTokenChannel;
 
   @override
   void initState(){
@@ -39,49 +36,16 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
   void _loadDeviceInformation() async{
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     deviceName = await PostTextFieldUtils.getDeviceName(context);
-    String? fetchedToken = null;
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-    if (Platform.isIOS){
-      fetchedToken = await messaging.getAPNSToken();
-
-      log("Get APNS ${fetchedToken}");
-    }
-    else{
-      // firebase
-
-
-      try{
-        fetchedToken = await messaging.getToken();
-      }
-      catch(e){
-        fetchedToken = null;
-      }
-    }
-
-
-
-    setState((){
+    PushTokenChannel? _pushTokenChannel = await PushServiceUtils.getPushToken();
+    bool _allowPush = await UserPreferencesUtils.getPushPreference();
+    
+    setState(() {
       deviceName = deviceName;
       packageId = packageInfo.packageName;
-      if(Platform.isIOS){
-        channel = S.of(context).pushChannelAPNs;
-      }
-      else{
-        channel = S.of(context).pushChannelFirebase;
-      }
-
-      if(fetchedToken!= null){
-        token = fetchedToken;
-      }
-      else{
-        token = "";
-      }
-    });
-    // allowPush
-    bool _allowPush = await UserPreferencesUtils.getPushPreference();
-    setState((){
+      pushTokenChannel = _pushTokenChannel;
       allowPush = _allowPush;
     });
+    
     Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = _allowPush;
 
 
@@ -97,7 +61,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
       body: SettingsList(
 
         sections: [
-          if(token == "")
+          if(pushTokenChannel == null)
             SettingsSection(tiles: [
               SettingsTile(
                 title: Text(S.of(context).pushDeviceNotSupported),
@@ -106,7 +70,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
               )
             ],
             ),
-          if(token != "")
+          if(pushTokenChannel != null)
           SettingsSection(tiles: [
             SettingsTile.switchTile(
               title: Text(S.of(context).pushNotificationEnable),
@@ -130,7 +94,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
               },
             )
           ]),
-          if(token != "")
+          if(pushTokenChannel != null)
           SettingsSection(
               title: Text(S.of(context).pushInformation),
               tiles: [
@@ -143,10 +107,10 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
                 ),
                 SettingsTile(
                   title: Text(S.of(context).pushChannel),
-                  value: Text(S.of(context).pushChannelFirebase),
+                  value: Text(pushTokenChannel!.getLocalizedChannelName(context)),
                 ),
-                SettingsTile(title: Text(channel),
-                  description: Text(token),
+                SettingsTile(title: Text(pushTokenChannel!.channelName),
+                  description: Text(pushTokenChannel!.token),
                 ),
               ]
           ),

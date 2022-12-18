@@ -535,9 +535,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "pullToRefresh":
             MessageLookupByLibrary.simpleMessage("Pull to refresh"),
         "pushChannel": MessageLookupByLibrary.simpleMessage("Channel"),
+        "pushChannelAPN": MessageLookupByLibrary.simpleMessage(
+            "Apple push notification service"),
         "pushChannelAPNs": MessageLookupByLibrary.simpleMessage(
             "Apple Push Notification service"),
+        "pushChannelFCM":
+            MessageLookupByLibrary.simpleMessage("Firebase cloud messaging"),
         "pushChannelFirebase": MessageLookupByLibrary.simpleMessage("Firebase"),
+        "pushChannelXMI": MessageLookupByLibrary.simpleMessage("Xiaomi push"),
         "pushDevice": MessageLookupByLibrary.simpleMessage("Device type"),
         "pushDeviceNotInterfaceWithService":
             MessageLookupByLibrary.simpleMessage(

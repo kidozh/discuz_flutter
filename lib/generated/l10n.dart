@@ -4291,6 +4291,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Firebase cloud messaging`
+  String get pushChannelFCM {
+    return Intl.message(
+      'Firebase cloud messaging',
+      name: 'pushChannelFCM',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Apple push notification service`
+  String get pushChannelAPN {
+    return Intl.message(
+      'Apple push notification service',
+      name: 'pushChannelAPN',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Xiaomi push`
+  String get pushChannelXMI {
+    return Intl.message(
+      'Xiaomi push',
+      name: 'pushChannelXMI',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

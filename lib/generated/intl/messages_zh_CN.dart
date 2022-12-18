@@ -460,8 +460,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "publishAt": MessageLookupByLibrary.simpleMessage(" 发帖于 "),
         "pullToRefresh": MessageLookupByLibrary.simpleMessage("拉动刷新"),
         "pushChannel": MessageLookupByLibrary.simpleMessage("推送渠道"),
+        "pushChannelAPN": MessageLookupByLibrary.simpleMessage("Apple 推送通知服务"),
         "pushChannelAPNs": MessageLookupByLibrary.simpleMessage("Apple推送通知服务"),
+        "pushChannelFCM":
+            MessageLookupByLibrary.simpleMessage("Firebase 云消息传递"),
         "pushChannelFirebase": MessageLookupByLibrary.simpleMessage("Firebase"),
+        "pushChannelXMI": MessageLookupByLibrary.simpleMessage("小米推送服务"),
         "pushDevice": MessageLookupByLibrary.simpleMessage("设备信息"),
         "pushDeviceNotInterfaceWithService":
             MessageLookupByLibrary.simpleMessage("其他服务依然是正常的"),

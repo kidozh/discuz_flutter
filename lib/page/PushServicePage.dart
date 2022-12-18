@@ -12,6 +12,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
+import 'package:discuz_flutter/utility/PushServiceUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -64,43 +65,21 @@ class PushServiceState extends State<PushServiceStateWidget>{
   // 控制结束
   bool _enableControlFinish = false;
   bool _enableRefresh = true;
-  String deviceToken = "";
+  PushTokenChannel? pushTokenChannel = null;
 
 
   @override
   void initState() {
     super.initState();
     _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
-    _loadTokenInfo();
+
   }
 
-  void _loadTokenInfo() async{
-
-    try{
-      FirebaseMessaging messaging = FirebaseMessaging.instance;
-      // try to get APNs before
-      String? fetchedToken = null;
-      if(Platform.isIOS){
-
-        String? apnsToken = await messaging.getAPNSToken();
-        print("Get APNS token ${apnsToken}");
-        fetchedToken = apnsToken;
-      }
-      else{
-        fetchedToken = await messaging.getToken();
-      }
-
-      print("Get token ${fetchedToken}");
-      if(fetchedToken != null){
-        deviceToken = fetchedToken;
-      }
-
-    }
-    catch (e){
-
-    }
-
-
+  @override
+  void didChangeDependencies() async{
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    pushTokenChannel = await PushServiceUtils.getPushToken();
   }
 
   @override
@@ -127,11 +106,11 @@ class PushServiceState extends State<PushServiceStateWidget>{
               controller: _controller,
               child: ListView.builder(itemBuilder: (context, index){
 
-                if(result.list[index].token != deviceToken){
+                if(result.list[index].token != pushTokenChannel?.token){
                   return ListTile(
                     title: Text(result.list[index].deviceName),
                     subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, result.list[index].updateAt)),
-                    trailing: result.list[index].token == deviceToken? Icon(AppPlatformIcons(context).thisDeviceSolid): null,
+                    trailing: result.list[index].token == pushTokenChannel?.token? Icon(AppPlatformIcons(context).thisDeviceSolid): null,
                   );
                 }
                 else{
@@ -141,7 +120,7 @@ class PushServiceState extends State<PushServiceStateWidget>{
                       textColor: Theme.of(context).primaryTextTheme.bodyText1?.color,
                       title: Text(result.list[index].deviceName),
                       subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, result.list[index].updateAt)),
-                      trailing: result.list[index].token == deviceToken? Icon(AppPlatformIcons(context).thisDeviceSolid, color: Theme.of(context).primaryTextTheme.bodyText1?.color,): null,
+                      trailing: result.list[index].token == pushTokenChannel?.token? Icon(AppPlatformIcons(context).thisDeviceSolid, color: Theme.of(context).primaryTextTheme.bodyText1?.color,): null,
                     ),
                   );
                 }

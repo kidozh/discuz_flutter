@@ -1,6 +1,8 @@
 
 import 'dart:convert';
-
+import 'dart:io';
+';
+import 'package:firebase_messaging/firebase_messaging.dart' as FCM;
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -14,16 +16,85 @@ import '../dao/UserDao.dart';
 import '../database/AppDatabase.dart';
 import '../entity/Discuz.dart';
 import '../entity/User.dart';
+import '../generated/l10n.dart';
 import '../page/ViewThreadSliverPage.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 
+enum PushChannel{
+  fcm,
+  apn,
+  xmi
+}
+
+class PushTokenChannel{
+  String token;
+  PushChannel channel;
+
+  PushTokenChannel(this.token, this.channel);
+
+  String get channelName{
+    switch(this.channel){
+      case PushChannel.fcm: return "FCM";
+      case PushChannel.apn: return "APN";
+      case PushChannel.xmi: return "XMI";
+    }
+  }
+
+  String getLocalizedChannelName(BuildContext context){
+    switch(this.channel){
+      case PushChannel.fcm: return S.of(context).pushChannelFCM;
+      case PushChannel.apn: return S.of(context).pushChannelAPN;
+      case PushChannel.xmi: return S.of(context).pushChannelXMI;
+    }
+  }
+}
+
 class PushServiceUtils{
 
-  static Future<void> updateTokenToAllApplicableDiscuzes(BuildContext context) async{
-    final dao = await AppDatabase.getDiscuzDao();
-    List<Discuz> allDiscuzList = await dao.findAllDiscuzs();
-    // traverse it one by one
+  static Future<PushTokenChannel?> getPushToken() async{
+    try{
+      FCM.FirebaseMessaging messaging = FCM.FirebaseMessaging.instance;
+      // try to get APNs before
+      String? fetchedToken = null;
+      if(Platform.isIOS){
 
+        String? apnsToken = await messaging.getAPNSToken();
+        print("Get APNS token ${apnsToken}");
+        if(apnsToken == null){
+          return null;
+        }
+        else{
+          return PushTokenChannel(apnsToken, PushChannel.fcm);
+        }
+
+      }
+      else{
+        fetchedToken = await messaging.getToken();
+        if(fetchedToken == null){
+          return null;
+        }
+        else{
+          return PushTokenChannel(fetchedToken, PushChannel.apn);
+        }
+      }
+
+    }
+    catch (e){
+      return null;
+    }
+  }
+
+  static Future<void> updateTokenToAllApplicableDiscuzes(BuildContext context) async{
+    final discuzDao = await AppDatabase.getDiscuzDao();
+    final userDao = await AppDatabase.getUserDao();
+    List<Discuz> allDiscuzList = await discuzDao.findAllDiscuzs();
+    // traverse it one by one
+    for(var discuz in allDiscuzList){
+      // check with availability of push service
+
+
+      List<User> userList = userDao.findAllUsersByDiscuz(discuz);
+    }
   }
 
   static Future<void> initPushInformation(GlobalKey<NavigatorState> navigatorKey) async {
@@ -42,7 +113,7 @@ class PushServiceUtils{
 
     });
 
-    final onMessageSubscription = Push.instance.onMessage.listen((message) {
+    Push.instance.onMessage.listen((message) {
       print('RemoteMessage received while app is in foreground:\n'
           'RemoteMessage.Notification: ${message.notification} \n'
           ' title: ${message.notification?.title.toString()}\n'
@@ -52,7 +123,6 @@ class PushServiceUtils{
     });
 
     // Handle push notifications
-    final onBackgroundMessageSubscription =
     Push.instance.onBackgroundMessage.listen((message) {
       print('RemoteMessage received while app is in background:\n'
           'RemoteMessage.Notification: ${message.notification} \n'
@@ -78,7 +148,7 @@ class PushServiceUtils{
     Map<String, dynamic> data = msgData.cast<String, dynamic>();
     //print("Receive discuz ${msg}} ");
     //Map<String, String>? data = msg;
-    if (data!=null && data['type'] == 'thread_reply') {
+    if (data['type'] == 'thread_reply') {
       int tid = int.parse(data["tid"].toString());
       String site_url = data["site_url"].toString();
       int uid = int.parse(data["uid"].toString());
