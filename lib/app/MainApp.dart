@@ -173,7 +173,7 @@ class MyApp extends StatelessWidget {
                   ],
                   supportedLocales: S.delegate.supportedLocales,
                   builder: EasyLoading.init(),
-                  home: MyHomePage(title: "谈坛"),
+                  home: MyHomePage(title: S.of(context).appName),
                 );
               },
             )
