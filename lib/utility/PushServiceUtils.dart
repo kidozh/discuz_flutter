@@ -1,15 +1,19 @@
 
 import 'dart:convert';
 import 'dart:io';
-';
+
+import 'package:dio/dio.dart';
+import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:firebase_messaging/firebase_messaging.dart' as FCM;
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:push/push.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../dao/DiscuzDao.dart';
 import '../dao/UserDao.dart';
@@ -19,6 +23,8 @@ import '../entity/User.dart';
 import '../generated/l10n.dart';
 import '../page/ViewThreadSliverPage.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
+import 'NetworkUtils.dart';
+import 'PostTextFieldUtils.dart';
 
 enum PushChannel{
   fcm,
@@ -29,8 +35,10 @@ enum PushChannel{
 class PushTokenChannel{
   String token;
   PushChannel channel;
+  String deviceName;
+  String packageId;
 
-  PushTokenChannel(this.token, this.channel);
+  PushTokenChannel(this.token, this.channel, this.deviceName, this.packageId);
 
   String get channelName{
     switch(this.channel){
@@ -51,7 +59,11 @@ class PushTokenChannel{
 
 class PushServiceUtils{
 
-  static Future<PushTokenChannel?> getPushToken() async{
+  static Future<PushTokenChannel?> getPushToken(BuildContext context) async{
+    String deviceName = await PostTextFieldUtils.getDeviceName(context);
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String packageId = packageInfo.packageName;
+
     try{
       FCM.FirebaseMessaging messaging = FCM.FirebaseMessaging.instance;
       // try to get APNs before
@@ -64,7 +76,7 @@ class PushServiceUtils{
           return null;
         }
         else{
-          return PushTokenChannel(apnsToken, PushChannel.fcm);
+          return PushTokenChannel(apnsToken, PushChannel.apn, deviceName, packageId);
         }
 
       }
@@ -74,7 +86,7 @@ class PushServiceUtils{
           return null;
         }
         else{
-          return PushTokenChannel(fetchedToken, PushChannel.apn);
+          return PushTokenChannel(fetchedToken, PushChannel.fcm, deviceName, packageId);
         }
       }
 
@@ -88,13 +100,37 @@ class PushServiceUtils{
     final discuzDao = await AppDatabase.getDiscuzDao();
     final userDao = await AppDatabase.getUserDao();
     List<Discuz> allDiscuzList = await discuzDao.findAllDiscuzs();
-    // traverse it one by one
-    for(var discuz in allDiscuzList){
-      // check with availability of push service
+    PushTokenChannel? pushTokenChannel = await getPushToken(context);
+    if(pushTokenChannel != null){
+      // traverse it one by one
+      for(var discuz in allDiscuzList){
+        // check with availability of push service
+        bool pushEnabled = await getDiscuzPushPluginEnabled(discuz);
+        if(pushEnabled){
+          print("Update discuz push enabled ${discuz.baseURL}");
+          List<User> userList = userDao.findAllUsersByDiscuz(discuz);
+          // update all
+          for(var user in userList){
+            Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+            MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
+            // need to get formhash first
+            client.getPushTokenListResult().then((value){
+              // obtained data
+              print("Update token to user successful ${user.username} ${discuz.baseURL} ${value.formhash}");
+              client.sendToken(value.formhash, pushTokenChannel.token, pushTokenChannel.deviceName, pushTokenChannel.packageId, pushTokenChannel.channelName).then((value) async {
+                if(value.result =="success"){
+                  await putDiscuzPushPluginEnabled(discuz, true);
+                }
+              });
+            });
+          }
+        }
+        else{
 
-
-      List<User> userList = userDao.findAllUsersByDiscuz(discuz);
+        }
+      }
     }
+
   }
 
   static Future<void> initPushInformation(GlobalKey<NavigatorState> navigatorKey) async {
@@ -335,6 +371,22 @@ class PushServiceUtils{
       payload: jsonEncode(data)
     );
 
+  }
+
+  static String getDiscuzPushPluginEnabledKey(Discuz discuz){
+    return "discuz_push_plugin_enabled_${discuz.baseURL}";
+  }
+
+  static Future<bool> getDiscuzPushPluginEnabled(Discuz discuz) async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var signaturePreference =  prefs.getBool(getDiscuzPushPluginEnabledKey(discuz));
+    return signaturePreference == null? false: signaturePreference;
+  }
+
+  static Future<void> putDiscuzPushPluginEnabled(Discuz discuz, bool value) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(getDiscuzPushPluginEnabledKey(discuz), value);
   }
 
 }

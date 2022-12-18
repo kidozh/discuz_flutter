@@ -1,8 +1,4 @@
-
-
-
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/PushTokenListResult.dart';
@@ -15,18 +11,14 @@ import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/PushServiceUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:easy_refresh/easy_refresh.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 import '../client/MobileApiClient.dart';
 import '../utility/EasyRefreshUtils.dart';
 import '../utility/NetworkUtils.dart';
-import '../utility/PostTextFieldUtils.dart';
 
 class PushServicePage extends StatelessWidget{
 
@@ -79,7 +71,7 @@ class PushServiceState extends State<PushServiceStateWidget>{
   void didChangeDependencies() async{
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
-    pushTokenChannel = await PushServiceUtils.getPushToken();
+    pushTokenChannel = await PushServiceUtils.getPushToken(context);
   }
 
   @override
@@ -145,6 +137,7 @@ class PushServiceState extends State<PushServiceStateWidget>{
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
 
     _client.getPushTokenListResult().then((value) async {
+      await PushServiceUtils.putDiscuzPushPluginEnabled(discuz, true);
       setState((){
         result = value;
       });
@@ -154,34 +147,12 @@ class PushServiceState extends State<PushServiceStateWidget>{
         _controller.finishRefresh(IndicatorResult.noMore);
       }
       // check with token
-      String token = "";
-      try{
-        // check with platform
-        if(Platform.isIOS){
-          FirebaseMessaging messaging = FirebaseMessaging.instance;
-          String? apnToken = await messaging.getAPNSToken();
-          if(apnToken != null){
-            token = apnToken;
-          }
-        }
-        else{
-          FirebaseMessaging messaging = FirebaseMessaging.instance;
-          String? fetchedToken = await messaging.getToken();
-          if(fetchedToken != null){
-            token = fetchedToken;
-          }
-        }
-
-
-      }
-      catch(e){
-        log(e.toString());
-      }
+      PushTokenChannel? pushTokenChannel = await PushServiceUtils.getPushToken(context);
       bool refreshToken = true;
       DateTime now = DateTime.now();
       for(var tokenInfo in result.list){
         // if time interval > 6, we need to refresh the page
-        if(tokenInfo.token == token && now.difference(tokenInfo.updateAt).inDays < 6){
+        if(tokenInfo.token == pushTokenChannel?.token && now.difference(tokenInfo.updateAt).inDays < 6){
           refreshToken = false;
         }
       }
@@ -201,47 +172,25 @@ class PushServiceState extends State<PushServiceStateWidget>{
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
     // send it
     // check with token
-    String token = "";
-    String channel = "FCM";
-    try{
-      // check with platform
-      if(Platform.isIOS){
-        FirebaseMessaging messaging = FirebaseMessaging.instance;
-        String? apnToken = await messaging.getAPNSToken();
-        log("Get APNS ${apnToken}");
-        if(apnToken != null){
-          token = apnToken;
-          // to make sure apn get posted
-          channel = "APN";
+    PushTokenChannel? _pushTokenChannel = await PushServiceUtils.getPushToken(context);
+    if(_pushTokenChannel!=null){
+      // prepare to send token
+
+      log("Get formhash ${result.formhash}");
+      _client.sendToken(result.formhash, _pushTokenChannel.token, _pushTokenChannel.deviceName, _pushTokenChannel.packageId, _pushTokenChannel.channelName).then((value) async {
+
+        if(value.result =="success"){
+          EasyLoading.showSuccess(S.of(context).uploadTokenSuccessful);
+          await PushServiceUtils.putDiscuzPushPluginEnabled(discuz, true);
         }
 
-      }
-      else{
-        FirebaseMessaging messaging = FirebaseMessaging.instance;
-        String? fetchedToken = await messaging.getToken();
-        if(fetchedToken != null){
-          token = fetchedToken;
-        }
-      }
 
+      }).catchError((Object object,StackTrace stackTrace){
+        log(stackTrace.toString());
+        EasyLoading.showError(S.of(context).uploadTokenUnsuccessful);
+      });
+    }
 
-    }
-    catch(e){
-      log(e.toString());
-    }
-    // prepare to send token
-    String deviceName = await PostTextFieldUtils.getDeviceName(context);
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    String packageId = packageInfo.packageName;
-    log("Get formhash ${result.formhash}");
-    _client.sendToken(result.formhash, token, deviceName, packageId, channel).then((value){
-      if(value.result =="success"){
-        EasyLoading.showSuccess(S.of(context).uploadTokenSuccessful);
-      }
-    }).catchError((Object object,StackTrace stackTrace){
-      log(stackTrace.toString());
-      EasyLoading.showError(S.of(context).uploadTokenUnsuccessful);
-    });
   }
 
 }

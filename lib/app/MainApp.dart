@@ -22,6 +22,7 @@ import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
 import 'package:discuz_flutter/screen/DiscuzPortalScreen.dart';
 import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
+import 'package:discuz_flutter/utility/PushServiceUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
@@ -42,6 +43,8 @@ class MyApp extends StatelessWidget {
   GlobalKey<NavigatorState> navigatorKey;
 
   MyApp(this.platformName, this.navigatorKey);
+
+
 
   _loadPreference(BuildContext context) async{
 
@@ -169,11 +172,6 @@ class MyApp extends StatelessWidget {
                     GlobalWidgetsLocalizations.delegate
                   ],
                   supportedLocales: S.delegate.supportedLocales,
-                  localeResolutionCallback: (locale, _){
-                    if(locale!=null){
-                      print("Locale ${locale.languageCode},${locale.scriptCode}, ${locale.countryCode}");
-                    }
-                  },
                   builder: EasyLoading.init(),
                   home: MyHomePage(title: "谈坛"),
                 );
@@ -206,7 +204,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
-  bool _showUserDetail = false;
   int _bottomNavigationbarIndex = 0;
   late List<Widget> bodies = [];
   late UserDao _userDao;
@@ -218,6 +215,14 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   _MyHomePageState() {
     _queryDiscuzList();
+  }
+
+  @override
+  void didChangeDependencies() async{
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    print("Update token to all applicable discuzes");
+    PushServiceUtils.updateTokenToAllApplicableDiscuzes(context);
   }
 
   Future<void> setupInteractedMessage() async {

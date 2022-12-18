@@ -28,15 +28,16 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
   PushTokenChannel? pushTokenChannel;
 
   @override
-  void initState(){
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
     _loadDeviceInformation();
-
   }
 
   void _loadDeviceInformation() async{
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     deviceName = await PostTextFieldUtils.getDeviceName(context);
-    PushTokenChannel? _pushTokenChannel = await PushServiceUtils.getPushToken();
+    PushTokenChannel? _pushTokenChannel = await PushServiceUtils.getPushToken(context);
     bool _allowPush = await UserPreferencesUtils.getPushPreference();
     
     setState(() {
