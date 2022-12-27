@@ -30,4 +30,11 @@ class AdHelper {
         listener: NativeAdListener(),
         request: AdRequest());
   }
+
+  static List<String> get adWhiteDiscuzHostList{
+    return [
+      "keylol.com",
+      "www.keylol.com"
+    ];
+  }
 }

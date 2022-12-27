@@ -124,8 +124,13 @@ class PostState extends State<PostStatefulWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _loadDB();
   }
 
@@ -319,6 +324,10 @@ class PostState extends State<PostStatefulWidget> {
                                             fontWeight: FontWeight.bold,
                                             color: Theme.of(context).primaryColor,
                                             fontSize: 14)),
+                                  if (_post.ipLocation != "")
+                                    TextSpan(
+                                        text: ' '+_post.ipLocation,
+                                        style: TextStyle(fontSize: 14)),
 
                                 ],
                               ),

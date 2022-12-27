@@ -2,7 +2,6 @@ import 'package:discuz_flutter/converter/AttachmentConverter.dart';
 import 'package:discuz_flutter/converter/SecondToDateTimeConverter.dart';
 import 'package:discuz_flutter/converter/StringToBoolConverter.dart';
 import 'package:discuz_flutter/converter/StringToIntConverter.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'Discuz.dart';
@@ -26,6 +25,9 @@ class Post{
   String dateline = "";
   @JsonKey(defaultValue: "")
   String message = "";
+
+  @JsonKey(defaultValue: "")
+  String ipLocation = "";
 
   @JsonKey(name:"authorid")
   @StringToIntConverter()

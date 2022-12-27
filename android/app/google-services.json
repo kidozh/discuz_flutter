@@ -41,6 +41,43 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:959949404332:android:70b9a6f7b1e31800234709",
+        "android_client_info": {
+          "package_name": "com.kidozh.discuz_flutter.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "959949404332-1f06i87orhls3mgura53mnec5onhq80v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBs94WWNIFjuj4aD_rhsN2dNwy5_Ed0ofA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "959949404332-1f06i87orhls3mgura53mnec5onhq80v.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "959949404332-d7p8dr61lklahce2i4vet89u2bltl5fn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kidozh.discuz-flutter",
+                "app_store_id": "1601703772"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

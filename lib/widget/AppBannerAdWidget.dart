@@ -4,8 +4,11 @@ import 'package:discuz_flutter/utility/AdHelper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:provider/provider.dart';
 
+import '../entity/Discuz.dart';
 import '../generated/l10n.dart';
+import '../provider/DiscuzAndUserNotifier.dart';
 
 class AppBannerAdWidget extends StatefulWidget{
   @override
@@ -63,7 +66,15 @@ class AppBannerAdState extends State<AppBannerAdWidget>{
 
   @override
   Widget build(BuildContext context) {
-
+    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    if(discuz!= null){
+      // check with list
+      Uri uri = Uri.parse(discuz.baseURL);
+      if (AdHelper.adWhiteDiscuzHostList.contains(uri.host)){
+        // not showing ad
+        return Container();
+      }
+    }
     return _isAdLoaded && _anchoredAdaptiveAd!=null ? Container(
       color: Theme.of(context).backgroundColor,
       width: _anchoredAdaptiveAd!.size.width.toDouble(),
