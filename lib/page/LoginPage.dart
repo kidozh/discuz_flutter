@@ -14,6 +14,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/LoginByWebviewPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
@@ -24,6 +25,8 @@ import 'package:form_validator/form_validator.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:provider/provider.dart';
+
+import 'PushServicePage.dart';
 
 class LoginPage extends StatelessWidget {
   late final Discuz discuz;
@@ -155,8 +158,40 @@ class _LoginFormFieldState
           // pop the activity
           // set it
           EasyLoading.showSuccess(S.of(context).signInSuccessTitle(user.username, discuz.siteName));
-          Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(user);
-          Navigator.pop(context);
+          // to popup a token
+          bool allowPush = await UserPreferencesUtils.getPushPreference();
+          if(allowPush){
+            showPlatformDialog(context: context, builder: (_) =>
+              PlatformAlertDialog(
+                title: Text(S.of(context).registerPushTokenTitle),
+                content: Text(S.of(context).registerPushTokenMessage),
+                actions: [
+                  PlatformDialogAction(
+                    child: Text(S.of(context).ok),
+                    onPressed: () async {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(user);
+                      await Navigator.push(context,platformPageRoute(context:context,builder: (context) => PushServicePage()));
+                    },
+                  ),
+                  PlatformDialogAction(
+                    child: Text(S.of(context).cancel),
+                    onPressed: (){
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(user);
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
+                  )
+                ],
+              )
+            );
+          }
+          else{
+            Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(user);
+            Navigator.pop(context);
+          }
+
 
         }
         catch(e,s){

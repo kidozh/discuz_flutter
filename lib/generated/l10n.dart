@@ -4321,6 +4321,46 @@ class S {
       args: [],
     );
   }
+
+  /// `Terms of push services`
+  String get pushTermsOfService {
+    return Intl.message(
+      'Terms of push services',
+      name: 'pushTermsOfService',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Privacy policy of push services`
+  String get pushPrivacyPolicy {
+    return Intl.message(
+      'Privacy policy of push services',
+      name: 'pushPrivacyPolicy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Register your device to the forum`
+  String get registerPushTokenTitle {
+    return Intl.message(
+      'Register your device to the forum',
+      name: 'registerPushTokenTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Do you wish to register your device to the forum so that you can receive a updated push.`
+  String get registerPushTokenMessage {
+    return Intl.message(
+      'Do you wish to register your device to the forum so that you can receive a updated push.',
+      name: 'registerPushTokenMessage',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

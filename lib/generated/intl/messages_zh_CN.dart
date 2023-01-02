@@ -491,6 +491,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushNotificationSubmittedContent": MessageLookupByLibrary.simpleMessage(
             "推送服务依赖Firebase以及APNs，需要您的设备型号、操作系统类别以及偏好渠道等信息。您需要同意我们的推送服务使用条款和隐私政策后使用本服务。"),
         "pushPackageId": MessageLookupByLibrary.simpleMessage("应用包名"),
+        "pushPrivacyPolicy": MessageLookupByLibrary.simpleMessage("推送服务隐私政策"),
+        "pushTermsOfService": MessageLookupByLibrary.simpleMessage("推送服务条款"),
         "pushThreadTitle": MessageLookupByLibrary.simpleMessage("发帖"),
         "pushThreadTitleHint": MessageLookupByLibrary.simpleMessage("帖子标题"),
         "pushToLoad": MessageLookupByLibrary.simpleMessage("拉动加载"),
@@ -507,6 +509,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "refreshed": MessageLookupByLibrary.simpleMessage("刷新完成"),
         "refreshing": MessageLookupByLibrary.simpleMessage("正在刷新..."),
         "registerAccountTime": MessageLookupByLibrary.simpleMessage("注册时间"),
+        "registerPushTokenMessage": MessageLookupByLibrary.simpleMessage(
+            "你可以现在开始注册你的设备到论坛中。此论坛需要满足推送服务要求。"),
+        "registerPushTokenTitle":
+            MessageLookupByLibrary.simpleMessage("注册你的设备到论坛"),
         "releaseToLoad": MessageLookupByLibrary.simpleMessage("释放加载"),
         "releaseToRefresh": MessageLookupByLibrary.simpleMessage("释放刷新"),
         "relogin": MessageLookupByLibrary.simpleMessage("重新登陆"),

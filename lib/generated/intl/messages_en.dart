@@ -572,6 +572,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushNotificationSubmittedContent": MessageLookupByLibrary.simpleMessage(
             "Push service relies on Firebase and APNs, which needs token, device information. You should agree with terms of service and privacy policy of push service to use it."),
         "pushPackageId": MessageLookupByLibrary.simpleMessage("Package ID"),
+        "pushPrivacyPolicy": MessageLookupByLibrary.simpleMessage(
+            "Privacy policy of push services"),
+        "pushTermsOfService":
+            MessageLookupByLibrary.simpleMessage("Terms of push services"),
         "pushThreadTitle": MessageLookupByLibrary.simpleMessage("Publish"),
         "pushThreadTitleHint": MessageLookupByLibrary.simpleMessage("Title"),
         "pushToLoad": MessageLookupByLibrary.simpleMessage("Push to load"),
@@ -591,6 +595,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "refreshing": MessageLookupByLibrary.simpleMessage("Refreshing..."),
         "registerAccountTime":
             MessageLookupByLibrary.simpleMessage("Register at"),
+        "registerPushTokenMessage": MessageLookupByLibrary.simpleMessage(
+            "Do you wish to register your device to the forum so that you can receive a updated push."),
+        "registerPushTokenTitle": MessageLookupByLibrary.simpleMessage(
+            "Register your device to the forum"),
         "releaseToLoad":
             MessageLookupByLibrary.simpleMessage("Release to load"),
         "releaseToRefresh":

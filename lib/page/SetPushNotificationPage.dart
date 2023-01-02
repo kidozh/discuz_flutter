@@ -117,19 +117,19 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
           ),
           SettingsSection(title: Text(S.of(context).legalInformation), tiles: [
             SettingsTile.navigation(
-              title: Text(S.of(context).termsOfService),
+              title: Text(S.of(context).pushTermsOfService),
               leading: Icon(AppPlatformIcons(context).termsOfServiceOutlined),
               onPressed: (_) {
                 VibrationUtils.vibrateWithClickIfPossible();
-                URLUtils.launchURL("https://discuzhub.kidozh.com/term_of_use/");
+                URLUtils.launchURL("https://dhp.kidozh.com/document/user-terms-of-service");
               },
             ),
             SettingsTile.navigation(
-              title: Text(S.of(context).privacyPolicy),
+              title: Text(S.of(context).pushPrivacyPolicy),
               leading: Icon(AppPlatformIcons(context).privacyPolicyOutlined),
               onPressed: (_) {
                 VibrationUtils.vibrateWithClickIfPossible();
-                URLUtils.launchURL("https://discuzhub.kidozh.com/privacy_policy/");
+                URLUtils.launchURL("https://dhp.kidozh.com/document/user-privacy-policy");
               },
             ),
 
@@ -140,7 +140,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
               leading: Icon(PlatformIcons(context).helpOutline),
               onPressed: (_) {
                 VibrationUtils.vibrateWithClickIfPossible();
-                URLUtils.launchURL("https://discuzhub.kidozh.com/dev-blog/how-push-service-works/");
+                URLUtils.launchURL("https://dhp.kidozh.com/document/how-push-works");
               },
             ),
             SettingsTile.navigation(
@@ -148,7 +148,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
               leading: Icon(PlatformIcons(context).checkMarkCircledOutline),
               onPressed: (_) {
                 VibrationUtils.vibrateWithClickIfPossible();
-                URLUtils.launchURL("https://discuzhub.kidozh.com/dev-blog/verified-discuz-site/");
+                URLUtils.launchURL("https://dhp.kidozh.com/authorized-site");
               },
             ),
           ])

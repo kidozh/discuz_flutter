@@ -635,5 +635,9 @@
   "useGoogleAnalyticsContent": "The app use Google analytics to collect only basic information and we will not track your account according to our privacy policy.",
   "pushChannelFCM": "Firebase cloud messaging",
   "pushChannelAPN": "Apple push notification service",
-  "pushChannelXMI": "Xiaomi push"
+  "pushChannelXMI": "Xiaomi push",
+  "pushTermsOfService": "Terms of push services",
+  "pushPrivacyPolicy": "Privacy policy of push services",
+  "registerPushTokenTitle": "Register your device to the forum",
+  "registerPushTokenMessage": "Do you wish to register your device to the forum so that you can receive a updated push."
 }
