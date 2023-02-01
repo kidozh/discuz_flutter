@@ -2,7 +2,6 @@
 
 import 'dart:io';
 
-import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -14,7 +13,6 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:open_filex/open_filex.dart';
@@ -112,7 +110,7 @@ class AttachmentWidget extends StatelessWidget{
             title: Text(_attachment.filename),
             subtitle: Text(_attachment.attachmentSizeString),
             trailing: Badge(
-              badgeContent: Text(_attachment.downloads.toString(),style: TextStyle(color: Colors.white),),
+              label: Text(_attachment.downloads.toString(),style: TextStyle(color: Colors.white),),
               child: Icon(Icons.file_download),
             ),
           ),

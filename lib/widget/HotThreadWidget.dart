@@ -1,7 +1,6 @@
 
 import 'dart:developer';
 
-import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
@@ -25,7 +24,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/ViewHistory.dart';
-import '../utility/PlatformListTile.dart';
+import 'AppPlatformListTile.dart';
 
 // ignore: must_be_immutable
 class HotThreadWidget extends StatelessWidget{
@@ -117,7 +116,7 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
     }
     else{
       return Badge(
-        badgeContent: Text(_hotThread.replies,style: TextStyle(color: Colors.white),),
+        label: Text(_hotThread.replies,style: TextStyle(color: Colors.white),),
         child: Icon(Icons.message_outlined),
       );
 
@@ -141,8 +140,9 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
     }
 
     return Card(
-      elevation: 2.0,
-      child: PlatformListTile(
+      elevation: 1,
+      color: Theme.of(context).cardColor,
+      child: AppPlatformListTile(
         leading: InkWell(
           child: ClipRRect(
 

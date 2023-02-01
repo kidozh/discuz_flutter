@@ -1,7 +1,6 @@
 
 import 'dart:developer';
 
-import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
@@ -25,7 +24,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/ViewHistory.dart';
-import '../utility/PlatformListTile.dart';
+import 'AppPlatformListTile.dart';
 
 // ignore: must_be_immutable
 class NewThreadWidget extends StatelessWidget{
@@ -113,7 +112,7 @@ class NewThreadState extends State<NewThreadStatefulWidget>{
 
   Widget getTailingWidget(){
     return Badge(
-      badgeContent: Text(_newThread.replies,style: TextStyle(color: Colors.white),),
+      label: Text(_newThread.replies,style: TextStyle(color: Colors.white),),
       child: Icon(Icons.message_outlined),
     );
   }
@@ -136,7 +135,7 @@ class NewThreadState extends State<NewThreadStatefulWidget>{
 
     return Card(
       elevation: 2.0,
-      child: PlatformListTile(
+      child: AppPlatformListTile(
         leading: InkWell(
           child: ClipRRect(
 

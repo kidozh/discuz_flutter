@@ -1,7 +1,6 @@
 
 import 'dart:developer';
 
-import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
@@ -110,7 +109,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     }
     else{
       return Badge(
-        badgeContent: Text(_forumThread.replies,style: TextStyle(color: Colors.white),),
+        label: Text(_forumThread.replies,style: TextStyle(color: Colors.white),),
         child: Icon(Icons.message_outlined),
       );
 

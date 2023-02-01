@@ -35,7 +35,6 @@ import 'package:discuz_flutter/widget/PollWidget.dart';
 import 'package:discuz_flutter/widget/PostTextField.dart';
 import 'package:discuz_flutter/widget/PostWidget.dart';
 import 'package:easy_refresh/easy_refresh.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -557,8 +556,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
-      iosContentPadding: true,
-      iosContentBottomPadding: true,
       appBar: PlatformAppBar(
         //middle: Text(S.of(context).forumDisplayTitle),
         // title: Text(S.of(context).viewThreadTitle),
@@ -657,121 +654,124 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       body: Column(
         children: [
           Expanded(
-              child: EasyRefresh(
-            header: EasyRefreshUtils.i18nClassicHeader(context),
-            footer: EasyRefreshUtils.i18nClassicFooter(context),
-            refreshOnStart: true,
-            controller: _controller,
-            //scrollController: _scrollController,
-            onRefresh: () async {
-              return await _invalidateContent();
-            },
-            onLoad: () async {
-              return await _loadForumContent();
-            },
-            child: CustomScrollView(
-              slivers: [
-                SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                  (context, _) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Hero(
-                        tag: ConstUtils.HERO_TAG_THREAD_SUBJECT,
-                        child: Text(
-                          _viewThreadResult.threadVariables.threadInfo.subject
-                                      .isEmpty &&
-                                  passedSubject != null
-                              ? passedSubject!
-                              : _viewThreadResult
-                                  .threadVariables.threadInfo.subject,
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
+              child: SafeArea(
+                child: EasyRefresh(
+                  header: EasyRefreshUtils.i18nClassicHeader(context),
+                  footer: EasyRefreshUtils.i18nClassicFooter(context),
+                  refreshOnStart: true,
+                  controller: _controller,
+                  //scrollController: _scrollController,
+                  onRefresh: () async {
+                    return await _invalidateContent();
+                  },
+                  onLoad: () async {
+                    return await _loadForumContent();
+                  },
+                  child: CustomScrollView(
+                    slivers: [
+                      SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                                (context, _) {
+                              return Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Hero(
+                                  tag: ConstUtils.HERO_TAG_THREAD_SUBJECT,
+                                  child: Text(
+                                    _viewThreadResult.threadVariables.threadInfo.subject
+                                        .isEmpty &&
+                                        passedSubject != null
+                                        ? passedSubject!
+                                        : _viewThreadResult
+                                        .threadVariables.threadInfo.subject,
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            childCount: 1,
+                          )),
+                      if (_error != null)
+                        SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                                  (context, _) {
+                                return ErrorCard(_error!, () {
+                                  _controller.callRefresh();
+                                },
+                                  errorType: _error!.errorType,
+                                  webpageUrl: URLUtils.getViewThreadURL(discuz, tid),
+                                );
+                              },
+                              childCount: 1,
+                            )),
+                      if(_postList.isEmpty && _error == null)
+                        SliverList(delegate: SliverChildBuilderDelegate((context, index){
+                          return EmptyListScreen(EmptyItemType.post);
+                        }, childCount:1)),
+                      if(_viewThreadResult.threadVariables.poll != null)
+                        SliverList(
+                            delegate: SliverChildBuilderDelegate((context, index) {
+                              return PollWidget(
+                                _viewThreadResult.threadVariables.poll!,
+                                _viewThreadResult.threadVariables.formHash,
+                                tid,
+                                _viewThreadResult.threadVariables.fid,
+                              );
+                            }, childCount: _viewThreadResult.threadVariables.poll != null ? 1 : 0)
+                        ),
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                            return Column(
+                              children: [
+                                PostWidget(
+                                  discuz,
+                                  _postList[index],
+                                  _viewThreadResult.threadVariables.threadInfo.authorId,
+                                  _viewThreadResult.threadVariables.formHash,
+                                  tid: tid,
+                                  onAuthorSelectedCallback: () {
+                                    if (viewThreadQuery.authorId == 0) {
+                                      viewThreadQuery.authorId =
+                                          _postList[index].authorId;
+                                    } else {
+                                      viewThreadQuery.authorId = 0;
+                                    }
+                                    setNewViewThreadQuery(viewThreadQuery);
+                                  },
+                                  postCommentList: postCommentList,
+                                  ignoreFontCustomization: ignoreFontCustomization,
+                                  jumpToPidCallback: (pid) {
+                                    // need to find the pid and scroll to it
+                                    log("jump to pid ${pid} and we are looking it");
+                                    int cnt = 0;
+                                    for (var post in _postList) {
+                                      log("find it: ${post.pid} in ${cnt}");
+                                      if (post.pid == pid) {
+                                        log("!find it: ${pid} in ${cnt}");
+                                        _postAutoScrollController.scrollToIndex(cnt);
+                                        break;
+                                      }
+                                      cnt += 1;
+                                    }
+                                    // check whether it's the end of the scroll
+                                  },
+                                ),
+                                if(index % 7 == 0 && index != 0)
+                                  AppBannerAdWidget()
+                              ],
+                            );
+                          },
+                          childCount: _postList.length,
                         ),
                       ),
-                    );
-                  },
-                  childCount: 1,
-                )),
-                if (_error != null)
-                  SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                    (context, _) {
-                      return ErrorCard(_error!, () {
-                        _controller.callRefresh();
-                      },
-                        errorType: _error!.errorType,
-                        webpageUrl: URLUtils.getViewThreadURL(discuz, tid),
-                      );
-                    },
-                    childCount: 1,
-                  )),
-                if(_postList.isEmpty && _error == null)
-                  SliverList(delegate: SliverChildBuilderDelegate((context, index){
-                    return EmptyListScreen(EmptyItemType.post);
-                  }, childCount:1)),
-                if(_viewThreadResult.threadVariables.poll != null)
-                  SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                    return PollWidget(
-                      _viewThreadResult.threadVariables.poll!,
-                      _viewThreadResult.threadVariables.formHash,
-                      tid,
-                      _viewThreadResult.threadVariables.fid,
-                    );
-                  }, childCount: _viewThreadResult.threadVariables.poll != null ? 1 : 0)
-                  ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      return Column(
-                        children: [
-                          PostWidget(
-                            discuz,
-                            _postList[index],
-                            _viewThreadResult.threadVariables.threadInfo.authorId,
-                            _viewThreadResult.threadVariables.formHash,
-                            tid: tid,
-                            onAuthorSelectedCallback: () {
-                              if (viewThreadQuery.authorId == 0) {
-                                viewThreadQuery.authorId =
-                                    _postList[index].authorId;
-                              } else {
-                                viewThreadQuery.authorId = 0;
-                              }
-                              setNewViewThreadQuery(viewThreadQuery);
-                            },
-                            postCommentList: postCommentList,
-                            ignoreFontCustomization: ignoreFontCustomization,
-                            jumpToPidCallback: (pid) {
-                              // need to find the pid and scroll to it
-                              log("jump to pid ${pid} and we are looking it");
-                              int cnt = 0;
-                              for (var post in _postList) {
-                                log("find it: ${post.pid} in ${cnt}");
-                                if (post.pid == pid) {
-                                  log("!find it: ${pid} in ${cnt}");
-                                  _postAutoScrollController.scrollToIndex(cnt);
-                                  break;
-                                }
-                                cnt += 1;
-                              }
-                              // check whether it's the end of the scroll
-                            },
-                          ),
-                          if(index % 7 == 0 && index != 0)
-                            AppBannerAdWidget()
-                        ],
-                      );
-                    },
-                    childCount: _postList.length,
+                    ],
                   ),
                 ),
-              ],
-            ),
-          )),
+              )
+          ),
           // comment parts
           if (_viewThreadResult.threadVariables.threadInfo.closed)
             Container(

@@ -55,16 +55,6 @@ void main() async{
   // await messaging.getToken();
   await PushServiceUtils.initFirebaseLocalNotification();
   await PushServiceUtils.initPushInformation(navigatorKey);
-  // remote message recall
-  // FirebaseMessaging.onBackgroundMessage(PushServiceUtils.firebaseMessagingBackgroundHandler);
-  // FirebaseMessaging.onMessage.listen((event) => PushServiceUtils.firebaseMessagingBackgroundHandler(event));
-  if(Platform.isIOS){
-    // final connector = createPushConnector();
-    // connector.configure(
-    //   onBackgroundMessage: PushServiceUtils.firebaseMessagingBackgroundHandler,
-    //   onMessage: PushServiceUtils.firebaseMessagingBackgroundHandler
-    // );
-  }
 
 
   log("languages initialization");

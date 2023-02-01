@@ -33,11 +33,11 @@ class ForumPartitionWidget extends StatelessWidget{
           ListTile(
             leading: Icon(Icons.forum_outlined,color: Theme.of(context).primaryColor,),
             title: Text(_forumPartition.name, style: TextStyle(color: Theme.of(context).primaryColor),),
-
           ),
 
           GridView.builder(
               physics: new NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.all(0),
               shrinkWrap: true,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: orientation == Orientation.portrait ? 2 : 3,

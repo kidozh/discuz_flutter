@@ -1,11 +1,9 @@
 
-
-import 'package:cupertino_list_tile/cupertino_list_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
-class PlatformListTile extends StatelessWidget{
+class AppPlatformListTile extends StatelessWidget{
   /// A widget to display before the title.
   ///
   /// Typically an [Icon] or a [CircleAvatar] widget.
@@ -17,7 +15,7 @@ class PlatformListTile extends StatelessWidget{
   ///
   /// This should not wrap. To enforce the single line limit, use
   /// [Text.maxLines].
-  final Widget? title;
+  final Widget title;
 
   /// Additional content displayed below the title.
   ///
@@ -76,12 +74,23 @@ class PlatformListTile extends StatelessWidget{
   /// Inoperative if [enabled] is false.
   final GestureLongPressCallback? onLongPress;
 
-  PlatformListTile({this.leading, this.title, this.subtitle, this.trailing, this.dense, this.onTap, this.isThreeLine=false, this.onLongPress});
+  AppPlatformListTile({this.leading, required this.title, this.subtitle, this.trailing, this.dense, this.onTap, this.isThreeLine=false, this.onLongPress});
 
 
 
   @override
   Widget build(BuildContext context) {
+    // return it by default
+    return ListTile(
+      leading:this.leading,
+      title:this.title,
+      subtitle:this.subtitle,
+      trailing:this.trailing,
+      isThreeLine:this.isThreeLine,
+      dense:this.dense,
+      onTap: this.onTap,
+      onLongPress: this.onLongPress,
+    );
 
     return PlatformWidget(
       material: (_,__) => ListTile(
@@ -99,10 +108,9 @@ class PlatformListTile extends StatelessWidget{
         title:this.title,
         subtitle:this.subtitle,
         trailing:this.trailing,
-        isThreeLine:this.isThreeLine,
-        dense:this.dense,
         onTap: this.onTap,
-        onLongPress: this.onLongPress,
+
+        //onLongPress: this.onLongPress,
       ),
     );
   }
