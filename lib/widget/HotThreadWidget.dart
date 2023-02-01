@@ -24,7 +24,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/ViewHistory.dart';
-import 'AppPlatformListTile.dart';
 
 // ignore: must_be_immutable
 class HotThreadWidget extends StatelessWidget{
@@ -123,12 +122,12 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
     }
   }
 
-  Widget getHotThreadCard(bool viewed){
+  Widget getHotThreadListTile(bool viewed){
     TextStyle? textStyle;
     if (viewed){
       textStyle = TextStyle(
-          fontWeight: FontWeight.w300,
-          color: Theme.of(context).unselectedWidgetColor,
+        fontWeight: FontWeight.w300,
+        color: Theme.of(context).unselectedWidgetColor,
       );
     }
     else{
@@ -139,82 +138,103 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
 
     }
 
-    return Card(
-      elevation: 1,
-      color: Theme.of(context).cardColor,
-      child: AppPlatformListTile(
-        leading: InkWell(
-          child: ClipRRect(
+    return ListTile(
+      leading: InkWell(
+        child: ClipRRect(
 
-            borderRadius: BorderRadius.circular(10000.0),
-            child: CachedNetworkImage(
-              height: 48,
-              width: 48,
-              imageUrl: URLUtils.getAvatarURL(_discuz, _hotThread.authorId.toString()),
-              progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-              errorWidget: (context, url, error) =>
-                  CircleAvatar(
+          borderRadius: BorderRadius.circular(10000.0),
+          child: CachedNetworkImage(
+            height: 48,
+            width: 48,
+            imageUrl: URLUtils.getAvatarURL(_discuz, _hotThread.authorId.toString()),
+            progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+            errorWidget: (context, url, error) =>
+                CircleAvatar(
 
-                    backgroundColor: CustomizeColor.getColorBackgroundById(_hotThread.authorId),
-                    child: Text(_hotThread.author.length !=0 ? _hotThread.author[0].toUpperCase()
-                        : S.of(context).anonymous,
-                        style: TextStyle(color: Colors.white)),
-                  )
-              ,
-            ),
-          ),
-          onTap: () async{
-            VibrationUtils.vibrateWithClickIfPossible();
-            User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-            await Navigator.push(
-                context,
-                platformPageRoute(context:context,builder: (context) => UserProfilePage(_discuz,user, _hotThread.authorId)));
-          },
-        ),
-        title: Hero(
-          tag: ConstUtils.HERO_TAG_THREAD_SUBJECT,
-          child: Text(_hotThread.subject,style: textStyle),
-        ),
-        subtitle: RichText(
-          text: TextSpan(
-            text: "",
-            style: DefaultTextStyle.of(context).style,
-            children: <TextSpan>[
-              //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
-              TextSpan(text: _hotThread.author,style: textStyle),
-              TextSpan(text: " · ",style: textStyle),
-              TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_hotThread.publishAt), style: textStyle),
-              if((_user == null && _hotThread.readPerm > 0)||(_user!= null && _hotThread.readPerm>_user!.readPerm))
-                TextSpan(text: " / " + S.of(context).threadReadAccess(_hotThread.readPerm),style: textStyle.copyWith(color: Theme.of(context).errorColor)),
-            ],
+                  backgroundColor: CustomizeColor.getColorBackgroundById(_hotThread.authorId),
+                  child: Text(_hotThread.author.length !=0 ? _hotThread.author[0].toUpperCase()
+                      : S.of(context).anonymous,
+                      style: TextStyle(color: Colors.white)),
+                )
+            ,
           ),
         ),
-        trailing: getTailingWidget(),
-        onTap: () async {
+        onTap: () async{
           VibrationUtils.vibrateWithClickIfPossible();
-          markThreadAsRead();
+          User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
           await Navigator.push(
               context,
-              platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( _discuz,  _user, _hotThread.tid,
-                passedSubject: _hotThread.subject,
-              ))
-          );
+              platformPageRoute(context:context,builder: (context) => UserProfilePage(_discuz,user, _hotThread.authorId)));
         },
-        onLongPress: () async{
-          VibrationUtils.vibrateSuccessfullyIfPossible();
-          // block user
-          setState(() {
-            this.isUserBlocked = true;
-          });
-          BlockUser blockUser = BlockUser(_hotThread.authorId, _hotThread.author, DateTime.now(), _discuz);
-          int insertId = await blockUserDao.insertBlockUser(blockUser);
-          log("insert id into block user ${insertId}");
-        },
+      ),
+      title: Hero(
+        tag: ConstUtils.HERO_TAG_THREAD_SUBJECT,
+        child: Text(_hotThread.subject,style: textStyle),
+      ),
+      subtitle: RichText(
+        text: TextSpan(
+          text: "",
+          style: DefaultTextStyle.of(context).style,
+          children: <TextSpan>[
+            //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
+            TextSpan(text: _hotThread.author,style: textStyle),
+            TextSpan(text: " · ",style: textStyle),
+            TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_hotThread.publishAt), style: textStyle),
+            if((_user == null && _hotThread.readPerm > 0)||(_user!= null && _hotThread.readPerm>_user!.readPerm))
+              TextSpan(text: " / " + S.of(context).threadReadAccess(_hotThread.readPerm),style: textStyle.copyWith(color: Theme.of(context).errorColor)),
+          ],
+        ),
+      ),
+      trailing: getTailingWidget(),
+      onTap: () async {
+        VibrationUtils.vibrateWithClickIfPossible();
+        markThreadAsRead();
+        await Navigator.push(
+            context,
+            platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( _discuz,  _user, _hotThread.tid,
+              passedSubject: _hotThread.subject,
+            ))
+        );
+      },
+      onLongPress: () async{
+        VibrationUtils.vibrateSuccessfullyIfPossible();
+        // block user
+        setState(() {
+          this.isUserBlocked = true;
+        });
+        BlockUser blockUser = BlockUser(_hotThread.authorId, _hotThread.author, DateTime.now(), _discuz);
+        int insertId = await blockUserDao.insertBlockUser(blockUser);
+        log("insert id into block user ${insertId}");
+      },
 
 
+    );
+
+
+  }
+
+  Widget getHotThreadCard(bool viewed){
+    return PlatformWidget(
+      material: (_, __)=> Card(
+        elevation: 1,
+        color: Theme.of(context).cardColor,
+        child: getHotThreadListTile(viewed)
+      ),
+      cupertino:  (_, __) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          getHotThreadListTile(viewed),
+          Padding(
+            padding: EdgeInsets.only(left: 80),
+            child: Divider(),
+          )
+
+        ],
       ),
     );
   }
+
+
 
   @override
   Widget build(BuildContext context) {

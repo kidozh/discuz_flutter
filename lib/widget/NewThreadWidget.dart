@@ -24,7 +24,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/ViewHistory.dart';
-import 'AppPlatformListTile.dart';
 
 // ignore: must_be_immutable
 class NewThreadWidget extends StatelessWidget{
@@ -117,12 +116,12 @@ class NewThreadState extends State<NewThreadStatefulWidget>{
     );
   }
 
-  Widget getNewThreadCard(bool viewed){
+  Widget getNewThreadListTile(bool viewed){
     TextStyle? textStyle;
     if (viewed){
       textStyle = TextStyle(
-          fontWeight: FontWeight.w300,
-          color: Theme.of(context).unselectedWidgetColor,
+        fontWeight: FontWeight.w300,
+        color: Theme.of(context).unselectedWidgetColor,
       );
     }
     else{
@@ -133,9 +132,7 @@ class NewThreadState extends State<NewThreadStatefulWidget>{
 
     }
 
-    return Card(
-      elevation: 2.0,
-      child: AppPlatformListTile(
+    return ListTile(
         leading: InkWell(
           child: ClipRRect(
 
@@ -203,8 +200,26 @@ class NewThreadState extends State<NewThreadStatefulWidget>{
           int insertId = await blockUserDao.insertBlockUser(blockUser);
           log("insert id into block user ${insertId}");
         },
+    );
+  }
 
+  Widget getNewThreadCard(bool viewed){
+    return PlatformWidget(
+      material: (_, __)=> Card(
+          elevation: 1,
+          color: Theme.of(context).cardColor,
+          child: getNewThreadListTile(viewed)
+      ),
+      cupertino:  (_, __) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          getNewThreadListTile(viewed),
+          Padding(
+            padding: EdgeInsets.only(left: 80),
+            child: Divider(),
+          )
 
+        ],
       ),
     );
   }

@@ -123,6 +123,31 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
   }
 
   Widget getForumThreadCard(bool viewed){
+    
+
+    
+
+    return PlatformWidget(
+      material: (_, __) => Card(
+        child: getForumThreadListTile(viewed),
+      ),
+      cupertino: (_, __) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          getForumThreadListTile(viewed),
+          Padding(
+            padding: EdgeInsets.only(left: 80),
+            child: Divider(),
+          )
+
+        ],
+      ),
+    );
+
+    
+  }
+  
+  Widget getForumThreadListTile(bool viewed){
     TextStyle? textStyle;
     if (viewed){
       textStyle = TextStyle(
@@ -137,88 +162,82 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
       );
 
     }
-
     String threadCategory = "";
     if(threadType!=null && threadType!.idNameMap.isNotEmpty && threadType!.idNameMap.containsKey(_forumThread.typeId)){
       threadCategory = threadType!.idNameMap[_forumThread.typeId]!;
     }
+    return ListTile(
+      leading: InkWell(
+        child: ClipRRect(
 
-
-
-    return Card(
-      child: ListTile(
-        leading: InkWell(
-          child: ClipRRect(
-
-            borderRadius: BorderRadius.circular(10000.0),
-            child: CachedNetworkImage(
-              imageUrl: URLUtils.getAvatarURL(_discuz, _forumThread.authorId),
-              width: 48,
-              height: 48,
-              progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-              errorWidget: (context, url, error) =>
-                  CircleAvatar(
-                    backgroundColor: CustomizeColor.getColorBackgroundById(_forumThread.getAuthorId()),
-                    child: Text(_forumThread.author.length !=0 ? _forumThread.author[0].toUpperCase()
-                        : S.of(context).anonymous,
-                        style: TextStyle(color: Colors.white)),
-                  )
-              ,
-            ),
-          ),
-          onTap: () async{
-            User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-            VibrationUtils.vibrateWithClickIfPossible();
-            await Navigator.push(
-                context,
-                platformPageRoute(context:context,builder: (context) => UserProfilePage(_discuz,user, int.parse(_forumThread.authorId))));
-
-          },
-        ),
-        title: Text(_forumThread.subject,
-            style: textStyle
-        ),
-        subtitle: RichText(
-          text: TextSpan(
-            text: "",
-            style: DefaultTextStyle.of(context).style,
-            children: <TextSpan>[
-              TextSpan(text: _forumThread.author, style: textStyle),
-              TextSpan(text: " · ", style: textStyle),
-              TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_forumThread.dbdatelineMinutes), style: textStyle),
-              if(threadCategory.isNotEmpty)
-                TextSpan(text: " / ", style: textStyle),
-              if(threadCategory.isNotEmpty)
-                TextSpan(text: threadCategory, style: textStyle),
-              if((_user == null && _forumThread.readPerm > 0)||(_user!= null && _forumThread.readPerm >_user!.readPerm))
-                TextSpan(text: " / " + S.of(context).threadReadAccess(_forumThread.readPerm),
-                    style: viewed? textStyle: textStyle.copyWith(color: Theme.of(context).errorColor)
-                ),
-            ],
+          borderRadius: BorderRadius.circular(10000.0),
+          child: CachedNetworkImage(
+            imageUrl: URLUtils.getAvatarURL(_discuz, _forumThread.authorId),
+            width: 48,
+            height: 48,
+            progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+            errorWidget: (context, url, error) =>
+                CircleAvatar(
+                  backgroundColor: CustomizeColor.getColorBackgroundById(_forumThread.getAuthorId()),
+                  child: Text(_forumThread.author.length !=0 ? _forumThread.author[0].toUpperCase()
+                      : S.of(context).anonymous,
+                      style: TextStyle(color: Colors.white)),
+                )
+            ,
           ),
         ),
-        trailing: getTailingWidget(),
-        onTap: () async {
+        onTap: () async{
+          User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
           VibrationUtils.vibrateWithClickIfPossible();
-          markThreadAsRead();
           await Navigator.push(
               context,
-              platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(_discuz,_user, _forumThread.getTid(),
-                passedSubject: _forumThread.subject,))
-          );
-        },
-        onLongPress: () async{
-          VibrationUtils.vibrateSuccessfullyIfPossible();
-          setState(() {
-            this.isUserBlocked = true;
-          });
-          BlockUser blockUser = BlockUser(_forumThread.getAuthorId(), _forumThread.author,DateTime.now(), _discuz );
-          int insertId = await blockUserDao.insertBlockUser(blockUser);
-          log("insert id into block user ${insertId}");
-        },
+              platformPageRoute(context:context,builder: (context) => UserProfilePage(_discuz,user, int.parse(_forumThread.authorId))));
 
-
+        },
       ),
+      title: Text(_forumThread.subject,
+          style: textStyle
+      ),
+      subtitle: RichText(
+        text: TextSpan(
+          text: "",
+          style: DefaultTextStyle.of(context).style,
+          children: <TextSpan>[
+            TextSpan(text: _forumThread.author, style: textStyle),
+            TextSpan(text: " · ", style: textStyle),
+            TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_forumThread.dbdatelineMinutes), style: textStyle),
+            if(threadCategory.isNotEmpty)
+              TextSpan(text: " / ", style: textStyle),
+            if(threadCategory.isNotEmpty)
+              TextSpan(text: threadCategory, style: textStyle),
+            if((_user == null && _forumThread.readPerm > 0)||(_user!= null && _forumThread.readPerm >_user!.readPerm))
+              TextSpan(text: " / " + S.of(context).threadReadAccess(_forumThread.readPerm),
+                  style: viewed? textStyle: textStyle?.copyWith(color: Theme.of(context).errorColor)
+              ),
+          ],
+        ),
+      ),
+      trailing: getTailingWidget(),
+      onTap: () async {
+        VibrationUtils.vibrateWithClickIfPossible();
+        markThreadAsRead();
+        await Navigator.push(
+            context,
+            platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(_discuz,_user, _forumThread.getTid(),
+              passedSubject: _forumThread.subject,))
+        );
+      },
+      onLongPress: () async{
+        VibrationUtils.vibrateSuccessfullyIfPossible();
+        setState(() {
+          this.isUserBlocked = true;
+        });
+        BlockUser blockUser = BlockUser(_forumThread.getAuthorId(), _forumThread.author,DateTime.now(), _discuz );
+        int insertId = await blockUserDao.insertBlockUser(blockUser);
+        log("insert id into block user ${insertId}");
+      },
+
+
     );
   }
 
