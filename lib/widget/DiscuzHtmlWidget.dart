@@ -15,11 +15,9 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/style.dart';
 import 'package:flutter_html_iframe/flutter_html_iframe.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
@@ -100,7 +98,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
       child: Consumer<TypeSettingNotifierProvider>(builder: (context, typesetting, _) {
         double scalingParameter = typesetting.scalingParameter;
         // print("font scaling parameters ${scalingParameter} and font size ${12*scalingParameter}");
-        double? themeFontSize = Theme.of(context).textTheme.bodyText2?.fontSize == null? 14 : Theme.of(context).textTheme.bodyText2?.fontSize!;
+        double? themeFontSize = Theme.of(context).textTheme.bodyMedium?.fontSize == null? 14 : Theme.of(context).textTheme.bodyText2?.fontSize!;
         double paragraphFontSize = themeFontSize == null ? 14 : themeFontSize;
         return Html(
 
@@ -114,17 +112,17 @@ class DiscuzHtmlWidget extends StatelessWidget{
               backgroundColor: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade200: Colors.grey.shade600,
               padding: const EdgeInsets.all(8),
               margin: Margins(bottom: Margin(8.0)),
-              border: Border(left: BorderSide(color: Theme.of(context).primaryColor, width: 4)),
+              border: Border(left: BorderSide(color: Theme.of(context).colorScheme.tertiary, width: 4)),
               width: Width.auto()
             ),
             "p":Style(
-              fontStyle: Theme.of(context).textTheme.bodyText2?.fontStyle,
+              fontStyle: Theme.of(context).textTheme.bodyMedium?.fontStyle,
               //fontSize: FontSize(paragraphFontSize*scalingParameter),
               //fontSize: scalingParameter <= 1.0? FontSize(Theme.of(context).textTheme.bodyText2?.fontSize): FontSize(14*scalingParameter),
 
             ),
             "a":Style(
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).colorScheme.primary,
               //fontSize: FontSize(paragraphFontSize*scalingParameter),
             )
 

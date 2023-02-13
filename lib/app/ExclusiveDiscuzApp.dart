@@ -1,19 +1,19 @@
 import 'dart:developer';
 import 'dart:io';
+
+import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/ExclusiveDiscuzPortalPage.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
-
-import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:discuz_flutter/generated/l10n.dart';
 
 
 
@@ -103,9 +103,6 @@ class ExclusiveDiscuzApp extends StatelessWidget{
               initialPlatform: getTargetPlatformByName(platformName),
 
               settings: PlatformSettingsData(
-                iosUsesMaterialWidgets: false,
-
-
               ),
               builder: (context){
                 return  PlatformApp(

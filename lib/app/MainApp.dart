@@ -97,28 +97,13 @@ class MyApp extends StatelessWidget {
       builder: (context, themeColorEntity, _){
         print("Change brightness ${themeColorEntity.brightness}");
 
-        final systemBrightness = MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness;
+        Brightness systemBrightness = MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness;
         log("Get system brightness ${systemBrightness} -> Cupertino? ${isCupertino(context)} ${platform(context).name}" );
 
 
         final materialTheme = ThemeData(
           useMaterial3: themeColorEntity.useMaterial3,
           brightness: (isUseCupertinoStyle(themeColorEntity) && themeColorEntity.brightness == null)?systemBrightness: themeColorEntity.brightness,
-
-          cupertinoOverrideTheme: CupertinoThemeData(
-            primaryColor: themeColorEntity.themeColor,
-            brightness: (isUseCupertinoStyle(themeColorEntity) && themeColorEntity.brightness == null)?systemBrightness: themeColorEntity.brightness
-          ),
-
-
-          primarySwatch: themeColorEntity.themeColor,
-          primaryColor: themeColorEntity.themeColor,
-          outlinedButtonTheme: OutlinedButtonThemeData(
-            style: ButtonStyle(
-              padding: MaterialStateProperty.all(EdgeInsets.all(16.0)),
-              foregroundColor: MaterialStateProperty.all(themeColorEntity.themeColor),
-            ),
-          ),
         );
 
         if (Platform.isAndroid) {
@@ -138,29 +123,35 @@ class MyApp extends StatelessWidget {
             data: materialTheme,
             child: PlatformProvider(
               initialPlatform: getTargetPlatformByName(initialPlatform),
-              settings: PlatformSettingsData(
-                iosUsesMaterialWidgets: false,
-
-              ),
+              settings: PlatformSettingsData(),
               builder: (context){
                 return  PlatformApp(
                   //title: S.of(context).appName,
                   navigatorKey: navigatorKey,
                   debugShowCheckedModeBanner: false,
                   material: (_,__)=> MaterialAppData(
-                      theme: materialTheme,
+                      theme: ThemeData(
+                        useMaterial3: themeColorEntity.useMaterial3,
+                        //brightness: Theme.of(context).brightness,
+                        colorScheme: ColorScheme.fromSeed(
+                            seedColor: themeColorEntity.themeColor,
+                            brightness: Brightness.light
+                        ),
+                      ),
                       darkTheme: ThemeData(
                         useMaterial3: themeColorEntity.useMaterial3,
-                        primaryColor: themeColorEntity.themeColor,
+                        colorScheme: ColorScheme.fromSeed(
+                            seedColor: themeColorEntity.themeColor,
+                            brightness: Brightness.dark
+                        ),
                         floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: themeColorEntity.themeColor),
-                        brightness: Brightness.dark,
+                        //brightness: Brightness.dark,
                       )
                   ),
                   cupertino: (_,__) => CupertinoAppData(
                     theme: CupertinoThemeData(
                       primaryColor: themeColorEntity.themeColor,
-                      brightness: (isUseCupertinoStyle(themeColorEntity) && themeColorEntity.brightness == null)?systemBrightness: themeColorEntity.brightness
-                      //brightness: systemBrightness == null? Brightness.light: systemBrightness
+                      brightness: themeColorEntity.brightness
                     ),
 
                   ),
@@ -334,7 +325,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         key: UniqueKey(),
         icon:
         (_selecteddiscuz != null && _selecteddiscuz == discuz) ? PlatformIcons(context).checkMarkCircledSolid : Icons.amp_stories,
-        color: (_selecteddiscuz != null && _selecteddiscuz == discuz) ? Theme.of(context).primaryColor : Theme.of(context).unselectedWidgetColor,
+        color: (_selecteddiscuz != null && _selecteddiscuz == discuz) ? Theme.of(context).colorScheme.primary : Theme.of(context).unselectedWidgetColor,
         text: discuz.siteName,
         onPressed: () async{
           await UserPreferencesUtils.putFirstShowDiscuzPreference(discuz.key.toString());
@@ -356,8 +347,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       Padding(
         padding: EdgeInsets.fromLTRB(24.0, 12.0, 24.0, 16.0),
         child: PlatformElevatedButton(
-          child: Text(S.of(context).addNewDiscuz, style: TextStyle(color: Theme.of(context).primaryTextTheme.button?.color),),
-          color: Theme.of(context).primaryColor,
+          child: Text(S.of(context).addNewDiscuz),
+          //color: Theme.of(context).colorScheme.onPrimaryContainer,
           onPressed: (){
             VibrationUtils.vibrateWithClickIfPossible();
             Navigator.of(context).pop();
@@ -505,7 +496,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       bottomNavBar: PlatformNavBar(
         currentIndex: _bottomNavigationbarIndex,
         material: (context,_) => MaterialNavBarData(
-          selectedItemColor: Theme.of(context).primaryColor,
+          selectedItemColor: Theme.of(context).colorScheme.onPrimaryContainer,
           unselectedItemColor: Theme.of(context).unselectedWidgetColor
         ),
         itemChanged: (index){

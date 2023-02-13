@@ -13,7 +13,6 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -192,7 +191,7 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
                   isScrollable: true,
                   labelColor: Theme
                       .of(context)
-                      .primaryColor,
+                      .colorScheme.primary,
                   unselectedLabelColor: Colors.grey,
                 ),
                 SizedBox(

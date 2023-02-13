@@ -1,7 +1,5 @@
 
 import 'package:discuz_flutter/generated/l10n.dart';
-import 'package:discuz_flutter/page/AddDiscuzPage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -25,7 +23,7 @@ class EmptyScreen extends StatelessWidget{
                     width: 50.0,
                     height: 50.0,
                     child: SpinKitDoubleBounce(
-                      color: Theme.of(context).primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                       size: 25.0,
                     ),
                   ),

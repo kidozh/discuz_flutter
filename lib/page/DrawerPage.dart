@@ -260,6 +260,7 @@ class DrawerState extends State<DrawerStatefulWidget>{
           } else {
 
             return ListView.builder(
+                padding: EdgeInsets.zero,
                 itemCount: userList.length + 1,
                 itemBuilder: (context, position) {
 
@@ -330,7 +331,7 @@ class DrawerState extends State<DrawerStatefulWidget>{
                 margin: EdgeInsets.zero,
                 accountEmail: Text(S.of(context).incognitoSubtitle),
                 accountName: Text(S.of(context).incognitoTitle),
-                currentAccountPicture: Icon(Icons.person_pin,color: Colors.white,),
+                currentAccountPicture: Icon(Icons.person_pin,color: Theme.of(context).colorScheme.onPrimary,),
                 onDetailsPressed: () {
                   setState(() {
                     _showUserDetail = !_showUserDetail;

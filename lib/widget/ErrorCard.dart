@@ -78,7 +78,7 @@ class ErrorCard extends StatelessWidget{
             ),
           if(discuzError.key == "mobile_template_no_found" && this.webpageUrl!=null)
             TextButton(
-              child: Text(S.of(context).navigateToWebPage, style: TextStyle(color: Theme.of(context).primaryColor),),
+              child: Text(S.of(context).navigateToWebPage, style: TextStyle(color: Theme.of(context).colorScheme.primary),),
               onPressed: () {
                 VibrationUtils.vibrateWithClickIfPossible();
                 // need go to webpage

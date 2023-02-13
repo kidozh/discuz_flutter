@@ -68,7 +68,7 @@ class _ChoosePlatformState extends State<ChoosePlatformPage> {
 
   Widget trailingWidget(String platformName) {
     return ( _selectedPlatformName == platformName)
-        ? Icon(PlatformIcons(context).checkMark, color: Theme.of(context).primaryColor)
+        ? Icon(PlatformIcons(context).checkMark, color: Theme.of(context).colorScheme.primary)
         : Icon(null);
   }
 

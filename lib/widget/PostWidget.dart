@@ -21,7 +21,6 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/AttachmentWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/PostCommentWidget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
@@ -304,7 +303,7 @@ class PostState extends State<PostStatefulWidget> {
                                         text: ' ' + S.of(context).postAuthorLabel,
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            color: Theme.of(context).primaryColor,
+                                            color: Theme.of(context).colorScheme.primary,
                                             fontSize:
                                             16)),
                                 ],
@@ -322,7 +321,7 @@ class PostState extends State<PostStatefulWidget> {
                                         text: ' · ' + S.of(context).editedPost,
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            color: Theme.of(context).primaryColor,
+                                            color: Theme.of(context).colorScheme.primary,
                                             fontSize: 14)),
                                   if (_post.ipLocation != "")
                                     TextSpan(

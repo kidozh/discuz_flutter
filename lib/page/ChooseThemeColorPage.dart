@@ -171,7 +171,7 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
 
   Widget trailingWidget(String colorName) {
     return ( _selectedColorName == colorName)
-        ? Icon(PlatformIcons(context).checkMark, color: Theme.of(context).primaryColor)
+        ? Icon(PlatformIcons(context).checkMark, color: Theme.of(context).colorScheme.primary)
         : Icon(null);
   }
 

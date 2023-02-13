@@ -4,8 +4,8 @@ import 'package:discuz_flutter/screen/NewThreadScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import '../generated/l10n.dart';
 
+import '../generated/l10n.dart';
 import 'HotThreadScreen.dart';
 
 class DashboardScreen extends StatelessWidget{
@@ -42,8 +42,8 @@ class MaterialDashboardScreen extends StatelessWidget{
                   //text: S.of(context).newThread,
                 ),
               ],
-              labelColor: Theme.of(context).primaryColor,
-              indicatorColor: Theme.of(context).primaryColor,
+              labelColor: Theme.of(context).colorScheme.primary,
+              indicatorColor: Theme.of(context).colorScheme.primary,
               unselectedLabelColor: Theme.of(context).brightness == Brightness.light?  Colors.black54 : Colors.white54,
               unselectedLabelStyle: Theme.of(context).brightness == Brightness.light? Theme.of(context).textTheme.bodyText2: Theme.of(context).textTheme.subtitle1,
 

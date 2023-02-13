@@ -91,7 +91,7 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
 
   Widget trailingWidget(String brightnessName) {
     return ( _selectedBrightnessName == brightnessName)
-        ? Icon(PlatformIcons(context).checkMark, color: Theme.of(context).primaryColor)
+        ? Icon(PlatformIcons(context).checkMark, color: Theme.of(context).colorScheme.primary)
         : Icon(null);
   }
 

@@ -42,49 +42,49 @@ class EmptyListScreen extends StatelessWidget{
 
       case EmptyItemType.thread:
         return SpinKitChasingDots(
-          color: Theme.of(context).primaryColor,
+          color: Theme.of(context).colorScheme.primary,
           size: 25.0,
         );
         break;
       case EmptyItemType.post:
         return SpinKitFadingGrid(
-          color: Theme.of(context).primaryColor,
+          color: Theme.of(context).colorScheme.primary,
           size: 25.0,
         );
         break;
       case EmptyItemType.user:
         return SpinKitSquareCircle(
-          color: Theme.of(context).primaryColor,
+          color: Theme.of(context).colorScheme.primary,
           size: 25.0,
         );
         break;
       case EmptyItemType.forum:
         return SpinKitWanderingCubes(
-          color: Theme.of(context).primaryColor,
+          color: Theme.of(context).colorScheme.primary,
           size: 25.0,
         );
         break;
       case EmptyItemType.trustHost:
         return SpinKitWave(
-          color: Theme.of(context).primaryColor,
+          color: Theme.of(context).colorScheme.primary,
           size: 25.0,
         );
         break;
       case EmptyItemType.history:
         return SpinKitSpinningLines(
-          color: Theme.of(context).primaryColor,
+          color: Theme.of(context).colorScheme.primary,
           size: 25.0,
         );
         break;
       case EmptyItemType.notification:
         return SpinKitThreeBounce(
-          color: Theme.of(context).primaryColor,
+          color: Theme.of(context).colorScheme.primary,
           size: 25.0,
         );
         break;
       case EmptyItemType.others:
         return SpinKitWave(
-          color: Theme.of(context).primaryColor,
+          color: Theme.of(context).colorScheme.primary,
           size: 25.0,
         );
         break;
