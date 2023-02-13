@@ -395,6 +395,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "invalidCookie": MessageLookupByLibrary.simpleMessage(
             "Invalid cookie from response."),
         "ios": MessageLookupByLibrary.simpleMessage("iOS"),
+        "iosColorSchemeSuggestions": MessageLookupByLibrary.simpleMessage(
+            "Due to the incompatibility brought by the upgrade of Material Design, the default color scheme app adopt is purple now but you can still customize some of them."),
         "iosDarkModeDisabledText": MessageLookupByLibrary.simpleMessage(
             "Display mode can not be adjusted manually when running on iOS platform mode."),
         "justNow": MessageLookupByLibrary.simpleMessage("Just Now"),
@@ -439,6 +441,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "manualControl": MessageLookupByLibrary.simpleMessage("Manual control"),
         "manualControlDescribe": MessageLookupByLibrary.simpleMessage(
             "Control the timing of completion of refresh and load"),
+        "materialBrightnessSwitchDisabledText":
+            MessageLookupByLibrary.simpleMessage(
+                "In the material setting, App\'s brightness will follow the system without any options to offer."),
         "materialDesign":
             MessageLookupByLibrary.simpleMessage("Material Design"),
         "me": MessageLookupByLibrary.simpleMessage("Me"),

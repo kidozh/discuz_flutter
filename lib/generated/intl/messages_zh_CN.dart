@@ -339,6 +339,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "invalidCookie": MessageLookupByLibrary.simpleMessage(
             "服务器的响应中包含一个或多个含有错误字符的Cookie,无法解析Cookie,无法登录."),
         "ios": MessageLookupByLibrary.simpleMessage("iOS"),
+        "iosColorSchemeSuggestions": MessageLookupByLibrary.simpleMessage(
+            "由于底层质感设计API更新，您暂时无法调节部分部件的样式（其默认为紫色），但是您仍能够调节其他样式。"),
         "iosDarkModeDisabledText": MessageLookupByLibrary.simpleMessage(
             "处于iOS运行平台偏好下，您的颜色模式将会跟随系统，不可以手动调节。"),
         "justNow": MessageLookupByLibrary.simpleMessage("刚刚"),
@@ -378,6 +380,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "manualControl": MessageLookupByLibrary.simpleMessage("手动控制"),
         "manualControlDescribe":
             MessageLookupByLibrary.simpleMessage("控制刷新和加载的完成时机"),
+        "materialBrightnessSwitchDisabledText":
+            MessageLookupByLibrary.simpleMessage("在质感设计的界面下，应用界面将跟随系统深浅设置 。"),
         "materialDesign": MessageLookupByLibrary.simpleMessage("质感设计"),
         "me": MessageLookupByLibrary.simpleMessage("我"),
         "minute": MessageLookupByLibrary.simpleMessage("分"),

@@ -168,8 +168,9 @@ class _SettingPageState extends State<SettingPage> {
                 ),
                 SettingsTile.navigation(
                   title: Text(S.of(context).interfaceBrightness),
-                  value: Text(themeEntity.getBrightnessName(context)),
+                  value: Text(isMaterial(context)? S.of(context).materialBrightnessSwitchDisabledText :themeEntity.getBrightnessName(context)),
                   leading: Icon(PlatformIcons(context).brightness),
+                  enabled: !isMaterial(context),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(

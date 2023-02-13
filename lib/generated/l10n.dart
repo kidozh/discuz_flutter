@@ -4361,6 +4361,26 @@ class S {
       args: [],
     );
   }
+
+  /// `In the material setting, App's brightness will follow the system without any options to offer.`
+  String get materialBrightnessSwitchDisabledText {
+    return Intl.message(
+      'In the material setting, App\'s brightness will follow the system without any options to offer.',
+      name: 'materialBrightnessSwitchDisabledText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Due to the incompatibility brought by the upgrade of Material Design, the default color scheme app adopt is purple now but you can still customize some of them.`
+  String get iosColorSchemeSuggestions {
+    return Intl.message(
+      'Due to the incompatibility brought by the upgrade of Material Design, the default color scheme app adopt is purple now but you can still customize some of them.',
+      name: 'iosColorSchemeSuggestions',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

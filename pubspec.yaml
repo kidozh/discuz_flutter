@@ -89,6 +89,7 @@ dependencies:
   google_mobile_ads: ^2.3.0
   gallery_saver: ^2.3.2
   dynamic_color: ^1.6.2
+  intl_utils: ^2.8.1
 
 
 
