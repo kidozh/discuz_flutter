@@ -113,10 +113,24 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
     if(_hotThread.displayOrder > 0){
       return Icon(Icons.vertical_align_top, color: Colors.redAccent,);
     }
+    else if(_hotThread.replies == 0){
+      return Container();
+    }
     else{
-      return Badge(
-        label: Text(_hotThread.replies,style: TextStyle(color: Colors.white),),
-        child: Icon(Icons.message_outlined),
+      return Container(
+        // color: Theme.of(context).colorScheme.onPrimary,
+        child: Text(
+          _hotThread.replies.toString(),
+          textScaleFactor: .8,
+          style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4.0),
+          color: Theme.of(context).colorScheme.primaryContainer,
+          boxShadow: [
+            BoxShadow(color: Theme.of(context).colorScheme.primaryContainer, spreadRadius: 4),
+          ],
+        ),
       );
 
     }

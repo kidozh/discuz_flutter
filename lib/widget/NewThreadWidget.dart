@@ -110,10 +110,27 @@ class NewThreadState extends State<NewThreadStatefulWidget>{
   }
 
   Widget getTailingWidget(){
-    return Badge(
-      label: Text(_newThread.replies,style: TextStyle(color: Colors.white),),
-      child: Icon(Icons.message_outlined),
-    );
+    if(_newThread.replies == 0){
+      return Container();
+    }
+    else{
+      return Container(
+        // color: Theme.of(context).colorScheme.onPrimary,
+        child: Text(
+          _newThread.replies.toString(),
+          textScaleFactor: .8,
+          style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4.0),
+          color: Theme.of(context).colorScheme.primaryContainer,
+          boxShadow: [
+            BoxShadow(color: Theme.of(context).colorScheme.primaryContainer, spreadRadius: 4),
+          ],
+        ),
+      );
+    }
+
   }
 
   Widget getNewThreadListTile(bool viewed){

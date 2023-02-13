@@ -80,18 +80,6 @@ class AppPlatformListTile extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    // return it by default
-    // return ListTile(
-    //   leading:this.leading,
-    //   title:this.title,
-    //   subtitle:this.subtitle,
-    //   trailing:this.trailing,
-    //   isThreeLine:this.isThreeLine,
-    //   dense:this.dense,
-    //   onTap: this.onTap,
-    //   onLongPress: this.onLongPress,
-    // );
-
     return PlatformWidget(
       material: (_,__) => ListTile(
           leading:this.leading,

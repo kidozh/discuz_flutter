@@ -107,12 +107,26 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     if(_forumThread.getDisplayOrder() > 0){
       return Icon(Icons.push_pin, color: Colors.redAccent,);
     }
+    else if(_forumThread.replies == 0){
+      return Container();
+    }
+    //_forumThread.replies
     else{
-      return Badge(
-        label: Text(_forumThread.replies,style: TextStyle(color: Colors.white),),
-        child: Icon(Icons.message_outlined),
+      return Container(
+        // color: Theme.of(context).colorScheme.onPrimary,
+        child: Text(
+          _forumThread.replies.toString(),
+          textScaleFactor: .8,
+          style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4.0),
+          color: Theme.of(context).colorScheme.primaryContainer,
+          boxShadow: [
+            BoxShadow(color: Theme.of(context).colorScheme.primaryContainer, spreadRadius: 4),
+          ],
+        ),
       );
-
     }
   }
 
@@ -129,6 +143,8 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
     return PlatformWidget(
       material: (_, __) => Card(
+        elevation: 4.0,
+
         child: getForumThreadListTile(viewed),
       ),
       cupertino: (_, __) => Column(
