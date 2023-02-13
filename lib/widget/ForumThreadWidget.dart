@@ -14,6 +14,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
@@ -105,7 +106,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
   Widget getTailingWidget(){
     if(_forumThread.getDisplayOrder() > 0){
-      return Icon(Icons.push_pin, color: Colors.redAccent,);
+      return Icon(AppPlatformIcons(context).pinContentSolid, color: Theme.of(context).colorScheme.primary,);
     }
     else if(_forumThread.replies == 0){
       return Container();

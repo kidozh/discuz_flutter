@@ -13,6 +13,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/ConstUtils.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
@@ -111,7 +112,7 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
 
   Widget getTailingWidget(){
     if(_hotThread.displayOrder > 0){
-      return Icon(Icons.vertical_align_top, color: Colors.redAccent,);
+      return Icon(AppPlatformIcons(context).pinContentSolid, color: Theme.of(context).colorScheme.primary);
     }
     else if(_hotThread.replies == 0){
       return Container();
@@ -158,8 +159,8 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
 
           borderRadius: BorderRadius.circular(10000.0),
           child: CachedNetworkImage(
-            height: 48,
-            width: 48,
+            height: isMaterial(context)?48:32,
+            width: isMaterial(context)?48:32,
             imageUrl: URLUtils.getAvatarURL(_discuz, _hotThread.authorId.toString()),
             progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
             errorWidget: (context, url, error) =>
@@ -239,7 +240,7 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
         children: [
           getHotThreadListTile(viewed),
           Padding(
-            padding: EdgeInsets.only(left: 80),
+            padding: EdgeInsets.only(left: 72),
             child: Divider(),
           )
 

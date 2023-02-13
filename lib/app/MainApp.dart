@@ -114,6 +114,10 @@ class MyApp extends StatelessWidget {
                     themeColorEntity.brightness == null)
                 ? systemBrightness
                 : themeColorEntity.brightness,
+          // cardTheme: CardTheme(
+          //   elevation: 0.0,
+          //   surfaceTintColor: Theme.of(context).colorScheme.background,
+          // ),
         );
 
         if (Platform.isAndroid) {
@@ -159,8 +163,8 @@ class MyApp extends StatelessWidget {
                             seedColor: themeColorEntity.themeColor,
                             brightness: Brightness.dark),
                         cardTheme: CardTheme.of(context).copyWith(
-                          color: Theme.of(context).colorScheme.background,
-                          surfaceTintColor: Theme.of(context).colorScheme.background,
+                          color: Theme.of(context).colorScheme.onBackground,
+                          surfaceTintColor: Theme.of(context).colorScheme.onInverseSurface,
                         ),
                         floatingActionButtonTheme:
                             FloatingActionButtonThemeData(
@@ -170,7 +174,13 @@ class MyApp extends StatelessWidget {
                   cupertino: (_, __) => CupertinoAppData(
                     theme: CupertinoThemeData(
                         primaryColor: themeColorEntity.themeColor,
-                        brightness: themeColorEntity.brightness),
+                        brightness: (isUseCupertinoStyle(themeColorEntity) &&
+                          themeColorEntity.brightness == null)
+                          ? systemBrightness
+                          : themeColorEntity.brightness,
+
+                    ),
+
                   ),
                   // localization
                   localizationsDelegates: [

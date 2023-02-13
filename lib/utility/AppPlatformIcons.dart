@@ -80,4 +80,6 @@ class AppPlatformIcons{
   IconData get checkCircleOutlined => isMaterial(context)? Icons.check_circle_outline : CupertinoIcons.check_mark_circled;
 
   IconData get optionWinnerOutlined => isMaterial(context)? Icons.stars : CupertinoIcons.star_circle_fill;
+
+  IconData get pinContentSolid => isMaterial(context)? Icons.vertical_align_top : CupertinoIcons.map_pin;
 }
