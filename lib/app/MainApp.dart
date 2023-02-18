@@ -110,11 +110,15 @@ class MyApp extends StatelessWidget {
 
         final materialTheme = ThemeData(
             useMaterial3: themeColorEntity.useMaterial3,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: themeColorEntity.themeColor,
+              brightness: systemBrightness,
+            ),
 
-            brightness: (isUseCupertinoStyle(themeColorEntity) &&
-                    themeColorEntity.brightness == null)
-                ? systemBrightness
-                : themeColorEntity.brightness,
+            // brightness: (isUseCupertinoStyle(themeColorEntity) &&
+            //         themeColorEntity.brightness == null)
+            //     ? systemBrightness
+            //     : themeColorEntity.brightness,
 
           // cardTheme: CardTheme(
           //   elevation: 0.0,
@@ -147,39 +151,15 @@ class MyApp extends StatelessWidget {
                   navigatorKey: navigatorKey,
                   debugShowCheckedModeBanner: false,
                   material: (_, __) => MaterialAppData(
-                      theme: ThemeData(
-                          useMaterial3: themeColorEntity.useMaterial3,
-                          //brightness: Theme.of(context).brightness,
-                          colorScheme: ColorScheme.fromSeed(
-                            seedColor: themeColorEntity.themeColor,
-                            brightness: Brightness.light,
-                          ),
-                        cardTheme: CardTheme.of(context).copyWith(
-                          color: Theme.of(context).colorScheme.background,
-                          surfaceTintColor: Theme.of(context).colorScheme.background,
-                        ),
-                      ),
-                      darkTheme: ThemeData(
-                        useMaterial3: themeColorEntity.useMaterial3,
-                        colorScheme: ColorScheme.fromSeed(
-                            seedColor: themeColorEntity.themeColor,
-                            brightness: Brightness.dark),
-                        cardTheme: CardTheme.of(context).copyWith(
-                          color: Theme.of(context).colorScheme.onBackground,
-                          surfaceTintColor: Theme.of(context).colorScheme.onInverseSurface,
-                        ),
-                        floatingActionButtonTheme:
-                            FloatingActionButtonThemeData(
-                                backgroundColor: themeColorEntity.themeColor),
-                        //brightness: Brightness.dark,
-                      )),
+
+                  ),
                   cupertino: (_, __) => CupertinoAppData(
                     theme: CupertinoThemeData(
                         primaryColor: themeColorEntity.themeColor,
-                        brightness: (isUseCupertinoStyle(themeColorEntity) &&
-                          themeColorEntity.brightness == null)
-                          ? systemBrightness
-                          : themeColorEntity.brightness,
+                        // brightness: (isUseCupertinoStyle(themeColorEntity) &&
+                        //   themeColorEntity.brightness == null)
+                        //   ? systemBrightness
+                        //   : themeColorEntity.brightness,
 
                     ),
 
@@ -231,6 +211,15 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   _MyHomePageState() {
     _queryDiscuzList();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    super.didChangePlatformBrightness();
+    // change now
+    var window = WidgetsBinding.instance.window;
+    Provider.of<ThemeNotifierProvider>(context, listen: false).setBrightness(window.platformBrightness);
+    //Theme.of(context).brightness = window.platformBrightness;
   }
 
   @override

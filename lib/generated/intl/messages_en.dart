@@ -141,6 +141,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Cute yellow Minions"),
         "brightnessDark": MessageLookupByLibrary.simpleMessage("Dark"),
         "brightnessLight": MessageLookupByLibrary.simpleMessage("Light"),
+        "brightnessManualChangeDisabled": MessageLookupByLibrary.simpleMessage(
+            "App now will follow the system appearance according to design discipline."),
         "brokenCountDown":
             MessageLookupByLibrary.simpleMessage("Invalid count down timer"),
         "bugTestSubtitle": MessageLookupByLibrary.simpleMessage(

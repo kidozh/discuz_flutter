@@ -194,7 +194,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                               child: new Center(
                                 child: Text(
                                   _userProfileResult!.variables.getSpace().username,
-                                  style: TextStyle(fontSize: 30.0, color: Colors.white),
+                                  style: TextStyle(fontSize: 30.0, color: Theme.of(context).colorScheme.onPrimaryContainer),
                                 ),
                               ),
                             ),

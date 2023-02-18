@@ -131,6 +131,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "bobMinionDescribe": MessageLookupByLibrary.simpleMessage("可爱的小黄人"),
         "brightnessDark": MessageLookupByLibrary.simpleMessage("深色"),
         "brightnessLight": MessageLookupByLibrary.simpleMessage("浅色"),
+        "brightnessManualChangeDisabled": MessageLookupByLibrary.simpleMessage(
+            "应用现在将仅跟随系统设置明暗模式，我们在下一个大版本中将会移除这个设置项。"),
         "brokenCountDown": MessageLookupByLibrary.simpleMessage("无效的倒数指令"),
         "bugTestSubtitle": MessageLookupByLibrary.simpleMessage(
             "你可以通过邮箱kidozh@gmail.com向我们报告错误，我们非常感谢您的报告"),

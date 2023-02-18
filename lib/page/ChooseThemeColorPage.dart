@@ -28,16 +28,16 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
       ),
       body: SettingsList(
         sections: [
-          CustomSettingsSection(child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 16.0),
-                child: Text(S.of(context).iosColorSchemeSuggestions, style: Theme.of(context).textTheme.bodyText2),
-
-              )
-
-            ],
-          )),
+          // CustomSettingsSection(child: Column(
+          //   children: [
+          //     Padding(
+          //       padding: EdgeInsets.symmetric(vertical: 0, horizontal: 16.0),
+          //       child: Text(S.of(context).iosColorSchemeSuggestions, style: Theme.of(context).textTheme.bodyText2),
+          //
+          //     )
+          //
+          //   ],
+          // )),
           SettingsSection(tiles: [
             SettingsTile(
               title: Text(S.of(context).colorAmber),

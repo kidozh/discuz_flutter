@@ -4381,6 +4381,16 @@ class S {
       args: [],
     );
   }
+
+  /// `App now will follow the system appearance according to design discipline.`
+  String get brightnessManualChangeDisabled {
+    return Intl.message(
+      'App now will follow the system appearance according to design discipline.',
+      name: 'brightnessManualChangeDisabled',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
