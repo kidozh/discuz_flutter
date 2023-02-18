@@ -82,4 +82,5 @@ class AppPlatformIcons{
   IconData get optionWinnerOutlined => isMaterial(context)? Icons.stars : CupertinoIcons.star_circle_fill;
 
   IconData get pinContentSolid => isMaterial(context)? Icons.vertical_align_top : CupertinoIcons.map_pin;
+
 }

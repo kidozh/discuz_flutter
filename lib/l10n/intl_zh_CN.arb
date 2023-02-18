@@ -643,5 +643,6 @@
   "registerPushTokenMessage": "你可以现在开始注册你的设备到论坛中。此论坛需要满足推送服务要求。",
   "materialBrightnessSwitchDisabledText": "在质感设计的界面下，应用界面将跟随系统深浅设置 。",
   "iosColorSchemeSuggestions": "由于底层质感设计API更新，您暂时无法调节部分部件的样式（其默认为紫色），但是您仍能够调节其他样式。",
-  "brightnessManualChangeDisabled": "应用现在将仅跟随系统设置明暗模式，我们在下一个大版本中将会移除这个设置项。"
+  "brightnessManualChangeDisabled": "应用现在将仅跟随系统设置明暗模式，我们在下一个大版本中将会移除这个设置项。",
+  "dhPushServiceTitle": "谈坛推送服务"
 }

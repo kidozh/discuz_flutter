@@ -150,13 +150,15 @@ class PostState extends State<PostStatefulWidget> {
   late BlockUserDao _blockUserDao;
   bool isUserBlocked = false;
   String groupTitle = "";
-  String groupStar = "";
+  int groupStar = 0;
 
   _loadDB() async {
     _blockUserDao = await AppDatabase.getBlockUserDao();
     // need to remove
-    groupTitle = await UserPreferencesUtils.getDiscuzGroupNameById(_discuz, _post.groupId);
-    groupStar = await UserPreferencesUtils.getDiscuzGroupStarById(_discuz, _post.groupId);
+    groupTitle = await UserPreferencesUtils.getDiscuzGroupNameById(
+        _discuz, _post.groupId);
+    groupStar = await UserPreferencesUtils.getDiscuzGroupStarById(
+        _discuz, _post.groupId);
     groupTitle = groupTitle.replaceAll(RegExp(r'<.*?>'), "");
     // query whether use get blocked
     Discuz discuz =
@@ -226,8 +228,10 @@ class PostState extends State<PostStatefulWidget> {
       // should return the container
       return PlatformWidget(
         material: (_, __) => Card(
+          surfaceTintColor: Theme.of(context).colorScheme.surface,
+          elevation: _post.first ? 0 : 8,
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4.0),
+            padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 12.0),
             child: getPostContent(context),
           ),
         ),
@@ -254,6 +258,7 @@ class PostState extends State<PostStatefulWidget> {
     }
     return Column(
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // post header
         getPostHeader(context),
@@ -263,7 +268,7 @@ class PostState extends State<PostStatefulWidget> {
 
         // rich text rendering
         Padding(
-          padding: EdgeInsets.only(left: _post.first?0:32),
+          padding: EdgeInsets.only(left: _post.first ? 0 : 32),
           child: Column(
             children: [
               DiscuzHtmlWidget(
@@ -308,7 +313,10 @@ class PostState extends State<PostStatefulWidget> {
   Widget getPostPopupMenu(BuildContext context) {
     return PopupMenuButton(
       padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0, bottom: 0),
-      icon: Icon(PlatformIcons(context).ellipsis, size: 16, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.8)),
+      icon: Icon(PlatformIcons(context).ellipsis,
+          size: 16,
+          color: Theme.of(context).disabledColor
+      ),
       itemBuilder: (context) => [
         PopupMenuItem<int>(
           child: Text(S.of(context).replyPost),
@@ -395,10 +403,11 @@ class PostState extends State<PostStatefulWidget> {
 
   Widget getUserAvatar(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: _post.first?4:2, horizontal: 8.0),
+      padding:
+          EdgeInsets.symmetric(vertical: _post.first ? 4 : 2, horizontal: 8.0),
       child: Container(
-        width: _post.first?30.0:24.0,
-        height: _post.first?30.0:24.0,
+        width: _post.first ? 30.0 : 24.0,
+        height: _post.first ? 30.0 : 24.0,
         child: InkWell(
           child: CachedNetworkImage(
             imageUrl:
@@ -455,12 +464,19 @@ class PostState extends State<PostStatefulWidget> {
           padding: EdgeInsets.only(right: 0.0),
           child: Text(
             S.of(context).postPosition(_post.position),
-            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.8)),
+            style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+                color: Theme.of(context).disabledColor),
           ),
         ),
         if (_user != null)
           IconButton(
-            icon: Icon(Icons.flag, size: 16, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.8),),
+            icon: Icon(
+              Icons.flag,
+              size: 16,
+              color: Theme.of(context).disabledColor,
+            ),
             onPressed: () {
               VibrationUtils.vibrateWithClickIfPossible();
               Navigator.push(
@@ -473,6 +489,52 @@ class PostState extends State<PostStatefulWidget> {
           ),
         getPostPopupMenu(context)
       ],
+    );
+  }
+
+
+
+  WidgetSpan getGroupWidgetSpan(BuildContext context){
+    return WidgetSpan(
+      child:Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 4.0),
+            child: Container(
+              color: Theme.of(context)
+                  .colorScheme
+                  .primary,
+              padding: EdgeInsets.all(2.0),
+              child: Text("Lv ${groupStar}",
+                  style: TextStyle(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onPrimary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: FontSize.small.value)),
+            ),
+          ),
+          Padding(
+              padding: EdgeInsets.only(right: 6.0),
+              child: Container(
+                color: Theme.of(context)
+                    .colorScheme
+                    .primaryContainer,
+                padding: EdgeInsets.all(2.0),
+                child: Text(groupTitle,
+                    style: TextStyle(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onPrimaryContainer,
+                        fontWeight: FontWeight.w300,
+                        fontSize: FontSize.small.value)),
+              )
+          )
+        ],
+      )
+      ,
     );
   }
 
@@ -507,23 +569,8 @@ class PostState extends State<PostStatefulWidget> {
                             text: _post.author,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 16)),
-                        if(groupTitle!= "")
-                          WidgetSpan(
-                            child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 6.0),
-                                child: Container(
-                                  color: Theme.of(context).colorScheme.secondaryContainer,
-                                  padding: EdgeInsets.all(2.0),
-                                  child: Text(groupTitle,
-                                      style: TextStyle(
-                                          color: Theme.of(context).colorScheme.onSecondaryContainer,
-                                          fontWeight: FontWeight.normal,
-                                        fontSize: FontSize.small.value
-                                      )
-                                  ),
-                                )
-                            ),
-                          ),
+                        if (groupTitle != "")
+
                         if (_authorId == _post.authorId)
                           TextSpan(
                               text: ' ' + S.of(context).postAuthorLabel,
@@ -548,9 +595,7 @@ class PostState extends State<PostStatefulWidget> {
                           TextSpan(
                               text: ' · ' + S.of(context).editedPost,
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontSize: 14)),
+                                  fontWeight: FontWeight.bold, fontSize: 14)),
                         if (_post.ipLocation != "")
                           TextSpan(
                               text: ' ' + _post.ipLocation,
@@ -565,8 +610,7 @@ class PostState extends State<PostStatefulWidget> {
           getPostFunctionWidget(context)
         ],
       );
-    }
-    else {
+    } else {
       return Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -584,24 +628,9 @@ class PostState extends State<PostStatefulWidget> {
                 TextSpan(
                     text: _post.author,
                     style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                if(groupTitle!= "")
-                  WidgetSpan(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 6.0),
-                      child: Container(
-                        color: Theme.of(context).colorScheme.secondaryContainer,
-                        padding: EdgeInsets.all(2.0),
-                        child: Text(groupTitle,
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSecondaryContainer,
-                                fontWeight: FontWeight.normal,
-                                fontSize: FontSize.small.value
-                            )
-                        ),
-                      )
-                    ),
-                  ),
+                        TextStyle(fontWeight: FontWeight.w600, fontSize: 18)),
+                if (groupTitle != "")
+                  getGroupWidgetSpan(context),
                 if (_authorId == _post.authorId)
                   TextSpan(
                       text: ' ' + S.of(context).postAuthorLabel,
@@ -633,23 +662,33 @@ class PostState extends State<PostStatefulWidget> {
               child: RichText(
                 overflow: TextOverflow.ellipsis,
                 text: TextSpan(
-                  text: TimeDisplayUtils.getLocaledTimeDisplay(
-                    context,
-                    _post.publishAt,
-                  ),
-                  style: Theme.of(context).textTheme.bodySmall?..color?.withOpacity(0.8),
+                  text: "",
                   children: [
+                    TextSpan(
+                        text: TimeDisplayUtils.getLocaledTimeDisplay(
+                          context,
+                          _post.publishAt,
+                        ),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                            color: Theme.of(context).disabledColor)
+                    ),
                     if (_post.status & POST_REVISED != 0)
                       TextSpan(
                           text: ' · ' + S.of(context).editedPost,
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primary,
-                              fontSize: 14)),
+                              fontWeight: FontWeight.w400, fontSize: 14,
+                              color: Theme.of(context).disabledColor
+                          )
+                      ),
                     if (_post.ipLocation != "")
                       TextSpan(
                           text: ' ' + _post.ipLocation,
-                          style: TextStyle(fontSize: 14)),
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: Theme.of(context).disabledColor)
+                      ),
                   ],
                 ),
               ),
@@ -678,7 +717,7 @@ class PostState extends State<PostStatefulWidget> {
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(
                   S.of(context).blockedPost,
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
                 ),
               ),
             )
@@ -704,7 +743,7 @@ class PostState extends State<PostStatefulWidget> {
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(
                   S.of(context).warnedPost,
-                  style: TextStyle(color: Colors.deepOrange),
+                  style: TextStyle(color: Colors.deepOrange, fontWeight: FontWeight.bold),
                 ),
               ),
             )

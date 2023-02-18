@@ -227,6 +227,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Clearing operation is irrecoverable, please take care."),
         "deviceNameSignature":
             MessageLookupByLibrary.simpleMessage("Use device name"),
+        "dhPushServiceTitle":
+            MessageLookupByLibrary.simpleMessage("DH Push service"),
         "dioErrorCancel":
             MessageLookupByLibrary.simpleMessage("Response cancelled."),
         "dioErrorConnectionTimeout":

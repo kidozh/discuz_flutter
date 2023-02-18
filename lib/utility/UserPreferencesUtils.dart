@@ -300,17 +300,17 @@ class UserPreferencesUtils{
     await prefs.setString(discuzForumFidsKey, value);
   }
 
-  static Future<String> getDiscuzGroupStarById(Discuz discuz, int groupId) async {
+  static Future<int> getDiscuzGroupStarById(Discuz discuz, int groupId) async {
     String discuzForumFidsKey = "discuz_groupStar_${discuz.baseURL}_${groupId}";
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var signaturePreference =  prefs.getString(discuzForumFidsKey);
-    return signaturePreference == null? "": signaturePreference;
+    var signaturePreference =  prefs.getInt(discuzForumFidsKey);
+    return signaturePreference == null? 0: signaturePreference;
   }
 
-  static Future<void> putDiscuzGroupStarById(Discuz discuz, int groupId, String value) async{
+  static Future<void> putDiscuzGroupStarById(Discuz discuz, int groupId, int value) async{
     String discuzForumFidsKey = "discuz_groupStar_${discuz.baseURL}_${groupId}";
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(discuzForumFidsKey, value);
+    await prefs.setInt(discuzForumFidsKey, value);
   }
 
 

@@ -91,7 +91,7 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
                       ? Text(S.of(context).disableFontCustomizationTitle)
                       : null,
                   leading: Icon(PlatformIcons(context).edit),
-                  activeSwitchColor: Theme.of(context).primaryColor,
+                  activeSwitchColor: Theme.of(context).colorScheme.primary,
                   //switchValue: ignoreCustomFontStyle,
                   onToggle: (bool value) {
                     VibrationUtils.vibrateWithSwitchIfPossible();

@@ -95,6 +95,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
 
     return Container(
       width: double.infinity,
+
       child: Consumer<TypeSettingNotifierProvider>(builder: (context, typesetting, _) {
         double scalingParameter = typesetting.scalingParameter;
         // print("font scaling parameters ${scalingParameter} and font size ${12*scalingParameter}");
@@ -111,19 +112,15 @@ class DiscuzHtmlWidget extends StatelessWidget{
               //backgroundColor: MediaQuery.of(context).platformBrightness == Brightness.light ? Colors.grey.shade200: Colors.grey.shade600,
               backgroundColor: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade200: Colors.grey.shade600,
               padding: const EdgeInsets.all(8),
-              margin: Margins(bottom: Margin(8.0)),
-              border: Border(left: BorderSide(color: Theme.of(context).colorScheme.tertiary, width: 4)),
+              margin: Margins(bottom: Margin(4.0)),
+              border: Border(left: BorderSide(color: Theme.of(context).colorScheme.primary, width: 4)),
               width: Width.auto()
             ),
             "p":Style(
               fontStyle: Theme.of(context).textTheme.bodyMedium?.fontStyle,
-              //fontSize: FontSize(paragraphFontSize*scalingParameter),
-              //fontSize: scalingParameter <= 1.0? FontSize(Theme.of(context).textTheme.bodyText2?.fontSize): FontSize(14*scalingParameter),
-
             ),
             "a":Style(
               color: Theme.of(context).colorScheme.primary,
-              //fontSize: FontSize(paragraphFontSize*scalingParameter),
             )
 
           },

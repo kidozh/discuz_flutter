@@ -247,12 +247,12 @@ class _SettingPageState extends State<SettingPage> {
                   },
                 ),
                 SettingsTile.navigation(
-                  title: Text(S.of(context).contactUsViaEmail),
-                  leading: Icon(AppPlatformIcons(context).termsOfServiceOutlined),
+                  title: Text(S.of(context).dhPushServiceTitle),
+                  leading: Icon(AppPlatformIcons(context).pushServiceOutlined),
 
                   onPressed: (_) {
                     VibrationUtils.vibrateWithClickIfPossible();
-                    _launchURL("mailto:kidozh@gmail.com");
+                    _launchURL("https:/dhp.kidozh.com");
                   },
                 ),
                 SettingsTile.navigation(

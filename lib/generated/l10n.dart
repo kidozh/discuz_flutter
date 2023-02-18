@@ -4391,6 +4391,16 @@ class S {
       args: [],
     );
   }
+
+  /// `DH Push service`
+  String get dhPushServiceTitle {
+    return Intl.message(
+      'DH Push service',
+      name: 'dhPushServiceTitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

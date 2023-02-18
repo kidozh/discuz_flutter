@@ -642,5 +642,6 @@
   "registerPushTokenMessage": "Do you wish to register your device to the forum so that you can receive a updated push.",
   "materialBrightnessSwitchDisabledText": "In the material setting, App's brightness will follow the system without any options to offer.",
   "iosColorSchemeSuggestions": "Due to the incompatibility brought by the upgrade of Material Design, the default color scheme app adopt is purple now but you can still customize some of them.",
-  "brightnessManualChangeDisabled": "App now will follow the system appearance according to design discipline."
+  "brightnessManualChangeDisabled": "App now will follow the system appearance according to design discipline.",
+  "dhPushServiceTitle": "DH Push service"
 }

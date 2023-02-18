@@ -203,6 +203,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "deleteViewHistoryWarnContent":
             MessageLookupByLibrary.simpleMessage("清除历史记录是不可恢复的，确认要继续？"),
         "deviceNameSignature": MessageLookupByLibrary.simpleMessage("使用设备名称"),
+        "dhPushServiceTitle": MessageLookupByLibrary.simpleMessage("谈坛推送服务"),
         "dioErrorCancel": MessageLookupByLibrary.simpleMessage("响应被取消"),
         "dioErrorConnectionTimeout":
             MessageLookupByLibrary.simpleMessage("连接超时"),
