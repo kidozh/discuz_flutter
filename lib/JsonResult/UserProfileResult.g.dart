@@ -114,6 +114,8 @@ SpaceVariables _$SpaceVariablesFromJson(Map<String, dynamic> json) =>
           const StringToIntConverter().fromJson(json['birthmonth'] as String?)
       ..birthDay =
           const StringToIntConverter().fromJson(json['birthday'] as String?)
+      ..groupId =
+          const StringToIntConverter().fromJson(json['groupid'] as String?)
       ..constellation = json['constellation'] as String? ?? ''
       ..zodiac = json['zodiac'] as String? ?? ''
       ..nationality = json['nationality'] as String? ?? ''
@@ -181,6 +183,7 @@ Map<String, dynamic> _$SpaceVariablesToJson(SpaceVariables instance) =>
       'birthyear': const StringToIntConverter().toJson(instance.birthYear),
       'birthmonth': const StringToIntConverter().toJson(instance.birthMonth),
       'birthday': const StringToIntConverter().toJson(instance.birthDay),
+      'groupid': const StringToIntConverter().toJson(instance.groupId),
       'constellation': instance.constellation,
       'zodiac': instance.zodiac,
       'nationality': instance.nationality,

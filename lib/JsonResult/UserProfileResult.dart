@@ -1,13 +1,11 @@
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:discuz_flutter/converter/MedalListConverter.dart';
 import 'package:discuz_flutter/converter/StringToBoolConverter.dart';
-import 'package:flutter/material.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:discuz_flutter/converter/StringToIntConverter.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 import 'BaseResult.dart';
 import 'ErrorResult.dart';
-
 
 part 'UserProfileResult.g.dart';
 
@@ -15,7 +13,7 @@ part 'UserProfileResult.g.dart';
 class UserProfileResult extends BaseResult{
 
   @JsonKey(name: "Variables")
-  late UserProfileVariables variables;
+  UserProfileVariables variables = UserProfileVariables();
 
   UserProfileResult();
 
@@ -74,6 +72,9 @@ class SpaceVariables{
   @JsonKey(name: "birthday")
   @StringToIntConverter()
   int birthDay = 0;
+  @JsonKey(name: "groupid")
+  @StringToIntConverter()
+  int groupId = 0;
   String getBirthDay(){
     return "${birthYear} / ${birthMonth} / ${birthDay}";
   }

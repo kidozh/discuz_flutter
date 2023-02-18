@@ -287,6 +287,32 @@ class UserPreferencesUtils{
     await prefs.setString(firstShowDiscuzKey, value);
   }
 
+  static Future<String> getDiscuzGroupNameById(Discuz discuz, int groupId) async {
+    String discuzForumFidsKey = "discuz_groupName_${discuz.baseURL}_${groupId}";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var signaturePreference =  prefs.getString(discuzForumFidsKey);
+    return signaturePreference == null? "": signaturePreference;
+  }
+
+  static Future<void> putDiscuzGroupNameById(Discuz discuz, int groupId, String value) async{
+    String discuzForumFidsKey = "discuz_groupName_${discuz.baseURL}_${groupId}";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(discuzForumFidsKey, value);
+  }
+
+  static Future<String> getDiscuzGroupStarById(Discuz discuz, int groupId) async {
+    String discuzForumFidsKey = "discuz_groupStar_${discuz.baseURL}_${groupId}";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var signaturePreference =  prefs.getString(discuzForumFidsKey);
+    return signaturePreference == null? "": signaturePreference;
+  }
+
+  static Future<void> putDiscuzGroupStarById(Discuz discuz, int groupId, String value) async{
+    String discuzForumFidsKey = "discuz_groupStar_${discuz.baseURL}_${groupId}";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(discuzForumFidsKey, value);
+  }
+
 
 
 

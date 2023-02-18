@@ -31,16 +31,13 @@ dependencies:
   dio: ^4.0.4
   shared_preferences: ^2.0.11
   adaptive_breakpoints: ^0.1.1
-  # flutter_svg: ^1.0.0
   retrofit: ^3.0.0
   logger: any  #for logging purpose
-  # floor: ^1.2.0
   settings_ui: ^2.0.2
   form_validator: ^1.0.1
   persistent_bottom_nav_bar: ^5.0.2
   cached_network_image: ^3.2.0
   provider: ^6.0.1
-  # flutter_easyrefresh: ^2.2.1
   flutter_localizations:
     sdk: flutter
   flutter_html: ^3.0.0-alpha.5

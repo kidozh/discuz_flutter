@@ -100,6 +100,10 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
+        <!-- enable impeller -->
+<!--        <meta-data-->
+<!--            android:name="io.flutter.embedding.android.EnableImpeller"-->
+<!--            android:value="true" />-->
 
 
 

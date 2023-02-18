@@ -260,7 +260,7 @@ class _LoginFormFieldState
                               title: Text(discuz.siteName),
                               subtitle: Text(discuz.baseURL),
                               leading: CircleAvatar(
-                                backgroundColor: Theme.of(context).primaryColor,
+                                backgroundColor: Theme.of(context).colorScheme.primary,
                                 child: Text(
                                   discuz.siteName.length != 0
                                       ? discuz.siteName[0].toUpperCase()
@@ -319,8 +319,8 @@ class _LoginFormFieldState
                                 ButtonState.idle:
                                 IconedButton(
                                     text: S.of(context).loginTitle,
-                                    icon: Icon(Icons.login,color: Theme.of(context).primaryTextTheme.headline1?.color),
-                                    color: Theme.of(context).primaryColor),
+                                    icon: Icon(Icons.login,color: Theme.of(context).colorScheme.onPrimaryContainer),
+                                    color: Theme.of(context).colorScheme.primaryContainer),
                                 ButtonState.loading:
                                 IconedButton(
                                     text: S.of(context).progressButtonLogining,

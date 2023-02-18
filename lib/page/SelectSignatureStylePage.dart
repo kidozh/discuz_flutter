@@ -4,7 +4,6 @@ import 'dart:developer';
 
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
@@ -81,7 +80,7 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
 
                   SettingsTile.navigation(
                     title: Text(S.of(context).noSignature),
-                    trailing: signature == PostTextFieldUtils.NO_SIGNATURE ?Icon(PlatformIcons(context).checkMark, color: Theme.of(context).primaryColor,): Icon(null),
+                    trailing: signature == PostTextFieldUtils.NO_SIGNATURE ?Icon(PlatformIcons(context).checkMark, color: Theme.of(context).colorScheme.primary,): Icon(null),
                     onPressed: (BuildContext context){
                       VibrationUtils.vibrateWithClickIfPossible();
                       setSignature(PostTextFieldUtils.NO_SIGNATURE);
@@ -90,7 +89,7 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
                   SettingsTile.navigation(
                     title: Text(S.of(context).deviceNameSignature+" (${deviceSignature})"),
                     //value: Text(deviceSignature),
-                    trailing: signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE?Icon(PlatformIcons(context).checkMark, color: Theme.of(context).primaryColor):Icon(null),
+                    trailing: signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE?Icon(PlatformIcons(context).checkMark, color: Theme.of(context).colorScheme.primary):Icon(null),
                     onPressed: (BuildContext context){
                       VibrationUtils.vibrateWithClickIfPossible();
                       setSignature(PostTextFieldUtils.USE_DEVICE_SIGNATURE);
@@ -99,7 +98,7 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
                   SettingsTile.navigation(
                     title: Text(S.of(context).customSignature),
                     trailing: (signature != PostTextFieldUtils.NO_SIGNATURE && signature != PostTextFieldUtils.USE_DEVICE_SIGNATURE)?
-                    Icon(PlatformIcons(context).checkMark, color: Theme.of(context).primaryColor):
+                    Icon(PlatformIcons(context).checkMark, color: Theme.of(context).colorScheme.primary):
                     Icon(null),
                     onPressed: (BuildContext context){
                       VibrationUtils.vibrateWithClickIfPossible();

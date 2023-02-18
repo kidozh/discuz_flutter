@@ -23,6 +23,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/DiscuzError.dart';
+import '../utility/UserPreferencesUtils.dart';
 import 'ExploreWebsiteScaffordPage.dart';
 import 'PrivateMessageDetailPage.dart';
 
@@ -78,6 +79,9 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
       setState(() {
         this._userProfileResult = value;
       });
+      // try to save the group information
+      UserPreferencesUtils.putDiscuzGroupNameById(discuz,value.variables.getSpace().groupId, value.variables.getSpace().groupInfo.groupTitle);
+      UserPreferencesUtils.putDiscuzGroupStarById(discuz,value.variables.getSpace().groupId, value.variables.getSpace().groupInfo.stars.toString());
     });
   }
 
@@ -143,7 +147,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                 Expanded(
                   flex: 1,
                   child: Container(
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context).colorScheme.primaryContainer,
                   ),
                 ),
                 Expanded(
@@ -180,7 +184,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                                 child: Container(
                                   width: double.infinity,
                                   height: 240.0,
-                                  color: Theme.of(context).primaryColor,
+                                  color: Theme.of(context).colorScheme.primaryContainer,
                                 ),
                               ),
                             ),
@@ -263,7 +267,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                                       children: [
                                         Text(S.of(context).userThread, style: Theme.of(context).textTheme.caption,),
                                         Text(_userProfileResult!.variables.getSpace().threads.toString(),
-                                          style: Theme.of(context).textTheme.headline4?.copyWith(color: Theme.of(context).primaryColor),)
+                                          style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer),)
                                       ],
                                     ),
                                   ),
@@ -286,7 +290,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                                       children: [
                                         Text(S.of(context).userPost, style: Theme.of(context).textTheme.caption,),
                                         Text(_userProfileResult!.variables.getSpace().posts.toString(),
-                                          style: Theme.of(context).textTheme.headline4?.copyWith(color: Theme.of(context).primaryColor),)
+                                          style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer,))
                                       ],
                                     ),
                                   ),
@@ -308,7 +312,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                                     children: [
                                       Text(S.of(context).userCredit, style: Theme.of(context).textTheme.caption,),
                                       Text(_userProfileResult!.variables.getSpace().credits.toString(),
-                                        style: Theme.of(context).textTheme.headline4?.copyWith(color: Theme.of(context).primaryColor),)
+                                        style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer))
                                     ],
                                   ),
                                 ),

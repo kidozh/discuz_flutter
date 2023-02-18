@@ -276,8 +276,8 @@
           <string>3qcr597p9d.skadnetwork</string>
         </dict>
       </array>
-      <key>NSUserTrackingUsageDescription</key>
-      <string>此标识符将用于向您投放个性化广告。</string>
+      <key>FLTEnableImpeller</key>
+      <true/>
 
 </dict>
 </plist>

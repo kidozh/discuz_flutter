@@ -110,10 +110,12 @@ class MyApp extends StatelessWidget {
 
         final materialTheme = ThemeData(
             useMaterial3: themeColorEntity.useMaterial3,
+
             brightness: (isUseCupertinoStyle(themeColorEntity) &&
                     themeColorEntity.brightness == null)
                 ? systemBrightness
                 : themeColorEntity.brightness,
+
           // cardTheme: CardTheme(
           //   elevation: 0.0,
           //   surfaceTintColor: Theme.of(context).colorScheme.background,

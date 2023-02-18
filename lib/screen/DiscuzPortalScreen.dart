@@ -268,18 +268,23 @@ class FavoriteForumCardWidget extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Theme.of(context).colorScheme.primary,
+      color: Theme.of(context).colorScheme.primaryContainer,
       elevation: 2.0,
       child: ListTile(
-        leading: Icon(Icons.favorite, color: Theme.of(context).primaryTextTheme.bodyLarge?.color?.withAlpha(200),),
+        leading: Icon(Icons.favorite, color: Theme.of(context).colorScheme.onPrimaryContainer,),
         title: Hero(
           tag: ConstUtils.HERO_TAG_FORUM_TITLE,
-          child: Text(favoriteForumInDatabase.title, style: Theme.of(context).primaryTextTheme.headlineMedium,),
+          child: Text(favoriteForumInDatabase.title,
+            style: Theme.of(context).primaryTextTheme.headlineSmall?.copyWith(
+                color: Theme.of(context).colorScheme.onPrimaryContainer
+            ),
+          ),
         ),
         subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, favoriteForumInDatabase.date),
           style: Theme.of(context).primaryTextTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).primaryTextTheme.bodyMedium?.color?.withAlpha(150)
-          ),),
+            color: Theme.of(context).colorScheme.onPrimaryContainer
+          ),
+        ),
         onTap: () async {
           VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(
@@ -287,7 +292,7 @@ class FavoriteForumCardWidget extends StatelessWidget{
               platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(discuz, user, favoriteForumInDatabase.idKey))
           );
         },
-        trailing: Icon(Icons.arrow_forward, color: Theme.of(context).primaryTextTheme.bodyMedium?.color,),
+        trailing: Icon(Icons.arrow_forward, color: Theme.of(context).colorScheme.onPrimaryContainer,),
 
 
       ),

@@ -16,5 +16,9 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-4589701606972085~9689235640"/>
+        <!-- enable impeller -->
+<!--        <meta-data-->
+<!--            android:name="io.flutter.embedding.android.EnableImpeller"-->
+<!--            android:value="true" />-->
     </application>
 </manifest>

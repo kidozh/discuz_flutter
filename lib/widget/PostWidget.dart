@@ -22,15 +22,18 @@ import 'package:discuz_flutter/widget/AttachmentWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/PostCommentWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
+
+import '../utility/UserPreferencesUtils.dart';
 
 int POST_BLOCKED = 1;
 int POST_WARNED = 2;
 int POST_REVISED = 4;
 int POST_MOBILE = 8;
 
-class PostWidget extends StatelessWidget{
+class PostWidget extends StatelessWidget {
   Post _post;
   Discuz _discuz;
   int _authorId;
@@ -41,11 +44,20 @@ class PostWidget extends StatelessWidget{
   bool? ignoreFontCustomization = false;
   int? tid;
 
-  PostWidget(this._discuz, this._post, this._authorId, this.formhash, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback, this.tid});
+  PostWidget(this._discuz, this._post, this._authorId, this.formhash,
+      {this.onAuthorSelectedCallback,
+      this.postCommentList,
+      this.ignoreFontCustomization,
+      this.jumpToPidCallback,
+      this.tid});
 
   @override
   Widget build(BuildContext context) {
-    return PostStatefulWidget(this._discuz, this._post, this._authorId,this.formhash,
+    return PostStatefulWidget(
+      this._discuz,
+      this._post,
+      this._authorId,
+      this.formhash,
       onAuthorSelectedCallback: this.onAuthorSelectedCallback,
       postCommentList: this.postCommentList,
       ignoreFontCustomization: this.ignoreFontCustomization,
@@ -53,11 +65,9 @@ class PostWidget extends StatelessWidget{
       tid: this.tid,
     );
   }
-
-
 }
 
-class PostStatefulWidget extends StatefulWidget{
+class PostStatefulWidget extends StatefulWidget {
   Post _post;
   Discuz _discuz;
   int _authorId;
@@ -68,20 +78,22 @@ class PostStatefulWidget extends StatefulWidget{
   bool? ignoreFontCustomization = false;
   int? tid;
 
-  PostStatefulWidget(this._discuz, this._post, this._authorId,this.formhash, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback, this.tid});
+  PostStatefulWidget(this._discuz, this._post, this._authorId, this.formhash,
+      {this.onAuthorSelectedCallback,
+      this.postCommentList,
+      this.ignoreFontCustomization,
+      this.jumpToPidCallback,
+      this.tid});
 
   @override
   PostState createState() {
-    return PostState(this._discuz, this._post, this._authorId,this.formhash,
+    return PostState(this._discuz, this._post, this._authorId, this.formhash,
         onAuthorSelectedCallback: this.onAuthorSelectedCallback,
         postCommentList: this.postCommentList,
         ignoreFontCustomization: this.ignoreFontCustomization,
         jumpToPidCallback: this.jumpToPidCallback,
-        tid: this.tid
-    );
+        tid: this.tid);
   }
-
-
 }
 
 // ignore: must_be_immutable
@@ -97,34 +109,36 @@ class PostState extends State<PostStatefulWidget> {
   String formhash;
   int? tid;
 
-  bool isFontStyleIgnored(){
-    if(ignoreFontCustomization == null || ignoreFontCustomization == false){
+  bool isFontStyleIgnored() {
+    if (ignoreFontCustomization == null || ignoreFontCustomization == false) {
       return false;
-    }
-    else{
+    } else {
       return true;
     }
   }
 
-  List<Comment> getCommentList(){
-    if(postCommentList == null){
+  List<Comment> getCommentList() {
+    if (postCommentList == null) {
       return [];
     }
     String pid = _post.pid.toString();
-    if(postCommentList!.containsKey(pid)){
+    if (postCommentList!.containsKey(pid)) {
       return postCommentList![pid]!;
-    }
-    else{
+    } else {
       return [];
     }
   }
 
-  PostState(this._discuz, this._post, this._authorId,this.formhash, {this.onAuthorSelectedCallback, this.postCommentList, this.ignoreFontCustomization, this.jumpToPidCallback, this.tid});
+  PostState(this._discuz, this._post, this._authorId, this.formhash,
+      {this.onAuthorSelectedCallback,
+      this.postCommentList,
+      this.ignoreFontCustomization,
+      this.jumpToPidCallback,
+      this.tid});
 
   @override
   void initState() {
     super.initState();
-
   }
 
   @override
@@ -135,395 +149,537 @@ class PostState extends State<PostStatefulWidget> {
 
   late BlockUserDao _blockUserDao;
   bool isUserBlocked = false;
+  String groupTitle = "";
+  String groupStar = "";
 
-  _loadDB() async{
+  _loadDB() async {
     _blockUserDao = await AppDatabase.getBlockUserDao();
+    // need to remove
+    groupTitle = await UserPreferencesUtils.getDiscuzGroupNameById(_discuz, _post.groupId);
+    groupStar = await UserPreferencesUtils.getDiscuzGroupStarById(_discuz, _post.groupId);
+    groupTitle = groupTitle.replaceAll(RegExp(r'<.*?>'), "");
     // query whether use get blocked
-    Discuz discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
+    Discuz discuz =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
     _user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    List<BlockUser> userBlockedInDB = await _blockUserDao.isUserBlocked(_post.authorId, discuz);
+    List<BlockUser> userBlockedInDB =
+        await _blockUserDao.isUserBlocked(_post.authorId, discuz);
     log("get blocked info ${userBlockedInDB} In DB");
-    if (userBlockedInDB.isEmpty){
+    if (userBlockedInDB.isEmpty) {
       setState(() {
         this.isUserBlocked = false;
       });
-    }
-    else{
+    } else {
       setState(() {
         this.isUserBlocked = true;
       });
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
-
-    if(this.isUserBlocked){
+    if (this.isUserBlocked) {
       // show blocked user interface
       return Container(
         child: Card(
           elevation: 4.0,
           child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Column(
-
-              children: [
-                Text(S.of(context).contentPostByBlockUserTitle(_post.author), style:Theme.of(context).textTheme.headline6),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextButton(
-                      child: Text(S.of(context).unblockContent),
-                      onPressed: () async{
-                        VibrationUtils.vibrateWithClickIfPossible();
-                        setState(() {
-                          this.isUserBlocked = false;
-                        });
-                      },
-                    ),
-                    TextButton(
-                      child: Text(S.of(context).unblockUser),
-                      onPressed: () async{
-                        // unblock user
-                        VibrationUtils.vibrateWithClickIfPossible();
-                        setState(() {
-                          this.isUserBlocked = false;
-                        });
-                        await _blockUserDao.deleteBlockUserByUid(_post.authorId,  _discuz);
-                      },
-                    )
-                  ],
-                )
-              ],
-            )
-          ),
+              padding: EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Text(S.of(context).contentPostByBlockUserTitle(_post.author),
+                      style: Theme.of(context).textTheme.headlineSmall),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextButton(
+                        child: Text(S.of(context).unblockContent),
+                        onPressed: () async {
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          setState(() {
+                            this.isUserBlocked = false;
+                          });
+                        },
+                      ),
+                      TextButton(
+                        child: Text(S.of(context).unblockUser),
+                        onPressed: () async {
+                          // unblock user
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          setState(() {
+                            this.isUserBlocked = false;
+                          });
+                          await _blockUserDao.deleteBlockUserByUid(
+                              _post.authorId, _discuz);
+                        },
+                      )
+                    ],
+                  )
+                ],
+              )),
         ),
       );
     }
-    String _html = _post.message;
-    if(this.isFontStyleIgnored()){
-      // regex
-      _html = _html.replaceAll(RegExp(r'<font.*?>',multiLine: true), "").replaceAll(RegExp(r'<\font.*?>'), "");
-    }
-
 
     return Consumer<TypeSettingNotifierProvider>(
         builder: (context, typesetting, _) {
-      return Container(
-          child: Card(
-            elevation: 4.0,
-        child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      // should return the container
+      return PlatformWidget(
+        material: (_, __) => Card(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4.0),
+            child: getPostContent(context),
+          ),
+        ),
+        cupertino: (_, __) => Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 4.0, right: 4.0, top: 16.0),
+              child: getPostContent(context),
+            ),
+            Divider()
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget getPostContent(BuildContext context) {
+    String _html = _post.message;
+    if (this.isFontStyleIgnored()) {
+      // regex
+      _html = _html
+          .replaceAll(RegExp(r'<font.*?>', multiLine: true), "")
+          .replaceAll(RegExp(r'<\font.*?>'), "");
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // post header
+        getPostHeader(context),
+        // banned or warn
+        if (_post.status & POST_BLOCKED != 0) getPostBlockedBlock(context),
+        if (_post.status & POST_WARNED != 0) getPostWarnBlock(context),
+
+        // rich text rendering
+        Padding(
+          padding: EdgeInsets.only(left: _post.first?0:32),
+          child: Column(
+            children: [
+              DiscuzHtmlWidget(
+                _discuz,
+                _html,
+                tid: this.tid,
+                callback: jumpToPidCallback,
+              ),
+              if (_post.attachmentMapper.isNotEmpty)
+                ListView.builder(
+                  itemBuilder: (context, index) {
+                    Attachment attachment = _post.getAttachmentList()[index];
+                    return AttachmentWidget(_discuz, attachment);
+                  },
+                  itemCount: _post.getAttachmentList().length,
+                  physics: new NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                ),
+              if (getCommentList().length != 0)
+                Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Padding(
-                      padding: EdgeInsets.all(4.0),
-                      child: Container(
-                        width: 30.0,
-                        height: 30.0,
-                        child: InkWell(
-                          child: CachedNetworkImage(
-                            imageUrl: URLUtils.getSmallAvatarURL(
-                                _discuz, _post.authorId.toString()),
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) =>
-                                    CircularProgressIndicator(
-                                        value: downloadProgress.progress),
-                            errorWidget: (context, url, error) => Container(
-                              child: CircleAvatar(
-                                backgroundColor:
-                                    CustomizeColor.getColorBackgroundById(
-                                        _post.authorId),
-                                child: Text(
-                                  _post.author.length != 0
-                                      ? _post.author[0].toUpperCase()
-                                      : S.of(context).anonymous,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize:
-                                          20
-                                  ),
-                                ),
-                              ),
-                            ),
-                            imageBuilder: (context, imageProvider) => Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                    image: imageProvider, fit: BoxFit.cover),
-                              ),
-                            ),
-                          ),
-                          onTap: () async {
-                            User? user = Provider.of<DiscuzAndUserNotifier>(
-                                    context,
-                                    listen: false)
-                                .user;
-                            VibrationUtils.vibrateWithClickIfPossible();
-                            await Navigator.push(
-                                context,
-                                platformPageRoute(
-                                    context: context,
-                                    builder: (context) => UserProfilePage(
-                                        _discuz, user, _post.authorId)));
-                          },
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(width: 4.0,),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // username and OP come first
-                            RichText(
-                              overflow: TextOverflow.ellipsis,
-                              text: TextSpan(
-                                text: "",
-                                style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  TextSpan(
-                                      text: _post.author,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize:
-                                          16)),
-                                  if (_authorId == _post.authorId)
-                                    TextSpan(
-                                        text: ' ' + S.of(context).postAuthorLabel,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Theme.of(context).colorScheme.primary,
-                                            fontSize:
-                                            16)),
-                                ],
-                              ),
-                            ),
-
-                            RichText(
-                              overflow: TextOverflow.ellipsis,
-                              text: TextSpan(
-                                text: TimeDisplayUtils.getLocaledTimeDisplay(context,_post.publishAt,),
-                                style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  if (_post.status & POST_REVISED != 0)
-                                    TextSpan(
-                                        text: ' · ' + S.of(context).editedPost,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Theme.of(context).colorScheme.primary,
-                                            fontSize: 14)),
-                                  if (_post.ipLocation != "")
-                                    TextSpan(
-                                        text: ' '+_post.ipLocation,
-                                        style: TextStyle(fontSize: 14)),
-
-                                ],
-                              ),
-                            ),
-                          ],
-
-                        ),
-
-
-
-                      ],
-                    )),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-
-                      children: [
-                        if (_post.status & POST_MOBILE != 0)
-                          Padding(
-                            padding: EdgeInsets.only(right: 2.0),
-                            child: Icon(
-                              Icons.smartphone,
-                              size: 16
-                            ),
-                          ),
-                        Padding(
-                          padding: EdgeInsets.only(right: 2.0),
-                          child: Text(
-                            S.of(context).postPosition(_post.position),
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 12),
-                          ),
-                        ),
-                        if(_user !=  null)
-                          IconButton(
-                            padding: EdgeInsets.only(left: 4.0, right: 4.0, top: 0, bottom: 0),
-                            icon: Icon(Icons.flag,size: 16),
-                            onPressed: () {
-                              VibrationUtils.vibrateWithClickIfPossible();
-                              Navigator.push(
-                                  context,
-                                  platformPageRoute(
-                                      context: context,
-                                      builder: (context) => ReportContentPage(_post.author,_post.pid, 0, formhash)));
-                            },
-
-                          ),
-                        PopupMenuButton(
-                          padding: EdgeInsets.only(left: 4.0, right: 4.0, top: 0, bottom: 0),
-                          icon: Icon(PlatformIcons(context).ellipsis,size: 16),
-                          itemBuilder: (context) => [
-                            PopupMenuItem<int>(
-                              child: Text(S.of(context).replyPost),
-                              value: 0,
-                            ),
-                            PopupMenuItem<int>(
-                              child: Text(
-                                  S.of(context).viewUserInfo(_post.author)),
-                              value: 1,
-                            ),
-                            PopupMenuItem<int>(
-                              child: Text(S.of(context).onlyViewAuthor),
-                              value: 2,
-                            ),
-                            if(!this.isUserBlocked)
-                              PopupMenuItem<int>(
-                                child: Text(S.of(context).blockUser),
-                                value: 3,
-                              ),
-                            if(this.isUserBlocked)
-                              PopupMenuItem<int>(
-                                child: Text(S.of(context).unblockUser),
-                                value: 4,
-                              ),
-                          ],
-                          onSelected: (int pos) async{
-                            VibrationUtils.vibrateWithClickIfPossible();
-                            switch (pos) {
-                              case 0:
-                                {
-                                  // set provider to
-
-                                  Provider.of<ReplyPostNotifierProvider>(
-                                      context,
-                                      listen: false)
-                                      .setPost(_post);
-                                  break;
-                                }
-                              case 1:
-                                {
-                                  User? user =
-                                      Provider.of<DiscuzAndUserNotifier>(
-                                          context,
-                                          listen: false)
-                                          .user;
-                                  Navigator.push(
-                                      context,
-                                      platformPageRoute(
-                                          context: context,
-                                          builder: (context) => UserProfilePage(
-                                              _discuz, user, _post.authorId)));
-                                  break;
-                                }
-                              case 2:
-                                {
-                                  // set provider to
-
-                                  if(onAuthorSelectedCallback!=null){
-                                    VibrationUtils.vibrateWithClickIfPossible();
-                                    onAuthorSelectedCallback!();
-                                  }
-                                  break;
-                                }
-                              case 3:
-                                {
-                                  // block user
-                                  setState(() {
-                                    this.isUserBlocked = true;
-                                  });
-                                  BlockUser blockUser = BlockUser(_post.authorId, _post.author, DateTime.now(), _discuz);
-                                  int insertId = await _blockUserDao.insertBlockUser(blockUser);
-                                  log("insert id into block user ${insertId}");
-                                  break;
-                                }
-                              case 4:
-                                {
-                                  // unblock user
-                                  setState(() {
-                                    this.isUserBlocked = false;
-                                  });
-                                  _blockUserDao.deleteBlockUserByUid(_post.authorId,  _discuz);
-                                  break;
-                                }
-                            }
-                          },
-                        )
-                      ],
+                    ListView.builder(
+                      itemBuilder: (context, index) {
+                        Comment comment = getCommentList()[index];
+                        return PostCommentWidget(comment);
+                      },
+                      itemCount: getCommentList().length,
+                      physics: new NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
                     )
-
                   ],
                 ),
-                // banned or warn
-                if (_post.status & POST_BLOCKED != 0)
-                  getPostBlockedBlock(context),
-                if (_post.status & POST_WARNED != 0) getPostWarnBlock(context),
+            ],
+          ),
+        ),
+        if (!_post.first) getPostTailWidget(context)
+      ],
+    );
+  }
 
-                // rich text rendering
-                DiscuzHtmlWidget(_discuz, _html,
-                  tid: this.tid,
-                  callback: jumpToPidCallback,
+  Widget getPostPopupMenu(BuildContext context) {
+    return PopupMenuButton(
+      padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0, bottom: 0),
+      icon: Icon(PlatformIcons(context).ellipsis, size: 16, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.8)),
+      itemBuilder: (context) => [
+        PopupMenuItem<int>(
+          child: Text(S.of(context).replyPost),
+          value: 0,
+        ),
+        PopupMenuItem<int>(
+          child: Text(S.of(context).viewUserInfo(_post.author)),
+          value: 1,
+        ),
+        PopupMenuItem<int>(
+          child: Text(S.of(context).onlyViewAuthor),
+          value: 2,
+        ),
+        if (!this.isUserBlocked)
+          PopupMenuItem<int>(
+            child: Text(S.of(context).blockUser),
+            value: 3,
+          ),
+        if (this.isUserBlocked)
+          PopupMenuItem<int>(
+            child: Text(S.of(context).unblockUser),
+            value: 4,
+          ),
+      ],
+      onSelected: (int pos) async {
+        VibrationUtils.vibrateWithClickIfPossible();
+        switch (pos) {
+          case 0:
+            {
+              // set provider to
+
+              Provider.of<ReplyPostNotifierProvider>(context, listen: false)
+                  .setPost(_post);
+              break;
+            }
+          case 1:
+            {
+              User? user =
+                  Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                      .user;
+              Navigator.push(
+                  context,
+                  platformPageRoute(
+                      context: context,
+                      builder: (context) =>
+                          UserProfilePage(_discuz, user, _post.authorId)));
+              break;
+            }
+          case 2:
+            {
+              // set provider to
+
+              if (onAuthorSelectedCallback != null) {
+                VibrationUtils.vibrateWithClickIfPossible();
+                onAuthorSelectedCallback!();
+              }
+              break;
+            }
+          case 3:
+            {
+              // block user
+              setState(() {
+                this.isUserBlocked = true;
+              });
+              BlockUser blockUser = BlockUser(
+                  _post.authorId, _post.author, DateTime.now(), _discuz);
+              int insertId = await _blockUserDao.insertBlockUser(blockUser);
+              log("insert id into block user ${insertId}");
+              break;
+            }
+          case 4:
+            {
+              // unblock user
+              setState(() {
+                this.isUserBlocked = false;
+              });
+              _blockUserDao.deleteBlockUserByUid(_post.authorId, _discuz);
+              break;
+            }
+        }
+      },
+    );
+  }
+
+  Widget getUserAvatar(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: _post.first?4:2, horizontal: 8.0),
+      child: Container(
+        width: _post.first?30.0:24.0,
+        height: _post.first?30.0:24.0,
+        child: InkWell(
+          child: CachedNetworkImage(
+            imageUrl:
+                URLUtils.getSmallAvatarURL(_discuz, _post.authorId.toString()),
+            progressIndicatorBuilder: (context, url, downloadProgress) =>
+                CircularProgressIndicator(value: downloadProgress.progress),
+            errorWidget: (context, url, error) => Container(
+              child: CircleAvatar(
+                backgroundColor:
+                    CustomizeColor.getColorBackgroundById(_post.authorId),
+                child: Text(
+                  _post.author.length != 0
+                      ? _post.author[0].toUpperCase()
+                      : S.of(context).anonymous,
+                  style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
-                if (_post.attachmentMapper.isNotEmpty)
-                  ListView.builder(
-                    itemBuilder: (context, index) {
-                      Attachment attachment = _post.getAttachmentList()[index];
-                      return AttachmentWidget(_discuz, attachment);
-                    },
-                    itemCount: _post.getAttachmentList().length,
-                    physics: new NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                  ),
-                if(getCommentList().length != 0)
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ListView.builder(
-                        itemBuilder: (context, index){
-                          Comment comment = getCommentList()[index];
-                          return PostCommentWidget(comment);
-                        },
-                        itemCount: getCommentList().length,
-                        physics: new NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                      )
-                    ],
+              ),
+            ),
+            imageBuilder: (context, imageProvider) => Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+              ),
+            ),
+          ),
+          onTap: () async {
+            User? user =
+                Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+            VibrationUtils.vibrateWithClickIfPossible();
+            await Navigator.push(
+                context,
+                platformPageRoute(
+                    context: context,
+                    builder: (context) =>
+                        UserProfilePage(_discuz, user, _post.authorId)));
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget getPostFunctionWidget(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // if (_post.status & POST_MOBILE != 0)
+        //   Padding(
+        //     padding: EdgeInsets.only(right: 2.0),
+        //     child: Icon(Icons.smartphone, size: 16),
+        //   ),
+        Padding(
+          padding: EdgeInsets.only(right: 0.0),
+          child: Text(
+            S.of(context).postPosition(_post.position),
+            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.8)),
+          ),
+        ),
+        if (_user != null)
+          IconButton(
+            icon: Icon(Icons.flag, size: 16, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.8),),
+            onPressed: () {
+              VibrationUtils.vibrateWithClickIfPossible();
+              Navigator.push(
+                  context,
+                  platformPageRoute(
+                      context: context,
+                      builder: (context) => ReportContentPage(
+                          _post.author, _post.pid, 0, formhash)));
+            },
+          ),
+        getPostPopupMenu(context)
+      ],
+    );
+  }
+
+  Widget getPostHeader(BuildContext context) {
+    // get star and member title
+
+    if (_post.first) {
+      return Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          getUserAvatar(context),
+          Expanded(
+              child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 4.0,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // username and OP come first
+                  RichText(
+                    overflow: TextOverflow.ellipsis,
+                    text: TextSpan(
+                      text: "",
+                      style: DefaultTextStyle.of(context).style,
+                      children: [
+                        TextSpan(
+                            text: _post.author,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16)),
+                        if(groupTitle!= "")
+                          WidgetSpan(
+                            child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 6.0),
+                                child: Container(
+                                  color: Theme.of(context).colorScheme.secondaryContainer,
+                                  padding: EdgeInsets.all(2.0),
+                                  child: Text(groupTitle,
+                                      style: TextStyle(
+                                          color: Theme.of(context).colorScheme.onSecondaryContainer,
+                                          fontWeight: FontWeight.normal,
+                                        fontSize: FontSize.small.value
+                                      )
+                                  ),
+                                )
+                            ),
+                          ),
+                        if (_authorId == _post.authorId)
+                          TextSpan(
+                              text: ' ' + S.of(context).postAuthorLabel,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontSize: 16)),
+                      ],
+                    ),
                   ),
 
+                  RichText(
+                    overflow: TextOverflow.ellipsis,
+                    text: TextSpan(
+                      text: TimeDisplayUtils.getLocaledTimeDisplay(
+                        context,
+                        _post.publishAt,
+                      ),
+                      style: DefaultTextStyle.of(context).style,
+                      children: [
+                        if (_post.status & POST_REVISED != 0)
+                          TextSpan(
+                              text: ' · ' + S.of(context).editedPost,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontSize: 14)),
+                        if (_post.ipLocation != "")
+                          TextSpan(
+                              text: ' ' + _post.ipLocation,
+                              style: TextStyle(fontSize: 14)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          )),
+          getPostFunctionWidget(context)
+        ],
+      );
+    }
+    else {
+      return Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          getUserAvatar(context),
+          Expanded(
+              // the author
+              child: RichText(
+            overflow: TextOverflow.ellipsis,
+            text: TextSpan(
+              text: "",
+              style: DefaultTextStyle.of(context).style,
+              children: [
+                TextSpan(
+                    text: _post.author,
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                if(groupTitle!= "")
+                  WidgetSpan(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 6.0),
+                      child: Container(
+                        color: Theme.of(context).colorScheme.secondaryContainer,
+                        padding: EdgeInsets.all(2.0),
+                        child: Text(groupTitle,
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSecondaryContainer,
+                                fontWeight: FontWeight.normal,
+                                fontSize: FontSize.small.value
+                            )
+                        ),
+                      )
+                    ),
+                  ),
+                if (_authorId == _post.authorId)
+                  TextSpan(
+                      text: ' ' + S.of(context).postAuthorLabel,
+                      style: TextStyle(
+                          fontWeight: FontWeight.normal,
+                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: 18)),
               ],
-            )),
-      ));
-    });
+            ),
+          ))
+        ],
+      );
+    }
+  }
+
+  Widget getPostTailWidget(BuildContext context) {
+    if (_post.first) {
+      return Container();
+    } else {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 4.0),
+        child: Row(
+          children: [
+            // user
+            SizedBox(
+              width: 36.0,
+            ),
+            Expanded(
+              child: RichText(
+                overflow: TextOverflow.ellipsis,
+                text: TextSpan(
+                  text: TimeDisplayUtils.getLocaledTimeDisplay(
+                    context,
+                    _post.publishAt,
+                  ),
+                  style: Theme.of(context).textTheme.bodySmall?..color?.withOpacity(0.8),
+                  children: [
+                    if (_post.status & POST_REVISED != 0)
+                      TextSpan(
+                          text: ' · ' + S.of(context).editedPost,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
+                              fontSize: 14)),
+                    if (_post.ipLocation != "")
+                      TextSpan(
+                          text: ' ' + _post.ipLocation,
+                          style: TextStyle(fontSize: 14)),
+                  ],
+                ),
+              ),
+            ),
+            // reports etcs
+            getPostFunctionWidget(context)
+          ],
+        ),
+      );
+    }
   }
 
   Widget getPostBlockedBlock(BuildContext context) {
     return Container(
-      color:  Colors.red.withOpacity(0.15),
+      color: Colors.red.withOpacity(0.15),
       child: Padding(
         padding: EdgeInsets.all(6.0),
         child: Row(
           children: [
-            Icon(Icons.block, color: Colors.red,),
+            Icon(
+              Icons.block,
+              color: Colors.red,
+            ),
             Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(S.of(context).blockedPost, style: TextStyle(color: Colors.red),),
+                child: Text(
+                  S.of(context).blockedPost,
+                  style: TextStyle(color: Colors.red),
+                ),
               ),
             )
           ],
@@ -534,43 +690,53 @@ class PostState extends State<PostStatefulWidget> {
 
   Widget getPostWarnBlock(BuildContext context) {
     return Container(
-      color:  Colors.deepOrange.withOpacity(0.15),
+      color: Colors.deepOrange.withOpacity(0.15),
       child: Padding(
         padding: EdgeInsets.all(6.0),
         child: Row(
           children: [
-            Icon(Icons.warning_amber_outlined, color: Colors.deepOrange,),
+            Icon(
+              Icons.warning_amber_outlined,
+              color: Colors.deepOrange,
+            ),
             Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(S.of(context).warnedPost, style: TextStyle(color: Colors.deepOrange),),
+                child: Text(
+                  S.of(context).warnedPost,
+                  style: TextStyle(color: Colors.deepOrange),
+                ),
               ),
             )
           ],
         ),
       ),
     );
-
   }
 
   Widget getPostRevisedBlock(BuildContext context) {
     return Container(
-        color:  Colors.blue.withOpacity(0.15),
-        child: Padding(
-          padding: EdgeInsets.all(6.0),
-          child: Row(
-            children: [
-              Icon(Icons.edit_outlined, color: Colors.blue,),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text(S.of(context).revisedPost, style: TextStyle(color: Colors.blue),),
+      color: Colors.blue.withOpacity(0.15),
+      child: Padding(
+        padding: EdgeInsets.all(6.0),
+        child: Row(
+          children: [
+            Icon(
+              Icons.edit_outlined,
+              color: Colors.blue,
+            ),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  S.of(context).revisedPost,
+                  style: TextStyle(color: Colors.blue),
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
+      ),
     );
   }
 }
-
