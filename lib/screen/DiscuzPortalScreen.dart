@@ -16,6 +16,7 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/ConstUtils.dart';
+import 'package:discuz_flutter/utility/MobileSignUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -38,7 +39,6 @@ class DiscuzPortalScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return DiscuzPortalStatefulWidget(key: UniqueKey());
   }
 }
@@ -63,9 +63,6 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
 
   // 控制结束
   bool _enableControlFinish = false;
-
-  // 是否开启刷新
-  bool _enableRefresh = true;
 
   bool _isFirstlyRefreshing = true;
 
@@ -94,7 +91,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
 
-    IndicatorResult indictaorResult = await _client.getDiscuzPortalResult().then((value) {
+    IndicatorResult indictaorResult = await _client.getDiscuzPortalResult().then((value) async {
       // render page
       setState(() {
         result = value;
@@ -128,6 +125,12 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
           _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle, errorType: ErrorType.userExpired);
         });
       }
+
+      if(user!= null && value.discuzIndexVariables.member_uid == user.uid){
+        // conduct mobile sign
+        await MobileSignUtils.conductMobileSign(context, discuz, user, value.discuzIndexVariables.formHash);
+      }
+
       return IndicatorResult.noMore;
 
     }).catchError((onError) {

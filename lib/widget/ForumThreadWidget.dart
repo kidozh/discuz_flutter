@@ -147,7 +147,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
         children: [
           getForumThreadListTile(viewed),
           Padding(
-            padding: _forumThread.message.isEmpty?EdgeInsets.only(left: 80):EdgeInsets.symmetric(horizontal: 4.0),
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Divider(),
           )
 

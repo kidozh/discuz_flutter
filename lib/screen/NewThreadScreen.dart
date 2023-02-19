@@ -17,6 +17,7 @@ import '../entity/User.dart';
 import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../utility/EasyRefreshUtils.dart';
+import '../utility/MobileSignUtils.dart';
 import '../utility/NetworkUtils.dart';
 import '../widget/AppBannerAdWidget.dart';
 import '../widget/ErrorCard.dart';
@@ -77,7 +78,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
     String fids = await UserPreferencesUtils.getDiscuzForumFids(discuz);
     log("Recv fids ${fids}");
 
-    return await _client.newThreadsResult(fids, (_page - 1) * 20).then((value) {
+    return await _client.newThreadsResult(fids, (_page - 1) * 20).then((value) async {
       setState(() {
         result = value;
         _error = null;
@@ -117,6 +118,12 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
           _error = null;
         });
       }
+
+      if(user!= null && value.variables.member_uid == user.uid){
+        // conduct mobile sign
+        await MobileSignUtils.conductMobileSign(context, discuz, user, value.variables.formHash);
+      }
+
       if (value.variables.newThreadList.isEmpty) {
         return IndicatorResult.noMore;
       } else {

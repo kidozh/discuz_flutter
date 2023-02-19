@@ -19,6 +19,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 import '../utility/EasyRefreshUtils.dart';
+import '../utility/MobileSignUtils.dart';
 import '../widget/AppBannerAdWidget.dart';
 import 'EmptyListScreen.dart';
 
@@ -70,7 +71,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
 
-    return await _client.hotThreadResult(_page).then((value) {
+    return await _client.hotThreadResult(_page).then((value) async {
       _controller.finishRefresh();
       setState(() {
         result = value;
@@ -112,6 +113,10 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
         setState(() {
           _error = null;
         });
+      }
+      if(user!= null && value.variables.member_uid == user.uid){
+        // conduct mobile sign
+        await MobileSignUtils.conductMobileSign(context, discuz, user, value.variables.formHash);
       }
       if (value.variables.hotThreadList.length < value.variables.perPage) {
         return IndicatorResult.noMore;

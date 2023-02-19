@@ -279,4 +279,11 @@ abstract class MobileApiClient {
       @Field("unused[]") List<String> attachAid,
       @Queries() Map<String, dynamic> formMap
       );
+
+  @POST(
+      "/api/mobile/index.php?version=4&module=mobilesign&type=thread&ac=favorite&deletesubmit=true&op=delete")
+  @FormUrlEncoded()
+  Future<ApiResult> mobileSignResult(
+      @Field("hash") String formhash,
+      );
 }

@@ -313,6 +313,38 @@ class UserPreferencesUtils{
     await prefs.setInt(discuzForumFidsKey, value);
   }
 
+  static Future<int> getLastMobileSign(Discuz discuz, int uid) async {
+    String discuzForumFidsKey = "discuz_last_signed_in_${discuz.baseURL}_${uid}";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var signaturePreference =  prefs.getInt(discuzForumFidsKey);
+    return signaturePreference == null? 0: signaturePreference;
+  }
+
+  static Future<void> _putLastMobileSign(Discuz discuz, int uid, int value) async{
+    String discuzForumFidsKey = "discuz_last_signed_in_${discuz.baseURL}_${uid}";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(discuzForumFidsKey, value);
+  }
+
+
+
+  static Future<bool> shouldMobileSign(Discuz discuz, int uid) async{
+    int lastMobileSignTimestampSecond = await getLastMobileSign(discuz, uid);
+    int nowTimestampSecond = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    if (nowTimestampSecond - lastMobileSignTimestampSecond> 8* 60* 60 || lastMobileSignTimestampSecond > nowTimestampSecond){
+      // mobile sign every 8 hrs or an error condition
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  static Future<void> putLastMobileSignRecord(Discuz discuz, int uid) async{
+    int nowTimestampSecond = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    await _putLastMobileSign(discuz, uid, nowTimestampSecond);
+  }
+
 
 
 
