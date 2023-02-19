@@ -1,5 +1,6 @@
 
 import 'dart:developer';
+import 'dart:math' as Math;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
@@ -59,6 +60,7 @@ class ForumThreadStatefulWidget extends StatefulWidget{
 
 }
 
+
 class ForumThreadState extends State<ForumThreadStatefulWidget>{
   ForumThread _forumThread;
   Discuz _discuz;
@@ -86,7 +88,6 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     blockUserDao = await AppDatabase.getBlockUserDao();
     // check with block information
     List<BlockUser> userBlockedInDB = blockUserDao.isUserBlocked(_forumThread.getAuthorId(), _discuz);
-    log("get blocked info ${userBlockedInDB} In DB");
     if (userBlockedInDB.isEmpty){
       setState(() {
         this.isUserBlocked = false;
@@ -155,6 +156,29 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     );
 
     
+  }
+
+  Widget getAttachmentPreviewWidget(AttachmentPreview attachmentPreview){
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8.0),
+      child: CachedNetworkImage(
+
+        fit: BoxFit.fitWidth,
+        imageUrl: "${_discuz.getBaseURLWithAfterfix()}/data/attachment/forum/${attachmentPreview.attachment}",
+        progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+        errorWidget: (context, url, error) {
+          return Container(
+            width: 64/0.618,
+            height: 64,
+            color: Theme.of(context).colorScheme.primaryContainer,
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Icon(AppPlatformIcons(context).imageSolid, color:  Theme.of(context).colorScheme.onPrimaryContainer,),
+            ),
+          );
+        },
+      ),
+    );
   }
   
   Widget getForumThreadListTile(bool viewed){
@@ -241,7 +265,6 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                 Row(
                   mainAxisSize: MainAxisSize.max,
                   children: [
-
                     Expanded(
                         child: Text(_forumThread.message,
                           style: TextStyle(
@@ -253,48 +276,18 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                         )
                     ),
                     if(_forumThread.attachmentImagePreviewList.length >0
-                        && _forumThread.attachmentImagePreviewList.length < 3)
-                      Badge.count(
-                        child: Container(
-                          width: 64/0.618,
-                          height: 64,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: CachedNetworkImage(
-                              width: 64/0.618,
-                              height: 64,
-                              fit: BoxFit.cover,
-                              imageUrl: "${_discuz.getBaseURLWithAfterfix()}/data/attachment/forum/${_forumThread.attachmentImagePreviewList[0].attachment}",
-                              progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-                              errorWidget: (context, url, error) {
-                                print("${_discuz.getBaseURLWithAfterfix()}${_forumThread.attachmentImagePreviewList[0].attachment}");
-                                print(url);
-                                print("${_forumThread.attachmentImagePreviewList[0].aid}"
-                                    " ${_forumThread.attachmentImagePreviewList[0].filename}"
-                                    " ${_forumThread.attachmentImagePreviewList[0].attachment}"
-                                    " ${_forumThread.attachmentImagePreviewList[0].fileSize}"
-                                );
-                                return Container(
-                                  width: 64/0.618,
-                                  height: 64,
-                                  color: Theme.of(context).colorScheme.primaryContainer,
-                                  child: Padding(
-                                    padding: EdgeInsets.all(16),
-                                    child: Icon(AppPlatformIcons(context).imageSolid, color:  Theme.of(context).colorScheme.onPrimaryContainer,),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                        count: _forumThread.attachmentImageNumber,
-                        alignment: AlignmentDirectional(64/0.618 - 8, -4),
-                        textColor: Theme.of(context).colorScheme.onSecondary,
-                        backgroundColor: Theme.of(context).colorScheme.secondary,
+                        && _forumThread.attachmentImagePreviewList.length < 2)
+                      Container(
+                        width: 64/0.618,
+                        height: 64,
+                        child: getAttachmentPreviewWidget(_forumThread.attachmentImagePreviewList[0]),
                       )
+
+
                   ],
                 ),
                 // start image
+                getAttachmentGridLayout(),
               ],
             )
         ),
@@ -342,6 +335,31 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
 
     );
+  }
+
+  Widget getAttachmentGridLayout(){
+    if(_forumThread.attachmentImagePreviewList.length > 1){
+      return GridView.builder(
+          physics: new NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          padding: EdgeInsets.all(4),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: Math.min(_forumThread.attachmentImagePreviewList.length, 3),
+            childAspectRatio: 1/0.618,
+            mainAxisSpacing: 4,
+            crossAxisSpacing: 16
+
+          ),
+          itemCount: Math.min(_forumThread.attachmentImagePreviewList.length, 3),
+          itemBuilder: (context, index){
+            return getAttachmentPreviewWidget(_forumThread.attachmentImagePreviewList[index]);
+
+        },
+      );
+    }
+    else{
+      return Container();
+    }
   }
 
   void triggerTapFunction() async{

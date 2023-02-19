@@ -610,7 +610,7 @@ class PostState extends State<PostStatefulWidget> {
 
   Widget getPostTailWidget(BuildContext context) {
     if (_post.first) {
-      return Divider();
+      return Container();
     } else {
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 4.0),

@@ -8,7 +8,7 @@ part of 'ForumThread.dart';
 
 ForumThread _$ForumThreadFromJson(Map<String, dynamic> json) => ForumThread()
   ..tid = json['tid'] as String
-  ..typeId = json['typeid'] as String
+  ..typeId = json['typeid'] as String? ?? '0'
   ..price = json['price'] as String? ?? '0'
   ..readPerm =
       const StringToIntConverter().fromJson(json['readperm'] as String?)
@@ -20,7 +20,7 @@ ForumThread _$ForumThreadFromJson(Map<String, dynamic> json) => ForumThread()
   ..lastposter = json['lastposter'] as String? ?? ''
   ..views = json['views'] as String? ?? ''
   ..replies = json['replies'] as String? ?? ''
-  ..displayOrder = json['displayorder'] as String
+  ..displayOrder = json['displayorder'] as String? ?? '0'
   ..digest = json['digest'] as String? ?? '0'
   ..special = json['special'] as String? ?? '0'
   ..attachment = json['attachment'] as String? ?? '0'

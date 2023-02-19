@@ -26,6 +26,7 @@ NewThread _$NewThreadFromJson(Map<String, dynamic> json) => NewThread()
       const SecondToDateTimeConverter().fromJson(json['dbdateline'] as String?)
   ..lastPostAt =
       const SecondToDateTimeConverter().fromJson(json['dblastpost'] as String?)
+  ..message = json['message'] as String? ?? ''
   ..attachmentImageNumber = json['attachmentImageNumber'] == null
       ? 0
       : const StringToIntConverter()
@@ -53,6 +54,7 @@ Map<String, dynamic> _$NewThreadToJson(NewThread instance) => <String, dynamic>{
           const SecondToDateTimeConverter().toJson(instance.publishAt),
       'dblastpost':
           const SecondToDateTimeConverter().toJson(instance.lastPostAt),
+      'message': instance.message,
       'attachmentImageNumber':
           const StringToIntConverter().toJson(instance.attachmentImageNumber),
       'attachmentImagePreviewList': instance.attachmentImagePreviewList,

@@ -42,6 +42,9 @@ class NewThread{
   @SecondToDateTimeConverter()
   DateTime lastPostAt = DateTime.now();
 
+  @JsonKey(defaultValue: "")
+  String message = "";
+
   @JsonKey(name: "attachmentImageNumber", defaultValue: 0)
   @StringToIntConverter()
   int attachmentImageNumber = 0;

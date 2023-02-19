@@ -12,7 +12,7 @@ class ForumThread{
     return int.parse(tid);
   }
 
-  @JsonKey(name:"typeid")
+  @JsonKey(name:"typeid", defaultValue: "0")
   String typeId = "0";
 
   int getTypeId(){
@@ -47,7 +47,7 @@ class ForumThread{
   String views = "";
   @JsonKey(defaultValue: "")
   String replies = "";
-  @JsonKey(name: "displayorder")
+  @JsonKey(name: "displayorder", defaultValue: "0")
   String displayOrder = "0";
   int getDisplayOrder(){
     return int.parse(displayOrder);
