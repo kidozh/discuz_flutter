@@ -24,7 +24,9 @@ HotThread _$HotThreadFromJson(Map<String, dynamic> json) => HotThread()
   ..lastPostTime = json['lastpost'] as String
   ..lastPoster = json['lastposter'] as String
   ..views = json['views'] as String
-  ..replies = json['replies'] as String
+  ..replies = json['replies'] == null
+      ? 0
+      : const StringToIntConverter().fromJson(json['replies'] as String?)
   ..displayOrder =
       const StringToIntConverter().fromJson(json['displayorder'] as String?)
   ..highlight = json['highlight'] as String
@@ -61,7 +63,7 @@ Map<String, dynamic> _$HotThreadToJson(HotThread instance) => <String, dynamic>{
       'lastpost': instance.lastPostTime,
       'lastposter': instance.lastPoster,
       'views': instance.views,
-      'replies': instance.replies,
+      'replies': const StringToIntConverter().toJson(instance.replies),
       'displayorder':
           const StringToIntConverter().toJson(instance.displayOrder),
       'highlight': instance.highlight,

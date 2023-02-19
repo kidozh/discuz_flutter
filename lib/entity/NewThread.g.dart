@@ -18,7 +18,9 @@ NewThread _$NewThreadFromJson(Map<String, dynamic> json) => NewThread()
   ..lastPostTime = json['lastpost'] as String
   ..lastPoster = json['lastposter'] as String
   ..views = json['views'] as String
-  ..replies = json['replies'] as String
+  ..replies = json['replies'] == null
+      ? 0
+      : const StringToIntConverter().fromJson(json['replies'] as String?)
   ..digest = const StringToBoolConverter().fromJson(json['digest'] as String?)
   ..attachment =
       const StringToIntConverter().fromJson(json['attachment'] as String?)
@@ -47,7 +49,7 @@ Map<String, dynamic> _$NewThreadToJson(NewThread instance) => <String, dynamic>{
       'lastpost': instance.lastPostTime,
       'lastposter': instance.lastPoster,
       'views': instance.views,
-      'replies': instance.replies,
+      'replies': const StringToIntConverter().toJson(instance.replies),
       'digest': const StringToBoolConverter().toJson(instance.digest),
       'attachment': const StringToIntConverter().toJson(instance.attachment),
       'dbdateline':

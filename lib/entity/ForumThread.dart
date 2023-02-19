@@ -45,8 +45,9 @@ class ForumThread{
   String lastposter = "";
   @JsonKey(defaultValue: "")
   String views = "";
-  @JsonKey(defaultValue: "")
-  String replies = "";
+  @StringToIntConverter()
+  @JsonKey(defaultValue: 0)
+  int replies = 0;
   @JsonKey(name: "displayorder", defaultValue: "0")
   String displayOrder = "0";
   int getDisplayOrder(){

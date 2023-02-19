@@ -239,7 +239,11 @@ class PostState extends State<PostStatefulWidget> {
               padding: EdgeInsets.only(left: 4.0, right: 4.0, top: 16.0),
               child: getPostContent(context),
             ),
-            Divider()
+            Padding(
+              padding: EdgeInsets.only(left: 16.0, right: 16.0),
+              child: Divider(),
+            ),
+
           ],
         ),
       );

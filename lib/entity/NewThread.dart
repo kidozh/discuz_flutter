@@ -28,7 +28,10 @@ class NewThread{
   @JsonKey(name: "lastposter")
   String lastPoster = "";
 
-  String views = "", replies = "";
+  String views = "";
+  @StringToIntConverter()
+  @JsonKey(defaultValue: 0)
+  int replies = 0;
 
   @StringToBoolConverter()
   bool digest = false;

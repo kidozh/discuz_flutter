@@ -232,7 +232,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                             fontWeight: viewed? FontWeight.w200:FontWeight.w300,
                             color: viewed? Theme.of(context).unselectedWidgetColor: Theme.of(context).textTheme.bodySmall?.color,
                           ),
-                          children: <TextSpan>[
+                          children: [
                             TextSpan(text: _forumThread.author,
                                 style:  TextStyle(
                                   fontWeight: FontWeight.w300,
@@ -254,6 +254,13 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                               TextSpan(text: " / " + S.of(context).threadReadAccess(_forumThread.readPerm),
                                   style: viewed? textStyle: textStyle.copyWith(color: Theme.of(context).colorScheme.error)
                               ),
+                            if(_forumThread.replies > 0)
+                            WidgetSpan(
+                                child: Padding(
+                                  padding: EdgeInsets.only(left: 8.0),
+                                  child: getTailingWidget(),
+                                )
+                            ),
                           ],
                         ),
                       ),

@@ -19,7 +19,9 @@ ForumThread _$ForumThreadFromJson(Map<String, dynamic> json) => ForumThread()
   ..lastpost = json['lastpost'] as String? ?? ''
   ..lastposter = json['lastposter'] as String? ?? ''
   ..views = json['views'] as String? ?? ''
-  ..replies = json['replies'] as String? ?? ''
+  ..replies = json['replies'] == null
+      ? 0
+      : const StringToIntConverter().fromJson(json['replies'] as String?)
   ..displayOrder = json['displayorder'] as String? ?? '0'
   ..digest = json['digest'] as String? ?? '0'
   ..special = json['special'] as String? ?? '0'
@@ -56,7 +58,7 @@ Map<String, dynamic> _$ForumThreadToJson(ForumThread instance) =>
       'lastpost': instance.lastpost,
       'lastposter': instance.lastposter,
       'views': instance.views,
-      'replies': instance.replies,
+      'replies': const StringToIntConverter().toJson(instance.replies),
       'displayorder': instance.displayOrder,
       'digest': instance.digest,
       'special': instance.special,

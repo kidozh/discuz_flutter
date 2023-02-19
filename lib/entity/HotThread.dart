@@ -27,7 +27,10 @@ class HotThread{
   @JsonKey(name: "lastposter")
   String lastPoster = "";
 
-  String views = "", replies = "";
+  String views = "";
+  @StringToIntConverter()
+  @JsonKey(defaultValue: 0)
+  int replies = 0;
   @JsonKey(name: "displayorder")
   @StringToIntConverter()
   int displayOrder = 0;
