@@ -510,7 +510,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       bottomNavBar: PlatformNavBar(
         currentIndex: _bottomNavigationbarIndex,
         material: (context, _) => MaterialNavBarData(
-            selectedItemColor: Theme.of(context).colorScheme.onPrimaryContainer,
+            selectedItemColor: Theme.of(context).colorScheme.primary,
             unselectedItemColor: Theme.of(context).unselectedWidgetColor),
         itemChanged: (index) {
           setState(() {

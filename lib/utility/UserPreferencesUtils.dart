@@ -145,7 +145,7 @@ class UserPreferencesUtils{
   static Future<double> getTypesettingScalePreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var scale =  prefs.getDouble(typesettingScalePreferenceKey);
-    return scale == null ? 1.0 : scale;
+    return scale == null ? 1.25 : scale;
   }
 
   static final String interfaceBrightnessPreferenceKey = "interfaceBrightnessPreferenceKey";

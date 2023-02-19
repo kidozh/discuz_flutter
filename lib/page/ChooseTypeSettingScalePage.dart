@@ -12,6 +12,8 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 
+import '../utility/AppPlatformIcons.dart';
+
 class ChooseTypeSettingScalePage extends StatefulWidget {
   @override
   _ChooseTypeSettingScaleState createState() => _ChooseTypeSettingScaleState();
@@ -116,7 +118,7 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.0),
                       child: Icon(
-                        Icons.format_size,
+                        AppPlatformIcons(context).formatSizeSolid,
                         color: Theme.of(context).brightness == Brightness.light
                             ? Colors.grey.shade600
                             : Colors.white,
@@ -146,14 +148,17 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
                 ),
                 SizedBox(
                   width: double.infinity,
-                  child: PlatformSlider(
-                    activeColor: Theme.of(context).primaryColor,
-                    value: _scalingParamter,
-                    min: 1.0,
-                    max: 3.0,
-                    onChanged: (value) {
-                      changeScale(value);
-                    },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: PlatformSlider(
+                      activeColor: Theme.of(context).primaryColor,
+                      value: _scalingParamter,
+                      min: 1.0,
+                      max: 3.0,
+                      onChanged: (value) {
+                        changeScale(value);
+                      },
+                    ),
                   ),
                 )
               ],

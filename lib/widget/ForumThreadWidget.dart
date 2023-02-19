@@ -163,7 +163,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
       borderRadius: BorderRadius.circular(8.0),
       child: CachedNetworkImage(
 
-        fit: BoxFit.fitWidth,
+        fit: BoxFit.cover,
         imageUrl: "${_discuz.getBaseURLWithAfterfix()}/data/attachment/forum/${attachmentPreview.attachment}",
         progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
         errorWidget: (context, url, error) {

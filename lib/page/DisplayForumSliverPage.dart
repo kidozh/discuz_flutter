@@ -79,40 +79,6 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   _DisplayForumSliverState(this.discuz, this.user, this.fid);
 
   late EasyRefreshController _controller;
-
-
-  // 反向
-  bool _reverse = false;
-
-  // 方向
-  Axis _direction = Axis.vertical;
-
-  // Header浮动
-  bool _headerFloat = false;
-
-  // 无限加载
-  bool _enableInfiniteLoad = true;
-
-  // 控制结束
-  bool _enableControlFinish = true;
-
-  // 任务独立
-  bool _taskIndependence = false;
-
-  // 震动
-  bool _vibration = true;
-
-  // 是否开启刷新
-  bool _enableRefresh = true;
-
-  // 是否开启加载
-  bool _enableLoad = true;
-
-  // 顶部回弹
-  bool _topBouncing = true;
-
-  // 底部回弹
-  bool _bottomBouncing = true;
   late Dio dio;
   late MobileApiClient client;
 
@@ -373,7 +339,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 }
                 else{
                   return IconButton(
-                    icon: Icon(PlatformIcons(context).favoriteSolid,size: 24, color: Theme.of(context).primaryColor,),
+                    icon: Icon(PlatformIcons(context).favoriteSolid,size: 24, color: Theme.of(context).colorScheme.primary,),
                     onPressed: () {
                       VibrationUtils.vibrateWithClickIfPossible();
                       unfavoriteForum();
@@ -491,11 +457,12 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                         (context, index){
                       var subForum = _displayForumResult.discuzIndexVariables.subForumList[index];
                       return Card(
-                        color: Theme.of(context).primaryColor,
+                        color: Theme.of(context).colorScheme.secondaryContainer,
+                        elevation: 4,
                         child: ListTile(
-                          title: Text(subForum.name, style: TextStyle(color: Theme.of(context).primaryTextTheme.bodyText1?.color),),
-                          leading: Icon(Icons.forum, color: Theme.of(context).primaryTextTheme.bodyText1?.color),
-                          trailing: Icon(Icons.arrow_forward, color: Theme.of(context).primaryTextTheme.bodyText1?.color),
+                          title: Text(subForum.name, style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer,)),
+                          leading: Icon(AppPlatformIcons(context).forumSolid, color: Theme.of(context).colorScheme.onSecondaryContainer),
+                          trailing: Icon(AppPlatformIcons(context).goToSolid, color: Theme.of(context).colorScheme.onSecondaryContainer),
                           onTap: () async {
                             VibrationUtils.vibrateWithClickIfPossible();
                             await Navigator.push(

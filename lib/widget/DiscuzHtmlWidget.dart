@@ -294,6 +294,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
             }
           },
           customRenders: {
+            iframeMatcher(): iframeRender(),
             collapseMatcher(): CustomRender.widget(
                 widget: (context, buildChild){
                   String title = S.of(context.buildContext).collapseItem;
@@ -380,37 +381,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 return Text(S.of(renderContext.buildContext).brokenCountDown);
               }
             }),
-            iframeMatcher(): CustomRender.widget(widget: (context, buildChild){
-              String? url = context.tree.element?.attributes["src"];
 
-              return InkWell(
-                child: Card(
-                  color: Theme.of(context.buildContext).primaryColor,
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Icon(url == null? Icons.error_outline: Icons.link_rounded, color: Theme.of(context.buildContext).primaryIconTheme.color,),
-                        Center(
-                          child: Text(
-                            url == null? S.of(context.buildContext).iframeUrlNull: url,
-                            style: Theme.of(context.buildContext).primaryTextTheme.bodyText1,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-
-                ),
-                onTap: (){
-                  if(url != null){
-
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    checkWithDbAndOpenURL(context, url);
-                  }
-                },
-              );
-            })
 
           },
           tagsList: Html.tags..addAll(["collapse", "spoil","countdown"]),

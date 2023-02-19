@@ -1,11 +1,11 @@
 
 
-import 'package:discuz_flutter/database/AppDatabase.dart';
-import 'package:discuz_flutter/page/ExclusiveDiscuzPortalPage.dart';
 import 'package:discuz_flutter/dao/DiscuzDao.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/AddDiscuzPage.dart';
+import 'package:discuz_flutter/page/ExclusiveDiscuzPortalPage.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -108,12 +108,12 @@ class ManageDiscuzState extends State<ManageDiscuzStateWidget>{
                       // width: 16.0,
                       // height: 16.0,
                       child: CircleAvatar(
-                        backgroundColor: Theme.of(context).primaryColor,
+                        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
                         child: Text(
                           discuz.siteName.length != 0
                               ? discuz.siteName[0].toUpperCase()
                               : S.of(context).anonymous,
-                          style: TextStyle(color: Colors.white,fontSize: 18),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer,fontSize: 18),
                         ),
                       ),
                     ),

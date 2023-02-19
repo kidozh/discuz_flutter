@@ -85,4 +85,8 @@ class AppPlatformIcons{
 
   IconData get imageSolid => isMaterial(context)? Icons.image : CupertinoIcons.film_fill;
 
+  IconData get forumSolid => isMaterial(context)? Icons.forum : CupertinoIcons.quote_bubble_fill;
+
+  IconData get formatSizeSolid => isMaterial(context)? Icons.format_size : CupertinoIcons.textformat_size;
+
 }
