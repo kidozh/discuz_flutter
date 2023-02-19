@@ -83,4 +83,6 @@ class AppPlatformIcons{
 
   IconData get pinContentSolid => isMaterial(context)? Icons.vertical_align_top : CupertinoIcons.map_pin;
 
+  IconData get imageSolid => isMaterial(context)? Icons.image : CupertinoIcons.film_fill;
+
 }

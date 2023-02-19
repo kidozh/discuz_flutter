@@ -1,6 +1,7 @@
 
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
@@ -36,7 +37,6 @@ class ForumThreadWidget extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return ForumThreadStatefulWidget(this._discuz,this._user,this._forumThread, this.threadType);
   }
 
@@ -134,9 +134,6 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
   }
 
   Widget getForumThreadCard(bool viewed){
-    
-
-    
 
     return PlatformWidget(
       material: (_, __) => Card(
@@ -149,7 +146,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
         children: [
           getForumThreadListTile(viewed),
           Padding(
-            padding: EdgeInsets.only(left: 80),
+            padding: _forumThread.message.isEmpty?EdgeInsets.only(left: 80):EdgeInsets.symmetric(horizontal: 4.0),
             child: Divider(),
           )
 
@@ -242,7 +239,9 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                 SizedBox(height: 8,),
                 // message
                 Row(
+                  mainAxisSize: MainAxisSize.max,
                   children: [
+
                     Expanded(
                         child: Text(_forumThread.message,
                           style: TextStyle(
@@ -253,12 +252,48 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                           overflow: TextOverflow.ellipsis,
                         )
                     ),
-
+                    if(_forumThread.attachmentImagePreviewList.length >0
+                        && _forumThread.attachmentImagePreviewList.length < 3)
+                      Badge.count(
+                        child: Container(
+                          width: 64/0.618,
+                          height: 64,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: CachedNetworkImage(
+                              width: 64/0.618,
+                              height: 64,
+                              fit: BoxFit.cover,
+                              imageUrl: "${_discuz.getBaseURLWithAfterfix()}/data/attachment/forum/${_forumThread.attachmentImagePreviewList[0].attachment}",
+                              progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+                              errorWidget: (context, url, error) {
+                                print("${_discuz.getBaseURLWithAfterfix()}${_forumThread.attachmentImagePreviewList[0].attachment}");
+                                print(url);
+                                print("${_forumThread.attachmentImagePreviewList[0].aid}"
+                                    " ${_forumThread.attachmentImagePreviewList[0].filename}"
+                                    " ${_forumThread.attachmentImagePreviewList[0].attachment}"
+                                    " ${_forumThread.attachmentImagePreviewList[0].fileSize}"
+                                );
+                                return Container(
+                                  width: 64/0.618,
+                                  height: 64,
+                                  color: Theme.of(context).colorScheme.primaryContainer,
+                                  child: Padding(
+                                    padding: EdgeInsets.all(16),
+                                    child: Icon(AppPlatformIcons(context).imageSolid, color:  Theme.of(context).colorScheme.onPrimaryContainer,),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        count: _forumThread.attachmentImageNumber,
+                        alignment: AlignmentDirectional(64/0.618 - 8, -4),
+                        textColor: Colors.white,
+                      )
                   ],
-                )
-
-
-
+                ),
+                // start image
               ],
             )
         ),
@@ -272,7 +307,6 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
       );
     }
     return ListTile(
-      dense: true,
       leading: UserAvatar(
         _discuz, _forumThread.getAuthorId(), _forumThread.author, size: 36,
       ),

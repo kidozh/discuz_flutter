@@ -63,8 +63,16 @@ class ForumThread{
 
   @JsonKey(required: false, defaultValue: [])
   List<ShortReply> reply = [];
+  // extra information
   @JsonKey(defaultValue: "")
   String message = "";
+
+  @JsonKey(name: "attachmentImageNumber", defaultValue: 0)
+  @StringToIntConverter()
+  int attachmentImageNumber = 0;
+
+  @JsonKey(defaultValue: [])
+  List<AttachmentPreview> attachmentImagePreviewList = [];
 
   ForumThread();
 
@@ -94,4 +102,27 @@ class ShortReply{
   factory ShortReply.fromJson(Map<String, dynamic> json) => _$ShortReplyFromJson(json);
   Map<String, dynamic> toJson() => _$ShortReplyToJson(this);
 
+}
+
+@JsonSerializable(ignoreUnannotated: true)
+class AttachmentPreview{
+  @StringToIntConverter()
+  int aid=0, tid=0, pid=0, uid=0;
+  @JsonKey(defaultValue: "")
+  String dateline = "", filename = "", attachment="";
+  @StringToIntConverter()
+  @JsonKey(name:"filesize",defaultValue: 0)
+  int fileSize = 0;
+  @JsonKey(defaultValue: "")
+  String description = "";
+  @StringToIntConverter()
+  @JsonKey(name:"readperm", defaultValue: 0)
+  int readPerm = 0;
+  @StringToIntConverter()
+  @JsonKey(defaultValue: 0)
+  int width = 0, height=0;
+
+  AttachmentPreview();
+  factory AttachmentPreview.fromJson(Map<String, dynamic> json) => _$AttachmentPreviewFromJson(json);
+  Map<String, dynamic> toJson() => _$AttachmentPreviewToJson(this);
 }

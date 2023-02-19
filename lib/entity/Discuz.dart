@@ -38,6 +38,14 @@ class Discuz extends HiveObject {
     return this.baseURL + "/static/image/common/logo.png";
   }
 
+  String getBaseURLWithAfterfix(){
+    String afterfix = "";
+    if(!this.baseURL.endsWith("/")){
+      afterfix = "/";
+    }
+    return this.baseURL + afterfix;
+  }
+
 
 
   Discuz(
