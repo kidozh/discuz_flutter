@@ -18,11 +18,14 @@ class UserAvatar extends StatelessWidget{
   int uid = 0;
   String username = "";
   Discuz discuz;
-  double? width = 16;
-  double? height = 16;
+  double? size = 16;
+
+  double getSize(){
+    return this.size == null? 16: this.size!;
+  }
 
 
-  UserAvatar(this.discuz,this.uid, this.username,{this.width, this.height});
+  UserAvatar(this.discuz,this.uid, this.username,{this.size});
 
   @override
   Widget build(BuildContext context) {
@@ -35,21 +38,21 @@ class UserAvatar extends StatelessWidget{
           imageUrl: URLUtils.getAvatarURL(discuz, uid.toString()),
           progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
           errorWidget: (context, url, error) => Container(
-            width: this.width,
-            height: this.height,
+            width: this.size,
+            height: this.size,
             child: CircleAvatar(
               backgroundColor: CustomizeColor.getColorBackgroundById(uid),
               child: Text(
                 username.length != 0
                     ? username[0].toUpperCase()
                     : S.of(context).anonymous,
-                style: TextStyle(color: Colors.white,fontSize: 18),
+                style: TextStyle(color: Colors.white,fontSize: this.getSize() * 0.6),
               ),
             ),
           ),
           imageBuilder: (context, imageProvider) => Container(
-            width: this.width,
-            height: this.height,
+            width: this.size,
+            height: this.size,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               image: DecorationImage(

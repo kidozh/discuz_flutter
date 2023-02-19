@@ -276,9 +276,6 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
           _forumThreadList.length >= value.discuzIndexVariables.forum.getThreadCount()?
           IndicatorResult.noMore:
           IndicatorResult.success);
-      log("Give finishload ${_forumThreadList.length >= value.discuzIndexVariables.forum.getThreadCount()?
-      IndicatorResult.noMore:
-      IndicatorResult.success}");
 
       if (value.getErrorString() != null) {
         EasyLoading.showError(value.getErrorString()!);

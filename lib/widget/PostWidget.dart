@@ -406,8 +406,7 @@ class PostState extends State<PostStatefulWidget> {
       child: UserAvatar(_discuz,
         _post.authorId,
         _post.author,
-        width: _post.first ? 30.0 : 24.0,
-        height: _post.first ? 30.0 : 24.0,
+        size: _post.first ? 30.0 : 24.0,
       )
     );
   }

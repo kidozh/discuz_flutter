@@ -16,6 +16,7 @@ import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive_flutter/adapters.dart';
 
@@ -178,10 +179,102 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     if(threadType!=null && threadType!.idNameMap.isNotEmpty && threadType!.idNameMap.containsKey(_forumThread.typeId)){
       threadCategory = threadType!.idNameMap[_forumThread.typeId]!;
     }
+    if(_forumThread.message.isNotEmpty){
+      // special card design
+      return InkWell(
+        child: Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Column(
+              // like zhihu layout
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(_forumThread.subject, style: TextStyle(
+                  fontSize: FontSize.xLarge.value,
+                  fontWeight: viewed? FontWeight.normal:FontWeight.bold,
+                  color: viewed? Theme.of(context).unselectedWidgetColor: null,)
+                ),
+                // then user interface
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // user avatar
+                    UserAvatar(
+                      _discuz, _forumThread.getAuthorId(), _forumThread.author, size:16,
+                    ),
+                    SizedBox(width: 8,),
+                    Expanded(
+                      child: RichText(
+                        text: TextSpan(
+                          text: " ",
+                          style: TextStyle(
+                            fontWeight: viewed? FontWeight.w200:FontWeight.w300,
+                            color: viewed? Theme.of(context).unselectedWidgetColor: Theme.of(context).textTheme.bodySmall?.color,
+                          ),
+                          children: <TextSpan>[
+                            TextSpan(text: _forumThread.author,
+                                style:  TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  color: viewed? Theme.of(context).unselectedWidgetColor: Theme.of(context).textTheme.bodySmall?.color,
+                                )
+                            ),
+                            TextSpan(text: " · ", style: textStyle),
+                            TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_forumThread.dbdatelineMinutes),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  color: viewed? Theme.of(context).unselectedWidgetColor: Theme.of(context).textTheme.bodySmall?.color,
+                                )
+                            ),
+                            if(threadCategory.isNotEmpty)
+                              TextSpan(text: " / ", style: textStyle),
+                            if(threadCategory.isNotEmpty)
+                              TextSpan(text: threadCategory, style: textStyle),
+                            if((_user == null && _forumThread.readPerm > 0)||(_user!= null && _forumThread.readPerm >_user!.readPerm))
+                              TextSpan(text: " / " + S.of(context).threadReadAccess(_forumThread.readPerm),
+                                  style: viewed? textStyle: textStyle.copyWith(color: Theme.of(context).colorScheme.error)
+                              ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(height: 8,),
+                // message
+                Row(
+                  children: [
+                    Expanded(
+                        child: Text(_forumThread.message,
+                          style: TextStyle(
+                            fontWeight: viewed? FontWeight.w300:FontWeight.w400,
+                            color: viewed? Theme.of(context).unselectedWidgetColor: null,
+                          ),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        )
+                    ),
+
+                  ],
+                )
+
+
+
+              ],
+            )
+        ),
+        onTap:  () async {
+          triggerTapFunction();
+        },
+        onLongPress: () async{
+          triggerLongPressFunction();
+        },
+
+      );
+    }
     return ListTile(
       dense: true,
       leading: UserAvatar(
-        _discuz, _forumThread.getAuthorId(), _forumThread.author, width: 36,height: 36,
+        _discuz, _forumThread.getAuthorId(), _forumThread.author, size: 36,
       ),
       title: Text(_forumThread.subject, style: textStyle),
       subtitle: RichText(
@@ -206,26 +299,34 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
       trailing: getTailingWidget(),
       onTap: () async {
-        VibrationUtils.vibrateWithClickIfPossible();
-        markThreadAsRead();
-        await Navigator.push(
-            context,
-            platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(_discuz,_user, _forumThread.getTid(),
-              passedSubject: _forumThread.subject,))
-        );
+        triggerTapFunction();
       },
       onLongPress: () async{
-        VibrationUtils.vibrateSuccessfullyIfPossible();
-        setState(() {
-          this.isUserBlocked = true;
-        });
-        BlockUser blockUser = BlockUser(_forumThread.getAuthorId(), _forumThread.author,DateTime.now(), _discuz );
-        int insertId = await blockUserDao.insertBlockUser(blockUser);
-        log("insert id into block user ${insertId}");
+        triggerLongPressFunction();
       },
 
 
     );
+  }
+
+  void triggerTapFunction() async{
+    VibrationUtils.vibrateWithClickIfPossible();
+    markThreadAsRead();
+    await Navigator.push(
+        context,
+        platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(_discuz,_user, _forumThread.getTid(),
+          passedSubject: _forumThread.subject,))
+    );
+  }
+
+  void triggerLongPressFunction() async{
+    VibrationUtils.vibrateSuccessfullyIfPossible();
+    setState(() {
+      this.isUserBlocked = true;
+    });
+    BlockUser blockUser = BlockUser(_forumThread.getAuthorId(), _forumThread.author,DateTime.now(), _discuz );
+    int insertId = await blockUserDao.insertBlockUser(blockUser);
+    log("insert id into block user ${insertId}");
   }
 
   @override

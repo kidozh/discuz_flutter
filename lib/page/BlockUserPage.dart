@@ -95,8 +95,7 @@ class _BlockUserState extends State<BlockUserStatefulWidget> {
                                     _discuz,
                                     blockUserList[index].uid,
                                     blockUserList[index].name,
-                                    width: 32,
-                                    height: 32,
+                                    size: 32,
                                 ),
                                 title: Text(blockUserList[index].name),
                               )
