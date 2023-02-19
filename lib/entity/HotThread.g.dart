@@ -34,7 +34,17 @@ HotThread _$HotThreadFromJson(Map<String, dynamic> json) => HotThread()
   ..publishAt =
       const SecondToDateTimeConverter().fromJson(json['dbdateline'] as String?)
   ..lastPostAt =
-      const SecondToDateTimeConverter().fromJson(json['dblastpost'] as String?);
+      const SecondToDateTimeConverter().fromJson(json['dblastpost'] as String?)
+  ..message = json['message'] as String? ?? ''
+  ..attachmentImageNumber = json['attachmentImageNumber'] == null
+      ? 0
+      : const StringToIntConverter()
+          .fromJson(json['attachmentImageNumber'] as String?)
+  ..attachmentImagePreviewList =
+      (json['attachmentImagePreviewList'] as List<dynamic>?)
+              ?.map((e) => AttachmentPreview.fromJson(e))
+              .toList() ??
+          [];
 
 Map<String, dynamic> _$HotThreadToJson(HotThread instance) => <String, dynamic>{
       'tid': const StringToIntConverter().toJson(instance.tid),
@@ -62,4 +72,8 @@ Map<String, dynamic> _$HotThreadToJson(HotThread instance) => <String, dynamic>{
           const SecondToDateTimeConverter().toJson(instance.publishAt),
       'dblastpost':
           const SecondToDateTimeConverter().toJson(instance.lastPostAt),
+      'message': instance.message,
+      'attachmentImageNumber':
+          const StringToIntConverter().toJson(instance.attachmentImageNumber),
+      'attachmentImagePreviewList': instance.attachmentImagePreviewList,
     };

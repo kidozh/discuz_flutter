@@ -28,28 +28,37 @@ class ForumThread{
   @JsonKey(name:"readperm")
   @StringToIntConverter()
   int readPerm = 0;
+  @JsonKey(defaultValue: "")
   String author = "";
   @JsonKey(name:"authorid")
   String authorId = "0";
   int getAuthorId(){
     return int.parse(authorId);
   }
+  @JsonKey(defaultValue: "")
   String subject = "";
+  @JsonKey(defaultValue: "")
   String dateline = "";
+  @JsonKey(defaultValue: "")
   String lastpost = "";
   @JsonKey(name: "lastposter",defaultValue: "")
   String lastposter = "";
+  @JsonKey(defaultValue: "")
   String views = "";
+  @JsonKey(defaultValue: "")
   String replies = "";
   @JsonKey(name: "displayorder")
   String displayOrder = "0";
   int getDisplayOrder(){
     return int.parse(displayOrder);
   }
+  @JsonKey(defaultValue: "0")
   String digest = "0";
+  @JsonKey(defaultValue: "0")
   String special = "0";
+  @JsonKey(defaultValue: "0")
   String attachment = "0";
-  @JsonKey(name: "replycredit")
+  @JsonKey(name: "replycredit", defaultValue: "0")
   String replyCredit = "0";
   @JsonKey(name: "dbdateline")
   @SecondToDateTimeConverter()
@@ -123,6 +132,20 @@ class AttachmentPreview{
   int width = 0, height=0;
 
   AttachmentPreview();
-  factory AttachmentPreview.fromJson(Map<String, dynamic> json) => _$AttachmentPreviewFromJson(json);
+  factory AttachmentPreview.fromJson(dynamic json){
+    if(json is Map<String, dynamic>){
+      return _$AttachmentPreviewFromJson(json);
+    }
+    else if(json is AttachmentPreview){
+      return json;
+    }
+    return AttachmentPreview();
+  }
+  //factory AttachmentPreview.fromJson(Map<String, dynamic> json) => _$AttachmentPreviewFromJson(json);
   Map<String, dynamic> toJson() => _$AttachmentPreviewToJson(this);
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
 }

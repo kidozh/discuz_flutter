@@ -18,6 +18,7 @@ import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -36,7 +37,7 @@ class NewThreadWidget extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return NewThreadStatefulWidget(this._discuz,this._user,this._newThread);
+    return ForumThreadWidget(_discuz, _user, _newThread.toForumThread(), null);
   }
 
 

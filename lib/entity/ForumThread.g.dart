@@ -12,19 +12,19 @@ ForumThread _$ForumThreadFromJson(Map<String, dynamic> json) => ForumThread()
   ..price = json['price'] as String? ?? '0'
   ..readPerm =
       const StringToIntConverter().fromJson(json['readperm'] as String?)
-  ..author = json['author'] as String
+  ..author = json['author'] as String? ?? ''
   ..authorId = json['authorid'] as String
-  ..subject = json['subject'] as String
-  ..dateline = json['dateline'] as String
-  ..lastpost = json['lastpost'] as String
+  ..subject = json['subject'] as String? ?? ''
+  ..dateline = json['dateline'] as String? ?? ''
+  ..lastpost = json['lastpost'] as String? ?? ''
   ..lastposter = json['lastposter'] as String? ?? ''
-  ..views = json['views'] as String
-  ..replies = json['replies'] as String
+  ..views = json['views'] as String? ?? ''
+  ..replies = json['replies'] as String? ?? ''
   ..displayOrder = json['displayorder'] as String
-  ..digest = json['digest'] as String
-  ..special = json['special'] as String
-  ..attachment = json['attachment'] as String
-  ..replyCredit = json['replycredit'] as String
+  ..digest = json['digest'] as String? ?? '0'
+  ..special = json['special'] as String? ?? '0'
+  ..attachment = json['attachment'] as String? ?? '0'
+  ..replyCredit = json['replycredit'] as String? ?? '0'
   ..dbdatelineMinutes =
       const SecondToDateTimeConverter().fromJson(json['dbdateline'] as String?)
   ..dblastpostMinutes = json['dblastpost'] as String
@@ -37,11 +37,11 @@ ForumThread _$ForumThreadFromJson(Map<String, dynamic> json) => ForumThread()
       ? 0
       : const StringToIntConverter()
           .fromJson(json['attachmentImageNumber'] as String?)
-  ..attachmentImagePreviewList = (json['attachmentImagePreviewList']
-              as List<dynamic>?)
-          ?.map((e) => AttachmentPreview.fromJson(e as Map<String, dynamic>))
-          .toList() ??
-      [];
+  ..attachmentImagePreviewList =
+      (json['attachmentImagePreviewList'] as List<dynamic>?)
+              ?.map((e) => AttachmentPreview.fromJson(e))
+              .toList() ??
+          [];
 
 Map<String, dynamic> _$ForumThreadToJson(ForumThread instance) =>
     <String, dynamic>{

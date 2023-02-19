@@ -19,7 +19,7 @@ class SecondToDateTimeConverter implements JsonConverter<DateTime, String?> {
 
   @override
   String toJson(DateTime object) {
-    return json.encode(object);
+    return json.encode((object.millisecondsSinceEpoch ~/ 1000));
 
   }
   

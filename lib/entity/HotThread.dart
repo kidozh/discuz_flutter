@@ -1,6 +1,7 @@
 import 'package:discuz_flutter/converter/SecondToDateTimeConverter.dart';
 import 'package:discuz_flutter/converter/StringToBoolConverter.dart';
 import 'package:discuz_flutter/converter/StringToIntConverter.dart';
+import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'HotThread.g.dart';
@@ -44,11 +45,25 @@ class HotThread{
   @SecondToDateTimeConverter()
   DateTime lastPostAt = DateTime.now();
 
+  @JsonKey(defaultValue: "")
+  String message = "";
+
+  @JsonKey(name: "attachmentImageNumber", defaultValue: 0)
+  @StringToIntConverter()
+  int attachmentImageNumber = 0;
+
+  @JsonKey(defaultValue: [])
+
+  List<AttachmentPreview> attachmentImagePreviewList = [];
+
   HotThread();
-
-
 
   factory HotThread.fromJson(Map<String, dynamic> json) => _$HotThreadFromJson(json);
   Map<String, dynamic> toJson() => _$HotThreadToJson(this);
+
+  ForumThread toForumThread(){
+    print(toJson());
+    return ForumThread.fromJson(toJson());
+  }
 
 }
