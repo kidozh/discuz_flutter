@@ -233,6 +233,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
     if(_displayForumResult.discuzIndexVariables.forum.getThreadCount()!= 0 && _forumThreadList.length >= _displayForumResult.discuzIndexVariables.forum.getThreadCount()){
       _controller.finishLoad(IndicatorResult.noMore);
+      return IndicatorResult.noMore;
     }
 
     print("Request display forum map ${_displayForumQuery.generateForumQueriesMap()}");

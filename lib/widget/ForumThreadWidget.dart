@@ -289,7 +289,8 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                         ),
                         count: _forumThread.attachmentImageNumber,
                         alignment: AlignmentDirectional(64/0.618 - 8, -4),
-                        textColor: Colors.white,
+                        textColor: Theme.of(context).colorScheme.onSecondary,
+                        backgroundColor: Theme.of(context).colorScheme.secondary,
                       )
                   ],
                 ),

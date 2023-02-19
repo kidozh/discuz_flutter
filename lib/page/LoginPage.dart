@@ -320,7 +320,7 @@ class _LoginFormFieldState
                                 IconedButton(
                                     text: S.of(context).loginTitle,
                                     icon: Icon(Icons.login,color: Theme.of(context).colorScheme.onPrimaryContainer),
-                                    color: Theme.of(context).colorScheme.primaryContainer),
+                                    color: Theme.of(context).colorScheme.primary),
                                 ButtonState.loading:
                                 IconedButton(
                                     text: S.of(context).progressButtonLogining,
