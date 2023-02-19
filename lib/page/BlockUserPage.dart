@@ -3,7 +3,6 @@ import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/BlockUser.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
@@ -94,7 +93,8 @@ class _BlockUserState extends State<BlockUserStatefulWidget> {
                               child: ListTile(
                                 leading: UserAvatar(
                                     _discuz,
-                                    User("","",blockUserList[index].name,"",0,blockUserList[index].uid, 0, _discuz),
+                                    blockUserList[index].uid,
+                                    blockUserList[index].name,
                                     width: 32,
                                     height: 32,
                                 ),

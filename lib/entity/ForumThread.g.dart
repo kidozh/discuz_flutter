@@ -31,7 +31,8 @@ ForumThread _$ForumThreadFromJson(Map<String, dynamic> json) => ForumThread()
   ..reply = (json['reply'] as List<dynamic>?)
           ?.map((e) => ShortReply.fromJson(e as Map<String, dynamic>))
           .toList() ??
-      [];
+      []
+  ..message = json['message'] as String? ?? '';
 
 Map<String, dynamic> _$ForumThreadToJson(ForumThread instance) =>
     <String, dynamic>{
@@ -56,6 +57,7 @@ Map<String, dynamic> _$ForumThreadToJson(ForumThread instance) =>
           const SecondToDateTimeConverter().toJson(instance.dbdatelineMinutes),
       'dblastpost': instance.dblastpostMinutes,
       'reply': instance.reply,
+      'message': instance.message,
     };
 
 ShortReply _$ShortReplyFromJson(Map<String, dynamic> json) => ShortReply()

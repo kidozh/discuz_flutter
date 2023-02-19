@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
@@ -14,9 +13,7 @@ import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
-import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
-import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/AttachmentWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
@@ -27,6 +24,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../utility/UserPreferencesUtils.dart';
+import 'UserAvatar.dart';
 
 int POST_BLOCKED = 1;
 int POST_WARNED = 2;
@@ -405,47 +403,12 @@ class PostState extends State<PostStatefulWidget> {
     return Padding(
       padding:
           EdgeInsets.symmetric(vertical: _post.first ? 4 : 2, horizontal: 8.0),
-      child: Container(
+      child: UserAvatar(_discuz,
+        _post.authorId,
+        _post.author,
         width: _post.first ? 30.0 : 24.0,
         height: _post.first ? 30.0 : 24.0,
-        child: InkWell(
-          child: CachedNetworkImage(
-            imageUrl:
-                URLUtils.getSmallAvatarURL(_discuz, _post.authorId.toString()),
-            progressIndicatorBuilder: (context, url, downloadProgress) =>
-                CircularProgressIndicator(value: downloadProgress.progress),
-            errorWidget: (context, url, error) => Container(
-              child: CircleAvatar(
-                backgroundColor:
-                    CustomizeColor.getColorBackgroundById(_post.authorId),
-                child: Text(
-                  _post.author.length != 0
-                      ? _post.author[0].toUpperCase()
-                      : S.of(context).anonymous,
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-              ),
-            ),
-            imageBuilder: (context, imageProvider) => Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-              ),
-            ),
-          ),
-          onTap: () async {
-            User? user =
-                Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-            VibrationUtils.vibrateWithClickIfPossible();
-            await Navigator.push(
-                context,
-                platformPageRoute(
-                    context: context,
-                    builder: (context) =>
-                        UserProfilePage(_discuz, user, _post.authorId)));
-          },
-        ),
-      ),
+      )
     );
   }
 

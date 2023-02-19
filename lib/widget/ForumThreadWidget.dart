@@ -1,7 +1,6 @@
 
 import 'dart:developer';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
@@ -11,18 +10,14 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
-import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
-import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
-import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
-import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:provider/provider.dart';
 
 import '../entity/ViewHistory.dart';
 
@@ -184,37 +179,11 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
       threadCategory = threadType!.idNameMap[_forumThread.typeId]!;
     }
     return ListTile(
-      leading: InkWell(
-        child: ClipRRect(
-
-          borderRadius: BorderRadius.circular(10000.0),
-          child: CachedNetworkImage(
-            imageUrl: URLUtils.getAvatarURL(_discuz, _forumThread.authorId),
-            width: 48,
-            height: 48,
-            progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-            errorWidget: (context, url, error) =>
-                CircleAvatar(
-                  backgroundColor: CustomizeColor.getColorBackgroundById(_forumThread.getAuthorId()),
-                  child: Text(_forumThread.author.length !=0 ? _forumThread.author[0].toUpperCase()
-                      : S.of(context).anonymous,
-                      style: TextStyle(color: Colors.white)),
-                )
-            ,
-          ),
-        ),
-        onTap: () async{
-          User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-          VibrationUtils.vibrateWithClickIfPossible();
-          await Navigator.push(
-              context,
-              platformPageRoute(context:context,builder: (context) => UserProfilePage(_discuz,user, int.parse(_forumThread.authorId))));
-
-        },
+      dense: true,
+      leading: UserAvatar(
+        _discuz, _forumThread.getAuthorId(), _forumThread.author, width: 36,height: 36,
       ),
-      title: Text(_forumThread.subject,
-          style: textStyle
-      ),
+      title: Text(_forumThread.subject, style: textStyle),
       subtitle: RichText(
         text: TextSpan(
           text: "",
@@ -229,11 +198,12 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
               TextSpan(text: threadCategory, style: textStyle),
             if((_user == null && _forumThread.readPerm > 0)||(_user!= null && _forumThread.readPerm >_user!.readPerm))
               TextSpan(text: " / " + S.of(context).threadReadAccess(_forumThread.readPerm),
-                  style: viewed? textStyle: textStyle?.copyWith(color: Theme.of(context).errorColor)
+                  style: viewed? textStyle: textStyle.copyWith(color: Theme.of(context).colorScheme.error)
               ),
           ],
         ),
       ),
+
       trailing: getTailingWidget(),
       onTap: () async {
         VibrationUtils.vibrateWithClickIfPossible();

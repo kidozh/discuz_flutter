@@ -63,6 +63,8 @@ class ForumThread{
 
   @JsonKey(required: false, defaultValue: [])
   List<ShortReply> reply = [];
+  @JsonKey(defaultValue: "")
+  String message = "";
 
   ForumThread();
 
