@@ -1,5 +1,6 @@
 
 
+import 'package:discuz_flutter/widget/AppPlatformSliverAppbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -28,41 +29,22 @@ class AppPlatformSilverScaffold extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return PlatformWidget(
-      material: (_,__)=> Scaffold(
-        body: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              floating: false,
-              snap: false,
-              pinned: false,
-              expandedHeight: 160.0,
-              flexibleSpace: const FlexibleSpaceBar(
-                title: Text("TITKEssssssssssssssssssdddddddddddddddddddddeeeeeeeeeeef"),
-              ),
-              actions: trailingActions,
-            ),
-            this.child
-          ],
-        ),
-      ),
-      cupertino: (_,__)=> CupertinoPageScaffold(
-        child: CustomScrollView(
-          slivers: [
-            CupertinoSliverNavigationBar(
-              leading: leading,
-              middle: title,
-              // When the "middle" parameter is implemented, the larget title is only visible
-              // when the CupertinoSliverNavigationBar is fully expanded.
-              largeTitle: title,
-              trailing: createCupertinoSliverNavigationBarTrailingWidget(),
-            ),
-            SliverFillRemaining(
-                child: this.child
-            ),
-          ]
-        ),
-        //onLongPress: this.onLongPress,
+    return PlatformScaffold(
+      body: CustomScrollView(
+        slivers: [
+          AppPlatformSliverAppBar(
+            title: this.title,
+            leading: this.leading,
+            floating: false,
+            snap: false,
+            pinned: true,
+            actions: trailingActions,
+
+          ),
+          SliverFillRemaining(
+            child: this.child,
+          )
+        ],
       ),
     );
   }

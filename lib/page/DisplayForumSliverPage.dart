@@ -527,7 +527,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       children: [
                         ForumThreadWidget(discuz, user, _forumThreadList[index],
                             _displayForumResult.discuzIndexVariables.threadType),
-                        if(index % 7 == 0 && index != 0)
+                        if(index % 10 == 0 && index != 0)
                           AppBannerAdWidget(),
                       ],
                     );

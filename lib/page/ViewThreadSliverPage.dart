@@ -759,7 +759,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                     // check whether it's the end of the scroll
                                   },
                                 ),
-                                if(index % 7 == 0 && index != 0)
+                                if(index % 10 == 0 && index != 0)
                                   AppBannerAdWidget()
                               ],
                             );

@@ -197,7 +197,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
                 (context, index) => Column(
                       children: [
                         NewThreadWidget(discuz, user, _newThreadList[index]),
-                        if (index % 7 == 0 && index != 0) AppBannerAdWidget()
+                        if (index % 10 == 0 && index != 0) AppBannerAdWidget()
                       ],
                     ),
                 childCount: _newThreadList.length),
