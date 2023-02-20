@@ -20,6 +20,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 import '../utility/EasyRefreshUtils.dart';
+import '../utility/MobileSignUtils.dart';
 import 'EmptyListScreen.dart';
 
 class NotificationScreen extends StatelessWidget {
@@ -77,7 +78,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
     //
     // });
 
-    return await _client.userNotificationResult(_page).then((value) {
+    return await _client.userNotificationResult(_page).then((value) async {
       setState(() {
         result = value;
         _error = null;
@@ -117,6 +118,12 @@ class _NotificationState extends State<NotificationStatefulWidget> {
           _error = null;
         });
       }
+      // mobile sign?
+      if(user!= null && value.variables.member_uid == user.uid){
+        // conduct mobile sign
+        await MobileSignUtils.conductMobileSign(context, discuz, user, value.variables.formHash);
+      }
+
       if(_noteList.length >= value.variables.count){
         return IndicatorResult.noMore;
       }

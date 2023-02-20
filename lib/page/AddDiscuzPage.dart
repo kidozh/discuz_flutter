@@ -120,7 +120,7 @@ class _AddDiscuzFormFieldState
                 if (_isLoading)
                   LinearProgressIndicator(
                     valueColor: AlwaysStoppedAnimation(
-                        GlobalTheme.getThemeData().primaryColor),
+                        GlobalTheme.getThemeData().colorScheme.primary),
                   ),
                 // input fields
                 new TextFormField(

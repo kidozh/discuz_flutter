@@ -144,6 +144,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
       ),
       cupertino: (_, __) => Column(
         mainAxisSize: MainAxisSize.min,
+
         children: [
           getForumThreadListTile(viewed),
           Padding(
@@ -209,6 +210,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
               // like zhihu layout
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(_forumThread.subject, style: TextStyle(
                   fontSize: FontSize.xLarge.value,
@@ -399,6 +401,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
           child: Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(S.of(context).contentPostByBlockUserTitle(_forumThread.author),style:Theme.of(context).textTheme.headline6),
                   Row(

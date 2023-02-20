@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'dart:ui';
 
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserPreferencesUtils{
@@ -326,13 +327,20 @@ class UserPreferencesUtils{
     await prefs.setInt(discuzForumFidsKey, value);
   }
 
-
+  static bool isTheSameDay(DateTime a, DateTime b){
+    final dateFormat = DateFormat("yyyy-MM-dd");
+    final date1 = dateFormat.format(a);
+    final date2 = dateFormat.format(b);
+    return date1 == date2;
+  }
 
   static Future<bool> shouldMobileSign(Discuz discuz, int uid) async{
     int lastMobileSignTimestampSecond = await getLastMobileSign(discuz, uid);
-    int nowTimestampSecond = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    if (nowTimestampSecond - lastMobileSignTimestampSecond> 8* 60* 60 || lastMobileSignTimestampSecond > nowTimestampSecond){
-      // mobile sign every 8 hrs or an error condition
+    DateTime lastSignDate = DateTime.fromMillisecondsSinceEpoch(lastMobileSignTimestampSecond * 1000);
+    DateTime now = DateTime.now();
+
+    if (!isTheSameDay(lastSignDate, now)){
+      // if not in the same day, a mobile sign is neccessary
       return true;
     }
     else{
