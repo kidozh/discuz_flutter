@@ -217,7 +217,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
                   (context, index) => Column(
                         children: [
                           HotThreadWidget(discuz, user, _hotThreadList[index]),
-                          if (index % 10 == 0 && index != 0) AppBannerAdWidget()
+                          if (index % 15 == 0 && index != 0) AppBannerAdWidget()
                         ],
                       ),
                   childCount: _hotThreadList.length))

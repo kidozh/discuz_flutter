@@ -21,6 +21,7 @@ import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:discuz_flutter/widget/AppBannerAdWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
@@ -97,8 +98,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   }
 
   Future<void> _loadFavoriteDao() async{
-    setState(() async{
-      favoriteForumDao = await AppDatabase.getFavoriteForumDao();
+    FavoriteForumDao dao = await AppDatabase.getFavoriteForumDao();
+    setState(() {
+      favoriteForumDao = dao;
     });
 
   }
@@ -487,8 +489,15 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 delegate: SliverChildBuilderDelegate(
                       (context, index) {
                     log("${_forumThreadList[index].subject} ${_forumThreadList}");
-                    return ForumThreadWidget(discuz, user, _forumThreadList[index],
-                        _displayForumResult.discuzIndexVariables.threadType);
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ForumThreadWidget(discuz, user, _forumThreadList[index],
+                            _displayForumResult.discuzIndexVariables.threadType),
+                        if(index % 15 == 0 && index != 0)
+                          AppBannerAdWidget(),
+                      ],
+                    );
                   },
                   childCount: _forumThreadList.length,
                 ),

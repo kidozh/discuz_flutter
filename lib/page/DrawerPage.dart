@@ -343,7 +343,7 @@ class DrawerState extends State<DrawerStatefulWidget>{
                 margin: EdgeInsets.zero,
                 accountEmail: Text(value.user!.uid.toString()),
                 accountName: Text(value.user!.username),
-                currentAccountPicture: UserAvatar(value.discuz!,value.user!.uid, value.user!.username),
+                currentAccountPicture: UserAvatar(value.discuz!,value.user!.uid, value.user!.username, size: 32,),
                 onDetailsPressed: () {
                   setState(() {
                     _showUserDetail = !_showUserDetail;

@@ -105,9 +105,9 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     if(_forumThread.getDisplayOrder() > 0){
       return Icon(AppPlatformIcons(context).pinContentSolid, color: Theme.of(context).colorScheme.primary,);
     }
-    else if(_forumThread.replies == 0){
-      return Container();
-    }
+    // else if(_forumThread.replies == 0){
+    //   return Container();
+    // }
     //_forumThread.replies
     else{
       return Container(
@@ -135,7 +135,6 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
   }
 
   Widget getForumThreadCard(bool viewed){
-
     return PlatformWidget(
       material: (_, __) => Card(
         elevation: 4.0,
@@ -218,14 +217,16 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                   color: viewed? Theme.of(context).unselectedWidgetColor: null,)
                 ),
                 // then user interface
+                SizedBox(height: 4,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
                   children: [
                     // user avatar
                     UserAvatar(
                       _discuz, _forumThread.getAuthorId(), _forumThread.author, size:16,
                     ),
-                    SizedBox(width: 8,),
+                    SizedBox(width: 6,),
                     Expanded(
                       child: RichText(
                         text: TextSpan(
@@ -309,6 +310,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
       );
     }
+
     return ListTile(
       leading: UserAvatar(
         _discuz, _forumThread.getAuthorId(), _forumThread.author, size: 36,
@@ -334,7 +336,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
         ),
       ),
 
-      trailing: getTailingWidget(),
+      trailing: _forumThread.replies!=0 ? getTailingWidget(): null,
       onTap: () async {
         triggerTapFunction();
       },
