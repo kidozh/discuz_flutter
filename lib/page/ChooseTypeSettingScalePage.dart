@@ -151,7 +151,7 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: PlatformSlider(
-                      activeColor: Theme.of(context).primaryColor,
+                      activeColor: Theme.of(context).colorScheme.primary,
                       value: _scalingParamter,
                       min: 1.0,
                       max: 3.0,
