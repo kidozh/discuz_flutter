@@ -551,6 +551,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushChannelFCM":
             MessageLookupByLibrary.simpleMessage("Firebase cloud messaging"),
         "pushChannelFirebase": MessageLookupByLibrary.simpleMessage("Firebase"),
+        "pushChannelHMS": MessageLookupByLibrary.simpleMessage("HMS Push"),
         "pushChannelXMI": MessageLookupByLibrary.simpleMessage("Xiaomi push"),
         "pushDevice": MessageLookupByLibrary.simpleMessage("Device type"),
         "pushDeviceNotInterfaceWithService":

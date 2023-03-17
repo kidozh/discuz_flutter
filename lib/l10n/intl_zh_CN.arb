@@ -637,6 +637,7 @@
   "pushChannelFCM": "Firebase 云消息传递",
   "pushChannelAPN": "Apple 推送通知服务",
   "pushChannelXMI": "小米推送服务",
+  "pushChannelHMS": "华为推送服务",
   "pushTermsOfService": "推送服务条款",
   "pushPrivacyPolicy": "推送服务隐私政策",
   "registerPushTokenTitle": "注册你的设备到论坛",

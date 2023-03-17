@@ -1,7 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -4317,6 +4316,16 @@ class S {
     return Intl.message(
       'Xiaomi push',
       name: 'pushChannelXMI',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `HMS Push`
+  String get pushChannelHMS {
+    return Intl.message(
+      'HMS Push',
+      name: 'pushChannelHMS',
       desc: '',
       args: [],
     );

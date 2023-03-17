@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
+import 'package:discuz_flutter/page/PushServicePage.dart';
 import 'package:firebase_messaging/firebase_messaging.dart' as FCM;
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -29,7 +30,8 @@ import 'PostTextFieldUtils.dart';
 enum PushChannel{
   fcm,
   apn,
-  xmi
+  xmi,
+  hms
 }
 
 class PushTokenChannel{
@@ -45,6 +47,7 @@ class PushTokenChannel{
       case PushChannel.fcm: return "FCM";
       case PushChannel.apn: return "APN";
       case PushChannel.xmi: return "XMI";
+      case PushChannel.hms: return "HMS";
     }
   }
 
@@ -53,6 +56,7 @@ class PushTokenChannel{
       case PushChannel.fcm: return S.of(context).pushChannelFCM;
       case PushChannel.apn: return S.of(context).pushChannelAPN;
       case PushChannel.xmi: return S.of(context).pushChannelXMI;
+      case PushChannel.hms: return S.of(context).pushChannelHMS;
     }
   }
 }
@@ -182,34 +186,49 @@ class PushServiceUtils{
   static Future<void> _handleMessage(Map<String?, Object?> msgData, GlobalKey<NavigatorState> navigatorKey) async {
 
     Map<String, dynamic> data = msgData.cast<String, dynamic>();
+    int tid = int.parse(data["tid"].toString());
+    String site_url = data["site_url"].toString();
+    int uid = int.parse(data["uid"].toString());
+    UserDao _userDao = await AppDatabase.getUserDao();
+    DiscuzDao _discuzDao = await AppDatabase.getDiscuzDao();
+    Discuz? _discuz = _discuzDao.findDiscuzByHost(site_url);
+
     //print("Receive discuz ${msg}} ");
     //Map<String, String>? data = msg;
-    if (data['type'] == 'thread_reply') {
-      int tid = int.parse(data["tid"].toString());
-      String site_url = data["site_url"].toString();
-      int uid = int.parse(data["uid"].toString());
-      // find it in discuz or uid
-      UserDao _userDao = await AppDatabase.getUserDao();
-      DiscuzDao _discuzDao = await AppDatabase.getDiscuzDao();
-      Discuz? _discuz = _discuzDao.findDiscuzByHost(site_url);
-      print("Receive discuz ${_discuz}");
-      if(_discuz!=null){
-        User? _user = _userDao.findUsersByDiscuzAndUid(_discuz, uid);
-        print("Receive user ${_user}");
-        if(_user != null && navigatorKey.currentState!=null && navigatorKey.currentState?.context!=null){
+    switch (data['type']){
+      case 'thread_reply':{
+        if(_discuz!=null){
+          User? _user = _userDao.findUsersByDiscuzAndUid(_discuz, uid);
 
-          // set to current discuz now
+          print("Receive user ${_user}");
+          if(_user != null && navigatorKey.currentState!=null && navigatorKey.currentState?.context!=null){
+
+            // set to current discuz now
+            Provider.of<DiscuzAndUserNotifier>(navigatorKey.currentState!.context, listen: false)
+                .initDiscuz(_discuz);
+            Navigator.push(
+                navigatorKey.currentState!.context,
+                platformPageRoute(
+                    context: navigatorKey.currentState!.context,
+                    builder: (context) => ViewThreadSliverPage(_discuz, _user, tid)));
+          }
+        }
+        break;
+      }
+      // for login notification
+      case 'login':{
+        if(_discuz != null){
           Provider.of<DiscuzAndUserNotifier>(navigatorKey.currentState!.context, listen: false)
               .initDiscuz(_discuz);
           Navigator.push(
               navigatorKey.currentState!.context,
               platformPageRoute(
                   context: navigatorKey.currentState!.context,
-                  builder: (context) => ViewThreadSliverPage(_discuz, _user, tid)));
+                  builder: (context) => PushServicePage()));
         }
+        break;
+
       }
-
-
     }
   }
 

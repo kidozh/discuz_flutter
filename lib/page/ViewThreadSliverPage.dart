@@ -495,21 +495,18 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       log("set successful result ${_viewThreadResult.threadVariables.threadInfo.replies} ${_postList.length}");
 
       // save rewrite rule
-      if (value.threadVariables.rewriteRule != null) {
-        // save rewrite url in database
-        RewriteRule rewriteRule = value.threadVariables.rewriteRule;
-        if (rewriteRule.forumDisplay.isNotEmpty) {
-          RewriteRuleUtils.putForumDisplayRule(
-              discuz, rewriteRule.forumDisplay);
-        }
+      RewriteRule rewriteRule = value.threadVariables.rewriteRule;
+      if (rewriteRule.forumDisplay.isNotEmpty) {
+        RewriteRuleUtils.putForumDisplayRule(
+            discuz, rewriteRule.forumDisplay);
+      }
 
-        if (rewriteRule.viewThread.isNotEmpty) {
-          RewriteRuleUtils.putViewThreadRule(discuz, rewriteRule.viewThread);
-        }
+      if (rewriteRule.viewThread.isNotEmpty) {
+        RewriteRuleUtils.putViewThreadRule(discuz, rewriteRule.viewThread);
+      }
 
-        if (rewriteRule.userSpace.isNotEmpty) {
-          RewriteRuleUtils.putUserProfileRule(discuz, rewriteRule.userSpace);
-        }
+      if (rewriteRule.userSpace.isNotEmpty) {
+        RewriteRuleUtils.putUserProfileRule(discuz, rewriteRule.userSpace);
       }
 
       if (_postList.length >= value.threadVariables.threadInfo.replies + 1) {
@@ -775,7 +772,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
           // comment parts
           if (_viewThreadResult.threadVariables.threadInfo.closed)
             Container(
-              color: Theme.of(context).errorColor.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.error.withOpacity(0.1),
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 4.0),
                 child: Row(
@@ -785,8 +782,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                       S.of(context).threadIsClosed,
                       style: Theme.of(context)
                           .textTheme
-                          .bodyText1
-                          ?.copyWith(color: Theme.of(context).errorColor),
+                          .bodyLarge
+                          ?.copyWith(color: Theme.of(context).colorScheme.error),
                     )
                   ],
                 ),

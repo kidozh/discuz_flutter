@@ -636,6 +636,7 @@
   "pushChannelFCM": "Firebase cloud messaging",
   "pushChannelAPN": "Apple push notification service",
   "pushChannelXMI": "Xiaomi push",
+  "pushChannelHMS": "HMS Push",
   "pushTermsOfService": "Terms of push services",
   "pushPrivacyPolicy": "Privacy policy of push services",
   "registerPushTokenTitle": "Register your device to the forum",

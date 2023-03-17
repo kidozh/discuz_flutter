@@ -472,6 +472,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushChannelFCM":
             MessageLookupByLibrary.simpleMessage("Firebase 云消息传递"),
         "pushChannelFirebase": MessageLookupByLibrary.simpleMessage("Firebase"),
+        "pushChannelHMS": MessageLookupByLibrary.simpleMessage("华为推送服务"),
         "pushChannelXMI": MessageLookupByLibrary.simpleMessage("小米推送服务"),
         "pushDevice": MessageLookupByLibrary.simpleMessage("设备信息"),
         "pushDeviceNotInterfaceWithService":

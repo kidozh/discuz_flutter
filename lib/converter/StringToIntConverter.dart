@@ -9,7 +9,14 @@ class StringToIntConverter implements JsonConverter<int, String?> {
       return 0;
     }
     else{
-      return int.parse(json);
+      int? value = int.tryParse(json);
+      if(value!= null){
+        return value;
+      }
+      else{
+        return 0;
+      }
+
     }
 
 
