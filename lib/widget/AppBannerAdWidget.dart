@@ -1,7 +1,6 @@
 
 
 import 'package:discuz_flutter/utility/AdHelper.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
@@ -76,7 +75,7 @@ class AppBannerAdState extends State<AppBannerAdWidget>{
       }
     }
     return _isAdLoaded && _anchoredAdaptiveAd!=null ? Container(
-      color: Theme.of(context).backgroundColor,
+      color: Theme.of(context).colorScheme.background,
       width: _anchoredAdaptiveAd!.size.width.toDouble(),
       height: _anchoredAdaptiveAd!.size.height.toDouble(),
       child: AdWidget(ad: _anchoredAdaptiveAd!),

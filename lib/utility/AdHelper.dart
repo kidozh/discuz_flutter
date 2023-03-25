@@ -34,7 +34,8 @@ class AdHelper {
   static List<String> get adWhiteDiscuzHostList{
     return [
       "keylol.com",
-      "www.keylol.com"
+      "www.keylol.com",
+      "bbs.aeroflight.cn"
     ];
   }
 }
