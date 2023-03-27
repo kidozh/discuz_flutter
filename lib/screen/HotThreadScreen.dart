@@ -47,6 +47,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
   DiscuzError? _error;
   int _page = 1;
   List<HotThread> _hotThreadList = [];
+  ValueChanged<int> onSelectTid = (tid){};
 
   late EasyRefreshController _controller;
 
@@ -216,7 +217,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
               delegate: SliverChildBuilderDelegate(
                   (context, index) => Column(
                         children: [
-                          HotThreadWidget(discuz, user, _hotThreadList[index]),
+                          HotThreadWidget(discuz, user, _hotThreadList[index], onSelectTid),
                           if (index % 15 == 0 && index != 0) AppBannerAdWidget()
                         ],
                       ),

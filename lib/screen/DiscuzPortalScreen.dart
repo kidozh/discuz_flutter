@@ -292,7 +292,7 @@ class FavoriteForumCardWidget extends StatelessWidget{
           VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(
               context,
-              platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(discuz, user, favoriteForumInDatabase.idKey))
+              platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz, user, favoriteForumInDatabase.idKey))
           );
         },
         trailing: Icon(Icons.arrow_forward, color: Theme.of(context).colorScheme.onPrimaryContainer,),

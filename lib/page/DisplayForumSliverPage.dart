@@ -14,10 +14,12 @@ import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/InternalWebviewBrowserPage.dart';
 import 'package:discuz_flutter/page/PostThreadPage.dart';
+import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/TwoPaneScaffold.dart';
 import 'package:discuz_flutter/utility/TwoPaneUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -42,13 +44,14 @@ class DisplayForumSliverPage extends StatelessWidget {
   late final Discuz discuz;
   late final User? user;
   int fid = 0;
+  final ValueChanged<int> onSelectTid;
 
-  DisplayForumSliverPage(this.discuz, this.user, this.fid);
+  DisplayForumSliverPage(this.discuz, this.user, this.fid, {required this.onSelectTid});
 
   @override
   Widget build(BuildContext context) {
     // try ios
-    return DisplayForumSliverStatefulWidget(discuz, user, fid);
+    return DisplayForumSliverStatefulWidget(discuz, user, fid, onSelectTid: this.onSelectTid,);
   }
 }
 
@@ -57,11 +60,13 @@ class DisplayForumSliverStatefulWidget extends StatefulWidget {
   late final User? user;
   int fid = 0;
 
-  DisplayForumSliverStatefulWidget(this.discuz, this.user, this.fid);
+  final ValueChanged<int> onSelectTid;
+
+  DisplayForumSliverStatefulWidget(this.discuz, this.user, this.fid, {required this.onSelectTid});
 
   @override
   _DisplayForumSliverState createState() {
-    return _DisplayForumSliverState(this.discuz, this.user, this.fid);
+    return _DisplayForumSliverState(this.discuz, this.user, this.fid, onSelectTid: this.onSelectTid);
   }
 }
 
@@ -78,7 +83,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
   bool historySaved = false;
 
-  _DisplayForumSliverState(this.discuz, this.user, this.fid);
+  final ValueChanged<int> onSelectTid;
+
+  _DisplayForumSliverState(this.discuz, this.user, this.fid, {required this.onSelectTid});
 
   late EasyRefreshController _controller;
   late Dio dio;
@@ -470,7 +477,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                             VibrationUtils.vibrateWithClickIfPossible();
                             await Navigator.push(
                                 context,
-                                platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(discuz, user, subForum.fid))
+                                platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz, user, subForum.fid))
                             );
                           },
                         ),
@@ -495,7 +502,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         ForumThreadWidget(discuz, user, _forumThreadList[index],
-                            _displayForumResult.discuzIndexVariables.threadType),
+                            _displayForumResult.discuzIndexVariables.threadType, onSelectTid),
                         if(index % 15 == 0 && index != 0)
                           AppBannerAdWidget(),
                       ],
@@ -1021,6 +1028,21 @@ class DisplayForumQuery {
   }
 }
 
+class DisplayForumTwoPanePage extends StatelessWidget{
+  final Discuz discuz;
+  final User? user;
+  final int fid;
+
+  const DisplayForumTwoPanePage(this.discuz, this.user, this.fid);
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints){
+      return DisplayForumTwoPaneStatefulWidget(discuz: discuz, fid: fid, restorationId: "DisplayForumFid", type: TwoPaneUtils.getTwoPaneType(constraints));
+    });
+
+  }
+}
 
 class DisplayForumTwoPaneStatefulWidget extends StatefulWidget{
   final String restorationId;
@@ -1042,7 +1064,7 @@ class DisplayForumTwoPaneStatefulWidget extends StatefulWidget{
 
   @override
   State<StatefulWidget> createState() {
-    return DisplayForumTwoPaneState();
+    return DisplayForumTwoPaneState(this.discuz, this.user, this.fid);
   }
 }
 
@@ -1054,19 +1076,19 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
 
   DisplayForumTwoPaneState(this.discuz, this.user, this.fid);
 
-  final RestorableInt _currentFid = RestorableInt(0);
+  final RestorableInt _currentTid = RestorableInt(0);
 
   @override
   String? get restorationId => widget.restorationId;
 
   @override
   void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
-    registerForRestoration(_currentFid, "DisplayForumFid");
+    registerForRestoration(_currentTid, "DisplayForumFid");
   }
 
   @override
   void dispose() {
-    _currentFid.dispose();
+    _currentTid.dispose();
     super.dispose();
   }
 
@@ -1074,15 +1096,32 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
   Widget build(BuildContext context) {
     var panePriority = TwoPanePriority.both;
     if (widget.type == TwoPaneType.smallScreen){
-      panePriority = _currentFid.value == 0? TwoPanePriority.start : TwoPanePriority.end;
+      panePriority = _currentTid.value == 0? TwoPanePriority.start : TwoPanePriority.end;
     }
 
-    return TwoPane(
-        paneProportion: 0.3,
-        panePriority: panePriority,
-        startPane: DisplayForumSliverPage(),
-        endPane: endPane
-    )
+    return TwoPaneScaffold(
+        type: widget.type,
+        child: TwoPane(
+            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+            paneProportion: 0.3,
+            panePriority: panePriority,
+            startPane: DisplayForumSliverPage(
+              discuz, user, fid,
+              onSelectTid: (tid) async {
+                setState(() {
+                  _currentTid.value = tid;
+                });
+                // if(widget.type == TwoPaneType.smallScreen){
+                //   await Navigator.push(
+                //           context,
+                //           platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz,user, tid,))
+                //       );
+                // }
+              },
+            ),
+            endPane: _currentTid.value == 0 ? Container():ViewThreadSliverPage(discuz, user,_currentTid.value)
+        )
+    );
 
     throw UnimplementedError();
   }

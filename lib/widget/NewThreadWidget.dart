@@ -32,12 +32,13 @@ class NewThreadWidget extends StatelessWidget{
   NewThread _newThread;
   Discuz _discuz;
   User? _user;
+  final ValueChanged<int> onSelectTid;
 
-  NewThreadWidget(this._discuz,this._user,this._newThread);
+  NewThreadWidget(this._discuz,this._user,this._newThread, this.onSelectTid);
 
   @override
   Widget build(BuildContext context) {
-    return ForumThreadWidget(_discuz, _user, _newThread.toForumThread(), null);
+    return ForumThreadWidget(_discuz, _user, _newThread.toForumThread(), null, onSelectTid);
   }
 
 

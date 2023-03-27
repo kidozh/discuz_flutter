@@ -12,7 +12,6 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
-import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -31,14 +30,15 @@ class ForumThreadWidget extends StatelessWidget{
   Discuz _discuz;
   User? _user;
   ThreadType? threadType;
+  final ValueChanged<int> onSelectTid;
 
-  ForumThreadWidget(this._discuz,this._user,this._forumThread, this.threadType);
+  ForumThreadWidget(this._discuz,this._user,this._forumThread, this.threadType, this.onSelectTid);
 
 
 
   @override
   Widget build(BuildContext context) {
-    return ForumThreadStatefulWidget(this._discuz,this._user,this._forumThread, this.threadType);
+    return ForumThreadStatefulWidget(this._discuz,this._user,this._forumThread, this.threadType, onSelectTid);
   }
 
 
@@ -49,13 +49,14 @@ class ForumThreadStatefulWidget extends StatefulWidget{
   Discuz _discuz;
   User? _user;
   ThreadType? threadType;
+  final ValueChanged<int> onSelectTid;
 
-  ForumThreadStatefulWidget(this._discuz,this._user,this._forumThread, this.threadType);
+  ForumThreadStatefulWidget(this._discuz,this._user,this._forumThread, this.threadType, this.onSelectTid);
 
   @override
   ForumThreadState createState() {
 
-    return ForumThreadState(this._discuz,this._user,this._forumThread, this.threadType);
+    return ForumThreadState(this._discuz,this._user,this._forumThread, this.threadType, this.onSelectTid);
   }
 
 }
@@ -68,7 +69,9 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
   ThreadType? threadType;
   bool read = false;
 
-  ForumThreadState(this._discuz,this._user,this._forumThread, this.threadType);
+  final ValueChanged<int> onSelectTid;
+
+  ForumThreadState(this._discuz,this._user,this._forumThread, this.threadType, this.onSelectTid);
 
   @override
   void initState() {
@@ -376,11 +379,13 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
   void triggerTapFunction() async{
     VibrationUtils.vibrateWithClickIfPossible();
     markThreadAsRead();
-    await Navigator.push(
-        context,
-        platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(_discuz,_user, _forumThread.getTid(),
-          passedSubject: _forumThread.subject,))
-    );
+    // recall
+    onSelectTid(_forumThread.getTid());
+    // await Navigator.push(
+    //     context,
+    //     platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(_discuz,_user, _forumThread.getTid(),
+    //       passedSubject: _forumThread.subject,))
+    // );
   }
 
   void triggerLongPressFunction() async{

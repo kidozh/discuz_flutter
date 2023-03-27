@@ -11,7 +11,6 @@ import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
@@ -350,7 +349,7 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
                 int fid = int.tryParse(fidString)!;
                 await Navigator.push(
                     context,
-                    platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(discuz,user, fid))
+                    platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz,user, fid))
                 );
                 return;
               }
@@ -382,7 +381,7 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
       if(fid!=null && int.tryParse(fid) != null){
         await Navigator.push(
             context,
-            platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(discuz, user, int.tryParse(fid)!))
+            platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz, user, int.tryParse(fid)!))
         );
         return;
       }

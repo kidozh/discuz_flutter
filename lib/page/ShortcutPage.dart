@@ -80,7 +80,7 @@ class ShortcutState extends State<ShortcutStatefulWidget> {
                                   platformPageRoute(
                                       context: context,
                                       builder: (context) =>
-                                          DisplayForumSliverPage(
+                                          DisplayForumTwoPanePage(
                                               _discuz, _user, fid)));
                             },
                           );

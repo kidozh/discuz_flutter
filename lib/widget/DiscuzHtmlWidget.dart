@@ -215,7 +215,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                           int fid = int.tryParse(fidString)!;
                           await Navigator.push(
                               context.buildContext,
-                              platformPageRoute(context:context.buildContext,builder: (context) => DisplayForumSliverPage(discuz,user, fid))
+                              platformPageRoute(context:context.buildContext,builder: (context) => DisplayForumTwoPanePage(discuz,user, fid))
                           );
                           return;
                         }
@@ -246,7 +246,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 if(fid!=null && int.tryParse(fid) != null){
                   await Navigator.push(
                       context.buildContext,
-                      platformPageRoute(context:context.buildContext,builder: (context) => DisplayForumSliverPage(discuz, user, int.tryParse(fid)!))
+                      platformPageRoute(context:context.buildContext,builder: (context) => DisplayForumTwoPanePage(discuz, user, int.tryParse(fid)!))
                   );
                   return;
                 }

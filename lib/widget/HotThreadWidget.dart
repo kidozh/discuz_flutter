@@ -33,12 +33,13 @@ class HotThreadWidget extends StatelessWidget{
   HotThread _hotThread;
   Discuz _discuz;
   User? _user;
+  final ValueChanged<int> onSelectTid;
 
-  HotThreadWidget(this._discuz,this._user,this._hotThread);
+  HotThreadWidget(this._discuz,this._user,this._hotThread, this.onSelectTid);
 
   @override
   Widget build(BuildContext context) {
-    return ForumThreadWidget(_discuz, _user, _hotThread.toForumThread(), null);
+    return ForumThreadWidget(_discuz, _user, _hotThread.toForumThread(), null, onSelectTid);
   }
 
 

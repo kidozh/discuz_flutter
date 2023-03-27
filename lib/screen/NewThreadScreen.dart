@@ -203,7 +203,9 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
             delegate: SliverChildBuilderDelegate(
                 (context, index) => Column(
                       children: [
-                        NewThreadWidget(discuz, user, _newThreadList[index]),
+                        NewThreadWidget(discuz, user, _newThreadList[index], (tid){
+
+                        }),
                         if (index % 15 == 0 && index != 0) AppBannerAdWidget()
                       ],
                     ),

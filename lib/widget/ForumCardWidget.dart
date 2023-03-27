@@ -40,7 +40,7 @@ class ForumCardWidget extends StatelessWidget{
           VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(
               context,
-              platformPageRoute(context:context,builder: (context) => DisplayForumSliverPage(_discuz, _user, _forum.getFid()))
+              platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(_discuz, _user, _forum.getFid()))
           );
         },
       ),
