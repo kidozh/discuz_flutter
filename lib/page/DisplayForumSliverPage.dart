@@ -18,6 +18,7 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/TwoPaneUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -1016,5 +1017,23 @@ class DisplayForumQuery {
     }
 
     return forumQueriesMap;
+  }
+}
+
+
+class DisplayForumTwoPaneStatefulWidget extends StatefulWidget{
+  final String restorationId;
+  final TwoPaneType type;
+
+  const DisplayForumTwoPaneStatefulWidget({
+    super.key,
+    required this.restorationId,
+    required this.type,
+  });
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    throw UnimplementedError();
   }
 }
