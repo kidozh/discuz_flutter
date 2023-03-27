@@ -26,6 +26,7 @@ import 'package:discuz_flutter/widget/AppBannerAdWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
+import 'package:dual_screen/dual_screen.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -1033,7 +1034,32 @@ class DisplayForumTwoPaneStatefulWidget extends StatefulWidget{
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
+    return DisplayForumTwoPaneState();
+  }
+}
+
+class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> with RestorationMixin{
+  final RestorableInt _currentFid = RestorableInt(0);
+
+  @override
+  String? get restorationId => widget.restorationId;
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(_currentFid, "DisplayForumFid");
+  }
+
+  @override
+  void dispose() {
+    _currentFid.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var panePriority = TwoPanePriority.both;
     throw UnimplementedError();
   }
+
+
 }

@@ -87,6 +87,7 @@ dependencies:
   gallery_saver: ^2.3.2
   dynamic_color: ^1.6.2
   intl_utils: ^2.8.1
+  dual_screen: ^1.0.3
 
 
 
