@@ -1026,8 +1026,16 @@ class DisplayForumTwoPaneStatefulWidget extends StatefulWidget{
   final String restorationId;
   final TwoPaneType type;
 
+  final Discuz discuz;
+  final User? user;
+  final int fid;
+
+
   const DisplayForumTwoPaneStatefulWidget({
     super.key,
+    required this.discuz,
+    this.user,
+    required this.fid,
     required this.restorationId,
     required this.type,
   });
@@ -1039,6 +1047,13 @@ class DisplayForumTwoPaneStatefulWidget extends StatefulWidget{
 }
 
 class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> with RestorationMixin{
+
+  Discuz discuz;
+  User? user;
+  int fid;
+
+  DisplayForumTwoPaneState(this.discuz, this.user, this.fid);
+
   final RestorableInt _currentFid = RestorableInt(0);
 
   @override
@@ -1058,6 +1073,17 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
   @override
   Widget build(BuildContext context) {
     var panePriority = TwoPanePriority.both;
+    if (widget.type == TwoPaneType.smallScreen){
+      panePriority = _currentFid.value == 0? TwoPanePriority.start : TwoPanePriority.end;
+    }
+
+    return TwoPane(
+        paneProportion: 0.3,
+        panePriority: panePriority,
+        startPane: DisplayForumSliverPage(),
+        endPane: endPane
+    )
+
     throw UnimplementedError();
   }
 
