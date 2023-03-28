@@ -50,7 +50,7 @@ class ForumThreadStatefulWidget extends StatefulWidget{
   Discuz _discuz;
   User? _user;
   ThreadType? threadType;
-  final ValueChanged<int>? onSelectTid;
+  ValueChanged<int>? onSelectTid;
 
   ForumThreadStatefulWidget(this._discuz,this._user,this._forumThread, this.threadType, this.onSelectTid);
 

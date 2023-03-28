@@ -1110,15 +1110,10 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
             startPane: DisplayForumSliverPage(
               discuz, user, fid,
               onSelectTid: (tid) {
+                log("Reselected a tid ${tid}");
                 setState(() {
                   _currentTid.value = tid;
                 });
-                // if(widget.type == TwoPaneType.smallScreen){
-                //   await Navigator.push(
-                //           context,
-                //           platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz,user, tid,))
-                //       );
-                // }
               },
             ),
 

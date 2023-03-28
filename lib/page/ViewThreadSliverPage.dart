@@ -103,7 +103,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
   late final Discuz discuz;
   late final User? user;
-  int tid = 0;
+  int tid;
 
   bool historySaved = false;
   VoidCallback? onClosed;
