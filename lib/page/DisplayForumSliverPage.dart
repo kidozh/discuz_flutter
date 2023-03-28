@@ -197,7 +197,6 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
   Future<IndicatorResult> _loadForumContent() async {
     // check the availability
-    log("Base url ${discuz.baseURL} ${_page}");
     User? user =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     var dio = await NetworkUtils.getDioWithPersistCookieJar(user);
@@ -499,7 +498,6 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                       (context, index) {
-                    log("${_forumThreadList[index].subject} ${_forumThreadList}");
                     return Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [

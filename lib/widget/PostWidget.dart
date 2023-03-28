@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
@@ -164,7 +162,6 @@ class PostState extends State<PostStatefulWidget> {
     _user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     List<BlockUser> userBlockedInDB =
         await _blockUserDao.isUserBlocked(_post.authorId, discuz);
-    log("get blocked info ${userBlockedInDB} In DB");
     if (userBlockedInDB.isEmpty) {
       setState(() {
         this.isUserBlocked = false;
@@ -386,7 +383,6 @@ class PostState extends State<PostStatefulWidget> {
               BlockUser blockUser = BlockUser(
                   _post.authorId, _post.author, DateTime.now(), _discuz);
               int insertId = await _blockUserDao.insertBlockUser(blockUser);
-              log("insert id into block user ${insertId}");
               break;
             }
           case 4:
