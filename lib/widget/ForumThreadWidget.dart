@@ -22,6 +22,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive_flutter/adapters.dart';
 
 import '../entity/ViewHistory.dart';
+import '../page/ViewThreadSliverPage.dart';
 
 // ignore: must_be_immutable
 class ForumThreadWidget extends StatelessWidget{
@@ -30,7 +31,7 @@ class ForumThreadWidget extends StatelessWidget{
   Discuz _discuz;
   User? _user;
   ThreadType? threadType;
-  final ValueChanged<int> onSelectTid;
+  final ValueChanged<int>? onSelectTid;
 
   ForumThreadWidget(this._discuz,this._user,this._forumThread, this.threadType, this.onSelectTid);
 
@@ -49,7 +50,7 @@ class ForumThreadStatefulWidget extends StatefulWidget{
   Discuz _discuz;
   User? _user;
   ThreadType? threadType;
-  final ValueChanged<int> onSelectTid;
+  final ValueChanged<int>? onSelectTid;
 
   ForumThreadStatefulWidget(this._discuz,this._user,this._forumThread, this.threadType, this.onSelectTid);
 
@@ -69,7 +70,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
   ThreadType? threadType;
   bool read = false;
 
-  final ValueChanged<int> onSelectTid;
+  final ValueChanged<int>? onSelectTid;
 
   ForumThreadState(this._discuz,this._user,this._forumThread, this.threadType, this.onSelectTid);
 
@@ -380,12 +381,18 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     VibrationUtils.vibrateWithClickIfPossible();
     markThreadAsRead();
     // recall
-    onSelectTid(_forumThread.getTid());
-    // await Navigator.push(
-    //     context,
-    //     platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(_discuz,_user, _forumThread.getTid(),
-    //       passedSubject: _forumThread.subject,))
-    // );
+    if(onSelectTid != null){
+      onSelectTid!(_forumThread.getTid());
+    }
+    else{
+      await Navigator.push(
+          context,
+          platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(_discuz,_user, _forumThread.getTid(),
+            passedSubject: _forumThread.subject,))
+      );
+    }
+
+
   }
 
   void triggerLongPressFunction() async{

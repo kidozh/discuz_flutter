@@ -33,7 +33,7 @@ class HotThreadWidget extends StatelessWidget{
   HotThread _hotThread;
   Discuz _discuz;
   User? _user;
-  final ValueChanged<int> onSelectTid;
+  final ValueChanged<int>? onSelectTid;
 
   HotThreadWidget(this._discuz,this._user,this._hotThread, this.onSelectTid);
 

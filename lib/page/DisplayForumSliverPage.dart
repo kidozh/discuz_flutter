@@ -16,6 +16,7 @@ import 'package:discuz_flutter/page/InternalWebviewBrowserPage.dart';
 import 'package:discuz_flutter/page/PostThreadPage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
@@ -441,6 +442,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
           footer: EasyRefreshUtils.i18nClassicFooter(context),
           refreshOnStart: true,
           onRefresh: () async {
+            VibrationUtils.vibrateSuccessfullyIfPossible();
             return await _invalidateContent();
 
           },
@@ -1103,11 +1105,11 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
         type: widget.type,
         child: TwoPane(
             padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-            paneProportion: 0.3,
+            paneProportion: 0.35,
             panePriority: panePriority,
             startPane: DisplayForumSliverPage(
               discuz, user, fid,
-              onSelectTid: (tid) async {
+              onSelectTid: (tid) {
                 setState(() {
                   _currentTid.value = tid;
                 });
@@ -1119,11 +1121,19 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
                 // }
               },
             ),
-            endPane: _currentTid.value == 0 ? Container():ViewThreadSliverPage(discuz, user,_currentTid.value)
+
+            endPane: _currentTid.value == 0 ? BlankScreen() :ViewThreadSliverPage(
+                discuz,
+                user,
+                _currentTid.value,
+                onClosed: (){
+                  setState(() {
+                    _currentTid.value = 0;
+                  });
+                },
+            )
         )
     );
-
-    throw UnimplementedError();
   }
 
 

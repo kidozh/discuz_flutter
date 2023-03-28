@@ -32,7 +32,7 @@ class NewThreadWidget extends StatelessWidget{
   NewThread _newThread;
   Discuz _discuz;
   User? _user;
-  final ValueChanged<int> onSelectTid;
+  final ValueChanged<int>? onSelectTid;
 
   NewThreadWidget(this._discuz,this._user,this._newThread, this.onSelectTid);
 

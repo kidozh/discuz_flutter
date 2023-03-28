@@ -217,7 +217,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
               delegate: SliverChildBuilderDelegate(
                   (context, index) => Column(
                         children: [
-                          HotThreadWidget(discuz, user, _hotThreadList[index], onSelectTid),
+                          HotThreadWidget(discuz, user, _hotThreadList[index], null),
                           if (index % 15 == 0 && index != 0) AppBannerAdWidget()
                         ],
                       ),

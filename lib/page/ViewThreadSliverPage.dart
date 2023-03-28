@@ -35,6 +35,7 @@ import 'package:discuz_flutter/widget/PollWidget.dart';
 import 'package:discuz_flutter/widget/PostTextField.dart';
 import 'package:discuz_flutter/widget/PostWidget.dart';
 import 'package:easy_refresh/easy_refresh.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -51,12 +52,13 @@ import '../widget/AppBannerAdWidget.dart';
 import 'InternalWebviewBrowserPage.dart';
 
 class ViewThreadSliverPage extends StatelessWidget {
-  late final Discuz discuz;
-  late final User? user;
-  int tid = 0;
+  Discuz discuz;
+  User? user;
+  int tid;
   String? passedSubject;
+  VoidCallback? onClosed;
 
-  ViewThreadSliverPage(this.discuz, this.user, this.tid, {this.passedSubject});
+  ViewThreadSliverPage(this.discuz, this.user, this.tid, {this.passedSubject, this.onClosed});
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +67,7 @@ class ViewThreadSliverPage extends StatelessWidget {
       user,
       tid,
       passedSubject: passedSubject,
+      onClosed: onClosed,
     );
   }
 }
@@ -74,14 +77,17 @@ class ViewThreadStatefulSliverWidget extends StatefulWidget {
   late final User? user;
   int tid = 0;
   String? passedSubject;
+  VoidCallback? onClosed;
 
   ViewThreadStatefulSliverWidget(this.discuz, this.user, this.tid,
-      {this.passedSubject});
+      {this.passedSubject, this.onClosed});
 
   @override
   _ViewThreadSliverState createState() {
     return _ViewThreadSliverState(this.discuz, this.user, this.tid,
-        passedSubject: passedSubject);
+        passedSubject: passedSubject,
+        onClosed: onClosed
+    );
   }
 }
 
@@ -100,9 +106,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   int tid = 0;
 
   bool historySaved = false;
+  VoidCallback? onClosed;
 
   _ViewThreadSliverState(this.discuz, this.user, this.tid,
-      {this.passedSubject});
+      {this.passedSubject, this.onClosed});
 
   EasyRefreshController _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
   ScrollController _scrollController = ScrollController();
@@ -554,6 +561,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   Widget build(BuildContext context) {
     return PlatformScaffold(
       appBar: PlatformAppBar(
+        automaticallyImplyLeading: this.onClosed == null? true: false,
+        leading: this.onClosed == null? null: PlatformIconButton(
+          icon: Icon(Icons.arrow_back),
+          cupertinoIcon: Icon(CupertinoIcons.back),
+          onPressed: onClosed,
+        ),
         //middle: Text(S.of(context).forumDisplayTitle),
         // title: Text(S.of(context).viewThreadTitle),
         title: _viewThreadResult.threadVariables.threadInfo.subject.isEmpty

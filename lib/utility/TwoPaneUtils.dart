@@ -10,7 +10,7 @@ enum TwoPaneType{
 
 class TwoPaneUtils{
   static TwoPaneType getTwoPaneType(BoxConstraints constraints){
-    if(constraints.maxWidth< 600){
+    if(constraints.maxWidth < 650){
       return TwoPaneType.smallScreen;
     }
     else{
