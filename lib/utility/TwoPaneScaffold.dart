@@ -42,7 +42,16 @@ class TwoPaneScaffold extends StatelessWidget{
             hingeSize.height,
           );
           var smallestDimension = MediaQuery.of(context).size.shortestSide;
-          final type = smallestDimension < 600? TwoPaneType.smallScreen: TwoPaneType.tablet;
+          TwoPaneType type = TwoPaneType.smallScreen;
+          if(smallestDimension < 650){
+            type = TwoPaneType.smallScreen;
+          }
+          else if(smallestDimension < 800){
+            type = TwoPaneType.foldable;
+          }
+          else{
+            type = TwoPaneType.tablet;
+          }
 
           return MediaQuery(
               data: MediaQueryData(

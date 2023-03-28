@@ -1076,6 +1076,7 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
   Discuz discuz;
   User? user;
   int fid;
+  int tid = 0;
 
   DisplayForumTwoPaneState(this.discuz, this.user, this.fid){
     _currentFid = RestorableInt(fid);
@@ -1125,7 +1126,7 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
               },
             ),
 
-            endPane: _currentTid.value == 0 ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText) :ViewThreadSliverPage(
+            endPane: _currentTid.value == 0 ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText) :ViewThreadStatefulSliverWidget(
                 discuz,
                 user,
                 _currentTid.value,
