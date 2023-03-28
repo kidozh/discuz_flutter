@@ -143,6 +143,13 @@ class PostState extends State<PostStatefulWidget> {
     _loadDB();
   }
 
+  @override
+  void dispose() {
+
+
+    super.dispose();
+  }
+
   late BlockUserDao _blockUserDao;
   bool isUserBlocked = false;
   String groupTitle = "";

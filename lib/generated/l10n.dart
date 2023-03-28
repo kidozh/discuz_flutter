@@ -1,6 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -4406,6 +4407,16 @@ class S {
     return Intl.message(
       'DH Push service',
       name: 'dhPushServiceTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Click thread to view posts inside.`
+  String get viewThreadTwoPaneText {
+    return Intl.message(
+      'Click thread to view posts inside.',
+      name: 'viewThreadTwoPaneText',
       desc: '',
       args: [],
     );

@@ -16,7 +16,6 @@ import 'package:discuz_flutter/page/InternalWebviewBrowserPage.dart';
 import 'package:discuz_flutter/page/PostThreadPage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
@@ -39,6 +38,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../screen/TwoPaneEmptyScreen.dart';
 import '../utility/EasyRefreshUtils.dart';
 
 class DisplayForumSliverPage extends StatelessWidget {
@@ -288,6 +288,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
       //log("set successful result ${_displayForumResult} ${_forumThreadList.length}");
     }).catchError((onError) {
+      if(!mounted){
+        return IndicatorResult.fail;
+      }
       VibrationUtils.vibrateErrorIfPossible();
       //log(onError);
       EasyLoading.showError('${onError}');
@@ -1074,21 +1077,26 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
   User? user;
   int fid;
 
-  DisplayForumTwoPaneState(this.discuz, this.user, this.fid);
+  DisplayForumTwoPaneState(this.discuz, this.user, this.fid){
+    _currentFid = RestorableInt(fid);
+  }
 
   final RestorableInt _currentTid = RestorableInt(0);
+  late final RestorableInt _currentFid;
 
   @override
   String? get restorationId => widget.restorationId;
 
   @override
   void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
-    registerForRestoration(_currentTid, "DisplayForumFid");
+    registerForRestoration(_currentTid, "DisplayForumTid");
+    registerForRestoration(_currentFid, "DisplayForumFid");
   }
 
   @override
   void dispose() {
     _currentTid.dispose();
+    _currentFid.dispose();
     super.dispose();
   }
 
@@ -1111,11 +1119,13 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
                 log("Reselected a tid ${tid}");
                 setState(() {
                   _currentTid.value = tid;
+                  _currentTid.didUpdateValue(tid);
                 });
+
               },
             ),
 
-            endPane: _currentTid.value == 0 ? BlankScreen() :ViewThreadSliverPage(
+            endPane: _currentTid.value == 0 ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText) :ViewThreadSliverPage(
                 discuz,
                 user,
                 _currentTid.value,

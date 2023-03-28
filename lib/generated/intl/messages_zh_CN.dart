@@ -653,6 +653,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewAuthorInfo": MessageLookupByLibrary.simpleMessage("查看用户详情"),
         "viewHistory": MessageLookupByLibrary.simpleMessage("浏览历史"),
         "viewThreadTitle": MessageLookupByLibrary.simpleMessage("查看帖子"),
+        "viewThreadTwoPaneText":
+            MessageLookupByLibrary.simpleMessage("点击左侧的帖子以查看内容。"),
         "viewUserInfo": m38,
         "warnedPost": MessageLookupByLibrary.simpleMessage("此贴被警告。"),
         "watchPictureInFullScreen":

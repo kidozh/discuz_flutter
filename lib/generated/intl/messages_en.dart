@@ -768,6 +768,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewHistory": MessageLookupByLibrary.simpleMessage("View History"),
         "viewThreadTitle":
             MessageLookupByLibrary.simpleMessage("View a thread"),
+        "viewThreadTwoPaneText": MessageLookupByLibrary.simpleMessage(
+            "Click thread to view posts inside."),
         "viewUserInfo": m38,
         "warnedPost":
             MessageLookupByLibrary.simpleMessage("The post is warned."),
