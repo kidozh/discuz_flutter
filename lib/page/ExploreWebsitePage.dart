@@ -41,7 +41,7 @@ class ExploreWebsiteState extends State<ExploreWebsitePage> {
   String? initialURL;
 
   final ValueChanged<int>? onSelectTid;
-  ExploreWebsiteState( {this.initialURL, this.onSelectTid});
+  ExploreWebsiteState({this.initialURL, this.onSelectTid});
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +147,7 @@ class InnerWebviewScreen extends StatefulWidget{
 
   @override
   InnerWebviewState createState() {
-    return InnerWebviewState(this._discuz,this._user,initialURL: this.initialURL);
+    return InnerWebviewState(this._discuz,this._user,initialURL: this.initialURL, onSelectTid: this.onSelectTid);
   }
 
 }

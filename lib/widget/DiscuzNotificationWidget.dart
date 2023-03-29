@@ -12,8 +12,9 @@ import 'package:flutter/material.dart';
 class DiscuzNotificationWidget extends StatelessWidget {
   DiscuzNotification _notification;
   Discuz _discuz;
+  final ValueChanged<int>? onSelectTid;
 
-  DiscuzNotificationWidget(this._discuz, this._notification);
+  DiscuzNotificationWidget(this._discuz, this._notification, {this.onSelectTid});
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +85,7 @@ class DiscuzNotificationWidget extends StatelessWidget {
             ],
           ),
           // rich text rendering
-          DiscuzHtmlWidget(_discuz,_notification.note)
+          DiscuzHtmlWidget(_discuz,_notification.note, onSelectTid: this.onSelectTid,)
         ],
       ),
     ));

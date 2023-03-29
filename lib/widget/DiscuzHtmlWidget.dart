@@ -34,8 +34,9 @@ class DiscuzHtmlWidget extends StatelessWidget{
   Discuz discuz;
   JumpToPidCallback? callback;
   int? tid;
+  final ValueChanged<int>? onSelectTid;
 
-  DiscuzHtmlWidget(this.discuz,this.html,{this.callback, this.tid});
+  DiscuzHtmlWidget(this.discuz,this.html,{this.callback, this.tid, this.onSelectTid});
 
   _trustHost(String host) async{
     TrustHostDao trustHostDao = await AppDatabase.getTrustHostDao();
@@ -178,13 +179,16 @@ class DiscuzHtmlWidget extends StatelessWidget{
                         // trigger tid
                         if(int.tryParse(tidString) != null){
                           int tid = int.tryParse(tidString)!;
+                          if(onSelectTid == null){
+                            await Navigator.push(
+                                context.buildContext,
+                                platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadSliverPage( discuz,user, tid))
+                            );
+                          }
+                          else{
+                            onSelectTid!(tid);
+                          }
 
-
-
-                          await Navigator.push(
-                              context.buildContext,
-                              platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadSliverPage( discuz,user, tid))
-                          );
                           return;
                         }
                       }
@@ -197,10 +201,15 @@ class DiscuzHtmlWidget extends StatelessWidget{
                         // trigger tid
                         if(int.tryParse(tidString) != null){
                           int tid = int.tryParse(tidString)!;
-                          await Navigator.push(
-                              context.buildContext,
-                              platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadSliverPage(discuz,user,tid))
-                          );
+                          if(onSelectTid == null){
+                            await Navigator.push(
+                                context.buildContext,
+                                platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadSliverPage( discuz,user, tid))
+                            );
+                          }
+                          else{
+                            onSelectTid!(tid);
+                          }
                           return;
                         }
                       }
@@ -254,10 +263,16 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 // check short
                 String? tid = await RewriteRuleUtils.findTidInURL(discuz, urlString);
                 if(tid!=null && int.tryParse(tid) != null){
-                  await Navigator.push(
-                      context.buildContext,
-                      platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadSliverPage(discuz, user, int.tryParse(tid)!))
-                  );
+                  if(onSelectTid == null){
+                    await Navigator.push(
+                        context.buildContext,
+                        platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadSliverPage(discuz, user, int.tryParse(tid)!))
+                    );
+                  }
+                  else{
+                    onSelectTid!(int.tryParse(tid)!);
+                  }
+
                   return;
                 }
 

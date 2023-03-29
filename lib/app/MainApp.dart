@@ -501,7 +501,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         if (!Platform.isIOS)
           ExploreWebsitePage(
             key: ValueKey(0),
+            onSelectTid: this.onSelectTid,
           ),
+        // should not exist any
         DiscuzPortalScreen(
           key: ValueKey(1),
         ),
@@ -509,6 +511,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         DashboardScreen(),
         NotificationScreen(
           key: ValueKey(3),
+          onSelectTid: this.onSelectTid,
         ),
         // FavoriteThreadScreen(),
         DiscuzMessageScreen(
@@ -618,7 +621,19 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget> with Restoration
             padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
             paneProportion: 0.35,
             panePriority: panePriority,
-            startPane: MyHomePage(title: ""),
+            startPane: MyHomePage(title: "", onSelectTid: (tid) async{
+
+              // setState(() {
+              //   _currentTid.value = 0;
+              // });
+              // // I don't know why it takes time to refresh
+              // await Future.delayed(const Duration(milliseconds: 100));
+              setState(() {
+                _currentTid.value = tid;
+                _currentTid.didUpdateValue(tid);
+              });
+              log("Two Pane Changed current tid ${_currentTid.value}");
+            },),
 
             endPane: _currentTid.value == 0 ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText) : Consumer<DiscuzAndUserNotifier>(
                 builder: (context, discuzAndUser, child){

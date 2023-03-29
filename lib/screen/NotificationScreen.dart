@@ -24,19 +24,24 @@ import '../utility/MobileSignUtils.dart';
 import 'EmptyListScreen.dart';
 
 class NotificationScreen extends StatelessWidget {
-  NotificationScreen({required Key key}) : super(key: key);
+  NotificationScreen({required Key key, this.onSelectTid}) : super(key: key);
+
+  final ValueChanged<int>? onSelectTid;
 
   @override
   Widget build(BuildContext context) {
-    return NotificationStatefulWidget(key: UniqueKey());
+    log("Notification Screen onSelectTid: ${onSelectTid}");
+    return NotificationStatefulWidget(key: UniqueKey(), onSelectTid: onSelectTid,);
   }
 }
 
 class NotificationStatefulWidget extends StatefulWidget {
-  NotificationStatefulWidget({required Key key}) : super(key: key);
+  final ValueChanged<int>? onSelectTid;
+
+  NotificationStatefulWidget({required Key key, this.onSelectTid}) : super(key: key);
 
   _NotificationState createState() {
-    return _NotificationState();
+    return _NotificationState(onSelectTid: this.onSelectTid);
   }
 }
 
@@ -50,12 +55,12 @@ class _NotificationState extends State<NotificationStatefulWidget> {
 
   late EasyRefreshController _controller;
 
+  final ValueChanged<int>? onSelectTid;
 
-  _NotificationState();
+  _NotificationState({this.onSelectTid});
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
 
@@ -178,8 +183,6 @@ class _NotificationState extends State<NotificationStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-
     return Consumer<DiscuzAndUserNotifier>(
         builder: (context, discuzAndUser, child) {
       if (discuzAndUser.discuz == null) {
@@ -224,7 +227,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
                 childCount: 1
             )),
           SliverList(delegate: SliverChildBuilderDelegate(
-                  (context, index)=> DiscuzNotificationWidget(discuz, _noteList[index]),
+                  (context, index)=> DiscuzNotificationWidget(discuz, _noteList[index], onSelectTid: this.onSelectTid,),
             childCount: _noteList.length
           )),
         ],
