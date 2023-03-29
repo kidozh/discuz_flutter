@@ -26,19 +26,24 @@ import 'EmptyListScreen.dart';
 import 'NullDiscuzScreen.dart';
 
 class NewThreadScreen extends StatelessWidget {
-  NewThreadScreen();
+  final ValueChanged<int>? onSelectTid;
+  NewThreadScreen({this.onSelectTid}){
+    log("New thread When create it ${onSelectTid}");
+  }
 
   @override
   Widget build(BuildContext context) {
-    return NewThreadStatefulWidget(key: UniqueKey());
+    return NewThreadStatefulWidget(onSelectTid: onSelectTid,);
   }
 }
 
 class NewThreadStatefulWidget extends StatefulWidget {
-  NewThreadStatefulWidget({required Key key}) : super(key: key);
+  final ValueChanged<int>? onSelectTid;
+  NewThreadStatefulWidget({this.onSelectTid});
 
   _NewThreadState createState() {
-    return _NewThreadState();
+
+    return _NewThreadState(onSelectTid: onSelectTid);
   }
 }
 
@@ -49,6 +54,9 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
   DiscuzError? _error;
   int _page = 1;
   List<NewThread> _newThreadList = [];
+  final ValueChanged<int>? onSelectTid;
+
+  _NewThreadState({this.onSelectTid});
 
   late EasyRefreshController _controller;
 
@@ -76,7 +84,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
     //
     // });
     String fids = await UserPreferencesUtils.getDiscuzForumFids(discuz);
-    log("Recv fids ${fids}");
+
 
     return await _client.newThreadsResult(fids, (_page - 1) * 20).then((value) async {
       setState(() {
@@ -157,6 +165,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
+
     return Consumer<DiscuzAndUserNotifier>(
         builder: (context, discuzAndUser, child) {
       if (discuzAndUser.discuz == null) {
@@ -203,7 +212,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
             delegate: SliverChildBuilderDelegate(
                 (context, index) => Column(
                       children: [
-                        NewThreadWidget(discuz, user, _newThreadList[index], null),
+                        NewThreadWidget(discuz, user, _newThreadList[index], this.onSelectTid),
                         if (index % 15 == 0 && index != 0) AppBannerAdWidget()
                       ],
                     ),

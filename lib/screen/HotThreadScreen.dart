@@ -26,7 +26,9 @@ import 'EmptyListScreen.dart';
 class HotThreadScreen extends StatelessWidget {
   final ValueChanged<int>? onSelectTid;
 
-  HotThreadScreen({this.onSelectTid});
+  HotThreadScreen({this.onSelectTid}){
+    log("Hot thread When create it ${onSelectTid}");
+  }
 
   @override
   Widget build(BuildContext context) {

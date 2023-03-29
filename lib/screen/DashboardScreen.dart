@@ -1,5 +1,7 @@
 
 
+import 'dart:developer';
+
 import 'package:discuz_flutter/screen/NewThreadScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +61,7 @@ class MaterialDashboardScreen extends StatelessWidget{
             Expanded(
               child: TabBarView(children: [
                 HotThreadScreen(onSelectTid: this.onSelectTid,),
-                NewThreadScreen()
+                NewThreadScreen(onSelectTid: onSelectTid,)
               ]),
             )
           ],
@@ -103,7 +105,7 @@ class CupertinoDashboardState extends State<CupertinoDashboardStatefulWidget>{
   int _selectedScreenIndex = 0;
   @override
   Widget build(BuildContext context) {
-
+    log("Dash board when loading it ${onSelectTid}");
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
@@ -135,7 +137,7 @@ class CupertinoDashboardState extends State<CupertinoDashboardStatefulWidget>{
         Expanded(
             child: [
               HotThreadScreen(onSelectTid: onSelectTid,),
-              NewThreadScreen()
+              NewThreadScreen(onSelectTid: onSelectTid,)
             ][_selectedScreenIndex]
         )
       ],
