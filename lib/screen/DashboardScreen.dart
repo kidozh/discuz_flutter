@@ -9,6 +9,10 @@ import '../generated/l10n.dart';
 import 'HotThreadScreen.dart';
 
 class DashboardScreen extends StatelessWidget{
+  final ValueChanged<int>? onSelectTid;
+
+  DashboardScreen({this.onSelectTid});
+
   @override
   Widget build(BuildContext context) {
     return PlatformWidgetBuilder(

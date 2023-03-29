@@ -24,7 +24,7 @@ import '../utility/MobileSignUtils.dart';
 import 'EmptyListScreen.dart';
 
 class NotificationScreen extends StatelessWidget {
-  NotificationScreen({required Key key, this.onSelectTid}) : super(key: key);
+  NotificationScreen({this.onSelectTid});
 
   final ValueChanged<int>? onSelectTid;
 

@@ -15,7 +15,6 @@ import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -143,7 +142,7 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
           ExploreWebsitePage(key: ValueKey(0),),
           DiscuzPortalScreen(key: ValueKey(1),),
           HotThreadScreen(key: ValueKey(2),),
-          NotificationScreen(key: ValueKey(3),),
+          NotificationScreen(),
           ConfigurationScreen(),
         ],
       ),

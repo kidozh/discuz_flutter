@@ -510,7 +510,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         //HotThreadScreen(key: ValueKey(2),),
         DashboardScreen(),
         NotificationScreen(
-          key: ValueKey(3),
+          //key: ValueKey(3),
           onSelectTid: this.onSelectTid,
         ),
         // FavoriteThreadScreen(),
@@ -623,11 +623,11 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget> with Restoration
             panePriority: panePriority,
             startPane: MyHomePage(title: "", onSelectTid: (tid) async{
 
-              // setState(() {
-              //   _currentTid.value = 0;
-              // });
-              // // I don't know why it takes time to refresh
-              // await Future.delayed(const Duration(milliseconds: 100));
+              setState(() {
+                _currentTid.value = 0;
+              });
+              // I don't know why it takes time to refresh
+              await Future.delayed(const Duration(milliseconds: 100));
               setState(() {
                 _currentTid.value = tid;
                 _currentTid.didUpdateValue(tid);

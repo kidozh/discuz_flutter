@@ -192,6 +192,7 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
 
   @override
   void initState() {
+    //log("ExploreWebsite Inner onSelectTid: ${onSelectTid}");
     super.initState();
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
 
@@ -407,10 +408,16 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
       String? tid = await RewriteRuleUtils.findTidInURL(discuz, urlString);
       log("read tid: ${fid} from url");
       if(tid!=null && int.tryParse(tid) != null){
-        await Navigator.push(
-            context,
-            platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz, user, int.tryParse(tid)!))
-        );
+        if(onSelectTid == null){
+          await Navigator.push(
+              context,
+              platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz, user, int.tryParse(tid)!))
+          );
+        }
+        else{
+          onSelectTid!(int.tryParse(tid)!);
+        }
+
         return;
       }
 
