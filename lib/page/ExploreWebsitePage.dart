@@ -26,11 +26,13 @@ class ExploreWebsitePage extends StatefulWidget {
 
   final String? initialURL;
 
-  ExploreWebsitePage({this.initialURL, required Key key}): super(key: key);
+  final ValueChanged<int>? onSelectTid;
+
+  ExploreWebsitePage({this.initialURL, required Key key, this.onSelectTid}): super(key: key);
 
   @override
   ExploreWebsiteState createState() {
-    return ExploreWebsiteState(initialURL: this.initialURL);
+    return ExploreWebsiteState(initialURL: this.initialURL, onSelectTid: this.onSelectTid);
   }
 }
 
@@ -38,11 +40,8 @@ class ExploreWebsiteState extends State<ExploreWebsitePage> {
 
   String? initialURL;
 
-  ExploreWebsiteState({this.initialURL});
-
-
-
-
+  final ValueChanged<int>? onSelectTid;
+  ExploreWebsiteState( {this.initialURL, this.onSelectTid});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +51,11 @@ class ExploreWebsiteState extends State<ExploreWebsitePage> {
       }
       else{
 
-        return InnerWebviewScreen(ValueKey(discuzAndUser.discuz),discuzAndUser.discuz!, discuzAndUser.user, initialURL: initialURL,);
+        return InnerWebviewScreen(ValueKey(discuzAndUser.discuz),discuzAndUser.discuz!,
+          discuzAndUser.user,
+          initialURL: initialURL,
+          onSelectTid: this.onSelectTid,
+        );
       }
     });
 
@@ -138,8 +141,9 @@ class InnerWebviewScreen extends StatefulWidget{
   Discuz _discuz;
   User? _user;
   String? initialURL;
+  final ValueChanged<int>? onSelectTid;
 
-  InnerWebviewScreen(Key key,this._discuz,this._user, {this.initialURL}):super(key: key);
+  InnerWebviewScreen(Key key,this._discuz,this._user, {this.initialURL, this.onSelectTid}):super(key: key);
 
   @override
   InnerWebviewState createState() {
@@ -151,6 +155,8 @@ class InnerWebviewScreen extends StatefulWidget{
 class InnerWebviewState extends State<InnerWebviewScreen>{
   Discuz _discuz;
   User? _user;
+  final ValueChanged<int>? onSelectTid;
+
 
   final Completer<WebViewController> _controller =
   Completer<WebViewController>();
@@ -164,7 +170,7 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
 
   bool cookieLoaded = false;
 
-  InnerWebviewState(this._discuz,this._user,{this.initialURL});
+  InnerWebviewState(this._discuz,this._user,{this.initialURL, this.onSelectTid});
 
   void loadCookieByUser(Discuz _discuz,User? _user) async {
     if(_user!=null){
@@ -289,7 +295,7 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
       // add a prefix to test if it's a url
       urlString = discuz.baseURL+ "/" + urlString;
       log("Press after link ${urlString} ");
-      urlLauchable = await canLaunch(urlString);
+      urlLauchable = await canLaunchUrl(Uri.parse(urlString));
     }
 
 
@@ -315,10 +321,16 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
               // trigger tid
               if(int.tryParse(tidString) != null){
                 int tid = int.tryParse(tidString)!;
-                await Navigator.push(
-                    context,
-                    platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( discuz,user, tid))
-                );
+                if(onSelectTid == null){
+                  await Navigator.push(
+                      context,
+                      platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( discuz,user, tid))
+                  );
+                }
+                else{
+                  onSelectTid!(tid);
+                }
+
                 return;
               }
             }
@@ -331,10 +343,15 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
               // trigger tid
               if(int.tryParse(tidString) != null){
                 int tid = int.tryParse(tidString)!;
-                await Navigator.push(
-                    context,
-                    platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz,user,tid))
-                );
+                if(onSelectTid == null){
+                  await Navigator.push(
+                      context,
+                      platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( discuz,user, tid))
+                  );
+                }
+                else{
+                  onSelectTid!(tid);
+                }
                 return;
               }
             }

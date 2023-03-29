@@ -187,7 +187,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title, this.onSelectTid}) : super(key: key);
+
+  final ValueChanged<int>? onSelectTid;
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -201,10 +203,12 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState(onSelectTid: this.onSelectTid);
 }
 
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
+  final ValueChanged<int>? onSelectTid;
+
   int _bottomNavigationbarIndex = 0;
   late List<Widget> bodies = [];
   late UserDao _userDao;
@@ -213,7 +217,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   //
   List<Discuz> _allDiscuzs = [];
 
-  _MyHomePageState() {
+  _MyHomePageState({this.onSelectTid}) {
     _queryDiscuzList();
   }
 
