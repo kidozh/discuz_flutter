@@ -358,6 +358,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             // save to user preference
 
             _setFirstUserInDiscuz(discuz);
+            if(onSelectTid!=null){
+              onSelectTid!(0);
+            }
             Navigator.of(context).pop();
           });
         },
