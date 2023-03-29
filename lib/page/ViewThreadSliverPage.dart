@@ -688,7 +688,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                     return await _loadForumContent();
                   },
                   child: CustomScrollView(
-                    controller: _postAutoScrollController,
+                    controller: _scrollController,
                     slivers: [
                       SliverList(
                           delegate: SliverChildBuilderDelegate(
@@ -744,38 +744,42 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                               (context, index) {
                             return Column(
                               children: [
-                                PostWidget(
-                                  discuz,
-                                  _postList[index],
-                                  _viewThreadResult.threadVariables.threadInfo.authorId,
-                                  _viewThreadResult.threadVariables.formHash,
-                                  tid: tid,
-                                  onAuthorSelectedCallback: () {
-                                    if (viewThreadQuery.authorId == 0) {
-                                      viewThreadQuery.authorId =
-                                          _postList[index].authorId;
-                                    } else {
-                                      viewThreadQuery.authorId = 0;
-                                    }
-                                    setNewViewThreadQuery(viewThreadQuery);
-                                  },
-                                  postCommentList: postCommentList,
-                                  ignoreFontCustomization: ignoreFontCustomization,
-                                  jumpToPidCallback: (pid) {
-                                    // need to find the pid and scroll to it
-                                    log("jump to pid ${pid} and we are looking it");
-                                    int cnt = 0;
-                                    for (var post in _postList) {
-                                      log("find it: ${post.pid} in ${cnt}");
-                                      if (post.pid == pid) {
-                                        log("!find it: ${pid} in ${cnt}");
-                                        _postAutoScrollController.scrollToIndex(cnt);
-                                        break;
-                                      }
-                                      cnt += 1;
-                                    }
-                                    // check whether it's the end of the scroll
-                                  },
+                                AutoScrollTag(
+                                    key: ValueKey(index),
+                                    controller: _postAutoScrollController,
+                                    index: index,
+                                    child: PostWidget(
+                                      discuz,
+                                      _postList[index],
+                                      _viewThreadResult.threadVariables.threadInfo.authorId,
+                                      _viewThreadResult.threadVariables.formHash,
+                                      tid: tid,
+                                      onAuthorSelectedCallback: () {
+                                        if (viewThreadQuery.authorId == 0) {
+                                          viewThreadQuery.authorId =
+                                              _postList[index].authorId;
+                                        } else {
+                                          viewThreadQuery.authorId = 0;
+                                        }
+                                        setNewViewThreadQuery(viewThreadQuery);
+                                      },
+                                      postCommentList: postCommentList,
+                                      ignoreFontCustomization: ignoreFontCustomization,
+                                      jumpToPidCallback: (pid) {
+                                        // need to find the pid and scroll to it
+                                        log("jump to pid ${pid} and we are looking it");
+                                        int cnt = 0;
+                                        for (var post in _postList) {
+                                          if (post.pid == pid) {
+                                            log("!find it: ${pid} in ${cnt}");
+                                            _postAutoScrollController.scrollToIndex(cnt);
+                                            break;
+                                          }
+                                          cnt += 1;
+                                        }
+                                        // check whether it's the end of the scroll
+                                      },
+                                    ),
                                 ),
                                 if(index % 10 == 0 && index != 0)
                                   AppBannerAdWidget()
