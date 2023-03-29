@@ -12,6 +12,7 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzNotificationWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:easy_refresh/easy_refresh.dart';
@@ -31,14 +32,14 @@ class NotificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return NotificationStatefulWidget(key: UniqueKey(), onSelectTid: onSelectTid,);
+    return NotificationStatefulWidget(onSelectTid: onSelectTid,);
   }
 }
 
 class NotificationStatefulWidget extends StatefulWidget {
   final ValueChanged<int>? onSelectTid;
 
-  NotificationStatefulWidget({required Key key, this.onSelectTid}) : super(key: key);
+  NotificationStatefulWidget({this.onSelectTid});
 
   _NotificationState createState() {
     return _NotificationState(onSelectTid: this.onSelectTid);
@@ -68,6 +69,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
 
   Future<IndicatorResult> _invalidateNotificationContent(Discuz discuz) async {
     _page = 1;
+    VibrationUtils.vibrateWithClickIfPossible();
     return await _loadNotificationContent(discuz);
   }
 
