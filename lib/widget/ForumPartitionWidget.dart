@@ -26,7 +26,6 @@ class ForumPartitionWidget extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    final orientation = MediaQuery.of(context).orientation;
     return Container(
       child: Column(
         children: [
@@ -40,9 +39,8 @@ class ForumPartitionWidget extends StatelessWidget{
               padding: EdgeInsets.all(0),
               shrinkWrap: true,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: orientation == Orientation.portrait ? 2 : 3,
-                  childAspectRatio: orientation == Orientation.portrait ? 2 : 3,
-
+                  crossAxisCount: 2,
+                  childAspectRatio: 2,
               ),
               itemCount: _subForumList.length,
               itemBuilder: (context, index){

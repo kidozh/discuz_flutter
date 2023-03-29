@@ -25,6 +25,7 @@ import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/PushServiceUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:dual_screen/dual_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,6 +37,9 @@ import 'package:provider/provider.dart';
 import 'package:push/push.dart' as Push;
 
 import '../main.dart';
+import '../screen/TwoPaneEmptyScreen.dart';
+import '../utility/TwoPaneScaffold.dart';
+import '../utility/TwoPaneUtils.dart';
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -173,7 +177,7 @@ class MyApp extends StatelessWidget {
                   ],
                   supportedLocales: S.delegate.supportedLocales,
                   builder: EasyLoading.init(),
-                  home: MyHomePage(title: ""),
+                  home: MainTwoPanePage(),
                 );
               },
             ));
@@ -551,4 +555,93 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       material: (_, __) => MaterialScaffoldData(),
     );
   }
+}
+
+class MainTwoPanePage extends StatelessWidget{
+
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints){
+      return MainTwoPaneStatefulWidget(type: TwoPaneUtils.getTwoPaneType(constraints));
+    });
+
+  }
+
+}
+
+class MainTwoPaneStatefulWidget extends StatefulWidget{
+  final String restorationId = "DisplayForumTid";
+  final TwoPaneType type;
+
+  MainTwoPaneStatefulWidget({super.key, required this.type});
+
+  @override
+  State<StatefulWidget> createState() {
+    return MainTwoPaneState();
+  }
+
+}
+
+class MainTwoPaneState extends State<MainTwoPaneStatefulWidget> with RestorationMixin{
+
+  final RestorableInt _currentTid = RestorableInt(0);
+
+  @override
+  String? get restorationId => widget.restorationId;
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(_currentTid, "DisplayForumTid");
+  }
+
+  @override
+  void dispose() {
+    _currentTid.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var panePriority = TwoPanePriority.both;
+    if (widget.type == TwoPaneType.smallScreen){
+      panePriority = _currentTid.value == 0? TwoPanePriority.start : TwoPanePriority.end;
+    }
+
+    return TwoPaneScaffold(
+        type: widget.type,
+        child: TwoPane(
+            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+            paneProportion: 0.35,
+            panePriority: panePriority,
+            startPane: MyHomePage(title: ""),
+
+            endPane: _currentTid.value == 0 ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText) : Consumer<DiscuzAndUserNotifier>(
+                builder: (context, discuzAndUser, child){
+                  if(discuzAndUser.discuz != null){
+                    Discuz discuz = discuzAndUser.discuz!;
+                    User? user = discuzAndUser.user;
+                    return ViewThreadSliverPage(
+                      discuz,
+                      user,
+                      _currentTid.value,
+                      onClosed: (){
+                        setState(() {
+                          _currentTid.value = 0;
+                        });
+                      },
+                    );
+                  }
+                  else{
+                    return Container();
+                  }
+                }
+            )
+
+        )
+    );
+  }
+
+
+
 }

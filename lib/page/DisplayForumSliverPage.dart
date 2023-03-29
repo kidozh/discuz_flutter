@@ -1041,7 +1041,7 @@ class DisplayForumTwoPanePage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints){
-      return DisplayForumTwoPaneStatefulWidget(discuz: discuz, fid: fid, restorationId: "DisplayForumFid", type: TwoPaneUtils.getTwoPaneType(constraints));
+      return DisplayForumTwoPaneStatefulWidget(discuz: discuz, fid: fid, restorationId: "DisplayForumTid", type: TwoPaneUtils.getTwoPaneType(constraints));
     });
 
   }

@@ -242,9 +242,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
                 //log("Forum partition length ${result!.discuzIndexVariables.forumPartitionList.length} all ${_allForumList.length}" );
                 return ForumPartitionWidget(discuz,user,forumPartition, _allForumList);
               },
-              childCount: result == null
-                  ? 0
-                  : result.discuzIndexVariables.forumPartitionList.length,
+              childCount: result.discuzIndexVariables.forumPartitionList.length,
             ),
           ),
         ],
