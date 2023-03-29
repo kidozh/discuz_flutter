@@ -7,7 +7,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class TestFlightBannerPage extends StatelessWidget{
   @override
@@ -15,11 +14,6 @@ class TestFlightBannerPage extends StatelessWidget{
     return PlatformScaffold(
         iosContentBottomPadding: true,
         iosContentPadding: true,
-        // appBar: PlatformAppBar(
-        //   title: Text(S.of(context).welcomeTitle),
-        //   automaticallyImplyLeading: false,
-        //
-        // ),
         body: TestFlightBannerContent()
     );
   }

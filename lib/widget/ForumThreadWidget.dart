@@ -142,7 +142,8 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     return PlatformWidget(
       material: (_, __) => Card(
         elevation: 4.0,
-
+        surfaceTintColor: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).colorScheme.background,
         child: getForumThreadListTile(viewed),
       ),
       cupertino: (_, __) => Column(

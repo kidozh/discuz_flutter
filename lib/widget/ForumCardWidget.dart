@@ -20,17 +20,19 @@ class ForumCardWidget extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Card(
+      surfaceTintColor: Theme.of(context).colorScheme.background,
+      color: Theme.of(context).colorScheme.background,
       elevation: 2.0,
       child: ListTile(
         leading: Container(
-          width: 32,
-          height: 32,
+          width: 40,
+          height: 40,
           child: CachedNetworkImage(
             imageUrl: _forum.iconUrl,
             progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
             errorWidget: (context, url, error) => CircleAvatar(
               backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-              child: Icon(PlatformIcons(context).tagSolid, color: Theme.of(context).colorScheme.onSecondaryContainer,),
+              child: Icon(PlatformIcons(context).tagSolid, color: Theme.of(context).colorScheme.onSecondaryContainer, size: 20,),
             ),
           ),
         ),
