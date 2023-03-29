@@ -30,7 +30,7 @@ class NotificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log("Notification Screen onSelectTid: ${onSelectTid}");
+
     return NotificationStatefulWidget(key: UniqueKey(), onSelectTid: onSelectTid,);
   }
 }
@@ -158,26 +158,6 @@ class _NotificationState extends State<NotificationStatefulWidget> {
           }
       }
       return IndicatorResult.fail;
-      // VibrationUtils.vibrateErrorIfPossible();
-      // if (!_enableControlFinish) {
-      //   _controller.resetLoadState();
-      //   try{
-      //     _controller.finishRefresh();
-      //   }
-      //   catch(e){
-      //
-      //   }
-      //
-      // }
-      // try{
-      //   setState(() {
-      //     _error = DiscuzError(
-      //         onError.runtimeType.toString(), onError.toString());
-      //   });
-      // }
-      // catch (e){
-      //
-      // }
     });
   }
 
