@@ -662,6 +662,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         ],
       ),
       body: Column(
+        mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(
               child: SafeArea(

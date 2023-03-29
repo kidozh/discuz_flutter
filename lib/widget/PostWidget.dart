@@ -135,12 +135,10 @@ class PostState extends State<PostStatefulWidget> {
   @override
   void initState() {
     super.initState();
-  }
+    if(mounted){
+      _loadDB();
+    }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _loadDB();
   }
 
   @override
@@ -164,20 +162,23 @@ class PostState extends State<PostStatefulWidget> {
         _discuz, _post.groupId);
     groupTitle = groupTitle.replaceAll(RegExp(r'<.*?>'), "");
     // query whether use get blocked
-    Discuz discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
-    _user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    List<BlockUser> userBlockedInDB =
-        await _blockUserDao.isUserBlocked(_post.authorId, discuz);
-    if (userBlockedInDB.isEmpty) {
-      setState(() {
-        this.isUserBlocked = false;
-      });
-    } else {
-      setState(() {
-        this.isUserBlocked = true;
-      });
+    if(mounted){
+      Discuz discuz =
+      Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
+      _user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+      List<BlockUser> userBlockedInDB =
+      await _blockUserDao.isUserBlocked(_post.authorId, discuz);
+      if (userBlockedInDB.isEmpty) {
+        setState(() {
+          this.isUserBlocked = false;
+        });
+      } else {
+        setState(() {
+          this.isUserBlocked = true;
+        });
+      }
     }
+
   }
 
   @override

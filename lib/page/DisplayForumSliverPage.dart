@@ -1116,17 +1116,23 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
             panePriority: panePriority,
             startPane: DisplayForumSliverPage(
               discuz, user, fid,
-              onSelectTid: (tid) {
-                log("Reselected a tid ${tid}");
+              onSelectTid: (tid) async{
+                log("Reselected a tid ${tid} ${_currentTid.value}");
+                setState(() {
+                  _currentTid.value = 0;
+                });
+                // I don't know why it takes time to refresh
+                await Future.delayed(const Duration(milliseconds: 100));
                 setState(() {
                   _currentTid.value = tid;
                   _currentTid.didUpdateValue(tid);
                 });
+                log("Changed current tid ${_currentTid.value}");
 
               },
             ),
 
-            endPane: _currentTid.value == 0 ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText) :ViewThreadStatefulSliverWidget(
+            endPane: _currentTid.value == 0 ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText) :ViewThreadSliverPage(
                 discuz,
                 user,
                 _currentTid.value,
