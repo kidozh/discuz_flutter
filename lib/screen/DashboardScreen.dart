@@ -17,10 +17,10 @@ class DashboardScreen extends StatelessWidget{
   Widget build(BuildContext context) {
     return PlatformWidgetBuilder(
       material: (context,child,target){
-        return MaterialDashboardScreen();
+        return MaterialDashboardScreen(onSelectTid: onSelectTid,);
       },
       cupertino: (context, child, target){
-        return CupertinoDashboardScreen();
+        return CupertinoDashboardScreen(onSelectTid: onSelectTid);
       },
     );
   }
@@ -28,6 +28,10 @@ class DashboardScreen extends StatelessWidget{
 }
 
 class MaterialDashboardScreen extends StatelessWidget{
+  final ValueChanged<int>? onSelectTid;
+
+  MaterialDashboardScreen({this.onSelectTid});
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -54,7 +58,7 @@ class MaterialDashboardScreen extends StatelessWidget{
             ),
             Expanded(
               child: TabBarView(children: [
-                HotThreadScreen(key: UniqueKey(),),
+                HotThreadScreen(onSelectTid: this.onSelectTid,),
                 NewThreadScreen()
               ]),
             )
@@ -67,23 +71,35 @@ class MaterialDashboardScreen extends StatelessWidget{
 
 
 class CupertinoDashboardScreen extends StatelessWidget{
+  final ValueChanged<int>? onSelectTid;
+
+  CupertinoDashboardScreen({this.onSelectTid});
+
   @override
   Widget build(BuildContext context) {
-    return CupertinoDashboardStatefulWidget();
+    return CupertinoDashboardStatefulWidget(onSelectTid: onSelectTid,);
   }
 
 }
 
 class CupertinoDashboardStatefulWidget extends StatefulWidget{
+  final ValueChanged<int>? onSelectTid;
+
+  CupertinoDashboardStatefulWidget({this.onSelectTid});
+
   @override
   CupertinoDashboardState createState() {
 
-    return CupertinoDashboardState();
+    return CupertinoDashboardState(onSelectTid: this.onSelectTid);
   }
 
 }
 
 class CupertinoDashboardState extends State<CupertinoDashboardStatefulWidget>{
+  final ValueChanged<int>? onSelectTid;
+
+  CupertinoDashboardState({this.onSelectTid});
+
   int _selectedScreenIndex = 0;
   @override
   Widget build(BuildContext context) {
@@ -118,7 +134,7 @@ class CupertinoDashboardState extends State<CupertinoDashboardStatefulWidget>{
 
         Expanded(
             child: [
-              HotThreadScreen(key: UniqueKey(),),
+              HotThreadScreen(onSelectTid: onSelectTid,),
               NewThreadScreen()
             ][_selectedScreenIndex]
         )

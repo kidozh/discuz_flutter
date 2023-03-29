@@ -141,7 +141,7 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
         children: [
           ExploreWebsitePage(key: ValueKey(0),),
           DiscuzPortalScreen(key: ValueKey(1),),
-          HotThreadScreen(key: ValueKey(2),),
+          HotThreadScreen(),
           NotificationScreen(),
           ConfigurationScreen(),
         ],

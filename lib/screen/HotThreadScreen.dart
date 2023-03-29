@@ -24,34 +24,38 @@ import '../widget/AppBannerAdWidget.dart';
 import 'EmptyListScreen.dart';
 
 class HotThreadScreen extends StatelessWidget {
-  HotThreadScreen({required Key key}) : super(key: key);
+  final ValueChanged<int>? onSelectTid;
+
+  HotThreadScreen({this.onSelectTid});
 
   @override
   Widget build(BuildContext context) {
-    return HotThreadStatefulWidget(key: UniqueKey());
+    return HotThreadStatefulWidget(onSelectTid: onSelectTid,);
   }
 }
 
 class HotThreadStatefulWidget extends StatefulWidget {
-  HotThreadStatefulWidget({required Key key}) : super(key: key);
+  final ValueChanged<int>? onSelectTid;
+  HotThreadStatefulWidget({this.onSelectTid});
 
   _HotThreadState createState() {
-    return _HotThreadState();
+    return _HotThreadState(onSelectTid: onSelectTid);
   }
 }
 
 class _HotThreadState extends State<HotThreadStatefulWidget> {
+  final ValueChanged<int>? onSelectTid;
   late Dio _dio;
   late MobileApiClient _client;
   HotThreadResult result = HotThreadResult();
   DiscuzError? _error;
   int _page = 1;
   List<HotThread> _hotThreadList = [];
-  ValueChanged<int> onSelectTid = (tid){};
+
 
   late EasyRefreshController _controller;
 
-  _HotThreadState();
+  _HotThreadState({this.onSelectTid});
 
   @override
   void initState() {
@@ -217,7 +221,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
               delegate: SliverChildBuilderDelegate(
                   (context, index) => Column(
                         children: [
-                          HotThreadWidget(discuz, user, _hotThreadList[index], null),
+                          HotThreadWidget(discuz, user, _hotThreadList[index], onSelectTid),
                           if (index % 15 == 0 && index != 0) AppBannerAdWidget()
                         ],
                       ),

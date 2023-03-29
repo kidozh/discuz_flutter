@@ -508,7 +508,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           key: ValueKey(1),
         ),
         //HotThreadScreen(key: ValueKey(2),),
-        DashboardScreen(),
+        DashboardScreen(onSelectTid: onSelectTid,),
         NotificationScreen(
           //key: ValueKey(3),
           onSelectTid: this.onSelectTid,
