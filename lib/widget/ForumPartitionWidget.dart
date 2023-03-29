@@ -38,9 +38,9 @@ class ForumPartitionWidget extends StatelessWidget{
               physics: new NeverScrollableScrollPhysics(),
               padding: EdgeInsets.all(0),
               shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 2,
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 300,
+                  childAspectRatio: 2.6
               ),
               itemCount: _subForumList.length,
               itemBuilder: (context, index){

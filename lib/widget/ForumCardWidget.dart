@@ -23,8 +23,8 @@ class ForumCardWidget extends StatelessWidget{
       elevation: 2.0,
       child: ListTile(
         leading: Container(
-          width: 64,
-          height: 64,
+          width: 32,
+          height: 32,
           child: CachedNetworkImage(
             imageUrl: _forum.iconUrl,
             progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
@@ -34,8 +34,8 @@ class ForumCardWidget extends StatelessWidget{
             ),
           ),
         ),
-        title: Text(_forum.name,maxLines: 1, softWrap: true,),
-        subtitle: Text(_forum.description, maxLines: 2,),
+        title: Text(_forum.name,maxLines: 1, softWrap: true),
+        subtitle: Text(_forum.description, maxLines: 2),
         onTap: () async{
           VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(

@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:dual_screen/dual_screen.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 import 'TwoPaneUtils.dart';
 
@@ -31,43 +32,45 @@ class TwoPaneScaffold extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: LayoutBuilder(builder: (context, constraints){
-          final size = Size(constraints.maxWidth, constraints.maxHeight);
-          final hingeSize = Size(size.width * hingeProportion, size.height);
-          // Position the hinge in the middle of the display
-          final hingeBounds = Rect.fromLTWH(
-            (size.width - hingeSize.width) / 2,
-            0,
-            hingeSize.width,
-            hingeSize.height,
-          );
-          var smallestDimension = MediaQuery.of(context).size.shortestSide;
-          TwoPaneType type = TwoPaneType.smallScreen;
-          if(smallestDimension < 650){
-            type = TwoPaneType.smallScreen;
-          }
-          else if(smallestDimension < 800){
-            type = TwoPaneType.foldable;
-          }
-          else{
-            type = TwoPaneType.tablet;
-          }
+        child: PlatformScaffold(
+            body: LayoutBuilder(builder: (context, constraints){
+              final size = Size(constraints.maxWidth, constraints.maxHeight);
+              final hingeSize = Size(size.width * hingeProportion, size.height);
+              // Position the hinge in the middle of the display
+              final hingeBounds = Rect.fromLTWH(
+                (size.width - hingeSize.width) / 2,
+                0,
+                hingeSize.width,
+                hingeSize.height,
+              );
+              var smallestDimension = MediaQuery.of(context).size.shortestSide;
+              TwoPaneType type = TwoPaneType.smallScreen;
+              if(smallestDimension < 650){
+                type = TwoPaneType.smallScreen;
+              }
+              else if(smallestDimension < 800){
+                type = TwoPaneType.foldable;
+              }
+              else{
+                type = TwoPaneType.tablet;
+              }
 
-          return MediaQuery(
-              data: MediaQueryData(
-                  size: size,
-                  displayFeatures: [
-                    if (type == TwoPaneType.foldable)
-                      DisplayFeature(
-                        bounds: hingeBounds,
-                        type: DisplayFeatureType.hinge,
-                        state: DisplayFeatureState.postureFlat,
-                      ),
-                  ]
-              ),
-              child: child
-          );
-        })
+              return MediaQuery(
+                  data: MediaQueryData(
+                      size: size,
+                      displayFeatures: [
+                        if (type == TwoPaneType.foldable)
+                          DisplayFeature(
+                            bounds: hingeBounds,
+                            type: DisplayFeatureType.hinge,
+                            state: DisplayFeatureState.postureFlat,
+                          ),
+                      ]
+                  ),
+                  child: child
+              );
+            })
+        )
     );
 
   }
