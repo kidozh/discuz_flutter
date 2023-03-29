@@ -22,7 +22,6 @@ import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/screen/ExtraFuncInThreadScreen.dart';
 import 'package:discuz_flutter/screen/SmileyListScreen.dart';
-import 'package:discuz_flutter/utility/ConstUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
@@ -685,19 +684,16 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                 (context, _) {
                               return Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Hero(
-                                  tag: ConstUtils.HERO_TAG_THREAD_SUBJECT,
-                                  child: Text(
-                                    _viewThreadResult.threadVariables.threadInfo.subject
-                                        .isEmpty &&
-                                        passedSubject != null
-                                        ? passedSubject!
-                                        : _viewThreadResult
-                                        .threadVariables.threadInfo.subject,
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                child: Text(
+                                  _viewThreadResult.threadVariables.threadInfo.subject
+                                      .isEmpty &&
+                                      passedSubject != null
+                                      ? passedSubject!
+                                      : _viewThreadResult
+                                      .threadVariables.threadInfo.subject,
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               );

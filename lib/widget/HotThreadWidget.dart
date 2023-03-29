@@ -14,7 +14,6 @@ import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
-import 'package:discuz_flutter/utility/ConstUtils.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
@@ -184,10 +183,7 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
               platformPageRoute(context:context,builder: (context) => UserProfilePage(_discuz,user, _hotThread.authorId)));
         },
       ),
-      title: Hero(
-        tag: ConstUtils.HERO_TAG_THREAD_SUBJECT,
-        child: Text(_hotThread.subject,style: textStyle),
-      ),
+      title: Text(_hotThread.subject,style: textStyle),
       subtitle: RichText(
         text: TextSpan(
           text: "",

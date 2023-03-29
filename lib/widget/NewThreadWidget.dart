@@ -13,7 +13,6 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/utility/ConstUtils.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
@@ -180,10 +179,7 @@ class NewThreadState extends State<NewThreadStatefulWidget>{
                 platformPageRoute(context:context,builder: (context) => UserProfilePage(_discuz,user, _newThread.authorId)));
           },
         ),
-        title: Hero(
-          tag: ConstUtils.HERO_TAG_THREAD_SUBJECT,
-          child: Text(_newThread.subject,style: textStyle),
-        ),
+        title: Text(_newThread.subject,style: textStyle),
         subtitle: RichText(
           text: TextSpan(
             text: "",

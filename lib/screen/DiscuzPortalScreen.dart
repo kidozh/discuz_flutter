@@ -15,7 +15,6 @@ import 'package:discuz_flutter/page/DisplayForumSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
-import 'package:discuz_flutter/utility/ConstUtils.dart';
 import 'package:discuz_flutter/utility/MobileSignUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
@@ -273,12 +272,9 @@ class FavoriteForumCardWidget extends StatelessWidget{
       elevation: 2.0,
       child: ListTile(
         leading: Icon(Icons.favorite, color: Theme.of(context).colorScheme.onPrimaryContainer,),
-        title: Hero(
-          tag: ConstUtils.HERO_TAG_FORUM_TITLE,
-          child: Text(favoriteForumInDatabase.title,
-            style: Theme.of(context).primaryTextTheme.headlineSmall?.copyWith(
-                color: Theme.of(context).colorScheme.onPrimaryContainer
-            ),
+        title: Text(favoriteForumInDatabase.title,
+          style: Theme.of(context).primaryTextTheme.headlineSmall?.copyWith(
+              color: Theme.of(context).colorScheme.onPrimaryContainer
           ),
         ),
         subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, favoriteForumInDatabase.date),

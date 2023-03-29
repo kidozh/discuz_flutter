@@ -11,7 +11,6 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
-import 'package:discuz_flutter/utility/ConstUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -173,10 +172,7 @@ class FavoriteForumCardWidget extends StatelessWidget{
       elevation: 2.0,
       child: ListTile(
         leading: Icon(Icons.forum_rounded),
-        title: Hero(
-          tag: ConstUtils.HERO_TAG_FORUM_TITLE,
-          child: Text(favoriteForumInDatabase.title, style: Theme.of(context).textTheme.headline6,),
-        ),
+        title: Text(favoriteForumInDatabase.title, style: Theme.of(context).textTheme.headlineSmall,),
         subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, favoriteForumInDatabase.date)),
         onTap: () async {
           VibrationUtils.vibrateWithClickIfPossible();

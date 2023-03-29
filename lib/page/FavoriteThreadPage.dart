@@ -12,13 +12,11 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
-import 'package:discuz_flutter/utility/ConstUtils.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -212,10 +210,7 @@ class FavoriteThreadCardWidget extends StatelessWidget{
                 platformPageRoute(context:context,builder: (context) => UserProfilePage(discuz,user, favoriteThreadInDatabase.spaceUid)));
           },
         ),
-        title: Hero(
-          tag: ConstUtils.HERO_TAG_THREAD_SUBJECT,
-          child: Text(favoriteThreadInDatabase.title, style: Theme.of(context).textTheme.headline6,),
-        ),
+        title: Text(favoriteThreadInDatabase.title, style: Theme.of(context).textTheme.headlineSmall,),
         subtitle: RichText(
           text: TextSpan(
             text: "",

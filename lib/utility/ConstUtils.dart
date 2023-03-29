@@ -1,7 +1,7 @@
 
 class ConstUtils{
-  static final HERO_TAG_FORUM_TITLE = "HERO_TAG_FORUM_TITLE";
-  static final HERO_TAG_THREAD_SUBJECT = "HERO_TAG_THREAD_SUBJECT";
+  //static final HERO_TAG_FORUM_TITLE = "HERO_TAG_FORUM_TITLE";
+  //static final HERO_TAG_THREAD_SUBJECT = "HERO_TAG_THREAD_SUBJECT";
 
   static const HIVE_TYPE_ID_DISCUZ = 0;
   static const HIVE_TYPE_ID_USER = 1;
