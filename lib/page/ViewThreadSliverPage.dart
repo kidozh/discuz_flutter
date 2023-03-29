@@ -556,6 +556,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
   AutoScrollController _postAutoScrollController = AutoScrollController();
 
+
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
@@ -569,6 +570,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
           icon: Icon(Icons.arrow_back),
           cupertinoIcon: Icon(CupertinoIcons.back),
           onPressed: onClosed,
+          cupertino: (_, __)=> CupertinoIconButtonData(
+            alignment: Alignment.centerLeft,
+            padding: EdgeInsets.all(0)
+          ),
 
         ),
         //middle: Text(S.of(context).forumDisplayTitle),
@@ -683,6 +688,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                     return await _loadForumContent();
                   },
                   child: CustomScrollView(
+                    controller: _postAutoScrollController,
                     slivers: [
                       SliverList(
                           delegate: SliverChildBuilderDelegate(
