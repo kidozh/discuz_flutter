@@ -617,51 +617,58 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget> with Restoration
     if (widget.type == TwoPaneType.smallScreen){
       panePriority = _currentTid.value == 0? TwoPanePriority.start : TwoPanePriority.end;
     }
+    double paneProportion = 0.35;
 
-    return TwoPaneScaffold(
-        type: widget.type,
-        child: TwoPane(
-            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-            paneProportion: 0.35,
-            panePriority: panePriority,
-            startPane: MyHomePage(title: "", onSelectTid: (tid) async{
+    return OrientationBuilder(builder: (context, orientation){
+      if(widget.type != TwoPaneType.smallScreen && orientation == Orientation.portrait){
+        paneProportion = 0.5;
+      }
 
-              setState(() {
-                _currentTid.value = 0;
-              });
-              // I don't know why it takes time to refresh
-              await Future.delayed(const Duration(milliseconds: 100));
-              setState(() {
-                _currentTid.value = tid;
-                _currentTid.didUpdateValue(tid);
-              });
-              log("Two Pane Changed current tid ${_currentTid.value}");
-            },),
+      return TwoPaneScaffold(
+          type: widget.type,
+          child: TwoPane(
+              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+              paneProportion: paneProportion,
+              panePriority: panePriority,
+              startPane: MyHomePage(title: "", onSelectTid: (tid) async{
 
-            endPane: _currentTid.value == 0 ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText) : Consumer<DiscuzAndUserNotifier>(
-                builder: (context, discuzAndUser, child){
-                  if(discuzAndUser.discuz != null){
-                    Discuz discuz = discuzAndUser.discuz!;
-                    User? user = discuzAndUser.user;
-                    return ViewThreadSliverPage(
-                      discuz,
-                      user,
-                      _currentTid.value,
-                      onClosed: (){
-                        setState(() {
-                          _currentTid.value = 0;
-                        });
-                      },
-                    );
+                setState(() {
+                  _currentTid.value = 0;
+                });
+                // I don't know why it takes time to refresh
+                await Future.delayed(const Duration(milliseconds: 100));
+                setState(() {
+                  _currentTid.value = tid;
+                  _currentTid.didUpdateValue(tid);
+                });
+                log("Two Pane Changed current tid ${_currentTid.value}");
+              },),
+
+              endPane: _currentTid.value == 0 ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText) : Consumer<DiscuzAndUserNotifier>(
+                  builder: (context, discuzAndUser, child){
+                    if(discuzAndUser.discuz != null){
+                      Discuz discuz = discuzAndUser.discuz!;
+                      User? user = discuzAndUser.user;
+                      return ViewThreadSliverPage(
+                        discuz,
+                        user,
+                        _currentTid.value,
+                        onClosed: (){
+                          setState(() {
+                            _currentTid.value = 0;
+                          });
+                        },
+                      );
+                    }
+                    else{
+                      return Container();
+                    }
                   }
-                  else{
-                    return Container();
-                  }
-                }
-            )
+              )
 
-        )
-    );
+          )
+      );
+    });
   }
 
 

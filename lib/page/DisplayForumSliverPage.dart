@@ -1108,31 +1108,38 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
       panePriority = _currentTid.value == 0? TwoPanePriority.start : TwoPanePriority.end;
     }
 
-    return TwoPaneScaffold(
-        type: widget.type,
-        child: TwoPane(
-            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-            paneProportion: 0.35,
-            panePriority: panePriority,
-            startPane: DisplayForumSliverPage(
-              discuz, user, fid,
-              onSelectTid: (tid) async{
-                log("Reselected a tid ${tid} ${_currentTid.value}");
-                setState(() {
-                  _currentTid.value = 0;
-                });
-                // I don't know why it takes time to refresh
-                await Future.delayed(const Duration(milliseconds: 100));
-                setState(() {
-                  _currentTid.value = tid;
-                  _currentTid.didUpdateValue(tid);
-                });
-                log("Changed current tid ${_currentTid.value}");
+    double paneProportion = 0.35;
 
-              },
-            ),
+    return OrientationBuilder(builder: (context, orientation){
+      if(widget.type != TwoPaneType.smallScreen && orientation == Orientation.portrait){
+        paneProportion = 0.5;
+      }
 
-            endPane: _currentTid.value == 0 ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText) :ViewThreadSliverPage(
+      return TwoPaneScaffold(
+          type: widget.type,
+          child: TwoPane(
+              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+              paneProportion: paneProportion,
+              panePriority: panePriority,
+              startPane: DisplayForumSliverPage(
+                discuz, user, fid,
+                onSelectTid: (tid) async{
+                  log("Reselected a tid ${tid} ${_currentTid.value}");
+                  setState(() {
+                    _currentTid.value = 0;
+                  });
+                  // I don't know why it takes time to refresh
+                  await Future.delayed(const Duration(milliseconds: 100));
+                  setState(() {
+                    _currentTid.value = tid;
+                    _currentTid.didUpdateValue(tid);
+                  });
+                  log("Changed current tid ${_currentTid.value}");
+
+                },
+              ),
+
+              endPane: _currentTid.value == 0 ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText) :ViewThreadSliverPage(
                 discuz,
                 user,
                 _currentTid.value,
@@ -1141,9 +1148,10 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
                     _currentTid.value = 0;
                   });
                 },
-            )
-        )
-    );
+              )
+          )
+      );
+    });
   }
 
 
