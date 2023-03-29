@@ -45,9 +45,23 @@ class DisplayForumSliverPage extends StatelessWidget {
   late final Discuz discuz;
   late final User? user;
   int fid = 0;
+
+  DisplayForumSliverPage(this.discuz, this.user, this.fid);
+
+  @override
+  Widget build(BuildContext context) {
+    // try ios
+    return DisplayForumTwoPanePage(discuz, user, fid);
+  }
+}
+
+class DisplayForumAltSliverPage extends StatelessWidget {
+  late final Discuz discuz;
+  late final User? user;
+  int fid = 0;
   final ValueChanged<int> onSelectTid;
 
-  DisplayForumSliverPage(this.discuz, this.user, this.fid, {required this.onSelectTid});
+  DisplayForumAltSliverPage(this.discuz, this.user, this.fid, {required this.onSelectTid});
 
   @override
   Widget build(BuildContext context) {
@@ -1121,7 +1135,7 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
               padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
               paneProportion: paneProportion,
               panePriority: panePriority,
-              startPane: DisplayForumSliverPage(
+              startPane: DisplayForumAltSliverPage(
                 discuz, user, fid,
                 onSelectTid: (tid) async{
                   log("Reselected a tid ${tid} ${_currentTid.value}");
