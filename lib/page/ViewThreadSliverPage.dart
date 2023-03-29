@@ -561,10 +561,15 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     return PlatformScaffold(
       appBar: PlatformAppBar(
         automaticallyImplyLeading: this.onClosed == null? true: false,
+        cupertino: (_, __) => CupertinoNavigationBarData(
+          heroTag: "viewthread_${tid}",
+          transitionBetweenRoutes: false
+        ),
         leading: this.onClosed == null? null: PlatformIconButton(
           icon: Icon(Icons.arrow_back),
           cupertinoIcon: Icon(CupertinoIcons.back),
           onPressed: onClosed,
+
         ),
         //middle: Text(S.of(context).forumDisplayTitle),
         // title: Text(S.of(context).viewThreadTitle),
