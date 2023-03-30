@@ -506,7 +506,7 @@
   "minute": "M",
   "second": "S",
   "upgrade_notification_title": "Safe update",
-  "upgrade_notification_subtitle": "Update includes bug fix, function add and interface change.",
+  "upgrade_notification_subtitle": "The app now supports tablet layout.",
   "useMaterial3Title": "Use Material You design",
   "useMaterial3YesSubtitle": "Components that have been migrated to Material 3 will use new colors, typography and other features of Material 3.",
   "useMaterial3NoSubtitle": "App will use the Material 2 look and feel.",
