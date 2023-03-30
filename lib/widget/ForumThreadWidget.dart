@@ -12,6 +12,7 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/provider/SelectedTidNotifierProvider.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -20,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:provider/provider.dart';
 
 import '../entity/ViewHistory.dart';
 import '../page/ViewThreadSliverPage.dart';
@@ -109,10 +111,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     if(_forumThread.getDisplayOrder() > 0){
       return Icon(AppPlatformIcons(context).pinContentSolid, color: Theme.of(context).colorScheme.primary,);
     }
-    // else if(_forumThread.replies == 0){
-    //   return Container();
-    // }
-    //_forumThread.replies
+
     else{
       return Container(
         // color: Theme.of(context).colorScheme.onPrimary,
@@ -139,25 +138,31 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
   }
 
   Widget getForumThreadCard(bool viewed){
-    return PlatformWidget(
-      material: (_, __) => Card(
-        elevation: 4.0,
-        surfaceTintColor: Theme.of(context).colorScheme.background,
-        color: Theme.of(context).colorScheme.background,
-        child: getForumThreadListTile(viewed),
-      ),
-      cupertino: (_, __) => Column(
-        mainAxisSize: MainAxisSize.min,
+    Brightness brightness = MediaQuery.of(context).platformBrightness;
+    return Consumer<SelectedTidNotifierProvider>(
+      builder: (context, selectedTid, child){
+        bool selected = selectedTid.tid == _forumThread.getTid();
+        return PlatformWidget(
+          material: (context, platform) => Card(
+            elevation: 4.0,
+            surfaceTintColor: selected? Theme.of(context).colorScheme.primary: brightness == Brightness.light? Colors.white: Colors.black45,
+            // color: Theme.of(context).colorScheme.background,
+            child: getForumThreadListTile(viewed),
+          ),
+          cupertino: (_, __) => Column(
+            mainAxisSize: MainAxisSize.min,
 
-        children: [
-          getForumThreadListTile(viewed),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Divider(),
-          )
+            children: [
+              getForumThreadListTile(viewed),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: Divider(),
+              )
 
-        ],
-      ),
+            ],
+          ),
+        );
+      },
     );
 
     
@@ -316,40 +321,51 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
       );
     }
 
-    return ListTile(
-      leading: UserAvatar(
-        _discuz, _forumThread.getAuthorId(), _forumThread.author, size: 36,
-      ),
-      title: Text(_forumThread.subject, style: textStyle),
-      subtitle: RichText(
-        text: TextSpan(
-          text: "",
-          style: DefaultTextStyle.of(context).style,
-          children: <TextSpan>[
-            TextSpan(text: _forumThread.author, style: textStyle),
-            TextSpan(text: " · ", style: textStyle),
-            TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_forumThread.dbdatelineMinutes), style: textStyle),
-            if(threadCategory.isNotEmpty)
-              TextSpan(text: " / ", style: textStyle),
-            if(threadCategory.isNotEmpty)
-              TextSpan(text: threadCategory, style: textStyle),
-            if((_user == null && _forumThread.readPerm > 0)||(_user!= null && _forumThread.readPerm >_user!.readPerm))
-              TextSpan(text: " / " + S.of(context).threadReadAccess(_forumThread.readPerm),
-                  style: viewed? textStyle: textStyle.copyWith(color: Theme.of(context).colorScheme.error)
-              ),
-          ],
-        ),
-      ),
+    return Consumer<SelectedTidNotifierProvider>(
+      builder: (context, selectedTid, child){
+        log("Changed tid ${selectedTid.tid} ${_forumThread.getTid()}");
+        bool selected = selectedTid.tid == _forumThread.getTid();
+        return ListTile(
+          selected: selected,
+          leading: UserAvatar(
+            _discuz, _forumThread.getAuthorId(), _forumThread.author, size: 36,
+          ),
+          title: Text(_forumThread.subject, style: textStyle?..copyWith(
+              color: selected? Theme.of(context).colorScheme.onPrimary: null,
+              fontWeight: viewed? null: FontWeight.bold
+          )),
+          subtitle: RichText(
+            text: TextSpan(
+              text: "",
+              style: textStyle?..copyWith(color: selected? Theme.of(context).colorScheme.onPrimary: null),
+              children: <TextSpan>[
+                TextSpan(text: _forumThread.author),
+                TextSpan(text: " · "),
+                TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_forumThread.dbdatelineMinutes)),
+                if(threadCategory.isNotEmpty)
+                  TextSpan(text: " / "),
+                if(threadCategory.isNotEmpty)
+                  TextSpan(text: threadCategory, style: textStyle),
+                if((_user == null && _forumThread.readPerm > 0)||(_user!= null && _forumThread.readPerm >_user!.readPerm))
+                  TextSpan(text: " / " + S.of(context).threadReadAccess(_forumThread.readPerm),
+                      style: viewed? textStyle: textStyle?.copyWith(color: Theme.of(context).colorScheme.error)
+                  ),
+              ],
+            ),
+          ),
 
-      trailing: _forumThread.replies!=0 ? getTailingWidget(): null,
-      onTap: () async {
-        triggerTapFunction();
-      },
-      onLongPress: () async{
-        triggerLongPressFunction();
-      },
+          trailing: selected? Icon(AppPlatformIcons(context).selectedThreadSolid, color: Theme.of(context).colorScheme.primary,):
+          _forumThread.replies!=0 ? getTailingWidget(): null,
+          onTap: () async {
+            triggerTapFunction();
+          },
+          onLongPress: () async{
+            triggerLongPressFunction();
+          },
 
 
+        );
+      }
     );
   }
 

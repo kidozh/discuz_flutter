@@ -92,4 +92,6 @@ class AppPlatformIcons{
   IconData get manageDiscuzSolid => isMaterial(context)? Icons.account_tree : CupertinoIcons.rectangle_fill_on_rectangle_angled_fill;
 
   IconData get menuSolid => isMaterial(context)? Icons.menu : CupertinoIcons.line_horizontal_3;
+
+  IconData get selectedThreadSolid => isMaterial(context)? Icons.play_circle : CupertinoIcons.arrowtriangle_right_circle_fill;
 }
