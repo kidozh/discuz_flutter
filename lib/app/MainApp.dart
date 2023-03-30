@@ -36,6 +36,7 @@ import 'package:provider/provider.dart';
 import 'package:push/push.dart' as Push;
 
 import '../main.dart';
+import '../provider/SelectedTidNotifierProvider.dart';
 import '../screen/TwoPaneEmptyScreen.dart';
 import '../utility/TwoPaneScaffold.dart';
 import '../utility/TwoPaneUtils.dart';
@@ -582,17 +583,20 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget> with Restoration
               paneProportion: paneProportion,
               panePriority: panePriority,
               startPane: MyHomePage(title: "", onSelectTid: (tid) async{
+                Provider.of<SelectedTidNotifierProvider>(context,listen: false).setTid(tid);
+                if(tid != _currentTid){
+                  setState(() {
+                    _currentTid.value = 0;
+                  });
+                  // I don't know why it takes time to refresh
+                  await Future.delayed(const Duration(milliseconds: 100));
+                  setState(() {
+                    _currentTid.value = tid;
+                    _currentTid.didUpdateValue(tid);
+                  });
+                  log("Two Pane Changed current tid ${_currentTid.value}");
+                }
 
-                setState(() {
-                  _currentTid.value = 0;
-                });
-                // I don't know why it takes time to refresh
-                await Future.delayed(const Duration(milliseconds: 100));
-                setState(() {
-                  _currentTid.value = tid;
-                  _currentTid.didUpdateValue(tid);
-                });
-                log("Two Pane Changed current tid ${_currentTid.value}");
               },),
 
               endPane: _currentTid.value == 0 ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText) : Consumer<DiscuzAndUserNotifier>(
@@ -605,6 +609,7 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget> with Restoration
                         user,
                         _currentTid.value,
                         onClosed: (){
+                          Provider.of<SelectedTidNotifierProvider>(context,listen: false).setTid(0);
                           setState(() {
                             _currentTid.value = 0;
                           });
