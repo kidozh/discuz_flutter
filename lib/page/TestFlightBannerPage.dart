@@ -205,14 +205,14 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent>{
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Expanded(child: PlatformElevatedButton(
-                      child: Text(S.of(context).continueToDo, style: TextStyle(color: Theme.of(context).primaryTextTheme.bodyText1?.color),),
+                      child: Text(S.of(context).continueToDo, style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),),
                       onPressed: () async {
                     PackageInfo packageInfo = await PackageInfo.fromPlatform();
                     String version = packageInfo.version;
                     await UserPreferencesUtils.putAcceptVersionCodeFlag(version);
                     Navigator.pop(context);
                   },
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context).colorScheme.primaryContainer,
 
 
                   ))

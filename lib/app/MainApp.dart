@@ -28,7 +28,6 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:dual_screen/dual_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -118,31 +117,7 @@ class MyApp extends StatelessWidget {
               seedColor: themeColorEntity.themeColor,
               brightness: systemBrightness,
             ),
-
-            // brightness: (isUseCupertinoStyle(themeColorEntity) &&
-            //         themeColorEntity.brightness == null)
-            //     ? systemBrightness
-            //     : themeColorEntity.brightness,
-
-          // cardTheme: CardTheme(
-          //   elevation: 0.0,
-          //   surfaceTintColor: Theme.of(context).colorScheme.background,
-          // ),
         );
-
-        if (Platform.isAndroid) {
-          print(
-              "Selected color ${themeColorEntity.themeColorName} ${themeColorEntity.themeColor}");
-
-          SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: themeColorEntity.iconBrightness,
-            statusBarBrightness: themeColorEntity.brightness,
-            // systemNavigationBarColor: Color(themeColorEntity.themeColor.value),
-            // systemNavigationBarIconBrightness: themeColorEntity.brightness
-          );
-          SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
-        }
 
         return Theme(
             data: materialTheme,
@@ -160,11 +135,7 @@ class MyApp extends StatelessWidget {
                   cupertino: (_, __) => CupertinoAppData(
                     theme: CupertinoThemeData(
                         primaryColor: themeColorEntity.themeColor,
-                        // brightness: (isUseCupertinoStyle(themeColorEntity) &&
-                        //   themeColorEntity.brightness == null)
-                        //   ? systemBrightness
-                        //   : themeColorEntity.brightness,
-
+                        brightness: systemBrightness
                     ),
 
                   ),
