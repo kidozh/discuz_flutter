@@ -5,14 +5,14 @@ class VibrationUtils{
   static void vibrateWithClickIfPossible() async{
     bool canVibrate = await Vibrate.canVibrate;
     if (canVibrate){
-      Vibrate.feedback(FeedbackType.medium);
+      Vibrate.feedback(FeedbackType.heavy);
     }
   }
 
   static void vibrateWithSwitchIfPossible() async{
     bool canVibrate = await Vibrate.canVibrate;
     if (canVibrate){
-      Vibrate.feedback(FeedbackType.medium);
+      Vibrate.feedback(FeedbackType.heavy);
     }
   }
 

@@ -19,9 +19,9 @@ class ForumCardWidget extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+    Brightness brightness = MediaQuery.of(context).platformBrightness;
     return Card(
-      surfaceTintColor: Theme.of(context).colorScheme.background,
-      color: Theme.of(context).colorScheme.background,
+      surfaceTintColor: brightness == Brightness.light? Colors.white: Colors.black45,
       elevation: 2.0,
       child: ListTile(
         leading: Container(
@@ -36,7 +36,7 @@ class ForumCardWidget extends StatelessWidget{
             ),
           ),
         ),
-        title: Text(_forum.name,maxLines: 1, softWrap: true),
+        title: Text(_forum.name,maxLines: 1, softWrap: true, style: TextStyle(fontWeight: FontWeight.bold),),
         subtitle: Text(_forum.description, maxLines: 2),
         onTap: () async{
           VibrationUtils.vibrateWithClickIfPossible();
