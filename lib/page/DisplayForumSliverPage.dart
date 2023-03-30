@@ -450,89 +450,93 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
             : Text(_displayForumResult.discuzIndexVariables.forum.name,overflow: TextOverflow.ellipsis),
         backgroundColor: Theme.of(context).navigationBarTheme.backgroundColor?.withOpacity(0.5),
       ),
-      body: SafeArea(
-        child: EasyRefresh(
-          controller: _controller,
+      body: EasyRefresh(
+        controller: _controller,
 
-          header: EasyRefreshUtils.i18nClassicHeader(context),
-          footer: EasyRefreshUtils.i18nClassicFooter(context),
-          refreshOnStart: true,
-          onRefresh: () async {
-            VibrationUtils.vibrateSuccessfullyIfPossible();
-            return await _invalidateContent();
+        header: EasyRefreshUtils.i18nClassicHeader(context),
+        footer: EasyRefreshUtils.i18nClassicFooter(context),
+        refreshOnStart: true,
+        onRefresh: () async {
+          VibrationUtils.vibrateSuccessfullyIfPossible();
+          return await _invalidateContent();
 
-          },
-          onLoad: () async {
-            return await _loadForumContent();
-          },
+        },
+        onLoad: () async {
+          return await _loadForumContent();
+        },
 
-          child: CustomScrollView(
-            slivers: <Widget>[
-
-              if (_error != null)
-                SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                          (context, _) {
-                        return ErrorCard(_error!, () {
-                          _controller.callRefresh();
-                        }, errorType: _error!.errorType,);
-                      },
-                      childCount: 1,
-                    )),
-              // check with sub forum
-              if(_displayForumResult.discuzIndexVariables.subForumList.isNotEmpty)
-                SliverList(delegate: SliverChildBuilderDelegate(
-                        (context, index){
-                      var subForum = _displayForumResult.discuzIndexVariables.subForumList[index];
-                      return Card(
-                        color: Theme.of(context).colorScheme.secondaryContainer,
-                        elevation: 4,
-                        child: ListTile(
-                          title: Text(subForum.name, style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer,)),
-                          leading: Icon(AppPlatformIcons(context).forumSolid, color: Theme.of(context).colorScheme.onSecondaryContainer),
-                          trailing: Icon(AppPlatformIcons(context).goToSolid, color: Theme.of(context).colorScheme.onSecondaryContainer),
-                          onTap: () async {
-                            VibrationUtils.vibrateWithClickIfPossible();
-                            await Navigator.push(
-                                context,
-                                platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz, user, subForum.fid))
-                            );
-                          },
-                        ),
-                      );
-                    },
-                    childCount: _displayForumResult.discuzIndexVariables.subForumList.length
-                )
-                ),
-              if(_forumThreadList.isEmpty)
-                SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    return EmptyListScreen(EmptyItemType.thread);
-                  }, childCount: 1),
-
-                ),
-
-              SliverList(
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverList(
                 delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ForumThreadWidget(discuz, user, _forumThreadList[index],
-                            _displayForumResult.discuzIndexVariables.threadType, onSelectTid),
-                        if(index % 15 == 0 && index != 0)
-                          AppBannerAdWidget(),
-                      ],
+                      (context, _) {
+                    return SafeArea(child: Container(), bottom: false,);
+                  },
+                  childCount: 1,
+                )),
+            if (_error != null)
+              SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                        (context, _) {
+                      return ErrorCard(_error!, () {
+                        _controller.callRefresh();
+                      }, errorType: _error!.errorType,);
+                    },
+                    childCount: 1,
+                  )),
+            // check with sub forum
+            if(_displayForumResult.discuzIndexVariables.subForumList.isNotEmpty)
+              SliverList(delegate: SliverChildBuilderDelegate(
+                      (context, index){
+                    var subForum = _displayForumResult.discuzIndexVariables.subForumList[index];
+                    return Card(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      elevation: 4,
+                      child: ListTile(
+                        title: Text(subForum.name, style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer,)),
+                        leading: Icon(AppPlatformIcons(context).forumSolid, color: Theme.of(context).colorScheme.onSecondaryContainer),
+                        trailing: Icon(AppPlatformIcons(context).goToSolid, color: Theme.of(context).colorScheme.onSecondaryContainer),
+                        onTap: () async {
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          await Navigator.push(
+                              context,
+                              platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz, user, subForum.fid))
+                          );
+                        },
+                      ),
                     );
                   },
-                  childCount: _forumThreadList.length,
-                ),
+                  childCount: _displayForumResult.discuzIndexVariables.subForumList.length
+              )
               ),
-            ],
-          ),
+            if(_forumThreadList.isEmpty)
+              SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  return EmptyListScreen(EmptyItemType.thread);
+                }, childCount: 1),
 
+              ),
 
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ForumThreadWidget(discuz, user, _forumThreadList[index],
+                          _displayForumResult.discuzIndexVariables.threadType, onSelectTid),
+                      if(index % 15 == 0 && index != 0)
+                        AppBannerAdWidget(),
+                    ],
+                  );
+                },
+                childCount: _forumThreadList.length,
+              ),
+            ),
+          ],
         ),
+
+
       ),
     );
   }
