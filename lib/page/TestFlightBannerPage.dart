@@ -3,6 +3,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -57,10 +58,29 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent>{
                 child: Text(S.of(context).ok),
                 onPressed: () async {
                   VibrationUtils.vibrateWithClickIfPossible();
-                  Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = true;
-                  await UserPreferencesUtils.putPushPreference(true);
-                  EasyLoading.showSuccess(S.of(context).pushServiceOnDescription);
+                  FirebaseMessaging messaging = FirebaseMessaging.instance;
+                  NotificationSettings settings = await messaging.requestPermission(
+                    alert: true,
+                    announcement: false,
+                    badge: true,
+                    carPlay: false,
+                    criticalAlert: false,
+                    provisional: false,
+                    sound: true,
+                  );
+
+                  if (settings.authorizationStatus == AuthorizationStatus.authorized || settings.authorizationStatus == AuthorizationStatus.provisional){
+                    Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = true;
+                    await UserPreferencesUtils.putPushPreference(true);
+                    EasyLoading.showInfo(S.of(context).pushServiceOnDescription);
+                  }
+                  else{
+                    EasyLoading.showInfo(S.of(context).pushNotificationPermissionNotAuthorized);
+                    Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = false;
+                    await UserPreferencesUtils.putPushPreference(false);
+                  }
                   Navigator.of(context).pop();
+
                 },
               ),
               PlatformDialogAction(
