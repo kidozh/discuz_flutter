@@ -616,9 +616,10 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget> with Restoration
     var panePriority = TwoPanePriority.both;
     if (widget.type == TwoPaneType.smallScreen){
       panePriority = _currentTid.value == 0? TwoPanePriority.start : TwoPanePriority.end;
+      return MyHomePage(title: "");
     }
     double paneProportion = 0.35;
-
+    // directly give
     return OrientationBuilder(builder: (context, orientation){
       if(widget.type != TwoPaneType.smallScreen && orientation == Orientation.portrait){
         paneProportion = 0.5;
