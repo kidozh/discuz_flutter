@@ -702,7 +702,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "undo": MessageLookupByLibrary.simpleMessage("Undo"),
         "updateAt": MessageLookupByLibrary.simpleMessage("Update at %T"),
         "upgrade_notification_subtitle": MessageLookupByLibrary.simpleMessage(
-            "Update includes bug fix, function add and interface change."),
+            "The app now supports tablet layout."),
         "upgrade_notification_title":
             MessageLookupByLibrary.simpleMessage("Safe update"),
         "uploadCompressedImageToServer": MessageLookupByLibrary.simpleMessage(

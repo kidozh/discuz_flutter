@@ -596,8 +596,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "unblockUser": MessageLookupByLibrary.simpleMessage("解除屏蔽"),
         "undo": MessageLookupByLibrary.simpleMessage("撤销"),
         "updateAt": MessageLookupByLibrary.simpleMessage("更新于 %T"),
-        "upgrade_notification_subtitle": MessageLookupByLibrary.simpleMessage(
-            "此次升级包含常规的功能更新、问题修复以及界面样式更改。可以正常兼容升级。"),
+        "upgrade_notification_subtitle":
+            MessageLookupByLibrary.simpleMessage("本次升级新增了平板预览模式，部分页面适配了平板操作。"),
         "upgrade_notification_title":
             MessageLookupByLibrary.simpleMessage("升级提醒"),
         "uploadCompressedImageToServer":

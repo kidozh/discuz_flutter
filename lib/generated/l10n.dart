@@ -1,7 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -3292,10 +3291,10 @@ class S {
     );
   }
 
-  /// `Update includes bug fix, function add and interface change.`
+  /// `The app now supports tablet layout.`
   String get upgrade_notification_subtitle {
     return Intl.message(
-      'Update includes bug fix, function add and interface change.',
+      'The app now supports tablet layout.',
       name: 'upgrade_notification_subtitle',
       desc: '',
       args: [],
