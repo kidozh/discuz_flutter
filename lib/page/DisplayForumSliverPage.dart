@@ -16,6 +16,7 @@ import 'package:discuz_flutter/page/InternalWebviewBrowserPage.dart';
 import 'package:discuz_flutter/page/PostThreadPage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/provider/SelectedTidNotifierProvider.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
@@ -1145,17 +1146,21 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
               startPane: DisplayForumAltSliverPage(
                 discuz, user, fid,
                 onSelectTid: (tid) async{
-                  log("Reselected a tid ${tid} ${_currentTid.value}");
-                  setState(() {
-                    _currentTid.value = 0;
-                  });
-                  // I don't know why it takes time to refresh
-                  await Future.delayed(const Duration(milliseconds: 100));
-                  setState(() {
-                    _currentTid.value = tid;
-                    _currentTid.didUpdateValue(tid);
-                  });
-                  log("Changed current tid ${_currentTid.value}");
+                  if(tid != _currentTid.value){
+                    log("Reselected a tid ${tid} ${_currentTid.value}");
+                    Provider.of<SelectedTidNotifierProvider>(context,listen: false).setTid(tid);
+                    setState(() {
+                      _currentTid.value = 0;
+                    });
+                    // I don't know why it takes time to refresh
+                    await Future.delayed(const Duration(milliseconds: 100));
+                    setState(() {
+                      _currentTid.value = tid;
+                      _currentTid.didUpdateValue(tid);
+                    });
+                    log("Changed current tid ${_currentTid.value}");
+                  }
+
 
                 },
               ),
@@ -1165,6 +1170,7 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
                 user,
                 _currentTid.value,
                 onClosed: (){
+                  Provider.of<SelectedTidNotifierProvider>(context,listen: false).setTid(0);
                   setState(() {
                     _currentTid.value = 0;
                   });

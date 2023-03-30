@@ -5,6 +5,7 @@ import 'package:discuz_flutter/app/ExclusiveDiscuzApp.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
+import 'package:discuz_flutter/provider/SelectedTidNotifierProvider.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
@@ -90,7 +91,8 @@ void main() async{
           ChangeNotifierProvider.value(value: DiscuzAndUserNotifier()),
           ChangeNotifierProvider.value(value: ReplyPostNotifierProvider()),
           ChangeNotifierProvider.value(value: TypeSettingNotifierProvider()),
-          ChangeNotifierProvider.value(value: UserPreferenceNotifierProvider())
+          ChangeNotifierProvider.value(value: UserPreferenceNotifierProvider()),
+          ChangeNotifierProvider.value(value: SelectedTidNotifierProvider())
         ],
         child: isExclusiveDiscuz? ExclusiveDiscuzApp(initialPlatform,discuz): MyApp(initialPlatform, navigatorKey),
       ));

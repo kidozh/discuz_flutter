@@ -1,9 +1,6 @@
-import 'dart:collection';
-
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:flutter/foundation.dart';
-import 'package:provider/provider.dart';
 
 
 class DiscuzAndUserNotifier with ChangeNotifier {
@@ -11,10 +8,6 @@ class DiscuzAndUserNotifier with ChangeNotifier {
 
 
   User? user = null;
-
-  DiscuzAndUserNotifier() {
-    _fetchSomething();
-  }
 
   void setDiscuz(Discuz? discuz){
     this.discuz = discuz;
@@ -31,6 +24,4 @@ class DiscuzAndUserNotifier with ChangeNotifier {
     this.user = user;
     notifyListeners();
   }
-
-  Future<void> _fetchSomething() async {}
 }
