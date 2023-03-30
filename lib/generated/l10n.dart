@@ -4421,6 +4421,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Do you wish to enable push service to receive the updated information?`
+  String get pushServiceEnableDescription {
+    return Intl.message(
+      'Do you wish to enable push service to receive the updated information?',
+      name: 'pushServiceEnableDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You are now able to get the updated information from supported Discuz.`
+  String get pushServiceOnDescription {
+    return Intl.message(
+      'You are now able to get the updated information from supported Discuz.',
+      name: 'pushServiceOnDescription',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

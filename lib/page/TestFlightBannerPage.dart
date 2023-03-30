@@ -5,22 +5,77 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/UserPreferenceNotifierProvider.dart';
 
 class TestFlightBannerPage extends StatelessWidget{
+
   @override
   Widget build(BuildContext context) {
+
     return PlatformScaffold(
         iosContentBottomPadding: true,
         iosContentPadding: true,
         body: TestFlightBannerContent()
     );
   }
+}
+
+class TestFlightBannerContent extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    return TestFlightBannerContentState();
+  }
 
 }
 
-class TestFlightBannerContent extends StatelessWidget{
+class TestFlightBannerContentState extends State<TestFlightBannerContent>{
+
+  @override
+  void initState(){
+    super.initState();
+    _checkPushService(context);
+
+  }
+
+  Future<void> _checkPushService(BuildContext context) async{
+
+    bool? enablePush = await UserPreferencesUtils.checkPushPreference();
+    if(enablePush == null){
+      // prompt push notification
+      await showPlatformDialog(
+          context: context,
+          builder: (_) => PlatformAlertDialog(
+            title: Text(S.of(context).pushNotificationEnable),
+            content: Text(S.of(context).pushServiceEnableDescription),
+            actions: [
+              PlatformDialogAction(
+                child: Text(S.of(context).ok),
+                onPressed: () async {
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = true;
+                  await UserPreferencesUtils.putPushPreference(true);
+                  EasyLoading.showSuccess(S.of(context).pushServiceOnDescription);
+                  Navigator.of(context).pop();
+                },
+              ),
+              PlatformDialogAction(
+                child: Text(S.of(context).cancel),
+                onPressed: (){
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          )
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(

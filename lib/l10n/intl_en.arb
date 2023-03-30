@@ -645,5 +645,7 @@
   "iosColorSchemeSuggestions": "Due to the incompatibility brought by the upgrade of Material Design, the default color scheme app adopt is purple now but you can still customize some of them.",
   "brightnessManualChangeDisabled": "App now will follow the system appearance according to design discipline.",
   "dhPushServiceTitle": "DH Push service",
-  "viewThreadTwoPaneText": "Click thread to view posts inside."
+  "viewThreadTwoPaneText": "Click thread to view posts inside.",
+  "pushServiceEnableDescription": "Do you wish to enable push service to receive the updated information?",
+  "pushServiceOnDescription": "You are now able to get the updated information from supported Discuz."
 }

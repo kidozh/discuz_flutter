@@ -270,6 +270,12 @@ class UserPreferencesUtils{
     return pushPreference == null? false: pushPreference;
   }
 
+  static Future<bool?> checkPushPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var pushPreference =  prefs.getBool(pushPreferenceKey);
+    return pushPreference;
+  }
+
   static Future<void> putPushPreference(bool value) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool(pushPreferenceKey, value);

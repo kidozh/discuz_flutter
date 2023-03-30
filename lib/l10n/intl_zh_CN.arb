@@ -646,5 +646,7 @@
   "iosColorSchemeSuggestions": "由于底层质感设计API更新，您暂时无法调节部分部件的样式（其默认为紫色），但是您仍能够调节其他样式。",
   "brightnessManualChangeDisabled": "应用现在将仅跟随系统设置明暗模式，我们在下一个大版本中将会移除这个设置项。",
   "dhPushServiceTitle": "谈坛推送服务",
-  "viewThreadTwoPaneText": "点击左侧的帖子以查看内容。"
+  "viewThreadTwoPaneText": "点击左侧的帖子以查看内容。",
+  "pushServiceEnableDescription": "您是否想要打开推送通知功能以接收实时消息？",
+  "pushServiceOnDescription": "您现在就可以接收来自已授权论坛的推送啦~"
 }

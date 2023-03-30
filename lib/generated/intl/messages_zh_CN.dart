@@ -500,6 +500,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "推送服务依赖Firebase以及APNs，需要您的设备型号、操作系统类别以及偏好渠道等信息。您需要同意我们的推送服务使用条款和隐私政策后使用本服务。"),
         "pushPackageId": MessageLookupByLibrary.simpleMessage("应用包名"),
         "pushPrivacyPolicy": MessageLookupByLibrary.simpleMessage("推送服务隐私政策"),
+        "pushServiceEnableDescription":
+            MessageLookupByLibrary.simpleMessage("您是否想要打开推送通知功能以接收实时消息？"),
+        "pushServiceOnDescription":
+            MessageLookupByLibrary.simpleMessage("您现在就可以接收来自已授权论坛的推送啦~"),
         "pushTermsOfService": MessageLookupByLibrary.simpleMessage("推送服务条款"),
         "pushThreadTitle": MessageLookupByLibrary.simpleMessage("发帖"),
         "pushThreadTitleHint": MessageLookupByLibrary.simpleMessage("帖子标题"),

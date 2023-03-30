@@ -584,6 +584,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushPackageId": MessageLookupByLibrary.simpleMessage("Package ID"),
         "pushPrivacyPolicy": MessageLookupByLibrary.simpleMessage(
             "Privacy policy of push services"),
+        "pushServiceEnableDescription": MessageLookupByLibrary.simpleMessage(
+            "Do you wish to enable push service to receive the updated information?"),
+        "pushServiceOnDescription": MessageLookupByLibrary.simpleMessage(
+            "You are now able to get the updated information from supported Discuz."),
         "pushTermsOfService":
             MessageLookupByLibrary.simpleMessage("Terms of push services"),
         "pushThreadTitle": MessageLookupByLibrary.simpleMessage("Publish"),
