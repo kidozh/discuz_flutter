@@ -72,7 +72,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent>{
                   if (settings.authorizationStatus == AuthorizationStatus.authorized || settings.authorizationStatus == AuthorizationStatus.provisional){
                     Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = true;
                     await UserPreferencesUtils.putPushPreference(true);
-                    EasyLoading.showInfo(S.of(context).pushServiceOnDescription);
+                    EasyLoading.showSuccess(S.of(context).pushServiceOnDescription);
                   }
                   else{
                     EasyLoading.showInfo(S.of(context).pushNotificationPermissionNotAuthorized);
