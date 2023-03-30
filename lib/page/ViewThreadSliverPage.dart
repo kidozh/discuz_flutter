@@ -674,132 +674,137 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(
-              child: SafeArea(
-                child: EasyRefresh(
-                  header: EasyRefreshUtils.i18nClassicHeader(context),
-                  footer: EasyRefreshUtils.i18nClassicFooter(context),
-                  refreshOnStart: true,
-                  controller: _controller,
-                  //scrollController: _scrollController,
-                  onRefresh: () async {
-                    return await _invalidateContent();
-                  },
-                  onLoad: () async {
-                    return await _loadForumContent();
-                  },
-                  child: CustomScrollView(
-                    controller: _scrollController,
-                    slivers: [
+              child: EasyRefresh(
+                header: EasyRefreshUtils.i18nClassicHeader(context),
+                footer: EasyRefreshUtils.i18nClassicFooter(context),
+                refreshOnStart: true,
+                controller: _controller,
+                //scrollController: _scrollController,
+                onRefresh: () async {
+                  return await _invalidateContent();
+                },
+                onLoad: () async {
+                  return await _loadForumContent();
+                },
+                child: CustomScrollView(
+                  controller: _scrollController,
+                  slivers: [
+                    SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                              (context, _) {
+                            return SafeArea(child: Container(), bottom: false,);
+                          },
+                          childCount: 1,
+                        )),
+                    SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                              (context, _) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text(
+                                _viewThreadResult.threadVariables.threadInfo.subject
+                                    .isEmpty &&
+                                    passedSubject != null
+                                    ? passedSubject!
+                                    : _viewThreadResult
+                                    .threadVariables.threadInfo.subject,
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            );
+                          },
+                          childCount: 1,
+                        )),
+                    if (_error != null)
                       SliverList(
                           delegate: SliverChildBuilderDelegate(
                                 (context, _) {
-                              return Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Text(
-                                  _viewThreadResult.threadVariables.threadInfo.subject
-                                      .isEmpty &&
-                                      passedSubject != null
-                                      ? passedSubject!
-                                      : _viewThreadResult
-                                      .threadVariables.threadInfo.subject,
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                              return ErrorCard(_error!, () {
+                                _controller.callRefresh();
+                              },
+                                errorType: _error!.errorType,
+                                webpageUrl: URLUtils.getViewThreadURL(discuz, tid),
                               );
                             },
                             childCount: 1,
                           )),
-                      if (_error != null)
-                        SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                                  (context, _) {
-                                return ErrorCard(_error!, () {
-                                  _controller.callRefresh();
-                                },
-                                  errorType: _error!.errorType,
-                                  webpageUrl: URLUtils.getViewThreadURL(discuz, tid),
-                                );
-                              },
-                              childCount: 1,
-                            )),
-                      if(_postList.isEmpty && _error == null)
-                        SliverList(delegate: SliverChildBuilderDelegate((context, index){
-                          return EmptyListScreen(EmptyItemType.post);
-                        }, childCount:1)),
-                      if(_viewThreadResult.threadVariables.poll != null)
-                        SliverList(
-                            delegate: SliverChildBuilderDelegate((context, index) {
-                              return PollWidget(
-                                _viewThreadResult.threadVariables.poll!,
-                                _viewThreadResult.threadVariables.formHash,
-                                tid,
-                                _viewThreadResult.threadVariables.fid,
-                              );
-                            }, childCount: _viewThreadResult.threadVariables.poll != null ? 1 : 0)
-                        ),
+                    if(_postList.isEmpty && _error == null)
+                      SliverList(delegate: SliverChildBuilderDelegate((context, index){
+                        return EmptyListScreen(EmptyItemType.post);
+                      }, childCount:1)),
+                    if(_viewThreadResult.threadVariables.poll != null)
                       SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                              (context, index) {
-                            return Column(
-                              children: [
-                                AutoScrollTag(
-                                    key: ValueKey(index),
-                                    controller: _postAutoScrollController,
-                                    index: index,
-                                    child: PostWidget(
-                                      discuz,
-                                      _postList[index],
-                                      _viewThreadResult.threadVariables.threadInfo.authorId,
-                                      _viewThreadResult.threadVariables.formHash,
-                                      tid: tid,
-                                      onAuthorSelectedCallback: () {
-                                        if (viewThreadQuery.authorId == 0) {
-                                          viewThreadQuery.authorId =
-                                              _postList[index].authorId;
-                                        } else {
-                                          viewThreadQuery.authorId = 0;
-                                        }
-                                        setNewViewThreadQuery(viewThreadQuery);
-                                      },
-                                      postCommentList: postCommentList,
-                                      ignoreFontCustomization: ignoreFontCustomization,
-                                      jumpToPidCallback: (pid) {
-                                        // need to find the pid and scroll to it
-                                        log("jump to pid ${pid} and we are looking it");
-                                        int cnt = 0;
-                                        for (var post in _postList) {
-                                          if (post.pid == pid) {
-                                            log("!find it: ${pid} in ${cnt}");
-                                            _postAutoScrollController.scrollToIndex(cnt);
-                                            break;
-                                          }
-                                          cnt += 1;
-                                        }
-                                        // check whether it's the end of the scroll
-                                      },
-                                    ),
-                                ),
-                                if(index % 10 == 0 && index != 0)
-                                  AppBannerAdWidget()
-                              ],
+                          delegate: SliverChildBuilderDelegate((context, index) {
+                            return PollWidget(
+                              _viewThreadResult.threadVariables.poll!,
+                              _viewThreadResult.threadVariables.formHash,
+                              tid,
+                              _viewThreadResult.threadVariables.fid,
                             );
-                          },
-                          childCount: _postList.length,
-                        ),
+                          }, childCount: _viewThreadResult.threadVariables.poll != null ? 1 : 0)
                       ),
-                    ],
-                  ),
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                          return Column(
+                            children: [
+                              AutoScrollTag(
+                                key: ValueKey(index),
+                                controller: _postAutoScrollController,
+                                index: index,
+                                child: PostWidget(
+                                  discuz,
+                                  _postList[index],
+                                  _viewThreadResult.threadVariables.threadInfo.authorId,
+                                  _viewThreadResult.threadVariables.formHash,
+                                  tid: tid,
+                                  onAuthorSelectedCallback: () {
+                                    if (viewThreadQuery.authorId == 0) {
+                                      viewThreadQuery.authorId =
+                                          _postList[index].authorId;
+                                    } else {
+                                      viewThreadQuery.authorId = 0;
+                                    }
+                                    setNewViewThreadQuery(viewThreadQuery);
+                                  },
+                                  postCommentList: postCommentList,
+                                  ignoreFontCustomization: ignoreFontCustomization,
+                                  jumpToPidCallback: (pid) {
+                                    // need to find the pid and scroll to it
+                                    log("jump to pid ${pid} and we are looking it");
+                                    int cnt = 0;
+                                    for (var post in _postList) {
+                                      if (post.pid == pid) {
+                                        log("!find it: ${pid} in ${cnt}");
+                                        _postAutoScrollController.scrollToIndex(cnt);
+                                        break;
+                                      }
+                                      cnt += 1;
+                                    }
+                                    // check whether it's the end of the scroll
+                                  },
+                                ),
+                              ),
+                              if(index % 10 == 0 && index != 0)
+                                AppBannerAdWidget()
+                            ],
+                          );
+                        },
+                        childCount: _postList.length,
+                      ),
+                    ),
+                  ],
                 ),
-              )
+              ),
           ),
           // comment parts
           if (_viewThreadResult.threadVariables.threadInfo.closed)
             Container(
               color: Theme.of(context).colorScheme.error.withOpacity(0.1),
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 4.0),
+                padding: EdgeInsets.symmetric(vertical: 6.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
