@@ -444,7 +444,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                             context: context,
                             builder: (context) => DrawerPage()));
                   },
-                  icon: Icon(Icons.menu,
+                  icon: Icon(AppPlatformIcons(context).menuSolid,
                       color: Theme.of(context).textTheme.titleSmall?.color));
             }
           },
