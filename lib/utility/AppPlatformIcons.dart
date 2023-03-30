@@ -89,4 +89,5 @@ class AppPlatformIcons{
 
   IconData get formatSizeSolid => isMaterial(context)? Icons.format_size : CupertinoIcons.textformat_size;
 
+  IconData get manageDiscuzSolid => isMaterial(context)? Icons.account_tree : CupertinoIcons.cube_box_fill;
 }

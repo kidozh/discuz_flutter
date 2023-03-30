@@ -205,48 +205,55 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
         return indicatorResult;
 
       },
-      child: SafeArea(
-        child: CustomScrollView(
-          slivers: [if(favoriteForumDao != null)
-            ValueListenableBuilder(
-                valueListenable: favoriteForumDao!.favoriteForumBox.listenable(),
-                builder: (BuildContext context, value, Widget? child) {
-                  List<
-                      FavoriteForumInDatabase> favoriteForumInDbList = favoriteForumDao!
-                      .getFavoriteForumList(discuz);
-                  return SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        return FavoriteForumCardWidget(
-                            discuz, user, favoriteForumInDbList[index]);
-                      },
-                          childCount: favoriteForumInDbList.length
-                      )
-                  );
-                }
+      child: CustomScrollView(
+        slivers: [
+          SliverList(delegate: SliverChildBuilderDelegate(
+                  (context, index)=> SafeArea(child: Container(), bottom: false,),
+              childCount: 1
+          )),
+          if(favoriteForumDao != null)
+          ValueListenableBuilder(
+              valueListenable: favoriteForumDao!.favoriteForumBox.listenable(),
+              builder: (BuildContext context, value, Widget? child) {
+                List<
+                    FavoriteForumInDatabase> favoriteForumInDbList = favoriteForumDao!
+                    .getFavoriteForumList(discuz);
+                return SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      return FavoriteForumCardWidget(
+                          discuz, user, favoriteForumInDbList[index]);
+                    },
+                        childCount: favoriteForumInDbList.length
+                    )
+                );
+              }
+          ),
+
+
+
+          if(result.discuzIndexVariables.forumPartitionList.isEmpty)
+            SliverList(delegate: SliverChildBuilderDelegate((context, index){
+              return EmptyListScreen(EmptyItemType.forum);
+            }, childCount: 1)),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                List<ForumPartition> forumPartitionList =
+                    result.discuzIndexVariables.forumPartitionList;
+                List<Forum> _allForumList =
+                    result.discuzIndexVariables.forumList;
+                ForumPartition forumPartition = forumPartitionList[index];
+                //log("Forum partition length ${result!.discuzIndexVariables.forumPartitionList.length} all ${_allForumList.length}" );
+                return ForumPartitionWidget(discuz,user,forumPartition, _allForumList);
+              },
+              childCount: result.discuzIndexVariables.forumPartitionList.length,
             ),
-
-
-
-            if(result.discuzIndexVariables.forumPartitionList.isEmpty)
-              SliverList(delegate: SliverChildBuilderDelegate((context, index){
-                return EmptyListScreen(EmptyItemType.forum);
-              }, childCount: 1)),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                  List<ForumPartition> forumPartitionList =
-                      result.discuzIndexVariables.forumPartitionList;
-                  List<Forum> _allForumList =
-                      result.discuzIndexVariables.forumList;
-                  ForumPartition forumPartition = forumPartitionList[index];
-                  //log("Forum partition length ${result!.discuzIndexVariables.forumPartitionList.length} all ${_allForumList.length}" );
-                  return ForumPartitionWidget(discuz,user,forumPartition, _allForumList);
-                },
-                childCount: result.discuzIndexVariables.forumPartitionList.length,
-              ),
-            ),
-          ],
-        )
+          ),
+          SliverList(delegate: SliverChildBuilderDelegate(
+                  (context, index)=> SafeArea(child: Container(), top: false,),
+              childCount: 1
+          )),
+        ],
       ),
     );
   }

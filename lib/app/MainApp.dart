@@ -422,7 +422,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
             onPressed: _triggerSwitchDiscuzDialog,
             icon: Icon(
-              Icons.account_tree,
+              AppPlatformIcons(context).manageDiscuzSolid,
               color: Theme.of(context).textTheme.titleSmall?.color,
             ),
           )
