@@ -59,9 +59,9 @@ class DisplayForumAltSliverPage extends StatelessWidget {
   late final Discuz discuz;
   late final User? user;
   int fid = 0;
-  final ValueChanged<int> onSelectTid;
+  final ValueChanged<int>? onSelectTid;
 
-  DisplayForumAltSliverPage(this.discuz, this.user, this.fid, {required this.onSelectTid});
+  DisplayForumAltSliverPage(this.discuz, this.user, this.fid, {this.onSelectTid});
 
   @override
   Widget build(BuildContext context) {
@@ -75,9 +75,9 @@ class DisplayForumSliverStatefulWidget extends StatefulWidget {
   late final User? user;
   int fid = 0;
 
-  final ValueChanged<int> onSelectTid;
+  final ValueChanged<int>? onSelectTid;
 
-  DisplayForumSliverStatefulWidget(this.discuz, this.user, this.fid, {required this.onSelectTid});
+  DisplayForumSliverStatefulWidget(this.discuz, this.user, this.fid, {this.onSelectTid});
 
   @override
   _DisplayForumSliverState createState() {
@@ -98,7 +98,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
   bool historySaved = false;
 
-  final ValueChanged<int> onSelectTid;
+  final ValueChanged<int>? onSelectTid;
 
   _DisplayForumSliverState(this.discuz, this.user, this.fid, {required this.onSelectTid});
 
@@ -1055,7 +1055,7 @@ class DisplayForumTwoPanePage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints){
-      return DisplayForumTwoPaneStatefulWidget(discuz: discuz, fid: fid, restorationId: "DisplayForumTid", type: TwoPaneUtils.getTwoPaneType(constraints));
+      return DisplayForumTwoPaneStatefulWidget(discuz: discuz, fid: fid, restorationId: "DisplayForumFid", type: TwoPaneUtils.getTwoPaneType(constraints));
     });
 
   }
@@ -1071,7 +1071,6 @@ class DisplayForumTwoPaneStatefulWidget extends StatefulWidget{
 
 
   const DisplayForumTwoPaneStatefulWidget({
-    super.key,
     required this.discuz,
     this.user,
     required this.fid,
@@ -1118,8 +1117,12 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
   @override
   Widget build(BuildContext context) {
     var panePriority = TwoPanePriority.both;
+    // directly give small Screen layout
     if (widget.type == TwoPaneType.smallScreen){
       panePriority = _currentTid.value == 0? TwoPanePriority.start : TwoPanePriority.end;
+      return DisplayForumAltSliverPage(
+        discuz, user, fid,
+      );
     }
 
     double paneProportion = 0.35;
