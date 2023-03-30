@@ -337,7 +337,8 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
           subtitle: RichText(
             text: TextSpan(
               text: "",
-              style: textStyle?..copyWith(color: selected? Theme.of(context).colorScheme.onPrimary: null),
+              style: Theme.of(context).textTheme.bodySmall?..copyWith(color: selected? Theme.of(context).colorScheme.onPrimary: null),
+              //style: ..copyWith(color: selected? Theme.of(context).colorScheme.onPrimary: null),
               children: <TextSpan>[
                 TextSpan(text: _forumThread.author),
                 TextSpan(text: " · "),
