@@ -408,7 +408,6 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     if (isUserBlocked){
       return Container(
         child: Card(
@@ -418,7 +417,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(S.of(context).contentPostByBlockUserTitle(_forumThread.author),style:Theme.of(context).textTheme.headline6),
+                  Text(S.of(context).contentPostByBlockUserTitle(_forumThread.author),style:Theme.of(context).textTheme.titleLarge),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
