@@ -51,10 +51,12 @@ class ExploreWebsiteState extends State<ExploreWebsitePage> {
       }
       else{
 
-        return InnerWebviewScreen(ValueKey(discuzAndUser.discuz),discuzAndUser.discuz!,
-          discuzAndUser.user,
-          initialURL: initialURL,
-          onSelectTid: this.onSelectTid,
+        return SafeArea(
+            child: InnerWebviewScreen(ValueKey(discuzAndUser.discuz),discuzAndUser.discuz!,
+                discuzAndUser.user,
+                initialURL: initialURL,
+                onSelectTid: this.onSelectTid,
+              )
         );
       }
     });

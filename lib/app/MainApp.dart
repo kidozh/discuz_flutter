@@ -162,15 +162,6 @@ class MyHomePage extends StatefulWidget {
 
   final ValueChanged<int>? onSelectTid;
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -203,7 +194,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   @override
   void didChangeDependencies() async {
-    // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     print("Update token to all applicable discuzes");
     PushServiceUtils.updateTokenToAllApplicableDiscuzes(context);
@@ -224,16 +214,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             'RemoteMessage: ${data} \n');
       }
     });
-
-    // If the message also contains a data property with a "type" of "chat",
-    // navigate to a chat screen
-    // if (initialMessage != null) {
-    //   _handleMessage(initialMessage);
-    // }
-    //
-    // // Also handle any interaction when the app is in the background via a
-    // // Stream listener
-    // FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
   }
 
   Future<void> _handleMessageByPush(Map<String?, Object?> message) async {
@@ -398,7 +378,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       }
       setState(() {
         // set
-
         Provider.of<DiscuzAndUserNotifier>(context, listen: false)
             .initDiscuz(selectedDiscuz);
         _setFirstUserInDiscuz(selectedDiscuz);
@@ -415,7 +394,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // need to check whether discuz exists in dataset
 
     return PlatformScaffold(
-      iosContentPadding: true,
+      //iosContentPadding: true,
       appBar: PlatformAppBar(
         title: Consumer<DiscuzAndUserNotifier>(
           builder: (context, value, child) {

@@ -203,6 +203,10 @@ class _NotificationState extends State<NotificationStatefulWidget> {
             },
       child: CustomScrollView(
         slivers: [
+          SliverList(delegate: SliverChildBuilderDelegate(
+                  (context, index)=> SafeArea(child: Container(), bottom: false,),
+              childCount: 1
+          )),
           if(_noteList.isEmpty)
             SliverList(delegate: SliverChildBuilderDelegate(
                     (context, index)=> EmptyListScreen(EmptyItemType.notification),

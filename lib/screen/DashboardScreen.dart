@@ -22,7 +22,9 @@ class DashboardScreen extends StatelessWidget{
         return MaterialDashboardScreen(onSelectTid: onSelectTid,);
       },
       cupertino: (context, child, target){
-        return CupertinoDashboardScreen(onSelectTid: onSelectTid);
+        return SafeArea(
+            child: CupertinoDashboardScreen(onSelectTid: onSelectTid)
+        );
       },
     );
   }
