@@ -18,15 +18,20 @@ class DiscuzNotificationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    Brightness brightness = MediaQuery.of(context).platformBrightness;
+    return Padding(
+        padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
         child: Card(
+          elevation: 4.0,
+          color: brightness == Brightness.light? Colors.white: Colors.black45,
+          surfaceTintColor: brightness == Brightness.light? Colors.white: Colors.black45,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             children: [
               Padding(
-                padding: EdgeInsets.all(4.0),
+                padding: EdgeInsets.all(8.0),
                 child: CachedNetworkImage(
                   imageUrl: URLUtils.getAvatarURL(_discuz, _notification.authorId.toString()),
                   progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
