@@ -323,7 +323,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
     return Consumer<SelectedTidNotifierProvider>(
       builder: (context, selectedTid, child){
-        log("Changed tid ${selectedTid.tid} ${_forumThread.getTid()}");
+        //log("Changed tid ${selectedTid.tid} ${_forumThread.getTid()}");
         bool selected = selectedTid.tid == _forumThread.getTid();
         return ListTile(
           selected: selected,

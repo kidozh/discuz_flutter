@@ -563,7 +563,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       appBar: PlatformAppBar(
         automaticallyImplyLeading: this.onClosed == null? true: false,
         cupertino: (_, __) => CupertinoNavigationBarData(
-          heroTag: "viewthread_${tid}",
+          heroTag: this.onClosed == null? null: "viewthread_${tid}",
           transitionBetweenRoutes: false
         ),
         leading: this.onClosed == null? null: PlatformIconButton(
