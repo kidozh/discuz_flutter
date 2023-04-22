@@ -8,33 +8,35 @@ class NullDiscuzScreen extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    return Container(
-      child: Card(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: Icon(Icons.announcement),
-                title: Text(S.of(context).nullDiscuzTitle),
-                subtitle: Text(S.of(context).nullDiscuzSubTitle),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  TextButton(
-                    child: Text(S.of(context).addNewDiscuz),
-                    onPressed: () async{
-                      await Navigator.push(
-                          context, MaterialPageRoute(builder: (context) => AddDiscuzPage()));
-                    },
+    return SafeArea(
+        child: Container(
+          child: Card(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    leading: Icon(Icons.announcement),
+                    title: Text(S.of(context).nullDiscuzTitle),
+                    subtitle: Text(S.of(context).nullDiscuzSubTitle),
                   ),
-                  const SizedBox(width: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      TextButton(
+                        child: Text(S.of(context).addNewDiscuz),
+                        onPressed: () async{
+                          await Navigator.push(
+                              context, MaterialPageRoute(builder: (context) => AddDiscuzPage()));
+                        },
+                      ),
+                      const SizedBox(width: 16),
 
+                    ],
+                  )
                 ],
               )
-            ],
-          )
-      ),
+          ),
+        )
     );
   }
 
