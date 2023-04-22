@@ -287,7 +287,6 @@ class _LoginFormFieldState
                     autofillHints: [AutofillHints.password],
                     controller: _passwdController,
                     decoration: new InputDecoration(
-
                       labelText: S.of(context).password,
                       prefixIcon: Icon(Icons.vpn_key),
                     ),
@@ -319,7 +318,7 @@ class _LoginFormFieldState
                                 ButtonState.idle:
                                 IconedButton(
                                     text: S.of(context).loginTitle,
-                                    icon: Icon(Icons.login,color: Theme.of(context).colorScheme.onPrimaryContainer),
+                                    icon: Icon(Icons.login,color: Colors.white60),
                                     color: Theme.of(context).colorScheme.primary),
                                 ButtonState.loading:
                                 IconedButton(
