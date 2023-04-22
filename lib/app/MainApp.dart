@@ -105,68 +105,101 @@ class MyApp extends StatelessWidget {
     //_listenToChanges(context);
     return Consumer<ThemeNotifierProvider>(
       builder: (context, themeColorEntity, _) {
-        print("Change brightness ${themeColorEntity.brightness}");
+        ThemeMode? themeMode = null;
 
-        Brightness systemBrightness =
-            MediaQueryData.fromWindow(WidgetsBinding.instance.window)
-                .platformBrightness;
-        log("Get system brightness ${systemBrightness} -> Cupertino? ${isCupertino(context)} ${platform(context).name}");
-
-        final materialTheme = ThemeData(
-            useMaterial3: themeColorEntity.useMaterial3,
+        final materialThemeDataLight = ThemeData.from(
+            colorScheme: ColorScheme.fromSeed(
+                seedColor: themeColorEntity.themeColor,
+              brightness: Brightness.light,
+            ),
+            useMaterial3: themeColorEntity.useMaterial3
+        );
+        final materialThemeDataDark = ThemeData.from(
             colorScheme: ColorScheme.fromSeed(
               seedColor: themeColorEntity.themeColor,
-              brightness: systemBrightness,
+              brightness: Brightness.dark,
             ),
+            useMaterial3: themeColorEntity.useMaterial3
         );
+        const darkDefaultCupertinoTheme =
+            CupertinoThemeData(brightness: Brightness.dark);
+        final cupertinoDarkTheme = MaterialBasedCupertinoThemeData(
+          materialTheme: materialThemeDataDark.copyWith(
+            cupertinoOverrideTheme: CupertinoThemeData(
+              brightness: Brightness.dark,
+              barBackgroundColor: darkDefaultCupertinoTheme.barBackgroundColor,
+              textTheme: CupertinoTextThemeData(
+                primaryColor: Colors.white,
+                navActionTextStyle: darkDefaultCupertinoTheme
+                    .textTheme.navActionTextStyle
+                    .copyWith(
+                  color: const Color(0xF0F9F9F9),
+                ),
+                navLargeTitleTextStyle: darkDefaultCupertinoTheme
+                    .textTheme.navLargeTitleTextStyle
+                    .copyWith(color: const Color(0xF0F9F9F9)),
+              ),
+            ),
+          ),
+        );
+        final cupertinoLightTheme = MaterialBasedCupertinoThemeData(
+            materialTheme: materialThemeDataLight);
+        // check the system setting
+        if (themeColorEntity.brightness == null) {
+          themeMode = ThemeMode.system;
+        } else if (themeColorEntity.brightness == Brightness.light) {
+          themeMode = ThemeMode.light;
+        } else if (themeColorEntity.brightness == Brightness.dark) {
+          themeMode = ThemeMode.dark;
+        } else {
+          themeMode = null;
+        }
 
-        return Theme(
-            data: materialTheme,
-            child: PlatformProvider(
-              initialPlatform: getTargetPlatformByName(initialPlatform),
-              settings: PlatformSettingsData(),
-              builder: (context) {
-                return PlatformApp(
-                  //title: S.of(context).appName,
-                  navigatorKey: navigatorKey,
-                  debugShowCheckedModeBanner: false,
-                  material: (_, __) => MaterialAppData(
-
-                  ),
-                  cupertino: (_, __) => CupertinoAppData(
-                    theme: CupertinoThemeData(
-                        primaryColor: themeColorEntity.themeColor,
-                        brightness: systemBrightness
-                    ),
-
-                  ),
-                  // localization
-                  localizationsDelegates: [
-                    S.delegate,
-                    GlobalCupertinoLocalizations.delegate,
-                    GlobalMaterialLocalizations.delegate,
-                    GlobalWidgetsLocalizations.delegate
-                  ],
-                  supportedLocales: S.delegate.supportedLocales,
-                  builder: EasyLoading.init(),
-                  home: MainTwoPanePage(),
-                );
-              },
-            ));
+        return PlatformProvider(
+          initialPlatform: getTargetPlatformByName(initialPlatform),
+          settings: PlatformSettingsData(),
+          builder: (context) {
+            return PlatformTheme(
+                themeMode: themeMode,
+                materialLightTheme: materialThemeDataLight,
+                materialDarkTheme: materialThemeDataDark,
+                cupertinoLightTheme: cupertinoLightTheme,
+                cupertinoDarkTheme: cupertinoDarkTheme,
+                onThemeModeChanged: (themeMode) {
+                  themeMode = themeMode;
+                },
+                builder: (context) => PlatformApp(
+                      //title: S.of(context).appName,
+                      navigatorKey: navigatorKey,
+                      debugShowCheckedModeBanner: false,
+                      localizationsDelegates: [
+                        S.delegate,
+                        GlobalCupertinoLocalizations.delegate,
+                        GlobalMaterialLocalizations.delegate,
+                        GlobalWidgetsLocalizations.delegate
+                      ],
+                      supportedLocales: S.delegate.supportedLocales,
+                      builder: EasyLoading.init(),
+                      home: MainTwoPanePage(),
+                    ));
+          },
+        );
       },
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title, this.onSelectTid}) : super(key: key);
+  MyHomePage({Key? key, required this.title, this.onSelectTid})
+      : super(key: key);
 
   final ValueChanged<int>? onSelectTid;
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState(onSelectTid: this.onSelectTid);
+  _MyHomePageState createState() =>
+      _MyHomePageState(onSelectTid: this.onSelectTid);
 }
 
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
@@ -189,7 +222,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     super.didChangePlatformBrightness();
     // change now
     var window = WidgetsBinding.instance.window;
-    Provider.of<ThemeNotifierProvider>(context, listen: false).setBrightness(window.platformBrightness);
+    Provider.of<ThemeNotifierProvider>(context, listen: false)
+        .setBrightness(window.platformBrightness);
     //Theme.of(context).brightness = window.platformBrightness;
   }
 
@@ -310,7 +344,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             // save to user preference
 
             _setFirstUserInDiscuz(discuz);
-            if(onSelectTid!=null){
+            if (onSelectTid != null) {
               onSelectTid!(0);
             }
             Navigator.of(context).pop();
@@ -462,7 +496,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           key: ValueKey(1),
         ),
         //HotThreadScreen(key: ValueKey(2),),
-        DashboardScreen(onSelectTid: onSelectTid,),
+        DashboardScreen(
+          onSelectTid: onSelectTid,
+        ),
         NotificationScreen(
           //key: ValueKey(3),
           onSelectTid: this.onSelectTid,
@@ -518,20 +554,17 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 }
 
-class MainTwoPanePage extends StatelessWidget{
-
-
+class MainTwoPanePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints){
-      return MainTwoPaneStatefulWidget(type: TwoPaneUtils.getTwoPaneType(constraints));
+    return LayoutBuilder(builder: (context, constraints) {
+      return MainTwoPaneStatefulWidget(
+          type: TwoPaneUtils.getTwoPaneType(constraints));
     });
-
   }
-
 }
 
-class MainTwoPaneStatefulWidget extends StatefulWidget{
+class MainTwoPaneStatefulWidget extends StatefulWidget {
   final String restorationId = "DisplayForumTid";
   final TwoPaneType type;
 
@@ -541,11 +574,10 @@ class MainTwoPaneStatefulWidget extends StatefulWidget{
   State<StatefulWidget> createState() {
     return MainTwoPaneState();
   }
-
 }
 
-class MainTwoPaneState extends State<MainTwoPaneStatefulWidget> with RestorationMixin{
-
+class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
+    with RestorationMixin {
   final RestorableInt _currentTid = RestorableInt(0);
 
   @override
@@ -565,14 +597,16 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget> with Restoration
   @override
   Widget build(BuildContext context) {
     var panePriority = TwoPanePriority.both;
-    if (widget.type == TwoPaneType.smallScreen){
-      panePriority = _currentTid.value == 0? TwoPanePriority.start : TwoPanePriority.end;
+    if (widget.type == TwoPaneType.smallScreen) {
+      panePriority =
+          _currentTid.value == 0 ? TwoPanePriority.start : TwoPanePriority.end;
       return MyHomePage(title: "");
     }
     double paneProportion = 0.35;
     // directly give
-    return OrientationBuilder(builder: (context, orientation){
-      if(widget.type != TwoPaneType.smallScreen && orientation == Orientation.portrait){
+    return OrientationBuilder(builder: (context, orientation) {
+      if (widget.type != TwoPaneType.smallScreen &&
+          orientation == Orientation.portrait) {
         paneProportion = 0.5;
       }
 
@@ -582,51 +616,50 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget> with Restoration
               padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
               paneProportion: paneProportion,
               panePriority: panePriority,
-              startPane: MyHomePage(title: "", onSelectTid: (tid) async{
-                Provider.of<SelectedTidNotifierProvider>(context,listen: false).setTid(tid);
-                if(tid != _currentTid){
-                  setState(() {
-                    _currentTid.value = 0;
-                  });
-                  // I don't know why it takes time to refresh
-                  await Future.delayed(const Duration(milliseconds: 100));
-                  setState(() {
-                    _currentTid.value = tid;
-                    _currentTid.didUpdateValue(tid);
-                  });
-                  log("Two Pane Changed current tid ${_currentTid.value}");
-                }
-
-              },),
-
-              endPane: _currentTid.value == 0 ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText) : Consumer<DiscuzAndUserNotifier>(
-                  builder: (context, discuzAndUser, child){
-                    if(discuzAndUser.discuz != null){
-                      Discuz discuz = discuzAndUser.discuz!;
-                      User? user = discuzAndUser.user;
-                      return ViewThreadSliverPage(
-                        discuz,
-                        user,
-                        _currentTid.value,
-                        onClosed: (){
-                          Provider.of<SelectedTidNotifierProvider>(context,listen: false).setTid(0);
-                          setState(() {
-                            _currentTid.value = 0;
-                          });
-                        },
-                      );
-                    }
-                    else{
-                      return Container();
-                    }
+              startPane: MyHomePage(
+                title: "",
+                onSelectTid: (tid) async {
+                  Provider.of<SelectedTidNotifierProvider>(context,
+                          listen: false)
+                      .setTid(tid);
+                  if (tid != _currentTid) {
+                    setState(() {
+                      _currentTid.value = 0;
+                    });
+                    // I don't know why it takes time to refresh
+                    await Future.delayed(const Duration(milliseconds: 100));
+                    setState(() {
+                      _currentTid.value = tid;
+                      _currentTid.didUpdateValue(tid);
+                    });
+                    log("Two Pane Changed current tid ${_currentTid.value}");
                   }
-              )
-
-          )
-      );
+                },
+              ),
+              endPane: _currentTid.value == 0
+                  ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText)
+                  : Consumer<DiscuzAndUserNotifier>(
+                      builder: (context, discuzAndUser, child) {
+                      if (discuzAndUser.discuz != null) {
+                        Discuz discuz = discuzAndUser.discuz!;
+                        User? user = discuzAndUser.user;
+                        return ViewThreadSliverPage(
+                          discuz,
+                          user,
+                          _currentTid.value,
+                          onClosed: () {
+                            Provider.of<SelectedTidNotifierProvider>(context,
+                                    listen: false)
+                                .setTid(0);
+                            setState(() {
+                              _currentTid.value = 0;
+                            });
+                          },
+                        );
+                      } else {
+                        return Container();
+                      }
+                    })));
     });
   }
-
-
-
 }

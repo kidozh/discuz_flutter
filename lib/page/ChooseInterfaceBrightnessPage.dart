@@ -54,7 +54,7 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
               title: Text(S.of(context).followSystem),
               trailing: trailingWidget(""),
               onPressed: (BuildContext context) {
-
+                VibrationUtils.vibrateWithClickIfPossible();
                 changePlatform("");
               },
             ),
@@ -62,6 +62,7 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
               title: Text(S.of(context).brightnessLight),
               trailing: trailingWidget("light"),
               onPressed: (BuildContext context) {
+                VibrationUtils.vibrateWithClickIfPossible();
                 changePlatform("light");
               },
             ),
@@ -69,21 +70,12 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
               title: Text(S.of(context).brightnessDark),
               trailing: trailingWidget("dark"),
               onPressed: (BuildContext context) {
+                VibrationUtils.vibrateWithClickIfPossible();
                 changePlatform("dark");
               },
             ),
             
           ]),
-          CustomSettingsSection(child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 16.0),
-                child: Text(S.of(context).materialBrightnessSwitchDisabledText, style: Theme.of(context).textTheme.bodyText2),
-
-              )
-
-            ],
-          ))
         ],
       ),
     );
