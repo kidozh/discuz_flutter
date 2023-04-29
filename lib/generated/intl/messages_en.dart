@@ -371,6 +371,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "googleAdTitle": MessageLookupByLibrary.simpleMessage("AD"),
         "groupInfoDescription": m13,
         "habit": MessageLookupByLibrary.simpleMessage("Habits"),
+        "hapticFeedbackTitle":
+            MessageLookupByLibrary.simpleMessage("Haptic feedback"),
         "homepage": MessageLookupByLibrary.simpleMessage("Homepage"),
         "hotThread": MessageLookupByLibrary.simpleMessage("Popular"),
         "hour": MessageLookupByLibrary.simpleMessage("H"),

@@ -648,5 +648,6 @@
   "dhPushServiceTitle": "谈坛推送服务",
   "viewThreadTwoPaneText": "点击左侧的帖子以查看内容。",
   "pushServiceEnableDescription": "您是否想要打开推送通知功能以接收实时消息？",
-  "pushServiceOnDescription": "您现在就可以接收来自已授权论坛的推送啦~"
+  "pushServiceOnDescription": "您现在就可以接收来自已授权论坛的推送啦~",
+  "hapticFeedbackTitle": "振动反馈"
 }

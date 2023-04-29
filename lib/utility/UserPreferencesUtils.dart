@@ -359,6 +359,18 @@ class UserPreferencesUtils{
     await _putLastMobileSign(discuz, uid, nowTimestampSecond);
   }
 
+  static final String hapticFeedbackPreferenceKey = "hapticFeedbackPreferenceKey";
+
+  static Future<bool> getHapticFeedbackPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var enableHapticFeedback =  prefs.getBool(hapticFeedbackPreferenceKey);
+    return enableHapticFeedback == null? true: enableHapticFeedback;
+  }
+
+  static Future<void> putHapticFeedbackPreference(bool value) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(hapticFeedbackPreferenceKey, value);
+  }
 
 
 

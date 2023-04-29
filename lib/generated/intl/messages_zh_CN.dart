@@ -320,6 +320,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "googleAdTitle": MessageLookupByLibrary.simpleMessage("广告"),
         "groupInfoDescription": m13,
         "habit": MessageLookupByLibrary.simpleMessage("爱好"),
+        "hapticFeedbackTitle": MessageLookupByLibrary.simpleMessage("振动反馈"),
         "homepage": MessageLookupByLibrary.simpleMessage("个人主页"),
         "hotThread": MessageLookupByLibrary.simpleMessage("最新热门"),
         "hour": MessageLookupByLibrary.simpleMessage("时"),

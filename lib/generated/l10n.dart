@@ -4441,6 +4441,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Haptic feedback`
+  String get hapticFeedbackTitle {
+    return Intl.message(
+      'Haptic feedback',
+      name: 'hapticFeedbackTitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
