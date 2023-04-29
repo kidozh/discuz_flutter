@@ -328,7 +328,9 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
         return ListTile(
           selected: selected,
           leading: UserAvatar(
-            _discuz, _forumThread.getAuthorId(), _forumThread.author, size: 36,
+            _discuz, _forumThread.getAuthorId(), _forumThread.author,
+            size: 36,
+            disableTap: true,
           ),
           title: Text(_forumThread.subject, style: textStyle?..copyWith(
               color: selected? Theme.of(context).colorScheme.onPrimary: null,

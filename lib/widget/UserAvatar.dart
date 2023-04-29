@@ -19,13 +19,14 @@ class UserAvatar extends StatelessWidget{
   String username = "";
   Discuz discuz;
   double? size = 16;
+  bool? disableTap = false;
 
   double getSize(){
     return this.size == null? 16: this.size!;
   }
 
 
-  UserAvatar(this.discuz,this.uid, this.username,{this.size});
+  UserAvatar(this.discuz,this.uid, this.username,{this.size, this.disableTap});
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +62,8 @@ class UserAvatar extends StatelessWidget{
           ),
         ),
       ),
-      onTap: () async{
+
+      onTap: this.disableTap == true? null: () async{
         User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
         Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
         if(discuz != null){

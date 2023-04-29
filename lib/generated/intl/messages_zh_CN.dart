@@ -143,6 +143,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "cancel": MessageLookupByLibrary.simpleMessage("取消"),
         "cancelAdding": MessageLookupByLibrary.simpleMessage("取消"),
         "captchaRequired": MessageLookupByLibrary.simpleMessage("需要验证码"),
+        "chatIconToolTip": MessageLookupByLibrary.simpleMessage("私聊"),
         "chatMessage": MessageLookupByLibrary.simpleMessage("信息"),
         "checkUserLoginStatus":
             MessageLookupByLibrary.simpleMessage("正在检查用户登录状态。。。"),
@@ -538,6 +539,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "reportContentTitle": m26,
         "reportOtherReasonHint": MessageLookupByLibrary.simpleMessage("提供举报原因"),
         "reportSuccessfully": m27,
+        "reportThreadTooltip": MessageLookupByLibrary.simpleMessage("举报不当内容"),
         "residentPlace": MessageLookupByLibrary.simpleMessage("居住地"),
         "retry": MessageLookupByLibrary.simpleMessage("重试"),
         "revisedPost": MessageLookupByLibrary.simpleMessage("帖子审核后再编辑，以防重复加分。"),

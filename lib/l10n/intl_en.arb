@@ -657,5 +657,7 @@
   "sortThreadInAscendOrder": "Sort thread in ascent order",
   "sortThreadInDescendOrder": "Sort thread in descent order",
   "menuIconTooltip": "Menu",
-  "selectDiscuzIconTooltip": "Select discuz forum"
+  "selectDiscuzIconTooltip": "Select discuz forum",
+  "chatIconToolTip": "Chat with him / her",
+  "reportThreadTooltip": "Report the post"
 }

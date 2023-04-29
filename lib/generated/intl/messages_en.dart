@@ -156,6 +156,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "cancelAdding": MessageLookupByLibrary.simpleMessage("Cancel"),
         "captchaRequired":
             MessageLookupByLibrary.simpleMessage("Captcha required."),
+        "chatIconToolTip":
+            MessageLookupByLibrary.simpleMessage("Chat with him / her"),
         "chatMessage": MessageLookupByLibrary.simpleMessage("Chat"),
         "checkUserLoginStatus":
             MessageLookupByLibrary.simpleMessage("Check user status..."),
@@ -632,6 +634,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "reportOtherReasonHint":
             MessageLookupByLibrary.simpleMessage("Type to report other reason"),
         "reportSuccessfully": m27,
+        "reportThreadTooltip":
+            MessageLookupByLibrary.simpleMessage("Report the post"),
         "residentPlace": MessageLookupByLibrary.simpleMessage("Resident place"),
         "retry": MessageLookupByLibrary.simpleMessage("Retry"),
         "revisedPost": MessageLookupByLibrary.simpleMessage(

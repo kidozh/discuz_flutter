@@ -658,5 +658,7 @@
   "sortThreadInAscendOrder": "从旧到新排列",
   "sortThreadInDescendOrder": "从新到旧排列",
   "menuIconTooltip": "菜单",
-  "selectDiscuzIconTooltip": "选择论坛"
+  "selectDiscuzIconTooltip": "选择论坛",
+  "chatIconToolTip": "私聊",
+  "reportThreadTooltip": "举报不当内容"
 }

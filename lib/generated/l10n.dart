@@ -4541,6 +4541,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Chat with him / her`
+  String get chatIconToolTip {
+    return Intl.message(
+      'Chat with him / her',
+      name: 'chatIconToolTip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Report the post`
+  String get reportThreadTooltip {
+    return Intl.message(
+      'Report the post',
+      name: 'reportThreadTooltip',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

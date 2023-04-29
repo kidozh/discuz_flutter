@@ -121,6 +121,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
             : Text(_userProfileResult!.variables.getSpace().username),
         trailingActions: [
           IconButton(
+              tooltip: S.of(context).chatIconToolTip,
               icon: Icon(AppPlatformIcons(context).contactUserSolid, size: 24,),
               onPressed: () {
                 if (_userProfileResult != null &&
