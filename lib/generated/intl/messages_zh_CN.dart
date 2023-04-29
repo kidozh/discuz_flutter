@@ -272,8 +272,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "error": MessageLookupByLibrary.simpleMessage("出错了"),
         "errorUserExpired": MessageLookupByLibrary.simpleMessage("用户登录信息已经失效。"),
         "favoriteForum": MessageLookupByLibrary.simpleMessage("收藏的板块"),
-        "favoriteIconTooltip": MessageLookupByLibrary.simpleMessage("收藏帖子"),
+        "favoriteIconTooltip": MessageLookupByLibrary.simpleMessage("收藏板块"),
         "favoriteThread": MessageLookupByLibrary.simpleMessage("收藏的帖子"),
+        "favoriteThreadTooltip": MessageLookupByLibrary.simpleMessage("收藏帖子"),
         "favorites": MessageLookupByLibrary.simpleMessage("收藏"),
         "feedbackTitle": MessageLookupByLibrary.simpleMessage("触感"),
         "finishLoginInWeb": MessageLookupByLibrary.simpleMessage("完成登录"),
@@ -570,6 +571,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("该论坛未开启推送插件。"),
         "sitePage": MessageLookupByLibrary.simpleMessage("主页"),
         "smileyLabel": m30,
+        "sortThreadInAscendOrder":
+            MessageLookupByLibrary.simpleMessage("从旧到新排列"),
+        "sortThreadInDescendOrder":
+            MessageLookupByLibrary.simpleMessage("从新到旧排列"),
         "spam": MessageLookupByLibrary.simpleMessage("恶意灌水"),
         "style": MessageLookupByLibrary.simpleMessage("样式"),
         "submitPoll": m31,
@@ -598,7 +603,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "unblockContent": MessageLookupByLibrary.simpleMessage("恢复显示内容"),
         "unblockUser": MessageLookupByLibrary.simpleMessage("解除屏蔽"),
         "undo": MessageLookupByLibrary.simpleMessage("撤销"),
-        "unfavoriteIconTooltip": MessageLookupByLibrary.simpleMessage("取消收藏"),
+        "unfavoriteIconTooltip": MessageLookupByLibrary.simpleMessage("取消收藏板块"),
+        "unfavoriteThreadTooltip":
+            MessageLookupByLibrary.simpleMessage("取消收藏帖子"),
         "updateAt": MessageLookupByLibrary.simpleMessage("更新于 %T"),
         "upgrade_notification_subtitle":
             MessageLookupByLibrary.simpleMessage("本次升级新增了平板预览模式，部分页面适配了平板操作。"),

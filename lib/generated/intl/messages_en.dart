@@ -314,6 +314,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Favorite forum"),
         "favoriteThread":
             MessageLookupByLibrary.simpleMessage("Favorite threads"),
+        "favoriteThreadTooltip":
+            MessageLookupByLibrary.simpleMessage("Favorite thread"),
         "favorites": MessageLookupByLibrary.simpleMessage("Favorites"),
         "feedbackTitle": MessageLookupByLibrary.simpleMessage("Haptic"),
         "finishLoginInWeb": MessageLookupByLibrary.simpleMessage("Finish"),
@@ -673,6 +675,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "The site may not install DHP Service."),
         "sitePage": MessageLookupByLibrary.simpleMessage("Homepage"),
         "smileyLabel": m30,
+        "sortThreadInAscendOrder":
+            MessageLookupByLibrary.simpleMessage("Sort thread in ascent order"),
+        "sortThreadInDescendOrder": MessageLookupByLibrary.simpleMessage(
+            "Sort thread in descent order"),
         "spam": MessageLookupByLibrary.simpleMessage("Spam"),
         "style": MessageLookupByLibrary.simpleMessage("Style"),
         "submitPoll": m31,
@@ -707,6 +713,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "undo": MessageLookupByLibrary.simpleMessage("Undo"),
         "unfavoriteIconTooltip":
             MessageLookupByLibrary.simpleMessage("Unfavorite forum"),
+        "unfavoriteThreadTooltip":
+            MessageLookupByLibrary.simpleMessage("Unfavorite thread"),
         "updateAt": MessageLookupByLibrary.simpleMessage("Update at %T"),
         "upgrade_notification_subtitle": MessageLookupByLibrary.simpleMessage(
             "The app now supports tablet layout."),

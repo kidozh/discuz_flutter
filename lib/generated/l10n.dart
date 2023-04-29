@@ -4481,6 +4481,46 @@ class S {
       args: [],
     );
   }
+
+  /// `Favorite thread`
+  String get favoriteThreadTooltip {
+    return Intl.message(
+      'Favorite thread',
+      name: 'favoriteThreadTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unfavorite thread`
+  String get unfavoriteThreadTooltip {
+    return Intl.message(
+      'Unfavorite thread',
+      name: 'unfavoriteThreadTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sort thread in ascent order`
+  String get sortThreadInAscendOrder {
+    return Intl.message(
+      'Sort thread in ascent order',
+      name: 'sortThreadInAscendOrder',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sort thread in descent order`
+  String get sortThreadInDescendOrder {
+    return Intl.message(
+      'Sort thread in descent order',
+      name: 'sortThreadInDescendOrder',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

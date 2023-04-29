@@ -651,5 +651,9 @@
   "hapticFeedbackTitle": "Vibration feedback",
   "feedbackTitle": "Haptic",
   "favoriteIconTooltip": "Favorite forum",
-  "unfavoriteIconTooltip": "Unfavorite forum"
+  "unfavoriteIconTooltip": "Unfavorite forum",
+  "favoriteThreadTooltip": "Favorite thread",
+  "unfavoriteThreadTooltip": "Unfavorite thread",
+  "sortThreadInAscendOrder": "Sort thread in ascent order",
+  "sortThreadInDescendOrder": "Sort thread in descent order"
 }

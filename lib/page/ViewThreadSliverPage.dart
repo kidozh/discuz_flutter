@@ -47,7 +47,6 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../utility/EasyRefreshUtils.dart';
-import '../widget/AppBannerAdWidget.dart';
 import 'InternalWebviewBrowserPage.dart';
 
 class ViewThreadSliverPage extends StatelessWidget {
@@ -596,6 +595,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                     unfavoriteThread();
                   }
                 },
+                tooltip: S.of(context).favoriteThreadTooltip,
                 icon: ValueListenableBuilder(
                   valueListenable:
                       favoriteThreadDao!.favoriteThreadBox.listenable(),
@@ -616,10 +616,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                   },
                 )),
           IconButton(
+            tooltip: viewThreadQuery.timeAscend?
+            S.of(context).sortThreadInAscendOrder: S.of(context).sortThreadInDescendOrder,
             icon: Icon(
               viewThreadQuery.timeAscend
                   ? PlatformIcons(context).upArrow
                   : PlatformIcons(context).downArrow,
+
               size: 24,
             ),
             onPressed: () {
@@ -787,8 +790,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                   },
                                 ),
                               ),
-                              if(index % 10 == 0 && index != 0)
-                                AppBannerAdWidget()
+                              // if(index % 10 == 0 && index != 0)
+                              //   AppBannerAdWidget()
                             ],
                           );
                         },
