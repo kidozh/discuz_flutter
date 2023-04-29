@@ -69,7 +69,7 @@ class AppBannerAdState extends State<AppBannerAdWidget>{
     if(discuz!= null){
       // check with list
       Uri uri = Uri.parse(discuz.baseURL);
-      if (AdHelper.adWhiteDiscuzHostList.contains(uri.host)){
+      if (AdHelper.adWhiteDiscuzHostList.contains(uri.host) && true){
         // not showing ad
         return Container();
       }
