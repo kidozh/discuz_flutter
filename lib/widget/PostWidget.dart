@@ -446,6 +446,7 @@ class PostState extends State<PostStatefulWidget> {
               Icons.flag,
               size: 16,
               color: Theme.of(context).disabledColor,
+              semanticLabel: S.of(context).reportContentTitle(_post.author),
             ),
             onPressed: () {
               VibrationUtils.vibrateWithClickIfPossible();
@@ -590,6 +591,7 @@ class PostState extends State<PostStatefulWidget> {
           Expanded(
               // the author
               child: RichText(
+                
             overflow: TextOverflow.ellipsis,
             text: TextSpan(
               text: "",
