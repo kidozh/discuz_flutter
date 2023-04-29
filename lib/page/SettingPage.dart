@@ -85,9 +85,9 @@ class _SettingPageState extends State<SettingPage> {
               tiles: [
                 SettingsTile.switchTile(
                   title: Text(S.of(context).recordHistoryTitle),
-                  description: Text(recordHistory
-                      ? S.of(context).recordHistoryOnDescription
-                      : S.of(context).recordHistoryOffDescription),
+                  // description: Text(recordHistory
+                  //     ? S.of(context).recordHistoryOnDescription
+                  //     : S.of(context).recordHistoryOffDescription),
                   leading: Icon(AppPlatformIcons(context).historyOutlined),
                   //switchValue: recordHistory,
                   activeSwitchColor: Theme.of(context).colorScheme.primary,
@@ -150,11 +150,24 @@ class _SettingPageState extends State<SettingPage> {
                     ));
                   },
                 ),
+                SettingsTile.navigation(
+                  title: Text(S.of(context).interfaceBrightness),
+                  //description: Text(S.of(context).brightnessManualChangeDisabled),
+                  value: Text(themeEntity.getBrightnessName(context)),
+                  leading: Icon(PlatformIcons(context).brightness),
+                  onPressed: (context) {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    Navigator.of(context).push(platformPageRoute(
+                      builder: (_) => ChooseInterfaceBrightnessPage(),
+                      context: context,
+                    ));
+                  },
+                ),
                 SettingsTile.switchTile(
                   title: Text(S.of(context).useMaterial3Title),
-                  description: themeEntity.useMaterial3
-                      ? Text(S.of(context).useMaterial3YesSubtitle)
-                      : Text(S.of(context).useMaterial3NoSubtitle),
+                  // description: themeEntity.useMaterial3
+                  //     ? Text(S.of(context).useMaterial3YesSubtitle)
+                  //     : Text(S.of(context).useMaterial3NoSubtitle),
                   leading: Icon(AppPlatformIcons(context).material3Outlined),
                   activeSwitchColor: Theme.of(context).colorScheme.primary,
                   onToggle: (bool value) {
@@ -165,19 +178,6 @@ class _SettingPageState extends State<SettingPage> {
                       useMaterial3 = value;
                     });
                   }, initialValue: useMaterial3,
-                ),
-                SettingsTile.navigation(
-                  title: Text(S.of(context).interfaceBrightness),
-                  description: Text(S.of(context).brightnessManualChangeDisabled),
-                  value: Text(themeEntity.getBrightnessName(context)),
-                  leading: Icon(PlatformIcons(context).brightness),
-                  onPressed: (context) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.of(context).push(platformPageRoute(
-                      builder: (_) => ChooseInterfaceBrightnessPage(),
-                      context: context,
-                    ));
-                  },
                 ),
                 SettingsTile.navigation(
                   title: Text(S.of(context).typeSetting),

@@ -804,7 +804,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             Container(
               color: Theme.of(context).colorScheme.error.withOpacity(0.1),
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 6.0),
+                padding: EdgeInsets.only(top: 6.0, bottom: 16.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
