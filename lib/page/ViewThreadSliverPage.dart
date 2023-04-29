@@ -47,6 +47,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../utility/EasyRefreshUtils.dart';
+import '../widget/AppBannerAdWidget.dart';
 import 'InternalWebviewBrowserPage.dart';
 
 class ViewThreadSliverPage extends StatelessWidget {
@@ -790,8 +791,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                   },
                                 ),
                               ),
-                              // if(index % 10 == 0 && index != 0)
-                              //   AppBannerAdWidget()
+                              if(index % 10 == 0 && index != 0)
+                                AppBannerAdWidget()
                             ],
                           );
                         },
