@@ -650,5 +650,7 @@
   "pushServiceEnableDescription": "您是否想要打开推送通知功能以接收实时消息？",
   "pushServiceOnDescription": "您现在就可以接收来自已授权论坛的推送啦~",
   "hapticFeedbackTitle": "振动反馈",
-  "feedbackTitle": "触感"
+  "feedbackTitle": "触感",
+  "favoriteIconTooltip": "收藏帖子",
+  "unfavoriteIconTooltip": "取消收藏"
 }

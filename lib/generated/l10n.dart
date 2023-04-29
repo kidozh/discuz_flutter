@@ -4461,6 +4461,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Favorite forum`
+  String get favoriteIconTooltip {
+    return Intl.message(
+      'Favorite forum',
+      name: 'favoriteIconTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unfavorite forum`
+  String get unfavoriteIconTooltip {
+    return Intl.message(
+      'Unfavorite forum',
+      name: 'unfavoriteIconTooltip',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -272,6 +272,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "error": MessageLookupByLibrary.simpleMessage("出错了"),
         "errorUserExpired": MessageLookupByLibrary.simpleMessage("用户登录信息已经失效。"),
         "favoriteForum": MessageLookupByLibrary.simpleMessage("收藏的板块"),
+        "favoriteIconTooltip": MessageLookupByLibrary.simpleMessage("收藏帖子"),
         "favoriteThread": MessageLookupByLibrary.simpleMessage("收藏的帖子"),
         "favorites": MessageLookupByLibrary.simpleMessage("收藏"),
         "feedbackTitle": MessageLookupByLibrary.simpleMessage("触感"),
@@ -597,6 +598,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "unblockContent": MessageLookupByLibrary.simpleMessage("恢复显示内容"),
         "unblockUser": MessageLookupByLibrary.simpleMessage("解除屏蔽"),
         "undo": MessageLookupByLibrary.simpleMessage("撤销"),
+        "unfavoriteIconTooltip": MessageLookupByLibrary.simpleMessage("取消收藏"),
         "updateAt": MessageLookupByLibrary.simpleMessage("更新于 %T"),
         "upgrade_notification_subtitle":
             MessageLookupByLibrary.simpleMessage("本次升级新增了平板预览模式，部分页面适配了平板操作。"),

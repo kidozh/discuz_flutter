@@ -310,6 +310,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "User authentication expired."),
         "favoriteForum":
             MessageLookupByLibrary.simpleMessage("Favorite forums"),
+        "favoriteIconTooltip":
+            MessageLookupByLibrary.simpleMessage("Favorite forum"),
         "favoriteThread":
             MessageLookupByLibrary.simpleMessage("Favorite threads"),
         "favorites": MessageLookupByLibrary.simpleMessage("Favorites"),
@@ -703,6 +705,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Unblock content"),
         "unblockUser": MessageLookupByLibrary.simpleMessage("Unblock user"),
         "undo": MessageLookupByLibrary.simpleMessage("Undo"),
+        "unfavoriteIconTooltip":
+            MessageLookupByLibrary.simpleMessage("Unfavorite forum"),
         "updateAt": MessageLookupByLibrary.simpleMessage("Update at %T"),
         "upgrade_notification_subtitle": MessageLookupByLibrary.simpleMessage(
             "The app now supports tablet layout."),
