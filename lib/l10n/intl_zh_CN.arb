@@ -656,5 +656,7 @@
   "favoriteThreadTooltip": "收藏帖子",
   "unfavoriteThreadTooltip": "取消收藏帖子",
   "sortThreadInAscendOrder": "从旧到新排列",
-  "sortThreadInDescendOrder": "从新到旧排列"
+  "sortThreadInDescendOrder": "从新到旧排列",
+  "menuIconTooltip": "菜单",
+  "selectDiscuzIconTooltip": "选择论坛"
 }

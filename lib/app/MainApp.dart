@@ -456,9 +456,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           PlatformIconButton(
             padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
             onPressed: _triggerSwitchDiscuzDialog,
+
             icon: Icon(
               AppPlatformIcons(context).manageDiscuzSolid,
               color: Theme.of(context).textTheme.titleSmall?.color,
+              semanticLabel: S.of(context).selectDiscuzIconTooltip,
             ),
           )
         ],
@@ -469,6 +471,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               return Container();
             } else {
               return PlatformIconButton(
+
                   padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                   onPressed: () async {
                     // open drawer
@@ -479,7 +482,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                             context: context,
                             builder: (context) => DrawerPage()));
                   },
-                  icon: Icon(AppPlatformIcons(context).menuSolid,
+                  icon: Icon(
+
+                      AppPlatformIcons(context).menuSolid,
+                      semanticLabel: S.of(context).menuIconTooltip,
                       color: Theme.of(context).textTheme.titleSmall?.color));
             }
           },

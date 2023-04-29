@@ -458,6 +458,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "materialDesign":
             MessageLookupByLibrary.simpleMessage("Material Design"),
         "me": MessageLookupByLibrary.simpleMessage("Me"),
+        "menuIconTooltip": MessageLookupByLibrary.simpleMessage("Menu"),
         "minute": MessageLookupByLibrary.simpleMessage("M"),
         "minuteAgo": m19,
         "minuteLater": m20,
@@ -644,6 +645,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "second": MessageLookupByLibrary.simpleMessage("S"),
         "seeAllReplies":
             MessageLookupByLibrary.simpleMessage("View all replies"),
+        "selectDiscuzIconTooltip":
+            MessageLookupByLibrary.simpleMessage("Select discuz forum"),
         "selectUserNull": MessageLookupByLibrary.simpleMessage(
             "No user is currently activated"),
         "send": MessageLookupByLibrary.simpleMessage("Send"),

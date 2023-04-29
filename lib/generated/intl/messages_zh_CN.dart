@@ -391,6 +391,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("在质感设计的界面下，应用界面将跟随系统深浅设置 。"),
         "materialDesign": MessageLookupByLibrary.simpleMessage("质感设计"),
         "me": MessageLookupByLibrary.simpleMessage("我"),
+        "menuIconTooltip": MessageLookupByLibrary.simpleMessage("菜单"),
         "minute": MessageLookupByLibrary.simpleMessage("分"),
         "minuteAgo": m19,
         "minuteLater": m20,
@@ -547,6 +548,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "savedSmileyTabTitle": MessageLookupByLibrary.simpleMessage("最近使用"),
         "second": MessageLookupByLibrary.simpleMessage("秒"),
         "seeAllReplies": MessageLookupByLibrary.simpleMessage("查看所有"),
+        "selectDiscuzIconTooltip": MessageLookupByLibrary.simpleMessage("选择论坛"),
         "selectUserNull": MessageLookupByLibrary.simpleMessage("未选中一个用户"),
         "send": MessageLookupByLibrary.simpleMessage("发送"),
         "sendImageWithVerificationNotice": MessageLookupByLibrary.simpleMessage(

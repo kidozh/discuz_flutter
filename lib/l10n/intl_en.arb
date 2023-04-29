@@ -655,5 +655,7 @@
   "favoriteThreadTooltip": "Favorite thread",
   "unfavoriteThreadTooltip": "Unfavorite thread",
   "sortThreadInAscendOrder": "Sort thread in ascent order",
-  "sortThreadInDescendOrder": "Sort thread in descent order"
+  "sortThreadInDescendOrder": "Sort thread in descent order",
+  "menuIconTooltip": "Menu",
+  "selectDiscuzIconTooltip": "Select discuz forum"
 }

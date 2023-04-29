@@ -4521,6 +4521,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Menu`
+  String get menuIconTooltip {
+    return Intl.message(
+      'Menu',
+      name: 'menuIconTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select discuz forum`
+  String get selectDiscuzIconTooltip {
+    return Intl.message(
+      'Select discuz forum',
+      name: 'selectDiscuzIconTooltip',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
