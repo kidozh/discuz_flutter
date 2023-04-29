@@ -7,7 +7,7 @@ class VibrationUtils{
     bool canVibrate = await Vibrate.canVibrate;
     bool enableHapticFeedback = await UserPreferencesUtils.getHapticFeedbackPreference();
     if (canVibrate && enableHapticFeedback){
-      Vibrate.feedback(FeedbackType.medium);
+      Vibrate.feedback(FeedbackType.light);
     }
   }
 
@@ -15,7 +15,7 @@ class VibrationUtils{
     bool canVibrate = await Vibrate.canVibrate;
     bool enableHapticFeedback = await UserPreferencesUtils.getHapticFeedbackPreference();
     if (canVibrate && enableHapticFeedback){
-      Vibrate.feedback(FeedbackType.heavy);
+      Vibrate.feedback(FeedbackType.medium);
     }
   }
 
