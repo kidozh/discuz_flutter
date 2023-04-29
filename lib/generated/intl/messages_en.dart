@@ -313,6 +313,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "favoriteThread":
             MessageLookupByLibrary.simpleMessage("Favorite threads"),
         "favorites": MessageLookupByLibrary.simpleMessage("Favorites"),
+        "feedbackTitle": MessageLookupByLibrary.simpleMessage("Haptic"),
         "finishLoginInWeb": MessageLookupByLibrary.simpleMessage("Finish"),
         "followSystem": MessageLookupByLibrary.simpleMessage("Follow system"),
         "fontSizeInParagraph":
@@ -372,7 +373,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "groupInfoDescription": m13,
         "habit": MessageLookupByLibrary.simpleMessage("Habits"),
         "hapticFeedbackTitle":
-            MessageLookupByLibrary.simpleMessage("Haptic feedback"),
+            MessageLookupByLibrary.simpleMessage("Vibration feedback"),
         "homepage": MessageLookupByLibrary.simpleMessage("Homepage"),
         "hotThread": MessageLookupByLibrary.simpleMessage("Popular"),
         "hour": MessageLookupByLibrary.simpleMessage("H"),

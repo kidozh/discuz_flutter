@@ -274,6 +274,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "favoriteForum": MessageLookupByLibrary.simpleMessage("收藏的板块"),
         "favoriteThread": MessageLookupByLibrary.simpleMessage("收藏的帖子"),
         "favorites": MessageLookupByLibrary.simpleMessage("收藏"),
+        "feedbackTitle": MessageLookupByLibrary.simpleMessage("触感"),
         "finishLoginInWeb": MessageLookupByLibrary.simpleMessage("完成登录"),
         "followSystem": MessageLookupByLibrary.simpleMessage("跟随系统"),
         "fontSizeInParagraph": MessageLookupByLibrary.simpleMessage("正文字体大小"),

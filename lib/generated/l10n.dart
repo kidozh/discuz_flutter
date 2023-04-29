@@ -4442,11 +4442,21 @@ class S {
     );
   }
 
-  /// `Haptic feedback`
+  /// `Vibration feedback`
   String get hapticFeedbackTitle {
     return Intl.message(
-      'Haptic feedback',
+      'Vibration feedback',
       name: 'hapticFeedbackTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Haptic`
+  String get feedbackTitle {
+    return Intl.message(
+      'Haptic',
+      name: 'feedbackTitle',
       desc: '',
       args: [],
     );

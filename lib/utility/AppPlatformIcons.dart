@@ -94,4 +94,6 @@ class AppPlatformIcons{
   IconData get menuSolid => isMaterial(context)? Icons.menu : CupertinoIcons.line_horizontal_3;
 
   IconData get selectedThreadSolid => isMaterial(context)? Icons.play_circle : CupertinoIcons.arrowtriangle_right_circle_fill;
+
+  IconData get hapticFeedbackOutlined => isMaterial(context)? Icons.vibration_outlined : CupertinoIcons.dial;
 }

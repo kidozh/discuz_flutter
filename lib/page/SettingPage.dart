@@ -34,6 +34,7 @@ class _SettingPageState extends State<SettingPage> {
   bool recordHistory = false;
 
   bool useMaterial3 = true;
+  bool hapticFeedback = true;
 
   String packageVersion = "";
   String packageBuildNumber = "";
@@ -57,9 +58,12 @@ class _SettingPageState extends State<SettingPage> {
 
   void getPreference() async {
     recordHistory = await UserPreferencesUtils.getRecordHistoryEnabled();
+    hapticFeedback = await UserPreferencesUtils.getHapticFeedbackPreference();
     setState(() {
       recordHistory = recordHistory;
+      hapticFeedback = hapticFeedback;
     });
+
 
   }
 
@@ -85,9 +89,6 @@ class _SettingPageState extends State<SettingPage> {
               tiles: [
                 SettingsTile.switchTile(
                   title: Text(S.of(context).recordHistoryTitle),
-                  // description: Text(recordHistory
-                  //     ? S.of(context).recordHistoryOnDescription
-                  //     : S.of(context).recordHistoryOffDescription),
                   leading: Icon(AppPlatformIcons(context).historyOutlined),
                   //switchValue: recordHistory,
                   activeSwitchColor: Theme.of(context).colorScheme.primary,
@@ -165,9 +166,6 @@ class _SettingPageState extends State<SettingPage> {
                 ),
                 SettingsTile.switchTile(
                   title: Text(S.of(context).useMaterial3Title),
-                  // description: themeEntity.useMaterial3
-                  //     ? Text(S.of(context).useMaterial3YesSubtitle)
-                  //     : Text(S.of(context).useMaterial3NoSubtitle),
                   leading: Icon(AppPlatformIcons(context).material3Outlined),
                   activeSwitchColor: Theme.of(context).colorScheme.primary,
                   onToggle: (bool value) {
@@ -194,6 +192,28 @@ class _SettingPageState extends State<SettingPage> {
 
 
               ],
+            ),
+            SettingsSection(
+              title: Text(S.of(context).feedbackTitle),
+                tiles: [
+                  SettingsTile.switchTile(
+                    title: Text(S.of(context).hapticFeedbackTitle),
+                    leading: Icon(AppPlatformIcons(context).hapticFeedbackOutlined),
+                    initialValue: hapticFeedback,
+                    activeSwitchColor: Theme.of(context).colorScheme.primary,
+                    onToggle: (bool value) async{
+                      if(value){
+                        VibrationUtils.vibrateWithClickIfPossible();
+                      }
+                      UserPreferencesUtils.putHapticFeedbackPreference(value);
+                      setState(() {
+                        hapticFeedback = value;
+                      });
+
+                    },
+
+                  )
+                ]
             ),
             SettingsSection(
               title: Text(S.of(context).post),

@@ -648,5 +648,6 @@
   "viewThreadTwoPaneText": "Click thread to view posts inside.",
   "pushServiceEnableDescription": "Do you wish to enable push service to receive the updated information?",
   "pushServiceOnDescription": "You are now able to get the updated information from supported Discuz.",
-  "hapticFeedbackTitle": "Haptic feedback"
+  "hapticFeedbackTitle": "Vibration feedback",
+  "feedbackTitle": "Haptic"
 }
