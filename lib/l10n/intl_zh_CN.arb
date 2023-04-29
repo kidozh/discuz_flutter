@@ -660,5 +660,8 @@
   "menuIconTooltip": "菜单",
   "selectDiscuzIconTooltip": "选择论坛",
   "chatIconToolTip": "私聊",
-  "reportThreadTooltip": "举报不当内容"
+  "reportThreadTooltip": "举报不当内容",
+  "emoijButtonTooltip": "插入表情",
+  "extraFuncButtonTooltip": "更多功能",
+  "closeKeyboardTooltip": "收起键盘"
 }

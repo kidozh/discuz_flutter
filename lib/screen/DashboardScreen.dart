@@ -46,11 +46,18 @@ class MaterialDashboardScreen extends StatelessWidget{
               tabs: [
 
                 Tab(
-                  icon: Icon(Icons.whatshot),
+                  icon: Icon(
+                    Icons.whatshot,
+                    semanticLabel: S.of(context).hotThread,
+                  ),
+
                   //text: S.of(context).hotThread,
                 ),
                 Tab(
-                  icon: Icon(CupertinoIcons.today_fill),
+                  icon: Icon(
+                      CupertinoIcons.today_fill,
+                    semanticLabel: S.of(context).newThread,
+                  ),
                   //text: S.of(context).newThread,
                 ),
               ],

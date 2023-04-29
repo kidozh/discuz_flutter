@@ -165,6 +165,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "chooseThemeTitle": MessageLookupByLibrary.simpleMessage("Theme color"),
         "clearAllViewHistories":
             MessageLookupByLibrary.simpleMessage("Clear all histories"),
+        "closeKeyboardTooltip":
+            MessageLookupByLibrary.simpleMessage("Close the keyboard"),
         "collapseItem":
             MessageLookupByLibrary.simpleMessage("Collapse content"),
         "colorAmber": MessageLookupByLibrary.simpleMessage("Amber"),
@@ -291,6 +293,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "easyRefreshClassicHeaderReadyText":
             MessageLookupByLibrary.simpleMessage("Refreshing..."),
         "editedPost": MessageLookupByLibrary.simpleMessage("Edited"),
+        "emoijButtonTooltip":
+            MessageLookupByLibrary.simpleMessage("Insert smiley emoij"),
         "emptyForum": MessageLookupByLibrary.simpleMessage("No fourm here"),
         "emptyHistory": MessageLookupByLibrary.simpleMessage(
             "No history is found in your device. Have you ever browse anything or never open the history recording in the setting?"),
@@ -310,6 +314,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "error": MessageLookupByLibrary.simpleMessage("Error"),
         "errorUserExpired": MessageLookupByLibrary.simpleMessage(
             "User authentication expired."),
+        "extraFuncButtonTooltip":
+            MessageLookupByLibrary.simpleMessage("More functions"),
         "favoriteForum":
             MessageLookupByLibrary.simpleMessage("Favorite forums"),
         "favoriteIconTooltip":

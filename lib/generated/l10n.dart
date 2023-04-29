@@ -4561,6 +4561,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Insert smiley emoij`
+  String get emoijButtonTooltip {
+    return Intl.message(
+      'Insert smiley emoij',
+      name: 'emoijButtonTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `More functions`
+  String get extraFuncButtonTooltip {
+    return Intl.message(
+      'More functions',
+      name: 'extraFuncButtonTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close the keyboard`
+  String get closeKeyboardTooltip {
+    return Intl.message(
+      'Close the keyboard',
+      name: 'closeKeyboardTooltip',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

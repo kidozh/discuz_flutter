@@ -659,5 +659,8 @@
   "menuIconTooltip": "Menu",
   "selectDiscuzIconTooltip": "Select discuz forum",
   "chatIconToolTip": "Chat with him / her",
-  "reportThreadTooltip": "Report the post"
+  "reportThreadTooltip": "Report the post",
+  "emoijButtonTooltip": "Insert smiley emoij",
+  "extraFuncButtonTooltip": "More functions",
+  "closeKeyboardTooltip": "Close the keyboard"
 }

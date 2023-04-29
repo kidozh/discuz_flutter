@@ -906,8 +906,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                 )),
                                 IconButton(
                                   icon: dialogStatus != SHOW_SMILEY_DIALOG
-                                      ? Icon(Icons.emoji_emotions_outlined)
-                                      : Icon(Icons.keyboard_outlined),
+                                      ? Icon(
+                                    Icons.emoji_emotions_outlined,
+                                    semanticLabel: S.of(context).emoijButtonTooltip,
+                                  )
+                                      : Icon(
+                                    Icons.keyboard_outlined,
+                                    semanticLabel: S.of(context).closeKeyboardTooltip,
+                                  ),
                                   onPressed: () {
                                     if (dialogStatus != SHOW_SMILEY_DIALOG) {
                                       FocusScope.of(context)
@@ -934,9 +940,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                               ButtonState.idle: IconedButton(
                                                   //text: S.of(context).sendReply,
                                                   icon: Icon(Icons.send,
-                                                      color: Colors.white),
+                                                      color: Theme.of(context)
+                                                          .colorScheme.onPrimaryContainer,
+                                                    semanticLabel: S.of(context).sendReply,
+                                                  ),
                                                   color: Theme.of(context)
-                                                      .primaryColor),
+                                                      .colorScheme.primaryContainer),
                                               ButtonState.loading: IconedButton(
                                                   //text: S.of(context).progressButtonReplySending,
                                                   color: Theme.of(context)
@@ -945,13 +954,16 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                               ButtonState.fail: IconedButton(
                                                   //text: S.of(context).progressButtonReplyFailed,
                                                   icon: Icon(Icons.cancel,
-                                                      color: Colors.white),
+                                                      color: Colors.white,
+                                                      semanticLabel: S.of(context).progressButtonReplyFailed,
+                                                  ),
                                                   color: Colors.red.shade300),
                                               ButtonState.success: IconedButton(
                                                   //text: S.of(context).progressButtonReplySuccess,
                                                   icon: Icon(
                                                     Icons.check_circle,
                                                     color: Colors.white,
+                                                    semanticLabel: S.of(context).progressButtonReplySuccess,
                                                   ),
                                                   color: Colors.green.shade400)
                                             },
@@ -967,7 +979,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                           icon: Icon(
                                               dialogStatus == SHOW_EXTRA_DIALOG
                                                   ? Icons.close
-                                                  : Icons.add_circle_outline),
+                                                  : Icons.add_circle_outline,
+                                            semanticLabel: S.of(context).extraFuncButtonTooltip,
+
+                                          ),
                                           onPressed: () {
                                             if (dialogStatus !=
                                                 SHOW_EXTRA_DIALOG) {

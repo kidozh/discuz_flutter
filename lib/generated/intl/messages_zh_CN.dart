@@ -150,6 +150,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "chooseDiscuz": MessageLookupByLibrary.simpleMessage("选择一个论坛"),
         "chooseThemeTitle": MessageLookupByLibrary.simpleMessage("主题颜色"),
         "clearAllViewHistories": MessageLookupByLibrary.simpleMessage("清除历史记录"),
+        "closeKeyboardTooltip": MessageLookupByLibrary.simpleMessage("收起键盘"),
         "collapseItem": MessageLookupByLibrary.simpleMessage("已折叠内容"),
         "colorAmber": MessageLookupByLibrary.simpleMessage("琥珀色"),
         "colorBlack": MessageLookupByLibrary.simpleMessage("黑色"),
@@ -260,6 +261,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "easyRefreshClassicHeaderReadyText":
             MessageLookupByLibrary.simpleMessage("刷新中..."),
         "editedPost": MessageLookupByLibrary.simpleMessage("已编辑"),
+        "emoijButtonTooltip": MessageLookupByLibrary.simpleMessage("插入表情"),
         "emptyForum": MessageLookupByLibrary.simpleMessage("当前板块列表为空。"),
         "emptyHistory": MessageLookupByLibrary.simpleMessage(
             "这里还没有历史记录。您未曾浏览论坛或者没有打开历史记录功能。"),
@@ -272,6 +274,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "emptyUser": MessageLookupByLibrary.simpleMessage("这里还没有用户。"),
         "error": MessageLookupByLibrary.simpleMessage("出错了"),
         "errorUserExpired": MessageLookupByLibrary.simpleMessage("用户登录信息已经失效。"),
+        "extraFuncButtonTooltip": MessageLookupByLibrary.simpleMessage("更多功能"),
         "favoriteForum": MessageLookupByLibrary.simpleMessage("收藏的板块"),
         "favoriteIconTooltip": MessageLookupByLibrary.simpleMessage("收藏板块"),
         "favoriteThread": MessageLookupByLibrary.simpleMessage("收藏的帖子"),
