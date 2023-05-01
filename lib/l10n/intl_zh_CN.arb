@@ -663,5 +663,7 @@
   "reportThreadTooltip": "举报不当内容",
   "emoijButtonTooltip": "插入表情",
   "extraFuncButtonTooltip": "更多功能",
-  "closeKeyboardTooltip": "收起键盘"
+  "closeKeyboardTooltip": "收起键盘",
+  "pictureBedTitle": "图床",
+  "pictureBedSMMS": "SMMS.app"
 }

@@ -439,6 +439,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "链接使用的域名与此论坛不一致，其很有可能不是论坛所有的。谨防钓鱼、木马和诈骗。"),
         "outerlinkOpenTitle": MessageLookupByLibrary.simpleMessage("你正要打开外链"),
         "password": MessageLookupByLibrary.simpleMessage("密码"),
+        "pictureBedSMMS": MessageLookupByLibrary.simpleMessage("SMMS.app"),
+        "pictureBedTitle": MessageLookupByLibrary.simpleMessage("图床"),
         "pictureTagInMessage": MessageLookupByLibrary.simpleMessage("[图片]"),
         "policy": MessageLookupByLibrary.simpleMessage("条款"),
         "pollExpireAt": m22,

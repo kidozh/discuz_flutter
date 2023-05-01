@@ -238,6 +238,14 @@ class _SettingPageState extends State<SettingPage> {
                     ));
                   },
                 ),
+                SettingsTile.navigation(
+                  title: Text(S.of(context).pictureBedTitle),
+                  leading: Icon(AppPlatformIcons(context).pictureBedOutlined),
+                  onPressed: (_) {
+                    VibrationUtils.vibrateWithClickIfPossible();
+
+                  },
+                ),
               ],
             ),
             SettingsSection(

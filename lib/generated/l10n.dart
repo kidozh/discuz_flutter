@@ -4590,6 +4590,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Image hosting website`
+  String get pictureBedTitle {
+    return Intl.message(
+      'Image hosting website',
+      name: 'pictureBedTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `SM.MS`
+  String get pictureBedSMMS {
+    return Intl.message(
+      'SM.MS',
+      name: 'pictureBedSMMS',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

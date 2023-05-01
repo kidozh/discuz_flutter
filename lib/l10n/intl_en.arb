@@ -662,5 +662,8 @@
   "reportThreadTooltip": "Report the post",
   "emoijButtonTooltip": "Insert smiley emoij",
   "extraFuncButtonTooltip": "More functions",
-  "closeKeyboardTooltip": "Close the keyboard"
+  "closeKeyboardTooltip": "Close the keyboard",
+  "pictureBedTitle": "Image hosting website",
+  "pictureBedSMMS": "SM.MS"
+
 }

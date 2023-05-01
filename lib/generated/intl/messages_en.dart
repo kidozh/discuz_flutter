@@ -519,6 +519,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "outerlinkOpenTitle": MessageLookupByLibrary.simpleMessage(
             "The link doesn\'t belong to the BBS"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
+        "pictureBedSMMS": MessageLookupByLibrary.simpleMessage("SM.MS"),
+        "pictureBedTitle":
+            MessageLookupByLibrary.simpleMessage("Image hosting website"),
         "pictureTagInMessage": MessageLookupByLibrary.simpleMessage("[Pic]"),
         "policy": MessageLookupByLibrary.simpleMessage("Our policy"),
         "pollExpireAt": m22,
