@@ -1,6 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -4606,6 +4607,76 @@ class S {
     return Intl.message(
       'SM.MS',
       name: 'pictureBedSMMS',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Active`
+  String get pictureBedActive {
+    return Intl.message(
+      'Active',
+      name: 'pictureBedActive',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not ready, click to continue`
+  String get pictureBedNotPrepared {
+    return Intl.message(
+      'Not ready, click to continue',
+      name: 'pictureBedNotPrepared',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Disabled`
+  String get pictureBedDisabled {
+    return Intl.message(
+      'Disabled',
+      name: 'pictureBedDisabled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Terms of service provided by {pictureBedName}`
+  String pictureBedTermsTitle(Object pictureBedName) {
+    return Intl.message(
+      'Terms of service provided by $pictureBedName',
+      name: 'pictureBedTermsTitle',
+      desc: '',
+      args: [pictureBedName],
+    );
+  }
+
+  /// `This service is not provided by us but the 3rd party services and we exclude all warranties for it. Using our service does not mean you are granted with 3rd party service as mentioned in our terms. You shall agree to their terms before using 3rd party service.`
+  String get pictureBedTermsSubtitle {
+    return Intl.message(
+      'This service is not provided by us but the 3rd party services and we exclude all warranties for it. Using our service does not mean you are granted with 3rd party service as mentioned in our terms. You shall agree to their terms before using 3rd party service.',
+      name: 'pictureBedTermsSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Agree`
+  String get pictureBedAgreeToService {
+    return Intl.message(
+      'Agree',
+      name: 'pictureBedAgreeToService',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `These service are not provided by us but the 3rd party service. We exclude any warranties or obligation to them. Some of them are not operated in China and you shall carefully watch their policy change to accommodate your use.`
+  String get pictureBedServiceNote {
+    return Intl.message(
+      'These service are not provided by us but the 3rd party service. We exclude any warranties or obligation to them. Some of them are not operated in China and you shall carefully watch their policy change to accommodate your use.',
+      name: 'pictureBedServiceNote',
       desc: '',
       args: [],
     );
