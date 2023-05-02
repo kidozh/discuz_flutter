@@ -444,6 +444,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pictureBedActive": MessageLookupByLibrary.simpleMessage("已启用"),
         "pictureBedAgreeToService": MessageLookupByLibrary.simpleMessage("我同意"),
         "pictureBedDisabled": MessageLookupByLibrary.simpleMessage("已禁用"),
+        "pictureBedImgloc": MessageLookupByLibrary.simpleMessage("imgloc.com"),
         "pictureBedNotPrepared":
             MessageLookupByLibrary.simpleMessage("未就绪，轻触以继续"),
         "pictureBedSMMS": MessageLookupByLibrary.simpleMessage("SMMS.app"),

@@ -526,6 +526,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pictureBedAgreeToService":
             MessageLookupByLibrary.simpleMessage("Agree"),
         "pictureBedDisabled": MessageLookupByLibrary.simpleMessage("Disabled"),
+        "pictureBedImgloc": MessageLookupByLibrary.simpleMessage("imgloc.com"),
         "pictureBedNotPrepared": MessageLookupByLibrary.simpleMessage(
             "Not ready, click to continue"),
         "pictureBedSMMS": MessageLookupByLibrary.simpleMessage("SM.MS"),

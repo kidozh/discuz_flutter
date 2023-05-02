@@ -4681,6 +4681,16 @@ class S {
       args: [],
     );
   }
+
+  /// `imgloc.com`
+  String get pictureBedImgloc {
+    return Intl.message(
+      'imgloc.com',
+      name: 'pictureBedImgloc',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
