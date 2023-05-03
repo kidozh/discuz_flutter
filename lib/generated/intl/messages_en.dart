@@ -162,6 +162,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "chatMessage": MessageLookupByLibrary.simpleMessage("Chat"),
         "checkUserLoginStatus":
             MessageLookupByLibrary.simpleMessage("Check user status..."),
+        "cheveretoPictureBed":
+            MessageLookupByLibrary.simpleMessage("Chevereto"),
         "chooseDiscuz": MessageLookupByLibrary.simpleMessage("Choose a BBS"),
         "chooseThemeTitle": MessageLookupByLibrary.simpleMessage("Theme color"),
         "clearAllViewHistories":

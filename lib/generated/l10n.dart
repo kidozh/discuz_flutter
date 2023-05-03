@@ -4691,6 +4691,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Chevereto`
+  String get cheveretoPictureBed {
+    return Intl.message(
+      'Chevereto',
+      name: 'cheveretoPictureBed',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

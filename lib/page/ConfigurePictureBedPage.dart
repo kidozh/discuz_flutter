@@ -25,7 +25,9 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
       body: SafeArea(
         child: SettingsList(
           sections: [
-            SettingsSection(tiles: [
+            SettingsSection(
+              title: Text(S.of(context).cheveretoPictureBed),
+                tiles: [
               SettingsTile.navigation(
                 //leading: PlatformCircularProgressIndicator(),
                 title: Text(S.of(context).pictureBedSMMS),
@@ -35,7 +37,34 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
                   bool isUserAcceptTerms =
                       await PictureBedUtils.isSMMSTermAccepted();
                   if (!isUserAcceptTerms) {
-                    showSMMSTermsModal();
+                    showPictureBedTermsModal(
+                        S.of(context).pictureBedSMMS,
+                        "https://smms.app/terms-of-use/",
+                        "https://smms.app/privacy-policy/",
+                            () {
+                            VibrationUtils.vibrateWithClickIfPossible();
+                        }
+                    );
+                  }
+                },
+              ),
+              SettingsTile.navigation(
+                //leading: PlatformCircularProgressIndicator(),
+                title: Text(S.of(context).pictureBedImgloc),
+                value: Text(S.of(context).pictureBedNotPrepared),
+                onPressed: (context) async {
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  bool isUserAcceptTerms =
+                  await PictureBedUtils.isSMMSTermAccepted();
+                  if (!isUserAcceptTerms) {
+                    showPictureBedTermsModal(
+                        S.of(context).pictureBedImgloc,
+                        "https://imgloc.com/page/tos",
+                        "https://imgloc.com/page/privacy",
+                            () {
+                          VibrationUtils.vibrateWithClickIfPossible();
+                        }
+                    );
                   }
                 },
               )
@@ -58,7 +87,7 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
     );
   }
 
-  void showSMMSTermsModal() async {
+  void showPictureBedTermsModal(String pictureBedName, String termsOfUseUrl, String privacyPolicyUrl, VoidCallback? onPressed) async {
     await showPlatformModalSheet(
         context: context,
         builder: (context) {
@@ -72,7 +101,7 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
                 children: [
                   Center(
                     child: Text(
-                      S.of(context).pictureBedTermsTitle(S.of(context).pictureBedSMMS),
+                      S.of(context).pictureBedTermsTitle(pictureBedName),
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
@@ -85,20 +114,22 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
                   ),
                   PlatformListTile(
                     title: Text(S.of(context).termsOfService),
-                    subtitle: Text("https://smms.app/terms-of-use/"),
+                    //subtitle: Text("https://smms.app/terms-of-use/"),
+                    subtitle: Text(termsOfUseUrl),
                     trailing: Icon(AppPlatformIcons(context).chevronSolid),
                     onTap: () {
                       VibrationUtils.vibrateWithClickIfPossible();
-                      URLUtils.launchURL("https://smms.app/terms-of-use/");
+                      URLUtils.launchURL(termsOfUseUrl);
                     },
                   ),
                   PlatformListTile(
                     title: Text(S.of(context).privacyPolicy),
-                    subtitle: Text("https://smms.app/privacy-policy/"),
+                    //subtitle: Text("https://smms.app/privacy-policy/"),
+                    subtitle: Text(privacyPolicyUrl),
                     trailing: Icon(AppPlatformIcons(context).chevronSolid),
                     onTap: () {
                       VibrationUtils.vibrateWithClickIfPossible();
-                      URLUtils.launchURL("https://smms.app/privacy-policy/");
+                      URLUtils.launchURL(privacyPolicyUrl);
                     },
                   ),
                   SizedBox(
@@ -108,9 +139,7 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
                     padding: EdgeInsets.symmetric(vertical: 8, horizontal: 0),
                     child: PlatformElevatedButton(
                       child: Text(S.of(context).pictureBedAgreeToService),
-                      onPressed: () {
-                        VibrationUtils.vibrateWithClickIfPossible();
-                      },
+                      onPressed: onPressed,
                     ),
                   )
                 ],

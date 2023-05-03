@@ -149,6 +149,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "chatMessage": MessageLookupByLibrary.simpleMessage("信息"),
         "checkUserLoginStatus":
             MessageLookupByLibrary.simpleMessage("正在检查用户登录状态。。。"),
+        "cheveretoPictureBed":
+            MessageLookupByLibrary.simpleMessage("基于chevereto服务的"),
         "chooseDiscuz": MessageLookupByLibrary.simpleMessage("选择一个论坛"),
         "chooseThemeTitle": MessageLookupByLibrary.simpleMessage("主题颜色"),
         "clearAllViewHistories": MessageLookupByLibrary.simpleMessage("清除历史记录"),
