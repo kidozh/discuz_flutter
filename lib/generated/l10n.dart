@@ -671,10 +671,10 @@ class S {
     );
   }
 
-  /// `Account`
+  /// `Username`
   String get account {
     return Intl.message(
-      'Account',
+      'Username',
       name: 'account',
       desc: '',
       args: [],

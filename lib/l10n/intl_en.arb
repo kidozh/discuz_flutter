@@ -81,7 +81,7 @@
       "discuzName": {}
     }
   },
-  "account": "Account",
+  "account": "Username",
   "password": "Password",
   "forgetPassword": "Forget password?",
   "or": "or",

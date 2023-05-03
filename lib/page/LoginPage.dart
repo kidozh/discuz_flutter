@@ -245,13 +245,14 @@ class _LoginFormFieldState
         padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal: 8.0),
         child: Form(
           key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: AutofillGroup(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // title and page
                 Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0,vertical: 16.0),
+                    padding: EdgeInsets.symmetric(horizontal: 32.0,vertical: 64.0),
                     child: Center(
                         child: CachedNetworkImage(
                             imageUrl: discuz.getDiscuzAvatarURL(),
@@ -272,27 +273,61 @@ class _LoginFormFieldState
                         )
                     )),
                 // input fields
-                new TextFormField(
-                    autofillHints: [AutofillHints.username],
-                    controller: _accountController,
-                    decoration: new InputDecoration(
+                Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: isCupertino(context)? BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Theme.of(context).disabledColor.withOpacity(0.1)
+                  ): null,
+                  child: Column(
+                    children: [
+                      PlatformTextFormField(
+                          autofillHints: [AutofillHints.username],
+                          controller: _accountController,
+                          hintText: S.of(context).account,
+                          material: (context, platform){
+                            return MaterialTextFormFieldData(
+                              decoration: InputDecoration(
 
-                      labelText: S.of(context).account,
-                      hintText: S.of(context).account,
-                      prefixIcon: Icon(Icons.account_circle),
-                    ),
-                    validator: ValidationBuilder().required().build()
+                                labelText: S.of(context).account,
+                                hintText: S.of(context).account,
+                                prefixIcon: Icon(Icons.account_circle),
+                              ),
+                            );
+                          },
+                          cupertino: (context, platform){
+                            return CupertinoTextFormFieldData(
+                                prefix: Text(S.of(context).account),
+                                decoration: BoxDecoration()
+                            );
+                          },
+                          validator: ValidationBuilder().required().build()
+                      ),
+                      PlatformTextFormField(
+                          autofillHints: [AutofillHints.password],
+                          controller: _passwdController,
+                          hintText: S.of(context).password,
+                          material: (context, platform){
+                            return MaterialTextFormFieldData(
+                              decoration: InputDecoration(
+                                labelText: S.of(context).password,
+                                prefixIcon: Icon(Icons.vpn_key),
+                              ),
+                            );
+                          },
+                          cupertino: (context, platform){
+                            return CupertinoTextFormFieldData(
+                                prefix: Text(S.of(context).password),
+                                decoration: BoxDecoration()
+                            );
+                          },
+                          obscureText: true,
+                          validator: ValidationBuilder().required().build()
+                      ),
+                    ],
+                  ),
                 ),
-                new TextFormField(
-                    autofillHints: [AutofillHints.password],
-                    controller: _passwdController,
-                    decoration: new InputDecoration(
-                      labelText: S.of(context).password,
-                      prefixIcon: Icon(Icons.vpn_key),
-                    ),
-                    obscureText: true,
-                    validator: ValidationBuilder().required().build()
-                ),
+                
                 CaptchaWidget(_dio, discuz, null, "login",captchaController: _captchaController,),
                 if (error != null)
                   Column(
@@ -342,29 +377,14 @@ class _LoginFormFieldState
                               state: _loginState
                           ),
                         ),
-                        // Row(
-                        //     children: <Widget>[
-                        //       Expanded(
-                        //           child: Divider()
-                        //       ),
-                        //
-                        //       Text(S.of(context).or,style: Theme.of(context).textTheme.bodyText2),
-                        //
-                        //       Expanded(
-                        //           child: Divider()
-                        //       ),
-                        //     ]
-                        // ),
-                        // Container(
-                        //   padding: EdgeInsets.symmetric(vertical: 8,horizontal: 0),
-                        // ),
-                        SizedBox(height: 12,),
+                        SizedBox(height: 24,),
                         if(!Platform.isIOS)
                           SizedBox(
                             width: double.infinity,
-                            child: OutlinedButton.icon(
-                              icon: Icon(Icons.open_in_browser),
-                              label: Text(S.of(context).signInViaBrowser),
+                            child: PlatformElevatedButton(
+                              color: Theme.of(context).colorScheme.tertiary,
+                              child: Text(S.of(context).signInViaBrowser, style: TextStyle(color:Theme.of(context).colorScheme.onTertiary)),
+
                               onPressed: (){
                                 VibrationUtils.vibrateWithClickIfPossible();
                                 Navigator.push(context,
