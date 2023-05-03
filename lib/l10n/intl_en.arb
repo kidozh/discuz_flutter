@@ -668,7 +668,7 @@
   "pictureBedActive": "Active",
   "pictureBedNotPrepared": "Not ready, click to continue",
   "pictureBedDisabled": "Disabled",
-  "pictureBedTermsTitle": "Terms of service provided by {pictureBedName}",
+  "pictureBedTermsTitle": "Service provided by {pictureBedName}",
   "@pictureBedTermsTitle": {
     "placeholders": {
       "pictureBedName": {}

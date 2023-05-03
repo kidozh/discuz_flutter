@@ -4642,10 +4642,10 @@ class S {
     );
   }
 
-  /// `Terms of service provided by {pictureBedName}`
+  /// `Service provided by {pictureBedName}`
   String pictureBedTermsTitle(Object pictureBedName) {
     return Intl.message(
-      'Terms of service provided by $pictureBedName',
+      'Service provided by $pictureBedName',
       name: 'pictureBedTermsTitle',
       desc: '',
       args: [pictureBedName],

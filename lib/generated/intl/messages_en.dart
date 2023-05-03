@@ -66,8 +66,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m21(hour) => "${hour} hour(s).";
 
-  static String m22(pictureBedName) =>
-      "Terms of service provided by ${pictureBedName}";
+  static String m22(pictureBedName) => "Service provided by ${pictureBedName}";
 
   static String m23(time) => "Poll will expire at ${time}.";
 
