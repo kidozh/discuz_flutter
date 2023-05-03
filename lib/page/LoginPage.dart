@@ -40,7 +40,7 @@ class LoginPage extends StatelessWidget {
         iosContentPadding: true,
         iosContentBottomPadding: true,
         appBar: PlatformAppBar(
-          title: Text(S.of(context).signInTitle(discuz.siteName)),
+          title: Text(discuz.siteName),
 
         ),
         body: LoginForumFieldStatefulWidget(discuz,accountName));
@@ -274,9 +274,9 @@ class _LoginFormFieldState
                     )),
                 // input fields
                 Container(
-                  padding: EdgeInsets.all(8),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   decoration: isCupertino(context)? BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(8),
                     color: Theme.of(context).disabledColor.withOpacity(0.1)
                   ): null,
                   child: Column(
@@ -303,6 +303,8 @@ class _LoginFormFieldState
                           },
                           validator: ValidationBuilder().required().build()
                       ),
+                      if(isCupertino(context))
+                        Divider(),
                       PlatformTextFormField(
                           autofillHints: [AutofillHints.password],
                           controller: _passwdController,
@@ -341,7 +343,7 @@ class _LoginFormFieldState
 
                 Center(
                   child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 4.0),
+                    padding: EdgeInsets.symmetric(vertical: 24.0,horizontal: 4.0),
                     width: double.infinity,
                     child: Column(
                       children: [

@@ -116,8 +116,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "addDiscuzSuccessfully": m0,
         "addDiscuzTitle":
             MessageLookupByLibrary.simpleMessage("Add a discuz! BBS"),
-        "addNewDiscuz":
-            MessageLookupByLibrary.simpleMessage("Add a new Discuz! site"),
+        "addNewDiscuz": MessageLookupByLibrary.simpleMessage("Add a Discuz"),
         "anonymous": MessageLookupByLibrary.simpleMessage("A"),
         "appName": MessageLookupByLibrary.simpleMessage("DisFly"),
         "appearanceOptimizedPlatform":

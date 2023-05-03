@@ -42,7 +42,7 @@
   "index": "Index",
   "dashboard": "Dashboard",
   "notification": "Notification",
-  "addNewDiscuz": "Add a new Discuz! site",
+  "addNewDiscuz": "Add a Discuz",
   "nullDiscuzTitle": "No Discuz! BBS is selected",
   "nullDiscuzSubTitle": "Why not consider add a discuz forum?",
   "retry": "Retry",

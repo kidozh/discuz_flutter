@@ -431,10 +431,10 @@ class S {
     );
   }
 
-  /// `Add a new Discuz! site`
+  /// `Add a Discuz`
   String get addNewDiscuz {
     return Intl.message(
-      'Add a new Discuz! site',
+      'Add a Discuz',
       name: 'addNewDiscuz',
       desc: '',
       args: [],
