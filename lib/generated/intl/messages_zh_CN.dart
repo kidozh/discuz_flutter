@@ -149,6 +149,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "chatMessage": MessageLookupByLibrary.simpleMessage("信息"),
         "checkUserLoginStatus":
             MessageLookupByLibrary.simpleMessage("正在检查用户登录状态。。。"),
+        "cheveretoApiDescription": MessageLookupByLibrary.simpleMessage(
+            "Chevereto密钥可以由已经注册的用户生成，其应以chv_开头。使用此密钥可以允许应用向您的图床上传照片并嵌入到论坛中。"),
+        "cheveretoApiKey": MessageLookupByLibrary.simpleMessage("密钥"),
         "cheveretoPictureBed":
             MessageLookupByLibrary.simpleMessage("基于chevereto服务的"),
         "chooseDiscuz": MessageLookupByLibrary.simpleMessage("选择一个论坛"),

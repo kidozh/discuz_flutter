@@ -678,5 +678,7 @@
   "pictureBedAgreeToService": "Agree",
   "pictureBedServiceNote": "These service are not provided by us but the 3rd party service. We exclude any warranties or obligation to them. Some of them are not operated in China and you shall carefully watch their policy change to accommodate your use.",
   "pictureBedImgloc": "imgloc.com",
-  "cheveretoPictureBed": "Chevereto"
+  "cheveretoPictureBed": "Chevereto",
+  "cheveretoApiKey": "API Key",
+  "cheveretoApiDescription": "The chevereto API key is created by user and should started with chv_, where you can upload your picture to the hosting site."
 }

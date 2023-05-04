@@ -1,3 +1,4 @@
+import 'package:discuz_flutter/page/ConfigureChevertoPage.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/PictureBedUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
@@ -38,11 +39,16 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
                       await PictureBedUtils.isSMMSTermAccepted();
                   if (!isUserAcceptTerms) {
                     showPictureBedTermsModal(
+                        ChevertoPictureBed.smms,
                         S.of(context).pictureBedSMMS,
                         "https://smms.app/terms-of-use/",
                         "https://smms.app/privacy-policy/",
                             () {
                             VibrationUtils.vibrateWithClickIfPossible();
+                            Navigator.of(context).push(platformPageRoute(
+                              builder: (_) => ConfigureChevertoPage(ChevertoPictureBed.smms),
+                              context: context,
+                            ));
                         }
                     );
                   }
@@ -58,11 +64,16 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
                   await PictureBedUtils.isSMMSTermAccepted();
                   if (!isUserAcceptTerms) {
                     showPictureBedTermsModal(
+                        ChevertoPictureBed.imgloc,
                         S.of(context).pictureBedImgloc,
                         "https://imgloc.com/page/tos",
                         "https://imgloc.com/page/privacy",
                             () {
                           VibrationUtils.vibrateWithClickIfPossible();
+                          Navigator.of(context).push(platformPageRoute(
+                            builder: (_) => ConfigureChevertoPage(ChevertoPictureBed.imgloc),
+                            context: context,
+                          ));
                         }
                     );
                   }
@@ -87,7 +98,7 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
     );
   }
 
-  void showPictureBedTermsModal(String pictureBedName, String termsOfUseUrl, String privacyPolicyUrl, VoidCallback? onPressed) async {
+  void showPictureBedTermsModal(ChevertoPictureBed chevertoPictureBed,String pictureBedName, String termsOfUseUrl, String privacyPolicyUrl, VoidCallback? onPressed) async {
     await showPlatformModalSheet(
         context: context,
         builder: (context) {

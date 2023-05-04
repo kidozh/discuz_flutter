@@ -4701,6 +4701,26 @@ class S {
       args: [],
     );
   }
+
+  /// `API Key`
+  String get cheveretoApiKey {
+    return Intl.message(
+      'API Key',
+      name: 'cheveretoApiKey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The chevereto API key is created by user and should started with chv_, where you can upload your picture to the hosting site.`
+  String get cheveretoApiDescription {
+    return Intl.message(
+      'The chevereto API key is created by user and should started with chv_, where you can upload your picture to the hosting site.',
+      name: 'cheveretoApiDescription',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
