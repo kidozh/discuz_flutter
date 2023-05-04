@@ -1,5 +1,4 @@
 import 'package:discuz_flutter/utility/PictureBedUtils.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -25,10 +24,32 @@ class ConfigureChevertoState extends State<ConfigureChevertoPage> {
   TextEditingController controller = TextEditingController();
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // query for the state
+    _loadToken();
+  }
+
+  void _loadToken() async{
+    String token = await PictureBedUtils.getChevertoApiToken(chevertoPictureBed);
+    controller.text = token;
+  }
+
+  String getChevertoTitle(){
+    switch (chevertoPictureBed){
+      case ChevertoPictureBed.smms:
+        return S.of(context).pictureBedSMMS;
+      case ChevertoPictureBed.imgloc:
+        return S.of(context).pictureBedImgloc;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
       appBar: PlatformAppBar(
-        title: Text(S.of(context).pictureBedTitle),
+        title: Text(getChevertoTitle()),
       ),
       body: SafeArea(
         child: SettingsList(
@@ -68,8 +89,11 @@ class ConfigureChevertoState extends State<ConfigureChevertoPage> {
                                           Text(S.of(context).cheveretoApiKey),
                                       decoration: BoxDecoration());
                                 },
+                                onChanged: (token) async{
+                                  PictureBedUtils.setChevertoApiToken(chevertoPictureBed, token);
+                                },
                               ),
-                              PlatformText(S.of(context).cheveretoApiDescription,
+                              Text(S.of(context).cheveretoApiDescription,
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: Theme.of(context).disabledColor
                                 ),
@@ -80,21 +104,6 @@ class ConfigureChevertoState extends State<ConfigureChevertoPage> {
                     )
                 )
             ),
-            CustomSettingsSection(
-                child: PlatformPopupMenu(
-                  options: [
-                    PopupMenuOption(label: 'One', ),
-                    PopupMenuOption(label: 'Two',),
-                    PopupMenuOption(label: 'Three',)
-                  ],
-                  icon: Icon(
-                    context.platformIcon(
-                      material: Icons.more_vert_rounded,
-                      cupertino: CupertinoIcons.ellipsis,
-                    ),
-                  ),
-                )
-            )
           ],
         ),
       ),

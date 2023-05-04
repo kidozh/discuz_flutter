@@ -271,7 +271,8 @@ class _LoginFormFieldState
                               ),
                             )
                         )
-                    )),
+                    )
+                ),
                 // input fields
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),

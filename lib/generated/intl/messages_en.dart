@@ -163,7 +163,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "checkUserLoginStatus":
             MessageLookupByLibrary.simpleMessage("Check user status..."),
         "cheveretoApiDescription": MessageLookupByLibrary.simpleMessage(
-            "The chevereto API key is created by user and should started with chv_, where you can upload your picture to the hosting site."),
+            "The chevereto API key is created by user and usually started with chv_, where you can upload your picture to the hosting site."),
         "cheveretoApiKey": MessageLookupByLibrary.simpleMessage("API Key"),
         "cheveretoPictureBed":
             MessageLookupByLibrary.simpleMessage("Chevereto"),

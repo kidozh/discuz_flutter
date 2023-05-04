@@ -681,5 +681,5 @@
   "pictureBedImgloc": "imgloc.com",
   "cheveretoPictureBed": "基于chevereto服务的",
   "cheveretoApiKey": "密钥",
-  "cheveretoApiDescription": "Chevereto密钥可以由已经注册的用户生成，其应以chv_开头。使用此密钥可以允许应用向您的图床上传照片并嵌入到论坛中。"
+  "cheveretoApiDescription": "Chevereto密钥可以由已经注册的用户生成。使用此密钥可以允许应用向您的图床上传照片并嵌入到论坛中。"
 }

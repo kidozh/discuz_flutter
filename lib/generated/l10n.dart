@@ -4712,10 +4712,10 @@ class S {
     );
   }
 
-  /// `The chevereto API key is created by user and should started with chv_, where you can upload your picture to the hosting site.`
+  /// `The chevereto API key is created by user and usually started with chv_, where you can upload your picture to the hosting site.`
   String get cheveretoApiDescription {
     return Intl.message(
-      'The chevereto API key is created by user and should started with chv_, where you can upload your picture to the hosting site.',
+      'The chevereto API key is created by user and usually started with chv_, where you can upload your picture to the hosting site.',
       name: 'cheveretoApiDescription',
       desc: '',
       args: [],
