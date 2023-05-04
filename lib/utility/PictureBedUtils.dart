@@ -2,7 +2,13 @@
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum ChevertoPictureBed{
+  smms,
+  imgloc
+}
+
 class PictureBedUtils{
+
   static String _SMMS_KEY = "SMMS";
   static String _IMGLOC_KEY = "IMGLOC";
   static String _TERM_OF_USE_ACCEPTED = "TERM_OF_USE_ACCEPTED";
