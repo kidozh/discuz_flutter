@@ -1,6 +1,8 @@
 
 import 'dart:developer';
+import 'dart:html';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/dao/TrustHostDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -112,7 +114,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
             ".reply_wrap" :Style(
               //backgroundColor: MediaQuery.of(context).platformBrightness == Brightness.light ? Colors.grey.shade200: Colors.grey.shade600,
               backgroundColor: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade200: Colors.grey.shade600,
-              padding: const EdgeInsets.all(8),
+              padding: HtmlPaddings.all(8),
               margin: Margins(bottom: Margin(4.0)),
               border: Border(left: BorderSide(color: Theme.of(context).colorScheme.primary, width: 4)),
               width: Width.auto()
@@ -125,13 +127,13 @@ class DiscuzHtmlWidget extends StatelessWidget{
             )
 
           },
-          onLinkTap: (urlString, context,attribute, element) async{
+          onLinkTap: (urlString, context1,attribute) async{
             VibrationUtils.vibrateWithClickIfPossible();
             log("Press link ${urlString} ");
             if(urlString != null){
               urlString = urlString.replaceAll("&amp;", "&");
               bool urlLauchable = await canLaunchUrl(Uri.parse(urlString));
-              User? user = Provider.of<DiscuzAndUserNotifier>(context.buildContext, listen: false).user;
+              User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
               // judge if it is a path
               Uri? tryUri = Uri.tryParse(urlString);
               log("${Uri.parse(urlString).isAbsolute} can launch $urlLauchable $urlString");
@@ -181,8 +183,8 @@ class DiscuzHtmlWidget extends StatelessWidget{
                           int tid = int.tryParse(tidString)!;
                           if(onSelectTid == null){
                             await Navigator.push(
-                                context.buildContext,
-                                platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadSliverPage( discuz,user, tid))
+                                context,
+                                platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( discuz,user, tid))
                             );
                           }
                           else{
@@ -203,8 +205,8 @@ class DiscuzHtmlWidget extends StatelessWidget{
                           int tid = int.tryParse(tidString)!;
                           if(onSelectTid == null){
                             await Navigator.push(
-                                context.buildContext,
-                                platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadSliverPage( discuz,user, tid))
+                                context,
+                                platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( discuz,user, tid))
                             );
                           }
                           else{
@@ -223,8 +225,8 @@ class DiscuzHtmlWidget extends StatelessWidget{
                         if(int.tryParse(fidString) != null){
                           int fid = int.tryParse(fidString)!;
                           await Navigator.push(
-                              context.buildContext,
-                              platformPageRoute(context:context.buildContext,builder: (context) => DisplayForumTwoPanePage(discuz,user, fid))
+                              context,
+                              platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz,user, fid))
                           );
                           return;
                         }
@@ -239,8 +241,8 @@ class DiscuzHtmlWidget extends StatelessWidget{
                         if(int.tryParse(uidString) != null){
                           int uid = int.tryParse(uidString)!;
                           await Navigator.push(
-                              context.buildContext,
-                              platformPageRoute(context:context.buildContext,builder: (context) => UserProfilePage(discuz,user,uid))
+                              context,
+                              platformPageRoute(context:context,builder: (context) => UserProfilePage(discuz,user,uid))
                           );
                           return;
                         }
@@ -254,8 +256,8 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 String? fid = await RewriteRuleUtils.findFidInURL(discuz, urlString);
                 if(fid!=null && int.tryParse(fid) != null){
                   await Navigator.push(
-                      context.buildContext,
-                      platformPageRoute(context:context.buildContext,builder: (context) => DisplayForumTwoPanePage(discuz, user, int.tryParse(fid)!))
+                      context,
+                      platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz, user, int.tryParse(fid)!))
                   );
                   return;
                 }
@@ -265,8 +267,8 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 if(tid!=null && int.tryParse(tid) != null){
                   if(onSelectTid == null){
                     await Navigator.push(
-                        context.buildContext,
-                        platformPageRoute(context:context.buildContext,builder: (context) => ViewThreadSliverPage(discuz, user, int.tryParse(tid)!))
+                        context,
+                        platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz, user, int.tryParse(tid)!))
                     );
                   }
                   else{
@@ -279,8 +281,8 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 String? uid = await RewriteRuleUtils.findUidInURL(discuz, urlString);
                 if(uid!=null && int.tryParse(uid) != null){
                   await Navigator.push(
-                      context.buildContext,
-                      platformPageRoute(context:context.buildContext,builder: (context) => UserProfilePage(discuz, user, int.tryParse(uid)!))
+                      context,
+                      platformPageRoute(context:context,builder: (context) => UserProfilePage(discuz, user, int.tryParse(uid)!))
                   );
                   return;
                 }
@@ -290,116 +292,119 @@ class DiscuzHtmlWidget extends StatelessWidget{
               }
               else{
                 // show the link
-                EasyLoading.showError(S.of(context.buildContext).linkUnableToOpen(urlString));
+                EasyLoading.showError(S.of(context).linkUnableToOpen(urlString));
               }
             }
 
 
           },
-          onImageError: (e,s){
+          extensions: [
+            ImageExtension(
+                //matchesAssetImages: false,
+                //matchesDataImages: false,
+                //networkSchemas: {"custom:"},
+                builder: (extensionContext) {
+                  final element = extensionContext.styledElement as ImageElement;
+                  if(element.src != null){
+                    return CachedNetworkImage(
+                      imageUrl: element.src!,
+                      errorWidget: (context, url, error) => Icon(Icons.error),
 
-          },
-          onImageTap: (string, context,attribute, element){
-            if(string!= null){
-              VibrationUtils.vibrateWithClickIfPossible();
-              Navigator.push(
-                  context.buildContext,
-                  platformPageRoute(context:context.buildContext,builder: (context) => FullImagePage(string))
-              );
-            }
-          },
-          customRenders: {
-            iframeMatcher(): iframeRender(),
-            collapseMatcher(): CustomRender.widget(
-                widget: (context, buildChild){
-                  String title = S.of(context.buildContext).collapseItem;
-                  if(context.tree.element?.attributes["title"] != null){
-                    title = context.tree.element!.attributes["title"]!;
+                    );
+                  }
+                  else{
+                    return Container();
                   }
 
-                  return ExpansionTile(
-                    title: Text(title),
-                    controlAffinity: ListTileControlAffinity.platform,
-                    children: [
-                      DiscuzHtmlWidget(discuz, context.tree.element!.innerHtml)
-                    ],
-                    collapsedBackgroundColor: Theme.of(context.buildContext).colorScheme.primary,
-                    collapsedTextColor: Theme.of(context.buildContext).colorScheme.onPrimary,
-                    collapsedIconColor: Theme.of(context.buildContext).colorScheme.onPrimary,
-                  );
                 }
-
             ),
-            spoilMatcher(): CustomRender.widget(widget: (context, buildChild){
-              String title = S.of(context.buildContext).collapseItem;
-              if(context.tree.element?.attributes["title"] != null){
-                title = context.tree.element!.attributes["title"]!;
+            // IframeHtmlExtension(
+            //   navigationDelegate: (request) {
+            //     //Return decision here
+            //   },
+            // ),
+            OnImageTapExtension(onImageTap: (src, imgAttributes, element){
+              if (src!= null){
+                VibrationUtils.vibrateWithClickIfPossible();
+                Navigator.push(
+                    context,
+                    platformPageRoute(context:context,builder: (context) => FullImagePage(src!))
+                );
               }
 
-              return ExpansionTile(
-                title: Text(title),
-                controlAffinity: ListTileControlAffinity.platform,
-                children: [
-                  DiscuzHtmlWidget(discuz, context.tree.element!.innerHtml)
-                ],
-                collapsedBackgroundColor: Theme.of(context.buildContext).colorScheme.primary,
-                collapsedTextColor: Theme.of(context.buildContext).colorScheme.onPrimary,
-                collapsedIconColor: Theme.of(context.buildContext).colorScheme.onPrimary,
-              );
             }),
-
-            countDownMatcher(): CustomRender.widget(widget: (renderContext, buildChild){
-              String timeString = "";
-              if(renderContext.tree.element?.attributes["time"] != null){
-                timeString = renderContext.tree.element!.attributes["time"]!;
-                DateTime? datetime = DateTime.tryParse(timeString);
-
-                if(datetime!=null){
-
-                  // most of them located in Asia/Shanghai
-                  Duration duration = datetime.difference(DateTime.now());
-
-                  log("get time string ${timeString} ${datetime}");
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: 32),
-                    child: ListTile(
-                      leading: Icon(Icons.timer),
-                      title: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SlideCountdown(
-                            duration: duration,
-                            textStyle: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.bold),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(20)),
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            separatorType: SeparatorType.title,
-                            durationTitle: DurationTitle(
-                              days: S.of(context).day,
-                              hours:S.of(context).hour,
-                              minutes:S.of(context).minute,
-                              seconds:S.of(context).second,
-                            ),
-                          )
-                        ],
-                      ),
-                      subtitle: DateTime.now().timeZoneOffset != Duration(hours: 8)? Text(S.of(context).countDownTimeZoneNotify): null,
-                    ),
-                  );
+            TagExtension(
+              tagsToExtend: {"collapse", "spoil"},
+              builder: (extensionContext){
+                String title = S.of(context).collapseItem;
+                if(extensionContext.attributes["title"] != null){
+                  title = extensionContext.attributes["title"]!;
                 }
-                else{
-                  return Text(S.of(renderContext.buildContext).brokenCountDown);
+
+                return ExpansionTile(
+                  title: Text(title),
+                  controlAffinity: ListTileControlAffinity.platform,
+                  children: [
+                    DiscuzHtmlWidget(discuz, extensionContext.innerHtml)
+                  ],
+                  collapsedBackgroundColor: Theme.of(context).colorScheme.primary,
+                  collapsedTextColor: Theme.of(context).colorScheme.onPrimary,
+                  collapsedIconColor: Theme.of(context).colorScheme.onPrimary,
+                );
+              }
+            ),
+            TagExtension(
+                tagsToExtend: {"countdown"},
+                builder: (extensionContext){
+                  String timeString = "";
+                  if(extensionContext.attributes["time"] != null){
+                    timeString = extensionContext.attributes["time"]!;
+                    DateTime? datetime = DateTime.tryParse(timeString);
+
+                    if(datetime!=null){
+
+                      // most of them located in Asia/Shanghai
+                      Duration duration = datetime.difference(DateTime.now());
+
+                      log("get time string ${timeString} ${datetime}");
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 32),
+                        child: ListTile(
+                          leading: Icon(Icons.timer),
+                          title: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SlideCountdown(
+                                duration: duration,
+                                textStyle: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.bold),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                separatorType: SeparatorType.title,
+                                durationTitle: DurationTitle(
+                                  days: S.of(context).day,
+                                  hours:S.of(context).hour,
+                                  minutes:S.of(context).minute,
+                                  seconds:S.of(context).second,
+                                ),
+                              )
+                            ],
+                          ),
+                          subtitle: DateTime.now().timeZoneOffset != Duration(hours: 8)? Text(S.of(context).countDownTimeZoneNotify): null,
+                        ),
+                      );
+                    }
+                    else{
+                      return Text(S.of(context).brokenCountDown);
+                    }
+                  }
+                  else{
+                    return Text(S.of(context).brokenCountDown);
+                  }
                 }
-              }
-              else{
-                return Text(S.of(renderContext.buildContext).brokenCountDown);
-              }
-            }),
-
-
-          },
-          tagsList: Html.tags..addAll(["collapse", "spoil","countdown"]),
+            )
+          ],
         );
       }),
 
@@ -407,11 +412,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
     );
   }
 
-  CustomRenderMatcher collapseMatcher() => (context) => context.tree.element?.localName == "collapse";
-  CustomRenderMatcher spoilMatcher() => (context) => context.tree.element?.localName == "spoil";
-  CustomRenderMatcher countDownMatcher() => (context) => context.tree.element?.localName == "countdown";
-
-  void checkWithDbAndOpenURL(RenderContext context, String urlString) async{
+  void checkWithDbAndOpenURL(BuildContext context, String urlString) async{
     Uri uri = Uri.parse(urlString);
     // check host
     if(uri.host != Uri.parse(discuz.baseURL).host){
@@ -420,7 +421,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
       TrustHostDao trustHostDao = await AppDatabase.getTrustHostDao();
       TrustHost? trustHostInDb = await trustHostDao.findTrustHostByName(uri.host);
       if(trustHostInDb == null){
-        showPlatformDialog(context: context.buildContext, builder: (context){
+        showPlatformDialog(context: context, builder: (context){
           return PlatformAlertDialog(
             title: Text(S.of(context).outerlinkOpenTitle,),
             content: Column(
