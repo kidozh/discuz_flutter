@@ -64,43 +64,45 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m21(hour) => "${hour}小时";
 
-  static String m22(time) => "该投票于${time}过期.";
+  static String m22(pictureBedName) => "此服务由${pictureBedName}提供";
 
-  static String m23(people) => "共有${people}人已投票.";
+  static String m23(time) => "该投票于${time}过期.";
 
-  static String m24(pos) => "第${pos}层";
+  static String m24(people) => "共有${people}人已投票.";
 
-  static String m25(pid, ptid, author, fullTimeString, trimMessage) =>
+  static String m25(pos) => "第${pos}层";
+
+  static String m26(pid, ptid, author, fullTimeString, trimMessage) =>
       "[quote][size=2][url=forum.php?mod=redirect&goto=findpost&pid=${pid}&ptid=${ptid}]${author} 发表于 ${fullTimeString}[/url][/size]\n${trimMessage}[/quote]";
 
-  static String m26(name) => "举报${name}的内容";
+  static String m27(name) => "举报${name}的内容";
 
-  static String m27(discuzName) => "成功向${discuzName}发送了举报信息，请等待管理员回应。";
+  static String m28(discuzName) => "成功向${discuzName}发送了举报信息，请等待管理员回应。";
 
-  static String m28(username, discuzName) =>
+  static String m29(username, discuzName) =>
       "用户 ${username} 已成功登录到 ${discuzName}。";
 
-  static String m29(discuzName) => "登录至 ${discuzName}";
+  static String m30(discuzName) => "登录至 ${discuzName}";
 
-  static String m30(index) => "表情 ${index}";
+  static String m31(index) => "表情 ${index}";
 
-  static String m31(checked, allowed) => "投票 (${checked} / ${allowed})";
+  static String m32(checked, allowed) => "投票 (${checked} / ${allowed})";
 
-  static String m32(title) => "成功删除历史记录 ${title}.";
+  static String m33(title) => "成功删除历史记录 ${title}.";
 
-  static String m33(filename) => "成功下载文件： ${filename}。";
+  static String m34(filename) => "成功下载文件： ${filename}。";
 
-  static String m34(num) => "已同步所有${num}个收藏的帖子";
+  static String m35(num) => "已同步所有${num}个收藏的帖子";
 
-  static String m35(num) => "阅读权限 ${num}";
+  static String m36(num) => "阅读权限 ${num}";
 
-  static String m36(username) => "用户 ${username} 已失效";
+  static String m37(username) => "用户 ${username} 已失效";
 
-  static String m37(uid) => "用户编号： ${uid}";
+  static String m38(uid) => "用户编号： ${uid}";
 
-  static String m38(user) => "查看${user}详情";
+  static String m39(user) => "查看${user}详情";
 
-  static String m39(name) => "${name}的Windows电脑";
+  static String m40(name) => "${name}的Windows电脑";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -147,6 +149,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "chatMessage": MessageLookupByLibrary.simpleMessage("信息"),
         "checkUserLoginStatus":
             MessageLookupByLibrary.simpleMessage("正在检查用户登录状态。。。"),
+        "cheveretoApiDescription": MessageLookupByLibrary.simpleMessage(
+            "Chevereto密钥可以由已经注册的用户生成。使用此密钥可以允许应用向您的图床上传照片并嵌入到论坛中。"),
+        "cheveretoApiKey": MessageLookupByLibrary.simpleMessage("密钥"),
+        "cheveretoPictureBed":
+            MessageLookupByLibrary.simpleMessage("基于chevereto服务的"),
         "chooseDiscuz": MessageLookupByLibrary.simpleMessage("选择一个论坛"),
         "chooseThemeTitle": MessageLookupByLibrary.simpleMessage("主题颜色"),
         "clearAllViewHistories": MessageLookupByLibrary.simpleMessage("清除历史记录"),
@@ -439,17 +446,30 @@ class MessageLookup extends MessageLookupByLibrary {
             "链接使用的域名与此论坛不一致，其很有可能不是论坛所有的。谨防钓鱼、木马和诈骗。"),
         "outerlinkOpenTitle": MessageLookupByLibrary.simpleMessage("你正要打开外链"),
         "password": MessageLookupByLibrary.simpleMessage("密码"),
+        "pictureBedActive": MessageLookupByLibrary.simpleMessage("已启用"),
+        "pictureBedAgreeToService": MessageLookupByLibrary.simpleMessage("我同意"),
+        "pictureBedDisabled": MessageLookupByLibrary.simpleMessage("已禁用"),
+        "pictureBedImgloc": MessageLookupByLibrary.simpleMessage("imgloc.com"),
+        "pictureBedNotPrepared":
+            MessageLookupByLibrary.simpleMessage("未就绪，轻触以继续"),
+        "pictureBedSMMS": MessageLookupByLibrary.simpleMessage("SMMS.app"),
+        "pictureBedServiceNote": MessageLookupByLibrary.simpleMessage(
+            "上述所有服务并非由谈坛（我们，第一方）或者您浏览的论坛，而是由第三方提供。根据我们的使用协议，我们并不担保和授权任何第三方服务，使用我们的服务也并不会自动授权、默许和担保您使用这些第三方服务。因此，您需要在使用服务前，同意他们的使用协议、隐私政策以及其他协议。您同样应当定时查看这些协议以防止政策变更给您带来的不便。最后，有些服务并非在中国展开，您需要注意其在中国的可使用性、可靠性以及相关的法律适用性。"),
+        "pictureBedTermsSubtitle": MessageLookupByLibrary.simpleMessage(
+            "请注意，此服务并非由我们提供。根据我们的服务条款，使用我们的服务并不代表您获得了第三方服务的授权，并且我们并不对第三方服务做出任何承诺或者担保。在使用第三方服务前，您需要同意他们的服务条款以及隐私政策。"),
+        "pictureBedTermsTitle": m22,
+        "pictureBedTitle": MessageLookupByLibrary.simpleMessage("图床"),
         "pictureTagInMessage": MessageLookupByLibrary.simpleMessage("[图片]"),
         "policy": MessageLookupByLibrary.simpleMessage("条款"),
-        "pollExpireAt": m22,
+        "pollExpireAt": m23,
         "pollNotAllowed": MessageLookupByLibrary.simpleMessage(
             "目前您无法参与投票。(显示的投中的选项与真实结果不符合)"),
         "pollTitle": MessageLookupByLibrary.simpleMessage("投票（目前我们只支持单选）"),
-        "pollVoterNumber": m23,
+        "pollVoterNumber": m24,
         "post": MessageLookupByLibrary.simpleMessage("发帖"),
         "postAuthorLabel": MessageLookupByLibrary.simpleMessage("楼主"),
         "postNumber": MessageLookupByLibrary.simpleMessage("回帖数"),
-        "postPosition": m24,
+        "postPosition": m25,
         "preparingPage": MessageLookupByLibrary.simpleMessage("正在准备此界面。"),
         "preventAbuseUser":
             MessageLookupByLibrary.simpleMessage("请勿使用此应用发表令人反感的内容或其他滥用行为"),
@@ -538,10 +558,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "releaseToRefresh": MessageLookupByLibrary.simpleMessage("释放刷新"),
         "relogin": MessageLookupByLibrary.simpleMessage("重新登陆"),
         "replyPost": MessageLookupByLibrary.simpleMessage("回复"),
-        "replyPostTrimMessage": m25,
-        "reportContentTitle": m26,
+        "replyPostTrimMessage": m26,
+        "reportContentTitle": m27,
         "reportOtherReasonHint": MessageLookupByLibrary.simpleMessage("提供举报原因"),
-        "reportSuccessfully": m27,
+        "reportSuccessfully": m28,
         "reportThreadTooltip": MessageLookupByLibrary.simpleMessage("举报不当内容"),
         "residentPlace": MessageLookupByLibrary.simpleMessage("居住地"),
         "retry": MessageLookupByLibrary.simpleMessage("重试"),
@@ -568,8 +588,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "shortcutGo": MessageLookupByLibrary.simpleMessage("跳转"),
         "shortcutTidHint": MessageLookupByLibrary.simpleMessage("输入帖子编号 (tid)"),
         "shortcutUidHint": MessageLookupByLibrary.simpleMessage("输入用户编号 (uid)"),
-        "signInSuccessTitle": m28,
-        "signInTitle": m29,
+        "signInSuccessTitle": m29,
+        "signInTitle": m30,
         "signInViaBrowser": MessageLookupByLibrary.simpleMessage("使用网页登录"),
         "signUp": MessageLookupByLibrary.simpleMessage("注册"),
         "signatureHint": MessageLookupByLibrary.simpleMessage("在此键入签名"),
@@ -577,17 +597,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "siteDoesNotSupportPushService":
             MessageLookupByLibrary.simpleMessage("该论坛未开启推送插件。"),
         "sitePage": MessageLookupByLibrary.simpleMessage("主页"),
-        "smileyLabel": m30,
+        "smileyLabel": m31,
         "sortThreadInAscendOrder":
             MessageLookupByLibrary.simpleMessage("从旧到新排列"),
         "sortThreadInDescendOrder":
             MessageLookupByLibrary.simpleMessage("从新到旧排列"),
         "spam": MessageLookupByLibrary.simpleMessage("恶意灌水"),
         "style": MessageLookupByLibrary.simpleMessage("样式"),
-        "submitPoll": m31,
-        "successfullyDeleteViewHistoryContent": m32,
-        "successfullyDownloadFiles": m33,
-        "syncSuccessfullyWithServer": m34,
+        "submitPoll": m32,
+        "successfullyDeleteViewHistoryContent": m33,
+        "successfullyDownloadFiles": m34,
+        "syncSuccessfullyWithServer": m35,
         "takeAPicture": MessageLookupByLibrary.simpleMessage("照相"),
         "tapToWipeAndRelogin":
             MessageLookupByLibrary.simpleMessage("点击以移除此用户并重新登陆"),
@@ -600,7 +620,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "testVersionNotificationTitle":
             MessageLookupByLibrary.simpleMessage("欢迎参与测试版本"),
         "threadIsClosed": MessageLookupByLibrary.simpleMessage("此贴已关闭发帖。"),
-        "threadReadAccess": m35,
+        "threadReadAccess": m36,
         "trashAd": MessageLookupByLibrary.simpleMessage("垃圾广告"),
         "trustHostActionText": MessageLookupByLibrary.simpleMessage("信任此域名"),
         "trustHostTitle": MessageLookupByLibrary.simpleMessage("主机域名白名单"),
@@ -666,8 +686,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "userCredit": MessageLookupByLibrary.simpleMessage("积分"),
         "userExpiredSubtitle":
             MessageLookupByLibrary.simpleMessage("当前用户授权已过期，你需要重新登录以重新激活此用户。"),
-        "userExpiredTitle": m36,
-        "userIdTitle": m37,
+        "userExpiredTitle": m37,
+        "userIdTitle": m38,
         "userPost": MessageLookupByLibrary.simpleMessage("回复"),
         "userProfile": MessageLookupByLibrary.simpleMessage("用户中心"),
         "userProfileTitle": MessageLookupByLibrary.simpleMessage("用户信息"),
@@ -677,7 +697,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewThreadTitle": MessageLookupByLibrary.simpleMessage("查看帖子"),
         "viewThreadTwoPaneText":
             MessageLookupByLibrary.simpleMessage("点击左侧的帖子以查看内容。"),
-        "viewUserInfo": m38,
+        "viewUserInfo": m39,
         "warnedPost": MessageLookupByLibrary.simpleMessage("此贴被警告。"),
         "watchPictureInFullScreen":
             MessageLookupByLibrary.simpleMessage("查看大图"),
@@ -686,7 +706,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "welcomeSubtitle": MessageLookupByLibrary.simpleMessage(
             "欢迎使用我们的服务，我们基于Discuz！移动插件为您服务。"),
         "welcomeTitle": MessageLookupByLibrary.simpleMessage("你好"),
-        "windowsDeviceName": m39,
+        "windowsDeviceName": m40,
         "workProcedure": MessageLookupByLibrary.simpleMessage("推送服务是如何工作的？"),
         "writeStorageDenied": MessageLookupByLibrary.simpleMessage("无法获得写入权限。")
       };

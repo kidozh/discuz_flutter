@@ -357,7 +357,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       padding: EdgeInsets.fromLTRB(24.0, 12.0, 24.0, 16.0),
       child: PlatformElevatedButton(
         color: Theme.of(context).colorScheme.primaryContainer,
-        child: Text(S.of(context).addNewDiscuz),
+        child: Text(S.of(context).addNewDiscuz, style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),),
         //color: Theme.of(context).colorScheme.onPrimaryContainer,
         onPressed: () {
           VibrationUtils.vibrateWithClickIfPossible();

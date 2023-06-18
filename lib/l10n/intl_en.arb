@@ -42,7 +42,7 @@
   "index": "Index",
   "dashboard": "Dashboard",
   "notification": "Notification",
-  "addNewDiscuz": "Add a new Discuz! site",
+  "addNewDiscuz": "Add a Discuz",
   "nullDiscuzTitle": "No Discuz! BBS is selected",
   "nullDiscuzSubTitle": "Why not consider add a discuz forum?",
   "retry": "Retry",
@@ -81,7 +81,7 @@
       "discuzName": {}
     }
   },
-  "account": "Account",
+  "account": "Username",
   "password": "Password",
   "forgetPassword": "Forget password?",
   "or": "or",
@@ -662,5 +662,23 @@
   "reportThreadTooltip": "Report the post",
   "emoijButtonTooltip": "Insert smiley emoij",
   "extraFuncButtonTooltip": "More functions",
-  "closeKeyboardTooltip": "Close the keyboard"
+  "closeKeyboardTooltip": "Close the keyboard",
+  "pictureBedTitle": "Image hosting website",
+  "pictureBedSMMS": "SM.MS",
+  "pictureBedActive": "Active",
+  "pictureBedNotPrepared": "Not ready, click to continue",
+  "pictureBedDisabled": "Disabled",
+  "pictureBedTermsTitle": "Service provided by {pictureBedName}",
+  "@pictureBedTermsTitle": {
+    "placeholders": {
+      "pictureBedName": {}
+    }
+  },
+  "pictureBedTermsSubtitle": "This service is not provided by us but the 3rd party services and we exclude all warranties for it. Using our service does not mean you are granted with 3rd party service as mentioned in our terms. You shall agree to their terms before using 3rd party service.",
+  "pictureBedAgreeToService": "Agree",
+  "pictureBedServiceNote": "These service are not provided by us but the 3rd party service. We exclude any warranties or obligation to them. Some of them are not operated in China and you shall carefully watch their policy change to accommodate your use.",
+  "pictureBedImgloc": "imgloc.com",
+  "cheveretoPictureBed": "Chevereto",
+  "cheveretoApiKey": "API Key",
+  "cheveretoApiDescription": "The chevereto API key is created by user and usually started with chv_, where you can upload your picture to the hosting site."
 }

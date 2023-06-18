@@ -430,10 +430,10 @@ class S {
     );
   }
 
-  /// `Add a new Discuz! site`
+  /// `Add a Discuz`
   String get addNewDiscuz {
     return Intl.message(
-      'Add a new Discuz! site',
+      'Add a Discuz',
       name: 'addNewDiscuz',
       desc: '',
       args: [],
@@ -670,10 +670,10 @@ class S {
     );
   }
 
-  /// `Account`
+  /// `Username`
   String get account {
     return Intl.message(
-      'Account',
+      'Username',
       name: 'account',
       desc: '',
       args: [],
@@ -4586,6 +4586,136 @@ class S {
     return Intl.message(
       'Close the keyboard',
       name: 'closeKeyboardTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Image hosting website`
+  String get pictureBedTitle {
+    return Intl.message(
+      'Image hosting website',
+      name: 'pictureBedTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `SM.MS`
+  String get pictureBedSMMS {
+    return Intl.message(
+      'SM.MS',
+      name: 'pictureBedSMMS',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Active`
+  String get pictureBedActive {
+    return Intl.message(
+      'Active',
+      name: 'pictureBedActive',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not ready, click to continue`
+  String get pictureBedNotPrepared {
+    return Intl.message(
+      'Not ready, click to continue',
+      name: 'pictureBedNotPrepared',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Disabled`
+  String get pictureBedDisabled {
+    return Intl.message(
+      'Disabled',
+      name: 'pictureBedDisabled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Service provided by {pictureBedName}`
+  String pictureBedTermsTitle(Object pictureBedName) {
+    return Intl.message(
+      'Service provided by $pictureBedName',
+      name: 'pictureBedTermsTitle',
+      desc: '',
+      args: [pictureBedName],
+    );
+  }
+
+  /// `This service is not provided by us but the 3rd party services and we exclude all warranties for it. Using our service does not mean you are granted with 3rd party service as mentioned in our terms. You shall agree to their terms before using 3rd party service.`
+  String get pictureBedTermsSubtitle {
+    return Intl.message(
+      'This service is not provided by us but the 3rd party services and we exclude all warranties for it. Using our service does not mean you are granted with 3rd party service as mentioned in our terms. You shall agree to their terms before using 3rd party service.',
+      name: 'pictureBedTermsSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Agree`
+  String get pictureBedAgreeToService {
+    return Intl.message(
+      'Agree',
+      name: 'pictureBedAgreeToService',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `These service are not provided by us but the 3rd party service. We exclude any warranties or obligation to them. Some of them are not operated in China and you shall carefully watch their policy change to accommodate your use.`
+  String get pictureBedServiceNote {
+    return Intl.message(
+      'These service are not provided by us but the 3rd party service. We exclude any warranties or obligation to them. Some of them are not operated in China and you shall carefully watch their policy change to accommodate your use.',
+      name: 'pictureBedServiceNote',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `imgloc.com`
+  String get pictureBedImgloc {
+    return Intl.message(
+      'imgloc.com',
+      name: 'pictureBedImgloc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Chevereto`
+  String get cheveretoPictureBed {
+    return Intl.message(
+      'Chevereto',
+      name: 'cheveretoPictureBed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `API Key`
+  String get cheveretoApiKey {
+    return Intl.message(
+      'API Key',
+      name: 'cheveretoApiKey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The chevereto API key is created by user and usually started with chv_, where you can upload your picture to the hosting site.`
+  String get cheveretoApiDescription {
+    return Intl.message(
+      'The chevereto API key is created by user and usually started with chv_, where you can upload your picture to the hosting site.',
+      name: 'cheveretoApiDescription',
       desc: '',
       args: [],
     );

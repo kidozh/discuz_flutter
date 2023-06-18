@@ -90,8 +90,6 @@ class _SettingPageState extends State<SettingPage> {
                 SettingsTile.switchTile(
                   title: Text(S.of(context).recordHistoryTitle),
                   leading: Icon(AppPlatformIcons(context).historyOutlined),
-                  //switchValue: recordHistory,
-                  activeSwitchColor: Theme.of(context).colorScheme.primary,
                   onToggle: (bool value) {
                     VibrationUtils.vibrateWithSwitchIfPossible();
                     print("set record history ${value} ");
@@ -167,7 +165,6 @@ class _SettingPageState extends State<SettingPage> {
                 SettingsTile.switchTile(
                   title: Text(S.of(context).useMaterial3Title),
                   leading: Icon(AppPlatformIcons(context).material3Outlined),
-                  activeSwitchColor: Theme.of(context).colorScheme.primary,
                   onToggle: (bool value) {
                     VibrationUtils.vibrateWithSwitchIfPossible();
                     UserPreferencesUtils.putMaterial3PropertyPreference(value);
@@ -200,7 +197,6 @@ class _SettingPageState extends State<SettingPage> {
                     title: Text(S.of(context).hapticFeedbackTitle),
                     leading: Icon(AppPlatformIcons(context).hapticFeedbackOutlined),
                     initialValue: hapticFeedback,
-                    activeSwitchColor: Theme.of(context).colorScheme.primary,
                     onToggle: (bool value) async{
                       if(value){
                         VibrationUtils.vibrateWithClickIfPossible();
@@ -242,6 +238,17 @@ class _SettingPageState extends State<SettingPage> {
                     ));
                   },
                 ),
+                // SettingsTile.navigation(
+                //   title: Text(S.of(context).pictureBedTitle),
+                //   leading: Icon(AppPlatformIcons(context).pictureBedOutlined),
+                //   onPressed: (_) {
+                //     VibrationUtils.vibrateWithClickIfPossible();
+                //     Navigator.of(context).push(platformPageRoute(
+                //       builder: (_) => ConfigurePictureBedPage(),
+                //       context: context,
+                //     ));
+                //   },
+                // ),
               ],
             ),
             SettingsSection(
