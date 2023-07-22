@@ -1,6 +1,5 @@
 
 import 'dart:developer';
-import 'dart:html';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/dao/TrustHostDao.dart';
@@ -304,10 +303,10 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 //matchesDataImages: false,
                 //networkSchemas: {"custom:"},
                 builder: (extensionContext) {
-                  final element = extensionContext.styledElement as ImageElement;
-                  if(element.src != null){
+                  final element = extensionContext.styledElement;
+                  if(element?.node.attributes["src"] != null){
                     return CachedNetworkImage(
-                      imageUrl: element.src!,
+                      imageUrl: element!.node.attributes["src"]!,
                       errorWidget: (context, url, error) => Icon(Icons.error),
 
                     );

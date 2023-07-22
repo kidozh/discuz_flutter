@@ -629,6 +629,9 @@
   "dioErrorResponse": "Response error.",
   "dioErrorCancel": "Response cancelled.",
   "dioErrorOther": "Error.",
+  "dioErrorBadCertificate": "Bad certificate",
+  "dioErrorBadResponse": "Bad response",
+  "dioErrorConnectionError": "Connection error",
   "mobileTemplateNotFound": "This page is optimized for web view.",
   "navigateToWebPage": "Go to web.",
   "useGoogleAnalyticsTitle": "Google analytics used",
@@ -680,5 +683,12 @@
   "pictureBedImgloc": "imgloc.com",
   "cheveretoPictureBed": "Chevereto",
   "cheveretoApiKey": "API Key",
-  "cheveretoApiDescription": "The chevereto API key is created by user and usually started with chv_, where you can upload your picture to the hosting site."
+  "cheveretoApiDescription": "The chevereto API key is created by user and usually started with chv_, where you can upload your picture to the hosting site.",
+  "pushServiceSiteNotSupport": "{discuz} may not support push service",
+  "@pushServiceSiteNotSupport": {
+    "placeholders": {
+      "discuz": {}
+    }
+  },
+  "viewPushServiceHomePage": "About push service ↗️"
 }

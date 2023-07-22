@@ -61,6 +61,8 @@ class DrawerState extends State<DrawerStatefulWidget>{
 
   Widget _buildFunctionNavWidgetList() {
     return ListView(
+      padding: EdgeInsets.zero,
+
       children: [
         ListTile(
           title: Text(S.of(context).loginTitle),

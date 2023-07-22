@@ -38,14 +38,14 @@ class ErrorCard extends StatelessWidget{
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(getErrorIcon(context),color: Theme.of(context).errorColor,size: 64,),
+              Icon(getErrorIcon(context),color: Theme.of(context).colorScheme.error,size: 64,),
               SizedBox(height: 6.0,),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(discuzError.content, style: Theme.of(context).textTheme.headline5),
-                  Text(getErrorLocalizedKey(context), style: Theme.of(context).textTheme.bodyText2,),
+                  Text(discuzError.content, style: Theme.of(context).textTheme.headlineSmall),
+                  Text(getErrorLocalizedKey(context), style: Theme.of(context).textTheme.bodyMedium,),
 
                 ],
               ),
@@ -122,11 +122,11 @@ class ErrorCard extends StatelessWidget{
         case DioExceptionType.connectionTimeout:
           return S.of(context).dioErrorConnectionTimeout;
         case DioExceptionType.badCertificate:
-          return S.of(context).dioErrorOther;
+          return S.of(context).dioErrorBadCertificate;
         case DioExceptionType.badResponse:
-          return S.of(context).dioErrorOther;
+          return S.of(context).dioErrorBadResponse;
         case DioExceptionType.connectionError:
-          return S.of(context).dioErrorOther;
+          return S.of(context).dioErrorConnectionError;
         case DioExceptionType.unknown:
           return S.of(context).dioErrorOther;
       }

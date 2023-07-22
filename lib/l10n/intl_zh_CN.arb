@@ -626,10 +626,13 @@
   "errorUserExpired": "用户登录信息已经失效。",
   "dioErrorConnectionTimeout": "连接超时",
   "dioErrorSendTimeout": "发送超时",
-  "dioErrorReceiveTimeout": "接收数据超市",
+  "dioErrorReceiveTimeout": "接收超时",
   "dioErrorResponse": "服务器响应错误",
   "dioErrorCancel": "响应被取消",
   "dioErrorOther": "解析或者其他错误",
+  "dioErrorBadCertificate": "HTTPS证书错误",
+  "dioErrorBadResponse": "响应出现了问题",
+  "dioErrorConnectionError": "连接出错",
   "mobileTemplateNotFound": "此界面更适合使用网页访问",
   "navigateToWebPage": "在网页中继续",
   "useGoogleAnalyticsTitle": "谷歌统计已开启",
@@ -681,5 +684,12 @@
   "pictureBedImgloc": "imgloc.com",
   "cheveretoPictureBed": "基于chevereto服务的",
   "cheveretoApiKey": "密钥",
-  "cheveretoApiDescription": "Chevereto密钥可以由已经注册的用户生成。使用此密钥可以允许应用向您的图床上传照片并嵌入到论坛中。"
+  "cheveretoApiDescription": "Chevereto密钥可以由已经注册的用户生成。使用此密钥可以允许应用向您的图床上传照片并嵌入到论坛中。",
+  "pushServiceSiteNotSupport": "{discuz}并未启用推送服务",
+  "@pushServiceSiteNotSupport": {
+    "placeholders": {
+      "discuz": {}
+    }
+  },
+  "viewPushServiceHomePage": "关于推送服务 ↗️"
 }

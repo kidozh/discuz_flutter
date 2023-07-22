@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/PushTokenListResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
@@ -10,6 +11,9 @@ import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/PushServiceUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
+import 'package:discuz_flutter/utility/URLUtils.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -59,6 +63,8 @@ class PushServiceState extends State<PushServiceStateWidget>{
   bool _enableRefresh = true;
   PushTokenChannel? pushTokenChannel = null;
 
+  bool _isSupportPushService = true;
+
 
   @override
   void initState() {
@@ -89,7 +95,41 @@ class PushServiceState extends State<PushServiceStateWidget>{
           else{
             Discuz discuz = discuzAndUser.discuz!;
             User user = discuzAndUser.user!;
+            if(!_isSupportPushService){
+              // display a page which does not support DHP
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: Icon(PlatformIcons(context).error,color: Theme.of(context).colorScheme.error,size: 64,),
+                  ),
+                  SizedBox(height: 16,),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
 
+                    children: [
+                      //Text(discuzError.content, style: Theme.of(context).textTheme.headlineSmall),
+                      Text(S.of(context).pushServiceSiteNotSupport(discuz.siteName), style: Theme.of(context).textTheme.bodyMedium,),
+
+                    ],
+                  ),
+                  SizedBox(height: 24,),
+                  PlatformElevatedButton(
+                    child: Text(S.of(context).viewPushServiceHomePage),
+                    onPressed: (){
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      URLUtils.launchURL("https://dhp.kidozh.com");
+                    },
+                  )
+
+
+                ],
+              );
+            }
             // start to trigger
             return EasyRefresh(
               header: EasyRefreshUtils.i18nClassicHeader(context),
@@ -109,7 +149,7 @@ class PushServiceState extends State<PushServiceStateWidget>{
                   return Card(
                     color: Theme.of(context).primaryColor,
                     child: ListTile(
-                      textColor: Theme.of(context).primaryTextTheme.bodyText1?.color,
+                      textColor: Theme.of(context).primaryTextTheme.bodyLarge?.color,
                       title: Text(result.list[index].deviceName),
                       subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, result.list[index].updateAt)),
                       trailing: result.list[index].token == pushTokenChannel?.token? Icon(AppPlatformIcons(context).thisDeviceSolid, color: Theme.of(context).primaryTextTheme.bodyText1?.color,): null,
@@ -164,6 +204,12 @@ class PushServiceState extends State<PushServiceStateWidget>{
     }).catchError((e,StackTrace stackTrace){
       log(stackTrace.toString());
       EasyLoading.showError(S.of(context).siteDoesNotSupportPushService);
+      if(mounted){
+        setState(() {
+          _isSupportPushService = false;
+        });
+      }
+
     });
   }
 

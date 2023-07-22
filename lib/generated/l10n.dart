@@ -4251,6 +4251,36 @@ class S {
     );
   }
 
+  /// `Bad certificate`
+  String get dioErrorBadCertificate {
+    return Intl.message(
+      'Bad certificate',
+      name: 'dioErrorBadCertificate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Bad response`
+  String get dioErrorBadResponse {
+    return Intl.message(
+      'Bad response',
+      name: 'dioErrorBadResponse',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connection error`
+  String get dioErrorConnectionError {
+    return Intl.message(
+      'Connection error',
+      name: 'dioErrorConnectionError',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `This page is optimized for web view.`
   String get mobileTemplateNotFound {
     return Intl.message(
@@ -4716,6 +4746,26 @@ class S {
     return Intl.message(
       'The chevereto API key is created by user and usually started with chv_, where you can upload your picture to the hosting site.',
       name: 'cheveretoApiDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{discuz} may not support push service`
+  String pushServiceSiteNotSupport(Object discuz) {
+    return Intl.message(
+      '$discuz may not support push service',
+      name: 'pushServiceSiteNotSupport',
+      desc: '',
+      args: [discuz],
+    );
+  }
+
+  /// `About push service ↗️`
+  String get viewPushServiceHomePage {
+    return Intl.message(
+      'About push service ↗️',
+      name: 'viewPushServiceHomePage',
       desc: '',
       args: [],
     );
