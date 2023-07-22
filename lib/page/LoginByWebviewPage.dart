@@ -42,8 +42,8 @@ class LoginByWebviewStatefulWidget extends StatefulWidget {
 }
 
 class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
-  final Completer<WebViewController> _controller = Completer<WebViewController>();
   final webviewCookieManager = WebviewCookieManager();
+  WebViewController _controller = WebViewController();
 
 
   final Discuz discuz;
@@ -53,9 +53,38 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
   @override
   void initState() {
     super.initState();
-    if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
     webviewCookieManager.clearCookies();
     _triggerNotificationDialog();
+    _loadWidgetControllerSetting();
+
+  }
+
+  void _loadWidgetControllerSetting(){
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (String url) {
+            print('Page started loading: $url');
+            setState(() {
+              websiteLoaded = false;
+            });
+          },
+          onPageFinished: (String url) async{
+            print('Page finished loading: $url');
+            setState(() {
+              websiteLoaded = true;
+            });
+            final gotCookies = await webviewCookieManager.getCookies(url);
+
+            // for (var item in gotCookies) {
+            //   print(item);
+            // }
+          },
+        )
+      );
+
+    _controller.loadRequest(Uri.parse(discuz.baseURL+"/member.php?mod=logging&action=login"));
   }
 
   bool websiteLoaded = false;
@@ -87,45 +116,8 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
         ],
       ),
       body: Builder(builder: (BuildContext context) {
-        return WebView(
-          initialUrl: discuz.baseURL+"/member.php?mod=logging&action=login",
-          javascriptMode: JavascriptMode.unrestricted,
-          onWebViewCreated: (WebViewController webViewController) async{
-            _controller.complete(webViewController);
-
-          },
-          onProgress: (int progress) {
-            print("WebView is loading (progress : $progress%)");
-          },
-          javascriptChannels: <JavascriptChannel>{
-
-          },
-          navigationDelegate: (NavigationRequest request) {
-            if (request.url.startsWith('https://www.youtube.com/')) {
-              print('blocking navigation to $request}');
-              return NavigationDecision.prevent;
-            }
-            print('allowing navigation to $request');
-            return NavigationDecision.navigate;
-          },
-          onPageStarted: (String url) {
-            print('Page started loading: $url');
-            setState(() {
-              websiteLoaded = false;
-            });
-          },
-          onPageFinished: (String url) async{
-            print('Page finished loading: $url');
-            setState(() {
-              websiteLoaded = true;
-            });
-            final gotCookies = await webviewCookieManager.getCookies(url);
-
-            // for (var item in gotCookies) {
-            //   print(item);
-            // }
-          },
-          gestureNavigationEnabled: true,
+        return WebViewWidget(
+          controller: _controller,
         );
       }),
       //floatingActionButton: checkButton(),
@@ -133,22 +125,14 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
   }
 
   Widget checkButton() {
-    return FutureBuilder<WebViewController>(
-        future: _controller.future,
-        builder: (BuildContext context,
-            AsyncSnapshot<WebViewController> controller) {
-          if (controller.hasData) {
-            return FloatingActionButton(
-              onPressed: () async {
-                // final String url = (await controller.data!.currentUrl())!;
-                // ignore: deprecated_member_use
-                _checkUserLogined();
-              },
-              child: const Icon(Icons.login),
-            );
-          }
-          return Container();
-        });
+    return FloatingActionButton(
+      onPressed: () async {
+        // final String url = (await controller.data!.currentUrl())!;
+        // ignore: deprecated_member_use
+        _checkUserLogined();
+      },
+      child: const Icon(Icons.login),
+    );
   }
 
   void _triggerNotificationDialog() async{
@@ -175,7 +159,6 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
 
   void _checkUserLogined() async{
     Dio _dio = Dio();
-    var controller = await _controller.future;
     // trigger an alert
     EasyLoading.showInfo(S.of(context).checkUserLoginStatus);
     // transfer from webview to cookiejar

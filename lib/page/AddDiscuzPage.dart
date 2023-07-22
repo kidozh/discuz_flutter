@@ -92,10 +92,10 @@ class _AddDiscuzFormFieldState
       setState(() {
         _isLoading = false;
       });
-      if(onError is DioError){
+      if(onError is DioException){
         //log("GET ADD discuz error ${onError}");
-        DioError dioError = onError;
-        error = DiscuzError(dioError.type.name, dioError.message, dioError: dioError);
+        DioException dioError = onError;
+        error = DiscuzError(dioError.type.name, dioError.message==null?S.of(context).error: dioError.message!, dioError: dioError);
       }
       else{
         //log("GET ADD discuz error NOT in DIO ${onError}");

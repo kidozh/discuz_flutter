@@ -113,17 +113,21 @@ class ErrorCard extends StatelessWidget{
     }
     else if(discuzError.dioError!=null){
       switch (discuzError.dioError!.type){
-        case DioErrorType.connectTimeout:
-          return S.of(context).dioErrorConnectionTimeout;
-        case DioErrorType.sendTimeout:
+        case DioExceptionType.sendTimeout:
           return S.of(context).dioErrorSendTimeout;
-        case DioErrorType.receiveTimeout:
+        case DioExceptionType.receiveTimeout:
           return S.of(context).dioErrorReceiveTimeout;
-        case DioErrorType.response:
-          return S.of(context).dioErrorResponse;
-        case DioErrorType.cancel:
+        case DioExceptionType.cancel:
           return S.of(context).dioErrorCancel;
-        case DioErrorType.other:
+        case DioExceptionType.connectionTimeout:
+          return S.of(context).dioErrorConnectionTimeout;
+        case DioExceptionType.badCertificate:
+          return S.of(context).dioErrorOther;
+        case DioExceptionType.badResponse:
+          return S.of(context).dioErrorOther;
+        case DioExceptionType.connectionError:
+          return S.of(context).dioErrorOther;
+        case DioExceptionType.unknown:
           return S.of(context).dioErrorOther;
       }
     }
@@ -141,17 +145,21 @@ class ErrorCard extends StatelessWidget{
     }
     else if(discuzError.dioError!=null){
       switch (discuzError.dioError!.type){
-        case DioErrorType.connectTimeout:
-          return Icons.explore_off_outlined;
-        case DioErrorType.sendTimeout:
+        case DioExceptionType.sendTimeout:
           return Icons.access_time;
-        case DioErrorType.receiveTimeout:
+        case DioExceptionType.receiveTimeout:
           return Icons.history_toggle_off_outlined;
-        case DioErrorType.response:
-          return Icons.sms_failed_outlined;
-        case DioErrorType.cancel:
+        case DioExceptionType.cancel:
           return Icons.cancel_outlined;
-        case DioErrorType.other:
+        case DioExceptionType.connectionTimeout:
+          return Icons.explore_off_outlined;
+        case DioExceptionType.badCertificate:
+          return Icons.key_off_outlined;
+        case DioExceptionType.badResponse:
+          return Icons.sms_failed_outlined;
+        case DioExceptionType.connectionError:
+          return Icons.sync_problem_outlined;
+        case DioExceptionType.unknown:
           return Icons.error_outline;
       }
     }

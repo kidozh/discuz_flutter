@@ -132,13 +132,13 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       }
     }).catchError((onError) {
       switch (onError.runtimeType) {
-        case DioError:
+        case DioException:
           {
-            DioError dioError = onError;
+            DioException dioError = onError;
             log("${dioError.message} >-> ${dioError.type}");
             EasyLoading.showError("${dioError.message} (${dioError})");
             setState(() {
-              _error = DiscuzError(dioError.message, dioError.type.name,
+              _error = DiscuzError(dioError.message==null?S.of(context).error: dioError.message!, dioError.type.name,
                   dioError: dioError);
             });
 

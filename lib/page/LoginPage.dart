@@ -218,12 +218,12 @@ class _LoginFormFieldState
 
       switch (onError.runtimeType) {
 
-        case DioError:
+        case DioException:
           {
-            DioError dioError = onError;
+            DioException dioError = onError;
             setState((){
               error =
-                  DiscuzError(dioError.message,dioError.type.name, dioError: dioError);
+                  DiscuzError(dioError.message==null?S.of(context).error: dioError.message!,dioError.type.name, dioError: dioError);
             });
             break;
           }

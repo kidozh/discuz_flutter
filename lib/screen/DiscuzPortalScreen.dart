@@ -136,14 +136,14 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
 
       _controller.finishLoad(IndicatorResult.fail);
       switch (onError.runtimeType) {
-        case DioError:
+        case DioException:
           {
-            DioError dioError = onError;
+            DioException dioError = onError;
             log("${dioError.message} >-> ${dioError.type}");
             EasyLoading.showError("${dioError.message} (${dioError})");
             setState((){
               _error =
-                  DiscuzError(dioError.message,dioError.type.name, dioError: dioError);
+                  DiscuzError(dioError.message==null?S.of(context).error: dioError.message!,dioError.type.name, dioError: dioError);
             });
 
             break;

@@ -159,10 +159,8 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
   User? _user;
   final ValueChanged<int>? onSelectTid;
 
-
-  final Completer<WebViewController> _controller =
-  Completer<WebViewController>();
   final webviewCookieManager = WebviewCookieManager();
+  WebViewController _controller = WebViewController();
 
   String? initialURL;
 
@@ -174,7 +172,7 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
 
   InnerWebviewState(this._discuz,this._user,{this.initialURL, this.onSelectTid});
 
-  void loadCookieByUser(Discuz _discuz,User? _user) async {
+  void loadCookieByUser(Discuz _discuz,User? _user, String initialURL) async {
     if(_user!=null){
       PersistCookieJar savedCookieJar = await NetworkUtils.getPersistentCookieJarByUser(_user);
       List<Cookie> cookies =
@@ -186,9 +184,50 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
       webviewCookieManager.clearCookies();
     }
 
+
+    _controller = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setNavigationDelegate(
+          NavigationDelegate(
+            onProgress: (int progress) {
+              setState(() {
+                this.progress = progress;
+              });
+              print("WebView is loading (progress : $progress%)");
+            },
+            onNavigationRequest: (NavigationRequest request){
+              return NavigationDecision.navigate;
+            },
+            onPageStarted: (String url) {
+              VibrationUtils.vibrateWithClickIfPossible();
+              print('Page started loading: $url');
+            },
+            onPageFinished: (String url) async {
+              setState(() {
+                progress = 0;
+              });
+
+
+              String? title = await _controller.getTitle();
+              setState(() {
+                webTitle = title;
+              });
+              print('Page finished loading: $url');
+              // check for if link is parsable
+              VibrationUtils.vibrateWithClickIfPossible();
+              checkIfLinkIsParsable(context, url);
+
+            },
+
+
+          )
+        );
+
     setState(() {
       cookieLoaded = true;
     });
+
+    _controller.loadRequest(Uri.parse(initialURL));
 
   }
 
@@ -196,18 +235,14 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
   void initState() {
     //log("ExploreWebsite Inner onSelectTid: ${onSelectTid}");
     super.initState();
-    if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
 
-    if(_discuz != null){
-      loadCookieByUser(_discuz, _user);
-      if(initialURL == null){
-        initialURL = _discuz.baseURL;
-      }
+
+    if(initialURL == null){
+      initialURL = _discuz.baseURL;
 
     }
-    else{
-      initialURL = "https://discuzhub.kidozh.com";
-    }
+    loadCookieByUser(_discuz, _user, initialURL!);
+
   }
 
   @override
@@ -223,67 +258,13 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
               value: progress/100,
             ),
           Expanded(
-              child: WebView(
-                initialUrl: initialURL,
-                javascriptMode: JavascriptMode.unrestricted,
-                onWebViewCreated: (WebViewController webViewController) async {
-                  _controller.complete(webViewController);
-                },
-                onProgress: (int progress) {
-                  setState(() {
-                    this.progress = progress;
-                  });
-                  print("WebView is loading (progress : $progress%)");
-                },
-                javascriptChannels: <JavascriptChannel>{
-                  _toasterJavascriptChannel(context),
-                },
-                navigationDelegate: (NavigationRequest request) {
-                  // if (request.url.startsWith('https://www.youtube.com/')) {
-                  //   print('blocking navigation to $request}');
-                  //   return NavigationDecision.prevent;
-                  // }
-                  print('allowing navigation to $request');
-                  return NavigationDecision.navigate;
-                },
-                onPageStarted: (String url) {
-
-                  print('Page started loading: $url');
-
-
-
-                },
-                onPageFinished: (String url) async {
-                  setState(() {
-                    progress = 0;
-                  });
-
-                  var controller = await _controller.future;
-                  String? title = await controller.getTitle();
-                  setState(() {
-                    webTitle = title;
-                  });
-                  print('Page finished loading: $url');
-                  // check for if link is parsable
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  checkIfLinkIsParsable(context, url);
-
-                },
-                gestureNavigationEnabled: true,
+              child: WebViewWidget(
+                controller: _controller,
               ))
         ],
       );
     }
 
-  }
-
-  JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
-    return JavascriptChannel(
-        name: 'Toaster',
-        onMessageReceived: (JavascriptMessage message) {
-          // ignore: deprecated_member_use
-
-        });
   }
 
   void checkIfLinkIsParsable(BuildContext context,String urlString) async{

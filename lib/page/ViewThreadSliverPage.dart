@@ -526,13 +526,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
       log("${onError} ${stack}");
       _controller.finishRefresh();
-      if(onError is DioError){
-        DioError dioError = onError;
+      if(onError is DioException){
+        DioException dioError = onError;
         log("DIOERROR ${dioError.message} >-> ${dioError.type}");
         EasyLoading.showError("${dioError.message} (${dioError})");
         setState((){
           _error =
-              DiscuzError(dioError.type.name,dioError.message, dioError: dioError);
+              DiscuzError(dioError.type.name,dioError.message==null?S.of(context).error: dioError.message!, dioError: dioError);
         });
       }
       else{
