@@ -1,5 +1,6 @@
 
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -174,9 +175,12 @@ class PushServiceUtils{
 
     // Handle notification taps
     Push.instance.onNotificationTap.listen((data) {
-      print("Handle the data ${data["payload"]}");
+      print("Handle the data ${data["payload"]} RAW ${data}");
       if(data["payload"] != null){
         _handleMessage(jsonDecode(data["payload"] as String),navigatorKey);
+      }
+      else{
+        _handleMessage(data, navigatorKey);
       }
 
     });
@@ -229,6 +233,27 @@ class PushServiceUtils{
         break;
 
       }
+      // for RSS
+      case 'RSS_FEED':{
+        if(_discuz!=null){
+          List<User> _userList = _userDao.findAllUsers();
+          User? _user = _userList.length == 0? null: _userList.first;
+
+          print("Receive user ${_user}");
+          if(navigatorKey.currentState!=null && navigatorKey.currentState?.context!=null){
+
+            // set to current discuz now
+            Provider.of<DiscuzAndUserNotifier>(navigatorKey.currentState!.context, listen: false)
+                .initDiscuz(_discuz);
+            Navigator.push(
+                navigatorKey.currentState!.context,
+                platformPageRoute(
+                    context: navigatorKey.currentState!.context,
+                    builder: (context) => ViewThreadSliverPage(_discuz, _user, tid)));
+          }
+        }
+        break;
+      }
     }
   }
 
@@ -271,6 +296,8 @@ class PushServiceUtils{
       }
       else{
         print("No user found!!!");
+        // will regard it as common message
+        makeCommonThreadNotification(discuz, data);
       }
     }
     else{
@@ -318,9 +345,11 @@ class PushServiceUtils{
       }
       else{
         print("No user found!!!");
+        makeCommonThreadNotification(discuz, data);
       }
     }
     else{
+
       print("No Discuz found!!!");
     }
     return;
@@ -388,6 +417,40 @@ class PushServiceUtils{
       data["message"],
       platformChannelSpecifics,
       payload: jsonEncode(data)
+    );
+
+  }
+
+  static Future<void> makeCommonThreadNotification(Discuz discuz, Map<String, dynamic> data) async{
+    print("Make common notification ${data}");
+    DarwinNotificationDetails iOSPlatformChannelSpecifics = DarwinNotificationDetails(
+        presentAlert: true,  // Present an alert when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
+        presentBadge: true,  // Present the badge number when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
+        presentSound: false,  // Play a sound when the notification is displayed and the application is in the foreground (only from iOS 10 onwards)
+        sound: null,  // Specifics the file path to play (only from iOS 10 onwards)
+        badgeNumber: null, // The application's icon badge number
+        attachments: [],
+        subtitle: "", //Secondary description  (only from iOS 10 onwards)
+        threadIdentifier: "s"
+    );
+
+    AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      discuz.baseURL,   //Required for Android 8.0 or after
+      discuz.siteName, //Required for Android 8.0 or after
+      channelDescription: discuz.siteName, //Required for Android 8.0 or after
+    );
+
+    NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
+    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = await initFirebaseLocalNotification();
+    int? tid = int.tryParse(data["tid"]);
+
+    await flutterLocalNotificationsPlugin.show(
+        tid == null? 0 : tid,
+        data["title"],
+        data["message"],
+        platformChannelSpecifics,
+        payload: jsonEncode(data)
     );
 
   }
