@@ -35,7 +35,7 @@ NewThread _$NewThreadFromJson(Map<String, dynamic> json) => NewThread()
           .fromJson(json['attachmentImageNumber'] as String?)
   ..attachmentImagePreviewList =
       (json['attachmentImagePreviewList'] as List<dynamic>?)
-              ?.map((e) => AttachmentPreview.fromJson(e))
+              ?.map(AttachmentPreview.fromJson)
               .toList() ??
           [];
 

@@ -26,7 +26,7 @@ class _MobileApiClient implements MobileApiClient {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'Content-Type': 'application/json'};
     _headers.removeWhere((k, v) => v == null);
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<CheckResult>(Options(
       method: 'GET',
@@ -40,7 +40,11 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = CheckResult.fromJson(_result.data!);
     return value;
   }
@@ -51,7 +55,7 @@ class _MobileApiClient implements MobileApiClient {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'Content-Type': 'application/json'};
     _headers.removeWhere((k, v) => v == null);
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
       method: 'GET',
       headers: _headers,
@@ -64,18 +68,22 @@ class _MobileApiClient implements MobileApiClient {
           queryParameters: queryParameters,
           data: _data,
         )
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
     final value = _result.data!;
     return value;
   }
 
   @override
   Future<LoginResult> sendLoginRequest(
-    username,
-    password,
-    captchaHash,
-    captchaType,
-    verification,
+    String username,
+    String password,
+    String captchaHash,
+    String captchaType,
+    String verification,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -100,18 +108,22 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = LoginResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<String> sendLoginRequestInString(
-    username,
-    password,
-    captchaHash,
-    captchaType,
-    verification,
+    String username,
+    String password,
+    String captchaHash,
+    String captchaType,
+    String verification,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -135,7 +147,11 @@ class _MobileApiClient implements MobileApiClient {
           queryParameters: queryParameters,
           data: _data,
         )
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
     final value = _result.data!;
     return value;
   }
@@ -145,7 +161,7 @@ class _MobileApiClient implements MobileApiClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<DiscuzIndexResult>(Options(
       method: 'GET',
@@ -158,7 +174,11 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = DiscuzIndexResult.fromJson(_result.data!);
     return value;
   }
@@ -168,7 +188,7 @@ class _MobileApiClient implements MobileApiClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
       method: 'GET',
       headers: _headers,
@@ -180,16 +200,20 @@ class _MobileApiClient implements MobileApiClient {
           queryParameters: queryParameters,
           data: _data,
         )
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
     final value = _result.data!;
     return value;
   }
 
   @override
   Future<DisplayForumResult> displayForumResult(
-    fid,
-    page,
-    queries,
+    String fid,
+    int page,
+    Map<String, dynamic> queries,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -198,7 +222,7 @@ class _MobileApiClient implements MobileApiClient {
     };
     queryParameters.addAll(queries);
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<DisplayForumResult>(Options(
       method: 'GET',
@@ -211,16 +235,20 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = DisplayForumResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<String> displayForumRaw(
-    fid,
-    page,
-    queries,
+    String fid,
+    int page,
+    Map<String, dynamic> queries,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -229,7 +257,7 @@ class _MobileApiClient implements MobileApiClient {
     };
     queryParameters.addAll(queries);
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
       method: 'GET',
       headers: _headers,
@@ -241,16 +269,20 @@ class _MobileApiClient implements MobileApiClient {
           queryParameters: queryParameters,
           data: _data,
         )
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
     final value = _result.data!;
     return value;
   }
 
   @override
   Future<ViewThreadResult> viewThreadResult(
-    tid,
-    page,
-    queries,
+    int tid,
+    int page,
+    Map<String, dynamic> queries,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -259,7 +291,7 @@ class _MobileApiClient implements MobileApiClient {
     };
     queryParameters.addAll(queries);
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<ViewThreadResult>(Options(
       method: 'GET',
@@ -272,16 +304,20 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = ViewThreadResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<String> viewThreadRaw(
-    tid,
-    page,
-    queries,
+    int tid,
+    int page,
+    Map<String, dynamic> queries,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -290,7 +326,7 @@ class _MobileApiClient implements MobileApiClient {
     };
     queryParameters.addAll(queries);
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
       method: 'GET',
       headers: _headers,
@@ -302,21 +338,25 @@ class _MobileApiClient implements MobileApiClient {
           queryParameters: queryParameters,
           data: _data,
         )
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
     final value = _result.data!;
     return value;
   }
 
   @override
   Future<String> sendReplyRaw(
-    fid,
-    tid,
-    formhash,
-    message,
-    captchaHash,
-    captchaType,
-    verification,
-    queries,
+    int fid,
+    int tid,
+    String formhash,
+    String message,
+    String captchaHash,
+    String captchaType,
+    String verification,
+    Map<String, dynamic> queries,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -343,24 +383,28 @@ class _MobileApiClient implements MobileApiClient {
           queryParameters: queryParameters,
           data: _data,
         )
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
     final value = _result.data!;
     return value;
   }
 
   @override
   Future<ApiResult> sendReplyResult(
-    fid,
-    tid,
-    formhash,
-    replyPostId,
-    replyPId,
-    notifyTriPostMessage,
-    message,
-    captchaHash,
-    captchaType,
-    verification,
-    queries,
+    int fid,
+    int tid,
+    String formhash,
+    int? replyPostId,
+    int? replyPId,
+    String? notifyTriPostMessage,
+    String message,
+    String captchaHash,
+    String captchaType,
+    String verification,
+    Map<String, dynamic> queries,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'repquote': replyPId};
@@ -392,17 +436,21 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = ApiResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<String> userNotificationRaw(page) async {
+  Future<String> userNotificationRaw(int page) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
       method: 'GET',
       headers: _headers,
@@ -414,17 +462,21 @@ class _MobileApiClient implements MobileApiClient {
           queryParameters: queryParameters,
           data: _data,
         )
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
     final value = _result.data!;
     return value;
   }
 
   @override
-  Future<UserDiscuzNotificationResult> userNotificationResult(page) async {
+  Future<UserDiscuzNotificationResult> userNotificationResult(int page) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<UserDiscuzNotificationResult>(Options(
       method: 'GET',
@@ -437,17 +489,21 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = UserDiscuzNotificationResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<String> hotThreadRaw(page) async {
+  Future<String> hotThreadRaw(int page) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
       method: 'GET',
       headers: _headers,
@@ -459,17 +515,21 @@ class _MobileApiClient implements MobileApiClient {
           queryParameters: queryParameters,
           data: _data,
         )
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
     final value = _result.data!;
     return value;
   }
 
   @override
-  Future<HotThreadResult> hotThreadResult(page) async {
+  Future<HotThreadResult> hotThreadResult(int page) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<HotThreadResult>(Options(
       method: 'GET',
@@ -482,17 +542,21 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = HotThreadResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<CaptchaResult> captchaResult(type) async {
+  Future<CaptchaResult> captchaResult(String type) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'type': type};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<CaptchaResult>(Options(
       method: 'GET',
@@ -505,17 +569,21 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = CaptchaResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<ApiResult> votePoll(
-    fid,
-    tid,
-    formHash,
-    checkedOptionId,
+    int fid,
+    int tid,
+    String formHash,
+    List<int> checkedOptionId,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -540,17 +608,21 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = ApiResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<String> votePollRaw(
-    fid,
-    tid,
-    formHash,
-    checkedOptionId,
+    int fid,
+    int tid,
+    String formHash,
+    List<int> checkedOptionId,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -574,7 +646,11 @@ class _MobileApiClient implements MobileApiClient {
           queryParameters: queryParameters,
           data: _data,
         )
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
     final value = _result.data!;
     return value;
   }
@@ -584,7 +660,7 @@ class _MobileApiClient implements MobileApiClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<CheckLoginResult>(Options(
       method: 'GET',
@@ -597,17 +673,21 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = CheckLoginResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<UserProfileResult> userProfileResult(uid) async {
+  Future<UserProfileResult> userProfileResult(int uid) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'uid': uid};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<UserProfileResult>(Options(
       method: 'GET',
@@ -620,17 +700,21 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = UserProfileResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<String> userProfileResultRaw(uid) async {
+  Future<String> userProfileResultRaw(int uid) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'uid': uid};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
       method: 'GET',
       headers: _headers,
@@ -642,7 +726,11 @@ class _MobileApiClient implements MobileApiClient {
           queryParameters: queryParameters,
           data: _data,
         )
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
     final value = _result.data!;
     return value;
   }
@@ -652,7 +740,7 @@ class _MobileApiClient implements MobileApiClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<SmileyResult>(Options(
       method: 'GET',
@@ -665,17 +753,22 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = SmileyResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<PrivateMessagePortalResult> privateMessagePortalResult(page) async {
+  Future<PrivateMessagePortalResult> privateMessagePortalResult(
+      int page) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<PrivateMessagePortalResult>(Options(
       method: 'GET',
@@ -688,15 +781,19 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = PrivateMessagePortalResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<PrivateMessageDetailResult> privateMessageDetailResult(
-    toUid,
-    page,
+    int toUid,
+    int page,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -704,7 +801,7 @@ class _MobileApiClient implements MobileApiClient {
       r'page': page,
     };
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<PrivateMessageDetailResult>(Options(
       method: 'GET',
@@ -717,16 +814,20 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = PrivateMessageDetailResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<ApiResult> sendPrivateMessageResult(
-    formHash,
-    message,
-    toUid,
+    String formHash,
+    String message,
+    int toUid,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -749,17 +850,21 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = ApiResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<PublicMessagePortalResult> publicMessagePortalResult(page) async {
+  Future<PublicMessagePortalResult> publicMessagePortalResult(int page) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<PublicMessagePortalResult>(Options(
       method: 'GET',
@@ -772,17 +877,21 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = PublicMessagePortalResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<FavoriteThreadResult> favoriteThreadResult(page) async {
+  Future<FavoriteThreadResult> favoriteThreadResult(int page) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<FavoriteThreadResult>(Options(
       method: 'GET',
@@ -795,16 +904,20 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = FavoriteThreadResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<String> uploadImage(
-    uid,
-    uploadHash,
-    file,
+    int uid,
+    String uploadHash,
+    File file,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -837,15 +950,19 @@ class _MobileApiClient implements MobileApiClient {
           queryParameters: queryParameters,
           data: _data,
         )
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
     final value = _result.data!;
     return value;
   }
 
   @override
   Future<CheckPostResult> checkPost(
-    fid,
-    tid,
+    int? fid,
+    int? tid,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -854,7 +971,7 @@ class _MobileApiClient implements MobileApiClient {
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<CheckPostResult>(Options(
       method: 'GET',
@@ -867,18 +984,22 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = CheckPostResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<String> reportContent(
-    formHash,
-    report_select,
-    message,
-    rtype,
-    rid,
+    String formHash,
+    String report_select,
+    String message,
+    String rtype,
+    int rid,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -902,15 +1023,19 @@ class _MobileApiClient implements MobileApiClient {
           queryParameters: queryParameters,
           data: _data,
         )
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
     final value = _result.data!;
     return value;
   }
 
   @override
   Future<ApiResult> favoriteThreadActionResult(
-    formhash,
-    tid,
+    String formhash,
+    int tid,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -932,15 +1057,19 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = ApiResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<ApiResult> unfavoriteThreadActionResult(
-    formhash,
-    favid,
+    String formhash,
+    int favid,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -962,17 +1091,21 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = ApiResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<FavoriteForumResult> favoriteForumResult(page) async {
+  Future<FavoriteForumResult> favoriteForumResult(int page) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<FavoriteForumResult>(Options(
       method: 'GET',
@@ -985,15 +1118,19 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = FavoriteForumResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<ApiResult> favoriteForumActionResult(
-    formhash,
-    fid,
+    String formhash,
+    int fid,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -1015,15 +1152,19 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = ApiResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<ApiResult> unfavoriteForumActionResult(
-    formhash,
-    favid,
+    String formhash,
+    int favid,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -1045,15 +1186,19 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = ApiResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<NewThreadResult> newThreadsResult(
-    fids,
-    start,
+    String fids,
+    int start,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -1061,7 +1206,7 @@ class _MobileApiClient implements MobileApiClient {
       r'start': start,
     };
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<NewThreadResult>(Options(
       method: 'GET',
@@ -1074,7 +1219,11 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = NewThreadResult.fromJson(_result.data!);
     return value;
   }
@@ -1084,7 +1233,7 @@ class _MobileApiClient implements MobileApiClient {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<PushTokenListResult>(Options(
       method: 'GET',
@@ -1097,18 +1246,22 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = PushTokenListResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<PostTokenResult> sendToken(
-    formHash,
-    token,
-    deviceName,
-    packageId,
-    pushChannel,
+    String formHash,
+    String token,
+    String deviceName,
+    String packageId,
+    String pushChannel,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -1133,23 +1286,27 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = PostTokenResult.fromJson(_result.data!);
     return value;
   }
 
   @override
   Future<ApiResult> postNewThread(
-    formhash,
-    fid,
-    typeId,
-    subject,
-    message,
-    captchaHash,
-    captchaType,
-    verification,
-    attachAid,
-    formMap,
+    String formhash,
+    int fid,
+    String typeId,
+    String subject,
+    String message,
+    String captchaHash,
+    String captchaType,
+    String verification,
+    List<String> attachAid,
+    Map<String, dynamic> formMap,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -1179,13 +1336,17 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = ApiResult.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<ApiResult> mobileSignResult(formhash) async {
+  Future<ApiResult> mobileSignResult(String formhash) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -1203,7 +1364,11 @@ class _MobileApiClient implements MobileApiClient {
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
     final value = ApiResult.fromJson(_result.data!);
     return value;
   }
@@ -1219,5 +1384,22 @@ class _MobileApiClient implements MobileApiClient {
       }
     }
     return requestOptions;
+  }
+
+  String _combineBaseUrls(
+    String dioBaseUrl,
+    String? baseUrl,
+  ) {
+    if (baseUrl == null || baseUrl.trim().isEmpty) {
+      return dioBaseUrl;
+    }
+
+    final url = Uri.parse(baseUrl);
+
+    if (url.isAbsolute) {
+      return url.toString();
+    }
+
+    return Uri.parse(dioBaseUrl).resolveUri(url).toString();
   }
 }

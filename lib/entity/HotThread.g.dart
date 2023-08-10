@@ -44,7 +44,7 @@ HotThread _$HotThreadFromJson(Map<String, dynamic> json) => HotThread()
           .fromJson(json['attachmentImageNumber'] as String?)
   ..attachmentImagePreviewList =
       (json['attachmentImagePreviewList'] as List<dynamic>?)
-              ?.map((e) => AttachmentPreview.fromJson(e))
+              ?.map(AttachmentPreview.fromJson)
               .toList() ??
           [];
 

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'CheveretoApiClient.dart';
+part of 'PushServiceClient.dart';
 
 // **************************************************************************
 // RetrofitGenerator
@@ -8,12 +8,12 @@ part of 'CheveretoApiClient.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers
 
-class _CheveretoApiClient implements CheveretoApiClient {
-  _CheveretoApiClient(
+class _PushServiceClient implements PushServiceClient {
+  _PushServiceClient(
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'https://sm.ms';
+    baseUrl ??= 'https://dhp.kidozh.com';
   }
 
   final Dio _dio;
@@ -21,25 +21,26 @@ class _CheveretoApiClient implements CheveretoApiClient {
   String? baseUrl;
 
   @override
-  Future<ChevertoUploadResult> uploadImageToChevereto(
-    String apiToken,
-    String base64String,
+  Future<SubscribeChannelResult> getAllChannelByHost(
+    String host,
+    String token,
   ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{r'X-API-Key': apiToken};
-    _headers.removeWhere((k, v) => v == null);
-    final _data = {'source': base64String};
+    final queryParameters = <String, dynamic>{
+      r'host': host,
+      r'token': token,
+    };
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<ChevertoUploadResult>(Options(
-      method: 'POST',
+        _setStreamType<SubscribeChannelResult>(Options(
+      method: 'GET',
       headers: _headers,
       extra: _extra,
-      contentType: 'application/x-www-form-urlencoded',
     )
             .compose(
               _dio.options,
-              '/api/1/upload/',
+              '/channel/api',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -48,7 +49,7 @@ class _CheveretoApiClient implements CheveretoApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = ChevertoUploadResult.fromJson(_result.data!);
+    final value = SubscribeChannelResult.fromJson(_result.data!);
     return value;
   }
 
