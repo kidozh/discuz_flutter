@@ -4770,6 +4770,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Push subscription`
+  String get subscribeChannel {
+    return Intl.message(
+      'Push subscription',
+      name: 'subscribeChannel',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

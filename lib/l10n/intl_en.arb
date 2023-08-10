@@ -690,5 +690,6 @@
       "discuz": {}
     }
   },
-  "viewPushServiceHomePage": "About push service ↗️"
+  "viewPushServiceHomePage": "About push service ↗️",
+  "subscribeChannel": "Push subscription"
 }

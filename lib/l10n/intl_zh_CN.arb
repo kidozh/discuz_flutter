@@ -691,5 +691,6 @@
       "discuz": {}
     }
   },
-  "viewPushServiceHomePage": "关于推送服务 ↗️"
+  "viewPushServiceHomePage": "关于推送服务 ↗️",
+  "subscribeChannel": "订阅推送"
 }

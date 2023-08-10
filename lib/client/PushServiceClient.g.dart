@@ -53,6 +53,125 @@ class _PushServiceClient implements PushServiceClient {
     return value;
   }
 
+  @override
+  Future<SubscribeChannelResult> changeSubscribeChannelByHost(
+    String host,
+    String token,
+    List<String> addId,
+    List<String> removeId,
+    String packageId,
+    String pushPlatform,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'host': host,
+      r'token': token,
+      r'add': addId,
+      r'remove': removeId,
+      r'packageId': packageId,
+      r'platform': pushPlatform,
+    };
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<SubscribeChannelResult>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/channel/api',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = SubscribeChannelResult.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<SubscribeChannelResult> setSubscribeChannelByHost(
+    String host,
+    String token,
+    List<String> channelList,
+    String packageId,
+    String pushPlatform,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'host': host,
+      r'token': token,
+      r'channel': channelList,
+      r'packageId': packageId,
+      r'platform': pushPlatform,
+    };
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<SubscribeChannelResult>(Options(
+      method: 'PUT',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/channel/api',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = SubscribeChannelResult.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<SubscribeChannelResult> deleteSubscribeChannelByHost(
+    String host,
+    String token,
+    List<String> channelList,
+    String packageId,
+    String pushPlatform,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'host': host,
+      r'token': token,
+      r'channel': channelList,
+      r'packageId': packageId,
+      r'platform': pushPlatform,
+    };
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<SubscribeChannelResult>(Options(
+      method: 'DELETE',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/channel/api',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = SubscribeChannelResult.fromJson(_result.data!);
+    return value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

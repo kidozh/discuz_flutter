@@ -725,6 +725,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "spam": MessageLookupByLibrary.simpleMessage("Spam"),
         "style": MessageLookupByLibrary.simpleMessage("Style"),
         "submitPoll": m33,
+        "subscribeChannel":
+            MessageLookupByLibrary.simpleMessage("Push subscription"),
         "successfullyDeleteViewHistoryContent": m34,
         "successfullyDownloadFiles": m35,
         "syncSuccessfullyWithServer": m36,
