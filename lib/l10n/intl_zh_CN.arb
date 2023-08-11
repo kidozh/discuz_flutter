@@ -708,5 +708,20 @@
   },
   "subscriptionSuccess": "成功同步至推送服务器",
   "pushServiceOff": "推送服务并未开启，请开启后再试试？",
-  "noDiscuzNotFound": "此设备上并未添加任何一个论坛站点。"
+  "noDiscuzNotFound": "此设备上并未添加任何一个论坛站点。",
+  "emailChannelTitle": "收录{discuz}到订阅频道中",
+  "@emailChannelTitle": {
+    "placeholders": {
+      "discuz": {}
+    }
+  },
+
+  "emailChannelBody": "我建议添加 {discuz}（{discuzUrl}）到订阅频道获得定时的推送。",
+  "@emailChannelBody": {
+    "placeholders": {
+      "discuz": {},
+      "discuzUrl": {}
+    }
+  },
+  "emailChannelFailed": "在此设备上无法发送邮件。你可以发送此站点信息到kidozh@gmail.com以添加此频道到订阅列表中。"
 }

@@ -707,5 +707,20 @@
   },
   "subscriptionSuccess": "Subscription change successful.",
   "pushServiceOff": "The push service is not on.",
-  "noDiscuzNotFound": "No discuz site is added to this device."
+  "noDiscuzNotFound": "No discuz site is added to this device.",
+  "emailChannelTitle": "Add {discuz} to subscription list",
+  "@emailChannelTitle": {
+    "placeholders": {
+      "discuz": {}
+    }
+  },
+
+  "emailChannelBody": "I hereby would like to add {discuz}({discuzUrl}) to subscription list",
+  "@emailChannelBody": {
+    "placeholders": {
+      "discuz": {},
+      "discuzUrl": {}
+    }
+  },
+  "emailChannelFailed": "Could not find mail app in this device. You could email us (kidozh@gmail.com) to add this site to the subscription list."
 }

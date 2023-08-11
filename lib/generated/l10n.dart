@@ -4840,6 +4840,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Add {discuz} to subscription list`
+  String emailChannelTitle(Object discuz) {
+    return Intl.message(
+      'Add $discuz to subscription list',
+      name: 'emailChannelTitle',
+      desc: '',
+      args: [discuz],
+    );
+  }
+
+  /// `I hereby would like to add {discuz}({discuzUrl}) to subscription list`
+  String emailChannelBody(Object discuz, Object discuzUrl) {
+    return Intl.message(
+      'I hereby would like to add $discuz($discuzUrl) to subscription list',
+      name: 'emailChannelBody',
+      desc: '',
+      args: [discuz, discuzUrl],
+    );
+  }
+
+  /// `Could not find mail app in this device. You could email us (kidozh@gmail.com) to add this site to the subscription list.`
+  String get emailChannelFailed {
+    return Intl.message(
+      'Could not find mail app in this device. You could email us (kidozh@gmail.com) to add this site to the subscription list.',
+      name: 'emailChannelFailed',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -15,6 +15,7 @@ import '../entity/Discuz.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../provider/UserPreferenceNotifierProvider.dart';
 import '../utility/AppPlatformIcons.dart';
+import '../utility/PushServiceUtils.dart';
 import 'SubscribeChannelPage.dart';
 
 class TestFlightBannerPage extends StatelessWidget{
@@ -62,28 +63,37 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent>{
                 child: Text(S.of(context).ok),
                 onPressed: () async {
                   VibrationUtils.vibrateWithClickIfPossible();
-                  FirebaseMessaging messaging = FirebaseMessaging.instance;
-                  NotificationSettings settings = await messaging.requestPermission(
-                    alert: true,
-                    announcement: false,
-                    badge: true,
-                    carPlay: false,
-                    criticalAlert: false,
-                    provisional: false,
-                    sound: true,
-                  );
 
-                  if (settings.authorizationStatus == AuthorizationStatus.authorized || settings.authorizationStatus == AuthorizationStatus.provisional){
-                    Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = true;
-                    await UserPreferencesUtils.putPushPreference(true);
-                    EasyLoading.showSuccess(S.of(context).pushServiceOnDescription);
+                  PushTokenChannel? pushTokenChannel = await PushServiceUtils.getPushToken(context);
+                  if(pushTokenChannel != null){
+                    FirebaseMessaging messaging = FirebaseMessaging.instance;
+                    NotificationSettings settings = await messaging.requestPermission(
+                      alert: true,
+                      announcement: false,
+                      badge: true,
+                      carPlay: false,
+                      criticalAlert: false,
+                      provisional: false,
+                      sound: true,
+                    );
+                    if (settings.authorizationStatus == AuthorizationStatus.authorized || settings.authorizationStatus == AuthorizationStatus.provisional){
+                      Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = true;
+                      await UserPreferencesUtils.putPushPreference(true);
+                      EasyLoading.showSuccess(S.of(context).pushServiceOnDescription);
+                    }
+                    else{
+                      EasyLoading.showInfo(S.of(context).pushNotificationPermissionNotAuthorized);
+                      Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = false;
+                      await UserPreferencesUtils.putPushPreference(false);
+                    }
+                    Navigator.of(context).pop();
                   }
                   else{
-                    EasyLoading.showInfo(S.of(context).pushNotificationPermissionNotAuthorized);
-                    Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = false;
-                    await UserPreferencesUtils.putPushPreference(false);
+                    EasyLoading.showError(S.of(context).pushDeviceNotSupportedDescription);
+                    Navigator.of(context).pop();
                   }
-                  Navigator.of(context).pop();
+
+
 
                 },
               ),
