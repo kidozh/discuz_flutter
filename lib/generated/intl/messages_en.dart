@@ -501,6 +501,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "newThread": MessageLookupByLibrary.simpleMessage("New"),
         "noCaptachaRequired":
             MessageLookupByLibrary.simpleMessage("No captcha needed."),
+        "noDiscuzNotFound": MessageLookupByLibrary.simpleMessage(
+            "No discuz site is added to this device."),
         "noFavoriteThreadInDb": MessageLookupByLibrary.simpleMessage(
             "No favorite thread is stored in your device"),
         "noImagePicked":
@@ -638,6 +640,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Privacy policy of push services"),
         "pushServiceEnableDescription": MessageLookupByLibrary.simpleMessage(
             "Do you wish to enable push service to receive the updated information?"),
+        "pushServiceOff":
+            MessageLookupByLibrary.simpleMessage("The push service is not on."),
         "pushServiceOnDescription": MessageLookupByLibrary.simpleMessage(
             "You are now able to get the updated information from supported Discuz."),
         "pushServiceSiteNotSupport": m28,
@@ -772,9 +776,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Unfavorite thread"),
         "updateAt": MessageLookupByLibrary.simpleMessage("Update at %T"),
         "upgrade_notification_subtitle": MessageLookupByLibrary.simpleMessage(
-            "The app now supports tablet layout."),
+            "You can subscribe to the channel now."),
         "upgrade_notification_title":
-            MessageLookupByLibrary.simpleMessage("Safe update"),
+            MessageLookupByLibrary.simpleMessage("Subscribe to channel"),
         "uploadCompressedImageToServer": MessageLookupByLibrary.simpleMessage(
             "Send compressed image(Recommended)"),
         "uploadImageError1": MessageLookupByLibrary.simpleMessage(

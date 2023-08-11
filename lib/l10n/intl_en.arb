@@ -505,8 +505,8 @@
   "hour": "H",
   "minute": "M",
   "second": "S",
-  "upgrade_notification_title": "Safe update",
-  "upgrade_notification_subtitle": "The app now supports tablet layout.",
+  "upgrade_notification_title": "Subscribe to channel",
+  "upgrade_notification_subtitle": "You can subscribe to the channel now.",
   "useMaterial3Title": "Use Material You design",
   "useMaterial3YesSubtitle": "Components that have been migrated to Material 3 will use new colors, typography and other features of Material 3.",
   "useMaterial3NoSubtitle": "App will use the Material 2 look and feel.",
@@ -705,5 +705,7 @@
       "discuz": {}
     }
   },
-  "subscriptionSuccess": "Subscription change successful."
+  "subscriptionSuccess": "Subscription change successful.",
+  "pushServiceOff": "The push service is not on.",
+  "noDiscuzNotFound": "No discuz site is added to this device."
 }

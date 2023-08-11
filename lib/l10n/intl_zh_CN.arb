@@ -505,8 +505,8 @@
   "hour": "时",
   "minute": "分",
   "second": "秒",
-  "upgrade_notification_title": "升级提醒",
-  "upgrade_notification_subtitle": "本次升级新增了平板预览模式，部分页面适配了平板操作。",
+  "upgrade_notification_title": "订阅论坛",
+  "upgrade_notification_subtitle": "开启推送服务后，在菜单 - 订阅推送中，你可以订阅论坛所属的频道，包括定期的RSS推送，编辑精选等信息。",
   "useMaterial3Title": "使用Material 3属性",
   "useMaterial3YesSubtitle": "迁移到 Material 3 的组件将使用 Material 3 的新颜色、排版和其他功能。",
   "useMaterial3NoSubtitle": "应用会使用 Material 2 的外观。",
@@ -706,5 +706,7 @@
       "discuz": {}
     }
   },
-  "subscriptionSuccess": "成功同步至推送服务器"
+  "subscriptionSuccess": "成功同步至推送服务器",
+  "pushServiceOff": "推送服务并未开启，请开启后再试试？",
+  "noDiscuzNotFound": "此设备上并未添加任何一个论坛站点。"
 }

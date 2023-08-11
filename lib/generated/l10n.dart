@@ -3281,20 +3281,20 @@ class S {
     );
   }
 
-  /// `Safe update`
+  /// `Subscribe to channel`
   String get upgrade_notification_title {
     return Intl.message(
-      'Safe update',
+      'Subscribe to channel',
       name: 'upgrade_notification_title',
       desc: '',
       args: [],
     );
   }
 
-  /// `The app now supports tablet layout.`
+  /// `You can subscribe to the channel now.`
   String get upgrade_notification_subtitle {
     return Intl.message(
-      'The app now supports tablet layout.',
+      'You can subscribe to the channel now.',
       name: 'upgrade_notification_subtitle',
       desc: '',
       args: [],
@@ -4816,6 +4816,26 @@ class S {
     return Intl.message(
       'Subscription change successful.',
       name: 'subscriptionSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The push service is not on.`
+  String get pushServiceOff {
+    return Intl.message(
+      'The push service is not on.',
+      name: 'pushServiceOff',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No discuz site is added to this device.`
+  String get noDiscuzNotFound {
+    return Intl.message(
+      'No discuz site is added to this device.',
+      name: 'noDiscuzNotFound',
       desc: '',
       args: [],
     );

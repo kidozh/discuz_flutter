@@ -425,6 +425,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "newThread": MessageLookupByLibrary.simpleMessage("最新发表"),
         "noCaptachaRequired":
             MessageLookupByLibrary.simpleMessage("不需要验证码验证信息。"),
+        "noDiscuzNotFound":
+            MessageLookupByLibrary.simpleMessage("此设备上并未添加任何一个论坛站点。"),
         "noFavoriteThreadInDb":
             MessageLookupByLibrary.simpleMessage("还没有收藏一个帖子"),
         "noImagePicked": MessageLookupByLibrary.simpleMessage("您可能没有选择任何一张图片。"),
@@ -542,6 +544,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushPrivacyPolicy": MessageLookupByLibrary.simpleMessage("推送服务隐私政策"),
         "pushServiceEnableDescription":
             MessageLookupByLibrary.simpleMessage("您是否想要打开推送通知功能以接收实时消息？"),
+        "pushServiceOff":
+            MessageLookupByLibrary.simpleMessage("推送服务并未开启，请开启后再试试？"),
         "pushServiceOnDescription":
             MessageLookupByLibrary.simpleMessage("您现在就可以接收来自已授权论坛的推送啦~"),
         "pushServiceSiteNotSupport": m28,
@@ -650,10 +654,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "unfavoriteThreadTooltip":
             MessageLookupByLibrary.simpleMessage("取消收藏帖子"),
         "updateAt": MessageLookupByLibrary.simpleMessage("更新于 %T"),
-        "upgrade_notification_subtitle":
-            MessageLookupByLibrary.simpleMessage("本次升级新增了平板预览模式，部分页面适配了平板操作。"),
+        "upgrade_notification_subtitle": MessageLookupByLibrary.simpleMessage(
+            "开启推送服务后，在菜单 - 订阅推送中，你可以订阅论坛所属的频道，包括定期的RSS推送，编辑精选等信息。"),
         "upgrade_notification_title":
-            MessageLookupByLibrary.simpleMessage("升级提醒"),
+            MessageLookupByLibrary.simpleMessage("订阅论坛"),
         "uploadCompressedImageToServer":
             MessageLookupByLibrary.simpleMessage("适当压缩的图片（推荐）"),
         "uploadImageError1": MessageLookupByLibrary.simpleMessage("不支持此类扩展名."),

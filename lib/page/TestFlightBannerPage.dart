@@ -11,7 +11,11 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
+import '../entity/Discuz.dart';
+import '../provider/DiscuzAndUserNotifier.dart';
 import '../provider/UserPreferenceNotifierProvider.dart';
+import '../utility/AppPlatformIcons.dart';
+import 'SubscribeChannelPage.dart';
 
 class TestFlightBannerPage extends StatelessWidget{
 
@@ -115,31 +119,49 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent>{
                 ),
               ),
               SizedBox(height: 16,),
-              Text(S.of(context).welcomeTitle, style: Theme.of(context).textTheme.headline6!.copyWith(
+              Text(S.of(context).welcomeTitle, style: Theme.of(context).textTheme.titleLarge!.copyWith(
                 fontSize: 30
               ),),
               SizedBox(height: 6,),
-              Text(S.of(context).welcomeSubtitle,style: Theme.of(context).textTheme.bodyText2!.copyWith(
+              Text(S.of(context).welcomeSubtitle,style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   fontSize: 18,
 
               ),textAlign: TextAlign.center,),
               SizedBox(height: 30,),
               Card(
 
-                color: Colors.green,
+                color: Colors.indigo,
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 4.0),
                   child: ListTile(
-                    leading: Icon(PlatformIcons(context).checkMarkCircled,color: Colors.white, size: 40,),
+                    leading: Icon(AppPlatformIcons(context).subscribeChannelSolid,color: Colors.white, size: 40,),
                     // leading: CircleAvatar(
                     //   backgroundColor: Colors.white,
                     //   child: Icon(PlatformIcons(context).checkMarkCircled,color: Colors.green),
                     // ),
-                    //title: Text(S.of(context).upgrade_notification_title, style: TextStyle(color: Colors.white),),
-                    title: Text(S.of(context).upgrade_notification_subtitle, style: TextStyle(color: Colors.white)),
+                    title: Text(S.of(context).upgrade_notification_title,
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(S.of(context).upgrade_notification_subtitle,
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.normal)
+                    ),
                     onTap: (){
                       VibrationUtils.vibrateWithClickIfPossible();
-                      URLUtils.launchURL("https://discuzhub.kidozh.com/dev-blog/");
+                      Discuz? discuz =
+                          Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+                      bool allowPush =
+                          Provider.of<UserPreferenceNotifierProvider>(context, listen: false).allowPush;
+                      if(discuz != null){
+                        if(allowPush){
+                          Navigator.push(context,platformPageRoute(context:context,builder: (context) => SubscribeChannelPage()));
+                        }
+                        else{
+                          EasyLoading.showError(S.of(context).pushServiceOff);
+                        }
+                      }
+                      else{
+                        EasyLoading.showError(S.of(context).noDiscuzNotFound);
+                      }
                     },
                   ),
                 ),

@@ -144,7 +144,7 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
           EasyLoading.showError(S.of(context).discuzOperationMessage(value.result, value.reason));
         }
         setState(() {
-          isSubmitting = true;
+          isSubmitting = false;
         });
       });
       
@@ -200,7 +200,7 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
                               ),
                             ),
                             Divider(),
-                            if(index == subscribeChannelResult.channelList.length - 1)
+                            if(index == subscribeChannelResult.channelList.length - 1 && isSubmitting == false)
                               PlatformElevatedButton(
                                 child: Text(S.of(context).subscribe),
                                 onPressed: (){
@@ -208,6 +208,8 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
                                   _subscribeChannels();
                                 },
                               ),
+                            if(index == subscribeChannelResult.channelList.length - 1 && isSubmitting == true)
+                              PlatformCircularProgressIndicator(),
 
                           ],
                         );
@@ -229,16 +231,14 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
                               style: Theme.of(context).textTheme.titleLarge,
                           ),
                           SizedBox(height: 32,),
-                          if(!isSubmitting)
-                            PlatformElevatedButton(
-                              child: Text(S.of(context).emailUsToAddChannel(discuzAndUser.discuz!.siteName)),
-                              onPressed: (){
-                                VibrationUtils.vibrateWithClickIfPossible();
+                          PlatformElevatedButton(
+                            child: Text(S.of(context).emailUsToAddChannel(discuzAndUser.discuz!.siteName)),
+                            onPressed: (){
+                              VibrationUtils.vibrateWithClickIfPossible();
 
                               },
-                            ),
-                          if(!isSubmitting)
-                            PlatformCircularProgressIndicator(),
+                          ),
+
                         ]
 
                       ),
