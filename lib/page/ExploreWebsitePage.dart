@@ -187,6 +187,7 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
 
     _controller = WebViewController()
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        
         ..setNavigationDelegate(
           NavigationDelegate(
             onProgress: (int progress) {
