@@ -245,6 +245,8 @@ class PushServiceUtils{
             // set to current discuz now
             Provider.of<DiscuzAndUserNotifier>(navigatorKey.currentState!.context, listen: false)
                 .initDiscuz(_discuz);
+            Provider.of<DiscuzAndUserNotifier>(navigatorKey.currentState!.context, listen: false)
+                .setUser(_user);
             Navigator.push(
                 navigatorKey.currentState!.context,
                 platformPageRoute(
