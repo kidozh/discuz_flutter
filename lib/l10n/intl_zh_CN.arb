@@ -692,5 +692,19 @@
     }
   },
   "viewPushServiceHomePage": "关于推送服务 ↗️",
-  "subscribeChannel": "订阅推送"
+  "subscribeChannel": "订阅推送",
+  "subscribe": "订阅",
+  "noSubscribeChannelProvided": "{discuz}目前还没有任何订阅消息",
+  "@noSubscribeChannelProvided": {
+    "placeholders": {
+      "discuz": {}
+    }
+  },
+  "emailUsToAddChannel": "通知我们收录{discuz}",
+  "@emailUsToAddChannel": {
+    "placeholders": {
+      "discuz": {}
+    }
+  },
+  "subscriptionSuccess": "成功同步至推送服务器"
 }

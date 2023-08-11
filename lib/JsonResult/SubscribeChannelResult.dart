@@ -14,6 +14,10 @@ class SubscribeChannelResult{
     SubscribeChannelResult();
 
     factory SubscribeChannelResult.fromJson(Map<String, dynamic> json) => _$SubscribeChannelResultFromJson(json);
+
+    bool isSuccess(){
+      return result == "success";
+    }
 }
 
 @JsonSerializable()
@@ -27,6 +31,7 @@ class SubscribeChannel{
   String type = "";
   String identification = "";
   String date = "";
+  String note = "";
   bool subscribe = false;
 
   SubscribeChannel();

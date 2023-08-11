@@ -4780,6 +4780,46 @@ class S {
       args: [],
     );
   }
+
+  /// `Subscribe`
+  String get subscribe {
+    return Intl.message(
+      'Subscribe',
+      name: 'subscribe',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No subscription channel exists for {discuz} now.`
+  String noSubscribeChannelProvided(Object discuz) {
+    return Intl.message(
+      'No subscription channel exists for $discuz now.',
+      name: 'noSubscribeChannelProvided',
+      desc: '',
+      args: [discuz],
+    );
+  }
+
+  /// `Notify us {discuz}`
+  String emailUsToAddChannel(Object discuz) {
+    return Intl.message(
+      'Notify us $discuz',
+      name: 'emailUsToAddChannel',
+      desc: '',
+      args: [discuz],
+    );
+  }
+
+  /// `Subscription change successful.`
+  String get subscriptionSuccess {
+    return Intl.message(
+      'Subscription change successful.',
+      name: 'subscriptionSuccess',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

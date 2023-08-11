@@ -691,5 +691,19 @@
     }
   },
   "viewPushServiceHomePage": "About push service ↗️",
-  "subscribeChannel": "Push subscription"
+  "subscribeChannel": "Push subscription",
+  "subscribe": "Subscribe",
+  "noSubscribeChannelProvided": "No subscription channel exists for {discuz} now.",
+  "@noSubscribeChannelProvided": {
+    "placeholders": {
+      "discuz": {}
+    }
+  },
+  "emailUsToAddChannel": "Notify us {discuz}",
+  "@emailUsToAddChannel": {
+    "placeholders": {
+      "discuz": {}
+    }
+  },
+  "subscriptionSuccess": "Subscription change successful."
 }

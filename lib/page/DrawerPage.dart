@@ -7,6 +7,7 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/FavoriteThreadPage.dart';
 import 'package:discuz_flutter/page/ShortcutPage.dart';
+import 'package:discuz_flutter/page/SubscribeChannelPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
@@ -208,6 +209,23 @@ class DrawerState extends State<DrawerStatefulWidget>{
                 onTap: () async {
                   VibrationUtils.vibrateWithClickIfPossible();
                   await Navigator.push(context,platformPageRoute(context:context,builder: (context) => PushServicePage()));
+                },
+              );
+            }
+            else{
+              return Container();
+            }
+          },
+        ),
+        Consumer<UserPreferenceNotifierProvider>(
+          builder: (context, userPreference, child){
+            if(userPreference.allowPush){
+              return ListTile(
+                title: Text(S.of(context).subscribeChannel),
+                leading: Icon(AppPlatformIcons(context).subscribeChannelSolid),
+                onTap: () async {
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  await Navigator.push(context,platformPageRoute(context:context,builder: (context) => SubscribeChannelPage()));
                 },
               );
             }

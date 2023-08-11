@@ -100,4 +100,6 @@ class AppPlatformIcons{
   IconData get pictureBedOutlined => isMaterial(context)? Icons.photo_album_outlined : CupertinoIcons.square_stack;
 
   IconData get chevronSolid => isMaterial(context)? Icons.arrow_forward : CupertinoIcons.chevron_forward;
+
+  IconData get subscribeChannelSolid => isMaterial(context)? Icons.subscriptions : CupertinoIcons.news_solid;
 }
