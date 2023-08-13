@@ -372,6 +372,50 @@ class UserPreferencesUtils{
     await prefs.setBool(hapticFeedbackPreferenceKey, value);
   }
 
+  static final String subscribedChannelPreferenceKey = "subscribedChannelPreferenceKey";
+
+  static Future<List<String>> getSubscribedChannelList() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var subscribedChannel =  prefs.getStringList(subscribedChannelPreferenceKey);
+    return subscribedChannel == null? []: subscribedChannel;
+  }
+
+  static Future<void> putSubscribedChannelList(List<String> subscribedChannelList) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(subscribedChannelPreferenceKey, subscribedChannelList);
+  }
+
+  static final String lastSubscribedTimestampPreferenceKey = "lastSubscribedTimestampPreferenceKey";
+
+  static Future<int> getLastPushSecond() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var signaturePreference =  prefs.getInt(lastSubscribedTimestampPreferenceKey);
+    return signaturePreference == null? 0: signaturePreference;
+  }
+
+  static Future<void> _putLastPushSecond(int value) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(lastSubscribedTimestampPreferenceKey, value);
+  }
+
+  static Future<bool> shouldSendTokenToDHPushServer() async{
+    int lastMobileSignTimestampSecond = await getLastPushSecond();
+    DateTime lastPushDate = DateTime.fromMillisecondsSinceEpoch(lastMobileSignTimestampSecond * 1000);
+    DateTime now = DateTime.now();
+    // since last two days?
+    if (now.difference(lastPushDate).inHours > 48){
+      // if not in the same day, a mobile sign is neccessary
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  static Future<void> putLastPushSecond() async{
+    int nowTimestampSecond = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    await _putLastPushSecond(nowTimestampSecond);
+  }
 
 
 

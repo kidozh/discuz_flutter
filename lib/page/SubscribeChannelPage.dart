@@ -5,6 +5,7 @@ import 'package:discuz_flutter/client/PushServiceClient.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/screen/EmptyScreen.dart';
 import 'package:discuz_flutter/screen/LoadingScreen.dart';
+import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -93,6 +94,15 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
     }
   }
 
+  Future<void> _saveSubscriptionId(List<String> addId, List<String> removeId) async{
+    List<String> subscribedIdList = await UserPreferencesUtils.getSubscribedChannelList();
+    subscribedIdList = [subscribedIdList, addId].expand((element) => element).toList();
+    subscribedIdList.removeWhere((element) => removeId.contains(element));
+    await UserPreferencesUtils.putSubscribedChannelList(subscribedIdList);
+    // attempt to send the information already
+    await UserPreferencesUtils.putLastPushSecond();
+  }
+
   void _subscribeChannels() async {
     Discuz? discuz =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
@@ -100,9 +110,7 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
         await PushServiceUtils.getPushToken(context);
     String? baseUrl = discuz?.baseURL;
     String? host = Uri.tryParse(baseUrl == null ? "" : baseUrl)?.host;
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    final dio = await NetworkUtils.getDioWithPersistCookieJar(null);
     final client = PushServiceClient(dio, baseUrl: pushServerBaseUrl);
     print("subscribe to the list ${host} R: ${pushTokenChannel}");
 
@@ -120,6 +128,8 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
           removeId.add(subscribeChannelResult.channelList[i].id);
         }
       }
+
+      await _saveSubscriptionId(addId, removeId);
 
       print("subscribe to the list ${addId} R: ${removeId}");
 
@@ -207,6 +217,7 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
                                 onPressed: () {
                                   VibrationUtils.vibrateWithClickIfPossible();
                                   _subscribeChannels();
+
                                 },
                               ),
                             ),

@@ -35,9 +35,11 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:push/push.dart' as Push;
 
+import '../client/PushServiceClient.dart';
 import '../main.dart';
 import '../provider/SelectedTidNotifierProvider.dart';
 import '../screen/TwoPaneEmptyScreen.dart';
+import '../utility/NetworkUtils.dart';
 import '../utility/TwoPaneScaffold.dart';
 import '../utility/TwoPaneUtils.dart';
 
@@ -239,6 +241,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // a terminated state.
     // RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
 
+    Push.Push.instance.onNotificationTap.listen((event) {
+      print("Notification tap ${event}");
+      _handleMessageByPush(event);
+    });
+
     Push.Push.instance.notificationTapWhichLaunchedAppFromTerminated
         .then((data) {
       if (data == null) {
@@ -249,6 +256,41 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             'RemoteMessage: ${data} \n');
       }
     });
+
+    // prepare to interact with dhpush
+    bool allowPush = await UserPreferencesUtils.getPushPreference();
+    bool shouldSendTokenToDhServer = await UserPreferencesUtils.shouldSendTokenToDHPushServer();
+    if(allowPush && shouldSendTokenToDhServer){
+      print("Interact with DHPUSH to update subscription information");
+      _sendSubscriptionToDhPush();
+
+    }
+  }
+
+  Future<void> _sendSubscriptionToDhPush() async{
+    String pushServerBaseUrl = "https://dhp.kidozh.com";
+
+    final dio = await NetworkUtils.getDioWithPersistCookieJar(null);
+    final client = PushServiceClient(dio, baseUrl: pushServerBaseUrl);
+    PushTokenChannel? pushTokenChannel = await PushServiceUtils.getPushToken(context);
+    if(pushTokenChannel != null){
+      String token = pushTokenChannel.token;
+      String pushPlatform = pushTokenChannel.channelName;
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      String packageId = packageInfo.packageName;
+      List<String> subscribedIdList = await UserPreferencesUtils.getSubscribedChannelList();
+      if(subscribedIdList.isEmpty){
+        return;
+      }
+      await UserPreferencesUtils.putLastPushSecond();
+      client
+          .changeSubscribeChannelByHost(
+          "", token, subscribedIdList, [], packageId, pushPlatform)
+          .then((value) {
+
+      });
+    }
+
   }
 
   Future<void> _handleMessageByPush(Map<String?, Object?> message) async {
