@@ -235,10 +235,24 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     super.didChangeDependencies();
     print("Update token to all applicable discuzes");
     PushServiceUtils.updateTokenToAllApplicableDiscuzes(context);
+    checkIfNotificationIsTap();
   }
 
   StreamSubscription<Map<String?, Object?>>? _onNotificationTap = null;
 
+
+  Future<void> checkIfNotificationIsTap()async {
+    Push.Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data){
+      if (data == null) {
+        print("App was not launched by tapping a notification");
+      } else {
+        PushServiceUtils.firebaseMessagingBackgroundHandlerByMsg(data);
+        print('Notification tap launched app from terminated state:\n'
+            'RemoteMessage: ${data} \n');
+      }
+
+    });
+  }
 
 
   Future<void> setupInteractedMessage() async {
@@ -246,46 +260,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // a terminated state.
     // RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
 
-    // Push.Push.instance.notificationTapWhichLaunchedAppFromTerminated
-    //     .then((data) {
-    //   if (data == null) {
-    //     print("App was not launched by tapping a notification");
-    //   } else {
-    //     _handleMessageByPush(data);
-    //     print('Notification tap launched app from terminated state:\n'
-    //         'RemoteMessage: ${data} \n');
-    //   }
-    // });
-    //
-    // _onNotificationTap = Push.Push.instance.onNotificationTap.listen((event) {
-    //   print("Notification tap ${event}");
-    //   _handleMessageByPush(event);
-    // });
-  }
 
-  // Future<void> _handleMessageByPush(Map<String?, Object?> message) async {
-  //   Map<String, String> data = message.cast<String, String>();
-  //   if (data['type'] == 'thread_reply' && data.containsKey("tid")) {
-  //     int tid = int.parse(data["tid"]!);
-  //     String site_url = data["site_url"]!;
-  //     int uid = int.parse(data["uid"]!);
-  //     // find it in discuz or uid
-  //     _userDao = await AppDatabase.getUserDao();
-  //     _discuzDao = await AppDatabase.getDiscuzDao();
-  //     Discuz? _discuz = _discuzDao.findDiscuzByHost(site_url);
-  //     if (_discuz != null) {
-  //       User? _user = _userDao.findUsersByDiscuzAndUid(_discuz, uid);
-  //       if (_user != null) {
-  //         Navigator.push(
-  //             context,
-  //             platformPageRoute(
-  //                 context: context,
-  //                 builder: (context) =>
-  //                     ViewThreadSliverPage(_discuz, _user, tid)));
-  //       }
-  //     }
-  //   }
-  // }
+  }
 
   @override
   void initState() {
@@ -294,6 +270,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _checkAcceptVersionFlag(context);
     setupInteractedMessage();
+
   }
 
   Future<void> _checkAcceptVersionFlag(BuildContext context) async {
