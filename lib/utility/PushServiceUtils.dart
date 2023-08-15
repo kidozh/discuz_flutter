@@ -17,6 +17,7 @@ import 'package:provider/provider.dart';
 import 'package:push/push.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../client/PushServiceClient.dart';
 import '../dao/DiscuzDao.dart';
 import '../dao/UserDao.dart';
 import '../database/AppDatabase.dart';
@@ -27,6 +28,7 @@ import '../page/ViewThreadSliverPage.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import 'NetworkUtils.dart';
 import 'PostTextFieldUtils.dart';
+import 'UserPreferencesUtils.dart';
 
 enum PushChannel{
   fcm,
@@ -136,9 +138,45 @@ class PushServiceUtils{
       }
     }
 
+    // prepare to interact with dhpush
+    bool allowPush = await UserPreferencesUtils.getPushPreference();
+    bool shouldSendTokenToDhServer = await UserPreferencesUtils.shouldSendTokenToDHPushServer();
+    if(allowPush && shouldSendTokenToDhServer){
+      print("Interact with DHPUSH to update subscription information");
+      _sendSubscriptionToDhPush(context);
+
+    }
+
+  }
+
+  static Future<void> _sendSubscriptionToDhPush(BuildContext context) async{
+    String pushServerBaseUrl = "https://dhp.kidozh.com";
+
+    final dio = await NetworkUtils.getDioWithPersistCookieJar(null);
+    final client = PushServiceClient(dio, baseUrl: pushServerBaseUrl);
+    PushTokenChannel? pushTokenChannel = await PushServiceUtils.getPushToken(context);
+    if(pushTokenChannel != null){
+      String token = pushTokenChannel.token;
+      String pushPlatform = pushTokenChannel.channelName;
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      String packageId = packageInfo.packageName;
+      List<String> subscribedIdList = await UserPreferencesUtils.getSubscribedChannelList();
+      if(subscribedIdList.isEmpty){
+        return;
+      }
+      await UserPreferencesUtils.putLastPushSecond();
+      client
+          .changeSubscribeChannelByHost(
+          "", token, subscribedIdList, [], packageId, pushPlatform)
+          .then((value) {
+
+      });
+    }
+
   }
 
   static Future<void> initPushInformation(GlobalKey<NavigatorState> navigatorKey) async {
+    print("Initialize push settings");
     Push.instance.onNewToken.listen((token) {
       print("Just got a new FCM registration token: ${token}");
     });

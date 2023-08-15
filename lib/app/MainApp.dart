@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
@@ -236,86 +237,55 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     PushServiceUtils.updateTokenToAllApplicableDiscuzes(context);
   }
 
+  StreamSubscription<Map<String?, Object?>>? _onNotificationTap = null;
+
+
+
   Future<void> setupInteractedMessage() async {
     // Get any messages which caused the application to open from
     // a terminated state.
     // RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
 
-    Push.Push.instance.onNotificationTap.listen((event) {
-      print("Notification tap ${event}");
-      _handleMessageByPush(event);
-    });
-
-    Push.Push.instance.notificationTapWhichLaunchedAppFromTerminated
-        .then((data) {
-      if (data == null) {
-        print("App was not launched by tapping a notification");
-      } else {
-        _handleMessageByPush(data);
-        print('Notification tap launched app from terminated state:\n'
-            'RemoteMessage: ${data} \n');
-      }
-    });
-
-    // prepare to interact with dhpush
-    bool allowPush = await UserPreferencesUtils.getPushPreference();
-    bool shouldSendTokenToDhServer = await UserPreferencesUtils.shouldSendTokenToDHPushServer();
-    if(allowPush && shouldSendTokenToDhServer){
-      print("Interact with DHPUSH to update subscription information");
-      _sendSubscriptionToDhPush();
-
-    }
+    // Push.Push.instance.notificationTapWhichLaunchedAppFromTerminated
+    //     .then((data) {
+    //   if (data == null) {
+    //     print("App was not launched by tapping a notification");
+    //   } else {
+    //     _handleMessageByPush(data);
+    //     print('Notification tap launched app from terminated state:\n'
+    //         'RemoteMessage: ${data} \n');
+    //   }
+    // });
+    //
+    // _onNotificationTap = Push.Push.instance.onNotificationTap.listen((event) {
+    //   print("Notification tap ${event}");
+    //   _handleMessageByPush(event);
+    // });
   }
 
-  Future<void> _sendSubscriptionToDhPush() async{
-    String pushServerBaseUrl = "https://dhp.kidozh.com";
-
-    final dio = await NetworkUtils.getDioWithPersistCookieJar(null);
-    final client = PushServiceClient(dio, baseUrl: pushServerBaseUrl);
-    PushTokenChannel? pushTokenChannel = await PushServiceUtils.getPushToken(context);
-    if(pushTokenChannel != null){
-      String token = pushTokenChannel.token;
-      String pushPlatform = pushTokenChannel.channelName;
-      PackageInfo packageInfo = await PackageInfo.fromPlatform();
-      String packageId = packageInfo.packageName;
-      List<String> subscribedIdList = await UserPreferencesUtils.getSubscribedChannelList();
-      if(subscribedIdList.isEmpty){
-        return;
-      }
-      await UserPreferencesUtils.putLastPushSecond();
-      client
-          .changeSubscribeChannelByHost(
-          "", token, subscribedIdList, [], packageId, pushPlatform)
-          .then((value) {
-
-      });
-    }
-
-  }
-
-  Future<void> _handleMessageByPush(Map<String?, Object?> message) async {
-    Map<String, String> data = message.cast<String, String>();
-    if (data['type'] == 'thread_reply' && data.containsKey("tid")) {
-      int tid = int.parse(data["tid"]!);
-      String site_url = data["site_url"]!;
-      int uid = int.parse(data["uid"]!);
-      // find it in discuz or uid
-      _userDao = await AppDatabase.getUserDao();
-      _discuzDao = await AppDatabase.getDiscuzDao();
-      Discuz? _discuz = _discuzDao.findDiscuzByHost(site_url);
-      if (_discuz != null) {
-        User? _user = _userDao.findUsersByDiscuzAndUid(_discuz, uid);
-        if (_user != null) {
-          Navigator.push(
-              context,
-              platformPageRoute(
-                  context: context,
-                  builder: (context) =>
-                      ViewThreadSliverPage(_discuz, _user, tid)));
-        }
-      }
-    }
-  }
+  // Future<void> _handleMessageByPush(Map<String?, Object?> message) async {
+  //   Map<String, String> data = message.cast<String, String>();
+  //   if (data['type'] == 'thread_reply' && data.containsKey("tid")) {
+  //     int tid = int.parse(data["tid"]!);
+  //     String site_url = data["site_url"]!;
+  //     int uid = int.parse(data["uid"]!);
+  //     // find it in discuz or uid
+  //     _userDao = await AppDatabase.getUserDao();
+  //     _discuzDao = await AppDatabase.getDiscuzDao();
+  //     Discuz? _discuz = _discuzDao.findDiscuzByHost(site_url);
+  //     if (_discuz != null) {
+  //       User? _user = _userDao.findUsersByDiscuzAndUid(_discuz, uid);
+  //       if (_user != null) {
+  //         Navigator.push(
+  //             context,
+  //             platformPageRoute(
+  //                 context: context,
+  //                 builder: (context) =>
+  //                     ViewThreadSliverPage(_discuz, _user, tid)));
+  //       }
+  //     }
+  //   }
+  // }
 
   @override
   void initState() {
@@ -343,6 +313,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    if(_onNotificationTap != null){
+      _onNotificationTap!.cancel();
+    }
     super.dispose();
   }
 
