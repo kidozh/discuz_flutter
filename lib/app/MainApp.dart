@@ -183,7 +183,7 @@ class MyApp extends StatelessWidget {
                       ],
                       supportedLocales: S.delegate.supportedLocales,
                       builder: EasyLoading.init(),
-                      home: MainTwoPanePage(),
+                      home: MainTwoPanePage(navigatorKey: this.navigatorKey,),
                     ));
           },
         );
@@ -193,7 +193,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title, this.onSelectTid})
+  GlobalKey<NavigatorState> navigatorKey;
+  MyHomePage({Key? key, required this.title, this.onSelectTid, required this.navigatorKey})
       : super(key: key);
 
   final ValueChanged<int>? onSelectTid;
@@ -202,10 +203,11 @@ class MyHomePage extends StatefulWidget {
 
   @override
   _MyHomePageState createState() =>
-      _MyHomePageState(onSelectTid: this.onSelectTid);
+      _MyHomePageState(onSelectTid: this.onSelectTid, navigatorKey: this.navigatorKey);
 }
 
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
+  GlobalKey<NavigatorState> navigatorKey;
   final ValueChanged<int>? onSelectTid;
 
   int _bottomNavigationbarIndex = 0;
@@ -216,7 +218,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   //
   List<Discuz> _allDiscuzs = [];
 
-  _MyHomePageState({this.onSelectTid}) {
+  _MyHomePageState({this.onSelectTid,required this.navigatorKey}) {
     _queryDiscuzList();
   }
 
@@ -235,7 +237,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     super.didChangeDependencies();
     print("Update token to all applicable discuzes");
     PushServiceUtils.updateTokenToAllApplicableDiscuzes(context);
-    checkIfNotificationIsTap();
+
   }
 
   StreamSubscription<Map<String?, Object?>>? _onNotificationTap = null;
@@ -246,7 +248,18 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       if (data == null) {
         print("App was not launched by tapping a notification");
       } else {
-        PushServiceUtils.firebaseMessagingBackgroundHandlerByMsg(data);
+
+        try{
+          Map<String, dynamic> msgData = data.cast<String, dynamic>();
+          PushServiceUtils.handleMessage(msgData, this.navigatorKey);
+
+
+        }
+        catch (e){
+
+        }
+
+        //PushServiceUtils.firebaseMessagingBackgroundHandlerByMsg(data);
         print('Notification tap launched app from terminated state:\n'
             'RemoteMessage: ${data} \n');
       }
@@ -259,8 +272,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // Get any messages which caused the application to open from
     // a terminated state.
     // RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-
-
+    checkIfNotificationIsTap();
   }
 
   @override
@@ -270,6 +282,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _checkAcceptVersionFlag(context);
     setupInteractedMessage();
+
 
   }
 
@@ -554,10 +567,15 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 }
 
 class MainTwoPanePage extends StatelessWidget {
+  GlobalKey<NavigatorState> navigatorKey;
+
+  MainTwoPanePage({required this.navigatorKey});
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       return MainTwoPaneStatefulWidget(
+          navigatorKey: this.navigatorKey,
           type: TwoPaneUtils.getTwoPaneType(constraints));
     });
   }
@@ -566,18 +584,22 @@ class MainTwoPanePage extends StatelessWidget {
 class MainTwoPaneStatefulWidget extends StatefulWidget {
   final String restorationId = "DisplayForumTid";
   final TwoPaneType type;
+  GlobalKey<NavigatorState> navigatorKey;
 
-  MainTwoPaneStatefulWidget({super.key, required this.type});
+  MainTwoPaneStatefulWidget({super.key, required this.type, required this.navigatorKey});
 
   @override
   State<StatefulWidget> createState() {
-    return MainTwoPaneState();
+    return MainTwoPaneState(navigatorKey: this.navigatorKey);
   }
 }
 
 class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
     with RestorationMixin {
   final RestorableInt _currentTid = RestorableInt(0);
+  GlobalKey<NavigatorState> navigatorKey;
+
+  MainTwoPaneState({required this.navigatorKey});
 
   @override
   String? get restorationId => widget.restorationId;
@@ -599,7 +621,7 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
     if (widget.type == TwoPaneType.smallScreen) {
       panePriority =
           _currentTid.value == 0 ? TwoPanePriority.start : TwoPanePriority.end;
-      return MyHomePage(title: "");
+      return MyHomePage(title: "", navigatorKey: this.navigatorKey,);
     }
     double paneProportion = 0.35;
     // directly give
@@ -616,6 +638,7 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
               paneProportion: paneProportion,
               panePriority: panePriority,
               startPane: MyHomePage(
+                navigatorKey: this.navigationKey,
                 title: "",
                 onSelectTid: (tid) async {
                   Provider.of<SelectedTidNotifierProvider>(context,

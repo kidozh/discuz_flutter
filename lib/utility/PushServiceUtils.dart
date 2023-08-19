@@ -225,6 +225,10 @@ class PushServiceUtils{
 
   }
 
+  static Future<void> handleMessage(Map<String?, Object?> msgData, GlobalKey<NavigatorState> navigatorKey) async{
+    return _handleMessage(msgData, navigatorKey);
+  }
+
   static Future<void> _handleMessage(Map<String?, Object?> msgData, GlobalKey<NavigatorState> navigatorKey) async {
 
     Map<String, dynamic> data = msgData.cast<String, dynamic>();
