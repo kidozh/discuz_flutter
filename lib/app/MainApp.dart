@@ -638,7 +638,7 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
               paneProportion: paneProportion,
               panePriority: panePriority,
               startPane: MyHomePage(
-                navigatorKey: this.navigationKey,
+                navigatorKey: this.navigatorKey,
                 title: "",
                 onSelectTid: (tid) async {
                   Provider.of<SelectedTidNotifierProvider>(context,
