@@ -27,6 +27,7 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/AppBannerAdWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
+import 'package:discuz_flutter/widget/DiscuzNotificationAppbarIconWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
 import 'package:dual_screen/dual_screen.dart';
@@ -351,6 +352,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       appBar: PlatformAppBar(
         //middle: Text(S.of(context).forumDisplayTitle),
         trailingActions: [
+          DiscuzNotificationAppbarIconWidget(),
           if(favoriteForumDao != null)
             ValueListenableBuilder(
               valueListenable: favoriteForumDao!.favoriteForumBox.listenable(),

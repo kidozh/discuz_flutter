@@ -64,27 +64,18 @@ class BaseVariableResult{
 
 @JsonSerializable()
 class NoticeCount{
-  String newpush = "";
-  int getPush(){
-    return int.parse(newpush);
-  }
 
-  String newpm = "";
-  int getPM(){
-    return int.parse(newpm);
-  }
+  @StringToIntConverter()
+  int newpush = 0;
 
-  String newprompt = "";
+  @StringToIntConverter()
+  int newpm = 0;
 
-  int getPrompt(){
-    return int.parse(newprompt);
-  }
+  @StringToIntConverter()
+  int newprompt = 0;
 
-  String newmypost = "";
-
-  int getPost(){
-    return int.parse(newmypost);
-  }
+  @StringToIntConverter()
+  int newmypost = 0;
 
   NoticeCount();
 

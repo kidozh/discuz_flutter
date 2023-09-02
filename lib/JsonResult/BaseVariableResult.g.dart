@@ -38,15 +38,17 @@ Map<String, dynamic> _$BaseVariableResultToJson(BaseVariableResult instance) =>
     };
 
 NoticeCount _$NoticeCountFromJson(Map<String, dynamic> json) => NoticeCount()
-  ..newpush = json['newpush'] as String
-  ..newpm = json['newpm'] as String
-  ..newprompt = json['newprompt'] as String
-  ..newmypost = json['newmypost'] as String;
+  ..newpush = const StringToIntConverter().fromJson(json['newpush'] as String?)
+  ..newpm = const StringToIntConverter().fromJson(json['newpm'] as String?)
+  ..newprompt =
+      const StringToIntConverter().fromJson(json['newprompt'] as String?)
+  ..newmypost =
+      const StringToIntConverter().fromJson(json['newmypost'] as String?);
 
 Map<String, dynamic> _$NoticeCountToJson(NoticeCount instance) =>
     <String, dynamic>{
-      'newpush': instance.newpush,
-      'newpm': instance.newpm,
-      'newprompt': instance.newprompt,
-      'newmypost': instance.newmypost,
+      'newpush': const StringToIntConverter().toJson(instance.newpush),
+      'newpm': const StringToIntConverter().toJson(instance.newpm),
+      'newprompt': const StringToIntConverter().toJson(instance.newprompt),
+      'newmypost': const StringToIntConverter().toJson(instance.newmypost),
     };

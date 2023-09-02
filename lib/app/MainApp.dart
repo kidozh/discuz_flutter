@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:discuz_flutter/dao/DiscuzDao.dart';
 import 'package:discuz_flutter/dao/UserDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
@@ -15,6 +16,7 @@ import 'package:discuz_flutter/page/ExploreWebsitePage.dart';
 import 'package:discuz_flutter/page/TestFlightBannerPage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/provider/DiscuzNotificationProvider.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
@@ -43,6 +45,7 @@ import '../screen/TwoPaneEmptyScreen.dart';
 import '../utility/NetworkUtils.dart';
 import '../utility/TwoPaneScaffold.dart';
 import '../utility/TwoPaneUtils.dart';
+import '../widget/DiscuzNotificationAppbarIconWidget.dart';
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -78,6 +81,7 @@ class MyApp extends StatelessWidget {
         .allowPush = allowPush;
     Provider.of<UserPreferenceNotifierProvider>(context, listen: false)
         .signature = signature;
+    Provider.of<DiscuzNotificationProvider>(context, listen: false).setNotificationCount(NoticeCount());
   }
 
   TargetPlatform? getTargetPlatformByName(String name) {
@@ -459,6 +463,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           },
         ),
         trailingActions: [
+          DiscuzNotificationAppbarIconWidget(),
+
           PlatformIconButton(
             padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
             onPressed: _triggerSwitchDiscuzDialog,

@@ -48,6 +48,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../utility/EasyRefreshUtils.dart';
 import '../widget/AppBannerAdWidget.dart';
+import '../widget/DiscuzNotificationAppbarIconWidget.dart';
 import 'InternalWebviewBrowserPage.dart';
 
 class ViewThreadSliverPage extends StatelessWidget {
@@ -584,6 +585,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             : Text(_viewThreadResult.threadVariables.threadInfo.subject,
                 overflow: TextOverflow.ellipsis),
         trailingActions: [
+          DiscuzNotificationAppbarIconWidget(),
           if (favoriteThreadDao != null)
             IconButton(
                 onPressed: () async {
