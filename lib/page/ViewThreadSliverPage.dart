@@ -46,6 +46,7 @@ import 'package:provider/provider.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../provider/DiscuzNotificationProvider.dart';
 import '../utility/EasyRefreshUtils.dart';
 import '../widget/AppBannerAdWidget.dart';
 import '../widget/DiscuzNotificationAppbarIconWidget.dart';
@@ -455,6 +456,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         _saveViewHistory(value.threadVariables.threadInfo,
             value.threadVariables.postList.first.message);
       }
+
+      Provider.of<DiscuzNotificationProvider>(context, listen: false).setNotificationCount(value.threadVariables.noticeCount);
 
       setState(() {
         _viewThreadResult = value;

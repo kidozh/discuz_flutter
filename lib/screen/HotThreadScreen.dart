@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
+import '../provider/DiscuzNotificationProvider.dart';
 import '../utility/EasyRefreshUtils.dart';
 import '../utility/MobileSignUtils.dart';
 import '../widget/AppBannerAdWidget.dart';
@@ -80,6 +81,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
 
     return await _client.hotThreadResult(_page).then((value) async {
       _controller.finishRefresh();
+      Provider.of<DiscuzNotificationProvider>(context, listen: false).setNotificationCount(value.variables.noticeCount);
       setState(() {
         result = value;
         _error = null;

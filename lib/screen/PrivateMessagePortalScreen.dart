@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
+import '../provider/DiscuzNotificationProvider.dart';
 import '../utility/EasyRefreshUtils.dart';
 
 class PrivateMessagePortalScreen extends StatelessWidget {
@@ -76,6 +77,7 @@ class _PrivateMessagePortalState
     //   result = HotThreadResult.fromJson(jsonDecode(value));
     //
     // });
+    Provider.of<DiscuzNotificationProvider>(context, listen: false).setNotificationCount(result.variables.noticeCount);
     if(result.variables.count != 0 && _pmList.length >= result.variables.count){
       _controller.finishLoad(IndicatorResult.noMore);
       return IndicatorResult.noMore;

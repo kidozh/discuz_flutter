@@ -40,6 +40,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../provider/DiscuzNotificationProvider.dart';
 import '../screen/TwoPaneEmptyScreen.dart';
 import '../utility/EasyRefreshUtils.dart';
 
@@ -285,6 +286,8 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
           _error = null;
         });
       }
+
+      Provider.of<DiscuzNotificationProvider>(context, listen: false).setNotificationCount(value.discuzIndexVariables.noticeCount);
 
       // check with user
       if (user != null && value.discuzIndexVariables.member_uid != user.uid) {

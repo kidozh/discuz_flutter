@@ -29,6 +29,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 
+import '../provider/DiscuzNotificationProvider.dart';
 import '../utility/EasyRefreshUtils.dart';
 
 class DiscuzPortalScreen extends StatelessWidget {
@@ -96,6 +97,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
         result = value;
         _isFirstlyRefreshing = false;
       });
+      Provider.of<DiscuzNotificationProvider>(context, listen: false).setNotificationCount(value.discuzIndexVariables.noticeCount);
       // get fids;
       if(value.discuzIndexVariables.forumList.isNotEmpty){
         String fids = "";

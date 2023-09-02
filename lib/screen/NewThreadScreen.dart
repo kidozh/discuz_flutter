@@ -16,6 +16,7 @@ import '../entity/NewThread.dart';
 import '../entity/User.dart';
 import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
+import '../provider/DiscuzNotificationProvider.dart';
 import '../utility/EasyRefreshUtils.dart';
 import '../utility/MobileSignUtils.dart';
 import '../utility/NetworkUtils.dart';
@@ -87,6 +88,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
 
 
     return await _client.newThreadsResult(fids, (_page - 1) * 20).then((value) async {
+      Provider.of<DiscuzNotificationProvider>(context, listen: false).setNotificationCount(value.variables.noticeCount);
       setState(() {
         result = value;
         _error = null;
