@@ -510,13 +510,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             onSelectTid: this.onSelectTid,
           ),
         // should not exist any
-        DiscuzPortalScreen(
-          key: ValueKey(1),
-        ),
-        //HotThreadScreen(key: ValueKey(2),),
         DashboardScreen(
           onSelectTid: onSelectTid,
         ),
+        DiscuzPortalScreen(
+          key: ValueKey(1),
+        ),
+
         NotificationScreen(
           //key: ValueKey(3),
           onSelectTid: this.onSelectTid,
@@ -544,13 +544,14 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 activeIcon: Icon(AppPlatformIcons(context).discuzSiteSolid),
                 label: S.of(context).sitePage),
           BottomNavigationBarItem(
-              icon: new Icon(AppPlatformIcons(context).discuzPortalOutlined),
-              activeIcon: Icon(AppPlatformIcons(context).discuzPortalSolid),
-              label: S.of(context).index),
-          BottomNavigationBarItem(
               icon: new Icon(AppPlatformIcons(context).discuzExploreOutlined),
               activeIcon: Icon(AppPlatformIcons(context).discuzExploreSolid),
               label: S.of(context).dashboard),
+          BottomNavigationBarItem(
+              icon: new Icon(AppPlatformIcons(context).discuzPortalOutlined),
+              activeIcon: Icon(AppPlatformIcons(context).discuzPortalSolid),
+              label: S.of(context).index),
+
           BottomNavigationBarItem(
               icon: new Icon(
                   AppPlatformIcons(context).discuzNotificationOutlined),

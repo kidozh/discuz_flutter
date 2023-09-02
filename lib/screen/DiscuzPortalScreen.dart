@@ -15,6 +15,7 @@ import 'package:discuz_flutter/page/DisplayForumSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/MobileSignUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
@@ -221,6 +222,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
                     FavoriteForumInDatabase> favoriteForumInDbList = favoriteForumDao!
                     .getFavoriteForumList(discuz);
                 return SliverList(
+
                     delegate: SliverChildBuilderDelegate((context, index) {
                       return FavoriteForumCardWidget(
                           discuz, user, favoriteForumInDbList[index]);
@@ -280,17 +282,20 @@ class FavoriteForumCardWidget extends StatelessWidget{
   Widget build(BuildContext context) {
     return Card(
       color: Theme.of(context).colorScheme.primaryContainer,
-      elevation: 2.0,
-      child: ListTile(
-        leading: Icon(Icons.favorite, color: Theme.of(context).colorScheme.onPrimaryContainer,),
+      elevation: isMaterial(context)?2.0:0.0,
+      child: PlatformListTile(
+        //dense: true,
+        leading: Icon(PlatformIcons(context).favoriteSolid, color: Theme.of(context).colorScheme.onPrimaryContainer,),
         title: Text(favoriteForumInDatabase.title,
-          style: Theme.of(context).primaryTextTheme.headlineSmall?.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer
+          style: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              //fontWeight: FontWeight.bold
           ),
         ),
         subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, favoriteForumInDatabase.date),
-          style: Theme.of(context).primaryTextTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onPrimaryContainer
+          style: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              fontWeight: FontWeight.normal
           ),
         ),
         onTap: () async {
@@ -300,7 +305,7 @@ class FavoriteForumCardWidget extends StatelessWidget{
               platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz, user, favoriteForumInDatabase.idKey))
           );
         },
-        trailing: Icon(Icons.arrow_forward, color: Theme.of(context).colorScheme.onPrimaryContainer,),
+        trailing: Icon(PlatformIcons(context).forward, color: Theme.of(context).colorScheme.onPrimaryContainer,),
 
 
       ),

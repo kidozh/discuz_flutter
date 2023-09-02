@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/widget/ForumCardWidget.dart';
 import 'package:flutter/material.dart';
 
@@ -30,8 +31,13 @@ class ForumPartitionWidget extends StatelessWidget{
       child: Column(
         children: [
           ListTile(
-            leading: Icon(Icons.forum_outlined,color: Theme.of(context).colorScheme.primary,),
-            title: Text(_forumPartition.name, style: TextStyle(color: Theme.of(context).colorScheme.primary),),
+            leading: Icon(AppPlatformIcons(context).forumOutlined,color: Theme.of(context).colorScheme.primary,),
+            title: Text(_forumPartition.name,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold
+              ),
+            ),
           ),
 
           GridView.builder(
