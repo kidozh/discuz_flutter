@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 class DiscuzNotificationAppbarIconWidget extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+
     return Consumer<DiscuzNotificationProvider>(
       builder: (context, discuzNotification, child){
         if(discuzNotification.noticeCount.getPrompt() == 0){
