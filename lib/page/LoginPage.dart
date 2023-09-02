@@ -385,8 +385,9 @@ class _LoginFormFieldState
                           SizedBox(
                             width: double.infinity,
                             child: PlatformElevatedButton(
-                              color: Theme.of(context).colorScheme.tertiary,
-                              child: Text(S.of(context).signInViaBrowser, style: TextStyle(color:Theme.of(context).colorScheme.onTertiary)),
+                              padding: EdgeInsets.symmetric(vertical: 16.0,horizontal: 4.0),
+                              color: Theme.of(context).colorScheme.secondaryContainer,
+                              child: Text(S.of(context).signInViaBrowser, style: TextStyle(color:Theme.of(context).colorScheme.onSecondaryContainer)),
 
                               onPressed: (){
                                 VibrationUtils.vibrateWithClickIfPossible();
