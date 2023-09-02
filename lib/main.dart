@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:discuz_flutter/app/ExclusiveDiscuzApp.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/provider/DiscuzNotificationProvider.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/provider/SelectedTidNotifierProvider.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
@@ -49,7 +50,6 @@ void main() async{
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   // check for iOS
   if(Platform.isIOS){
-
     String? apnsToken = await messaging.getAPNSToken();
     print("Get APNS token ${apnsToken}");
   }
@@ -92,7 +92,8 @@ void main() async{
           ChangeNotifierProvider.value(value: ReplyPostNotifierProvider()),
           ChangeNotifierProvider.value(value: TypeSettingNotifierProvider()),
           ChangeNotifierProvider.value(value: UserPreferenceNotifierProvider()),
-          ChangeNotifierProvider.value(value: SelectedTidNotifierProvider())
+          ChangeNotifierProvider.value(value: SelectedTidNotifierProvider()),
+          ChangeNotifierProvider.value(value: DiscuzNotificationProvider(),)
         ],
         child: isExclusiveDiscuz? ExclusiveDiscuzApp(initialPlatform,discuz): MyApp(initialPlatform, navigatorKey),
       ));

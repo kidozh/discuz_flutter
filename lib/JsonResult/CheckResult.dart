@@ -37,10 +37,10 @@ class CheckResult {
   String uCenterURL = "";
   @JsonKey(name: 'defaultfid', defaultValue: "0")
   String defaultFid = "";
-  @JsonKey(name: 'totalposts')
-  int totalPosts = 0;
-  @JsonKey(name: 'totalmembers')
-  int totalMembers = 0;
+  // @JsonKey(name: 'totalposts', ignore: true)
+  // int totalPosts = 0;
+  // @JsonKey(name: 'totalmembers')
+  // int totalMembers = 0;
   @JsonKey(defaultValue: "")
   String? testcookie = "";
 
@@ -58,8 +58,9 @@ class CheckResult {
       this.siteId,
       this.uCenterURL,
       this.defaultFid,
-      this.totalPosts,
-      this.totalMembers);
+      // this.totalPosts,
+      // this.totalMembers
+    );
 
   factory CheckResult.fromJson(Map<String, dynamic> json) => _$CheckResultFromJson(json);
   Map<String, dynamic> toJson() => _$CheckResultToJson(this);
