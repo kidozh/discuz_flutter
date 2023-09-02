@@ -116,12 +116,6 @@ class _AddDiscuzFormFieldState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // title and page
-                if (_isLoading)
-                  LinearProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation(
-                        GlobalTheme.getThemeData().colorScheme.primary),
-                  ),
                 // input fields
                 new TextFormField(
                   controller: _urlController,
@@ -152,11 +146,13 @@ class _AddDiscuzFormFieldState
                     ],
                   ),
                 SizedBox(height: 32.0,),
+
                 SizedBox(
                   width: double.infinity,
                   child: PlatformElevatedButton(
-                    child: Text(S.of(context).continueAdding),
-                    onPressed: (){
+
+                    child: _isLoading? PlatformCircularProgressIndicator(): Text(S.of(context).continueAdding),
+                    onPressed: _isLoading? null : (){
                       VibrationUtils.vibrateWithClickIfPossible();
                       if (_formKey.currentState!.validate()) {
                         EasyLoading.showToast(S.of(context).connectServerWhenAdding);
@@ -167,6 +163,8 @@ class _AddDiscuzFormFieldState
                     },
                   ),
                 ),
+
+
               ],
             ),
           )),
