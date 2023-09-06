@@ -723,5 +723,6 @@
       "discuzUrl": {}
     }
   },
-  "emailChannelFailed": "在此设备上无法发送邮件。你可以发送此站点信息到kidozh@gmail.com以添加此频道到订阅列表中。"
+  "emailChannelFailed": "在此设备上无法发送邮件。你可以发送此站点信息到kidozh@gmail.com以添加此频道到订阅列表中。",
+  "subscribeChannelForMore": "订阅此论坛频道获得实时的最新消息"
 }

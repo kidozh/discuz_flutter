@@ -632,6 +632,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "submitPoll": m37,
         "subscribe": MessageLookupByLibrary.simpleMessage("订阅"),
         "subscribeChannel": MessageLookupByLibrary.simpleMessage("订阅推送"),
+        "subscribeChannelForMore":
+            MessageLookupByLibrary.simpleMessage("订阅此论坛频道获得实时的最新消息"),
         "subscriptionSuccess":
             MessageLookupByLibrary.simpleMessage("成功同步至推送服务器"),
         "successfullyDeleteViewHistoryContent": m38,

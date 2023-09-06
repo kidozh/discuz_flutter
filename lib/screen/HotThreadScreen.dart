@@ -13,6 +13,7 @@ import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/HotThreadWidget.dart';
+import 'package:discuz_flutter/widget/ThreadSlideShowCarouselWidget.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -225,6 +226,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
               delegate: SliverChildBuilderDelegate(
                   (context, index) => Column(
                         children: [
+                          if(index == 0) ThreadSlideShowCarouselWidget(),
                           HotThreadWidget(discuz, user, _hotThreadList[index], onSelectTid),
                           if (index % 15 == 0 && index != 0) AppBannerAdWidget()
                         ],

@@ -4870,6 +4870,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Subscribe to the channels to get updates.`
+  String get subscribeChannelForMore {
+    return Intl.message(
+      'Subscribe to the channels to get updates.',
+      name: 'subscribeChannelForMore',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -89,6 +89,7 @@ dependencies:
   intl_utils: ^2.8.1
   dual_screen: ^1.0.3
   flutter_html_iframe: ^3.0.0-beta.2
+  carousel_slider: ^4.2.1
 
 
 

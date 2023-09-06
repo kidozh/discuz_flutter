@@ -748,6 +748,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "subscribe": MessageLookupByLibrary.simpleMessage("Subscribe"),
         "subscribeChannel":
             MessageLookupByLibrary.simpleMessage("Push subscription"),
+        "subscribeChannelForMore": MessageLookupByLibrary.simpleMessage(
+            "Subscribe to the channels to get updates."),
         "subscriptionSuccess": MessageLookupByLibrary.simpleMessage(
             "Subscription change successful."),
         "successfullyDeleteViewHistoryContent": m38,

@@ -172,6 +172,34 @@ class _PushServiceClient implements PushServiceClient {
     return value;
   }
 
+  @override
+  Future<ThreadSlideShowResult> getThreadSlideShowResultByHost(
+      String host) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'host': host};
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ThreadSlideShowResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/customize-slide/api',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = ThreadSlideShowResult.fromJson(_result.data!);
+    return value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

@@ -1,6 +1,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/SubscribeChannelResult.dart';
+import 'package:discuz_flutter/JsonResult/ThreadSlideShowResult.dart';
 import 'package:retrofit/http.dart';
 
 part 'PushServiceClient.g.dart';
@@ -40,4 +41,6 @@ abstract class PushServiceClient {
       @Query("platform") String pushPlatform,
       );
 
+  @GET("/customize-slide/api")
+  Future<ThreadSlideShowResult> getThreadSlideShowResultByHost(@Query("host") String host);
 }
