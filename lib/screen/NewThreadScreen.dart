@@ -215,7 +215,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
             delegate: SliverChildBuilderDelegate(
                 (context, index) => Column(
                       children: [
-                        if(index == 0) ThreadSlideShowCarouselWidget(),
+                        if(index == 0) ThreadSlideShowCarouselWidget(onSelectTid: onSelectTid),
                         NewThreadWidget(discuz, user, _newThreadList[index], this.onSelectTid),
                         if (index % 15 == 0 && index != 0) AppBannerAdWidget()
                       ],

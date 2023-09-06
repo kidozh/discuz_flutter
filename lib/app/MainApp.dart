@@ -504,15 +504,16 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         ),
       ),
       body: [
+        DashboardScreen(
+          onSelectTid: onSelectTid,
+        ),
         if (!Platform.isIOS)
           ExploreWebsitePage(
             key: ValueKey(0),
             onSelectTid: this.onSelectTid,
           ),
         // should not exist any
-        DashboardScreen(
-          onSelectTid: onSelectTid,
-        ),
+
         DiscuzPortalScreen(
           key: ValueKey(1),
         ),
@@ -538,15 +539,16 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           });
         },
         items: [
+          BottomNavigationBarItem(
+              icon: new Icon(AppPlatformIcons(context).discuzExploreOutlined),
+              activeIcon: Icon(AppPlatformIcons(context).discuzExploreSolid),
+              label: S.of(context).dashboard),
           if (!Platform.isIOS)
             BottomNavigationBarItem(
                 icon: new Icon(AppPlatformIcons(context).discuzSiteOutlined),
                 activeIcon: Icon(AppPlatformIcons(context).discuzSiteSolid),
                 label: S.of(context).sitePage),
-          BottomNavigationBarItem(
-              icon: new Icon(AppPlatformIcons(context).discuzExploreOutlined),
-              activeIcon: Icon(AppPlatformIcons(context).discuzExploreSolid),
-              label: S.of(context).dashboard),
+
           BottomNavigationBarItem(
               icon: new Icon(AppPlatformIcons(context).discuzPortalOutlined),
               activeIcon: Icon(AppPlatformIcons(context).discuzPortalSolid),

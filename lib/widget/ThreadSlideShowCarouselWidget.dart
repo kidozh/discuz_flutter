@@ -21,23 +21,35 @@ import '../provider/DiscuzAndUserNotifier.dart';
 import '../utility/NetworkUtils.dart';
 
 class ThreadSlideShowCarouselWidget extends StatelessWidget{
+  final ValueChanged<int>? onSelectTid;
+
+  ThreadSlideShowCarouselWidget({super.key, this.onSelectTid});
+
   @override
   Widget build(BuildContext context) {
-    return ThreadSlideShowCarouselStatefulWidget();
+    return ThreadSlideShowCarouselStatefulWidget(onSelectTid: this.onSelectTid,);
   }
 }
 
 
 class ThreadSlideShowCarouselStatefulWidget extends StatefulWidget{
+  final ValueChanged<int>? onSelectTid;
+
+  ThreadSlideShowCarouselStatefulWidget({super.key, this.onSelectTid});
+
   @override
   State<StatefulWidget> createState() {
-    return ThreadSlideShowCarouselState();
+    return ThreadSlideShowCarouselState(onSelectTid: this.onSelectTid);
   }
 
 }
 
 
 class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStatefulWidget>{
+
+  final ValueChanged<int>? onSelectTid;
+
+  ThreadSlideShowCarouselState({this.onSelectTid});
 
   bool isLoading = true;
   ThreadSlideShowResult threadSlideShowResult = ThreadSlideShowResult();
@@ -233,7 +245,12 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
         VibrationUtils.vibrateWithClickIfPossible();
         Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
         User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+        if(onSelectTid != null){
+          return onSelectTid!(slideShow.tid);
+        }
+
         if(discuz != null){
+
           await Navigator.push(
               context,
               platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz,  user, slideShow.tid,
