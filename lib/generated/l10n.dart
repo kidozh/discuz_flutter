@@ -4880,6 +4880,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Please enable push service to enable this function.`
+  String get pushServiceNotEnabled {
+    return Intl.message(
+      'Please enable push service to enable this function.',
+      name: 'pushServiceNotEnabled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable push service`
+  String get goToPushSetting {
+    return Intl.message(
+      'Enable push service',
+      name: 'goToPushSetting',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -348,6 +348,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "friendNumber": MessageLookupByLibrary.simpleMessage("好友数"),
         "fromDeviceSignature": m15,
         "fuchsia": MessageLookupByLibrary.simpleMessage("Fuchsia"),
+        "goToPushSetting": MessageLookupByLibrary.simpleMessage("开启推送"),
         "googleAdSubTitle":
             MessageLookupByLibrary.simpleMessage("由Google提供的广告"),
         "googleAdTitle": MessageLookupByLibrary.simpleMessage("广告"),
@@ -553,6 +554,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushPrivacyPolicy": MessageLookupByLibrary.simpleMessage("推送服务隐私政策"),
         "pushServiceEnableDescription":
             MessageLookupByLibrary.simpleMessage("您是否想要打开推送通知功能以接收实时消息？"),
+        "pushServiceNotEnabled":
+            MessageLookupByLibrary.simpleMessage("请打开通知服务以允许频道推送"),
         "pushServiceOff":
             MessageLookupByLibrary.simpleMessage("推送服务并未开启，请开启后再试试？"),
         "pushServiceOnDescription":

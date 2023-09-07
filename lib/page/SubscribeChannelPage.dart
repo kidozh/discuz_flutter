@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:discuz_flutter/JsonResult/SubscribeChannelResult.dart';
 import 'package:discuz_flutter/client/PushServiceClient.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
+import 'package:discuz_flutter/page/SetPushNotificationPage.dart';
 import 'package:discuz_flutter/screen/EmptyScreen.dart';
 import 'package:discuz_flutter/screen/LoadingScreen.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -21,6 +22,7 @@ import '../entity/Discuz.dart';
 import '../entity/User.dart';
 import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
+import '../provider/UserPreferenceNotifierProvider.dart';
 import '../screen/EmptyListScreen.dart';
 import '../screen/NullDiscuzScreen.dart';
 import '../utility/NetworkUtils.dart';
@@ -164,128 +166,173 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<DiscuzAndUserNotifier>(
-        builder: (context, discuzAndUser, child) {
-      if (discuzAndUser.discuz == null) {
-        return NullDiscuzScreen();
-      } else {
-        if (discuzError != null) {
-          return ErrorCard(discuzError!, () {
-            VibrationUtils.vibrateWithClickIfPossible();
-            _loadChannel();
-          });
-        } else {
-          if (isRefreshing) {
-            return LoadingScreen();
-          } else {
-            if (subscribeChannelResult.channelList.length != 0) {
-              return ListView.builder(
-                  padding: EdgeInsets.zero,
-                  //shrinkWrap: true,
-                  itemCount: subscribeChannelResult.channelList.length,
-                  itemBuilder: (context, index) {
-                    SubscribeChannel subscribeChannel =
-                        subscribeChannelResult.channelList[index];
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        PlatformListTile(
-                          title: Text(subscribeChannel.description),
-                          subtitle: Text(subscribeChannel.note),
-                          trailing: PlatformSwitch(
-                            value: subscribeChannel.subscribe,
-                            onChanged: (value) {
-                              setState(() {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                subscribeChannelResult
-                                    .channelList[index].subscribe = value;
-                              });
-                            },
-                          ),
-                        ),
-                        Divider(),
-                        if (index ==
-                                subscribeChannelResult.channelList.length - 1 &&
-                            isSubmitting == false)
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16.0),
-                            child: Container(
-                              width: double.infinity,
-                              child: PlatformElevatedButton(
-                                child: Text(S.of(context).subscribe),
-                                onPressed: () {
-                                  VibrationUtils.vibrateWithClickIfPossible();
-                                  _subscribeChannels();
-
-                                },
-                              ),
-                            ),
-                          ),
-                        if (index ==
-                                subscribeChannelResult.channelList.length - 1 &&
-                            isSubmitting == true)
-                          PlatformCircularProgressIndicator(),
-                      ],
-                    );
+    return Consumer<UserPreferenceNotifierProvider>(builder: (context, settings, child){
+      if(settings.allowPush){
+        return Consumer<DiscuzAndUserNotifier>(
+            builder: (context, discuzAndUser, child) {
+              if (discuzAndUser.discuz == null) {
+                return NullDiscuzScreen();
+              } else {
+                if (discuzError != null) {
+                  return ErrorCard(discuzError!, () {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    _loadChannel();
                   });
-            } else {
-              // no channel
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 64, horizontal: 32),
-                  child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          S.of(context).noSubscribeChannelProvided(
-                              discuzAndUser.discuz!.siteName),
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        SizedBox(
-                          height: 32,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 0),
-                          child: Container(
-                            width: double.infinity,
-                            child: PlatformElevatedButton(
-                              child: Text(S.of(context).emailUsToAddChannel(
-                                  discuzAndUser.discuz!.siteName)),
-                              onPressed: () async {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                // send email
-                                final Uri uri = Uri(
-                                    scheme: "mailto",
-                                    path: "kidozh@gmail.com",
-                                    queryParameters: {
-                                      'subject': S.of(context).emailChannelTitle(
-                                          discuzAndUser.discuz!.siteName),
-                                      'body': S.of(context).emailChannelBody(
-                                          discuzAndUser.discuz!.siteName,
-                                          discuzAndUser.discuz!.baseURL),
-                                    });
+                } else {
+                  if (isRefreshing) {
+                    return LoadingScreen();
+                  } else {
+                    if (subscribeChannelResult.channelList.length != 0) {
+                      return ListView.builder(
+                          padding: EdgeInsets.zero,
+                          //shrinkWrap: true,
+                          itemCount: subscribeChannelResult.channelList.length,
+                          itemBuilder: (context, index) {
+                            SubscribeChannel subscribeChannel =
+                            subscribeChannelResult.channelList[index];
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                PlatformListTile(
+                                  title: Text(subscribeChannel.description),
+                                  subtitle: Text(subscribeChannel.note),
+                                  trailing: PlatformSwitch(
+                                    value: subscribeChannel.subscribe,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        VibrationUtils.vibrateWithClickIfPossible();
+                                        subscribeChannelResult
+                                            .channelList[index].subscribe = value;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                Divider(),
+                                if (index ==
+                                    subscribeChannelResult.channelList.length - 1 &&
+                                    isSubmitting == false)
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 8.0, horizontal: 16.0),
+                                    child: Container(
+                                      width: double.infinity,
+                                      child: PlatformElevatedButton(
+                                        child: Text(S.of(context).subscribe),
+                                        onPressed: () {
+                                          VibrationUtils.vibrateWithClickIfPossible();
+                                          _subscribeChannels();
 
-                                if (await canLaunchUrl(uri)) {
-                                  await launchUrl(uri);
-                                } else {
-                                  print("Error in sending ${uri.toString()}");
-                                  EasyLoading.showError(
-                                      S.of(context).emailChannelFailed);
-                                }
-                              },
-                            ),
-                          ),
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                if (index ==
+                                    subscribeChannelResult.channelList.length - 1 &&
+                                    isSubmitting == true)
+                                  PlatformCircularProgressIndicator(),
+                              ],
+                            );
+                          });
+                    } else {
+                      // no channel
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 64, horizontal: 32),
+                          child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  S.of(context).noSubscribeChannelProvided(
+                                      discuzAndUser.discuz!.siteName),
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                                SizedBox(
+                                  height: 32,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 0),
+                                  child: Container(
+                                    width: double.infinity,
+                                    child: PlatformElevatedButton(
+                                      child: Text(S.of(context).emailUsToAddChannel(
+                                          discuzAndUser.discuz!.siteName)),
+                                      onPressed: () async {
+                                        VibrationUtils.vibrateWithClickIfPossible();
+                                        // send email
+                                        final Uri uri = Uri(
+                                            scheme: "mailto",
+                                            path: "kidozh@gmail.com",
+                                            queryParameters: {
+                                              'subject': S.of(context).emailChannelTitle(
+                                                  discuzAndUser.discuz!.siteName),
+                                              'body': S.of(context).emailChannelBody(
+                                                  discuzAndUser.discuz!.siteName,
+                                                  discuzAndUser.discuz!.baseURL),
+                                            });
+
+                                        if (await canLaunchUrl(uri)) {
+                                          await launchUrl(uri);
+                                        } else {
+                                          print("Error in sending ${uri.toString()}");
+                                          EasyLoading.showError(
+                                              S.of(context).emailChannelFailed);
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ]),
                         ),
-                      ]),
-                ),
-              );
-            }
-          }
-        }
+                      );
+                    }
+                  }
+                }
+              }
+            });
       }
+      else{
+        // enable it
+        return Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 64, horizontal: 32),
+            child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    S.of(context).pushServiceNotEnabled,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  SizedBox(
+                    height: 32,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 0),
+                    child: Container(
+                      width: double.infinity,
+                      child: PlatformElevatedButton(
+                        child: Text(S.of(context).goToPushSetting),
+                        onPressed: () async {
+                          VibrationUtils.vibrateWithClickIfPossible();
+
+                          Navigator.push(
+                              context,
+                              platformPageRoute(
+                                  context: context, builder: (context) => SetPushNotificationPage()));
+
+                        },
+                      ),
+                    ),
+                  ),
+                ]),
+          ),
+        );
+      }
+
     });
+
   }
 }

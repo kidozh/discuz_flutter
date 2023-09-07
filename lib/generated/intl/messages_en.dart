@@ -408,6 +408,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "friendNumber": MessageLookupByLibrary.simpleMessage("Friends"),
         "fromDeviceSignature": m15,
         "fuchsia": MessageLookupByLibrary.simpleMessage("Fuchsia"),
+        "goToPushSetting":
+            MessageLookupByLibrary.simpleMessage("Enable push service"),
         "googleAdSubTitle": MessageLookupByLibrary.simpleMessage(
             "Advertisement provided by Google"),
         "googleAdTitle": MessageLookupByLibrary.simpleMessage("AD"),
@@ -649,6 +651,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Privacy policy of push services"),
         "pushServiceEnableDescription": MessageLookupByLibrary.simpleMessage(
             "Do you wish to enable push service to receive the updated information?"),
+        "pushServiceNotEnabled": MessageLookupByLibrary.simpleMessage(
+            "Please enable push service to enable this function."),
         "pushServiceOff":
             MessageLookupByLibrary.simpleMessage("The push service is not on."),
         "pushServiceOnDescription": MessageLookupByLibrary.simpleMessage(

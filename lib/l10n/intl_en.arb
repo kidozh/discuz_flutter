@@ -723,5 +723,7 @@
     }
   },
   "emailChannelFailed": "Could not find mail app in this device. You could email us (kidozh@gmail.com) to add this site to the subscription list.",
-  "subscribeChannelForMore": "Subscribe to the channels to get updates."
+  "subscribeChannelForMore": "Subscribe to the channels to get updates.",
+  "pushServiceNotEnabled": "Please enable push service to enable this function.",
+  "goToPushSetting": "Enable push service"
 }
