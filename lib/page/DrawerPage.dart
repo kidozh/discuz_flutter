@@ -29,24 +29,21 @@ import 'PushServicePage.dart';
 import 'SettingPage.dart';
 import 'ViewHistoryPage.dart';
 
-class DrawerPage extends StatelessWidget{
+class DrawerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DrawerStatefulWidget();
   }
-
 }
 
-class DrawerStatefulWidget extends StatefulWidget{
+class DrawerStatefulWidget extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return DrawerState();
   }
-
 }
 
-class DrawerState extends State<DrawerStatefulWidget>{
-
+class DrawerState extends State<DrawerStatefulWidget> {
   late UserDao _userDao;
 
   @override
@@ -57,13 +54,11 @@ class DrawerState extends State<DrawerStatefulWidget>{
 
   void _initDb() async {
     _userDao = await AppDatabase.getUserDao();
-
   }
 
   Widget _buildFunctionNavWidgetList() {
     return ListView(
       padding: EdgeInsets.zero,
-
       children: [
         ListTile(
           title: Text(S.of(context).loginTitle),
@@ -75,7 +70,11 @@ class DrawerState extends State<DrawerStatefulWidget>{
                 Provider.of<DiscuzAndUserNotifier>(context, listen: false)
                     .discuz;
             if (discuz != null) {
-              await Navigator.push(context, platformPageRoute(context:context,builder: (context) => LoginPage(discuz, null)));
+              await Navigator.push(
+                  context,
+                  platformPageRoute(
+                      context: context,
+                      builder: (context) => LoginPage(discuz, null)));
             }
           },
         ),
@@ -93,8 +92,8 @@ class DrawerState extends State<DrawerStatefulWidget>{
                   platformPageRoute(
                       context: context,
                       builder: (context) => ManageAccountPage(
-                        discuz,
-                      )));
+                            discuz,
+                          )));
             }
           },
         ),
@@ -115,8 +114,9 @@ class DrawerState extends State<DrawerStatefulWidget>{
           leading: Icon(PlatformIcons(context).timeSolid),
           onTap: () async {
             Discuz? discuz =
-                Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
-            if(discuz != null){
+                Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                    .discuz;
+            if (discuz != null) {
               VibrationUtils.vibrateWithClickIfPossible();
               await Navigator.push(
                   context,
@@ -124,7 +124,6 @@ class DrawerState extends State<DrawerStatefulWidget>{
                       context: context,
                       builder: (context) => ViewHistoryPage(discuz)));
             }
-
           },
         ),
         ListTile(
@@ -132,8 +131,9 @@ class DrawerState extends State<DrawerStatefulWidget>{
           leading: Icon(PlatformIcons(context).favoriteSolid),
           onTap: () async {
             Discuz? discuz =
-                Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
-            if(discuz != null){
+                Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                    .discuz;
+            if (discuz != null) {
               VibrationUtils.vibrateWithClickIfPossible();
               await Navigator.push(
                   context,
@@ -141,7 +141,6 @@ class DrawerState extends State<DrawerStatefulWidget>{
                       context: context,
                       builder: (context) => FavoriteThreadPage()));
             }
-
           },
         ),
         ListTile(
@@ -149,8 +148,9 @@ class DrawerState extends State<DrawerStatefulWidget>{
           leading: Icon(PlatformIcons(context).bookmarkSolid),
           onTap: () async {
             Discuz? discuz =
-                Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
-            if(discuz != null){
+                Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                    .discuz;
+            if (discuz != null) {
               VibrationUtils.vibrateWithClickIfPossible();
               await Navigator.push(
                   context,
@@ -158,7 +158,6 @@ class DrawerState extends State<DrawerStatefulWidget>{
                       context: context,
                       builder: (context) => FavoriteForumPage()));
             }
-
           },
         ),
         ListTile(
@@ -166,16 +165,15 @@ class DrawerState extends State<DrawerStatefulWidget>{
           leading: Icon(AppPlatformIcons(context).shortcutSolid),
           onTap: () async {
             Discuz? discuz =
-                Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
-            if(discuz != null){
+                Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                    .discuz;
+            if (discuz != null) {
               VibrationUtils.vibrateWithClickIfPossible();
               await Navigator.push(
                   context,
                   platformPageRoute(
-                      context: context,
-                      builder: (context) => ShortcutPage()));
+                      context: context, builder: (context) => ShortcutPage()));
             }
-
           },
         ),
         ListTile(
@@ -183,13 +181,17 @@ class DrawerState extends State<DrawerStatefulWidget>{
           leading: Icon(PlatformIcons(context).removeCircledSolid),
           onTap: () async {
             Discuz? discuz =
-                Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+                Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                    .discuz;
 
-            if(discuz != null){
+            if (discuz != null) {
               VibrationUtils.vibrateWithClickIfPossible();
-              await Navigator.push(context,platformPageRoute(context:context,builder: (context) => BlockUserPage(discuz)));
+              await Navigator.push(
+                  context,
+                  platformPageRoute(
+                      context: context,
+                      builder: (context) => BlockUserPage(discuz)));
             }
-
           },
         ),
         ListTile(
@@ -197,41 +199,44 @@ class DrawerState extends State<DrawerStatefulWidget>{
           leading: Icon(PlatformIcons(context).checkMarkCircledSolid),
           onTap: () async {
             VibrationUtils.vibrateWithClickIfPossible();
-            await Navigator.push(context,platformPageRoute(context:context,builder: (context) => ManageTrustHostPage()));
+            await Navigator.push(
+                context,
+                platformPageRoute(
+                    context: context,
+                    builder: (context) => ManageTrustHostPage()));
           },
         ),
         Consumer<UserPreferenceNotifierProvider>(
-          builder: (context, userPreference, child){
-            if(userPreference.allowPush){
+          builder: (context, userPreference, child) {
+            if (userPreference.allowPush) {
               return ListTile(
                 title: Text(S.of(context).pushNotification),
                 leading: Icon(AppPlatformIcons(context).pushServiceSolid),
+
                 onTap: () async {
                   VibrationUtils.vibrateWithClickIfPossible();
-                  await Navigator.push(context,platformPageRoute(context:context,builder: (context) => PushServicePage()));
+                  await Navigator.push(
+                      context,
+                      platformPageRoute(
+                          context: context,
+                          builder: (context) => PushServicePage()));
                 },
               );
-            }
-            else{
+            } else {
               return Container();
             }
           },
         ),
-        Consumer<UserPreferenceNotifierProvider>(
-          builder: (context, userPreference, child){
-            if(userPreference.allowPush){
-              return ListTile(
-                title: Text(S.of(context).subscribeChannel),
-                leading: Icon(AppPlatformIcons(context).subscribeChannelSolid),
-                onTap: () async {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  await Navigator.push(context,platformPageRoute(context:context,builder: (context) => SubscribeChannelPage()));
-                },
-              );
-            }
-            else{
-              return Container();
-            }
+        ListTile(
+          title: Text(S.of(context).subscribeChannel),
+          leading: Icon(AppPlatformIcons(context).subscribeChannelSolid),
+          onTap: () async {
+            VibrationUtils.vibrateWithClickIfPossible();
+            await Navigator.push(
+                context,
+                platformPageRoute(
+                    context: context,
+                    builder: (context) => SubscribeChannelPage()));
           },
         ),
         ListTile(
@@ -239,15 +244,17 @@ class DrawerState extends State<DrawerStatefulWidget>{
           leading: Icon(PlatformIcons(context).settingsSolid),
           onTap: () async {
             VibrationUtils.vibrateWithClickIfPossible();
-            await Navigator.push(context,
-                platformPageRoute(context:context,builder: (context) => SettingPage()));
+            await Navigator.push(
+                context,
+                platformPageRoute(
+                    context: context, builder: (context) => SettingPage()));
           },
         )
       ],
     );
   }
 
-  void _toggleNavigationStatus(){
+  void _toggleNavigationStatus() {
     setState(() {
       _showUserDetail = !_showUserDetail;
     });
@@ -278,19 +285,17 @@ class DrawerState extends State<DrawerStatefulWidget>{
               ],
             );
           } else {
-
             return ListView.builder(
                 padding: EdgeInsets.zero,
                 itemCount: userList.length + 1,
                 itemBuilder: (context, position) {
-
                   if (position != userList.length) {
                     User user = userList[position];
                     return ListTile(
-                        onTap: (){
+                        onTap: () {
                           VibrationUtils.vibrateWithClickIfPossible();
                           Provider.of<DiscuzAndUserNotifier>(context,
-                              listen: false)
+                                  listen: false)
                               .setUser(user);
                           _toggleNavigationStatus();
                         },
@@ -300,22 +305,23 @@ class DrawerState extends State<DrawerStatefulWidget>{
                           // width: 16.0,
                           // height: 16.0,
                           child: CircleAvatar(
-                            backgroundColor: CustomizeColor.getColorBackgroundById(user.uid),
+                            backgroundColor:
+                                CustomizeColor.getColorBackgroundById(user.uid),
                             child: Text(
                               user.username.length != 0
                                   ? user.username[0].toUpperCase()
                                   : S.of(context).anonymous,
-                              style: TextStyle(color: Colors.white,fontSize: 18),
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
                             ),
                           ),
-                        )
-                    );
+                        ));
                   } else {
                     return ListTile(
                         onTap: () {
                           VibrationUtils.vibrateWithClickIfPossible();
                           Provider.of<DiscuzAndUserNotifier>(context,
-                              listen: false)
+                                  listen: false)
                               .setUser(null);
                           _toggleNavigationStatus();
                         },
@@ -326,7 +332,6 @@ class DrawerState extends State<DrawerStatefulWidget>{
                 });
           }
         },
-
       );
     } else {
       return Container();
@@ -335,10 +340,8 @@ class DrawerState extends State<DrawerStatefulWidget>{
 
   bool _showUserDetail = false;
 
-
   @override
   Widget build(BuildContext context) {
-
     return PlatformScaffold(
       appBar: PlatformAppBar(
         automaticallyImplyLeading: true,
@@ -351,7 +354,10 @@ class DrawerState extends State<DrawerStatefulWidget>{
                 margin: EdgeInsets.zero,
                 accountEmail: Text(S.of(context).incognitoSubtitle),
                 accountName: Text(S.of(context).incognitoTitle),
-                currentAccountPicture: Icon(Icons.person_pin,color: Theme.of(context).colorScheme.onPrimary,),
+                currentAccountPicture: Icon(
+                  Icons.person_pin,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
                 onDetailsPressed: () {
                   setState(() {
                     _showUserDetail = !_showUserDetail;
@@ -363,7 +369,12 @@ class DrawerState extends State<DrawerStatefulWidget>{
                 margin: EdgeInsets.zero,
                 accountEmail: Text(value.user!.uid.toString()),
                 accountName: Text(value.user!.username),
-                currentAccountPicture: UserAvatar(value.discuz!,value.user!.uid, value.user!.username, size: 32,),
+                currentAccountPicture: UserAvatar(
+                  value.discuz!,
+                  value.user!.uid,
+                  value.user!.username,
+                  size: 32,
+                ),
                 onDetailsPressed: () {
                   setState(() {
                     _showUserDetail = !_showUserDetail;
@@ -380,5 +391,4 @@ class DrawerState extends State<DrawerStatefulWidget>{
       ),
     );
   }
-
 }
