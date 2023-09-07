@@ -15,6 +15,7 @@ import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -116,6 +117,12 @@ class AttachmentWidget extends StatelessWidget{
           ),
           CachedNetworkImage(
             imageUrl: _attachment.getAttachmentRealUrl(_discuz),
+            errorWidget: (context, url, error) => Icon(Icons.error),
+            progressIndicatorBuilder: (context, url, progress) => PlatformCircularProgressIndicator(
+              material: (_, __) => MaterialProgressIndicatorData(
+                  value: progress.progress
+              ),
+            ),
           ),
           Row(
             mainAxisSize: MainAxisSize.max,

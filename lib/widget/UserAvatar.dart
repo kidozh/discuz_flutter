@@ -37,7 +37,11 @@ class UserAvatar extends StatelessWidget{
         borderRadius: BorderRadius.circular(10000.0),
         child: CachedNetworkImage(
           imageUrl: URLUtils.getAvatarURL(discuz, uid.toString()),
-          progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+          progressIndicatorBuilder: (context, url, downloadProgress) => PlatformCircularProgressIndicator(
+            material: (_, __) => MaterialProgressIndicatorData(
+                value: downloadProgress.progress
+            ),
+          ),
           errorWidget: (context, url, error) => Container(
             width: this.size,
             height: this.size,

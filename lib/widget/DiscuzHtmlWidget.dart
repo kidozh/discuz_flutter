@@ -305,10 +305,27 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 builder: (extensionContext) {
                   final element = extensionContext.styledElement;
                   if(element?.node.attributes["src"] != null){
-                    return CachedNetworkImage(
-                      imageUrl: element!.node.attributes["src"]!,
-                      errorWidget: (context, url, error) => Icon(Icons.error),
-
+                    return InkWell(
+                      child: CachedNetworkImage(
+                        imageUrl: element!.node.attributes["src"]!,
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                        progressIndicatorBuilder: (context, url, progress) => PlatformCircularProgressIndicator(
+                          material: (_, __) => MaterialProgressIndicatorData(
+                            value: progress.progress
+                          ),
+                        ),
+                      ),
+                      onTap: () {
+                        String? src = element.node.attributes["src"];
+                        if (src != null) {
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          Navigator.push(
+                              context,
+                              platformPageRoute(context: context,
+                                  builder: (context) => FullImagePage(src))
+                          );
+                        }
+                      }
                     );
                   }
                   else{
