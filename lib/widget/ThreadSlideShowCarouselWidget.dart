@@ -202,23 +202,24 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
 
                 )
             ),
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-              child: Flex(
-                  direction: Axis.vertical,
+            child: ClipRect(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                child: Column(
+                  //direction: Axis.vertical,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(slideShow.forum+" ",
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold
+                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold
                       ),
                       maxLines: 1,
 
                     ),
                     Text(" "+slideShow.category,
-                        style: TextStyle(
+                      style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                           fontSize: 18),
                       maxLines: 1,
@@ -226,15 +227,16 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
                     ),
                     SizedBox(height: 48,),
                     Text(slideShow.title,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            color: Theme.of(context).textTheme.displayLarge?.color,
-                            fontSize: 18
-                        ),
-                        maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          color: Theme.of(context).textTheme.displayLarge?.color,
+                          fontSize: 18
+                      ),
+                      maxLines: 1,
                     )
                   ],
 
+                ),
               ),
             ),
           ),

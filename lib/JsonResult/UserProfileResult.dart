@@ -83,13 +83,25 @@ class SpaceVariables{
   @JsonKey(defaultValue: "")
   String birthprovince = "", birthcity = "", birthdist="", birthcommunity = "";
   String getBirthPlace(){
-    return birthprovince+birthcity+birthdist+birthcommunity;
+    if(birthdist.startsWith("汉川") || birthdist.endsWith("市")){
+      return birthprovince+birthdist+birthcommunity;
+    }
+    else{
+      return birthprovince+birthcity+birthdist+birthcommunity;
+    }
+    
   }
 
   @JsonKey(defaultValue: "")
   String resideprovince = "", residecity = "", residedist="", residecommunity = "", residesuite = "";
   String getResidentPlace(){
-    return resideprovince+residecity+residedist+residecommunity+residesuite;
+    if(residedist.startsWith("汉川") || residedist.endsWith("市")){
+      return resideprovince+residedist+residecommunity+residesuite;
+    }
+    else{
+      return resideprovince+residecity+residedist+residecommunity+residesuite;
+    }
+    
   }
   @JsonKey(defaultValue: "")
   String graduateschool = "", education = "", company = "", occupation = "", position = "", revenue = "";
