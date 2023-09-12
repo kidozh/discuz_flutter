@@ -101,41 +101,43 @@ class CupertinoDiscuzMessageState extends State<CupertinoDiscuzMessageStatefulWi
   @override
   Widget build(BuildContext context) {
 
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Container(
-          width: double.infinity,
-          child: Padding(padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-            child: CupertinoSlidingSegmentedControl<int>(
-                children: <int, Widget>{
-                  0: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).privateMessage),),
-                  1: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).publicMessage),)
-                },
-                groupValue: _selectedScreenIndex,
-                onValueChanged: (int? value){
-                  if(value == null || ![0,1].contains(value)){
-                    setState((){
-                      _selectedScreenIndex = 0;
-                    });
-                  }
-                  else{
-                    setState((){
-                      _selectedScreenIndex = value;
-                    });
-                  }
-                }
+    return SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Container(
+              width: double.infinity,
+              child: Padding(padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                child: CupertinoSlidingSegmentedControl<int>(
+                    children: <int, Widget>{
+                      0: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).privateMessage),),
+                      1: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).publicMessage),)
+                    },
+                    groupValue: _selectedScreenIndex,
+                    onValueChanged: (int? value){
+                      if(value == null || ![0,1].contains(value)){
+                        setState((){
+                          _selectedScreenIndex = 0;
+                        });
+                      }
+                      else{
+                        setState((){
+                          _selectedScreenIndex = value;
+                        });
+                      }
+                    }
+                ),
+              ),
             ),
-          ),
-        ),
 
-        Expanded(
-            child: [
-              PrivateMessagePortalScreen(),
-              PublicMessagePortalScreen()
-            ][_selectedScreenIndex]
+            Expanded(
+                child: [
+                  PrivateMessagePortalScreen(),
+                  PublicMessagePortalScreen()
+                ][_selectedScreenIndex]
+            )
+          ],
         )
-      ],
     );
   }
 

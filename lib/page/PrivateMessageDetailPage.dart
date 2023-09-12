@@ -246,10 +246,9 @@ class _PrivateMessageDetailState
                   Discuz discuz = discuzAndUser.discuz!;
                   User? user = discuzAndUser.user;
                   return EasyRefresh(
-
+                    refreshOnStart: true,
                     onRefresh:  () async {
                             return await _invalidateHotThreadContent(discuz);
-
                           },
                     onLoad:  () async {
                             return await _loadPortalPrivateMessage(discuz);
@@ -264,7 +263,7 @@ class _PrivateMessageDetailState
                 },
               ),
             ),
-            SafeArea(
+            Container(
               child: Container(
                 color: Colors.grey[100],
                 padding: EdgeInsets.only(
