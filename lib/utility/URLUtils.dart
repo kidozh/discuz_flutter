@@ -32,4 +32,8 @@ class URLUtils{
   static Future<void> launchURL(String url) async => await canLaunchUrl(Uri.parse(url))
       ? await launchUrl(Uri.parse(url), mode: Platform.isIOS? LaunchMode.inAppWebView: LaunchMode.externalApplication)
       : throw 'Could not launch $url';
+
+  static String getPublicMessageURL(Discuz discuz, int pmid){
+    return "${discuz.baseURL}/home.php?mod=space&do=pm&subop=viewg&pmid=${pmid}";
+  }
 }

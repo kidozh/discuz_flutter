@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/PublicMessagePortalResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
@@ -19,7 +20,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../page/InternalWebviewBrowserPage.dart';
 import '../utility/EasyRefreshUtils.dart';
+import '../utility/URLUtils.dart';
 
 class PublicMessagePortalScreen extends StatelessWidget {
   PublicMessagePortalScreen();
@@ -50,14 +53,14 @@ class _PublicMessagePortalState
 
   late EasyRefreshController _controller;
 
-
   _PublicMessagePortalState();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
+    _controller = EasyRefreshController(
+        controlFinishLoad: true, controlFinishRefresh: true);
   }
 
   _invalidateHotThreadContent(Discuz discuz) async {
@@ -96,7 +99,6 @@ class _PublicMessagePortalState
           ? IndicatorResult.noMore
           : IndicatorResult.success);
 
-
       if (user != null && value.variables.member_uid != user.uid) {
         setState(() {
           _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
@@ -118,10 +120,9 @@ class _PublicMessagePortalState
           _error = null;
         });
       }
-      if(_pmList.length >= value.variables.count){
+      if (_pmList.length >= value.variables.count) {
         return IndicatorResult.noMore;
-      }
-      else{
+      } else {
         return IndicatorResult.success;
       }
     }).catchError((onError, stacktrace) {
@@ -140,7 +141,6 @@ class _PublicMessagePortalState
 
   @override
   Widget build(BuildContext context) {
-
     return Consumer<DiscuzAndUserNotifier>(
         builder: (context, discuzAndUser, child) {
       if (discuzAndUser.discuz == null) {
@@ -168,20 +168,47 @@ class _PublicMessagePortalState
       footer: EasyRefreshUtils.i18nClassicFooter(context),
       refreshOnStart: true,
       controller: _controller,
-      onRefresh:  () async {
-              return await _invalidateHotThreadContent(discuz);
-
-            },
+      onRefresh: () async {
+        return await _invalidateHotThreadContent(discuz);
+      },
       onLoad: () async {
-             return await _loadPortalPublicMessage(discuz);
-            },
+        return await _loadPortalPublicMessage(discuz);
+      },
       child: ListView.builder(
         itemBuilder: (context, index) {
-          return ListTile(
-            leading: Icon(PlatformIcons(context).mail),
-            title: Text(_pmList[index].message),
-            subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(
-                context, _pmList[index].publishAt)),
+          return Column(
+            children: [
+              ListTile(
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(10000.0),
+                  child: Container(
+                    width: 48,
+                    height: 48,
+
+                    child: Icon(PlatformIcons(context).micSolid, color: Theme.of(context).colorScheme.onPrimaryContainer,),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                    ),
+                  ),
+                ),
+                title: Text(_pmList[index].message),
+                subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(
+                    context, _pmList[index].publishAt)),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      platformPageRoute(
+                          context: context,
+                          builder: (context) => InternalWebviewBrowserPage(
+                              discuz,
+                              user,
+                              URLUtils.getPublicMessageURL(
+                                  discuz, _pmList[index].id))));
+                },
+              ),
+              Divider()
+            ],
           );
         },
         itemCount: _pmList.length,
