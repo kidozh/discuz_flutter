@@ -194,8 +194,7 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
                       .colorScheme.primary,
                   unselectedLabelColor: Colors.grey,
                 ),
-                SizedBox(
-                    height: 100,
+                Expanded(
                     child: TabBarView(children: tabBarViewList))
 
               ],
