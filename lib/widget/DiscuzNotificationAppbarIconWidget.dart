@@ -17,14 +17,14 @@ class DiscuzNotificationAppbarIconWidget extends StatelessWidget{
 
     return Consumer<DiscuzNotificationProvider>(
       builder: (context, discuzNotification, child){
-        if(discuzNotification.noticeCount.newprompt == 0){
+        if(discuzNotification.noticeCount.newprompt == 0 && discuzNotification.noticeCount.newmypost == 0){
           return Container();
         }
         else{
           return PlatformIconButton(
             padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
             icon: Badge.count(
-                count: discuzNotification.noticeCount.newprompt,
+                count: discuzNotification.noticeCount.newprompt + discuzNotification.noticeCount.newmypost,
                 alignment: AlignmentDirectional.topEnd,
                 child: Icon(AppPlatformIcons(context).notificationSolid),
             ),
