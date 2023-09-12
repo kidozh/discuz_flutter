@@ -19,11 +19,16 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html_audio/flutter_html_audio.dart';
 import 'package:flutter_html_iframe/flutter_html_iframe.dart';
+import 'package:flutter_html_svg/flutter_html_svg.dart';
+import 'package:flutter_html_table/flutter_html_table.dart';
+import 'package:flutter_html_video/flutter_html_video.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_countdown/slide_countdown.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import '../utility/URLUtils.dart';
 
@@ -298,6 +303,20 @@ class DiscuzHtmlWidget extends StatelessWidget{
 
           },
           extensions: [
+            const IframeHtmlExtension(),
+            //MathHtmlExtension(),
+            const SvgHtmlExtension(),
+            const AudioHtmlExtension(),
+            const TableHtmlExtension(),
+            const VideoHtmlExtension(),
+            TagWrapExtension(
+                tagsToWrap: {"table"},
+                builder: (child) {
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: child,
+                  );
+                }),
             ImageExtension(
                 //matchesAssetImages: false,
                 //matchesDataImages: false,
@@ -334,11 +353,6 @@ class DiscuzHtmlWidget extends StatelessWidget{
 
                 }
             ),
-            // IframeHtmlExtension(
-            //   navigationDelegate: (request) {
-            //     //Return decision here
-            //   },
-            // ),
             OnImageTapExtension(onImageTap: (src, imgAttributes, element){
               if (src!= null){
                 VibrationUtils.vibrateWithClickIfPossible();
@@ -420,6 +434,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                   }
                 }
             )
+
           ],
         );
       }),
@@ -461,7 +476,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                     ),
                   ),
                   SizedBox(height: 16.0,),
-                  Text(S.of(context).outerlinkOpenMessage,style: Theme.of(context).textTheme.bodyText1,),
+                  Text(S.of(context).outerlinkOpenMessage,style: Theme.of(context).textTheme.bodyLarge,),
 
 
                 ]

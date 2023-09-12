@@ -162,31 +162,34 @@ class _PrivateMessagePortalState
               _controller.callRefresh();
             }),
           Expanded(
-              child: getEasyRefreshWidget(
-                  discuzAndUser.discuz!, discuzAndUser.user))
+              child: EasyRefresh(
+                header: EasyRefreshUtils.i18nClassicHeader(context),
+                footer: EasyRefreshUtils.i18nClassicFooter(context),
+                refreshOnStart: true,
+                controller: _controller,
+                onRefresh: () async {
+                  return await _invalidateHotThreadContent(discuzAndUser.discuz!);
+                },
+                onLoad: () async {
+                  return await _loadPortalPrivateMessage(discuzAndUser.discuz!);
+                },
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: [
+                        PrivateMessagePortalWidget(discuzAndUser.discuz!, discuzAndUser.user, _pmList[index]),
+                        Divider()
+                      ],
+                    );
+                  },
+                  itemCount: _pmList.length,
+                ),
+              )
+          )
         ],
       );
     });
   }
 
-  Widget getEasyRefreshWidget(Discuz discuz, User? user) {
-    return EasyRefresh(
-      header: EasyRefreshUtils.i18nClassicHeader(context),
-      footer: EasyRefreshUtils.i18nClassicFooter(context),
-      refreshOnStart: true,
-      controller: _controller,
-      onRefresh: () async {
-              return await _invalidateHotThreadContent(discuz);
-            },
-      onLoad: () async {
-              return await _loadPortalPrivateMessage(discuz);
-            },
-      child: ListView.builder(
-        itemBuilder: (context, index) {
-          return PrivateMessagePortalWidget(discuz, user, _pmList[index]);
-        },
-        itemCount: _pmList.length,
-      ),
-    );
-  }
+
 }
