@@ -317,7 +317,77 @@ class PostState extends State<PostStatefulWidget> {
     );
   }
 
+
+
   Widget getPostPopupMenu(BuildContext context) {
+    return PlatformPopupMenu(
+        icon: Padding(
+          padding: EdgeInsets.only(right: isCupertino(context)?8.0:0.0),
+          child: Icon(
+              PlatformIcons(context).ellipsis,
+              size: 16,
+              color: Theme.of(context).disabledColor
+          ),
+        ),
+
+        options: [
+          PopupMenuOption(
+            label: S.of(context).replyPost,
+            onTap: (option){
+              Provider.of<ReplyPostNotifierProvider>(context, listen: false)
+                  .setPost(_post);
+            }
+          ),
+          PopupMenuOption(
+            label: S.of(context).viewUserInfo(_post.author),
+              onTap: (option){
+                User? user =
+                    Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                        .user;
+                Navigator.push(
+                    context,
+                    platformPageRoute(
+                        context: context,
+                        builder: (context) =>
+                            UserProfilePage(_discuz, user, _post.authorId)));
+              }
+          ),
+          PopupMenuOption(
+            label: S.of(context).onlyViewAuthor,
+              onTap: (option){
+                if (onAuthorSelectedCallback != null) {
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  onAuthorSelectedCallback!();
+                }
+              }
+          ),
+          if (!this.isUserBlocked)
+            PopupMenuOption(
+              label: S.of(context).blockUser,
+                onTap: (option) async {
+                  // block user
+                  setState(() {
+                    this.isUserBlocked = true;
+                  });
+                  BlockUser blockUser = BlockUser(
+                      _post.authorId, _post.author, DateTime.now(), _discuz);
+                  int insertId = await _blockUserDao.insertBlockUser(blockUser);
+                }
+            ),
+          if (this.isUserBlocked)
+            PopupMenuOption(
+              label: S.of(context).unblockUser,
+                onTap: (option){
+                  setState(() {
+                    this.isUserBlocked = false;
+                  });
+                  _blockUserDao.deleteBlockUserByUid(_post.authorId, _discuz);
+                }
+            ),
+        ]
+    );
+
+
     return PopupMenuButton(
       padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0, bottom: 0),
       icon: Icon(PlatformIcons(context).ellipsis,
@@ -472,7 +542,7 @@ class PostState extends State<PostStatefulWidget> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 4.0),
+            padding: EdgeInsets.only(left: 6.0),
             child: Container(
               color: Theme.of(context)
                   .colorScheme
@@ -499,7 +569,7 @@ class PostState extends State<PostStatefulWidget> {
                         color: Theme.of(context)
                             .colorScheme
                             .onPrimaryContainer,
-                        fontWeight: FontWeight.w300,
+                        fontWeight: FontWeight.normal,
                         fontSize: FontSize.small.value)),
               )
           )
@@ -540,15 +610,14 @@ class PostState extends State<PostStatefulWidget> {
                             text: _post.author,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 16)),
-                        if (groupTitle != "")
 
                         if (_authorId == _post.authorId)
                           TextSpan(
                               text: ' ' + S.of(context).postAuthorLabel,
                               style: TextStyle(
-                                  fontWeight: FontWeight.normal,
+                                  fontWeight: FontWeight.w300,
                                   color: Theme.of(context).colorScheme.primary,
-                                  fontSize: 16)),
+                                  fontSize: 14)),
                       ],
                     ),
                   ),
@@ -571,6 +640,8 @@ class PostState extends State<PostStatefulWidget> {
                           TextSpan(
                               text: ' ' + _post.ipLocation,
                               style: TextStyle(fontSize: 14)),
+                        if (groupTitle != "")
+                          getGroupWidgetSpan(context),
                       ],
                     ),
                   ),
