@@ -59,13 +59,13 @@ class DiscuzHtmlWidget extends StatelessWidget{
           title = title.replaceFirst("=", "");
         }
         //log("Recv matched message ${match.group(1)} $title");
-        return '<collapse title="$title"> \n';
+        return '<collapse title="$title">';
       }
       else{
-        return '<collapse>\n';
+        return '<collapse>';
       }
     });
-    string = string.replaceAll(RegExp(r"\[/collapse.*?\]"), r"<br/></collapse>");
+    string = string.replaceAll(RegExp(r"\[/collapse.*?\]"), r"</collapse>");
 
     return string;
   }
@@ -73,7 +73,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
   String replaceSpoilTag(String string){
     string = string
         .replaceAll(RegExp(r"\[spoil.*?\]"), r'<spoil><br/>')
-        .replaceAll(RegExp(r"\[/spoil\]"), r"<br/></spoil>");
+        .replaceAll(RegExp(r"\[/spoil\]"), r"</spoil>");
 
     return string;
   }
@@ -92,8 +92,20 @@ class DiscuzHtmlWidget extends StatelessWidget{
     String decodedString = replaceCollapseTag(this.html);
     decodedString = replaceSpoilTag(decodedString);
     decodedString = replaceCountDownTag(decodedString);
+    decodedString = replaceMediaTag(decodedString);
     //log("decode string ${decodedString}");
     return decodedString;
+  }
+
+  String replaceMediaTag(String string){
+    // process video
+    string = string.replaceAllMapped(RegExp(r"\[video.*?\](.*?)\[/video\]"), (match) {
+      if(match.groupCount == 1){
+        return '<video controls src="${match.group(1)}"></video>';
+      }
+      return "";
+    });
+    return string;
   }
 
 
