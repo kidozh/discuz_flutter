@@ -373,6 +373,9 @@ class DiscuzHtmlWidget extends StatelessWidget{
 
                 return ExpansionTile(
                   title: Text(title),
+                  onExpansionChanged: (bool){
+                    VibrationUtils.vibrateWithClickIfPossible();
+                  },
                   controlAffinity: ListTileControlAffinity.platform,
                   children: [
                     DiscuzHtmlWidget(discuz, extensionContext.innerHtml)

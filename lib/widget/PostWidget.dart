@@ -325,7 +325,7 @@ class PostState extends State<PostStatefulWidget> {
           padding: EdgeInsets.only(right: isCupertino(context)?8.0:0.0),
           child: Icon(
               PlatformIcons(context).ellipsis,
-              size: 16,
+              size: 24,
               color: Theme.of(context).disabledColor
           ),
         ),
@@ -334,6 +334,7 @@ class PostState extends State<PostStatefulWidget> {
           PopupMenuOption(
             label: S.of(context).replyPost,
             onTap: (option){
+              VibrationUtils.vibrateWithClickIfPossible();
               Provider.of<ReplyPostNotifierProvider>(context, listen: false)
                   .setPost(_post);
             }
@@ -341,6 +342,7 @@ class PostState extends State<PostStatefulWidget> {
           PopupMenuOption(
             label: S.of(context).viewUserInfo(_post.author),
               onTap: (option){
+                VibrationUtils.vibrateWithClickIfPossible();
                 User? user =
                     Provider.of<DiscuzAndUserNotifier>(context, listen: false)
                         .user;
@@ -355,6 +357,7 @@ class PostState extends State<PostStatefulWidget> {
           PopupMenuOption(
             label: S.of(context).onlyViewAuthor,
               onTap: (option){
+                VibrationUtils.vibrateWithClickIfPossible();
                 if (onAuthorSelectedCallback != null) {
                   VibrationUtils.vibrateWithClickIfPossible();
                   onAuthorSelectedCallback!();
@@ -365,6 +368,7 @@ class PostState extends State<PostStatefulWidget> {
             PopupMenuOption(
               label: S.of(context).blockUser,
                 onTap: (option) async {
+                  VibrationUtils.vibrateWithClickIfPossible();
                   // block user
                   setState(() {
                     this.isUserBlocked = true;
@@ -378,6 +382,7 @@ class PostState extends State<PostStatefulWidget> {
             PopupMenuOption(
               label: S.of(context).unblockUser,
                 onTap: (option){
+                  VibrationUtils.vibrateWithClickIfPossible();
                   setState(() {
                     this.isUserBlocked = false;
                   });
