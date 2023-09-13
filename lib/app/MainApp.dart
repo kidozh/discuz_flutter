@@ -327,6 +327,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   Future<void> _triggerSwitchDiscuzDialog() async {
+    VibrationUtils.vibrateWithClickIfPossible();
     await _getDiscuzList();
     List<Widget> widgetList = [];
     for (int i = 0; i < _allDiscuzs.length; i++) {
