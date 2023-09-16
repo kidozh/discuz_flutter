@@ -400,58 +400,46 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 }
 
               }),
-          PopupMenuButton(
-            icon: Icon(PlatformIcons(context).ellipsis, size: 24,),
-            itemBuilder: (context) => [
-              PopupMenuItem<int>(
-                child: Text(S.of(context).forumInformation),
-                value: 3,
-              ),
-              PopupMenuItem<int>(
-                child: Text(S.of(context).forumSortPosts),
-                value: 4,
-              ),
-              PopupMenuItem<int>(
-                child: Text(S.of(context).openViaInternalBrowser),
-                value: 0,
-              ),
-              PopupMenuItem<int>(
-                child: Text(S.of(context).share),
-                value: 1,
-              )
-            ],
-            onSelected: (int pos) {
-              VibrationUtils.vibrateWithClickIfPossible();
-              switch (pos) {
-                case 0:
-                  {
-                    Navigator.push(
-                        context,
-                        platformPageRoute(
-                            context: context,
-                            builder: (context) => InternalWebviewBrowserPage(
-                                discuz,
-                                user,
-                                URLUtils.getForumDisplayURL(discuz, fid))));
-                    break;
+          PlatformPopupMenu(
+              icon: Icon(PlatformIcons(context).ellipsis, size: 24,),
+              options: [
+                PopupMenuOption(
+                  label: S.of(context).forumInformation,
+                  onTap: (option){
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    _showInformationBottomSheet(context);
                   }
-                case 1:{
-                  Share.share(URLUtils.getForumDisplayURL(discuz, fid), subject: _displayForumResult.discuzIndexVariables.forum.name);
-                  break;
-                }
-                case 3:{
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  _showInformationBottomSheet(context);
-                  break;
-                }
-                case 4:{
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  _showForumFilterBottomSheet(context);
-                  break;
-                }
-              }
-            },
-          )
+                ),
+                PopupMenuOption(
+                    label: S.of(context).forumSortPosts,
+                    onTap: (option){
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      _showForumFilterBottomSheet(context);
+                    }
+                ),
+                PopupMenuOption(
+                    label: S.of(context).openViaInternalBrowser,
+                    onTap: (option){
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      Navigator.push(
+                          context,
+                          platformPageRoute(
+                              context: context,
+                              builder: (context) => InternalWebviewBrowserPage(
+                                  discuz,
+                                  user,
+                                  URLUtils.getForumDisplayURL(discuz, fid))));
+                    }
+                ),
+                PopupMenuOption(
+                    label: S.of(context).share,
+                    onTap: (option){
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      Share.share(URLUtils.getForumDisplayURL(discuz, fid), subject: _displayForumResult.discuzIndexVariables.forum.name);
+                    }
+                ),
+              ]
+          ),
         ],
         title: _displayForumResult == null
             ? Text(S.of(context).forumDisplayTitle,overflow: TextOverflow.ellipsis)
