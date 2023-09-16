@@ -376,7 +376,13 @@ class PostState extends State<PostStatefulWidget> {
                   BlockUser blockUser = BlockUser(
                       _post.authorId, _post.author, DateTime.now(), _discuz);
                   int insertId = await _blockUserDao.insertBlockUser(blockUser);
-                }
+                },
+                material: (context, platform)=> MaterialPopupMenuOptionData(
+                  textStyle: TextStyle(color: Theme.of(context).colorScheme.error)
+                ),
+                cupertino: (context, platform) => CupertinoPopupMenuOptionData(
+                    isDestructiveAction: true
+                )
             ),
           if (this.isUserBlocked)
             PopupMenuOption(
@@ -387,98 +393,13 @@ class PostState extends State<PostStatefulWidget> {
                     this.isUserBlocked = false;
                   });
                   _blockUserDao.deleteBlockUserByUid(_post.authorId, _discuz);
-                }
+                },
+              cupertino: (context, platform) => CupertinoPopupMenuOptionData(
+                isDestructiveAction: true
+              )
             ),
+
         ]
-    );
-
-
-    return PopupMenuButton(
-      padding: EdgeInsets.only(left: 0.0, right: 0.0, top: 0, bottom: 0),
-      icon: Icon(PlatformIcons(context).ellipsis,
-          size: 16,
-          color: Theme.of(context).disabledColor
-      ),
-      itemBuilder: (context) => [
-        PopupMenuItem<int>(
-          child: Text(S.of(context).replyPost),
-          value: 0,
-        ),
-        PopupMenuItem<int>(
-          child: Text(S.of(context).viewUserInfo(_post.author)),
-          value: 1,
-        ),
-        PopupMenuItem<int>(
-          child: Text(S.of(context).onlyViewAuthor),
-          value: 2,
-        ),
-        if (!this.isUserBlocked)
-          PopupMenuItem<int>(
-            child: Text(S.of(context).blockUser),
-            value: 3,
-          ),
-        if (this.isUserBlocked)
-          PopupMenuItem<int>(
-            child: Text(S.of(context).unblockUser),
-            value: 4,
-          ),
-      ],
-      onSelected: (int pos) async {
-        VibrationUtils.vibrateWithClickIfPossible();
-        switch (pos) {
-          case 0:
-            {
-              // set provider to
-
-              Provider.of<ReplyPostNotifierProvider>(context, listen: false)
-                  .setPost(_post);
-              break;
-            }
-          case 1:
-            {
-              User? user =
-                  Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-                      .user;
-              Navigator.push(
-                  context,
-                  platformPageRoute(
-                      context: context,
-                      builder: (context) =>
-                          UserProfilePage(_discuz, user, _post.authorId)));
-              break;
-            }
-          case 2:
-            {
-              // set provider to
-
-              if (onAuthorSelectedCallback != null) {
-                VibrationUtils.vibrateWithClickIfPossible();
-                onAuthorSelectedCallback!();
-              }
-              break;
-            }
-          case 3:
-            {
-              // block user
-              setState(() {
-                this.isUserBlocked = true;
-              });
-              BlockUser blockUser = BlockUser(
-                  _post.authorId, _post.author, DateTime.now(), _discuz);
-              int insertId = await _blockUserDao.insertBlockUser(blockUser);
-              break;
-            }
-          case 4:
-            {
-              // unblock user
-              setState(() {
-                this.isUserBlocked = false;
-              });
-              _blockUserDao.deleteBlockUserByUid(_post.authorId, _discuz);
-              break;
-            }
-        }
-      },
     );
   }
 
