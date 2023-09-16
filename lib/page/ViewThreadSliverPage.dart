@@ -138,6 +138,11 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     //_invalidateContent();
     bindFocusNode();
     _loadDao();
+    // set reply post as null
+    Provider.of<ReplyPostNotifierProvider>(
+        context,
+        listen: false)
+        .setPost(null);
   }
 
   void _loadDao() async {
@@ -825,51 +830,59 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
               builder: (context, discuzAndUser, child) {
                 if (discuzAndUser.user != null) {
                   return Container(
-                    padding: EdgeInsets.all(4.0),
+                    //padding: EdgeInsets.all(4.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Consumer<ReplyPostNotifierProvider>(
                           builder: (context, replyPost, child) {
-                            if (replyPost.post != null) {
-                              return Row(
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  ActionChip(
-                                    label: Text(replyPost.post!.author),
-                                    avatar: Icon(PlatformIcons(context)
-                                        .clearThickCircled),
-                                    onPressed: () {
-                                      VibrationUtils
-                                          .vibrateWithClickIfPossible();
-                                      // removing it
-                                      Provider.of<ReplyPostNotifierProvider>(
-                                              context,
-                                              listen: false)
-                                          .setPost(null);
-                                    },
-                                  ),
-                                  Expanded(
-                                      child: Padding(
-                                          padding: EdgeInsets.only(
-                                              left: 8.0, right: 8.0),
-                                          child: Text(
-                                            replyPost.post!.message
-                                                .replaceAll(
-                                                    RegExp(r"<img*?>"),
-                                                    S
-                                                        .of(context)
-                                                        .pictureTagInMessage)
-                                                .replaceAll(
-                                                    RegExp(
-                                                        r"<div.*?>.*?</div>"),
-                                                    "")
-                                                .replaceAll(
-                                                    RegExp(r"<.*?>"), ""),
-                                            style: TextStyle(fontSize: 14),
-                                            overflow: TextOverflow.ellipsis,
-                                          )))
-                                ],
+                            if (replyPost.post != null && _viewThreadResult.threadVariables.member_uid != 0) {
+                              return Container(
+                                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                                color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.6),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    InkWell(
+                                      child: Icon(
+                                          PlatformIcons(context).clearThickCircled,
+                                        color: Theme.of(context).colorScheme.primary,
+                                      ),
+                                      onTap: (){
+                                        VibrationUtils
+                                            .vibrateWithClickIfPossible();
+                                        // removing it
+                                        Provider.of<ReplyPostNotifierProvider>(
+                                            context,
+                                            listen: false)
+                                            .setPost(null);
+                                      },
+                                    ),
+                                    Expanded(
+                                        child: Padding(
+                                            padding: EdgeInsets.only(
+                                                left: 8.0, right: 8.0),
+                                            child: Text(
+                                              replyPost.post!.message
+                                                  .replaceAll(
+                                                  RegExp(r"<img*?>"),
+                                                  S
+                                                      .of(context)
+                                                      .pictureTagInMessage)
+                                                  .replaceAll(
+                                                  RegExp(
+                                                      r"<div.*?>.*?</div>"),
+                                                  "")
+                                                  .replaceAll(
+                                                  RegExp(r"<.*?>"), ""),
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Theme.of(context).colorScheme.onPrimaryContainer
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            )))
+                                  ],
+                                ),
                               );
                             } else {
                               return Container(height: 0);
