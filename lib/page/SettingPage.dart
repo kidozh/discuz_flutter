@@ -284,15 +284,15 @@ class _SettingPageState extends State<SettingPage> {
                     _launchURL("https:/dhp.kidozh.com");
                   },
                 ),
-                SettingsTile.navigation(
-                  title: Text(S.of(context).contactUsViaWeibo),
-                  leading: Icon(AppPlatformIcons(context).termsOfServiceOutlined),
-
-                  onPressed: (_) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    _launchURL("https://weibo.com/u/7436177109");
-                  },
-                ),
+                // SettingsTile.navigation(
+                //   title: Text(S.of(context).contactUsViaWeibo),
+                //   leading: Icon(AppPlatformIcons(context).termsOfServiceOutlined),
+                //
+                //   onPressed: (_) {
+                //     VibrationUtils.vibrateWithClickIfPossible();
+                //     _launchURL("https://weibo.com/u/7436177109");
+                //   },
+                // ),
               ],
             ),
             CustomSettingsSection(
@@ -300,15 +300,16 @@ class _SettingPageState extends State<SettingPage> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 22, bottom: 8),
-                    child: Icon(
-                      Icons.flutter_dash_rounded,
-                      size: 54,
+                    child: Image(
+                        image: AssetImage("assets/images/icon-large.png",),
+                        width: 64,
                     ),
                   ),
                   Text(
                     S.of(context).buildVersionDescription(packageVersion, packageBuildNumber),
-                    style: TextStyle(color: Color(0xFF777777)),
+                    style: TextStyle(color: Theme.of(context).disabledColor),
                   ),
+                  SizedBox(height: 32,)
                 ],
               ),
             ),

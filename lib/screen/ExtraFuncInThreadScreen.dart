@@ -119,7 +119,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
 
         // then upload to the server
         if(image != null){
-          File file = File(image.path);
+          XFile file = XFile(image.path);
           // confirm with user
           showPlatformDialog(
               context: context,
@@ -134,7 +134,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
                           leading: PlatformCircularProgressIndicator(),
                           title: Text(S.of(context).uploadingImageToServer),
                         ),
-                      Image.file(file),
+                      Image.file(File(file.path)),
                     ],
                   ),
                   actions: [
@@ -151,14 +151,14 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
                         Directory directory = await getApplicationDocumentsDirectory();
                         final compressionPath = directory.path+"/"+file.path.split("/").last;
                         // with 90% compression
-                        File? compressedFile = await FlutterImageCompress.compressAndGetFile(file.path,
+                        XFile? compressedFile = await FlutterImageCompress.compressAndGetFile(file.path,
                           compressionPath,
                         );
                         if(compressedFile != null){
                           file = compressedFile;
                         }
 
-                        String respString = await uploadPhotoToDiscuzServer(context, file);
+                        String respString = await uploadPhotoToDiscuzServer(context, File(file.path));
                         setState(() {
                           isUploadingPicture = false;
                         });
@@ -178,7 +178,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
                           isUploadingPicture = true;
                         });
                         EasyLoading.showInfo(S.of(context).uploadingImageToServer);
-                        String respString = await uploadPhotoToDiscuzServer(context, file);
+                        String respString = await uploadPhotoToDiscuzServer(context, File(file.path));
                         setState(() {
                           isUploadingPicture = false;
                         });
@@ -247,11 +247,11 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
 
                         final compressionPath = directory.path+"/"+file.path.split("/").last;
                         // with 90% compression
-                        File? compressedFile = await FlutterImageCompress.compressAndGetFile(file.path,
+                        XFile? compressedFile = await FlutterImageCompress.compressAndGetFile(file.path,
                           compressionPath,
                         );
                         if(compressedFile != null){
-                          file = compressedFile;
+                          file = File(compressedFile.path);
                         }
                         String respString = await uploadPhotoToDiscuzServer(context, file);
                         setState(() {
