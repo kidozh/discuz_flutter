@@ -148,7 +148,7 @@ abstract class MobileApiClient {
       @Query("fid") int fid,
       @Query("tid") int tid,
       @Field("formhash") String formHash,
-      @Field("pollanswers[]") List<int> checkedOptionId);
+      @Field("pollanswers[]") List<String> checkedOptionId);
 
   @POST(
       "/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes&action=votepoll")

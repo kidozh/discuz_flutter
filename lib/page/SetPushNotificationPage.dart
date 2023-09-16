@@ -79,6 +79,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
             SettingsTile.switchTile(
               title: Text(S.of(context).pushNotificationEnable),
               description: Text(S.of(context).pushNotificationDescription),
+              activeSwitchColor: Theme.of(context).colorScheme.primary,
               initialValue: allowPush,
               onToggle: (value) async {
                 VibrationUtils.vibrateWithClickIfPossible();

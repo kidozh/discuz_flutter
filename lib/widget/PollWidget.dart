@@ -80,7 +80,7 @@ class PollState extends State<PollStatefulWidget>{
   }
 
   Future<bool> vote(FlutterPolls.PollOption pollOption) async{
-    List<int> checkedOptionIds = [];
+    List<String> checkedOptionIds = [];
     if(pollOption.id == null){
       return false;
     }
@@ -140,11 +140,11 @@ class PollState extends State<PollStatefulWidget>{
     List<FlutterPolls.PollOption> flutterPollOptionList = [];
 
     flutterPollOptionList = pollOptionList.map(
-            (e) => FlutterPolls.PollOption(id:e.id,title: Text(e.name), votes: e.voteNumber)
+            (e) => FlutterPolls.PollOption(id:e.id.toString(),title: Text(e.name), votes: e.voteNumber)
     ).toList();
     log("The poll option: ${flutterPollOptionList}");
     int maxVote = 0;
-    int? maxOptionId = null;
+    String? maxOptionId = null;
     for(int i=0;i<flutterPollOptionList.length; i++){
       if(flutterPollOptionList[i].votes> maxVote){
         maxVote = flutterPollOptionList[i].votes;
@@ -162,7 +162,7 @@ class PollState extends State<PollStatefulWidget>{
             return await vote(pollOption);
           },
           hasVoted: !poll.allowVote,
-          userVotedOptionId: !poll.allowVote? maxOptionId: null,
+          userVotedOptionId: !poll.allowVote? int.parse(maxOptionId!): null,
           pollTitle: poll.allowVote?Text(S.of(context).pollTitle):Text(S.of(context).pollNotAllowed),
           pollOptions: flutterPollOptionList,
           pollEnded: poll.expiredAt.isBefore(DateTime.now()),

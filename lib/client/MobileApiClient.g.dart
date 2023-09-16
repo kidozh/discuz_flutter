@@ -583,7 +583,7 @@ class _MobileApiClient implements MobileApiClient {
     int fid,
     int tid,
     String formHash,
-    List<int> checkedOptionId,
+    List<String> checkedOptionId,
   ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
