@@ -637,26 +637,16 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
               setNewViewThreadQuery(viewThreadQuery);
             },
           ),
-          PopupMenuButton(
-            icon: Icon(
-              PlatformIcons(context).ellipsis,
-              size: 24,
-            ),
-            itemBuilder: (context) => [
-              PopupMenuItem<int>(
-                child: Text(S.of(context).openViaInternalBrowser),
-                value: 0,
+          PlatformPopupMenu(
+              icon: Icon(
+                PlatformIcons(context).ellipsis,
+                size: 24,
               ),
-              PopupMenuItem<int>(
-                child: Text(S.of(context).share),
-                value: 1,
-              )
-            ],
-            onSelected: (int pos) {
-              VibrationUtils.vibrateWithClickIfPossible();
-              switch (pos) {
-                case 0:
-                  {
+              options: [
+                PopupMenuOption(
+                  label: S.of(context).openViaInternalBrowser,
+                  onTap: (option){
+                    VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.push(
                         context,
                         platformPageRoute(
@@ -665,18 +655,19 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                 discuz,
                                 user,
                                 URLUtils.getViewThreadURL(discuz, tid))));
-                    break;
                   }
-                case 1:
-                  {
-                    Share.share(URLUtils.getViewThreadURL(discuz, tid),
-                        subject: _viewThreadResult
-                            .threadVariables.threadInfo.subject);
-                    break;
-                  }
-              }
-            },
-          )
+                ),
+                PopupMenuOption(
+                    label: S.of(context).share,
+                    onTap: (option){
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      Share.share(URLUtils.getViewThreadURL(discuz, tid),
+                          subject: _viewThreadResult
+                              .threadVariables.threadInfo.subject);
+                    }
+                ),
+              ]
+          ),
         ],
       ),
       body: Column(
