@@ -29,6 +29,7 @@ import 'package:discuz_flutter/utility/PushServiceUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:dual_screen/dual_screen.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -118,14 +119,14 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(
                 seedColor: themeColorEntity.themeColor,
               brightness: Brightness.light,
-            ),
+            ).harmonized(),
             useMaterial3: themeColorEntity.useMaterial3
         );
         final materialThemeDataDark = ThemeData.from(
             colorScheme: ColorScheme.fromSeed(
               seedColor: themeColorEntity.themeColor,
               brightness: Brightness.dark,
-            ),
+            ).harmonized(),
             useMaterial3: themeColorEntity.useMaterial3
         );
         const darkDefaultCupertinoTheme =
