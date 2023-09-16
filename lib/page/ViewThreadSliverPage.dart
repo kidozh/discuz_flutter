@@ -878,6 +878,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                         ),
 
                         // input fields
+                        if(_viewThreadResult.threadVariables.member_uid != 0)
                         Column(
                           children: [
                             Row(
