@@ -531,7 +531,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "ok": MessageLookupByLibrary.simpleMessage("OK"),
         "onlineHours": m25,
         "onlineHoursTitle": MessageLookupByLibrary.simpleMessage("Online Time"),
-        "onlyViewAuthor": MessageLookupByLibrary.simpleMessage("OP mode"),
+        "onlyViewAuthor":
+            MessageLookupByLibrary.simpleMessage("OP mode / View all"),
         "openFileInExternalAppActionText":
             MessageLookupByLibrary.simpleMessage("Open"),
         "openFileInExternalAppContent": MessageLookupByLibrary.simpleMessage(

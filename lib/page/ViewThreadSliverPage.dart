@@ -839,7 +839,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                             if (replyPost.post != null && _viewThreadResult.threadVariables.member_uid != 0) {
                               return Container(
                                 padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-                                color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.6),
+                                color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.max,
                                   children: [
@@ -880,6 +880,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                                   color: Theme.of(context).colorScheme.onPrimaryContainer
                                               ),
                                               overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
                                             )))
                                   ],
                                 ),

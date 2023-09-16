@@ -190,7 +190,7 @@ class UserPreferencesUtils{
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     var boolValue =  prefs.getBool(disableFontCustomizationKey);
-    return boolValue == null ? false : boolValue;
+    return boolValue == null ? true : boolValue;
   }
 
   static final String testFlightNotificationFlag = "testFlightNotificationFlag";

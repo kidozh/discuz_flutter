@@ -2381,10 +2381,10 @@ class S {
     );
   }
 
-  /// `OP mode`
+  /// `OP mode / View all`
   String get onlyViewAuthor {
     return Intl.message(
-      'OP mode',
+      'OP mode / View all',
       name: 'onlyViewAuthor',
       desc: '',
       args: [],
