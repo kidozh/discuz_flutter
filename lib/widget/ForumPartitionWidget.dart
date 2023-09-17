@@ -7,6 +7,7 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/widget/ForumCardWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 // ignore: must_be_immutable
 class ForumPartitionWidget extends StatelessWidget{
@@ -30,15 +31,19 @@ class ForumPartitionWidget extends StatelessWidget{
     return Container(
       child: Column(
         children: [
-          ListTile(
-            leading: Icon(AppPlatformIcons(context).forumOutlined,color: Theme.of(context).colorScheme.primary,),
-            title: Text(_forumPartition.name,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.bold
+          Container(
+            color: Theme.of(context).colorScheme.onPrimary,
+            child: PlatformListTile(
+              leading: Icon(AppPlatformIcons(context).forumOutlined,color: Theme.of(context).colorScheme.primary,),
+              title: Text(_forumPartition.name,
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: isCupertino(context)?FontWeight.w200: FontWeight.normal,
+                ),
               ),
             ),
-          ),
+          )
+          ,
 
           GridView.builder(
               physics: new NeverScrollableScrollPhysics(),
@@ -55,6 +60,7 @@ class ForumPartitionWidget extends StatelessWidget{
                 return ForumCardWidget(_discuz,_user,subForum);
               },
           ),
+          if(isMaterial(context))
           Divider()
         ],
       ),
