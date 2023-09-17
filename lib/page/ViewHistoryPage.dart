@@ -11,6 +11,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
@@ -42,7 +43,6 @@ class ViewHistoryStateWidget extends StatefulWidget{
 
   @override
   ViewHistoryState createState() {
-    // TODO: implement createState
     return ViewHistoryState(discuz);
   }
 
@@ -61,7 +61,6 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _initDb();
 
@@ -77,15 +76,28 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
 
   void _showDeleteAllDialog(BuildContext context){
     showDialog(context: context, builder: (context) {
-      return AlertDialog(
+      return PlatformAlertDialog(
         title: Text(S.of(context).clearAllViewHistories),
         content: Text(S.of(context).deleteViewHistoryWarnContent),
         actions: [
-          TextButton(onPressed: () async{
+          PlatformTextButton(onPressed: () async{
+            VibrationUtils.vibrateWithHeavyFeedbackIfPossible();
             await _clearAllViewHistory();
             Navigator.pop(context);
 
-          }, child: Text(S.of(context).ok))
+          }, child: Text(
+              S.of(context).ok,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+          ),
+
+          ),
+          PlatformTextButton(onPressed: () async{
+            VibrationUtils.vibrateWithClickIfPossible();
+            Navigator.pop(context);
+
+          }, child: Text(S.of(context).cancel),
+
+          )
         ],
       );
     }
@@ -122,7 +134,10 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
   Widget getUserAvatar(int uid, String username){
     return CachedNetworkImage(
       imageUrl: URLUtils.getAvatarURL(discuz, uid.toString()),
-      progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+      progressIndicatorBuilder: (context, url, downloadProgress) => PlatformCircularProgressIndicator(
+          material: (context, platform) => MaterialProgressIndicatorData(value: downloadProgress.progress),
+
+      ),
       errorWidget: (context, url, error) => Container(
         // width: 16.0,
         // height: 16.0,
@@ -150,7 +165,6 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     if(_viewHistoryDao != null){
       return PlatformScaffold(
         appBar: PlatformAppBar(
@@ -163,7 +177,7 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
                 _showDeleteAllDialog(context);
               },
               //label: S.of(context).clearAllViewHistories,
-              icon: Icon(PlatformIcons(context).delete),
+              icon: Icon(PlatformIcons(context).deleteSolid),
             )
           ],
         ),
@@ -183,33 +197,55 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
                     key: Key(viewHistory.key.toString()),
                     child: InkWell(
                       child: Card(
+                        elevation: isCupertino(context)? 0: 4.0,
                         child: Column(
                           children: [
                             ListTile(
                               leading: Container(
-                                width: 32,
+                                width: 48,
                                 child: viewHistory.type == "thread" ?
                                 getUserAvatar(viewHistory.authorId, viewHistory.author) :
                                 CircleAvatar(
-                                  backgroundColor: Theme.of(context).primaryColor,
-                                  child: Icon(Icons.forum_outlined, color: Colors.white, size: 16,),
+                                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                                  child: Icon(
+                                    AppPlatformIcons(context).forumOutlined,
+                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                    size: 24,
+                                  ),
                                 )
                                 ,
                               ),
                               title: Text(viewHistory.title),
-                              subtitle: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  if(viewHistory.type == "thread")
-                                    Icon(PlatformIcons(context).person, size: 12,),
-                                  if(viewHistory.type == "thread")
-                                    Text(viewHistory.author, style: TextStyle(fontSize: 12),),
-                                  SizedBox(width: 4,),
-                                  Icon(Icons.access_time, size: 12,),
-                                  Text(TimeDisplayUtils.getLocaledTimeDisplay(context,viewHistory.updateTime), style: TextStyle(fontSize: 12),)
-                                ],
+                              subtitle: RichText(
+                                overflow: TextOverflow.ellipsis,
+                                text: TextSpan(
+                                  text: "",
+                                  style: DefaultTextStyle.of(context).style,
+                                  children: [
+                                    if(viewHistory.author.isNotEmpty)
+                                    TextSpan(
+                                        text: viewHistory.author,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)
+                                    ),
+                                    if(viewHistory.author.isNotEmpty)
+                                    TextSpan(
+                                        text: ' · ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)
+                                    ),
+
+                                    TextSpan(
+                                          text:  TimeDisplayUtils.getLocaledTimeDisplay(context,viewHistory.updateTime),
+                                          style: TextStyle(
+                                              color: Theme.of(context).colorScheme.primary,)
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
+                            if(isCupertino(context))
+                              Divider()
                           ],
                         ),
 

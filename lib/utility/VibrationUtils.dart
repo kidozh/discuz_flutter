@@ -42,4 +42,12 @@ class VibrationUtils{
       Vibrate.feedback(FeedbackType.error);
     }
   }
+
+  static void vibrateWithHeavyFeedbackIfPossible() async{
+    bool canVibrate = await Vibrate.canVibrate;
+    bool enableHapticFeedback = await UserPreferencesUtils.getHapticFeedbackPreference();
+    if (canVibrate && enableHapticFeedback){
+      Vibrate.feedback(FeedbackType.heavy);
+    }
+  }
 }
