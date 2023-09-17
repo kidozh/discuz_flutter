@@ -38,6 +38,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:push/push.dart' as Push;
+import 'package:upgrader/upgrader.dart';
 
 import '../client/PushServiceClient.dart';
 import '../main.dart';
@@ -176,20 +177,22 @@ class MyApp extends StatelessWidget {
                 onThemeModeChanged: (themeMode) {
                   themeMode = themeMode;
                 },
-                builder: (context) => PlatformApp(
-                      //title: S.of(context).appName,
-                      navigatorKey: navigatorKey,
-                      debugShowCheckedModeBanner: false,
-                      localizationsDelegates: [
-                        S.delegate,
-                        GlobalCupertinoLocalizations.delegate,
-                        GlobalMaterialLocalizations.delegate,
-                        GlobalWidgetsLocalizations.delegate
-                      ],
-                      supportedLocales: S.delegate.supportedLocales,
-                      builder: EasyLoading.init(),
-                      home: MainTwoPanePage(navigatorKey: this.navigatorKey,),
-                    ));
+                builder: (context) => UpgradeAlert(
+                  child: PlatformApp(
+                    //title: S.of(context).appName,
+                    navigatorKey: navigatorKey,
+                    debugShowCheckedModeBanner: false,
+                    localizationsDelegates: [
+                      S.delegate,
+                      GlobalCupertinoLocalizations.delegate,
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalWidgetsLocalizations.delegate
+                    ],
+                    supportedLocales: S.delegate.supportedLocales,
+                    builder: EasyLoading.init(),
+                    home: MainTwoPanePage(navigatorKey: this.navigatorKey,),
+                  )),
+                );
           },
         );
       },

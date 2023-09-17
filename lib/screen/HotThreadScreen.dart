@@ -217,7 +217,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       },
       child: CustomScrollView(
         slivers: [
-          if (_hotThreadList.isEmpty)
+          if (_hotThreadList.isEmpty && result.errorResult == null)
             SliverList(
                 delegate: SliverChildBuilderDelegate(
                     (context, index) => EmptyListScreen(EmptyItemType.thread),
