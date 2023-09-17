@@ -59,7 +59,8 @@ class ViewThreadSliverPage extends StatelessWidget {
   String? passedSubject;
   VoidCallback? onClosed;
 
-  ViewThreadSliverPage(this.discuz, this.user, this.tid, {this.passedSubject, this.onClosed});
+  ViewThreadSliverPage(this.discuz, this.user, this.tid,
+      {this.passedSubject, this.onClosed});
 
   @override
   Widget build(BuildContext context) {
@@ -86,9 +87,7 @@ class ViewThreadStatefulSliverWidget extends StatefulWidget {
   @override
   _ViewThreadSliverState createState() {
     return _ViewThreadSliverState(this.discuz, this.user, this.tid,
-        passedSubject: passedSubject,
-        onClosed: onClosed
-    );
+        passedSubject: passedSubject, onClosed: onClosed);
   }
 }
 
@@ -112,7 +111,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   _ViewThreadSliverState(this.discuz, this.user, this.tid,
       {this.passedSubject, this.onClosed});
 
-  EasyRefreshController _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
+  EasyRefreshController _controller = EasyRefreshController(
+      controlFinishLoad: true, controlFinishRefresh: true);
   ScrollController _scrollController = ScrollController();
   ButtonState _sendReplyStatus = ButtonState.idle;
   ViewThreadQuery viewThreadQuery = ViewThreadQuery();
@@ -139,9 +139,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     bindFocusNode();
     _loadDao();
     // set reply post as null
-    Provider.of<ReplyPostNotifierProvider>(
-        context,
-        listen: false)
+    Provider.of<ReplyPostNotifierProvider>(context, listen: false)
         .setPost(null);
   }
 
@@ -359,11 +357,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       setState(() {
         _sendReplyStatus = ButtonState.fail;
       });
-      if(onError is DioError){
+      if (onError is DioError) {
         DioError dioError = onError;
         EasyLoading.showError("${dioError.message}");
-      }
-      else{
+      } else {
         EasyLoading.showError('${onError}');
       }
     });
@@ -446,7 +443,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
-    if(_postList.length >= _viewThreadResult.threadVariables.threadInfo.replies + 1){
+    if (_postList.length >=
+        _viewThreadResult.threadVariables.threadInfo.replies + 1) {
       _controller.finishLoad(IndicatorResult.noMore);
       _page -= 1;
       return IndicatorResult.noMore;
@@ -462,7 +460,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             value.threadVariables.postList.first.message);
       }
 
-      Provider.of<DiscuzNotificationProvider>(context, listen: false).setNotificationCount(value.threadVariables.noticeCount);
+      Provider.of<DiscuzNotificationProvider>(context, listen: false)
+          .setNotificationCount(value.threadVariables.noticeCount);
 
       setState(() {
         _viewThreadResult = value;
@@ -503,7 +502,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         log("recv user uid different! ${user.uid} ${value.threadVariables.member_uid} ${value.threadVariables.member_username}");
         setState(() {
           _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
-              S.of(context).userExpiredSubtitle, errorType: ErrorType.userExpired);
+              S.of(context).userExpiredSubtitle,
+              errorType: ErrorType.userExpired);
         });
       }
 
@@ -512,8 +512,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       // save rewrite rule
       RewriteRule rewriteRule = value.threadVariables.rewriteRule;
       if (rewriteRule.forumDisplay.isNotEmpty) {
-        RewriteRuleUtils.putForumDisplayRule(
-            discuz, rewriteRule.forumDisplay);
+        RewriteRuleUtils.putForumDisplayRule(discuz, rewriteRule.forumDisplay);
       }
 
       if (rewriteRule.viewThread.isNotEmpty) {
@@ -535,22 +534,25 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
       log("${onError} ${stack}");
       _controller.finishRefresh();
-      if(onError is DioException){
+      if (onError is DioException) {
         DioException dioError = onError;
         log("DIOERROR ${dioError.message} >-> ${dioError.type}");
         EasyLoading.showError("${dioError.message} (${dioError})");
-        setState((){
-          _error =
-              DiscuzError(dioError.type.name,dioError.message==null?S.of(context).error: dioError.message!, dioError: dioError);
+        setState(() {
+          _error = DiscuzError(
+              dioError.type.name,
+              dioError.message == null
+                  ? S.of(context).error
+                  : dioError.message!,
+              dioError: dioError);
         });
-      }
-      else{
+      } else {
         log("${onError} >-> ${onError.runtimeType}");
-          setState(() {
-            _error = DiscuzError(
-                onError.runtimeType.toString(), onError.toString());
-          });
-          EasyLoading.showError('${onError}');
+        setState(() {
+          _error =
+              DiscuzError(onError.runtimeType.toString(), onError.toString());
+        });
+        EasyLoading.showError('${onError}');
       }
 
       return IndicatorResult.fail;
@@ -565,26 +567,24 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
   AutoScrollController _postAutoScrollController = AutoScrollController();
 
-
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
       appBar: PlatformAppBar(
-        automaticallyImplyLeading: this.onClosed == null? true: false,
+        automaticallyImplyLeading: this.onClosed == null ? true : false,
         cupertino: (_, __) => CupertinoNavigationBarData(
-          heroTag: this.onClosed == null? null: "viewthread_${tid}",
-          transitionBetweenRoutes: false
-        ),
-        leading: this.onClosed == null? null: PlatformIconButton(
-          icon: Icon(Icons.arrow_back),
-          cupertinoIcon: Icon(CupertinoIcons.back),
-          onPressed: onClosed,
-          cupertino: (_, __)=> CupertinoIconButtonData(
-            alignment: Alignment.centerLeft,
-            padding: EdgeInsets.all(0)
-          ),
-
-        ),
+            heroTag: this.onClosed == null ? null : "viewthread_${tid}",
+            transitionBetweenRoutes: false),
+        leading: this.onClosed == null
+            ? null
+            : PlatformIconButton(
+                icon: Icon(Icons.arrow_back),
+                cupertinoIcon: Icon(CupertinoIcons.back),
+                onPressed: onClosed,
+                cupertino: (_, __) => CupertinoIconButtonData(
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.all(0)),
+              ),
         //middle: Text(S.of(context).forumDisplayTitle),
         // title: Text(S.of(context).viewThreadTitle),
         title: _viewThreadResult.threadVariables.threadInfo.subject.isEmpty
@@ -619,21 +619,22 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                         size: 24,
                       );
                     } else {
-                      return Icon(PlatformIcons(context).favoriteSolid,
-                          size: 24,
+                      return Icon(
+                        PlatformIcons(context).favoriteSolid,
+                        size: 24,
                         color: Theme.of(context).primaryColor,
                       );
                     }
                   },
                 )),
           IconButton(
-            tooltip: viewThreadQuery.timeAscend?
-            S.of(context).sortThreadInAscendOrder: S.of(context).sortThreadInDescendOrder,
+            tooltip: viewThreadQuery.timeAscend
+                ? S.of(context).sortThreadInAscendOrder
+                : S.of(context).sortThreadInDescendOrder,
             icon: Icon(
               viewThreadQuery.timeAscend
                   ? PlatformIcons(context).upArrow
                   : PlatformIcons(context).downArrow,
-
               size: 24,
             ),
             onPressed: () {
@@ -649,160 +650,169 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
               ),
               options: [
                 PopupMenuOption(
-                  label: S.of(context).openViaInternalBrowser,
-                  onTap: (option){
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.push(
-                        context,
-                        platformPageRoute(
-                            context: context,
-                            builder: (context) => InternalWebviewBrowserPage(
-                                discuz,
-                                user,
-                                URLUtils.getViewThreadURL(discuz, tid))));
-                  }
-                ),
+                    label: S.of(context).openViaInternalBrowser,
+                    onTap: (option) {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      Navigator.push(
+                          context,
+                          platformPageRoute(
+                              context: context,
+                              builder: (context) => InternalWebviewBrowserPage(
+                                  discuz,
+                                  user,
+                                  URLUtils.getViewThreadURL(discuz, tid))));
+                    }),
                 PopupMenuOption(
                     label: S.of(context).share,
-                    onTap: (option){
+                    onTap: (option) {
                       VibrationUtils.vibrateWithClickIfPossible();
                       Share.share(URLUtils.getViewThreadURL(discuz, tid),
                           subject: _viewThreadResult
                               .threadVariables.threadInfo.subject);
-                    }
-                ),
-              ]
-          ),
+                    }),
+              ]),
         ],
       ),
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(
-              child: EasyRefresh(
-                header: EasyRefreshUtils.i18nClassicHeader(context),
-                footer: EasyRefreshUtils.i18nClassicFooter(context),
-                refreshOnStart: true,
-                controller: _controller,
-                //scrollController: _scrollController,
-                onRefresh: () async {
-                  return await _invalidateContent();
-                },
-                onLoad: () async {
-                  return await _loadForumContent();
-                },
-                child: CustomScrollView(
-                  controller: _scrollController,
-                  slivers: [
-                    SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                              (context, _) {
-                            return SafeArea(child: Container(), bottom: false,);
-                          },
-                          childCount: 1,
-                        )),
-                    SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                              (context, _) {
-                            return Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Text(
-                                _viewThreadResult.threadVariables.threadInfo.subject
-                                    .isEmpty &&
-                                    passedSubject != null
-                                    ? passedSubject!
-                                    : _viewThreadResult
-                                    .threadVariables.threadInfo.subject,
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            );
-                          },
-                          childCount: 1,
-                        )),
-                    if (_error != null)
-                      SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                                (context, _) {
-                              return ErrorCard(_error!, () {
-                                _controller.callRefresh();
-                              },
-                                errorType: _error!.errorType,
-                                webpageUrl: URLUtils.getViewThreadURL(discuz, tid),
-                              );
-                            },
-                            childCount: 1,
-                          )),
-                    if(_postList.isEmpty && _error == null)
-                      SliverList(delegate: SliverChildBuilderDelegate((context, index){
-                        return EmptyListScreen(EmptyItemType.post);
-                      }, childCount:1)),
-                    if(_viewThreadResult.threadVariables.poll != null)
-                      SliverList(
-                          delegate: SliverChildBuilderDelegate((context, index) {
-                            return PollWidget(
-                              _viewThreadResult.threadVariables.poll!,
-                              _viewThreadResult.threadVariables.formHash,
-                              tid,
-                              _viewThreadResult.threadVariables.fid,
-                            );
-                          }, childCount: _viewThreadResult.threadVariables.poll != null ? 1 : 0)
-                      ),
-                    SliverList(
+            child: EasyRefresh(
+              header: EasyRefreshUtils.i18nClassicHeader(context),
+              footer: EasyRefreshUtils.i18nClassicFooter(context),
+              refreshOnStart: true,
+              controller: _controller,
+              //scrollController: _scrollController,
+              onRefresh: () async {
+                return await _invalidateContent();
+              },
+              onLoad: () async {
+                return await _loadForumContent();
+              },
+              child: CustomScrollView(
+                controller: _scrollController,
+                slivers: [
+                  SliverList(
                       delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                          return Column(
-                            children: [
-                              AutoScrollTag(
-                                key: ValueKey(index),
-                                controller: _postAutoScrollController,
-                                index: index,
-                                child: PostWidget(
-                                  discuz,
-                                  _postList[index],
-                                  _viewThreadResult.threadVariables.threadInfo.authorId,
-                                  _viewThreadResult.threadVariables.formHash,
-                                  tid: tid,
-                                  onAuthorSelectedCallback: () {
-                                    if (viewThreadQuery.authorId == 0) {
-                                      viewThreadQuery.authorId =
-                                          _postList[index].authorId;
-                                    } else {
-                                      viewThreadQuery.authorId = 0;
+                    (context, _) {
+                      return SafeArea(
+                        child: Container(),
+                        bottom: false,
+                      );
+                    },
+                    childCount: 1,
+                  )),
+                  SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                    (context, _) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          _viewThreadResult.threadVariables.threadInfo.subject
+                                      .isEmpty &&
+                                  passedSubject != null
+                              ? passedSubject!
+                              : _viewThreadResult
+                                  .threadVariables.threadInfo.subject,
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      );
+                    },
+                    childCount: 1,
+                  )),
+                  if (_error != null)
+                    SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                      (context, _) {
+                        return ErrorCard(
+                          _error!,
+                          () {
+                            _controller.callRefresh();
+                          },
+                          errorType: _error!.errorType,
+                          webpageUrl: URLUtils.getViewThreadURL(discuz, tid),
+                        );
+                      },
+                      childCount: 1,
+                    )),
+                  if (_postList.isEmpty && _error == null)
+                    SliverList(
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                      return EmptyListScreen(EmptyItemType.post);
+                    }, childCount: 1)),
+                  if (_viewThreadResult.threadVariables.poll != null)
+                    SliverList(
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                      return PollWidget(
+                        _viewThreadResult.threadVariables.poll!,
+                        _viewThreadResult.threadVariables.formHash,
+                        tid,
+                        _viewThreadResult.threadVariables.fid,
+                      );
+                    },
+                            childCount:
+                                _viewThreadResult.threadVariables.poll != null
+                                    ? 1
+                                    : 0)),
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        return Column(
+                          children: [
+                            AutoScrollTag(
+                              key: ValueKey(index),
+                              controller: _postAutoScrollController,
+                              index: index,
+                              child: PostWidget(
+                                discuz,
+                                _postList[index],
+                                _viewThreadResult
+                                    .threadVariables.threadInfo.authorId,
+                                _viewThreadResult.threadVariables.formHash,
+                                tid: tid,
+                                onAuthorSelectedCallback: () {
+                                  if (viewThreadQuery.authorId == 0) {
+                                    viewThreadQuery.authorId =
+                                        _postList[index].authorId;
+                                  } else {
+                                    viewThreadQuery.authorId = 0;
+                                  }
+                                  setNewViewThreadQuery(viewThreadQuery);
+                                },
+                                postCommentList: postCommentList,
+                                ignoreFontCustomization:
+                                    ignoreFontCustomization,
+                                jumpToPidCallback: (pid) {
+                                  // need to find the pid and scroll to it
+                                  log("jump to pid ${pid} and we are looking it");
+                                  int cnt = 0;
+                                  for (var post in _postList) {
+                                    if (post.pid == pid) {
+                                      log("!find it: ${pid} in ${cnt}");
+                                      _postAutoScrollController
+                                          .scrollToIndex(cnt);
+                                      break;
                                     }
-                                    setNewViewThreadQuery(viewThreadQuery);
-                                  },
-                                  postCommentList: postCommentList,
-                                  ignoreFontCustomization: ignoreFontCustomization,
-                                  jumpToPidCallback: (pid) {
-                                    // need to find the pid and scroll to it
-                                    log("jump to pid ${pid} and we are looking it");
-                                    int cnt = 0;
-                                    for (var post in _postList) {
-                                      if (post.pid == pid) {
-                                        log("!find it: ${pid} in ${cnt}");
-                                        _postAutoScrollController.scrollToIndex(cnt);
-                                        break;
-                                      }
-                                      cnt += 1;
-                                    }
-                                    // check whether it's the end of the scroll
-                                  },
-                                ),
+                                    cnt += 1;
+                                  }
+                                  // check whether it's the end of the scroll
+                                },
                               ),
-                              if(index % 10 == 0 && index != 0)
-                                AppBannerAdWidget()
-                            ],
-                          );
-                        },
-                        childCount: _postList.length,
-                      ),
+                            ),
+                            if (index % 10 == 0 && index != 0)
+                              AppBannerAdWidget()
+                          ],
+                        );
+                      },
+                      childCount: _postList.length,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
+            ),
           ),
           // comment parts
           if (_viewThreadResult.threadVariables.threadInfo.closed)
@@ -815,10 +825,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                   children: [
                     Text(
                       S.of(context).threadIsClosed,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge
-                          ?.copyWith(color: Theme.of(context).colorScheme.error),
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: Theme.of(context).colorScheme.error),
                     )
                   ],
                 ),
@@ -836,52 +844,83 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                       children: [
                         Consumer<ReplyPostNotifierProvider>(
                           builder: (context, replyPost, child) {
-                            if (replyPost.post != null && _viewThreadResult.threadVariables.member_uid != 0) {
+                            if (replyPost.post != null &&
+                                _viewThreadResult.threadVariables.member_uid !=
+                                    0) {
                               return Container(
-                                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-                                color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 8.0, horizontal: 4.0),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer
+                                    .withOpacity(0.3),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.max,
                                   children: [
                                     InkWell(
                                       child: Icon(
-                                          PlatformIcons(context).clearThickCircled,
-                                        color: Theme.of(context).colorScheme.primary,
+                                        PlatformIcons(context)
+                                            .clearThickCircled,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
                                       ),
-                                      onTap: (){
+                                      onTap: () {
                                         VibrationUtils
                                             .vibrateWithClickIfPossible();
                                         // removing it
                                         Provider.of<ReplyPostNotifierProvider>(
-                                            context,
-                                            listen: false)
+                                                context,
+                                                listen: false)
                                             .setPost(null);
                                       },
                                     ),
                                     Expanded(
-                                        child: Padding(
+                                        child: Container(
+
                                             padding: EdgeInsets.only(
                                                 left: 8.0, right: 8.0),
-                                            child: Text(
-                                              replyPost.post!.message
-                                                  .replaceAll(
-                                                  RegExp(r"<img*?>"),
-                                                  S
-                                                      .of(context)
-                                                      .pictureTagInMessage)
-                                                  .replaceAll(
-                                                  RegExp(
-                                                      r"<div.*?>.*?</div>"),
-                                                  "")
-                                                  .replaceAll(
-                                                  RegExp(r"<.*?>"), ""),
-                                              style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Theme.of(context).colorScheme.onPrimaryContainer
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 1,
-                                            )))
+                                            child: Column(
+
+                                              children: [
+                                                Text(
+                                                  replyPost.post!.author,
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                                    fontSize: 16
+                                                  ),
+                                                  maxLines: 1,
+                                                ),
+                                                Text(
+                                                  replyPost.post!.message
+                                                      .replaceAll(
+                                                          RegExp(r"<img*?>"),
+                                                          S
+                                                              .of(context)
+                                                              .pictureTagInMessage)
+                                                      .replaceAll(
+                                                          RegExp(
+                                                              r"<div.*?>.*?</div>"),
+                                                          "")
+                                                      .replaceAll(
+                                                          RegExp(r"<.*?>"), ""),
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onPrimaryContainer.withOpacity(0.5)
+                                                  ),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 1,
+                                                )
+                                              ],
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+
+                                            ),
+                                        )
+                                    )
                                   ],
                                 ),
                               );
@@ -892,201 +931,219 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                         ),
 
                         // input fields
-                        if(_viewThreadResult.threadVariables.member_uid != 0)
-                        Column(
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                    child: Padding(
-                                  padding: EdgeInsets.all(12.0),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      //color: Colors.white,
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(
-                                        4.0,
-                                      )),
+                        if (_viewThreadResult.threadVariables.member_uid != 0)
+                          Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                      child: Padding(
+                                    padding: EdgeInsets.all(12.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        //color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.all(Radius.circular(
+                                          4.0,
+                                        )),
+                                      ),
+                                      child: PostTextField(
+                                        discuz,
+                                        _replyController,
+                                        focusNode: _focusNode,
+                                      ),
                                     ),
-                                    child: PostTextField(
-                                      discuz,
-                                      _replyController,
-                                      focusNode: _focusNode,
-                                    ),
-                                  ),
-                                )),
-                                IconButton(
-                                  icon: dialogStatus != SHOW_SMILEY_DIALOG
-                                      ? Icon(
-                                    Icons.emoji_emotions_outlined,
-                                    semanticLabel: S.of(context).emoijButtonTooltip,
-                                  )
-                                      : Icon(
-                                    Icons.keyboard_outlined,
-                                    semanticLabel: S.of(context).closeKeyboardTooltip,
-                                  ),
-                                  onPressed: () {
-                                    if (dialogStatus != SHOW_SMILEY_DIALOG) {
-                                      FocusScope.of(context)
-                                          .requestFocus(new FocusNode());
-                                      setState(() {
-                                        dialogStatus = SHOW_SMILEY_DIALOG;
-                                      });
-                                    } else {
-                                      FocusScope.of(context)
-                                          .requestFocus(_focusNode);
-                                      setState(() {
-                                        dialogStatus = SHOW_NONE_DIALOG;
-                                      });
-                                    }
-                                  },
-                                ),
-                                ValueListenableBuilder(
-                                    valueListenable: showExtraButton,
-                                    builder: (context, value, _) {
-                                      if (value == false) {
-                                        return ProgressButton.icon(
-                                            maxWidth: 60.0,
-                                            iconedButtons: {
-                                              ButtonState.idle: IconedButton(
-                                                  //text: S.of(context).sendReply,
-                                                  icon: Icon(Icons.send,
-                                                      color: Theme.of(context)
-                                                          .colorScheme.onPrimaryContainer,
-                                                    semanticLabel: S.of(context).sendReply,
-                                                  ),
-                                                  color: Theme.of(context)
-                                                      .colorScheme.primaryContainer),
-                                              ButtonState.loading: IconedButton(
-                                                  //text: S.of(context).progressButtonReplySending,
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary),
-                                              ButtonState.fail: IconedButton(
-                                                  //text: S.of(context).progressButtonReplyFailed,
-                                                  icon: Icon(Icons.cancel,
-                                                      color: Colors.white,
-                                                      semanticLabel: S.of(context).progressButtonReplyFailed,
-                                                  ),
-                                                  color: Colors.red.shade300),
-                                              ButtonState.success: IconedButton(
-                                                  //text: S.of(context).progressButtonReplySuccess,
-                                                  icon: Icon(
-                                                    Icons.check_circle,
-                                                    color: Colors.white,
-                                                    semanticLabel: S.of(context).progressButtonReplySuccess,
-                                                  ),
-                                                  color: Colors.green.shade400)
-                                            },
-                                            onPressed: () {
-                                              VibrationUtils
-                                                  .vibrateWithClickIfPossible();
-                                              _sendReply(context);
-                                            },
-                                            state: _sendReplyStatus);
+                                  )),
+                                  IconButton(
+                                    icon: dialogStatus != SHOW_SMILEY_DIALOG
+                                        ? Icon(
+                                            Icons.emoji_emotions_outlined,
+                                            semanticLabel: S
+                                                .of(context)
+                                                .emoijButtonTooltip,
+                                          )
+                                        : Icon(
+                                            Icons.keyboard_outlined,
+                                            semanticLabel: S
+                                                .of(context)
+                                                .closeKeyboardTooltip,
+                                          ),
+                                    onPressed: () {
+                                      if (dialogStatus != SHOW_SMILEY_DIALOG) {
+                                        FocusScope.of(context)
+                                            .requestFocus(new FocusNode());
+                                        setState(() {
+                                          dialogStatus = SHOW_SMILEY_DIALOG;
+                                        });
                                       } else {
-                                        //return Container();
-                                        return IconButton(
-                                          icon: Icon(
+                                        FocusScope.of(context)
+                                            .requestFocus(_focusNode);
+                                        setState(() {
+                                          dialogStatus = SHOW_NONE_DIALOG;
+                                        });
+                                      }
+                                    },
+                                  ),
+                                  ValueListenableBuilder(
+                                      valueListenable: showExtraButton,
+                                      builder: (context, value, _) {
+                                        if (value == false) {
+                                          return ProgressButton.icon(
+                                              maxWidth: 60.0,
+                                              iconedButtons: {
+                                                ButtonState.idle: IconedButton(
+                                                    //text: S.of(context).sendReply,
+                                                    icon: Icon(
+                                                      Icons.send,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onPrimaryContainer,
+                                                      semanticLabel: S
+                                                          .of(context)
+                                                          .sendReply,
+                                                    ),
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primaryContainer),
+                                                ButtonState.loading:
+                                                    IconedButton(
+                                                        //text: S.of(context).progressButtonReplySending,
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .secondary),
+                                                ButtonState.fail: IconedButton(
+                                                    //text: S.of(context).progressButtonReplyFailed,
+                                                    icon: Icon(
+                                                      Icons.cancel,
+                                                      color: Colors.white,
+                                                      semanticLabel: S
+                                                          .of(context)
+                                                          .progressButtonReplyFailed,
+                                                    ),
+                                                    color: Colors.red.shade300),
+                                                ButtonState.success: IconedButton(
+                                                    //text: S.of(context).progressButtonReplySuccess,
+                                                    icon: Icon(
+                                                      Icons.check_circle,
+                                                      color: Colors.white,
+                                                      semanticLabel: S
+                                                          .of(context)
+                                                          .progressButtonReplySuccess,
+                                                    ),
+                                                    color: Colors.green.shade400)
+                                              },
+                                              onPressed: () {
+                                                VibrationUtils
+                                                    .vibrateWithClickIfPossible();
+                                                _sendReply(context);
+                                              },
+                                              state: _sendReplyStatus);
+                                        } else {
+                                          //return Container();
+                                          return IconButton(
+                                            icon: Icon(
                                               dialogStatus == SHOW_EXTRA_DIALOG
                                                   ? Icons.close
                                                   : Icons.add_circle_outline,
-                                            semanticLabel: S.of(context).extraFuncButtonTooltip,
-
-                                          ),
-                                          onPressed: () {
-                                            if (dialogStatus !=
-                                                SHOW_EXTRA_DIALOG) {
-                                              FocusScope.of(context)
-                                                  .requestFocus(
-                                                      new FocusNode());
-                                              setState(() {
-                                                dialogStatus =
-                                                    SHOW_EXTRA_DIALOG;
-                                              });
-                                            } else {
-                                              FocusScope.of(context)
-                                                  .requestFocus(_focusNode);
-                                              setState(() {
-                                                dialogStatus = SHOW_NONE_DIALOG;
-                                              });
-                                            }
-                                          },
-                                        );
-                                      }
-                                    })
-                              ],
-                            ),
-                            if (dioLoaded)
-                              CaptchaWidget(
-                                dio,
-                                discuz,
-                                user,
-                                "post",
-                                captchaController: _captchaController,
-                              ),
-                            if (dialogStatus == SHOW_SMILEY_DIALOG)
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  SmileyListScreen((smiley) {
-                                    insertSmiley(smiley);
-                                  })
-                                ],
-                              ),
-                            if (dialogStatus == SHOW_EXTRA_DIALOG)
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  ExtraFuncInThreadScreen(
-                                    discuz,
-                                    tid,
-                                    _viewThreadResult.threadVariables.fid,
-                                    onReplyWithImage: (aid, path) async {
-                                      // fill with text first
-                                      // refresh the layout
-                                      // insertedAidList.clear();
-                                      if (aid.isNotEmpty) {
-                                        _replyController.text =
-                                            _replyController.text +
-                                                "[attachimg]${aid}[/attachimg]";
-                                        // add aid to list
-                                        insertedAidList.add(aid);
-                                        // add to historical attachment
-                                        bool savedInDatabase =
-                                            await UserPreferencesUtils
-                                                .getRecordHistoryEnabled();
-                                        if (savedInDatabase) {
-                                          // save it to database
-                                          ImageAttachmentDao
-                                              imageAttachmentDao =
-                                              await AppDatabase
-                                                  .getImageAttachmentDao();
-                                          ImageAttachment? imageAttachment =
-                                              imageAttachmentDao
-                                                  .findImageAttachmentByDiscuzAndAid(
-                                                      discuz, aid);
-                                          if (imageAttachment != null) {
-                                            imageAttachment.updateAt =
-                                                DateTime.now();
-                                            imageAttachmentDao
-                                                .insertImageAttachmentWithKey(
-                                                    imageAttachment.key,
-                                                    imageAttachment);
-                                          } else {
-                                            imageAttachmentDao
-                                                .insertImageAttachment(
-                                                    ImageAttachment(
-                                                        aid, discuz, path));
-                                          }
+                                              semanticLabel: S
+                                                  .of(context)
+                                                  .extraFuncButtonTooltip,
+                                            ),
+                                            onPressed: () {
+                                              if (dialogStatus !=
+                                                  SHOW_EXTRA_DIALOG) {
+                                                FocusScope.of(context)
+                                                    .requestFocus(
+                                                        new FocusNode());
+                                                setState(() {
+                                                  dialogStatus =
+                                                      SHOW_EXTRA_DIALOG;
+                                                });
+                                              } else {
+                                                FocusScope.of(context)
+                                                    .requestFocus(_focusNode);
+                                                setState(() {
+                                                  dialogStatus =
+                                                      SHOW_NONE_DIALOG;
+                                                });
+                                              }
+                                            },
+                                          );
                                         }
-                                      } else {}
-                                    },
-                                  ),
+                                      })
                                 ],
-                              )
-                          ],
-                        )
+                              ),
+                              if (dioLoaded)
+                                CaptchaWidget(
+                                  dio,
+                                  discuz,
+                                  user,
+                                  "post",
+                                  captchaController: _captchaController,
+                                ),
+                              if (dialogStatus == SHOW_SMILEY_DIALOG)
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SmileyListScreen((smiley) {
+                                      insertSmiley(smiley);
+                                    })
+                                  ],
+                                ),
+                              if (dialogStatus == SHOW_EXTRA_DIALOG)
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ExtraFuncInThreadScreen(
+                                      discuz,
+                                      tid,
+                                      _viewThreadResult.threadVariables.fid,
+                                      onReplyWithImage: (aid, path) async {
+                                        // fill with text first
+                                        // refresh the layout
+                                        // insertedAidList.clear();
+                                        if (aid.isNotEmpty) {
+                                          _replyController
+                                              .text = _replyController
+                                                  .text +
+                                              "[attachimg]${aid}[/attachimg]";
+                                          // add aid to list
+                                          insertedAidList.add(aid);
+                                          // add to historical attachment
+                                          bool savedInDatabase =
+                                              await UserPreferencesUtils
+                                                  .getRecordHistoryEnabled();
+                                          if (savedInDatabase) {
+                                            // save it to database
+                                            ImageAttachmentDao
+                                                imageAttachmentDao =
+                                                await AppDatabase
+                                                    .getImageAttachmentDao();
+                                            ImageAttachment? imageAttachment =
+                                                imageAttachmentDao
+                                                    .findImageAttachmentByDiscuzAndAid(
+                                                        discuz, aid);
+                                            if (imageAttachment != null) {
+                                              imageAttachment.updateAt =
+                                                  DateTime.now();
+                                              imageAttachmentDao
+                                                  .insertImageAttachmentWithKey(
+                                                      imageAttachment.key,
+                                                      imageAttachment);
+                                            } else {
+                                              imageAttachmentDao
+                                                  .insertImageAttachment(
+                                                      ImageAttachment(
+                                                          aid, discuz, path));
+                                            }
+                                          }
+                                        } else {}
+                                      },
+                                    ),
+                                  ],
+                                )
+                            ],
+                          )
                       ],
                     ),
                   );
