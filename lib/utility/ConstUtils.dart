@@ -14,5 +14,7 @@ class ConstUtils{
   static const HIVE_TYPE_ID_IMAGE_ATTACHMENT = 8;
   static const HIVE_TYPE_ID_DRAFT = 9;
 
+  static const HIVE_TYPE_ID_DISCUZ_AUTHENTIFICATION = 10;
+
   static const FIREBASE_VAPIDKEY = "";
 }
