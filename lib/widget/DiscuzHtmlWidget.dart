@@ -114,14 +114,14 @@ class DiscuzHtmlWidget extends StatelessWidget{
 
     return Container(
       width: double.infinity,
+      //padding: EdgeInsets.zero,
 
       child: Consumer<TypeSettingNotifierProvider>(builder: (context, typesetting, _) {
         double scalingParameter = typesetting.scalingParameter;
-        // print("font scaling parameters ${scalingParameter} and font size ${12*scalingParameter}");
         double? themeFontSize = Theme.of(context).textTheme.bodyMedium?.fontSize == null? 14 : Theme.of(context).textTheme.bodyText2?.fontSize!;
         double paragraphFontSize = themeFontSize == null ? 14 : themeFontSize;
         return Html(
-
+          //shrinkWrap: true,
           data: "<p>${this.getDecodedString()}</p>",
           style: {
             "*": Style(
