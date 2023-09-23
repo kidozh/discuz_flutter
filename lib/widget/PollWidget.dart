@@ -162,7 +162,7 @@ class PollState extends State<PollStatefulWidget>{
             return await vote(pollOption);
           },
           hasVoted: !poll.allowVote,
-          userVotedOptionId: !poll.allowVote? int.parse(maxOptionId!): null,
+          userVotedOptionId: !poll.allowVote? maxOptionId!: null,
           pollTitle: poll.allowVote?Text(S.of(context).pollTitle):Text(S.of(context).pollNotAllowed),
           pollOptions: flutterPollOptionList,
           pollEnded: poll.expiredAt.isBefore(DateTime.now()),

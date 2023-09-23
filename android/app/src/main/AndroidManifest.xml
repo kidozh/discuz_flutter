@@ -39,7 +39,7 @@
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true"
         android:allowBackup="false"
-        android:fullBackupContent="false"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/launcher_icon">
 
         <activity
