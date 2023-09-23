@@ -295,10 +295,25 @@ class PostState extends State<PostStatefulWidget> {
                   shrinkWrap: true,
                 ),
               if (getCommentList().length != 0)
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ListView.builder(
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                        color: Theme.of(context).colorScheme.primaryContainer.withOpacity(isCupertino(context)?0.3: 1),
+                        boxShadow: [
+                          if(isMaterial(context))
+                            BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset: Offset(0, 3)
+                            )
+                        ]
+                    ),
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
                       itemBuilder: (context, index) {
                         Comment comment = getCommentList()[index];
                         return PostCommentWidget(comment);
@@ -306,8 +321,8 @@ class PostState extends State<PostStatefulWidget> {
                       itemCount: getCommentList().length,
                       physics: new NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                    )
-                  ],
+                    ),
+                  ),
                 ),
             ],
           ),
