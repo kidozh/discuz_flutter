@@ -4,7 +4,6 @@ import 'package:discuz_flutter/JsonResult/SubscribeChannelResult.dart';
 import 'package:discuz_flutter/client/PushServiceClient.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/page/SetPushNotificationPage.dart';
-import 'package:discuz_flutter/screen/EmptyScreen.dart';
 import 'package:discuz_flutter/screen/LoadingScreen.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -17,13 +16,11 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../client/MobileApiClient.dart';
 import '../entity/Discuz.dart';
 import '../entity/User.dart';
 import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../provider/UserPreferenceNotifierProvider.dart';
-import '../screen/EmptyListScreen.dart';
 import '../screen/NullDiscuzScreen.dart';
 import '../utility/NetworkUtils.dart';
 import '../utility/PushServiceUtils.dart';
@@ -159,7 +156,6 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     _loadChannel();
     super.initState();
   }
@@ -198,6 +194,7 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
                                   subtitle: Text(subscribeChannel.note),
                                   trailing: PlatformSwitch(
                                     value: subscribeChannel.subscribe,
+                                    activeColor: Theme.of(context).colorScheme.primary,
                                     onChanged: (value) {
                                       setState(() {
                                         VibrationUtils.vibrateWithClickIfPossible();
