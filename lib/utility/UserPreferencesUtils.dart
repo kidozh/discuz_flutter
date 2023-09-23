@@ -19,7 +19,7 @@ class UserPreferencesUtils{
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     var boolValue =  prefs.getBool(recordHistoryKey);
-    return boolValue == null ? false : boolValue;
+    return boolValue == null ? true : boolValue;
   }
 
   static String getForumDisplayRewriteRuleName(Discuz discuz){
