@@ -1,6 +1,7 @@
 
 
 import 'dart:developer';
+import 'dart:ffi';
 import 'dart:ui';
 
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -249,7 +250,7 @@ class UserPreferencesUtils{
 
 
 
-  static Future<String> getDiscuzForumFids(Discuz discuz,) async {
+  static Future<String> getDiscuzForumFids(Discuz discuz) async {
     String discuzForumFidsKey = "discuz_forums_${discuz.baseURL}";
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var signaturePreference =  prefs.getString(discuzForumFidsKey);
@@ -415,6 +416,19 @@ class UserPreferencesUtils{
   static Future<void> putLastPushSecond() async{
     int nowTimestampSecond = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     await _putLastPushSecond(nowTimestampSecond);
+  }
+
+  static Future<bool> shouldRememberDiscuzPassword(Discuz discuz) async {
+    String discuzForumFidsKey = "discuz_password_remember_${discuz.baseURL}";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var signaturePreference =  prefs.getBool(discuzForumFidsKey);
+    return signaturePreference == null? false : signaturePreference;
+  }
+
+  static Future<void> putShouldRememberDiscuzPassword(Discuz discuz, bool value) async{
+    String discuzForumFidsKey = "discuz_password_remember_${discuz.baseURL}";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(discuzForumFidsKey, value);
   }
 
 
