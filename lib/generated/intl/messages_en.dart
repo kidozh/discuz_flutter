@@ -141,6 +141,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "attachFile": m1,
         "authenticateBySystem": MessageLookupByLibrary.simpleMessage(
             "Please authenticate to query saved password."),
+        "authenticationSecurityAndroidContent":
+            MessageLookupByLibrary.simpleMessage(
+                "Your authentication are AES-256 encrypted in this device and never sent outside. AES-256 secret key is encrypted with RSA and RSA key is stored in Android Keystore system. Only after authentication from the system, your data is accessible to DisFly."),
+        "authenticationSecurityIosContent": MessageLookupByLibrary.simpleMessage(
+            "Your authentication are AES-256 encrypted in this device and never sent outside. AES-256 private key is stored at keychain of the system. Only after authentication from the system, your data is accessible to DisFly."),
+        "authenticationSecurityTitle":
+            MessageLookupByLibrary.simpleMessage("Secure at your device."),
         "authorizedSite":
             MessageLookupByLibrary.simpleMessage("Authorized site"),
         "autoFillUsername": m2,
@@ -791,6 +798,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Trust this host"),
         "trustHostTitle": MessageLookupByLibrary.simpleMessage("Trusted host"),
         "typeSetting": MessageLookupByLibrary.simpleMessage("Typesetting"),
+        "unableToAuthenticate": MessageLookupByLibrary.simpleMessage(
+            "Doesn\'t get authentication from the system and auto fill failed."),
         "unableToVerifyAuthStatus": MessageLookupByLibrary.simpleMessage(
             "Unable to verify your auth status"),
         "unblockContent":

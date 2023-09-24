@@ -4950,6 +4950,46 @@ class S {
       args: [username],
     );
   }
+
+  /// `Secure at your device.`
+  String get authenticationSecurityTitle {
+    return Intl.message(
+      'Secure at your device.',
+      name: 'authenticationSecurityTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your authentication are AES-256 encrypted in this device and never sent outside. AES-256 private key is stored at keychain of the system. Only after authentication from the system, your data is accessible to DisFly.`
+  String get authenticationSecurityIosContent {
+    return Intl.message(
+      'Your authentication are AES-256 encrypted in this device and never sent outside. AES-256 private key is stored at keychain of the system. Only after authentication from the system, your data is accessible to DisFly.',
+      name: 'authenticationSecurityIosContent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your authentication are AES-256 encrypted in this device and never sent outside. AES-256 secret key is encrypted with RSA and RSA key is stored in Android Keystore system. Only after authentication from the system, your data is accessible to DisFly.`
+  String get authenticationSecurityAndroidContent {
+    return Intl.message(
+      'Your authentication are AES-256 encrypted in this device and never sent outside. AES-256 secret key is encrypted with RSA and RSA key is stored in Android Keystore system. Only after authentication from the system, your data is accessible to DisFly.',
+      name: 'authenticationSecurityAndroidContent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Doesn't get authentication from the system and auto fill failed.`
+  String get unableToAuthenticate {
+    return Intl.message(
+      'Doesn\'t get authentication from the system and auto fill failed.',
+      name: 'unableToAuthenticate',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

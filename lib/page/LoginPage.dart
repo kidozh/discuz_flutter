@@ -22,6 +22,7 @@ import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:progress_state_button/iconed_button.dart';
@@ -108,25 +109,28 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
     if(canAuth){
       bool isAuthed = await SecureStorageUtils.authenticateWithSystem(context);
 
-      setState(() {
-        _isAuthed = isAuthed;
-      });
-      // check into system
-      DiscuzAuthentificationDao discuzAuthentificationDao = await SecureStorageUtils.getDiscuzAuthentificationDao();
-      List<DiscuzAuthentification> discuzAuthentificationList =
-      discuzAuthentificationDao.getDiscuzAuthentificationListByHost(discuz.host);
-      log("The list of authentification ${discuzAuthentificationList.length}");
-      if(discuzAuthentificationList.length == 1){
-        // only one element in authentication
-        DiscuzAuthentification discuzAuthentification = discuzAuthentificationList.first;
-        _autoFillLoginForm(discuzAuthentification.account, discuzAuthentification.password);
-      }
-      else if(discuzAuthentificationList.isEmpty){
-        EasyLoading.showInfo(S.of(context).noAuthenticationFoundInApp);
+      if(isAuthed){
+        // check into system
+        DiscuzAuthentificationDao discuzAuthentificationDao = await SecureStorageUtils.getDiscuzAuthentificationDao();
+        List<DiscuzAuthentification> discuzAuthentificationList =
+        discuzAuthentificationDao.getDiscuzAuthentificationListByHost(discuz.host);
+        log("The list of authentification ${discuzAuthentificationList.length}");
+        if(discuzAuthentificationList.length == 1){
+          // only one element in authentication
+          DiscuzAuthentification discuzAuthentification = discuzAuthentificationList.first;
+          _autoFillLoginForm(discuzAuthentification.account, discuzAuthentification.password);
+        }
+        else if(discuzAuthentificationList.isEmpty){
+          EasyLoading.showInfo(S.of(context).noAuthenticationFoundInApp);
+        }
+        else{
+          // multiple choices
+        }
       }
       else{
-        // multiple choices
+        EasyLoading.showError(S.of(context).unableToAuthenticate);
       }
+
     }
 
 
@@ -137,6 +141,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
     _accountController.text = account;
     _passwdController.text = password;
     EasyLoading.showSuccess(S.of(context).autoFillUsername(account));
+    VibrationUtils.vibrateSuccessfullyIfPossible();
 
   }
 
@@ -451,7 +456,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                                         style: TextStyle(color: Theme.of(context).colorScheme.primary),
                                         recognizer: TapGestureRecognizer()..onTap = (){
                                           VibrationUtils.vibrateWithClickIfPossible();
-
+                                          _showAuthenticationDialog();
                                         }
                                     )
                                   ]
@@ -569,5 +574,38 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
             ),
           ),
         ));
+  }
+
+  Future<void> _showAuthenticationDialog() async{
+    showPlatformModalSheet(
+        context: context,
+        builder: (context) => Container(
+          color: Theme.of(context).colorScheme.background,
+          padding: EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Icon(Icons.security,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 48,
+                  ),
+              ),
+              Text(S.of(context).authenticationSecurityTitle, style: TextStyle(
+                color: Theme.of(context).textTheme.titleMedium?.color,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              )),
+              SizedBox(height: 16,),
+              Text(Platform.isIOS? S.of(context).authenticationSecurityIosContent: S.of(context).authenticationSecurityAndroidContent, style: TextStyle(
+                  color: Theme.of(context).textTheme.displayLarge?.color,
+                  fontWeight: FontWeight.normal
+              )),
+            ],
+          ),
+        )
+    );
   }
 }
