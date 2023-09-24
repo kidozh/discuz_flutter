@@ -729,5 +729,11 @@
   "authenticateBySystem": "Please authenticate to query saved password.",
   "rememeberPasswordInApp": "Remember password to device.",
   "rememberPasswordInAppDetail": "View details",
-  "noAuthenticationFoundInApp": "No authentication is found in this device."
+  "noAuthenticationFoundInApp": "No authentication is found in this device.",
+  "autoFillUsername": "Auto fill {username} to the form.",
+  "@autoFillUsername": {
+    "placeholders": {
+      "username": {}
+    }
+  }
 }

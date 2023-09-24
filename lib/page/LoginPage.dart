@@ -136,6 +136,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
     // first of all set it
     _accountController.text = account;
     _passwdController.text = password;
+    EasyLoading.showSuccess(S.of(context).autoFillUsername(account));
 
   }
 

@@ -730,5 +730,11 @@
   "authenticateBySystem": "请验证您的身份以查看本地存储的保存密码。",
   "rememeberPasswordInApp": "将登陆凭证在此设备中存储。",
   "rememberPasswordInAppDetail": "了解详情",
-  "noAuthenticationFoundInApp": "在此设备上未有存储的登陆凭证。"
+  "noAuthenticationFoundInApp": "在此设备上未有存储的登陆凭证。",
+  "autoFillUsername": "自动填充{username}的信息到登陆表单中。",
+  "@autoFillUsername": {
+    "placeholders": {
+      "username": {}
+    }
+  }
 }

@@ -4940,6 +4940,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Auto fill {username} to the form.`
+  String autoFillUsername(Object username) {
+    return Intl.message(
+      'Auto fill $username to the form.',
+      name: 'autoFillUsername',
+      desc: '',
+      args: [username],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
