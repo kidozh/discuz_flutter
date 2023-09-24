@@ -512,6 +512,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "networkFailed":
             MessageLookupByLibrary.simpleMessage("Network failed."),
         "newThread": MessageLookupByLibrary.simpleMessage("New"),
+        "noAuthenticationFoundInApp": MessageLookupByLibrary.simpleMessage(
+            "No authentication is found in this device."),
         "noCaptachaRequired":
             MessageLookupByLibrary.simpleMessage("No captcha needed."),
         "noDiscuzNotFound": MessageLookupByLibrary.simpleMessage(

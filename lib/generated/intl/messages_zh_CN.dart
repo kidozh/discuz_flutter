@@ -435,6 +435,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "networkFail": MessageLookupByLibrary.simpleMessage("连接服务器时出错。"),
         "networkFailed": MessageLookupByLibrary.simpleMessage("网络访问失败。"),
         "newThread": MessageLookupByLibrary.simpleMessage("最新发表"),
+        "noAuthenticationFoundInApp":
+            MessageLookupByLibrary.simpleMessage("在此设备上未有存储的登陆凭证。"),
         "noCaptachaRequired":
             MessageLookupByLibrary.simpleMessage("不需要验证码验证信息。"),
         "noDiscuzNotFound":
@@ -590,7 +592,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "rememberPasswordInAppDetail":
             MessageLookupByLibrary.simpleMessage("了解详情"),
         "rememeberPasswordInApp":
-            MessageLookupByLibrary.simpleMessage("将登陆凭证（用户名和密码）在此设备中存储。"),
+            MessageLookupByLibrary.simpleMessage("将登陆凭证在此设备中存储。"),
         "replyPost": MessageLookupByLibrary.simpleMessage("回复"),
         "replyPostTrimMessage": m31,
         "reportContentTitle": m32,
