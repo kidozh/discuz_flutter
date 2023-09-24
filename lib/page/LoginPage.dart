@@ -115,10 +115,17 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
       DiscuzAuthentificationDao discuzAuthentificationDao = await SecureStorageUtils.getDiscuzAuthentificationDao();
       List<DiscuzAuthentification> discuzAuthentificationList =
       discuzAuthentificationDao.getDiscuzAuthentificationListByHost(discuz.host);
+      log("The list of authentification ${discuzAuthentificationList.length}");
       if(discuzAuthentificationList.length == 1){
         // only one element in authentication
         DiscuzAuthentification discuzAuthentification = discuzAuthentificationList.first;
         _autoFillLoginForm(discuzAuthentification.account, discuzAuthentification.password);
+      }
+      else if(discuzAuthentificationList.isEmpty){
+        EasyLoading.showInfo(S.of(context).noAuthenticationFoundInApp);
+      }
+      else{
+        // multiple choices
       }
     }
 
@@ -129,10 +136,6 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
     // first of all set it
     _accountController.text = account;
     _passwdController.text = password;
-
-    if(_captchaController.value == null || _captchaController.value!.captchaFormHash.isEmpty){
-      _verifyAccountAndPassword();
-    }
 
   }
 
@@ -227,7 +230,10 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
           EasyLoading.showSuccess(
               S.of(context).signInSuccessTitle(user.username, discuz.siteName));
           // handle with security issue
-
+          if(_rememberPassword){
+            log("Save authentification to secure storage");
+            await _saveAuthentificationToSecureDatabase();
+          }
 
           // to popup a token
           bool allowPush = await UserPreferencesUtils.getPushPreference();
@@ -550,15 +556,10 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                     child: InkWell(
                       child: Icon(
                         Icons.key_rounded,
-                        size: 48,
+                        size: 36,
                       ),
                       onTap: () async {
                         VibrationUtils.vibrateWithClickIfPossible();
-                        bool isSuccessResult =
-                            await SecureStorageUtils.authenticateWithSystem(
-                                context);
-                        log("is Auth success ${isSuccessResult}");
-
                         await _checkWithAuthentication();
                       },
                     ),

@@ -4930,6 +4930,16 @@ class S {
       args: [],
     );
   }
+
+  /// `No authentication is found in this device.`
+  String get noAuthenticationFoundInApp {
+    return Intl.message(
+      'No authentication is found in this device.',
+      name: 'noAuthenticationFoundInApp',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

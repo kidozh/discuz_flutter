@@ -728,5 +728,6 @@
   "goToPushSetting": "Enable push service",
   "authenticateBySystem": "Please authenticate to query saved password.",
   "rememeberPasswordInApp": "Remember password to device.",
-  "rememberPasswordInAppDetail": "View details"
+  "rememberPasswordInAppDetail": "View details",
+  "noAuthenticationFoundInApp": "No authentication is found in this device."
 }
