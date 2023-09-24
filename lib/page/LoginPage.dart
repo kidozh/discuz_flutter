@@ -14,6 +14,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/LoginByWebviewPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/SecureStorageUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/CaptchaWidget.dart';
@@ -69,6 +70,7 @@ class _LoginFormFieldState
   final TextEditingController _accountController = new TextEditingController();
   final TextEditingController _passwdController = new TextEditingController();
   final CaptchaController _captchaController = new CaptchaController(new CaptchaFields("", "login", ""));
+  bool canAuthenticate = false;
 
   _LoginFormFieldState(this.discuz, this.accountName){}
 
@@ -80,8 +82,16 @@ class _LoginFormFieldState
     }
 
     _initDio();
+    _checkWithAuthentication();
 
 
+  }
+
+  Future<void> _checkWithAuthentication() async{
+    bool canAuth = await SecureStorageUtils.canAuthenticated();
+    setState(() {
+      canAuthenticate = canAuth;
+    });
   }
 
   Dio _dio = Dio();
@@ -241,7 +251,8 @@ class _LoginFormFieldState
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return Container(
+        height: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal: 8.0),
         child: Form(
           key: _formKey,
@@ -249,6 +260,7 @@ class _LoginFormFieldState
           child: AutofillGroup(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
               children: [
                 // title and page
                 Padding(
@@ -396,10 +408,33 @@ class _LoginFormFieldState
                               }, ),
                           ),
 
+
+
                       ],
                     ),
                   ),
                 ),
+                Expanded(
+                    child: Container(
+                      height: 6,
+                    )
+                ),
+                if(canAuthenticate)
+                Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 32.0, horizontal: 8.0),
+                      child: InkWell(
+                        child: Icon(Icons.key_rounded, size: 48,),
+                        onTap: () async{
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          bool isSuccessResult = await SecureStorageUtils.authenticateWithSystem(context);
+                          log("is Auth success ${isSuccessResult}");
+
+                        },
+                      ),
+                    )
+                )
+
 
               ],
             ),

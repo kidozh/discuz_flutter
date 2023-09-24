@@ -137,6 +137,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage(
                 "Choose the app appearance on preferred platform."),
         "attachFile": m1,
+        "authenticateBySystem": MessageLookupByLibrary.simpleMessage(
+            "Please authenticate to query saved password."),
         "authorizedSite":
             MessageLookupByLibrary.simpleMessage("Authorized site"),
         "basicUse": MessageLookupByLibrary.simpleMessage("Basic"),

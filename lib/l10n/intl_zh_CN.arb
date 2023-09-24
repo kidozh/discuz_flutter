@@ -726,5 +726,6 @@
   "emailChannelFailed": "在此设备上无法发送邮件。你可以发送此站点信息到kidozh@gmail.com以添加此频道到订阅列表中。",
   "subscribeChannelForMore": "订阅此论坛频道获得实时的最新消息",
   "pushServiceNotEnabled": "请打开通知服务以允许频道推送",
-  "goToPushSetting": "开启推送"
+  "goToPushSetting": "开启推送",
+  "authenticateBySystem": "请验证您的身份以查看本地存储的保存密码。"
 }

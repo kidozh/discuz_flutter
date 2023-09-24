@@ -4900,6 +4900,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Please authenticate to query saved password.`
+  String get authenticateBySystem {
+    return Intl.message(
+      'Please authenticate to query saved password.',
+      name: 'authenticateBySystem',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

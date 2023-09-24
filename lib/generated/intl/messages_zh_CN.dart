@@ -131,6 +131,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "appearanceOptimizedPlatformSubtitle":
             MessageLookupByLibrary.simpleMessage("你可以选择对应平台下应用的显示样式"),
         "attachFile": m1,
+        "authenticateBySystem":
+            MessageLookupByLibrary.simpleMessage("请验证您的身份以查看本地存储的保存密码。"),
         "authorizedSite": MessageLookupByLibrary.simpleMessage("已验证站点"),
         "basicUse": MessageLookupByLibrary.simpleMessage("基本使用"),
         "basicUseDescribe":
