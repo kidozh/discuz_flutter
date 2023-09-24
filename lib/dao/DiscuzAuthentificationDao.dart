@@ -18,7 +18,9 @@ class DiscuzAuthentificationDao{
       DiscuzAuthentification discuzAuthentificationInRecord = discuzAuthentificationBox.values.where(
               (element) => element.account == discuzAuthentification.account
               && element.discuz_host == discuzAuthentification.discuz_host).first;
-      await discuzAuthentificationBox.put(discuzAuthentificationInRecord.key,discuzAuthentification);
+      discuzAuthentificationInRecord.password = discuzAuthentification.password;
+      discuzAuthentificationInRecord.updateTime = DateTime.now();
+      await discuzAuthentificationInRecord.save();
       return discuzAuthentificationInRecord.hashCode;
     }
     else{

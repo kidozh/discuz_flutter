@@ -136,6 +136,20 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
 
   }
 
+  Future<void> _saveAuthentificationToSecureDatabase() async{
+    String account = _accountController.text;
+    String password = _passwdController.text;
+    DiscuzAuthentificationDao discuzAuthentificationDao = await SecureStorageUtils.getDiscuzAuthentificationDao();
+    DiscuzAuthentification discuzAuthentification = DiscuzAuthentification();
+    discuzAuthentification.account = account;
+    discuzAuthentification.password = password;
+    discuzAuthentification.discuz_host = discuz.host;
+    discuzAuthentification.updateTime = DateTime.now();
+    discuzAuthentificationDao.insertDiscuzAuthentification(
+        discuzAuthentification
+    );
+  }
+
   Dio _dio = Dio();
   late PersistCookieJar cookieJar;
 
@@ -212,6 +226,9 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
           // set it
           EasyLoading.showSuccess(
               S.of(context).signInSuccessTitle(user.username, discuz.siteName));
+          // handle with security issue
+
+
           // to popup a token
           bool allowPush = await UserPreferencesUtils.getPushPreference();
           if (allowPush) {
