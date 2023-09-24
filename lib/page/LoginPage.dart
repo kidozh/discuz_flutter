@@ -19,6 +19,7 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -42,9 +43,8 @@ class LoginPage extends StatelessWidget {
         iosContentBottomPadding: true,
         appBar: PlatformAppBar(
           title: Text(discuz.siteName),
-
         ),
-        body: LoginForumFieldStatefulWidget(discuz,accountName));
+        body: LoginForumFieldStatefulWidget(discuz, accountName));
   }
 }
 
@@ -55,12 +55,11 @@ class LoginForumFieldStatefulWidget extends StatefulWidget {
   LoginForumFieldStatefulWidget(this.discuz, this.accountName);
   @override
   _LoginFormFieldState createState() {
-    return _LoginFormFieldState(discuz,accountName);
+    return _LoginFormFieldState(discuz, accountName);
   }
 }
 
-class _LoginFormFieldState
-    extends State<LoginForumFieldStatefulWidget> {
+class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
   late final Discuz discuz;
   String? accountName;
 
@@ -69,45 +68,45 @@ class _LoginFormFieldState
   ButtonState _loginState = ButtonState.idle;
   final TextEditingController _accountController = new TextEditingController();
   final TextEditingController _passwdController = new TextEditingController();
-  final CaptchaController _captchaController = new CaptchaController(new CaptchaFields("", "login", ""));
+  final CaptchaController _captchaController =
+      new CaptchaController(new CaptchaFields("", "login", ""));
   bool canAuthenticate = false;
+  bool _rememberPassword = true;
+  bool isAuthed = false;
 
-  _LoginFormFieldState(this.discuz, this.accountName){}
+  _LoginFormFieldState(this.discuz, this.accountName) {}
 
   @override
   void initState() {
     super.initState();
-    if(accountName !=null){
+    if (accountName != null) {
       _accountController.text = accountName!;
     }
 
     _initDio();
     _checkWithAuthentication();
-
-
   }
 
-  Future<void> _checkWithAuthentication() async{
+  Future<void> _checkWithAuthentication() async {
     bool canAuth = await SecureStorageUtils.canAuthenticated();
     setState(() {
       canAuthenticate = canAuth;
+      _rememberPassword = canAuth;
     });
   }
 
   Dio _dio = Dio();
   late PersistCookieJar cookieJar;
 
-  Future<void> _initDio() async{
+  Future<void> _initDio() async {
     cookieJar = await NetworkUtils.getTemporaryCookieJar();
     setState(() {
       _dio.interceptors.add(CookieManager(cookieJar));
     });
-
   }
 
-  void _verifyAccountAndPassword() async{
+  void _verifyAccountAndPassword() async {
     // create a dio
-
 
     String account = _accountController.text;
     String password = _passwdController.text;
@@ -121,21 +120,23 @@ class _LoginFormFieldState
       _loginState = ButtonState.loading;
     });
 
-
     CaptchaFields? captchaFields = _captchaController.value;
     String captchaHash = "";
     String captchaMod = "";
     String verification = "";
-    if(captchaFields!= null && captchaFields.captchaFormHash.isNotEmpty){
+    if (captchaFields != null && captchaFields.captchaFormHash.isNotEmpty) {
       captchaHash = captchaFields.captchaFormHash;
       verification = captchaFields.verification;
       captchaMod = "member::logging";
-      print("Captcha hash: ${captchaFields.captchaFormHash} verification: ${captchaFields.verification}");
+      print(
+          "Captcha hash: ${captchaFields.captchaFormHash} verification: ${captchaFields.verification}");
     }
 
-    client.sendLoginRequest(account,password,captchaHash,captchaMod,verification).then((value) async {
+    client
+        .sendLoginRequest(
+            account, password, captchaHash, captchaMod, verification)
+        .then((value) async {
       setState(() {
-
         error = null;
       });
       // check if the
@@ -143,97 +144,105 @@ class _LoginFormFieldState
       // if user is validated
       User user = value.loginVariables.getUser(discuz);
       user.discuz = discuz;
-      if(value.errorResult!.key == "login_succeed"){
+      if (value.errorResult!.key == "login_succeed") {
         // save it in database
         setState(() {
           _loginState = ButtonState.success;
         });
-        try{
-
+        try {
           final dao = await AppDatabase.getUserDao();
+
           // search in database first
           User? userInDataBase = dao.findUsersByDiscuzAndUid(discuz, user.uid);
-          if(userInDataBase != null){
+          if (userInDataBase != null) {
             user = userInDataBase;
             await dao.insertWithKey(userInDataBase.key, user);
-          }
-          else{
+          } else {
             await dao.insert(user);
           }
           // save it in cookiejar
-          List<Cookie> cookies = await cookieJar.loadForRequest(Uri.parse(discuz.baseURL));
-          PersistCookieJar savedCookieJar = await NetworkUtils.getPersistentCookieJarByUser(user);
+          List<Cookie> cookies =
+              await cookieJar.loadForRequest(Uri.parse(discuz.baseURL));
+          PersistCookieJar savedCookieJar =
+              await NetworkUtils.getPersistentCookieJarByUser(user);
           log("cookies ${cookies}");
           savedCookieJar.saveFromResponse(Uri.parse(discuz.baseURL), cookies);
           // pop the activity
           // set it
-          EasyLoading.showSuccess(S.of(context).signInSuccessTitle(user.username, discuz.siteName));
+          EasyLoading.showSuccess(
+              S.of(context).signInSuccessTitle(user.username, discuz.siteName));
           // to popup a token
           bool allowPush = await UserPreferencesUtils.getPushPreference();
-          if(allowPush){
-            showPlatformDialog(context: context, builder: (_) =>
-              PlatformAlertDialog(
-                title: Text(S.of(context).registerPushTokenTitle),
-                content: Text(S.of(context).registerPushTokenMessage),
-                actions: [
-                  PlatformDialogAction(
-                    child: Text(S.of(context).ok),
-                    onPressed: () async {
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(user);
-                      await Navigator.push(context,platformPageRoute(context:context,builder: (context) => PushServicePage()));
-                    },
-                  ),
-                  PlatformDialogAction(
-                    child: Text(S.of(context).cancel),
-                    onPressed: (){
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(user);
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                    },
-                  )
-                ],
-              )
-            );
-          }
-          else{
-            Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(user);
+          if (allowPush) {
+            showPlatformDialog(
+                context: context,
+                builder: (_) => PlatformAlertDialog(
+                      title: Text(S.of(context).registerPushTokenTitle),
+                      content: Text(S.of(context).registerPushTokenMessage),
+                      actions: [
+                        PlatformDialogAction(
+                          child: Text(S.of(context).ok),
+                          onPressed: () async {
+                            VibrationUtils.vibrateWithClickIfPossible();
+                            Provider.of<DiscuzAndUserNotifier>(context,
+                                    listen: false)
+                                .setUser(user);
+                            await Navigator.push(
+                                context,
+                                platformPageRoute(
+                                    context: context,
+                                    builder: (context) => PushServicePage()));
+                          },
+                        ),
+                        PlatformDialogAction(
+                          child: Text(S.of(context).cancel),
+                          onPressed: () {
+                            VibrationUtils.vibrateWithClickIfPossible();
+                            Provider.of<DiscuzAndUserNotifier>(context,
+                                    listen: false)
+                                .setUser(user);
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          },
+                        )
+                      ],
+                    ));
+          } else {
+            Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                .setUser(user);
             Navigator.pop(context);
           }
 
-
-        }
-        catch(e,s){
+        } catch (e, s) {
           VibrationUtils.vibrateErrorIfPossible();
           log("${e},${s}");
         }
-      }
-      else{
+      } else {
         _captchaController.reloadCaptcha();
         setState(() {
-          error = DiscuzError(value.errorResult!.key, value.errorResult!.content);
+          error =
+              DiscuzError(value.errorResult!.key, value.errorResult!.content);
           _loginState = ButtonState.fail;
         });
       }
-
     }).catchError((onError) {
       VibrationUtils.vibrateErrorIfPossible();
       _captchaController.reloadCaptcha();
       setState(() {
-
         _loginState = ButtonState.fail;
       });
 
-
       switch (onError.runtimeType) {
-
         case DioException:
           {
             DioException dioError = onError;
-            setState((){
-              error =
-                  DiscuzError(dioError.message==null?S.of(context).error: dioError.message!,dioError.type.name, dioError: dioError);
+            setState(() {
+              error = DiscuzError(
+                  dioError.message == null
+                      ? S.of(context).error
+                      : dioError.message!,
+                  dioError.type.name,
+                  dioError: dioError);
             });
             break;
           }
@@ -245,15 +254,14 @@ class _LoginFormFieldState
             });
           }
       }
-    })
-    ;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
         height: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal: 8.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
         child: Form(
           key: _formKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -264,65 +272,66 @@ class _LoginFormFieldState
               children: [
                 // title and page
                 Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 32.0,vertical: 64.0),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 32.0, vertical: 64.0),
                     child: Center(
                         child: CachedNetworkImage(
                             imageUrl: discuz.getDiscuzAvatarURL(),
-                            progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) =>
+                                    CircularProgressIndicator(
+                                        value: downloadProgress.progress),
                             errorWidget: (context, url, error) => ListTile(
-                              title: Text(discuz.siteName),
-                              subtitle: Text(discuz.baseURL),
-                              leading: CircleAvatar(
-                                backgroundColor: Theme.of(context).colorScheme.primary,
-                                child: Text(
-                                  discuz.siteName.length != 0
-                                      ? discuz.siteName[0].toUpperCase()
-                                      : S.of(context).anonymous,
-                                  style: TextStyle(color: Colors.white,fontSize: 18),
-                                ),
-                              ),
-                            )
-                        )
-                    )
-                ),
+                                  title: Text(discuz.siteName),
+                                  subtitle: Text(discuz.baseURL),
+                                  leading: CircleAvatar(
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.primary,
+                                    child: Text(
+                                      discuz.siteName.length != 0
+                                          ? discuz.siteName[0].toUpperCase()
+                                          : S.of(context).anonymous,
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 18),
+                                    ),
+                                  ),
+                                )))),
                 // input fields
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  decoration: isCupertino(context)? BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Theme.of(context).disabledColor.withOpacity(0.1)
-                  ): null,
+                  decoration: isCupertino(context)
+                      ? BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color:
+                              Theme.of(context).disabledColor.withOpacity(0.1))
+                      : null,
                   child: Column(
                     children: [
                       PlatformTextFormField(
                           autofillHints: [AutofillHints.username],
                           controller: _accountController,
                           hintText: S.of(context).account,
-                          material: (context, platform){
+                          material: (context, platform) {
                             return MaterialTextFormFieldData(
                               decoration: InputDecoration(
-
                                 labelText: S.of(context).account,
                                 hintText: S.of(context).account,
                                 prefixIcon: Icon(Icons.account_circle),
                               ),
                             );
                           },
-                          cupertino: (context, platform){
+                          cupertino: (context, platform) {
                             return CupertinoTextFormFieldData(
                                 prefix: Text(S.of(context).account),
-                                decoration: BoxDecoration()
-                            );
+                                decoration: BoxDecoration());
                           },
-                          validator: ValidationBuilder().required().build()
-                      ),
-                      if(isCupertino(context))
-                        Divider(),
+                          validator: ValidationBuilder().required().build()),
+                      if (isCupertino(context)) Divider(),
                       PlatformTextFormField(
                           autofillHints: [AutofillHints.password],
                           controller: _passwdController,
                           hintText: S.of(context).password,
-                          material: (context, platform){
+                          material: (context, platform) {
                             return MaterialTextFormFieldData(
                               decoration: InputDecoration(
                                 labelText: S.of(context).password,
@@ -330,33 +339,77 @@ class _LoginFormFieldState
                               ),
                             );
                           },
-                          cupertino: (context, platform){
+                          cupertino: (context, platform) {
                             return CupertinoTextFormFieldData(
                                 prefix: Text(S.of(context).password),
-                                decoration: BoxDecoration()
-                            );
+                                decoration: BoxDecoration());
                           },
                           obscureText: true,
-                          validator: ValidationBuilder().required().build()
-                      ),
+                          validator: ValidationBuilder().required().build()),
                     ],
                   ),
                 ),
-                
-                CaptchaWidget(_dio, discuz, null, "login",captchaController: _captchaController,),
+
+                CaptchaWidget(
+                  _dio,
+                  discuz,
+                  null,
+                  "login",
+                  captchaController: _captchaController,
+                ),
                 if (error != null)
                   Column(
                     children: [
-                      ErrorCard(error!,(){
-                        _verifyAccountAndPassword();
-                      },
-                        largeSize: false,),
+                      ErrorCard(
+                        error!,
+                        () {
+                          _verifyAccountAndPassword();
+                        },
+                        largeSize: false,
+                      ),
                     ],
                   ),
+                // remember part
+                if (canAuthenticate)
+                  Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                      child: Row(children: [
+                        Expanded(
+                            child: RichText(
+                              text: TextSpan(
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                  text:S.of(context).rememeberPasswordInApp,
+                                  children: [
+                                    TextSpan(
+                                        text: " "+S.of(context).rememberPasswordInAppDetail,
+                                        style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                                        recognizer: TapGestureRecognizer()..onTap = (){
+                                          VibrationUtils.vibrateWithClickIfPossible();
+
+                                        }
+                                    )
+                                  ]
+                              ),
+
+                            )
+                        ),
+                        SizedBox(width: 8,),
+                        PlatformSwitch(
+                            value: _rememberPassword,
+                            activeColor: Theme.of(context).colorScheme.primary,
+                            onChanged: (value) {
+                              VibrationUtils.vibrateWithClickIfPossible();
+                              setState(() {
+                                _rememberPassword = value;
+                              });
+                            })
+                      ])),
 
                 Center(
                   child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 24.0,horizontal: 4.0),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 24.0, horizontal: 4.0),
                     width: double.infinity,
                     child: Column(
                       children: [
@@ -365,77 +418,91 @@ class _LoginFormFieldState
                           child: ProgressButton.icon(
                               maxWidth: 230.0,
                               iconedButtons: {
-                                ButtonState.idle:
-                                IconedButton(
+                                ButtonState.idle: IconedButton(
                                     text: S.of(context).loginTitle,
-                                    icon: Icon(Icons.login,color: Colors.white60),
-                                    color: Theme.of(context).colorScheme.primary),
-                                ButtonState.loading:
-                                IconedButton(
+                                    icon: Icon(Icons.login,
+                                        color: Colors.white60),
+                                    color:
+                                        Theme.of(context).colorScheme.primary),
+                                ButtonState.loading: IconedButton(
                                     text: S.of(context).progressButtonLogining,
                                     color: Colors.blue.shade300),
-                                ButtonState.fail:
-                                IconedButton(
-                                    text: S.of(context).progressButtonLoginFailed,
-                                    icon: Icon(Icons.cancel,color: Colors.white),
+                                ButtonState.fail: IconedButton(
+                                    text:
+                                        S.of(context).progressButtonLoginFailed,
+                                    icon:
+                                        Icon(Icons.cancel, color: Colors.white),
                                     color: Colors.red.shade300),
-                                ButtonState.success:
-                                IconedButton(
-                                    text: S.of(context).progressButtonLoginSuccess,
-                                    icon: Icon(Icons.check_circle,color: Colors.white,),
+                                ButtonState.success: IconedButton(
+                                    text: S
+                                        .of(context)
+                                        .progressButtonLoginSuccess,
+                                    icon: Icon(
+                                      Icons.check_circle,
+                                      color: Colors.white,
+                                    ),
                                     color: Colors.green.shade400)
                               },
-                              onPressed: (){
+                              onPressed: () {
                                 VibrationUtils.vibrateWithClickIfPossible();
                                 _verifyAccountAndPassword();
                               },
-                              state: _loginState
-                          ),
+                              state: _loginState),
                         ),
-                        SizedBox(height: 24,),
-                        if(!Platform.isIOS)
+                        SizedBox(
+                          height: 24,
+                        ),
+                        if (!Platform.isIOS)
                           SizedBox(
                             width: double.infinity,
                             child: PlatformElevatedButton(
-                              padding: EdgeInsets.symmetric(vertical: 16.0,horizontal: 4.0),
-                              color: Theme.of(context).colorScheme.secondaryContainer,
-                              child: Text(S.of(context).signInViaBrowser, style: TextStyle(color:Theme.of(context).colorScheme.onSecondaryContainer)),
-
-                              onPressed: (){
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 16.0, horizontal: 4.0),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .secondaryContainer,
+                              child: Text(S.of(context).signInViaBrowser,
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSecondaryContainer)),
+                              onPressed: () {
                                 VibrationUtils.vibrateWithClickIfPossible();
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => LoginByWebviewPage(discuz)));
-                              }, ),
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            LoginByWebviewPage(discuz)));
+                              },
+                            ),
                           ),
-
-
-
                       ],
                     ),
                   ),
                 ),
                 Expanded(
                     child: Container(
-                      height: 6,
-                    )
-                ),
-                if(canAuthenticate)
-                Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 32.0, horizontal: 8.0),
-                      child: InkWell(
-                        child: Icon(Icons.key_rounded, size: 48,),
-                        onTap: () async{
-                          VibrationUtils.vibrateWithClickIfPossible();
-                          bool isSuccessResult = await SecureStorageUtils.authenticateWithSystem(context);
-                          log("is Auth success ${isSuccessResult}");
-
-                        },
+                  height: 6,
+                )),
+                if (canAuthenticate)
+                  Center(
+                      child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 32.0, horizontal: 8.0),
+                    child: InkWell(
+                      child: Icon(
+                        Icons.key_rounded,
+                        size: 48,
                       ),
-                    )
-                )
-
-
+                      onTap: () async {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        bool isSuccessResult =
+                            await SecureStorageUtils.authenticateWithSystem(
+                                context);
+                        log("is Auth success ${isSuccessResult}");
+                      },
+                    ),
+                  ))
               ],
             ),
           ),

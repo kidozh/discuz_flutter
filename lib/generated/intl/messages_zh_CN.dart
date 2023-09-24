@@ -587,6 +587,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "releaseToLoad": MessageLookupByLibrary.simpleMessage("释放加载"),
         "releaseToRefresh": MessageLookupByLibrary.simpleMessage("释放刷新"),
         "relogin": MessageLookupByLibrary.simpleMessage("重新登陆"),
+        "rememberPasswordInAppDetail":
+            MessageLookupByLibrary.simpleMessage("了解详情"),
+        "rememeberPasswordInApp":
+            MessageLookupByLibrary.simpleMessage("将登陆凭证（用户名和密码）在此设备中存储。"),
         "replyPost": MessageLookupByLibrary.simpleMessage("回复"),
         "replyPostTrimMessage": m31,
         "reportContentTitle": m32,

@@ -726,5 +726,7 @@
   "subscribeChannelForMore": "Subscribe to the channels to get updates.",
   "pushServiceNotEnabled": "Please enable push service to enable this function.",
   "goToPushSetting": "Enable push service",
-  "authenticateBySystem": "Please authenticate to query saved password."
+  "authenticateBySystem": "Please authenticate to query saved password.",
+  "rememeberPasswordInApp": "Remember password to device.",
+  "rememberPasswordInAppDetail": "View details"
 }

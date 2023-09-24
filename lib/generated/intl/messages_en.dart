@@ -691,6 +691,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "releaseToRefresh":
             MessageLookupByLibrary.simpleMessage("Release to refresh"),
         "relogin": MessageLookupByLibrary.simpleMessage("relogin"),
+        "rememberPasswordInAppDetail":
+            MessageLookupByLibrary.simpleMessage("View details"),
+        "rememeberPasswordInApp": MessageLookupByLibrary.simpleMessage(
+            "Remember password to device."),
         "replyPost": MessageLookupByLibrary.simpleMessage("Reply"),
         "replyPostTrimMessage": m31,
         "reportContentTitle": m32,

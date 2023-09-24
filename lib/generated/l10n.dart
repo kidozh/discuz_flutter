@@ -4910,6 +4910,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Remember password to device.`
+  String get rememeberPasswordInApp {
+    return Intl.message(
+      'Remember password to device.',
+      name: 'rememeberPasswordInApp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View details`
+  String get rememberPasswordInAppDetail {
+    return Intl.message(
+      'View details',
+      name: 'rememberPasswordInAppDetail',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
