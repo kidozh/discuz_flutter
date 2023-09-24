@@ -20,4 +20,7 @@ class DiscuzAuthentification extends HiveObject{
 
   @HiveField(4)
   DateTime updateTime = DateTime.now();
+
+  @HiveField(5)
+  String note = "";
 }
