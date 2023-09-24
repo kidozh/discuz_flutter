@@ -4951,10 +4951,10 @@ class S {
     );
   }
 
-  /// `Secure at your device.`
+  /// `Secure at your device`
   String get authenticationSecurityTitle {
     return Intl.message(
-      'Secure at your device.',
+      'Secure at your device',
       name: 'authenticationSecurityTitle',
       desc: '',
       args: [],

@@ -106,4 +106,6 @@ class AppPlatformIcons{
   IconData get notificationSolid => isMaterial(context)? Icons.notifications : CupertinoIcons.bell_fill;
 
   IconData get forumOutlined => isMaterial(context)? Icons.forum_outlined : CupertinoIcons.chat_bubble_2;
+
+  IconData get authenticationSecureSolid => isMaterial(context)? Icons.lock : CupertinoIcons.lock_shield_fill;
 }

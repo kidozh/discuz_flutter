@@ -13,6 +13,7 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/LoginByWebviewPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/SecureStorageUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -588,7 +589,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
             children: [
               Padding(
                   padding: EdgeInsets.all(8),
-                  child: Icon(Icons.security,
+                  child: Icon(AppPlatformIcons(context).authenticationSecureSolid,
                     color: Theme.of(context).colorScheme.primary,
                     size: 48,
                   ),
