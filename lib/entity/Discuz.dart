@@ -46,6 +46,8 @@ class Discuz extends HiveObject {
     return this.baseURL + afterfix;
   }
 
+  String get host => Uri.tryParse(this.baseURL) == null? "" : Uri.tryParse(this.baseURL)!.host;
+
 
 
   Discuz(

@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:discuz_flutter/dao/DiscuzAuthentificationDao.dart';
 import 'package:discuz_flutter/entity/DiscuzAuthentification.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -42,10 +43,8 @@ class SecureStorageUtils{
           )
       );
       return didAuthenticate;
-      // ···
     } on PlatformException {
       return false;
-      // ...
     }
   }
 
@@ -71,6 +70,11 @@ class SecureStorageUtils{
     }
 
     return discuzAuthentificationBox!;
+  }
+
+  static Future<DiscuzAuthentificationDao> getDiscuzAuthentificationDao() async {
+    Box<DiscuzAuthentification> discuzAuthentificationBox = await getDiscuzAuthentificationBox();
+    return DiscuzAuthentificationDao(discuzAuthentificationBox);
   }
 
 

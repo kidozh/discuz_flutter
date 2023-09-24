@@ -28,6 +28,8 @@ import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:provider/provider.dart';
 
+import '../dao/DiscuzAuthentificationDao.dart';
+import '../entity/DiscuzAuthentification.dart';
 import 'PushServicePage.dart';
 
 class LoginPage extends StatelessWidget {
@@ -72,7 +74,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
       new CaptchaController(new CaptchaFields("", "login", ""));
   bool canAuthenticate = false;
   bool _rememberPassword = true;
-  bool isAuthed = false;
+  bool _isAuthed = false;
 
   _LoginFormFieldState(this.discuz, this.accountName) {}
 
@@ -93,6 +95,45 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
       canAuthenticate = canAuth;
       _rememberPassword = canAuth;
     });
+
+    if(canAuth){
+      await _authWithSystemAndAutoFill();
+    }
+
+  }
+
+  Future<void> _authWithSystemAndAutoFill() async{
+    bool canAuth = await SecureStorageUtils.canAuthenticated();
+
+    if(canAuth){
+      bool isAuthed = await SecureStorageUtils.authenticateWithSystem(context);
+
+      setState(() {
+        _isAuthed = isAuthed;
+      });
+      // check into system
+      DiscuzAuthentificationDao discuzAuthentificationDao = await SecureStorageUtils.getDiscuzAuthentificationDao();
+      List<DiscuzAuthentification> discuzAuthentificationList =
+      discuzAuthentificationDao.getDiscuzAuthentificationListByHost(discuz.host);
+      if(discuzAuthentificationList.length == 1){
+        // only one element in authentication
+        DiscuzAuthentification discuzAuthentification = discuzAuthentificationList.first;
+        _autoFillLoginForm(discuzAuthentification.account, discuzAuthentification.password);
+      }
+    }
+
+
+  }
+
+  Future<void> _autoFillLoginForm(String account, String password) async {
+    // first of all set it
+    _accountController.text = account;
+    _passwdController.text = password;
+
+    if(_captchaController.value == null || _captchaController.value!.captchaFormHash.isEmpty){
+      _verifyAccountAndPassword();
+    }
+
   }
 
   Dio _dio = Dio();
@@ -500,6 +541,8 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                             await SecureStorageUtils.authenticateWithSystem(
                                 context);
                         log("is Auth success ${isSuccessResult}");
+
+                        await _checkWithAuthentication();
                       },
                     ),
                   ))
