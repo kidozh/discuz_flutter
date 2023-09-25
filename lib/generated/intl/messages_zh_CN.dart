@@ -142,6 +142,13 @@ class MessageLookup extends MessageLookupByLibrary {
             "您的凭证数据经由AES 256位强加密于您的设备中并且永不会发送出本机。AES-256的解密私钥仅存储于您设备中的安全飞地中。只有通过了来自系统的验证，应用才能访问并解密您的这些数据用于自动填充功能。"),
         "authenticationSecurityTitle":
             MessageLookupByLibrary.simpleMessage("凭证仅存于本机"),
+        "authenticationStatusCannotAuthenticate":
+            MessageLookupByLibrary.simpleMessage(
+                "您的设备并未有密码或者生物信息加密，因此无法认证您的身份。"),
+        "authenticationStatusDeviceNotSupported":
+            MessageLookupByLibrary.simpleMessage("您的设备不支持验证身份"),
+        "authenticationStatusFailed":
+            MessageLookupByLibrary.simpleMessage("系统未能验证您的身份。请重试。"),
         "authorizedSite": MessageLookupByLibrary.simpleMessage("已验证站点"),
         "autoFillUsername": m2,
         "basicUse": MessageLookupByLibrary.simpleMessage("基本使用"),

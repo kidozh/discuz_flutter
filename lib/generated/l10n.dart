@@ -5010,6 +5010,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Your device is not supported.`
+  String get authenticationStatusDeviceNotSupported {
+    return Intl.message(
+      'Your device is not supported.',
+      name: 'authenticationStatusDeviceNotSupported',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your device is not enrolled in any authentication method.`
+  String get authenticationStatusCannotAuthenticate {
+    return Intl.message(
+      'Your device is not enrolled in any authentication method.',
+      name: 'authenticationStatusCannotAuthenticate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not pass system's authentication.`
+  String get authenticationStatusFailed {
+    return Intl.message(
+      'Could not pass system\'s authentication.',
+      name: 'authenticationStatusFailed',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

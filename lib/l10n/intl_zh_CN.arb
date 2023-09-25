@@ -742,5 +742,8 @@
   "authenticationSecurityAndroidContent": "您的凭证数据经由AES 256位强加密于您的设备中并且永不会发送出本机。AES-256的解密私钥经由RSA算法加密，RSA键值信息仅存储于您设备中的密钥库系统中。只有通过了来自系统的验证，应用才能访问并解密您的这些数据用于自动填充功能。",
   "unableToAuthenticate": "系统未能验证您的身份，自动填充失败。",
   "discuzAuthenticationTitle": "密码与凭证",
-  "securityTitle": "安全"
+  "securityTitle": "安全",
+  "authenticationStatusDeviceNotSupported": "您的设备不支持验证身份",
+  "authenticationStatusCannotAuthenticate": "您的设备并未有密码或者生物信息加密，因此无法认证您的身份。",
+  "authenticationStatusFailed": "系统未能验证您的身份。请重试。"
 }

@@ -148,6 +148,14 @@ class MessageLookup extends MessageLookupByLibrary {
             "Your authentication are AES-256 encrypted in this device and never sent outside. AES-256 private key is stored at keychain of the system. Only after authentication from the system, your data is accessible to DisFly."),
         "authenticationSecurityTitle":
             MessageLookupByLibrary.simpleMessage("Secure at your device"),
+        "authenticationStatusCannotAuthenticate":
+            MessageLookupByLibrary.simpleMessage(
+                "Your device is not enrolled in any authentication method."),
+        "authenticationStatusDeviceNotSupported":
+            MessageLookupByLibrary.simpleMessage(
+                "Your device is not supported."),
+        "authenticationStatusFailed": MessageLookupByLibrary.simpleMessage(
+            "Could not pass system\'s authentication."),
         "authorizedSite":
             MessageLookupByLibrary.simpleMessage("Authorized site"),
         "autoFillUsername": m2,

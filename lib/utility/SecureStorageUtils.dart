@@ -13,6 +13,16 @@ import 'package:local_auth/local_auth.dart';
 import '../dao/DiscuzAuthenticationDao.dart';
 import '../generated/l10n.dart';
 
+enum AuthenticationStatus{
+  can_authenticate,
+  device_not_supported,
+  could_not_authenticate,
+  failed,
+  success
+
+}
+
+
 class SecureStorageUtils{
   static const discuz_password_storage_key = "discuz_password_storage_key";
 
@@ -31,6 +41,22 @@ class SecureStorageUtils{
     final bool canAuthenticate = canAuthenticateWithBiometrics && isDeviceSupported;
     log("can auth with bio? ${canAuthenticateWithBiometrics} is device supported ${isDeviceSupported}");
     return canAuthenticate;
+  }
+
+  static Future<AuthenticationStatus> getAuthenticationStatus() async{
+    final LocalAuthentication auth = LocalAuthentication();
+    final bool canAuthenticateWithBiometrics = await auth.canCheckBiometrics;
+    final bool isDeviceSupported = await auth.isDeviceSupported();
+    if(!isDeviceSupported){
+    return AuthenticationStatus.device_not_supported;
+    }
+    else if(!canAuthenticateWithBiometrics){
+      return AuthenticationStatus.could_not_authenticate;
+    }
+    else{
+      return AuthenticationStatus.can_authenticate;
+    }
+
   }
 
   static Future<bool> authenticateWithSystem(BuildContext context) async{
