@@ -4990,6 +4990,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Password & Authentication`
+  String get discuzAuthenticationTitle {
+    return Intl.message(
+      'Password & Authentication',
+      name: 'discuzAuthenticationTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Security`
+  String get securityTitle {
+    return Intl.message(
+      'Security',
+      name: 'securityTitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

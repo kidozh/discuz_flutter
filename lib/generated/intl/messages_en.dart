@@ -284,6 +284,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Disable custom font"),
         "disableFontCustomizationTitle": MessageLookupByLibrary.simpleMessage(
             "Ignore all customized font information"),
+        "discuzAuthenticationTitle":
+            MessageLookupByLibrary.simpleMessage("Password & Authentication"),
         "discuzOperationMessage": m9,
         "discuzServerAddress":
             MessageLookupByLibrary.simpleMessage("The Discuz\'s address"),
@@ -726,6 +728,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "savedSmileyTabTitle":
             MessageLookupByLibrary.simpleMessage("Recently used"),
         "second": MessageLookupByLibrary.simpleMessage("S"),
+        "securityTitle": MessageLookupByLibrary.simpleMessage("Security"),
         "seeAllReplies":
             MessageLookupByLibrary.simpleMessage("View all replies"),
         "selectDiscuzIconTooltip":

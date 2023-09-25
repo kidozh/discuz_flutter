@@ -251,6 +251,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("停用自定义字体"),
         "disableFontCustomizationTitle":
             MessageLookupByLibrary.simpleMessage("不再解析自定义字体的颜色，大小等信息"),
+        "discuzAuthenticationTitle":
+            MessageLookupByLibrary.simpleMessage("密码与凭证"),
         "discuzOperationMessage": m9,
         "discuzServerAddress": MessageLookupByLibrary.simpleMessage("论坛地址"),
         "discuzServerAddressHelperText":
@@ -618,6 +620,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "savePictureToDevice": MessageLookupByLibrary.simpleMessage("保存图片至此设备"),
         "savedSmileyTabTitle": MessageLookupByLibrary.simpleMessage("最近使用"),
         "second": MessageLookupByLibrary.simpleMessage("秒"),
+        "securityTitle": MessageLookupByLibrary.simpleMessage("安全"),
         "seeAllReplies": MessageLookupByLibrary.simpleMessage("查看所有"),
         "selectDiscuzIconTooltip": MessageLookupByLibrary.simpleMessage("选择论坛"),
         "selectUserNull": MessageLookupByLibrary.simpleMessage("未选中一个用户"),

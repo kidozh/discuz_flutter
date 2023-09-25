@@ -108,4 +108,6 @@ class AppPlatformIcons{
   IconData get forumOutlined => isMaterial(context)? Icons.forum_outlined : CupertinoIcons.chat_bubble_2;
 
   IconData get authenticationSecureSolid => isMaterial(context)? Icons.lock : CupertinoIcons.lock_shield_fill;
+
+  IconData get authenticationSecureOutline => isMaterial(context)? Icons.lock_outline : CupertinoIcons.lock_shield;
 }

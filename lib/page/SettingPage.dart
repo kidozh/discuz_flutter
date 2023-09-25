@@ -4,6 +4,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/ChooseInterfaceBrightnessPage.dart';
 import 'package:discuz_flutter/page/ChoosePlatformPage.dart';
 import 'package:discuz_flutter/page/ChooseTypeSettingScalePage.dart';
+import 'package:discuz_flutter/page/DiscuzAuthenticationPage.dart';
 import 'package:discuz_flutter/page/SelectSignatureStylePage.dart';
 import 'package:discuz_flutter/page/SetPushNotificationPage.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
@@ -84,6 +85,24 @@ class _SettingPageState extends State<SettingPage> {
       return Consumer<TypeSettingNotifierProvider>(builder: (context, typeSetting, _) {
         return SettingsList(
           sections: [
+            SettingsSection(
+                title: Text(S.of(context).securityTitle),
+                tiles: [
+                  SettingsTile.navigation(
+                    title: Text(S.of(context).discuzAuthenticationTitle),
+                    leading: Icon(AppPlatformIcons(context).authenticationSecureOutline),
+
+                    onPressed: (context){
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      Navigator.of(context).push(platformPageRoute(
+                        builder: (_) => DiscuzAuthenticationPage(),
+                        context: context,
+                      ));
+                    },
+                  )
+                ],
+            ),
+
             SettingsSection(
               title: Text(S.of(context).common),
               tiles: [

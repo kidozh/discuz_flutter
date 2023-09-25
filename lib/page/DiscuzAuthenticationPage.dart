@@ -1,12 +1,30 @@
 
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
-class DiscuzAuthenticationPage extends StatelessWidget{
+import '../generated/l10n.dart';
+
+class DiscuzAuthenticationPage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+  State<StatefulWidget> createState() {
+    return DiscuzAuthenticationState();
   }
   
+}
+
+class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage>{
+  @override
+  Widget build(BuildContext context) {
+    return PlatformScaffold(
+      iosContentPadding: true,
+      appBar: PlatformAppBar(
+        title: Text(S.of(context).discuzAuthenticationTitle),
+      ),
+
+    );
+  }
+
+
+
 }
