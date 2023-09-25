@@ -60,8 +60,8 @@ class ForumPartitionWidget extends StatelessWidget{
                 return ForumCardWidget(_discuz,_user,subForum);
               },
           ),
-          if(isMaterial(context))
-          Divider()
+          // if(isCupertino(context))
+          // Divider()
         ],
       ),
     );

@@ -538,13 +538,19 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   }
 
   void _showInformationBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-        isScrollControlled: false,
+    showPlatformModalSheet(
+        //isScrollControlled: false,
         context: context,
         builder: (context) {
-          return Scrollable(
-            viewportBuilder: (BuildContext context, ViewportOffset position) {
-              return ListView(
+          return Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.65
+            ),
+            color: Theme.of(context).colorScheme.background,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+
                 children: [
                   Row(
                     children: [
@@ -564,9 +570,11 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                   ),
                   Divider(),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                         child: Icon(
                           Icons.rule,
                           color: Colors.redAccent,
@@ -579,8 +587,8 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                     ],
                   )
                 ],
-              );
-            },
+              ),
+            ),
           );
         });
   }
