@@ -14,6 +14,7 @@ import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -158,8 +159,14 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
                         currentSmiley[j].relativePath,
                     progressIndicatorBuilder: (context, url,
                         downloadProgress) =>
-                        CircularProgressIndicator(
-                            value: downloadProgress.progress),
+                        PlatformCircularProgressIndicator(
+                            material: (context, platform) => MaterialProgressIndicatorData(
+                              value: downloadProgress.progress
+                            ),
+                            cupertino: (context, platform) => CupertinoProgressIndicatorData(
+                              color: Theme.of(context).colorScheme.primary
+                            ),
+                            ),
                     errorWidget: (context, url, error) =>
                         Icon(Icons.image_not_supported),
                   )
