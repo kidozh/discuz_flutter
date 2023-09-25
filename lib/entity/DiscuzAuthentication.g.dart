@@ -1,33 +1,33 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'DiscuzAuthentification.dart';
+part of 'DiscuzAuthentication.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class DiscuzAuthentificationAdapter
-    extends TypeAdapter<DiscuzAuthentification> {
+class DiscuzAuthenticationAdapter extends TypeAdapter<DiscuzAuthentication> {
   @override
   final int typeId = 10;
 
   @override
-  DiscuzAuthentification read(BinaryReader reader) {
+  DiscuzAuthentication read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return DiscuzAuthentification()
+    return DiscuzAuthentication()
       ..account = fields[1] as String
       ..password = fields[2] as String
       ..discuz_host = fields[3] as String
-      ..updateTime = fields[4] as DateTime;
+      ..updateTime = fields[4] as DateTime
+      ..note = fields[5] as String;
   }
 
   @override
-  void write(BinaryWriter writer, DiscuzAuthentification obj) {
+  void write(BinaryWriter writer, DiscuzAuthentication obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(1)
       ..write(obj.account)
       ..writeByte(2)
@@ -35,7 +35,9 @@ class DiscuzAuthentificationAdapter
       ..writeByte(3)
       ..write(obj.discuz_host)
       ..writeByte(4)
-      ..write(obj.updateTime);
+      ..write(obj.updateTime)
+      ..writeByte(5)
+      ..write(obj.note);
   }
 
   @override
@@ -44,7 +46,7 @@ class DiscuzAuthentificationAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DiscuzAuthentificationAdapter &&
+      other is DiscuzAuthenticationAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

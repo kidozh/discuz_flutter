@@ -5,10 +5,10 @@ import 'package:hive/hive.dart';
 import '../utility/ConstUtils.dart';
 
 
-part 'DiscuzAuthentification.g.dart';
+part 'DiscuzAuthentication.g.dart';
 
-@HiveType(typeId: ConstUtils.HIVE_TYPE_ID_DISCUZ_AUTHENTIFICATION)
-class DiscuzAuthentification extends HiveObject{
+@HiveType(typeId: ConstUtils.HIVE_TYPE_ID_DISCUZ_AUTHENTICATION)
+class DiscuzAuthentication extends HiveObject{
   @HiveField(1)
   String account = "";
 

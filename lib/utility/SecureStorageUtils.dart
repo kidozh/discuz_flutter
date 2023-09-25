@@ -3,8 +3,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:discuz_flutter/dao/DiscuzAuthentificationDao.dart';
-import 'package:discuz_flutter/entity/DiscuzAuthentification.dart';
+import 'package:discuz_flutter/entity/DiscuzAuthentication.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -48,11 +47,11 @@ class SecureStorageUtils{
     }
   }
 
-  static Box<DiscuzAuthentification>? discuzAuthentificationBox= null;
+  static Box<DiscuzAuthentication>? discuzAuthentificationBox= null;
 
   static String discuzAuthentificationKey = "discuzAuthentificationKey";
 
-  static Future<Box<DiscuzAuthentification>> getDiscuzAuthentificationBox() async {
+  static Future<Box<DiscuzAuthentication>> getDiscuzAuthenticationBox() async {
     final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
     String? encryptedKey = await secureStorage.read(key: discuz_password_storage_key);
     if(encryptedKey == null){
@@ -63,7 +62,7 @@ class SecureStorageUtils{
     var encryptionBase64Key = base64Url.decode(encryptedKey);
 
     if(discuzAuthentificationBox == null){
-      discuzAuthentificationBox = await Hive.openBox<DiscuzAuthentification>(
+      discuzAuthentificationBox = await Hive.openBox<DiscuzAuthentication>(
           '${discuzAuthentificationKey}_password',
           encryptionCipher: HiveAesCipher(encryptionBase64Key)
       );
@@ -72,9 +71,9 @@ class SecureStorageUtils{
     return discuzAuthentificationBox!;
   }
 
-  static Future<DiscuzAuthentificationDao> getDiscuzAuthentificationDao() async {
-    Box<DiscuzAuthentification> discuzAuthentificationBox = await getDiscuzAuthentificationBox();
-    return DiscuzAuthentificationDao(discuzAuthentificationBox);
+  static Future<DiscuzAuthenticationDao> getDiscuzAuthenticationDao() async {
+    Box<DiscuzAuthentication> discuzAuthentificationBox = await getDiscuzAuthenticationBox();
+    return DiscuzAuthenticationDao(discuzAuthentificationBox);
   }
 
 

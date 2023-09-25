@@ -30,8 +30,8 @@ import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:provider/provider.dart';
 
-import '../dao/DiscuzAuthentificationDao.dart';
-import '../entity/DiscuzAuthentification.dart';
+import '../dao/DiscuzAuthenticationDao.dart';
+import '../entity/DiscuzAuthentication.dart';
 import 'PushServicePage.dart';
 
 class LoginPage extends StatelessWidget {
@@ -112,13 +112,13 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
 
       if(isAuthed){
         // check into system
-        DiscuzAuthentificationDao discuzAuthentificationDao = await SecureStorageUtils.getDiscuzAuthentificationDao();
-        List<DiscuzAuthentification> discuzAuthentificationList =
-        discuzAuthentificationDao.getDiscuzAuthentificationListByHost(discuz.host);
+        DiscuzAuthenticationDao discuzAuthentificationDao = await SecureStorageUtils.getDiscuzAuthenticationDao();
+        List<DiscuzAuthentication> discuzAuthentificationList =
+        discuzAuthentificationDao.getDiscuzAuthenticationListByHost(discuz.host);
         log("The list of authentification ${discuzAuthentificationList.length}");
         if(discuzAuthentificationList.length == 1){
           // only one element in authentication
-          DiscuzAuthentification discuzAuthentification = discuzAuthentificationList.first;
+          DiscuzAuthentication discuzAuthentification = discuzAuthentificationList.first;
           _autoFillLoginForm(discuzAuthentification.account, discuzAuthentification.password);
         }
         else if(discuzAuthentificationList.isEmpty){
@@ -149,13 +149,13 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
   Future<void> _saveAuthentificationToSecureDatabase() async{
     String account = _accountController.text;
     String password = _passwdController.text;
-    DiscuzAuthentificationDao discuzAuthentificationDao = await SecureStorageUtils.getDiscuzAuthentificationDao();
-    DiscuzAuthentification discuzAuthentification = DiscuzAuthentification();
+    DiscuzAuthenticationDao discuzAuthentificationDao = await SecureStorageUtils.getDiscuzAuthenticationDao();
+    DiscuzAuthentication discuzAuthentification = DiscuzAuthentication();
     discuzAuthentification.account = account;
     discuzAuthentification.password = password;
     discuzAuthentification.discuz_host = discuz.host;
     discuzAuthentification.updateTime = DateTime.now();
-    discuzAuthentificationDao.insertDiscuzAuthentification(
+    discuzAuthentificationDao.insertDiscuzAuthentication(
         discuzAuthentification
     );
   }

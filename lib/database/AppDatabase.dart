@@ -6,7 +6,7 @@ import 'package:discuz_flutter/dao/ImageAttachmentDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/entity/BlockUser.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:discuz_flutter/entity/DiscuzAuthentification.dart';
+import 'package:discuz_flutter/entity/DiscuzAuthentication.dart';
 import 'package:discuz_flutter/entity/Draft.dart';
 import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
@@ -50,7 +50,7 @@ class AppDatabase{
       ..registerAdapter(SmileyAdapter())
       ..registerAdapter(ViewHistoryAdapter())
       ..registerAdapter(ImageAttachmentAdapter())
-      ..registerAdapter(DiscuzAuthentificationAdapter())
+      ..registerAdapter(DiscuzAuthenticationAdapter())
       ..registerAdapter(DraftAdapter())
     ;
 
