@@ -35,5 +35,11 @@ class DiscuzAuthenticationDao{
             (element) => element.discuz_host == host).toList();
   }
 
+  List<DiscuzAuthentication> getAllDiscuzAuthentications(){
+    List<DiscuzAuthentication> list = discuzAuthenticationBox.values.toList();
+    list.sort((a,b) => a.discuz_host.compareTo(b.discuz_host));
+    return list;
+  }
+
 
 }

@@ -115,5 +115,5 @@ class AppPlatformIcons{
 
   IconData get deviceNotSupportSolid => isMaterial(context)? Icons.perm_device_info : CupertinoIcons.hand_raised_slash_fill;
 
-  IconData get authenticationFailedSolid => isMaterial(context)? Icons.security_update_warning : CupertinoIcons.eye_slash_fill;
+  IconData get authenticationFailedSolid => isMaterial(context)? Icons.lock : CupertinoIcons.lock_fill;
 }

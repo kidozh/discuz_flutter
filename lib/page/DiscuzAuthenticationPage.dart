@@ -173,7 +173,12 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage>{
   );
 
   Widget getAuthenticationListPage(){
-    return ListView();
+    if(discuzAuthenticationDao == null){
+      return failedAuthenticateWidget;
+    }
+    return ValueListenableBuilder(
+      valueListenable: ,
+    );
   }
 
 
