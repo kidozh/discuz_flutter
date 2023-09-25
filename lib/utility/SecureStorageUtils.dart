@@ -10,6 +10,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:local_auth/local_auth.dart';
 
+import '../dao/DiscuzAuthenticationDao.dart';
 import '../generated/l10n.dart';
 
 class SecureStorageUtils{
