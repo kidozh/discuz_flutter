@@ -164,8 +164,8 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
                               value: downloadProgress.progress
                             ),
                             cupertino: (context, platform) => CupertinoProgressIndicatorData(
-                              color: Theme.of(context).colorScheme.primary
-                            ),
+                                color: Theme.of(context).colorScheme.primary
+                              ),
                             ),
                     errorWidget: (context, url, error) =>
                         Icon(Icons.image_not_supported),
