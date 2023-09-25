@@ -590,7 +590,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
               Padding(
                   padding: EdgeInsets.all(8),
                   child: Icon(AppPlatformIcons(context).authenticationSecureSolid,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Theme.of(context).brightness == Brightness.light? Colors.green.shade700: Colors.green.shade300,
                     size: 48,
                   ),
               ),
