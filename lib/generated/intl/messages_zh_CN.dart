@@ -135,6 +135,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "attachFile": m1,
         "authenticateBySystem":
             MessageLookupByLibrary.simpleMessage("请验证您的身份以查看本地存储的保存密码。"),
+        "authenticationEmpty":
+            MessageLookupByLibrary.simpleMessage("在此设备上并无任何凭证信息。"),
         "authenticationSecurityAndroidContent":
             MessageLookupByLibrary.simpleMessage(
                 "您的凭证数据经由AES 256位强加密于您的设备中并且永不会发送出本机。AES-256的解密私钥经由RSA算法加密，RSA键值信息仅存储于您设备中的密钥库系统中。只有通过了来自系统的验证，应用才能访问并解密您的这些数据用于自动填充功能。"),

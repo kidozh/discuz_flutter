@@ -5040,6 +5040,16 @@ class S {
       args: [],
     );
   }
+
+  /// `No authentication found in this device.`
+  String get authenticationEmpty {
+    return Intl.message(
+      'No authentication found in this device.',
+      name: 'authenticationEmpty',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

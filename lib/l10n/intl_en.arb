@@ -744,5 +744,6 @@
   "securityTitle": "Security",
   "authenticationStatusDeviceNotSupported": "Your device is not supported.",
   "authenticationStatusCannotAuthenticate": "Your device is not enrolled in any authentication method.",
-  "authenticationStatusFailed": "Could not pass system's authentication."
+  "authenticationStatusFailed": "Could not pass system's authentication.",
+  "authenticationEmpty": "No authentication found in this device."
 }
