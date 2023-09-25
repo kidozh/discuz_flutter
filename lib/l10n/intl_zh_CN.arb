@@ -746,5 +746,7 @@
   "authenticationStatusDeviceNotSupported": "您的设备不支持验证身份",
   "authenticationStatusCannotAuthenticate": "您的设备并未有密码或者生物信息加密，因此无法认证您的身份。",
   "authenticationStatusFailed": "系统未能验证您的身份。请重试。",
-  "authenticationEmpty": "在此设备上并无任何凭证信息。"
+  "authenticationEmpty": "在此设备上并无任何凭证信息。",
+  "authenticationLocked": "数据已锁定",
+  "authenticationRetry": "验证身份"
 }

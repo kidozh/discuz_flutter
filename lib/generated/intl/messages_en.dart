@@ -143,6 +143,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "Please authenticate to query saved password."),
         "authenticationEmpty": MessageLookupByLibrary.simpleMessage(
             "No authentication found in this device."),
+        "authenticationLocked":
+            MessageLookupByLibrary.simpleMessage("The data is locked"),
+        "authenticationRetry":
+            MessageLookupByLibrary.simpleMessage("Authenticate"),
         "authenticationSecurityAndroidContent":
             MessageLookupByLibrary.simpleMessage(
                 "Your authentication are AES-256 encrypted in this device and never sent outside. AES-256 secret key is encrypted with RSA and RSA key is stored in Android Keystore system. Only after authentication from the system, your data is accessible to DisFly."),

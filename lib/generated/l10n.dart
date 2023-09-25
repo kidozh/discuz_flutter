@@ -5050,6 +5050,26 @@ class S {
       args: [],
     );
   }
+
+  /// `The data is locked`
+  String get authenticationLocked {
+    return Intl.message(
+      'The data is locked',
+      name: 'authenticationLocked',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Authenticate`
+  String get authenticationRetry {
+    return Intl.message(
+      'Authenticate',
+      name: 'authenticationRetry',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

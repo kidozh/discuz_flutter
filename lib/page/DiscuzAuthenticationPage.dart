@@ -11,6 +11,7 @@ import '../dao/DiscuzAuthenticationDao.dart';
 import '../entity/DiscuzAuthentication.dart';
 import '../generated/l10n.dart';
 import '../utility/AppPlatformIcons.dart';
+import '../utility/CustomizeColor.dart';
 
 class DiscuzAuthenticationPage extends StatefulWidget {
   @override
@@ -64,7 +65,7 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage>{
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
-      iosContentPadding: true,
+      //iosContentPadding: true,
       appBar: PlatformAppBar(
         title: Text(S.of(context).discuzAuthenticationTitle),
       ),
@@ -165,19 +166,19 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage>{
             Padding(
               padding: EdgeInsets.all(8),
               child: Icon(AppPlatformIcons(context).authenticationFailedSolid,
-                color: Theme.of(context).colorScheme.error,
-                size: 36,
+                color: Theme.of(context).disabledColor,
+                size: 128,
               ),
             ),
-            Text(S.of(context).authenticationStatusFailed, style: TextStyle(
-              color: Theme.of(context).textTheme.titleMedium?.color,
+            Text(S.of(context).authenticationLocked, style: TextStyle(
+              color: Theme.of(context).disabledColor,
               fontSize: 24,
             )),
             SizedBox(height: 48,),
             SizedBox(
               width: double.infinity,
               child: PlatformElevatedButton(
-                child: Text(S.of(context).retry),
+                child: Text(S.of(context).authenticationRetry),
                 onPressed: () async {
                   VibrationUtils.vibrateWithClickIfPossible();
                   await _loadAuthenticationList();
@@ -239,8 +240,27 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage>{
                 itemBuilder: (context, index){
                   DiscuzAuthentication discuzAuthentication = list[index];
                   return PlatformListTile(
+                      leading: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.all(Radius.circular(4))
+                        ),
+                        child: Center(
+                          child: Text(
+                            discuzAuthentication.account.length != 0
+                                ? discuzAuthentication.account[0].toUpperCase()
+                                : S.of(context).anonymous,
+                            style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer,fontSize: 16),
+                          ),
+                        ),
+                      ),
                       title: Text(discuzAuthentication.account),
                       subtitle: Text(discuzAuthentication.discuz_host),
+                      onTap: (){
+                        VibrationUtils.vibrateWithClickIfPossible();
+                      },
                   );
                 }
             );
@@ -251,6 +271,8 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage>{
     }
 
   }
+
+  void show
 
 
 
