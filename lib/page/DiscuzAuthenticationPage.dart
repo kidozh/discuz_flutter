@@ -8,6 +8,7 @@ import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -262,32 +263,53 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
                 itemCount: list.length,
                 itemBuilder: (context, index) {
                   DiscuzAuthentication discuzAuthentication = list[index];
-                  return PlatformListTile(
-                    leading: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.all(Radius.circular(4))),
-                      child: Center(
-                        child: Text(
-                          discuzAuthentication.account.length != 0
-                              ? discuzAuthentication.account[0].toUpperCase()
-                              : S.of(context).anonymous,
-                          style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer,
-                              fontSize: 16),
+                  return PlatformWidgetBuilder(
+                    material: (context, child, platform){
+                      return Card(
+                        child: child,
+                      );
+                    },
+                    cupertino: (context, child, platform){
+                      if(child!= null){
+                        return Column(
+                          children: [
+                            child,
+                            Divider()
+                          ],
+                        );
+                      }
+                      else{
+                        return Container();
+                      }
+
+                    },
+                    child: PlatformListTile(
+                      leading: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.all(Radius.circular(4))),
+                        child: Center(
+                          child: Text(
+                            discuzAuthentication.account.length != 0
+                                ? discuzAuthentication.account[0].toUpperCase()
+                                : S.of(context).anonymous,
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer,
+                                fontSize: 16),
+                          ),
                         ),
                       ),
+                      title: Text(discuzAuthentication.account),
+                      subtitle: Text(discuzAuthentication.discuz_host),
+                      onTap: () {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        _showAuthenticationDetailDialog(discuzAuthentication);
+                      },
                     ),
-                    title: Text(discuzAuthentication.account),
-                    subtitle: Text(discuzAuthentication.discuz_host),
-                    onTap: () {
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      _showAuthenticationDetailDialog(discuzAuthentication);
-                    },
                   );
                 });
           }
@@ -498,7 +520,7 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
                                           },
                                           children: List<Widget>.generate(
                                             discuzList.length, (index) => Center(
-                                              child: Text("${discuzList[index].siteName} (${discuzList[index].host})")
+                                              child: Text("${discuzList[index].siteName}")
                                           ),
                                           )
                                       ),
@@ -588,7 +610,24 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
                         child: Text(S.of(context).addAuthentication),
                         onPressed: () async {
                           VibrationUtils.vibrateWithClickIfPossible();
+                          if(_accountController.text.isEmpty){
+                            EasyLoading.showError(S.of(context).usernameIsEmpty);
+                            return;
+                          }
+
+                          if(_passwordController.text.isEmpty){
+                            EasyLoading.showError(S.of(context).passwordIsEmpty);
+                            return;
+                          }
+
+                          if(_discuz == null || _discuz!.host.isEmpty){
+                            EasyLoading.showError(S.of(context).hostIsEmpty);
+                            return;
+                          }
+
                           if(discuzAuthenticationDao != null && _discuz != null){
+
+
                             DiscuzAuthentication discuzAuthentication = DiscuzAuthentication();
                             discuzAuthentication.account = _accountController.text;
                             discuzAuthentication.password = _passwordController.text;

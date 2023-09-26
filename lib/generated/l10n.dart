@@ -5110,6 +5110,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Username is empty in the form`
+  String get usernameIsEmpty {
+    return Intl.message(
+      'Username is empty in the form',
+      name: 'usernameIsEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password is empty in the form`
+  String get passwordIsEmpty {
+    return Intl.message(
+      'Password is empty in the form',
+      name: 'passwordIsEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please specify the discuz.`
+  String get hostIsEmpty {
+    return Intl.message(
+      'Please specify the discuz.',
+      name: 'hostIsEmpty',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

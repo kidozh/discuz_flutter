@@ -388,6 +388,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "habit": MessageLookupByLibrary.simpleMessage("爱好"),
         "hapticFeedbackTitle": MessageLookupByLibrary.simpleMessage("振动反馈"),
         "homepage": MessageLookupByLibrary.simpleMessage("个人主页"),
+        "hostIsEmpty": MessageLookupByLibrary.simpleMessage("请选择一个已有的论坛。"),
         "hotThread": MessageLookupByLibrary.simpleMessage("最新热门"),
         "hour": MessageLookupByLibrary.simpleMessage("时"),
         "hourAgo": m19,
@@ -503,6 +504,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "链接使用的域名与此论坛不一致，其很有可能不是论坛所有的。谨防钓鱼、木马和诈骗。"),
         "outerlinkOpenTitle": MessageLookupByLibrary.simpleMessage("你正要打开外链"),
         "password": MessageLookupByLibrary.simpleMessage("密码"),
+        "passwordIsEmpty": MessageLookupByLibrary.simpleMessage("密码为空"),
         "pictureBedActive": MessageLookupByLibrary.simpleMessage("已启用"),
         "pictureBedAgreeToService": MessageLookupByLibrary.simpleMessage("我同意"),
         "pictureBedDisabled": MessageLookupByLibrary.simpleMessage("已禁用"),
@@ -767,6 +769,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "userProfile": MessageLookupByLibrary.simpleMessage("用户中心"),
         "userProfileTitle": MessageLookupByLibrary.simpleMessage("用户信息"),
         "userThread": MessageLookupByLibrary.simpleMessage("发帖"),
+        "usernameIsEmpty": MessageLookupByLibrary.simpleMessage("用户名为空"),
         "viewAuthorInfo": MessageLookupByLibrary.simpleMessage("查看用户详情"),
         "viewHistory": MessageLookupByLibrary.simpleMessage("浏览历史"),
         "viewPushServiceHomePage":

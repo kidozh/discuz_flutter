@@ -757,5 +757,8 @@
   },
   "addAuthentication": "添加到凭证集中",
   "autofillDialogTitle": "自动填充",
-  "autofillDialogSubtitle": "选择用户名以自动填充登陆表格"
+  "autofillDialogSubtitle": "选择用户名以自动填充登陆表格",
+  "usernameIsEmpty": "用户名为空",
+  "passwordIsEmpty": "密码为空",
+  "hostIsEmpty": "请选择一个已有的论坛。"
 }

@@ -453,6 +453,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "hapticFeedbackTitle":
             MessageLookupByLibrary.simpleMessage("Vibration feedback"),
         "homepage": MessageLookupByLibrary.simpleMessage("Homepage"),
+        "hostIsEmpty":
+            MessageLookupByLibrary.simpleMessage("Please specify the discuz."),
         "hotThread": MessageLookupByLibrary.simpleMessage("Popular"),
         "hour": MessageLookupByLibrary.simpleMessage("H"),
         "hourAgo": m19,
@@ -591,6 +593,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "outerlinkOpenTitle": MessageLookupByLibrary.simpleMessage(
             "The link doesn\'t belong to the BBS"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
+        "passwordIsEmpty": MessageLookupByLibrary.simpleMessage(
+            "Password is empty in the form"),
         "pictureBedActive": MessageLookupByLibrary.simpleMessage("Active"),
         "pictureBedAgreeToService":
             MessageLookupByLibrary.simpleMessage("Agree"),
@@ -901,6 +905,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "userProfileTitle":
             MessageLookupByLibrary.simpleMessage("User Profiles"),
         "userThread": MessageLookupByLibrary.simpleMessage("Threads"),
+        "usernameIsEmpty": MessageLookupByLibrary.simpleMessage(
+            "Username is empty in the form"),
         "viewAuthorInfo":
             MessageLookupByLibrary.simpleMessage("View author\'s profile"),
         "viewHistory": MessageLookupByLibrary.simpleMessage("View History"),

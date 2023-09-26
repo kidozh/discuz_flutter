@@ -756,5 +756,8 @@
   },
   "addAuthentication": "Add",
   "autofillDialogTitle": "Autofill",
-  "autofillDialogSubtitle": "Select the username to fill the login form"
+  "autofillDialogSubtitle": "Select the username to fill the login form",
+  "usernameIsEmpty": "Username is empty in the form",
+  "passwordIsEmpty": "Password is empty in the form",
+  "hostIsEmpty": "Please specify the discuz."
 }
