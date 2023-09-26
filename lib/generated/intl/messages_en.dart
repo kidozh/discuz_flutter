@@ -169,6 +169,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "authorizedSite":
             MessageLookupByLibrary.simpleMessage("Authorized site"),
         "autoFillUsername": m3,
+        "autofillDialogSubtitle": MessageLookupByLibrary.simpleMessage(
+            "Select the username to fill the login form"),
+        "autofillDialogTitle": MessageLookupByLibrary.simpleMessage("Autofill"),
         "basicUse": MessageLookupByLibrary.simpleMessage("Basic"),
         "basicUseDescribe":
             MessageLookupByLibrary.simpleMessage("Basic use of EasyRefresh"),

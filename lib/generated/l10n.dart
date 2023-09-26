@@ -5090,6 +5090,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Autofill`
+  String get autofillDialogTitle {
+    return Intl.message(
+      'Autofill',
+      name: 'autofillDialogTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select the username to fill the login form`
+  String get autofillDialogSubtitle {
+    return Intl.message(
+      'Select the username to fill the login form',
+      name: 'autofillDialogSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

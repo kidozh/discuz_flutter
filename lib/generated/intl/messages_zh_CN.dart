@@ -159,6 +159,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("系统未能验证您的身份。请重试。"),
         "authorizedSite": MessageLookupByLibrary.simpleMessage("已验证站点"),
         "autoFillUsername": m3,
+        "autofillDialogSubtitle":
+            MessageLookupByLibrary.simpleMessage("选择用户名以自动填充登陆表格"),
+        "autofillDialogTitle": MessageLookupByLibrary.simpleMessage("自动填充"),
         "basicUse": MessageLookupByLibrary.simpleMessage("基本使用"),
         "basicUseDescribe":
             MessageLookupByLibrary.simpleMessage("EasyRefresh的基本使用"),

@@ -754,5 +754,7 @@
       "time": {}
     }
   },
-  "addAuthentication": "Add"
+  "addAuthentication": "Add",
+  "autofillDialogTitle": "Autofill",
+  "autofillDialogSubtitle": "Select the username to fill the login form"
 }

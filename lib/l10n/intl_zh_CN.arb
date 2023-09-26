@@ -755,5 +755,7 @@
       "time": {}
     }
   },
-  "addAuthentication": "添加到凭证集中"
+  "addAuthentication": "添加到凭证集中",
+  "autofillDialogTitle": "自动填充",
+  "autofillDialogSubtitle": "选择用户名以自动填充登陆表格"
 }

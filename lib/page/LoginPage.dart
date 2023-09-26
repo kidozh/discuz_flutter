@@ -20,6 +20,7 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -126,6 +127,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
         }
         else{
           // multiple choices
+          _showAutoFillDialog(discuzAuthentificationList);
         }
       }
       else{
@@ -143,6 +145,28 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
     _passwdController.text = password;
     EasyLoading.showSuccess(S.of(context).autoFillUsername(account));
     VibrationUtils.vibrateSuccessfullyIfPossible();
+
+  }
+
+  Future<void> _showAutoFillDialog(List<DiscuzAuthentication> discuzAuthenticationList) async{
+    // cupertino comes first
+    showCupertinoModalPopup(
+          context: context,
+          builder: (context) => CupertinoActionSheet(
+            title: Text(S.of(context).autofillDialogTitle),
+            message: Text(S.of(context).autofillDialogSubtitle),
+            actions: discuzAuthenticationList.map(
+                    (e) => CupertinoActionSheetAction(
+                        child: Text(e.account),
+                        onPressed: (){
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          _autoFillLoginForm(e.account, e.password);
+                          Navigator.of(context).pop();
+                        },
+                    )
+            ).toList(),
+          )
+    );
 
   }
 
