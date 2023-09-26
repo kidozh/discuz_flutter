@@ -440,7 +440,7 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
               constraints: BoxConstraints(
                   maxHeight: MediaQuery.of(context).size.height * 0.8),
               padding: EdgeInsets.symmetric(vertical: 32, horizontal: 16),
-              child: SingleChildScrollView(
+              child: Container(
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                   children: [
