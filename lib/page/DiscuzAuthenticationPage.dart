@@ -1,6 +1,12 @@
 
 
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/utility/SecureStorageUtils.dart';
+import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +14,8 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../dao/DiscuzAuthenticationDao.dart';
+import '../dao/DiscuzDao.dart';
+import '../entity/Discuz.dart';
 import '../entity/DiscuzAuthentication.dart';
 import '../generated/l10n.dart';
 import '../utility/AppPlatformIcons.dart';
@@ -260,6 +268,7 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage>{
                       subtitle: Text(discuzAuthentication.discuz_host),
                       onTap: (){
                         VibrationUtils.vibrateWithClickIfPossible();
+                        _showAuthenticationDetailDialog(discuzAuthentication);
                       },
                   );
                 }
@@ -272,7 +281,102 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage>{
 
   }
 
-  void show
+  bool _passwordVisible = false;
+
+  Future<void> _showAuthenticationDetailDialog(DiscuzAuthentication discuzAuthentication) async{
+    DiscuzDao discuzDao = await AppDatabase.getDiscuzDao();
+    Discuz? discuz = discuzDao.findDiscuzByRealHost(discuzAuthentication.discuz_host);
+    log("Get discuz ${discuz} and ${discuzAuthentication.discuz_host}");
+
+    if(discuz == null){
+      return;
+    }
+
+    showPlatformModalSheet(
+        context: context,
+        builder: (context) => Container(
+          color: Theme.of(context).brightness == Brightness.light? Colors.grey.shade200 : Colors.grey.shade800,
+          constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.65
+          ),
+          padding: EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(16)),
+                    color: Theme.of(context).colorScheme.background,
+                  ),
+                    child: Column(
+                      // header
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              PlatformListTile(
+                                  title: Text(discuz.siteName, maxLines: 1,),
+                                  subtitle: Text(S.of(context).authenticationLastUpdateAt(TimeDisplayUtils.getLocaledTimeDisplay(context, discuzAuthentication.updateTime))),
+                                  leading: CachedNetworkImage(
+                                    imageUrl: discuz.getDiscuzAvatarURL(),
+                                    width: 96,
+                                    height: 64,
+                                    progressIndicatorBuilder: (context, url, downloadProgress) => PlatformCircularProgressIndicator(
+                                      material: (context, platform) => MaterialProgressIndicatorData(value: downloadProgress.progress),
+                                    ),
+                                    errorWidget: (context, url, error) => Icon(Icons.forum),
+
+                                  )
+                              ),
+                              Divider(),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(S.of(context).account),
+                                  Text(discuzAuthentication.account, style: TextStyle(color: Theme.of(context).disabledColor),)
+                                ],
+                              ),
+                              Divider(),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(S.of(context).password),
+                                  Text(discuzAuthentication.password, style: TextStyle(color: Theme.of(context).disabledColor),)
+                                ],
+                              )
+                            ],
+                          ),
+                        )
+                        
+                      ],
+                    ),
+                ),
+
+                SizedBox(height: 32,),
+
+                // another platform box
+                SizedBox(
+                  width: double.infinity,
+                  child: PlatformElevatedButton(
+                    child: Text(
+                        S.of(context).deleteAccount, style: TextStyle(color: Theme.of(context).colorScheme.error)
+                    ),
+                    color: Theme.of(context).colorScheme.onError,
+                    onPressed: () async {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                    },
+                  ),
+                )
+              ],
+            ),
+          ),
+        )
+    );
+  }
 
 
 

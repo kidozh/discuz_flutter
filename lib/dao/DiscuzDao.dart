@@ -34,6 +34,16 @@ class DiscuzDao{
     }
   }
 
+  Discuz? findDiscuzByRealHost(String host){
+
+    if (discuzBox.values.where((element) => Uri.parse(element.baseURL).host == host).isEmpty){
+      return null;
+    }
+    else{
+      return discuzBox.values.where((element) => Uri.parse(element.baseURL).host == host).first;
+    }
+  }
+
   Future<int> insertDiscuz(Discuz discuz){
     return discuzBox.add(discuz);
   }

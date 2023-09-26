@@ -5070,6 +5070,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Last update at {time}`
+  String authenticationLastUpdateAt(Object time) {
+    return Intl.message(
+      'Last update at $time',
+      name: 'authenticationLastUpdateAt',
+      desc: '',
+      args: [time],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

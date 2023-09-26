@@ -747,5 +747,11 @@
   "authenticationStatusFailed": "Could not pass system's authentication.",
   "authenticationEmpty": "No authentication found in this device.",
   "authenticationLocked": "The data is locked",
-  "authenticationRetry": "Authenticate"
+  "authenticationRetry": "Authenticate",
+  "authenticationLastUpdateAt": "Last update at {time}",
+  "@authenticationLastUpdateAt": {
+    "placeholders": {
+      "time": {}
+    }
+  }
 }

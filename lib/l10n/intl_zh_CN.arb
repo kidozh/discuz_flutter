@@ -748,5 +748,11 @@
   "authenticationStatusFailed": "系统未能验证您的身份。请重试。",
   "authenticationEmpty": "在此设备上并无任何凭证信息。",
   "authenticationLocked": "数据已锁定",
-  "authenticationRetry": "验证身份"
+  "authenticationRetry": "验证身份",
+  "authenticationLastUpdateAt": "上次修改时间： {time}",
+  "@authenticationLastUpdateAt": {
+    "placeholders": {
+      "time": {}
+    }
+  }
 }
