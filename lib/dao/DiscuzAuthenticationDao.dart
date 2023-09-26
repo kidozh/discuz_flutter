@@ -41,5 +41,9 @@ class DiscuzAuthenticationDao{
     return list;
   }
 
+  Future<void> deleteDiscuzAuthentication(DiscuzAuthentication discuzAuthentication) async {
+    discuzAuthenticationBox.delete(discuzAuthentication.key);
+  }
+
 
 }

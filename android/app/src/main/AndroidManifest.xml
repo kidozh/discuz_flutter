@@ -42,10 +42,11 @@
         android:usesCleartextTraffic="true"
         android:allowBackup="false"
         android:fullBackupContent="@xml/backup_rules"
+        android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/launcher_icon">
 
         <activity
-            android:name="io.flutter.embedding.android.FlutterActivity"
+            android:name="io.flutter.embedding.android.FlutterFragmentActivity"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"

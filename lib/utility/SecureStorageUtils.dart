@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:local_auth/local_auth.dart';
-
+import 'package:local_auth/error_codes.dart' as auth_error;
 import '../dao/DiscuzAuthenticationDao.dart';
 import '../generated/l10n.dart';
 
@@ -69,7 +69,8 @@ class SecureStorageUtils{
           )
       );
       return didAuthenticate;
-    } on PlatformException {
+    } on PlatformException catch(e) {
+      log("message ${e.code}");
       return false;
     }
   }
