@@ -129,6 +129,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "adLoadingText":
             MessageLookupByLibrary.simpleMessage("AD provided by Google"),
         "addAPhoto": MessageLookupByLibrary.simpleMessage("Photo"),
+        "addAuthentication": MessageLookupByLibrary.simpleMessage("Add"),
         "addDiscuzSuccessfully": m0,
         "addDiscuzTitle":
             MessageLookupByLibrary.simpleMessage("Add a discuz! BBS"),

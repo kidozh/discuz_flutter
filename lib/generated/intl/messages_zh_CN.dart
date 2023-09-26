@@ -125,6 +125,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "adLoadingText":
             MessageLookupByLibrary.simpleMessage("由Google提供的广告，与论坛无关。"),
         "addAPhoto": MessageLookupByLibrary.simpleMessage("照片"),
+        "addAuthentication": MessageLookupByLibrary.simpleMessage("添加到凭证集中"),
         "addDiscuzSuccessfully": m0,
         "addDiscuzTitle": MessageLookupByLibrary.simpleMessage("添加Discuz! 论坛"),
         "addNewDiscuz": MessageLookupByLibrary.simpleMessage("添加一个论坛"),

@@ -754,5 +754,6 @@
     "placeholders": {
       "time": {}
     }
-  }
+  },
+  "addAuthentication": "添加到凭证集中"
 }

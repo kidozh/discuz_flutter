@@ -5080,6 +5080,16 @@ class S {
       args: [time],
     );
   }
+
+  /// `Add`
+  String get addAuthentication {
+    return Intl.message(
+      'Add',
+      name: 'addAuthentication',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

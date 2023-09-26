@@ -387,7 +387,8 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
                                       discuzAuthentication.password,
                                       style: TextStyle(
                                           color:
-                                              Theme.of(context).disabledColor),
+                                              Theme.of(context).disabledColor,
+                                      ),
                                     )
                                   ],
                                 )
@@ -424,26 +425,107 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
             ));
   }
 
+  Discuz? _discuz = null;
+
   Future<void> _showAddDiscuzAuthenticationDialog() async {
     DiscuzDao discuzDao = await AppDatabase.getDiscuzDao();
     List<Discuz> discuzList = discuzDao.findAllDiscuzs();
+    if(discuzList.isNotEmpty){
+      setState(() {
+        _discuz = discuzList.first;
+      });
+    }
+
 
     TextEditingController _accountController = TextEditingController();
     TextEditingController _passwordController = TextEditingController();
 
     showPlatformModalSheet(
         context: context,
+        material: MaterialModalSheetData(
+          isScrollControlled: true
+        ),
+
         builder: (context) => Container(
               color: Theme.of(context).brightness == Brightness.light
                   ? Colors.grey.shade200
                   : Colors.grey.shade800,
               constraints: BoxConstraints(
                   maxHeight: MediaQuery.of(context).size.height * 0.8),
-              padding: EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
               child: Container(
+                padding: EdgeInsets.symmetric(vertical: 32, horizontal: 16),
                 child: Column(
-                  mainAxisSize: MainAxisSize.max,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
+                    PlatformWidgetBuilder(
+                      cupertino: (context, child, platform) => StatefulBuilder(builder: (context, setState){
+                        return SizedBox(
+                          width: double.infinity,
+                          child: Container(
+
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.all(Radius.circular(8))
+                            ),
+                            child: ListTile(
+                                title: Text(_discuz == null? "" : _discuz!.siteName, style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),),
+                                subtitle: Text(_discuz == null? "" : _discuz!.host, style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),),
+                                leading: Icon(PlatformIcons(context).checkMark),
+                                trailing: Icon(Icons.arrow_drop_down),
+                                onTap: (){
+                                  VibrationUtils.vibrateWithClickIfPossible();
+                                  showCupertinoModalPopup(
+                                      context: context, builder: (context) => Container(
+                                    height: 216,
+                                    padding: EdgeInsets.only(top: 6.0),
+                                    margin: EdgeInsets.only(
+                                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                                    ),
+                                    color: Theme.of(context).colorScheme.background,
+                                    child: SafeArea(
+                                      child: CupertinoPicker(
+                                          itemExtent: 32,
+                                          useMagnifier: true,
+                                          magnification: 1.22,
+                                          squeeze: 1.2,
+                                          onSelectedItemChanged: (position){
+                                            log("select position ${position}");
+                                            VibrationUtils.vibrateWithClickIfPossible();
+                                            setState(() {
+                                              _discuz = discuzList[position];
+                                            });
+                                          },
+                                          children: List<Widget>.generate(
+                                            discuzList.length, (index) => Center(
+                                              child: Text("${discuzList[index].siteName} (${discuzList[index].host})")
+                                          ),
+                                          )
+                                      ),
+                                    ),
+                                  )
+                                  );
+                                }
+                            ),
+                          ),
+                        );
+                      }),
+                      material: (context, child, platform) => DropdownMenu(
+                        dropdownMenuEntries: discuzList.map((e) => DropdownMenuEntry<Discuz>(
+                            value: e, label: e.siteName)
+                        ).toList(),
+                        onSelected: (Discuz? discuz){
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          log("select position ${discuz == null? "NOT SELECTED": discuz.siteName}");
+                          setState(() {
+                            _discuz = discuz;
+                          });
+                        },
+                      ),
+                    ),
+
+                    SizedBox(height: 16,),
+
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                       decoration: isCupertino(context)
@@ -454,6 +536,8 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
                           : null,
                       child: Column(
                         children: [
+
+
                           PlatformTextFormField(
                               autofillHints: [AutofillHints.username],
                               controller: _accountController,
@@ -495,6 +579,27 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
                         ],
                       ),
                     ),
+
+                    SizedBox(height: 16,),
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: PlatformElevatedButton(
+                        child: Text(S.of(context).addAuthentication),
+                        onPressed: () async {
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          if(discuzAuthenticationDao != null && _discuz != null){
+                            DiscuzAuthentication discuzAuthentication = DiscuzAuthentication();
+                            discuzAuthentication.account = _accountController.text;
+                            discuzAuthentication.password = _passwordController.text;
+                            discuzAuthentication.discuz_host = _discuz!.host;
+                            discuzAuthentication.updateTime = DateTime.now();
+                            await discuzAuthenticationDao!.insertDiscuzAuthentication(discuzAuthentication);
+                            Navigator.of(context).pop();
+                          }
+                        },
+                      ),
+                    )
                   ],
                 ),
               ),

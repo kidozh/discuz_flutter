@@ -753,5 +753,6 @@
     "placeholders": {
       "time": {}
     }
-  }
+  },
+  "addAuthentication": "Add"
 }
