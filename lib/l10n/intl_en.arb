@@ -759,5 +759,17 @@
   "autofillDialogSubtitle": "Select the username to fill the login form",
   "usernameIsEmpty": "Username is empty in the form",
   "passwordIsEmpty": "Password is empty in the form",
-  "hostIsEmpty": "Please specify the discuz."
+  "hostIsEmpty": "Host is empty in the form.",
+  "threadView": "{view} views",
+  "@threadView": {
+    "placeholders": {
+      "view": {}
+    }
+  },
+  "threadReply": "{reply} replies",
+  "@threadReply": {
+    "placeholders": {
+      "reply": {}
+    }
+  }
 }

@@ -115,13 +115,17 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m43(num) => "RP ${num}";
 
-  static String m44(username) => "User ${username} expired";
+  static String m44(reply) => "${reply} replies";
 
-  static String m45(uid) => "UserId ${uid}";
+  static String m45(view) => "${view} views";
 
-  static String m46(user) => "View ${user}\'s profile.";
+  static String m46(username) => "User ${username} expired";
 
-  static String m47(name) => "${name}\'s Windows device";
+  static String m47(uid) => "UserId ${uid}";
+
+  static String m48(user) => "View ${user}\'s profile.";
+
+  static String m49(name) => "${name}\'s Windows device";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -454,7 +458,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Vibration feedback"),
         "homepage": MessageLookupByLibrary.simpleMessage("Homepage"),
         "hostIsEmpty":
-            MessageLookupByLibrary.simpleMessage("Please specify the discuz."),
+            MessageLookupByLibrary.simpleMessage("Host is empty in the form."),
         "hotThread": MessageLookupByLibrary.simpleMessage("Popular"),
         "hour": MessageLookupByLibrary.simpleMessage("H"),
         "hourAgo": m19,
@@ -821,6 +825,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "threadIsClosed":
             MessageLookupByLibrary.simpleMessage("Thread is closed."),
         "threadReadAccess": m43,
+        "threadReply": m44,
+        "threadView": m45,
         "trashAd": MessageLookupByLibrary.simpleMessage("Trash Advertisement"),
         "trustHostActionText":
             MessageLookupByLibrary.simpleMessage("Trust this host"),
@@ -898,8 +904,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "userCredit": MessageLookupByLibrary.simpleMessage("Credits"),
         "userExpiredSubtitle": MessageLookupByLibrary.simpleMessage(
             "The current user is expired, some function may not work."),
-        "userExpiredTitle": m44,
-        "userIdTitle": m45,
+        "userExpiredTitle": m46,
+        "userIdTitle": m47,
         "userPost": MessageLookupByLibrary.simpleMessage("Posts"),
         "userProfile": MessageLookupByLibrary.simpleMessage("User Profile"),
         "userProfileTitle":
@@ -916,7 +922,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("View a thread"),
         "viewThreadTwoPaneText": MessageLookupByLibrary.simpleMessage(
             "Click thread to view posts inside."),
-        "viewUserInfo": m46,
+        "viewUserInfo": m48,
         "warnedPost":
             MessageLookupByLibrary.simpleMessage("The post is warned."),
         "watchPictureInFullScreen":
@@ -926,7 +932,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "welcomeSubtitle": MessageLookupByLibrary.simpleMessage(
             "Welcome to use our Services."),
         "welcomeTitle": MessageLookupByLibrary.simpleMessage("Welcome"),
-        "windowsDeviceName": m47,
+        "windowsDeviceName": m49,
         "workProcedure":
             MessageLookupByLibrary.simpleMessage("How does push service work?"),
         "writeStorageDenied": MessageLookupByLibrary.simpleMessage(

@@ -111,13 +111,17 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m43(num) => "阅读权限 ${num}";
 
-  static String m44(username) => "用户 ${username} 已失效";
+  static String m44(reply) => "${reply}回复";
 
-  static String m45(uid) => "用户编号： ${uid}";
+  static String m45(view) => "${view}浏览";
 
-  static String m46(user) => "查看${user}详情";
+  static String m46(username) => "用户 ${username} 已失效";
 
-  static String m47(name) => "${name}的Windows电脑";
+  static String m47(uid) => "用户编号： ${uid}";
+
+  static String m48(user) => "查看${user}详情";
+
+  static String m49(name) => "${name}的Windows电脑";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -696,6 +700,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("欢迎参与测试版本"),
         "threadIsClosed": MessageLookupByLibrary.simpleMessage("此贴已关闭发帖。"),
         "threadReadAccess": m43,
+        "threadReply": m44,
+        "threadView": m45,
         "trashAd": MessageLookupByLibrary.simpleMessage("垃圾广告"),
         "trustHostActionText": MessageLookupByLibrary.simpleMessage("信任此域名"),
         "trustHostTitle": MessageLookupByLibrary.simpleMessage("主机域名白名单"),
@@ -763,8 +769,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "userCredit": MessageLookupByLibrary.simpleMessage("积分"),
         "userExpiredSubtitle":
             MessageLookupByLibrary.simpleMessage("当前用户授权已过期，你需要重新登录以重新激活此用户。"),
-        "userExpiredTitle": m44,
-        "userIdTitle": m45,
+        "userExpiredTitle": m46,
+        "userIdTitle": m47,
         "userPost": MessageLookupByLibrary.simpleMessage("回复"),
         "userProfile": MessageLookupByLibrary.simpleMessage("用户中心"),
         "userProfileTitle": MessageLookupByLibrary.simpleMessage("用户信息"),
@@ -777,7 +783,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewThreadTitle": MessageLookupByLibrary.simpleMessage("查看帖子"),
         "viewThreadTwoPaneText":
             MessageLookupByLibrary.simpleMessage("点击左侧的帖子以查看内容。"),
-        "viewUserInfo": m46,
+        "viewUserInfo": m48,
         "warnedPost": MessageLookupByLibrary.simpleMessage("此贴被警告。"),
         "watchPictureInFullScreen":
             MessageLookupByLibrary.simpleMessage("查看大图"),
@@ -786,7 +792,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "welcomeSubtitle": MessageLookupByLibrary.simpleMessage(
             "欢迎使用我们的服务，我们基于Discuz！移动插件为您服务。"),
         "welcomeTitle": MessageLookupByLibrary.simpleMessage("你好"),
-        "windowsDeviceName": m47,
+        "windowsDeviceName": m49,
         "workProcedure": MessageLookupByLibrary.simpleMessage("推送服务是如何工作的？"),
         "writeStorageDenied": MessageLookupByLibrary.simpleMessage("无法获得写入权限。")
       };

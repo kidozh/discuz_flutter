@@ -5131,13 +5131,33 @@ class S {
     );
   }
 
-  /// `Please specify the discuz.`
+  /// `Host is empty in the form.`
   String get hostIsEmpty {
     return Intl.message(
-      'Please specify the discuz.',
+      'Host is empty in the form.',
       name: 'hostIsEmpty',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `{view} views`
+  String threadView(Object view) {
+    return Intl.message(
+      '$view views',
+      name: 'threadView',
+      desc: '',
+      args: [view],
+    );
+  }
+
+  /// `{reply} replies`
+  String threadReply(Object reply) {
+    return Intl.message(
+      '$reply replies',
+      name: 'threadReply',
+      desc: '',
+      args: [reply],
     );
   }
 }

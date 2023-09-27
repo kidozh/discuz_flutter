@@ -107,27 +107,13 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
   }
 
-  Widget getTailingWidget(){
+  Widget? getTailingWidget(){
     if(_forumThread.getDisplayOrder() > 0){
       return Icon(AppPlatformIcons(context).pinContentSolid, color: Theme.of(context).colorScheme.primary,);
     }
 
     else{
-      return Container(
-        // color: Theme.of(context).colorScheme.onPrimary,
-        child: Text(
-          _forumThread.replies.toString(),
-          textScaleFactor: .8,
-          style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4.0),
-          color: Theme.of(context).colorScheme.primaryContainer,
-          boxShadow: [
-            BoxShadow(color: Theme.of(context).colorScheme.primaryContainer, spreadRadius: 4),
-          ],
-        ),
-      );
+      return null;
     }
   }
 
@@ -325,48 +311,92 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
       builder: (context, selectedTid, child){
         //log("Changed tid ${selectedTid.tid} ${_forumThread.getTid()}");
         bool selected = selectedTid.tid == _forumThread.getTid();
-        return ListTile(
-          selected: selected,
-          leading: UserAvatar(
-            _discuz, _forumThread.getAuthorId(), _forumThread.author,
-            size: 36,
-            disableTap: true,
-          ),
-          title: Text(_forumThread.subject, style: textStyle?..copyWith(
-              color: selected? Theme.of(context).colorScheme.onPrimary: null,
-              fontWeight: viewed? null: FontWeight.bold
-          )),
-          subtitle: RichText(
-            text: TextSpan(
-              text: "",
-              style: Theme.of(context).textTheme.bodySmall?..copyWith(color: selected? Theme.of(context).colorScheme.onPrimary: null),
-              //style: ..copyWith(color: selected? Theme.of(context).colorScheme.onPrimary: null),
-              children: <TextSpan>[
-                TextSpan(text: _forumThread.author),
-                TextSpan(text: " · "),
-                TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_forumThread.dbdatelineMinutes)),
-                if(threadCategory.isNotEmpty)
-                  TextSpan(text: " / "),
-                if(threadCategory.isNotEmpty)
-                  TextSpan(text: threadCategory, style: textStyle),
-                if((_user == null && _forumThread.readPerm > 0)||(_user!= null && _forumThread.readPerm >_user!.readPerm))
-                  TextSpan(text: " / " + S.of(context).threadReadAccess(_forumThread.readPerm),
-                      style: viewed? textStyle: textStyle?.copyWith(color: Theme.of(context).colorScheme.error)
+        return Column(
+          children: [
+            ListTile(
+              selected: selected,
+              leading: UserAvatar(
+                _discuz, _forumThread.getAuthorId(), _forumThread.author,
+                size: 36,
+                disableTap: true,
+              ),
+              title: Text(_forumThread.subject, style: textStyle?..copyWith(
+                  color: selected? Theme.of(context).colorScheme.onPrimary: null,
+                  fontWeight: viewed? null: FontWeight.bold,
+              )),
+              subtitle: RichText(
+                text: TextSpan(
+                  text: "",
+                  style: TextStyle(
+                      color: selected? Theme.of(context).colorScheme.onPrimary: Theme.of(context).disabledColor,
+                      fontSize: 12
                   ),
-              ],
+                  //style: ..copyWith(color: selected? Theme.of(context).colorScheme.onPrimary: null),
+                  children: <TextSpan>[
+                    TextSpan(text: _forumThread.author),
+                    TextSpan(text: " · "),
+                    TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_forumThread.dbdatelineMinutes)),
+                  ],
+                ),
+              ),
+
+              trailing: selected? Icon(AppPlatformIcons(context).selectedThreadSolid, color: Theme.of(context).colorScheme.primary,):
+              _forumThread.replies!=0 ? getTailingWidget(): null,
+              onTap: () async {
+                triggerTapFunction();
+              },
+              onLongPress: () async{
+                triggerLongPressFunction();
+              },
+
+
             ),
-          ),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  if(threadCategory.isNotEmpty)
+                  Container(
+                      padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                      color: viewed? Theme.of(context).colorScheme.tertiaryContainer: Theme.of(context).colorScheme.primaryContainer,
+                      child: Text(threadCategory, style: TextStyle(
+                        color: viewed? Theme.of(context).colorScheme.onTertiaryContainer:Theme.of(context).colorScheme.onPrimaryContainer,
+                      )
+                      ),
+                  ),
+                  RichText(
+                    text: TextSpan(
+                        text: "",
+                        style: TextStyle(
 
-          trailing: selected? Icon(AppPlatformIcons(context).selectedThreadSolid, color: Theme.of(context).colorScheme.primary,):
-          _forumThread.replies!=0 ? getTailingWidget(): null,
-          onTap: () async {
-            triggerTapFunction();
-          },
-          onLongPress: () async{
-            triggerLongPressFunction();
-          },
+                        ),
+                        children: <TextSpan>[
+                          if(threadCategory.isNotEmpty)
+                            TextSpan(text: " · ", style: viewed? TextStyle(color: Theme.of(context).disabledColor) : TextStyle(
+                                color:  Theme.of(context).disabledColor
+                            )),
 
+                          TextSpan(text: S.of(context).threadView(_forumThread.views),
+                              style: TextStyle(color: Theme.of(context).disabledColor)
 
+                          ),
+                          TextSpan(text: " · " + S.of(context).threadReply(_forumThread.replies),
+                              style: TextStyle(color: Theme.of(context).disabledColor)
+                          ),
+
+                          if((_user == null && _forumThread.readPerm > 0)|| (_user!= null && _forumThread.readPerm > _user!.readPerm))
+                            TextSpan(text: " · " + S.of(context).threadReadAccess(_forumThread.readPerm),
+                                style: viewed? textStyle: textStyle?.copyWith(color: Theme.of(context).colorScheme.error)
+                            ),
+
+                        ]
+                    ),
+                  )
+                ],
+              ),
+            )
+          ],
         );
       }
     );
