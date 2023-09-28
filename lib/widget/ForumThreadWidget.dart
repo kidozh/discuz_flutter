@@ -25,6 +25,7 @@ import 'package:provider/provider.dart';
 
 import '../entity/ViewHistory.dart';
 import '../page/ViewThreadSliverPage.dart';
+import '../provider/DiscuzAndUserNotifier.dart';
 
 // ignore: must_be_immutable
 class ForumThreadWidget extends StatelessWidget{
@@ -78,8 +79,11 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
   @override
   void initState() {
+    // set in case
+    _user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     loadDatabase();
     super.initState();
+
   }
 
   ViewHistoryDao? dao;
@@ -128,18 +132,22 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     return Consumer<SelectedTidNotifierProvider>(
       builder: (context, selectedTid, child){
         bool selected = selectedTid.tid == _forumThread.getTid();
-        return PlatformWidget(
-          material: (context, platform) => Card(
+        return PlatformWidgetBuilder(
+          material: (context, child, platform) => Card(
             elevation: 4.0,
             surfaceTintColor: selected? Theme.of(context).colorScheme.primary: brightness == Brightness.light? Colors.white: Colors.black45,
             // color: Theme.of(context).colorScheme.background,
-            child: getForumThreadListTile(viewed),
+            child: Container(
+              padding: EdgeInsets.only(bottom: 12.0),
+              child: child,
+            ),
           ),
-          cupertino: (_, __) => Column(
+          cupertino: (_, child, __) => Column(
             mainAxisSize: MainAxisSize.min,
 
             children: [
-              getForumThreadListTile(viewed),
+              if(child!= null)
+                child,
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: Divider(),
@@ -147,6 +155,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
             ],
           ),
+          child: getForumThreadListTile(viewed)
         );
       },
     );
@@ -193,6 +202,8 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
     }
     String threadCategory = "";
+    // set for popular terms
+    threadCategory = _forumThread.typeName;
     if(threadType!=null && threadType!.idNameMap.isNotEmpty && threadType!.idNameMap.containsKey(_forumThread.typeId)){
       threadCategory = threadType!.idNameMap[_forumThread.typeId]!;
     }
@@ -317,7 +328,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
               selected: selected,
               leading: UserAvatar(
                 _discuz, _forumThread.getAuthorId(), _forumThread.author,
-                size: 36,
+                size: 48,
                 disableTap: true,
               ),
               title: Text(_forumThread.subject, style: textStyle?..copyWith(
@@ -389,9 +400,12 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                           TextSpan(text: " · " + S.of(context).threadReply(_forumThread.replies),
                               style: TextStyle(color: Theme.of(context).disabledColor)
                           ),
-
                           if((_user == null && _forumThread.readPerm > 0)|| (_user!= null && _forumThread.readPerm > _user!.readPerm))
-                            TextSpan(text: " · " + S.of(context).threadReadAccess(_forumThread.readPerm),
+                            TextSpan(text: " · ",
+                                style: TextStyle(color: Theme.of(context).disabledColor)
+                            ),
+                          if((_user == null && _forumThread.readPerm > 0)|| (_user!= null && _forumThread.readPerm > _user!.readPerm))
+                            TextSpan(text: S.of(context).threadReadAccess(_forumThread.readPerm),
                                 style: viewed? textStyle: textStyle?.copyWith(color: Theme.of(context).colorScheme.error)
                             ),
 

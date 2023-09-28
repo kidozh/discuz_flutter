@@ -43,7 +43,8 @@ ForumThread _$ForumThreadFromJson(Map<String, dynamic> json) => ForumThread()
       (json['attachmentImagePreviewList'] as List<dynamic>?)
               ?.map(AttachmentPreview.fromJson)
               .toList() ??
-          [];
+          []
+  ..typeName = json['typename'] as String? ?? '';
 
 Map<String, dynamic> _$ForumThreadToJson(ForumThread instance) =>
     <String, dynamic>{
@@ -72,6 +73,7 @@ Map<String, dynamic> _$ForumThreadToJson(ForumThread instance) =>
       'attachmentImageNumber':
           const StringToIntConverter().toJson(instance.attachmentImageNumber),
       'attachmentImagePreviewList': instance.attachmentImagePreviewList,
+      'typename': instance.typeName,
     };
 
 ShortReply _$ShortReplyFromJson(Map<String, dynamic> json) => ShortReply()

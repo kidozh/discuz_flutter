@@ -96,6 +96,9 @@ class ForumThread{
     // TODO: implement toString
     return "ForumThread ${author} in ${tid}";
   }
+
+  @JsonKey(name: "typename", required: false, defaultValue: "")
+  String typeName = "";
 }
 
 @JsonSerializable(disallowUnrecognizedKeys: false)

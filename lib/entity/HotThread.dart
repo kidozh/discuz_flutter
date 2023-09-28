@@ -65,8 +65,9 @@ class HotThread{
   Map<String, dynamic> toJson() => _$HotThreadToJson(this);
 
   ForumThread toForumThread(){
-    print(toJson());
-    return ForumThread.fromJson(toJson());
+    ForumThread forumThread = ForumThread.fromJson(toJson());
+
+    return forumThread;
   }
 
 }
