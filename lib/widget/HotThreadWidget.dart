@@ -163,7 +163,9 @@ class HotThreadState extends State<HotThreadStatefulWidget>{
             height: isMaterial(context)?48:32,
             width: isMaterial(context)?48:32,
             imageUrl: URLUtils.getAvatarURL(_discuz, _hotThread.authorId.toString()),
-            progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+            progressIndicatorBuilder: (context, url, downloadProgress) => PlatformCircularProgressIndicator(
+              material: (_, __)=> MaterialProgressIndicatorData(value: downloadProgress.progress),
+            ),
             errorWidget: (context, url, error) =>
                 CircleAvatar(
 

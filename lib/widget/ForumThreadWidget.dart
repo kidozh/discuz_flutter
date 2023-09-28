@@ -358,10 +358,15 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                 children: [
                   if(threadCategory.isNotEmpty)
                   Container(
-                      padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                      color: viewed? Theme.of(context).colorScheme.tertiaryContainer: Theme.of(context).colorScheme.primaryContainer,
+                      padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+                      decoration: BoxDecoration(
+                        color: viewed? Theme.of(context).disabledColor.withOpacity(0.1): Theme.of(context).colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                      ),
+                      
                       child: Text(threadCategory, style: TextStyle(
-                        color: viewed? Theme.of(context).colorScheme.onTertiaryContainer:Theme.of(context).colorScheme.onPrimaryContainer,
+                        color: viewed? Theme.of(context).disabledColor:Theme.of(context).colorScheme.onPrimaryContainer,
+                        fontSize: 12
                       )
                       ),
                   ),
