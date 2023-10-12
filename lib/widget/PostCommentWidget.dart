@@ -24,7 +24,7 @@ class PostCommentWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: [
-            SizedBox(width: 16,),
+            SizedBox(width: 8,),
             CachedNetworkImage(
                 imageUrl: _comment.avatar,
                 height: 16,

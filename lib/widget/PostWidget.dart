@@ -275,7 +275,7 @@ class PostState extends State<PostStatefulWidget> {
 
         // rich text rendering
         Padding(
-          padding: EdgeInsets.only(left: _post.first ? 0 : 32),
+          padding: EdgeInsets.zero,
           child: Column(
             children: [
               DiscuzHtmlWidget(
@@ -301,22 +301,33 @@ class PostState extends State<PostStatefulWidget> {
                     padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                        color: Theme.of(context).colorScheme.primaryContainer.withOpacity(isCupertino(context)?0.3: 1),
-                        boxShadow: [
-                          if(isMaterial(context))
-                            BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 5,
-                                blurRadius: 7,
-                                offset: Offset(0, 3)
-                            )
-                        ]
+                        color: Theme.of(context).disabledColor.withOpacity(0.04),
+                        // boxShadow: [
+                        //   if(isMaterial(context))
+                        //     BoxShadow(
+                        //         color: Colors.grey.withOpacity(0.5),
+                        //         spreadRadius: 5,
+                        //         blurRadius: 7,
+                        //         offset: Offset(0, 3)
+                        //     )
+                        // ]
                     ),
                     child: ListView.builder(
                       padding: EdgeInsets.zero,
                       itemBuilder: (context, index) {
                         Comment comment = getCommentList()[index];
-                        return PostCommentWidget(comment);
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            PostCommentWidget(comment),
+                            if(index != getCommentList().length-1)
+                              Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Divider(),
+                              )
+
+                          ],
+                        );
                       },
                       itemCount: getCommentList().length,
                       physics: new NeverScrollableScrollPhysics(),
@@ -441,16 +452,16 @@ class PostState extends State<PostStatefulWidget> {
         //     padding: EdgeInsets.only(right: 2.0),
         //     child: Icon(Icons.smartphone, size: 16),
         //   ),
-        Padding(
-          padding: EdgeInsets.only(right: 0.0),
-          child: Text(
-            S.of(context).postPosition(_post.position),
-            style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-                color: Theme.of(context).disabledColor),
-          ),
-        ),
+        // Padding(
+        //   padding: EdgeInsets.only(right: 0.0),
+        //   child: Text(
+        //     S.of(context).postPosition(_post.position),
+        //     style: TextStyle(
+        //         fontWeight: FontWeight.w400,
+        //         fontSize: 12,
+        //         color: Theme.of(context).disabledColor),
+        //   ),
+        // ),
         if (_user != null)
           IconButton(
             icon: Icon(
@@ -624,7 +635,14 @@ class PostState extends State<PostStatefulWidget> {
                           fontSize: 18)),
               ],
             ),
-          ))
+          )),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Text(_post.position.toString(), style: TextStyle(
+                fontSize: 18,
+                color: Theme.of(context).disabledColor),
+            ),
+          )
         ],
       );
     }
