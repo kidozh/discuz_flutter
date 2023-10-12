@@ -70,6 +70,9 @@ class SecureStorageUtils{
       );
       return didAuthenticate;
     } on PlatformException catch(e) {
+      if(e.code == auth_error.notAvailable){
+
+      }
       log("message ${e.code}");
       return false;
     }

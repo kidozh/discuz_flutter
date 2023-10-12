@@ -536,7 +536,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         currentIndex: _bottomNavigationbarIndex,
         material: (context, _) => MaterialNavBarData(
             selectedItemColor: Theme.of(context).colorScheme.primary,
-            unselectedItemColor: Theme.of(context).unselectedWidgetColor),
+            unselectedItemColor: Theme.of(context).unselectedWidgetColor,
+            elevation: 0
+        ),
+
         itemChanged: (index) {
           setState(() {
             VibrationUtils.vibrateWithClickIfPossible();
