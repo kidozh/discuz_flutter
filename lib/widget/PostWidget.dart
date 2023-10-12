@@ -229,28 +229,27 @@ class PostState extends State<PostStatefulWidget> {
     return Consumer<TypeSettingNotifierProvider>(
         builder: (context, typesetting, _) {
       // should return the container
-      return PlatformWidget(
-        material: (_, __) => Card(
+      return PlatformWidgetBuilder(
+        material: (_, child, platform) => Card(
           surfaceTintColor: Theme.of(context).colorScheme.surface,
           elevation: _post.first ? 0 : 8,
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 12.0),
-            child: getPostContent(context),
+            child: child,
           ),
         ),
-        cupertino: (_, __) => Column(
+        cupertino: (_, child, platform) => Column(
           children: [
             Padding(
               padding: EdgeInsets.only(left: 4.0, right: 4.0, top: 16.0),
-              child: getPostContent(context),
+              child: child,
             ),
-            Padding(
-              padding: EdgeInsets.only(left: 16.0, right: 16.0),
-              child: Divider(),
-            ),
+            Divider(indent: 8.0,)
+
 
           ],
         ),
+        child: getPostContent(context),
       );
     });
   }
@@ -653,13 +652,9 @@ class PostState extends State<PostStatefulWidget> {
       return Container();
     } else {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 4.0),
+        padding: EdgeInsets.symmetric(horizontal: 8.0),
         child: Row(
           children: [
-            // user
-            SizedBox(
-              width: 36.0,
-            ),
             Expanded(
               child: RichText(
                 overflow: TextOverflow.ellipsis,
