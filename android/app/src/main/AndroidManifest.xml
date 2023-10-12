@@ -42,12 +42,14 @@
         android:usesCleartextTraffic="true"
         android:allowBackup="false"
         android:fullBackupContent="@xml/backup_rules"
-        android:enableOnBackInvokedCallback="true"
-        android:icon="@mipmap/launcher_icon">
-        <!--            android:name="io.flutter.embedding.android.FlutterFragmentActivity"-->
-        <activity
 
+        android:icon="@mipmap/launcher_icon">
+        <!--        android:enableOnBackInvokedCallback="true"-->
+        <!--            android:name="io.flutter.embedding.android.FlutterFragmentActivity"-->
+        <!--            android:name="com.kidozh.discuz_flutter.MainActivity"-->
+        <activity
             android:name="com.kidozh.discuz_flutter.MainActivity"
+
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
