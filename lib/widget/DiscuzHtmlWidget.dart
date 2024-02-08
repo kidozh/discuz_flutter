@@ -123,7 +123,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
         Typography typography = Typography.material2021();
 
         TextTheme textTheme = typography.dense;
-        TextStyle? defaultTextStyle = textTheme.bodyMedium;
+        TextStyle? defaultTextStyle = textTheme.bodyLarge;
         double? themeFontSize = defaultTextStyle?.fontSize == null? 14 : defaultTextStyle?.fontSize!;
 
         return Html(
@@ -140,7 +140,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 fontSize: defaultTextStyle?.fontSize == null? FontSize.medium:FontSize(defaultTextStyle!.fontSize!*scalingParameter),
                 fontWeight: defaultTextStyle?.fontWeight,
                 wordSpacing: defaultTextStyle?.wordSpacing,
-                lineHeight: LineHeight(scalingParameter< 1.5? 1.35*scalingParameter: 1.35 * 1.5),
+                lineHeight: LineHeight(1.3),
                 padding: HtmlPaddings.zero,
                 margin: Margins.zero
             ),
@@ -153,8 +153,59 @@ class DiscuzHtmlWidget extends StatelessWidget{
             ),
             "a":Style(
               color: Theme.of(context).colorScheme.primary,
+              textDecoration: TextDecoration.underline,
+              textDecorationColor: Theme.of(context).colorScheme.primary,
 
-            )
+            ),
+            "h1": Style(
+                fontSize: textTheme.headlineLarge?.fontSize != null ? FontSize(textTheme.headlineLarge!.fontSize!*scalingParameter): null,
+                color: textTheme.headlineLarge?.color,
+                fontFamily: textTheme.headlineLarge?.fontFamily,
+                fontWeight: textTheme.headlineLarge?.fontWeight,
+                fontStyle: textTheme.headlineLarge?.fontStyle,
+                backgroundColor: textTheme.headlineLarge?.backgroundColor
+            ),
+            "h2": Style(
+                fontSize: textTheme.headlineMedium?.fontSize != null ? FontSize(textTheme.headlineMedium!.fontSize!*scalingParameter): null,
+                color: textTheme.headlineMedium?.color,
+                fontFamily: textTheme.headlineMedium?.fontFamily,
+                fontWeight: textTheme.headlineMedium?.fontWeight,
+                fontStyle: textTheme.headlineMedium?.fontStyle,
+                backgroundColor: textTheme.headlineMedium?.backgroundColor
+            ),
+            "h3": Style(
+                fontSize: textTheme.headlineSmall?.fontSize != null ? FontSize(textTheme.headlineSmall!.fontSize!*scalingParameter): null,
+                color: textTheme.headlineSmall?.color,
+                fontFamily: textTheme.headlineSmall?.fontFamily,
+                fontWeight: textTheme.headlineSmall?.fontWeight,
+                fontStyle: textTheme.headlineSmall?.fontStyle,
+                backgroundColor: textTheme.headlineSmall?.backgroundColor
+            ),
+            "h4": Style(
+              fontSize: textTheme.titleLarge?.fontSize != null ? FontSize(textTheme.titleLarge!.fontSize!*scalingParameter): null,
+              color: textTheme.titleLarge?.color,
+              fontFamily: textTheme.titleLarge?.fontFamily,
+              fontWeight: textTheme.titleLarge?.fontWeight,
+              fontStyle: textTheme.titleLarge?.fontStyle,
+              backgroundColor: textTheme.titleLarge?.backgroundColor
+            ),
+            "h5": Style(
+                fontSize: textTheme.titleMedium?.fontSize != null ? FontSize(textTheme.titleMedium!.fontSize!*scalingParameter): null,
+                color: textTheme.titleMedium?.color,
+                fontFamily: textTheme.titleMedium?.fontFamily,
+                fontWeight: textTheme.titleMedium?.fontWeight,
+                fontStyle: textTheme.titleMedium?.fontStyle,
+                backgroundColor: textTheme.titleMedium?.backgroundColor
+            ),
+            "h6": Style(
+                fontSize: textTheme.titleSmall?.fontSize != null ? FontSize(textTheme.titleSmall!.fontSize!*scalingParameter): null,
+                color: textTheme.titleSmall?.color,
+                fontFamily: textTheme.titleSmall?.fontFamily,
+                fontWeight: textTheme.titleSmall?.fontWeight,
+                fontStyle: textTheme.titleSmall?.fontStyle,
+                backgroundColor: textTheme.titleSmall?.backgroundColor
+            ),
+
 
           },
           onLinkTap: (urlString, context1,attribute) async{

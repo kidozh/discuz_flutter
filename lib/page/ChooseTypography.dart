@@ -4,6 +4,7 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
+import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/PostWidget.dart';
@@ -32,8 +33,11 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
     Post mockedPost = Post();
     mockedPost.authorId = _rnd.nextInt(100);
     mockedPost.position = _rnd.nextInt(400);
-    mockedPost.message = getRandomString(200);
+    mockedPost.message = PostTextFieldUtils.EXAMPLE_HTML_LONG_DATA;
     mockedPost.author = getRandomString(10);
+    DateTime today = DateTime.now();
+    DateTime randomTimeAgo = today.subtract(Duration(minutes: _rnd.nextInt(500)));
+    mockedPost.publishAt = randomTimeAgo;
     return mockedPost;
   }
 
@@ -168,9 +172,6 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
                   children: [
                     PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000),""),
                     PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000),""),
-                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000),""),
-                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000),""),
-                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000),"")
                   ],
                 ),
               ),
