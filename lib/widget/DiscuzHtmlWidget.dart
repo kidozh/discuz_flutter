@@ -120,6 +120,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
 
       child: Consumer<TypeSettingNotifierProvider>(builder: (context, typesetting, _) {
         double scalingParameter = typesetting.scalingParameter;
+
         Typography typography = Typography.material2021();
 
         TextTheme textTheme = typography.dense;
@@ -149,7 +150,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
               padding: HtmlPaddings.all(4.0),
               margin: Margins(bottom: Margin(0.0)),
               border: Border(left: BorderSide(color: Theme.of(context).colorScheme.primary, width: 4)),
-              width: Width(double.maxFinite)
+              width: Width.auto()
             ),
             "a":Style(
               color: Theme.of(context).colorScheme.primary,
@@ -159,23 +160,24 @@ class DiscuzHtmlWidget extends StatelessWidget{
             ),
             "h1": Style(
                 fontSize: textTheme.headlineLarge?.fontSize != null ? FontSize(textTheme.headlineLarge!.fontSize!*scalingParameter): null,
-                color: textTheme.headlineLarge?.color,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
                 fontFamily: textTheme.headlineLarge?.fontFamily,
-                fontWeight: textTheme.headlineLarge?.fontWeight,
+                fontWeight: FontWeight.bold,
                 fontStyle: textTheme.headlineLarge?.fontStyle,
-                backgroundColor: textTheme.headlineLarge?.backgroundColor
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                padding: HtmlPaddings.all(6.0)
             ),
             "h2": Style(
                 fontSize: textTheme.headlineMedium?.fontSize != null ? FontSize(textTheme.headlineMedium!.fontSize!*scalingParameter): null,
-                color: textTheme.headlineMedium?.color,
+                color: Theme.of(context).colorScheme.primary,
                 fontFamily: textTheme.headlineMedium?.fontFamily,
-                fontWeight: textTheme.headlineMedium?.fontWeight,
+                fontWeight: FontWeight.bold,
                 fontStyle: textTheme.headlineMedium?.fontStyle,
-                backgroundColor: textTheme.headlineMedium?.backgroundColor
+                backgroundColor: textTheme.headlineMedium?.backgroundColor,
             ),
             "h3": Style(
                 fontSize: textTheme.headlineSmall?.fontSize != null ? FontSize(textTheme.headlineSmall!.fontSize!*scalingParameter): null,
-                color: textTheme.headlineSmall?.color,
+                color: Theme.of(context).colorScheme.primary,
                 fontFamily: textTheme.headlineSmall?.fontFamily,
                 fontWeight: textTheme.headlineSmall?.fontWeight,
                 fontStyle: textTheme.headlineSmall?.fontStyle,
