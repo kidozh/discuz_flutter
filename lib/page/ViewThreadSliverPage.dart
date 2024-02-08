@@ -51,6 +51,7 @@ import '../utility/EasyRefreshUtils.dart';
 import '../widget/AppBannerAdWidget.dart';
 import '../widget/DiscuzNotificationAppbarIconWidget.dart';
 import 'InternalWebviewBrowserPage.dart';
+import 'SettingPage.dart';
 
 class ViewThreadSliverPage extends StatelessWidget {
   Discuz discuz;
@@ -600,11 +601,17 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                   VibrationUtils.vibrateWithClickIfPossible();
                   FavoriteThreadInDatabase? favoriteThreadInDatabase =
                       favoriteThreadDao!.getFavoriteThreadByTid(tid, discuz);
-                  if (favoriteThreadInDatabase == null) {
-                    favoriteThread();
-                  } else {
-                    unfavoriteThread();
+                  if(Provider.of<DiscuzAndUserNotifier>(context, listen: false).user != null){
+                    if (favoriteThreadInDatabase == null) {
+                      favoriteThread();
+                    } else {
+                      unfavoriteThread();
+                    }
                   }
+                  else{
+                    // only save in the local storage
+                  }
+
                 },
                 tooltip: S.of(context).favoriteThreadTooltip,
                 icon: ValueListenableBuilder(
@@ -622,7 +629,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                       return Icon(
                         PlatformIcons(context).favoriteSolid,
                         size: 24,
-                        color: Theme.of(context).primaryColor,
+                        color: Theme.of(context).colorScheme.primary,
                       );
                     }
                   },
@@ -669,6 +676,15 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                       Share.share(URLUtils.getViewThreadURL(discuz, tid),
                           subject: _viewThreadResult
                               .threadVariables.threadInfo.subject);
+                    }),
+                PopupMenuOption(
+                    label: S.of(context).settings,
+                    onTap: (option) async {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      await Navigator.push(
+                          context,
+                          platformPageRoute(
+                              context: context, builder: (context) => SettingPage()));
                     }),
               ]),
         ],

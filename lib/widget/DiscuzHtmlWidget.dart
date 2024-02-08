@@ -128,7 +128,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
         double? themeFontSize = defaultTextStyle?.fontSize == null? 14 : defaultTextStyle?.fontSize!;
 
         return Html(
-          shrinkWrap: true,
+          //shrinkWrap: true,
           data: this.getDecodedString(),
 
           style: {

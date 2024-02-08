@@ -43,6 +43,7 @@ import 'package:share_plus/share_plus.dart';
 import '../provider/DiscuzNotificationProvider.dart';
 import '../screen/TwoPaneEmptyScreen.dart';
 import '../utility/EasyRefreshUtils.dart';
+import 'SettingPage.dart';
 
 class DisplayForumSliverPage extends StatelessWidget {
   late final Discuz discuz;
@@ -438,6 +439,15 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       Share.share(URLUtils.getForumDisplayURL(discuz, fid), subject: _displayForumResult.discuzIndexVariables.forum.name);
                     }
                 ),
+                PopupMenuOption(
+                    label: S.of(context).settings,
+                    onTap: (option) async {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      await Navigator.push(
+                          context,
+                          platformPageRoute(
+                              context: context, builder: (context) => SettingPage()));
+                    }),
               ]
           ),
         ],
