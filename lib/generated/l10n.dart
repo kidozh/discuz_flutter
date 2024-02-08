@@ -5240,6 +5240,56 @@ class S {
       args: [],
     );
   }
+
+  /// `Typography theme`
+  String get chooseTypographyTheme {
+    return Intl.message(
+      'Typography theme',
+      name: 'chooseTypographyTheme',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Material 2014`
+  String get typographyMaterial2014 {
+    return Intl.message(
+      'Material 2014',
+      name: 'typographyMaterial2014',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Material 2018`
+  String get typographyMaterial2018 {
+    return Intl.message(
+      'Material 2018',
+      name: 'typographyMaterial2018',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Material 2021`
+  String get typographyMaterial2021 {
+    return Intl.message(
+      'Material 2021',
+      name: 'typographyMaterial2021',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Typography default`
+  String get typographySystem {
+    return Intl.message(
+      'Typography default',
+      name: 'typographySystem',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

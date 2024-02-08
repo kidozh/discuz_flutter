@@ -3,11 +3,13 @@ import 'dart:math';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/PostWidget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
@@ -93,9 +95,9 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
               tiles: [
                 SettingsTile.switchTile(
                   title: Text(S.of(context).disableFontCustomization),
-                  description: ignoreCustomFontStyle
-                      ? Text(S.of(context).disableFontCustomizationTitle)
-                      : null,
+                  // description: ignoreCustomFontStyle
+                  //     ? Text(S.of(context).disableFontCustomizationTitle)
+                  //     : null,
                   activeSwitchColor: Theme.of(context).colorScheme.primary,
                   leading: Icon(PlatformIcons(context).edit),
                   onToggle: (bool value) {
@@ -106,6 +108,16 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
                       ignoreCustomFontStyle = value;
                     });
                   }, initialValue: ignoreCustomFontStyle,
+                ),
+                SettingsTile.navigation(
+                  title: Text(S.of(context).chooseTypographyTheme),
+                  leading: Icon(AppPlatformIcons(context).typographyOutline),
+                  value: Text(typesetting.getTypographyThemeName(context)),
+                  onPressed: (context) {
+                    VibrationUtils.vibrateWithSwitchIfPossible();
+                    // trigger a
+                    triggerTypographySelection();
+                  }
                 ),
               ],
             ),
@@ -189,5 +201,42 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
     UserPreferencesUtils.putTypesettingScalePreference(_scalingParamter);
     Provider.of<TypeSettingNotifierProvider>(context, listen: false)
         .setScalingParameter(_scalingParamter);
+  }
+
+  void triggerTypographySelection(){
+    List<String> typographyThemeList = TypeSettingNotifierProvider.getTypographyThemeNameList(context);
+    
+    showCupertinoModalPopup(
+        context: context, builder: (context) => Container(
+      height: 216,
+      padding: EdgeInsets.only(top: 6.0),
+      margin: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      color: Theme.of(context).colorScheme.background,
+      child: SafeArea(
+        child: CupertinoPicker(
+            itemExtent: 32,
+            useMagnifier: true,
+            magnification: 1.22,
+            squeeze: 1.2,
+            onSelectedItemChanged: (position){
+              VibrationUtils.vibrateWithClickIfPossible();
+              List<String> typographyList = TypeSettingNotifierProvider.typographyList;
+              if(position < typographyList.length){
+                UserPreferencesUtils.putTypographyThemePreference(typographyList[position]);
+                Provider.of<TypeSettingNotifierProvider>(context, listen: false).typographyTheme = typographyList[position];
+              }
+              
+            },
+            children: List<Widget>.generate(
+              typographyThemeList.length, (index) => Center(
+                child: Text("${typographyThemeList[index]}")
+            ),
+            )
+        ),
+      ),
+    )
+    );
   }
 }

@@ -120,4 +120,6 @@ class AppPlatformIcons{
   IconData get saveSolid => isMaterial(context)? Icons.save : CupertinoIcons.arrow_down_doc_fill;
 
   IconData get saveOutline => isMaterial(context)? Icons.save_outlined : CupertinoIcons.download_circle;
+
+  IconData get typographyOutline => isMaterial(context)? Icons.translate : CupertinoIcons.textbox;
 }

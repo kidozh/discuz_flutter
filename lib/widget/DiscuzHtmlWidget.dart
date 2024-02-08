@@ -13,6 +13,7 @@ import 'package:discuz_flutter/page/FullImagePage.dart';
 import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -122,6 +123,40 @@ class DiscuzHtmlWidget extends StatelessWidget{
         double scalingParameter = typesetting.scalingParameter;
 
         Typography typography = Typography.material2021();
+        String platformName = Provider.of<ThemeNotifierProvider>(context, listen: false).platformName;
+        TargetPlatform targetPlatform = TargetPlatform.android;
+
+        switch(platformName){
+          case "ios":{
+            targetPlatform = TargetPlatform.iOS;
+            break;
+          }
+          case "android":{
+            targetPlatform = TargetPlatform.android;
+            break;
+          }
+          case "":{
+            targetPlatform = Theme.of(context).platform;
+          }
+        }
+
+        switch (typesetting.typographyTheme){
+          case "material2014":{
+            typography = Typography.material2014(platform: targetPlatform);
+            break;
+          }
+          case "material2018":{
+            typography = Typography.material2018(platform: targetPlatform);
+            break;
+          }
+          case "material2021":{
+            typography = Typography.material2021(platform: targetPlatform);
+            break;
+          }
+          default:{
+            typography = Theme.of(context).typography;
+          }
+        }
 
         TextTheme textTheme = typography.dense;
         TextStyle? defaultTextStyle = textTheme.bodyLarge;

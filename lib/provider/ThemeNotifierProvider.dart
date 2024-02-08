@@ -51,6 +51,8 @@ extension ColorsExt on Color {
 
 
 class ThemeNotifierProvider with ChangeNotifier{
+
+
   int _themeColor = Colors.blue.value;
 
   String _platformName ="";
@@ -67,6 +69,9 @@ class ThemeNotifierProvider with ChangeNotifier{
     this._useMaterial3 = value;
     notifyListeners();
   }
+
+
+
 
   setBrightness(Brightness? brightness){
     _brightnessPreference = brightness;

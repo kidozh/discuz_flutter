@@ -14,5 +14,42 @@ class TypeSettingNotifierProvider with ChangeNotifier{
 
   double get scalingParameter => _scalingParameter >= 1.0 && _scalingParameter <= 3.0 ? _scalingParameter : 1.0;
 
+  String _typographyTheme ="";
+
+  set typographyTheme(String typographyTheme){
+    this._typographyTheme = typographyTheme;
+    notifyListeners();
+  }
+
+  static List<String> typographyList = [
+    "","material2014", "material2018", "material2021"
+  ];
+
+  String get typographyTheme => _typographyTheme;
+
+  String getTypographyThemeName(BuildContext context){
+    switch (_typographyTheme){
+      case "material2014": return S.of(context).typographyMaterial2014;
+      case "material2018": return S.of(context).typographyMaterial2018;
+      case "material2021": return S.of(context).typographyMaterial2021;
+    }
+    return S.of(context).typographySystem;
+
+  }
+
+  static String getTypographyThemeByName(BuildContext context, String typographyTheme){
+    switch (typographyTheme){
+      case "material2014": return S.of(context).typographyMaterial2014;
+      case "material2018": return S.of(context).typographyMaterial2018;
+      case "material2021": return S.of(context).typographyMaterial2021;
+    }
+    return S.of(context).typographySystem;
+
+  }
+
+  static List<String> getTypographyThemeNameList(BuildContext context){
+    return typographyList.map((e) => getTypographyThemeByName(context,e)).toList();
+  }
+
 
 }

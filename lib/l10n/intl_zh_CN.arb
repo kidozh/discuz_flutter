@@ -780,5 +780,10 @@
   "accentColorPickerType": "强调色",
   "wheelColorPickerType": "轮抽选色",
   "blackAndWhiteColorPickerType": "黑白",
-  "bothColorPickerType": "统一色彩"
+  "bothColorPickerType": "示例色彩",
+  "chooseTypographyTheme": "文字排版主题",
+  "typographyMaterial2014": "2014版质感设计",
+  "typographyMaterial2018": "2018版质感设计",
+  "typographyMaterial2021": "2021版质感设计",
+  "typographySystem": "默认排版"
 }

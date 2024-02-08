@@ -66,6 +66,7 @@ class MyApp extends StatelessWidget {
         await UserPreferencesUtils.getMaterial3PropertyPreference();
     bool allowPush = await UserPreferencesUtils.getPushPreference();
     String signature = await UserPreferencesUtils.getSignaturePreference();
+    String? typography = await UserPreferencesUtils.getTypographyThemePreference();
 
     print("Get brightness ${brightness}");
 
@@ -84,6 +85,10 @@ class MyApp extends StatelessWidget {
     Provider.of<UserPreferenceNotifierProvider>(context, listen: false)
         .signature = signature;
     Provider.of<DiscuzNotificationProvider>(context, listen: false).setNotificationCount(NoticeCount());
+
+    if(typography != null){
+      Provider.of<TypeSettingNotifierProvider>(context, listen: false).typographyTheme = typography;
+    }
   }
 
   TargetPlatform? getTargetPlatformByName(String name) {

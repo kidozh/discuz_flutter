@@ -222,6 +222,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Chevereto"),
         "chooseDiscuz": MessageLookupByLibrary.simpleMessage("Choose a BBS"),
         "chooseThemeTitle": MessageLookupByLibrary.simpleMessage("Theme color"),
+        "chooseTypographyTheme":
+            MessageLookupByLibrary.simpleMessage("Typography theme"),
         "clearAllViewHistories":
             MessageLookupByLibrary.simpleMessage("Clear all histories"),
         "closeKeyboardTooltip":
@@ -844,6 +846,14 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Trust this host"),
         "trustHostTitle": MessageLookupByLibrary.simpleMessage("Trusted host"),
         "typeSetting": MessageLookupByLibrary.simpleMessage("Typesetting"),
+        "typographyMaterial2014":
+            MessageLookupByLibrary.simpleMessage("Material 2014"),
+        "typographyMaterial2018":
+            MessageLookupByLibrary.simpleMessage("Material 2018"),
+        "typographyMaterial2021":
+            MessageLookupByLibrary.simpleMessage("Material 2021"),
+        "typographySystem":
+            MessageLookupByLibrary.simpleMessage("Typography default"),
         "unableToAuthenticate": MessageLookupByLibrary.simpleMessage(
             "Doesn\'t get authentication from the system and auto fill failed."),
         "unableToVerifyAuthStatus": MessageLookupByLibrary.simpleMessage(

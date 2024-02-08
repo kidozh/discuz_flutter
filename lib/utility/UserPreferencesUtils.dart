@@ -432,6 +432,19 @@ class UserPreferencesUtils{
     await prefs.setBool(discuzForumFidsKey, value);
   }
 
+  static final String typographyThemePreferenceKey = "typographyThemePreferenceKey";
+
+  static Future<void> putTypographyThemePreference(String typography) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(typographyThemePreferenceKey, typography);
+  }
+
+  static Future<String?> getTypographyThemePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var brightness =  prefs.getString(typographyThemePreferenceKey);
+    return brightness;
+  }
+
 
 
 }

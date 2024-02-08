@@ -179,7 +179,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "blockedUserList": MessageLookupByLibrary.simpleMessage("屏蔽用户列表"),
         "bobMinion": MessageLookupByLibrary.simpleMessage("Bob小黄人"),
         "bobMinionDescribe": MessageLookupByLibrary.simpleMessage("可爱的小黄人"),
-        "bothColorPickerType": MessageLookupByLibrary.simpleMessage("统一色彩"),
+        "bothColorPickerType": MessageLookupByLibrary.simpleMessage("示例色彩"),
         "brightnessDark": MessageLookupByLibrary.simpleMessage("深色"),
         "brightnessLight": MessageLookupByLibrary.simpleMessage("浅色"),
         "brightnessManualChangeDisabled": MessageLookupByLibrary.simpleMessage(
@@ -205,6 +205,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("基于chevereto服务的"),
         "chooseDiscuz": MessageLookupByLibrary.simpleMessage("选择一个论坛"),
         "chooseThemeTitle": MessageLookupByLibrary.simpleMessage("主题颜色"),
+        "chooseTypographyTheme": MessageLookupByLibrary.simpleMessage("文字排版主题"),
         "clearAllViewHistories": MessageLookupByLibrary.simpleMessage("清除历史记录"),
         "closeKeyboardTooltip": MessageLookupByLibrary.simpleMessage("收起键盘"),
         "collapseItem": MessageLookupByLibrary.simpleMessage("已折叠内容"),
@@ -715,6 +716,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "trustHostActionText": MessageLookupByLibrary.simpleMessage("信任此域名"),
         "trustHostTitle": MessageLookupByLibrary.simpleMessage("主机域名白名单"),
         "typeSetting": MessageLookupByLibrary.simpleMessage("文本排版"),
+        "typographyMaterial2014":
+            MessageLookupByLibrary.simpleMessage("2014版质感设计"),
+        "typographyMaterial2018":
+            MessageLookupByLibrary.simpleMessage("2018版质感设计"),
+        "typographyMaterial2021":
+            MessageLookupByLibrary.simpleMessage("2021版质感设计"),
+        "typographySystem": MessageLookupByLibrary.simpleMessage("默认排版"),
         "unableToAuthenticate":
             MessageLookupByLibrary.simpleMessage("系统未能验证您的身份，自动填充失败。"),
         "unableToVerifyAuthStatus":
