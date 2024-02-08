@@ -116,4 +116,8 @@ class AppPlatformIcons{
   IconData get deviceNotSupportSolid => isMaterial(context)? Icons.perm_device_info : CupertinoIcons.hand_raised_slash_fill;
 
   IconData get authenticationFailedSolid => isMaterial(context)? Icons.lock : CupertinoIcons.lock_fill;
+
+  IconData get saveSolid => isMaterial(context)? Icons.save : CupertinoIcons.arrow_down_doc_fill;
+
+  IconData get saveOutline => isMaterial(context)? Icons.save_outlined : CupertinoIcons.download_circle;
 }

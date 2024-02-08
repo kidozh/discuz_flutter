@@ -106,6 +106,7 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
 
   @override
   Widget build(BuildContext context) {
+    return Container();
     // TODO: implement build
     return Consumer<DiscuzAndUserNotifier>(
         builder: (context, value, child) {

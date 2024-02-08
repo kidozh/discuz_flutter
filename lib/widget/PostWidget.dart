@@ -274,9 +274,12 @@ class PostState extends State<PostStatefulWidget> {
 
         // rich text rendering
         Padding(
-          padding: EdgeInsets.zero,
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
           child: Column(
+
             children: [
+              // add a padding btm
+              SizedBox(height: 8,),
               DiscuzHtmlWidget(
                 _discuz,
                 _html,

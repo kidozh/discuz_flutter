@@ -96,7 +96,7 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
                   leading: Icon(PlatformIcons(context).edit),
                   onToggle: (bool value) {
                     VibrationUtils.vibrateWithSwitchIfPossible();
-                    print("set record history ${value} ");
+                    print("set disable font customisation ${value} ");
                     UserPreferencesUtils.putDisableFontCustomizationPreference(value);
                     setState(() {
                       ignoreCustomFontStyle = value;

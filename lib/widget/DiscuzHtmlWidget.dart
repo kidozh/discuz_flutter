@@ -94,6 +94,8 @@ class DiscuzHtmlWidget extends StatelessWidget{
     decodedString = replaceCountDownTag(decodedString);
     decodedString = replaceMediaTag(decodedString);
     //log("decode string ${decodedString}");
+    // hard coding?
+    decodedString = "<p>"+decodedString+"</p>";
     return decodedString;
   }
 
@@ -118,28 +120,40 @@ class DiscuzHtmlWidget extends StatelessWidget{
 
       child: Consumer<TypeSettingNotifierProvider>(builder: (context, typesetting, _) {
         double scalingParameter = typesetting.scalingParameter;
-        double? themeFontSize = Theme.of(context).textTheme.bodyMedium?.fontSize == null? 14 : Theme.of(context).textTheme.bodyText2?.fontSize!;
-        double paragraphFontSize = themeFontSize == null ? 14 : themeFontSize;
+        Typography typography = Typography.material2021();
+
+        TextTheme textTheme = typography.dense;
+        TextStyle? defaultTextStyle = textTheme.bodyLarge;
+        double? themeFontSize = defaultTextStyle?.fontSize == null? 14 : defaultTextStyle?.fontSize!;
+
         return Html(
-          //shrinkWrap: true,
-          data: "<p>${this.getDecodedString()}</p>",
+          shrinkWrap: true,
+          data: this.getDecodedString(),
+
           style: {
             "*": Style(
-              fontSize: FontSize(paragraphFontSize*scalingParameter),
+                color: defaultTextStyle?.color,
+                backgroundColor: defaultTextStyle?.backgroundColor,
+                fontStyle: defaultTextStyle?.fontStyle,
+                fontFamily: defaultTextStyle?.fontFamily,
+                fontFamilyFallback: defaultTextStyle?.fontFamilyFallback,
+                fontSize: defaultTextStyle?.fontSize == null? FontSize.medium:FontSize(defaultTextStyle!.fontSize!),
+                fontWeight: defaultTextStyle?.fontWeight,
+                wordSpacing: defaultTextStyle?.wordSpacing,
+                lineHeight: LineHeight(1.5),
+                padding: HtmlPaddings.zero,
+                margin: Margins.zero
             ),
             ".reply_wrap" :Style(
-              //backgroundColor: MediaQuery.of(context).platformBrightness == Brightness.light ? Colors.grey.shade200: Colors.grey.shade600,
               backgroundColor: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade200: Colors.grey.shade600,
-              padding: HtmlPaddings.all(8),
-              margin: Margins(bottom: Margin(4.0)),
+              padding: HtmlPaddings.all(4.0),
+              margin: Margins(bottom: Margin(0.0)),
               border: Border(left: BorderSide(color: Theme.of(context).colorScheme.primary, width: 4)),
-              width: Width.auto()
-            ),
-            "p":Style(
-              fontStyle: Theme.of(context).textTheme.bodyMedium?.fontStyle,
+              width: Width(double.maxFinite)
             ),
             "a":Style(
               color: Theme.of(context).colorScheme.primary,
+
             )
 
           },

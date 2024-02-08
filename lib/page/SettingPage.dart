@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/ChooseInterfaceBrightnessPage.dart';
 import 'package:discuz_flutter/page/ChoosePlatformPage.dart';
-import 'package:discuz_flutter/page/ChooseTypeSettingScalePage.dart';
+import 'package:discuz_flutter/page/ChooseTypography.dart';
 import 'package:discuz_flutter/page/DiscuzAuthenticationPage.dart';
 import 'package:discuz_flutter/page/SelectSignatureStylePage.dart';
 import 'package:discuz_flutter/page/SetPushNotificationPage.dart';
