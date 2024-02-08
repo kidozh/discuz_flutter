@@ -766,6 +766,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "securityTitle": MessageLookupByLibrary.simpleMessage("Security"),
         "seeAllReplies":
             MessageLookupByLibrary.simpleMessage("View all replies"),
+        "selectColorAndShadeTitle":
+            MessageLookupByLibrary.simpleMessage("Select color and shade"),
         "selectColorShadeTitle":
             MessageLookupByLibrary.simpleMessage("Select color shade"),
         "selectColorTitle":

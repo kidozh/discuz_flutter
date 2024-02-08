@@ -120,14 +120,16 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(
                 seedColor: themeColorEntity.themeColor,
               brightness: Brightness.light,
-            ).harmonized(),
+            )//.harmonized()
+            ,
             useMaterial3: themeColorEntity.useMaterial3
         );
         final materialThemeDataDark = ThemeData.from(
             colorScheme: ColorScheme.fromSeed(
               seedColor: themeColorEntity.themeColor,
               brightness: Brightness.dark,
-            ).harmonized(),
+            )//.harmonized()
+            ,
             useMaterial3: themeColorEntity.useMaterial3
         );
         const darkDefaultCupertinoTheme =

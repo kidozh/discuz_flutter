@@ -774,7 +774,8 @@
     }
   },
   "selectColorTitle": "选择颜色",
-  "selectColorShadeTitle": "选择色彩变种",
+  "selectColorShadeTitle": "选择色彩光影",
+  "selectColorAndShadeTitle": "选择色彩以及光影",
   "primaryColorPickerType": "主要色",
   "accentColorPickerType": "强调色",
   "wheelColorPickerType": "轮抽选色",

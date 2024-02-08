@@ -61,7 +61,7 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 wheelSubheading: Text(
-                  'Selected color and its shades',
+                  S.of(context).selectColorAndShadeTitle,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 showMaterialName: true,
@@ -75,8 +75,8 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
                 colorCodeTextStyle: Theme.of(context).textTheme.bodySmall,
                 pickersEnabled: const <ColorPickerType, bool>{
                   ColorPickerType.both: true,
-                  ColorPickerType.primary: true,
-                  ColorPickerType.accent: true,
+                  ColorPickerType.primary: false,
+                  ColorPickerType.accent: false,
                   ColorPickerType.bw: false,
                   ColorPickerType.custom: true,
                   ColorPickerType.wheel: true,

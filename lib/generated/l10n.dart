@@ -5181,6 +5181,16 @@ class S {
     );
   }
 
+  /// `Select color and shade`
+  String get selectColorAndShadeTitle {
+    return Intl.message(
+      'Select color and shade',
+      name: 'selectColorAndShadeTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Primary`
   String get primaryColorPickerType {
     return Intl.message(

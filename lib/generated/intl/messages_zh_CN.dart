@@ -651,7 +651,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "second": MessageLookupByLibrary.simpleMessage("秒"),
         "securityTitle": MessageLookupByLibrary.simpleMessage("安全"),
         "seeAllReplies": MessageLookupByLibrary.simpleMessage("查看所有"),
-        "selectColorShadeTitle": MessageLookupByLibrary.simpleMessage("选择色彩变种"),
+        "selectColorAndShadeTitle":
+            MessageLookupByLibrary.simpleMessage("选择色彩以及光影"),
+        "selectColorShadeTitle": MessageLookupByLibrary.simpleMessage("选择色彩光影"),
         "selectColorTitle": MessageLookupByLibrary.simpleMessage("选择颜色"),
         "selectDiscuzIconTooltip": MessageLookupByLibrary.simpleMessage("选择论坛"),
         "selectUserNull": MessageLookupByLibrary.simpleMessage("未选中一个用户"),

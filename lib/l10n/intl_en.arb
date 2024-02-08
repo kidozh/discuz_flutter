@@ -774,6 +774,7 @@
   },
   "selectColorTitle": "Select color",
   "selectColorShadeTitle": "Select color shade",
+  "selectColorAndShadeTitle": "Select color and shade",
   "primaryColorPickerType": "Primary",
   "accentColorPickerType": "Accent",
   "wheelColorPickerType": "Wheel",
