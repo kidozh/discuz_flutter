@@ -206,39 +206,39 @@ class DrawerState extends State<DrawerStatefulWidget> {
                     builder: (context) => ManageTrustHostPage()));
           },
         ),
-        Consumer<UserPreferenceNotifierProvider>(
-          builder: (context, userPreference, child) {
-            if (userPreference.allowPush) {
-              return ListTile(
-                title: Text(S.of(context).pushNotification),
-                leading: Icon(AppPlatformIcons(context).pushServiceSolid),
-
-                onTap: () async {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  await Navigator.push(
-                      context,
-                      platformPageRoute(
-                          context: context,
-                          builder: (context) => PushServicePage()));
-                },
-              );
-            } else {
-              return Container();
-            }
-          },
-        ),
-        ListTile(
-          title: Text(S.of(context).subscribeChannel),
-          leading: Icon(AppPlatformIcons(context).subscribeChannelSolid),
-          onTap: () async {
-            VibrationUtils.vibrateWithClickIfPossible();
-            await Navigator.push(
-                context,
-                platformPageRoute(
-                    context: context,
-                    builder: (context) => SubscribeChannelPage()));
-          },
-        ),
+        // Consumer<UserPreferenceNotifierProvider>(
+        //   builder: (context, userPreference, child) {
+        //     if (userPreference.allowPush) {
+        //       return ListTile(
+        //         title: Text(S.of(context).pushNotification),
+        //         leading: Icon(AppPlatformIcons(context).pushServiceSolid),
+        //
+        //         onTap: () async {
+        //           VibrationUtils.vibrateWithClickIfPossible();
+        //           await Navigator.push(
+        //               context,
+        //               platformPageRoute(
+        //                   context: context,
+        //                   builder: (context) => PushServicePage()));
+        //         },
+        //       );
+        //     } else {
+        //       return Container();
+        //     }
+        //   },
+        // ),
+        // ListTile(
+        //   title: Text(S.of(context).subscribeChannel),
+        //   leading: Icon(AppPlatformIcons(context).subscribeChannelSolid),
+        //   onTap: () async {
+        //     VibrationUtils.vibrateWithClickIfPossible();
+        //     await Navigator.push(
+        //         context,
+        //         platformPageRoute(
+        //             context: context,
+        //             builder: (context) => SubscribeChannelPage()));
+        //   },
+        // ),
         ListTile(
           title: Text(S.of(context).settingTitle),
           leading: Icon(PlatformIcons(context).settingsSolid),
