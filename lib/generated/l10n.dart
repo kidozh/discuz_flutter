@@ -3281,20 +3281,20 @@ class S {
     );
   }
 
-  /// `Subscribe to channel`
+  /// `Service termination`
   String get upgrade_notification_title {
     return Intl.message(
-      'Subscribe to channel',
+      'Service termination',
       name: 'upgrade_notification_title',
       desc: '',
       args: [],
     );
   }
 
-  /// `You can subscribe to the channel now.`
+  /// `Due to ongoing incidences, push notification service has been terminated.`
   String get upgrade_notification_subtitle {
     return Intl.message(
-      'You can subscribe to the channel now.',
+      'Due to ongoing incidences, push notification service has been terminated.',
       name: 'upgrade_notification_subtitle',
       desc: '',
       args: [],

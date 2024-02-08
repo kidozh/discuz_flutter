@@ -868,9 +868,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Unfavorite thread"),
         "updateAt": MessageLookupByLibrary.simpleMessage("Update at %T"),
         "upgrade_notification_subtitle": MessageLookupByLibrary.simpleMessage(
-            "You can subscribe to the channel now."),
+            "Due to ongoing incidences, push notification service has been terminated."),
         "upgrade_notification_title":
-            MessageLookupByLibrary.simpleMessage("Subscribe to channel"),
+            MessageLookupByLibrary.simpleMessage("Service termination"),
         "uploadCompressedImageToServer": MessageLookupByLibrary.simpleMessage(
             "Send compressed image(Recommended)"),
         "uploadImageError1": MessageLookupByLibrary.simpleMessage(

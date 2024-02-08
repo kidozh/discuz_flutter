@@ -144,7 +144,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent>{
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 4.0),
                   child: ListTile(
-                    leading: Icon(AppPlatformIcons(context).subscribeChannelSolid,color: Colors.white, size: 40,),
+                    leading: Icon(Icons.stop_circle_rounded,color: Colors.white, size: 40,),
                     // leading: CircleAvatar(
                     //   backgroundColor: Colors.white,
                     //   child: Icon(PlatformIcons(context).checkMarkCircled,color: Colors.green),

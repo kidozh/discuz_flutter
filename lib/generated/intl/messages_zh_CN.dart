@@ -734,10 +734,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "unfavoriteThreadTooltip":
             MessageLookupByLibrary.simpleMessage("取消收藏帖子"),
         "updateAt": MessageLookupByLibrary.simpleMessage("更新于 %T"),
-        "upgrade_notification_subtitle": MessageLookupByLibrary.simpleMessage(
-            "开启推送服务后，在菜单 - 订阅推送中，你可以订阅论坛所属的频道，包括定期的RSS推送，编辑精选等信息。"),
+        "upgrade_notification_subtitle":
+            MessageLookupByLibrary.simpleMessage("由于使用人数过少，我们已经停用了推送通知功能。"),
         "upgrade_notification_title":
-            MessageLookupByLibrary.simpleMessage("订阅论坛"),
+            MessageLookupByLibrary.simpleMessage("服务终止"),
         "uploadCompressedImageToServer":
             MessageLookupByLibrary.simpleMessage("适当压缩的图片（推荐）"),
         "uploadImageError1": MessageLookupByLibrary.simpleMessage("不支持此类扩展名."),
