@@ -123,7 +123,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
         Typography typography = Typography.material2021();
 
         TextTheme textTheme = typography.dense;
-        TextStyle? defaultTextStyle = textTheme.bodyLarge;
+        TextStyle? defaultTextStyle = textTheme.bodyMedium;
         double? themeFontSize = defaultTextStyle?.fontSize == null? 14 : defaultTextStyle?.fontSize!;
 
         return Html(
@@ -137,10 +137,10 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 fontStyle: defaultTextStyle?.fontStyle,
                 fontFamily: defaultTextStyle?.fontFamily,
                 fontFamilyFallback: defaultTextStyle?.fontFamilyFallback,
-                fontSize: defaultTextStyle?.fontSize == null? FontSize.medium:FontSize(defaultTextStyle!.fontSize!),
+                fontSize: defaultTextStyle?.fontSize == null? FontSize.medium:FontSize(defaultTextStyle!.fontSize!*scalingParameter),
                 fontWeight: defaultTextStyle?.fontWeight,
                 wordSpacing: defaultTextStyle?.wordSpacing,
-                lineHeight: LineHeight(1.5),
+                lineHeight: LineHeight(scalingParameter< 1.5? 1.35*scalingParameter: 1.35 * 1.5),
                 padding: HtmlPaddings.zero,
                 margin: Margins.zero
             ),

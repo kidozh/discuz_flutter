@@ -260,7 +260,9 @@ class PostState extends State<PostStatefulWidget> {
       // regex
       _html = _html
           .replaceAll(RegExp(r'<font.*?>', multiLine: true), "")
-          .replaceAll(RegExp(r'<\font.*?>'), "");
+          .replaceAll(RegExp(r'<\font.*?>'), "")
+          .replaceAll(RegExp(r'<span style="display:none">.+</span>'), "")
+      ;
     }
     return Column(
       mainAxisSize: MainAxisSize.min,

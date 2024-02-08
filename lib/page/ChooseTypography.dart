@@ -32,7 +32,7 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
     Post mockedPost = Post();
     mockedPost.authorId = _rnd.nextInt(100);
     mockedPost.position = _rnd.nextInt(400);
-    mockedPost.message = getRandomString(400);
+    mockedPost.message = getRandomString(200);
     mockedPost.author = getRandomString(10);
     return mockedPost;
   }
