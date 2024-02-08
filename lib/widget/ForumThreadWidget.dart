@@ -150,11 +150,11 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                 children: [
                   if(child!= null)
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 16.0),
-                      padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
+                      margin: EdgeInsets.symmetric(horizontal: 4.0),
+                      padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
                       decoration: BoxDecoration(
                         color: selected? Theme.of(context).colorScheme.primaryContainer: null,
-                        borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                        borderRadius: BorderRadius.all(Radius.circular(12.0)),
                       ),
                       //color: ,
                       child: child,
