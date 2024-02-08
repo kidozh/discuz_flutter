@@ -317,6 +317,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
       );
     }
 
+    // normal without message
     return Consumer<SelectedTidNotifierProvider>(
       builder: (context, selectedTid, child){
         //log("Changed tid ${selectedTid.tid} ${_forumThread.getTid()}");
@@ -330,16 +331,17 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                 size: 48,
                 disableTap: true,
               ),
-              title: Text(_forumThread.subject, style: textStyle?..copyWith(
+              title: Text(_forumThread.subject, style: Theme.of(context).textTheme.titleMedium?..copyWith(
                   color: selected? Theme.of(context).colorScheme.onPrimary: null,
-                  fontWeight: viewed? null: FontWeight.bold,
+                  fontWeight: viewed? FontWeight.w400: FontWeight.bold,
               )),
               subtitle: RichText(
                 text: TextSpan(
                   text: "",
-                  style: TextStyle(
-                      color: selected? Theme.of(context).colorScheme.onPrimary: Theme.of(context).disabledColor,
-                      fontSize: 12
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: selected? Theme.of(context).colorScheme.primary: Theme.of(context).disabledColor,
+                      fontWeight: viewed? FontWeight.w300: null,
+                      //fontSize: 12
                   ),
                   //style: ..copyWith(color: selected? Theme.of(context).colorScheme.onPrimary: null),
                   children: <TextSpan>[
@@ -352,12 +354,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
               trailing: selected? Icon(AppPlatformIcons(context).selectedThreadSolid, color: Theme.of(context).colorScheme.primary,):
               _forumThread.replies!=0 ? getTailingWidget(): null,
-              // onTap: () async {
-              //   triggerTapFunction();
-              // },
-              // onLongPress: () async{
-              //   triggerLongPressFunction();
-              // },
+
 
 
             ),
