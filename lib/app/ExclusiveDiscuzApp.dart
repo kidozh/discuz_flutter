@@ -20,14 +20,14 @@ class ExclusiveDiscuzApp extends StatelessWidget {
   ExclusiveDiscuzApp(this.platformName, this._discuz);
 
   _loadPreference(context) async {
-    String colorName = await UserPreferencesUtils.getThemeColor();
+    int colorValue = await UserPreferencesUtils.getThemeColor();
     platformName = await UserPreferencesUtils.getPlatformPreference();
     double scale = await UserPreferencesUtils.getTypesettingScalePreference();
     Brightness? brightness =
         await UserPreferencesUtils.getInterfaceBrightnessPreference();
 
     Provider.of<ThemeNotifierProvider>(context, listen: false)
-        .setTheme(colorName);
+        .setTheme(colorValue);
     Provider.of<ThemeNotifierProvider>(context, listen: false)
         .setPlatformName(platformName);
     Provider.of<TypeSettingNotifierProvider>(context, listen: false)
@@ -55,12 +55,12 @@ class ExclusiveDiscuzApp extends StatelessWidget {
         // deal with theme data
         final materialThemeDataLight = ThemeData(
             brightness: Brightness.light,
-            primarySwatch: themeColorEntity.themeColor,
+            //primarySwatch: themeColorEntity.themeColor,
             primaryColor: themeColorEntity.themeColor,
             useMaterial3: themeColorEntity.useMaterial3);
         final materialThemeDataDark = ThemeData(
             brightness: Brightness.dark,
-            primarySwatch: themeColorEntity.themeColor,
+            //primarySwatch: themeColorEntity.themeColor,
             primaryColor: themeColorEntity.themeColor,
             useMaterial3: themeColorEntity.useMaterial3);
         const darkDefaultCupertinoTheme =

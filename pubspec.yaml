@@ -95,6 +95,7 @@ dependencies:
   upgrader: ^8.1.0
   flutter_secure_storage: ^9.0.0
   local_auth: ^2.1.7
+  flex_color_picker: ^3.3.1
 
 
 

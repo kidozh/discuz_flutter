@@ -772,5 +772,12 @@
     "placeholders": {
       "reply": {}
     }
-  }
+  },
+  "selectColorTitle": "选择颜色",
+  "selectColorShadeTitle": "选择色彩变种",
+  "primaryColorPickerType": "主要色",
+  "accentColorPickerType": "强调色",
+  "wheelColorPickerType": "轮抽选色",
+  "blackAndWhiteColorPickerType": "黑白",
+  "bothColorPickerType": "统一色彩"
 }

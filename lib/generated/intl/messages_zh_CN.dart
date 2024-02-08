@@ -125,6 +125,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "accentColorPickerType": MessageLookupByLibrary.simpleMessage("强调色"),
         "account": MessageLookupByLibrary.simpleMessage("账号"),
         "adLoadingText":
             MessageLookupByLibrary.simpleMessage("由Google提供的广告，与论坛无关。"),
@@ -171,11 +172,14 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("EasyRefresh的基本使用"),
         "bio": MessageLookupByLibrary.simpleMessage("签名"),
         "birthPlace": MessageLookupByLibrary.simpleMessage("出生地"),
+        "blackAndWhiteColorPickerType":
+            MessageLookupByLibrary.simpleMessage("黑白"),
         "blockUser": MessageLookupByLibrary.simpleMessage("屏蔽此用户"),
         "blockedPost": MessageLookupByLibrary.simpleMessage("此贴被屏蔽。"),
         "blockedUserList": MessageLookupByLibrary.simpleMessage("屏蔽用户列表"),
         "bobMinion": MessageLookupByLibrary.simpleMessage("Bob小黄人"),
         "bobMinionDescribe": MessageLookupByLibrary.simpleMessage("可爱的小黄人"),
+        "bothColorPickerType": MessageLookupByLibrary.simpleMessage("统一色彩"),
         "brightnessDark": MessageLookupByLibrary.simpleMessage("深色"),
         "brightnessLight": MessageLookupByLibrary.simpleMessage("浅色"),
         "brightnessManualChangeDisabled": MessageLookupByLibrary.simpleMessage(
@@ -538,6 +542,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("请勿使用此应用发表令人反感的内容或其他滥用行为"),
         "preventAbuseUserDescription": MessageLookupByLibrary.simpleMessage(
             "我们对于令人反感的内容（包含并不限于咒骂内容（包含粗俗用语）、违禁药品、歧视性语言、针对人类的暴力行为、宣扬或美化恐怖主义或与性相关的脏话）和滥用行为都没有容忍。我们也强烈反对使用本应用发表任何涉政言论及以及做出相应的行为。该约束作为最终用户协议的一部分，您必须同意此约束后使用本应用。"),
+        "primaryColorPickerType": MessageLookupByLibrary.simpleMessage("主要色"),
         "privacyPolicy": MessageLookupByLibrary.simpleMessage("隐私政策"),
         "privacyProtectSubtitle":
             MessageLookupByLibrary.simpleMessage("轻轻的来正如我轻轻的走，我们不会搜集任何有关您的信息"),
@@ -646,6 +651,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "second": MessageLookupByLibrary.simpleMessage("秒"),
         "securityTitle": MessageLookupByLibrary.simpleMessage("安全"),
         "seeAllReplies": MessageLookupByLibrary.simpleMessage("查看所有"),
+        "selectColorShadeTitle": MessageLookupByLibrary.simpleMessage("选择色彩变种"),
+        "selectColorTitle": MessageLookupByLibrary.simpleMessage("选择颜色"),
         "selectDiscuzIconTooltip": MessageLookupByLibrary.simpleMessage("选择论坛"),
         "selectUserNull": MessageLookupByLibrary.simpleMessage("未选中一个用户"),
         "send": MessageLookupByLibrary.simpleMessage("发送"),
@@ -792,6 +799,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "welcomeSubtitle": MessageLookupByLibrary.simpleMessage(
             "欢迎使用我们的服务，我们基于Discuz！移动插件为您服务。"),
         "welcomeTitle": MessageLookupByLibrary.simpleMessage("你好"),
+        "wheelColorPickerType": MessageLookupByLibrary.simpleMessage("轮抽选色"),
         "windowsDeviceName": m49,
         "workProcedure": MessageLookupByLibrary.simpleMessage("推送服务是如何工作的？"),
         "writeStorageDenied": MessageLookupByLibrary.simpleMessage("无法获得写入权限。")

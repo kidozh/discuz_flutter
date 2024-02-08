@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
   MyApp(this.platformName, this.navigatorKey);
 
   _loadPreference(BuildContext context) async {
-    String colorName = await UserPreferencesUtils.getThemeColor();
+    int colorName = await UserPreferencesUtils.getThemeColor();
     platformName = await UserPreferencesUtils.getPlatformPreference();
     double scale = await UserPreferencesUtils.getTypesettingScalePreference();
     Brightness? brightness =

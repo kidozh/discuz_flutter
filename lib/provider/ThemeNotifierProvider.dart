@@ -1,4 +1,5 @@
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 
 Map<String, MaterialColor> themeColorMap = {
@@ -26,11 +27,11 @@ Map<String, MaterialColor> themeColorMap = {
 
 
 class ThemeNotifierProvider with ChangeNotifier{
-  String _themeColor = "";
+  int _themeColor = Colors.blue.value;
 
   String _platformName ="";
 
-  String get themeColorName => _themeColor;
+  String get themeColorName => ColorTools.nameThatColor(Color(_themeColor));
 
   Brightness? _brightnessPreference;
 
@@ -53,8 +54,8 @@ class ThemeNotifierProvider with ChangeNotifier{
   //Brightness? get brightness => null;
 
 
-  setTheme(String themeColorName){
-    _themeColor = themeColorName;
+  setTheme(int themeColorValue){
+    _themeColor = themeColorValue;
     notifyListeners();
   }
 
@@ -65,56 +66,24 @@ class ThemeNotifierProvider with ChangeNotifier{
     notifyListeners();
   }
 
-  MaterialColor get themeColor => themeColorMap[_themeColor] != null ? themeColorMap[_themeColor]! : Colors.blue;
+  Color get themeColor => Color(_themeColor);
 
+  MaterialColor get themeMaterialColor => getMaterialColor(themeColor);
 
-
-  Brightness get colorBrightness {
-    if (["amber","grey","cyan","deepOrange","yellow","lime","orange","lightBlue","lightGreen"].contains(_themeColor)){
-      return Brightness.light;
-    }
-    else{
-      return Brightness.dark;
-    }
-  }
-
-  Brightness get iconBrightness{
-    if(colorBrightness == Brightness.light){
-      return Brightness.dark;
-    }
-    else{
-      return Brightness.light;
-    }
-  }
-
-  String getColorName(BuildContext context){
-    Map<String, String> themeColorNameMap = {
-      'grey': S.of(context).colorGrey,
-      'blue': S.of(context).colorBlue,
-      'cyan': S.of(context).colorCyan,
-      'deepPurple': S.of(context).colorDeepPurple,
-      'deepOrange': S.of(context).colorDeepOrange,
-      'green': S.of(context).colorGreen,
-      'indigo': S.of(context).colorIndigo,
-      'orange': S.of(context).colorOrange,
-      'purple': S.of(context).colorPurple,
-      'pink': S.of(context).colorPink,
-      'red': S.of(context).colorRed,
-      'teal': S.of(context).colorTeal,
-      'brown': S.of(context).colorBrown,
-      "amber": S.of(context).colorAmber,
-      "lightBlue": S.of(context).colorLightBlue,
-      "blueGrey": S.of(context).colorBlueGrey,
-      "lightGreen": S.of(context).colorLightGreen,
-      "lime": S.of(context).colorLime,
-      "yellow":S.of(context).colorYellow,
+  MaterialColor getMaterialColor(Color color) {
+    final Map<int, Color> shades = {
+      50: Color.fromRGBO(136, 14, 79, .1),
+      100: Color.fromRGBO(136, 14, 79, .2),
+      200: Color.fromRGBO(136, 14, 79, .3),
+      300: Color.fromRGBO(136, 14, 79, .4),
+      400: Color.fromRGBO(136, 14, 79, .5),
+      500: Color.fromRGBO(136, 14, 79, .6),
+      600: Color.fromRGBO(136, 14, 79, .7),
+      700: Color.fromRGBO(136, 14, 79, .8),
+      800: Color.fromRGBO(136, 14, 79, .9),
+      900: Color.fromRGBO(136, 14, 79, 1),
     };
-    if (themeColorNameMap.containsKey(_themeColor)){
-      return themeColorNameMap[_themeColor]!;
-    }
-    else{
-      return S.of(context).colorBlue;
-    }
+    return MaterialColor(color.value, shades);
   }
 
   String getPlatformLocaleName(BuildContext context){
@@ -151,6 +120,8 @@ class ThemeNotifierProvider with ChangeNotifier{
     this._useMaterial3 = material3Property;
     notifyListeners();
   }
+
+
 
 
 

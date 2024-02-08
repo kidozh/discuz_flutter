@@ -129,6 +129,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "accentColorPickerType": MessageLookupByLibrary.simpleMessage("Accent"),
         "account": MessageLookupByLibrary.simpleMessage("Username"),
         "adLoadingText":
             MessageLookupByLibrary.simpleMessage("AD provided by Google"),
@@ -181,6 +182,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Basic use of EasyRefresh"),
         "bio": MessageLookupByLibrary.simpleMessage("Bio"),
         "birthPlace": MessageLookupByLibrary.simpleMessage("Birth place"),
+        "blackAndWhiteColorPickerType":
+            MessageLookupByLibrary.simpleMessage("Black & White"),
         "blockUser": MessageLookupByLibrary.simpleMessage("Block user"),
         "blockedPost":
             MessageLookupByLibrary.simpleMessage("The post is blocked."),
@@ -189,6 +192,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "bobMinion": MessageLookupByLibrary.simpleMessage("Bob minion"),
         "bobMinionDescribe":
             MessageLookupByLibrary.simpleMessage("Cute yellow Minions"),
+        "bothColorPickerType": MessageLookupByLibrary.simpleMessage("Both"),
         "brightnessDark": MessageLookupByLibrary.simpleMessage("Dark"),
         "brightnessLight": MessageLookupByLibrary.simpleMessage("Light"),
         "brightnessManualChangeDisabled": MessageLookupByLibrary.simpleMessage(
@@ -632,6 +636,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "No objectionable content and abusive action"),
         "preventAbuseUserDescription": MessageLookupByLibrary.simpleMessage(
             "There is no tolerance for objectionable content and abusive users"),
+        "primaryColorPickerType":
+            MessageLookupByLibrary.simpleMessage("Primary"),
         "privacyPolicy": MessageLookupByLibrary.simpleMessage("Privacy policy"),
         "privacyProtectSubtitle":
             MessageLookupByLibrary.simpleMessage("Nothing is collected by us"),
@@ -760,6 +766,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "securityTitle": MessageLookupByLibrary.simpleMessage("Security"),
         "seeAllReplies":
             MessageLookupByLibrary.simpleMessage("View all replies"),
+        "selectColorShadeTitle":
+            MessageLookupByLibrary.simpleMessage("Select color shade"),
+        "selectColorTitle":
+            MessageLookupByLibrary.simpleMessage("Select color"),
         "selectDiscuzIconTooltip":
             MessageLookupByLibrary.simpleMessage("Select discuz forum"),
         "selectUserNull": MessageLookupByLibrary.simpleMessage(
@@ -932,6 +942,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "welcomeSubtitle": MessageLookupByLibrary.simpleMessage(
             "Welcome to use our Services."),
         "welcomeTitle": MessageLookupByLibrary.simpleMessage("Welcome"),
+        "wheelColorPickerType": MessageLookupByLibrary.simpleMessage("Wheel"),
         "windowsDeviceName": m49,
         "workProcedure":
             MessageLookupByLibrary.simpleMessage("How does push service work?"),

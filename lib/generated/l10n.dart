@@ -5160,6 +5160,76 @@ class S {
       args: [reply],
     );
   }
+
+  /// `Select color`
+  String get selectColorTitle {
+    return Intl.message(
+      'Select color',
+      name: 'selectColorTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select color shade`
+  String get selectColorShadeTitle {
+    return Intl.message(
+      'Select color shade',
+      name: 'selectColorShadeTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Primary`
+  String get primaryColorPickerType {
+    return Intl.message(
+      'Primary',
+      name: 'primaryColorPickerType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Accent`
+  String get accentColorPickerType {
+    return Intl.message(
+      'Accent',
+      name: 'accentColorPickerType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Wheel`
+  String get wheelColorPickerType {
+    return Intl.message(
+      'Wheel',
+      name: 'wheelColorPickerType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Black & White`
+  String get blackAndWhiteColorPickerType {
+    return Intl.message(
+      'Black & White',
+      name: 'blackAndWhiteColorPickerType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Both`
+  String get bothColorPickerType {
+    return Intl.message(
+      'Both',
+      name: 'bothColorPickerType',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

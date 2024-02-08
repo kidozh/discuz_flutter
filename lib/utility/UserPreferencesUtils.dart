@@ -5,6 +5,7 @@ import 'dart:ffi';
 import 'dart:ui';
 
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -111,17 +112,17 @@ class UserPreferencesUtils{
 
   }
 
-  static final String themeColorKey = "themeColorKey";
+  static final String themeColorKey = "themeColorValueKey";
 
-  static Future<void> putThemeColor(String themeColor) async{
+  static Future<void> putThemeColor(int themeColorValue) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(themeColorKey, themeColor);
+    await prefs.setInt(themeColorKey, themeColorValue);
   }
 
-  static Future<String> getThemeColor() async {
+  static Future<int> getThemeColor() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var boolValue =  prefs.getString(themeColorKey);
-    return boolValue == null ? "" : boolValue;
+    var colorValue =  prefs.getInt(themeColorKey);
+    return colorValue == null ? Colors.blue.value : colorValue;
   }
 
   static final String platformPreferenceKey = "platformPreferenceKey";
