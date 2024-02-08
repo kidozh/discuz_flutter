@@ -125,6 +125,7 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(
                 seedColor: themeColorEntity.themeColor,
               brightness: Brightness.light,
+              background: Colors.white
             )//.harmonized()
             ,
             useMaterial3: themeColorEntity.useMaterial3
@@ -133,6 +134,7 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(
               seedColor: themeColorEntity.themeColor,
               brightness: Brightness.dark,
+              background: Colors.black54
             )//.harmonized()
             ,
             useMaterial3: themeColorEntity.useMaterial3

@@ -136,7 +136,8 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
           child: PlatformWidgetBuilder(
               material: (context, child, platform) => Card(
                 elevation: 4.0,
-                surfaceTintColor: selected? Theme.of(context).colorScheme.primary: brightness == Brightness.light? Colors.white: Colors.black45,
+                color: selected? Theme.of(context).colorScheme.primaryContainer: null,
+                //surfaceTintColor: selected? Theme.of(context).colorScheme.primary: brightness == Brightness.light? Colors.white: Colors.black45,
                 // color: Theme.of(context).colorScheme.background,
                 child: Container(
                   padding: EdgeInsets.only(bottom: 12.0),
@@ -148,7 +149,17 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
                 children: [
                   if(child!= null)
-                    child,
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
+                      decoration: BoxDecoration(
+                        color: selected? Theme.of(context).colorScheme.primaryContainer: null,
+                        borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                      ),
+                      //color: ,
+                      child: child,
+                    ),
+                  if(!selected)
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: Divider(),
@@ -156,7 +167,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
                 ],
               ),
-              child: getForumThreadListTile(viewed)
+              child: getForumThreadListTile(viewed, selected)
           ),
           onTap:  () async {
             triggerTapFunction();
@@ -194,12 +205,12 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     );
   }
   
-  Widget getForumThreadListTile(bool viewed){
+  Widget getForumThreadListTile(bool viewed, bool selected){
     TextStyle? textStyle;
     if (viewed){
       textStyle = TextStyle(
         fontWeight: FontWeight.w300,
-        color: Theme.of(context).unselectedWidgetColor,
+        color: selected? Theme.of(context).colorScheme.onPrimaryContainer:Theme.of(context).unselectedWidgetColor,
       );
     }
     else{
@@ -228,7 +239,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
               Text(_forumThread.subject, style: TextStyle(
                 fontSize: FontSize.xLarge.value,
                 fontWeight: viewed? FontWeight.normal:FontWeight.bold,
-                color: viewed? Theme.of(context).unselectedWidgetColor: null,)
+                color: selected? Theme.of(context).colorScheme.onPrimaryContainer: viewed? Theme.of(context).unselectedWidgetColor: null,)
               ),
               // then user interface
               SizedBox(height: 4,),
@@ -247,20 +258,20 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                         text: " ",
                         style: TextStyle(
                           fontWeight: viewed? FontWeight.w200:FontWeight.w300,
-                          color: viewed? Theme.of(context).unselectedWidgetColor: Theme.of(context).textTheme.bodySmall?.color,
+                          color: selected? Theme.of(context).colorScheme.onPrimaryContainer:viewed? Theme.of(context).unselectedWidgetColor: Theme.of(context).textTheme.bodySmall?.color,
                         ),
                         children: [
                           TextSpan(text: _forumThread.author,
                               style:  TextStyle(
                                 fontWeight: FontWeight.w300,
-                                color: viewed? Theme.of(context).unselectedWidgetColor: Theme.of(context).textTheme.bodySmall?.color,
+                                color: selected? Theme.of(context).colorScheme.onPrimaryContainer:viewed? Theme.of(context).unselectedWidgetColor: Theme.of(context).textTheme.bodySmall?.color,
                               )
                           ),
                           TextSpan(text: " · ", style: textStyle),
                           TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_forumThread.dbdatelineMinutes),
                               style: TextStyle(
                                 fontWeight: FontWeight.w300,
-                                color: viewed? Theme.of(context).unselectedWidgetColor: Theme.of(context).textTheme.bodySmall?.color,
+                                color: selected? Theme.of(context).colorScheme.onPrimaryContainer: viewed? Theme.of(context).unselectedWidgetColor: Theme.of(context).textTheme.bodySmall?.color,
                               )
                           ),
                           if(threadCategory.isNotEmpty)
@@ -293,7 +304,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                       child: Text(_forumThread.message,
                         style: TextStyle(
                           fontWeight: viewed? FontWeight.w300:FontWeight.w400,
-                          color: viewed? Theme.of(context).unselectedWidgetColor: null,
+                          color: selected? Theme.of(context).colorScheme.onPrimaryContainer: viewed? Theme.of(context).unselectedWidgetColor: null,
                         ),
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
@@ -331,9 +342,9 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                 size: 48,
                 disableTap: true,
               ),
-              title: Text(_forumThread.subject, style: Theme.of(context).textTheme.titleMedium?..copyWith(
-                  color: selected? Theme.of(context).colorScheme.onPrimary: null,
-                  fontWeight: viewed? FontWeight.w400: FontWeight.bold,
+              title: Text(_forumThread.subject, style: TextStyle(
+                  color: selected? Theme.of(context).colorScheme.primary: viewed? Theme.of(context).disabledColor :null,
+                  fontWeight: selected? FontWeight.bold: viewed? FontWeight.w400: FontWeight.normal,
               )),
               subtitle: RichText(
                 text: TextSpan(
@@ -352,8 +363,8 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                 ),
               ),
 
-              trailing: selected? Icon(AppPlatformIcons(context).selectedThreadSolid, color: Theme.of(context).colorScheme.primary,):
-              _forumThread.replies!=0 ? getTailingWidget(): null,
+              // trailing: selected? Icon(AppPlatformIcons(context).selectedThreadSolid, color: Theme.of(context).colorScheme.primary,):
+              // _forumThread.replies!=0 ? getTailingWidget(): null,
 
 
 

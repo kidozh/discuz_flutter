@@ -49,13 +49,18 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
           CustomSettingsSection(
               child: ColorPicker(
                 color: Color(_selectedColorValue),
-                onColorChanged: (Color value) {
-                  changeColor(value.value);
+                onColorChanged: (Color color) {
+                  setState(() {
+                    _selectedColorValue = color.value;
+                  });
+
+                  changeColor(color.value);
+
                 },
-                heading: Text(
-                  S.of(context).selectColorTitle,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
+                // heading: Text(
+                //   S.of(context).selectColorTitle,
+                //   style: Theme.of(context).textTheme.headlineSmall,
+                // ),
                 subheading: Text(
                   S.of(context).selectColorShadeTitle,
                   style: Theme.of(context).textTheme.titleSmall,
