@@ -35,6 +35,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:push/push.dart' as Push;
@@ -128,7 +129,7 @@ class MyApp extends StatelessWidget {
               background: Colors.white
             )//.harmonized()
             ,
-            useMaterial3: themeColorEntity.useMaterial3
+            useMaterial3: themeColorEntity.useMaterial3,
         );
         final materialThemeDataDark = ThemeData.from(
             colorScheme: ColorScheme.fromSeed(

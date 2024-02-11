@@ -2,6 +2,7 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:discuz_flutter/dao/TrustHostDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
