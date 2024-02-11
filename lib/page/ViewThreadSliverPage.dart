@@ -30,6 +30,7 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
+import 'package:discuz_flutter/widget/LoadingStateWidget.dart';
 import 'package:discuz_flutter/widget/PollWidget.dart';
 import 'package:discuz_flutter/widget/PostTextField.dart';
 import 'package:discuz_flutter/widget/PostWidget.dart';
@@ -94,6 +95,7 @@ class ViewThreadStatefulSliverWidget extends StatefulWidget {
 
 class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   ViewThreadResult _viewThreadResult = ViewThreadResult();
+  bool _isFirstLoading = true;
   DiscuzError? _error;
   List<Post> _postList = [];
   int _page = 1;
@@ -466,6 +468,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
       setState(() {
         _viewThreadResult = value;
+        _isFirstLoading = false;
         _error = null;
         if (_page == 1) {
           _postList = value.threadVariables.postList;
@@ -540,6 +543,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         log("DIOERROR ${dioError.message} >-> ${dioError.type}");
         EasyLoading.showError("${dioError.message} (${dioError})");
         setState(() {
+          _isFirstLoading = false;
           _error = DiscuzError(
               dioError.type.name,
               dioError.message == null
@@ -705,6 +709,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
               onLoad: () async {
                 return await _loadForumContent();
               },
+              // if first load then should display a loading screen
               child: CustomScrollView(
                 controller: _scrollController,
                 slivers: [
@@ -718,6 +723,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                     },
                     childCount: 1,
                   )),
+                  if(!_isFirstLoading)
                   SliverList(
                       delegate: SliverChildBuilderDelegate(
                     (context, _) {
@@ -754,10 +760,11 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                       },
                       childCount: 1,
                     )),
+
                   if (_postList.isEmpty && _error == null)
                     SliverList(
                         delegate: SliverChildBuilderDelegate((context, index) {
-                      return EmptyListScreen(EmptyItemType.post);
+                      return _isFirstLoading? LoadingStateWidget(): EmptyListScreen(EmptyItemType.post);
                     }, childCount: 1)),
                   if (_viewThreadResult.threadVariables.poll != null)
                     SliverList(

@@ -22,6 +22,7 @@ import '../utility/MobileSignUtils.dart';
 import '../utility/NetworkUtils.dart';
 import '../widget/AppBannerAdWidget.dart';
 import '../widget/ErrorCard.dart';
+import '../widget/LoadingStateWidget.dart';
 import '../widget/NewThreadWidget.dart';
 import '../widget/ThreadSlideShowCarouselWidget.dart';
 import 'EmptyListScreen.dart';
@@ -52,6 +53,7 @@ class NewThreadStatefulWidget extends StatefulWidget {
 class _NewThreadState extends State<NewThreadStatefulWidget> {
   late Dio _dio;
   late MobileApiClient _client;
+  bool _isFirstLoading = true;
   NewThreadResult result = NewThreadResult();
   DiscuzError? _error;
   int _page = 1;
@@ -91,6 +93,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
     return await _client.newThreadsResult(fids, (_page - 1) * 20).then((value) async {
       Provider.of<DiscuzNotificationProvider>(context, listen: false).setNotificationCount(value.variables.noticeCount);
       setState(() {
+        _isFirstLoading = false;
         result = value;
         _error = null;
         if (_page == 1) {
@@ -141,6 +144,12 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
         return IndicatorResult.success;
       }
     }).catchError((onError) {
+      if(mounted){
+        setState(() {
+          _isFirstLoading = false;
+        });
+      }
+
       switch (onError.runtimeType) {
         case DioException:
           {
@@ -209,7 +218,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
           if (_newThreadList.isEmpty)
             SliverList(
                 delegate: SliverChildBuilderDelegate(
-                    (context, index) => EmptyListScreen(EmptyItemType.thread),
+                    (context, index) => _isFirstLoading? LoadingStateWidget():EmptyListScreen(EmptyItemType.thread),
                     childCount: 1)),
           SliverList(
             delegate: SliverChildBuilderDelegate(

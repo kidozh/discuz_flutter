@@ -16,6 +16,7 @@ import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
+import 'package:discuz_flutter/widget/LoadingStateWidget.dart';
 import 'package:discuz_flutter/widget/UserProfileListItem.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
@@ -57,12 +58,18 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
   late final Discuz discuz;
   late final User? user;
   int uid = 0;
+  bool isUpdating = false;
+
+  DiscuzError? _discuzError = null;
 
   UserProfileResult? _userProfileResult = null;
 
   UserProfileState(this.discuz, this.user, this.uid);
 
   void _loadUserProfile() async {
+    setState(() {
+      isUpdating = true;
+    });
     print("get uid profile : ${uid}");
     User? user =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
@@ -70,18 +77,22 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
     final MobileApiClient client =
         MobileApiClient(dio, baseUrl: discuz.baseURL);
 
-    client.userProfileResultRaw(uid).then((value) {
-          log(value);
-          UserProfileResult.fromJson(jsonDecode(value));
-    });
-
     client.userProfileResult(uid).then((value) {
       setState(() {
+        isUpdating = false;
         this._userProfileResult = value;
       });
       // try to save the group information
       UserPreferencesUtils.putDiscuzGroupNameById(discuz,value.variables.getSpace().groupId, value.variables.getSpace().groupInfo.groupTitle);
       UserPreferencesUtils.putDiscuzGroupStarById(discuz,value.variables.getSpace().groupId, value.variables.getSpace().groupInfo.stars);
+    }).catchError((e){
+      if(mounted){
+        setState(() {
+          isUpdating = false;
+          _discuzError = DiscuzError(S.of(context).networkFailed, S.of(context).networkFail);
+        });
+      }
+
     });
   }
 
@@ -94,12 +105,17 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
+
+
     if (_userProfileResult == null) {
       return PlatformScaffold(
         iosContentPadding: true,
         iosContentBottomPadding: true,
         appBar: PlatformAppBar(title: Text(S.of(context).userProfile)),
-        body: BlankScreen(),
+        body: isUpdating? LoadingStateWidget(): _discuzError == null ?BlankScreen(): ErrorCard(_discuzError!, () {
+          VibrationUtils.vibrateWithClickIfPossible();
+          _loadUserProfile();
+        }),
       );
     } else if (_userProfileResult != null &&
         _userProfileResult!.errorResult != null) {

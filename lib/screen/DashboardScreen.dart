@@ -2,10 +2,12 @@
 
 import 'dart:developer';
 
+import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NewThreadScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:provider/provider.dart';
 
 import '../generated/l10n.dart';
 import 'HotThreadScreen.dart';
@@ -17,16 +19,21 @@ class DashboardScreen extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return PlatformWidgetBuilder(
-      material: (context,child,target){
-        return MaterialDashboardScreen(onSelectTid: onSelectTid,);
-      },
-      cupertino: (context, child, target){
-        return SafeArea(
-            child: CupertinoDashboardScreen(onSelectTid: onSelectTid)
+    return Consumer<DiscuzAndUserNotifier>(
+      builder: (BuildContext context, DiscuzAndUserNotifier value, Widget? child) {
+        return PlatformWidgetBuilder(
+          material: (context,child,target){
+            return MaterialDashboardScreen(onSelectTid: onSelectTid,);
+          },
+          cupertino: (context, child, target){
+            return SafeArea(
+                child: CupertinoDashboardScreen(onSelectTid: onSelectTid)
+            );
+          },
         );
       },
     );
+
   }
 
 }

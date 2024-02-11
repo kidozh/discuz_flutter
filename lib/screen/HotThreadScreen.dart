@@ -23,6 +23,7 @@ import '../provider/DiscuzNotificationProvider.dart';
 import '../utility/EasyRefreshUtils.dart';
 import '../utility/MobileSignUtils.dart';
 import '../widget/AppBannerAdWidget.dart';
+import '../widget/LoadingStateWidget.dart';
 import 'EmptyListScreen.dart';
 
 class HotThreadScreen extends StatelessWidget {
@@ -49,6 +50,7 @@ class HotThreadStatefulWidget extends StatefulWidget {
 
 class _HotThreadState extends State<HotThreadStatefulWidget> {
   final ValueChanged<int>? onSelectTid;
+  bool _isFirstLoading = true;
   late Dio _dio;
   late MobileApiClient _client;
   HotThreadResult result = HotThreadResult();
@@ -84,6 +86,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       _controller.finishRefresh();
       Provider.of<DiscuzNotificationProvider>(context, listen: false).setNotificationCount(value.variables.noticeCount);
       setState(() {
+        _isFirstLoading = false;
         result = value;
         _error = null;
         if (_page == 1) {
@@ -134,6 +137,11 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
         return IndicatorResult.success;
       }
     }).catchError((onError) {
+      if(mounted){
+        setState(() {
+          _isFirstLoading = false;
+        });
+      }
       switch (onError.runtimeType) {
         case DioException:
           {
@@ -217,10 +225,12 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       },
       child: CustomScrollView(
         slivers: [
+
+
           if (_hotThreadList.isEmpty && result.errorResult == null)
             SliverList(
                 delegate: SliverChildBuilderDelegate(
-                    (context, index) => EmptyListScreen(EmptyItemType.thread),
+                    (context, index) => _isFirstLoading? LoadingStateWidget(): EmptyListScreen(EmptyItemType.thread),
                     childCount: 1)),
           SliverList(
               delegate: SliverChildBuilderDelegate(
