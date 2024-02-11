@@ -394,7 +394,7 @@ class PostState extends State<PostStatefulWidget> {
                     platformPageRoute(
                         context: context,
                         builder: (context) =>
-                            UserProfilePage(_discuz, user, _post.authorId)));
+                            UserProfilePage(_discuz, user, _post.authorId, username: _post.author,)));
               }
           ),
           PopupMenuOption(

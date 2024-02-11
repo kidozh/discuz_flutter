@@ -32,12 +32,13 @@ class UserProfilePage extends StatelessWidget {
   late final Discuz discuz;
   late final User? user;
   int uid = 0;
+  String? username = null;
 
-  UserProfilePage(this.discuz, this.user, this.uid);
+  UserProfilePage(this.discuz, this.user, this.uid, {this.username});
 
   @override
   Widget build(BuildContext context) {
-    return UserProfileStatefulWidget(discuz, user, uid);
+    return UserProfileStatefulWidget(discuz, user, uid, username: this.username);
   }
 }
 
@@ -45,18 +46,20 @@ class UserProfileStatefulWidget extends StatefulWidget {
   late final Discuz discuz;
   late final User? user;
   int uid = 0;
+  String? username = null;
 
-  UserProfileStatefulWidget(this.discuz, this.user, this.uid);
+  UserProfileStatefulWidget(this.discuz, this.user, this.uid, {this.username});
 
   @override
   State<StatefulWidget> createState() {
-    return UserProfileState(discuz, user, uid);
+    return UserProfileState(discuz, user, uid, username: this.username);
   }
 }
 
 class UserProfileState extends State<UserProfileStatefulWidget> {
   late final Discuz discuz;
   late final User? user;
+  String? username = null;
   int uid = 0;
   bool isUpdating = false;
 
@@ -64,7 +67,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
 
   UserProfileResult? _userProfileResult = null;
 
-  UserProfileState(this.discuz, this.user, this.uid);
+  UserProfileState(this.discuz, this.user, this.uid, {this.username});
 
   void _loadUserProfile() async {
     setState(() {
@@ -112,7 +115,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
         iosContentPadding: true,
         iosContentBottomPadding: true,
         appBar: PlatformAppBar(title: Text(S.of(context).userProfile)),
-        body: isUpdating? LoadingStateWidget(): _discuzError == null ?BlankScreen(): ErrorCard(_discuzError!, () {
+        body: isUpdating? LoadingStateWidget(hintText: this.username,): _discuzError == null ?BlankScreen(): ErrorCard(_discuzError!, () {
           VibrationUtils.vibrateWithClickIfPossible();
           _loadUserProfile();
         }),

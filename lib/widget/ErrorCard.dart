@@ -13,6 +13,7 @@ import '../entity/Discuz.dart';
 import '../entity/DiscuzError.dart';
 import '../entity/User.dart';
 import '../page/InternalWebviewBrowserPage.dart';
+import '../page/LoginPage.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 
 class ErrorCard extends StatelessWidget{
@@ -80,9 +81,18 @@ class ErrorCard extends StatelessWidget{
             // should directly re-login here
             TextButton(
               child: Text(S.of(context).loginTitle, style: TextStyle(color: Theme.of(context).colorScheme.error),),
-              onPressed: () {
+              onPressed: () async {
                 VibrationUtils.vibrateWithClickIfPossible();
-                onRefreshCallback!();
+                Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context,listen: false).discuz;
+                User? user = Provider.of<DiscuzAndUserNotifier>(context,listen: false).user;
+                if(discuz != null){
+                  await Navigator.push(
+                      context,
+                      platformPageRoute(
+                          context: context,
+                          builder: (context) => LoginPage(discuz, user?.username)));
+                }
+
               },
             ),
           if(discuzError.key == "mobile_template_no_found" && this.webpageUrl!=null)
