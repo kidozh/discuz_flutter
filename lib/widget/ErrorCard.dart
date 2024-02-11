@@ -65,12 +65,21 @@ class ErrorCard extends StatelessWidget{
     }
     else{
       return MaterialBanner(
-        leading: Icon(getErrorIcon(context), color: Theme.of(context).errorColor,),
+        leading: Icon(getErrorIcon(context), color: Theme.of(context).colorScheme.error,),
         content: Text("${discuzError.content}(${getErrorLocalizedKey(context)})"),
         actions: [
-          if(onRefreshCallback!=null)
+          if(errorType!= ErrorType.userExpired && onRefreshCallback!=null)
             TextButton(
-              child: Text(S.of(context).retry, style: TextStyle(color: Theme.of(context).errorColor),),
+              child: Text(S.of(context).retry, style: TextStyle(color: Theme.of(context).colorScheme.error),),
+              onPressed: () {
+                VibrationUtils.vibrateWithClickIfPossible();
+                onRefreshCallback!();
+              },
+            ),
+          if(errorType == ErrorType.userExpired)
+            // should directly re-login here
+            TextButton(
+              child: Text(S.of(context).loginTitle, style: TextStyle(color: Theme.of(context).colorScheme.error),),
               onPressed: () {
                 VibrationUtils.vibrateWithClickIfPossible();
                 onRefreshCallback!();

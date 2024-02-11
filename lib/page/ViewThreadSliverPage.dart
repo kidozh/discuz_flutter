@@ -764,7 +764,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                   if (_postList.isEmpty && _error == null)
                     SliverList(
                         delegate: SliverChildBuilderDelegate((context, index) {
-                      return _isFirstLoading? LoadingStateWidget(): EmptyListScreen(EmptyItemType.post);
+                      return _isFirstLoading? LoadingStateWidget(hintText: passedSubject,): EmptyListScreen(EmptyItemType.post);
                     }, childCount: 1)),
                   if (_viewThreadResult.threadVariables.poll != null)
                     SliverList(
