@@ -30,6 +30,7 @@ import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzNotificationAppbarIconWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
+import 'package:discuz_flutter/widget/LoadingStateWidget.dart';
 import 'package:dual_screen/dual_screen.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
@@ -109,6 +110,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   late EasyRefreshController _controller;
   late Dio dio;
   late MobileApiClient client;
+  bool _isFirstLoading = true;
 
   @override
   void initState() {
@@ -244,6 +246,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         _displayForumResult = value;
         _error = null;
         print("GET page ${_page} results");
+        _isFirstLoading = false;
 
       });
 
@@ -309,6 +312,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       //log("set successful result ${_displayForumResult} ${_forumThreadList.length}");
     }).catchError((onError) {
       if(!mounted){
+        setState(() {
+          _isFirstLoading = false;
+        });
         return IndicatorResult.fail;
       }
       VibrationUtils.vibrateErrorIfPossible();
@@ -518,7 +524,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
             if(_forumThreadList.isEmpty)
               SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
-                  return EmptyListScreen(EmptyItemType.thread);
+                  return _isFirstLoading? LoadingStateWidget() : EmptyListScreen(EmptyItemType.thread);
                 }, childCount: 1),
 
               ),
