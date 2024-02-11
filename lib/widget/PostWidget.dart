@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
@@ -11,6 +13,7 @@ import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
+import 'package:discuz_flutter/utility/PostTextUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/AttachmentWidget.dart';
@@ -256,14 +259,24 @@ class PostState extends State<PostStatefulWidget> {
 
   Widget getPostContent(BuildContext context) {
     String _html = _post.message;
+
+    if(_post.first){
+      log("${_html}");
+    }
+
     if (this.isFontStyleIgnored()) {
       // regex
-      _html = _html
-          .replaceAll(RegExp(r'<font.*?>', multiLine: true), "")
-          .replaceAll(RegExp(r'<\font.*?>'), "")
-          .replaceAll(RegExp(r'<span style="display:none">.+</span>'), "")
-      ;
+      // _html = _html
+      //     .replaceAll(RegExp(r'<font.*?>', multiLine: true), "")
+      //     .replaceAll(RegExp(r'</font.*?>'), "")
+      //     .replaceAll(RegExp(r'<span style="display:none">.+</span>'), "")
+      //     //.replaceAll(RegExp(r'\\n'), '<br />')
+      // ;
+      _html = PostTextUtils.decodePostMessage(_html);
     }
+
+
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,

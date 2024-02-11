@@ -482,6 +482,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "incorrectDiscuzAddress":
             MessageLookupByLibrary.simpleMessage("Invalid discuz address."),
         "index": MessageLookupByLibrary.simpleMessage("Index"),
+        "inlineFramePage": MessageLookupByLibrary.simpleMessage("Inline frame"),
         "insertBoldText": MessageLookupByLibrary.simpleMessage("Bold"),
         "insertItalicText": MessageLookupByLibrary.simpleMessage("Italic"),
         "insertQuoteText": MessageLookupByLibrary.simpleMessage("Quote"),

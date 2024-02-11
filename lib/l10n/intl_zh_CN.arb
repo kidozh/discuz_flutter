@@ -785,5 +785,6 @@
   "typographyMaterial2014": "2014版质感设计",
   "typographyMaterial2018": "2018版质感设计",
   "typographyMaterial2021": "2021版质感设计",
-  "typographySystem": "默认排版"
+  "typographySystem": "默认排版",
+  "inlineFramePage": "访问嵌入式页面"
 }

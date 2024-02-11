@@ -15,6 +15,8 @@ import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
+import 'package:discuz_flutter/utility/PostTextUtils.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
@@ -50,66 +52,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
     await trustHostDao.insertTrustHost(TrustHost(host));
   }
 
-  String replaceCollapseTag(String string){
-    //log("Recv html $string");
-    string = string.replaceAllMapped(RegExp(r"\[collapse(|=(.*?))]"), (match){
-      //log("Get match string ${match.groupCount} ${match.group(0)}");
-      if(match.groupCount == 2){
-        String title = match.group(1)!;
-        if(title.startsWith("=")){
-          title = title.replaceFirst("=", "");
-        }
-        //log("Recv matched message ${match.group(1)} $title");
-        return '<collapse title="$title">';
-      }
-      else{
-        return '<collapse>';
-      }
-    });
-    string = string.replaceAll(RegExp(r"\[/collapse.*?\]"), r"</collapse>");
 
-    return string;
-  }
-
-  String replaceSpoilTag(String string){
-    string = string
-        .replaceAll(RegExp(r"\[spoil.*?\]"), r'<spoil><br/>')
-        .replaceAll(RegExp(r"\[/spoil\]"), r"</spoil>");
-
-    return string;
-  }
-
-  String replaceCountDownTag(String string){
-    string = string.replaceAllMapped(RegExp(r"\[micxp_countdown.*?\](.*?)\[/micxp_countdown\]"), (match) {
-      if(match.groupCount == 1){
-        return '<countdown time="${match.group(1)}"></countdown>';
-      }
-      return "";
-    });
-    return string;
-  }
-
-  String getDecodedString(){
-    String decodedString = replaceCollapseTag(this.html);
-    decodedString = replaceSpoilTag(decodedString);
-    decodedString = replaceCountDownTag(decodedString);
-    decodedString = replaceMediaTag(decodedString);
-    //log("decode string ${decodedString}");
-    // hard coding?
-    decodedString = "<p>"+decodedString+"</p>";
-    return decodedString;
-  }
-
-  String replaceMediaTag(String string){
-    // process video
-    string = string.replaceAllMapped(RegExp(r"\[video.*?\](.*?)\[/video\]"), (match) {
-      if(match.groupCount == 1){
-        return '<video controls src="${match.group(1)}"></video>';
-      }
-      return "";
-    });
-    return string;
-  }
 
 
   @override
@@ -164,10 +107,10 @@ class DiscuzHtmlWidget extends StatelessWidget{
 
         return Html(
           //shrinkWrap: true,
-          data: this.getDecodedString(),
+          data: PostTextUtils.getDecodedString(html),
 
           style: {
-            "*": Style(
+            "p": Style(
                 color: defaultTextStyle?.color,
                 backgroundColor: defaultTextStyle?.backgroundColor,
                 fontStyle: defaultTextStyle?.fontStyle,
@@ -176,7 +119,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 fontSize: defaultTextStyle?.fontSize == null? FontSize.medium:FontSize(defaultTextStyle!.fontSize!*scalingParameter),
                 fontWeight: defaultTextStyle?.fontWeight,
                 wordSpacing: defaultTextStyle?.wordSpacing,
-                lineHeight: LineHeight(1.3),
+                //lineHeight: LineHeight(1.3),
                 padding: HtmlPaddings.zero,
                 margin: Margins.zero
             ),
@@ -194,29 +137,29 @@ class DiscuzHtmlWidget extends StatelessWidget{
 
             ),
             "h1": Style(
-                fontSize: textTheme.headlineLarge?.fontSize != null ? FontSize(textTheme.headlineLarge!.fontSize!*scalingParameter): null,
+                fontSize: textTheme.titleLarge?.fontSize != null ? FontSize(textTheme.titleLarge!.fontSize!*scalingParameter): null,
                 color: Theme.of(context).colorScheme.onPrimaryContainer,
-                fontFamily: textTheme.headlineLarge?.fontFamily,
+                fontFamily: textTheme.titleLarge?.fontFamily,
                 fontWeight: FontWeight.bold,
-                fontStyle: textTheme.headlineLarge?.fontStyle,
+                fontStyle: textTheme.titleLarge?.fontStyle,
                 backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                 padding: HtmlPaddings.all(6.0)
             ),
             "h2": Style(
-                fontSize: textTheme.headlineMedium?.fontSize != null ? FontSize(textTheme.headlineMedium!.fontSize!*scalingParameter): null,
+                fontSize: textTheme.titleLarge?.fontSize != null ? FontSize(textTheme.titleLarge!.fontSize!*scalingParameter): null,
                 color: Theme.of(context).colorScheme.primary,
-                fontFamily: textTheme.headlineMedium?.fontFamily,
+                fontFamily: textTheme.titleLarge?.fontFamily,
                 fontWeight: FontWeight.bold,
-                fontStyle: textTheme.headlineMedium?.fontStyle,
-                backgroundColor: textTheme.headlineMedium?.backgroundColor,
+                fontStyle: textTheme.titleLarge?.fontStyle,
+                backgroundColor: textTheme.titleLarge?.backgroundColor,
             ),
             "h3": Style(
-                fontSize: textTheme.headlineSmall?.fontSize != null ? FontSize(textTheme.headlineSmall!.fontSize!*scalingParameter): null,
+                fontSize: textTheme.titleLarge?.fontSize != null ? FontSize(textTheme.titleLarge!.fontSize!*scalingParameter): null,
                 color: Theme.of(context).colorScheme.primary,
-                fontFamily: textTheme.headlineSmall?.fontFamily,
-                fontWeight: textTheme.headlineSmall?.fontWeight,
-                fontStyle: textTheme.headlineSmall?.fontStyle,
-                backgroundColor: textTheme.headlineSmall?.backgroundColor
+                fontFamily: textTheme.titleLarge?.fontFamily,
+                fontWeight: textTheme.titleLarge?.fontWeight,
+                fontStyle: textTheme.titleLarge?.fontStyle,
+                backgroundColor: textTheme.titleLarge?.backgroundColor
             ),
             "h4": Style(
               fontSize: textTheme.titleLarge?.fontSize != null ? FontSize(textTheme.titleLarge!.fontSize!*scalingParameter): null,
@@ -230,7 +173,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 fontSize: textTheme.titleMedium?.fontSize != null ? FontSize(textTheme.titleMedium!.fontSize!*scalingParameter): null,
                 color: textTheme.titleMedium?.color,
                 fontFamily: textTheme.titleMedium?.fontFamily,
-                fontWeight: textTheme.titleMedium?.fontWeight,
+                fontWeight: FontWeight.w300,
                 fontStyle: textTheme.titleMedium?.fontStyle,
                 backgroundColor: textTheme.titleMedium?.backgroundColor
             ),
@@ -238,7 +181,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 fontSize: textTheme.titleSmall?.fontSize != null ? FontSize(textTheme.titleSmall!.fontSize!*scalingParameter): null,
                 color: textTheme.titleSmall?.color,
                 fontFamily: textTheme.titleSmall?.fontFamily,
-                fontWeight: textTheme.titleSmall?.fontWeight,
+                fontWeight: FontWeight.w300,
                 fontStyle: textTheme.titleSmall?.fontStyle,
                 backgroundColor: textTheme.titleSmall?.backgroundColor
             ),
@@ -417,7 +360,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
 
           },
           extensions: [
-            const IframeHtmlExtension(),
+            //const IframeHtmlExtension(),
             //MathHtmlExtension(),
             const SvgHtmlExtension(),
             const AudioHtmlExtension(),
@@ -550,7 +493,47 @@ class DiscuzHtmlWidget extends StatelessWidget{
                     return Text(S.of(context).brokenCountDown);
                   }
                 }
-            )
+            ),
+            TagExtension(
+                tagsToExtend: {"iframe"},
+                builder: (extensionContext){
+                    String? url = extensionContext.attributes["src"];
+                    if(url != null ){
+                      return InkWell(
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary,
+                              borderRadius: BorderRadius.all(Radius.circular(16.0))
+                          ),
+                          padding: EdgeInsets.all(isCupertino(context)? 4.0: 0.0),
+                          child: PlatformListTile(
+                            leading: Icon(AppPlatformIcons(context).iframeOutline,
+                              color: Theme.of(context).colorScheme.onPrimary,),
+                            title: Text(S.of(context).inlineFramePage, style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                fontWeight: FontWeight.bold
+                            ),),
+                            subtitle: Text(extensionContext.attributes["src"]!,style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.6),
+                                fontWeight: FontWeight.w300
+                            ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                        onTap: (){
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          checkWithDbAndOpenURL(context, url);
+                        },
+                      );
+                    }
+                    else{
+                      return Container();
+                    }
+
+                }
+            ),
 
           ],
         );

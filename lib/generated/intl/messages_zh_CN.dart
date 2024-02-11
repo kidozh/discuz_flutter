@@ -410,6 +410,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "incorrectDiscuzAddress":
             MessageLookupByLibrary.simpleMessage("无效的论坛地址."),
         "index": MessageLookupByLibrary.simpleMessage("索引"),
+        "inlineFramePage": MessageLookupByLibrary.simpleMessage("访问嵌入式页面"),
         "insertBoldText": MessageLookupByLibrary.simpleMessage("粗体文字"),
         "insertItalicText": MessageLookupByLibrary.simpleMessage("斜体文字"),
         "insertQuoteText": MessageLookupByLibrary.simpleMessage("引用文字"),

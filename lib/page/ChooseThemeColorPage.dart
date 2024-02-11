@@ -43,8 +43,6 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
 
       ),
       body: SettingsList(
-
-
         sections: [
           CustomSettingsSection(
               child: ColorPicker(

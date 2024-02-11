@@ -784,5 +784,6 @@
   "typographyMaterial2014": "Material 2014",
   "typographyMaterial2018": "Material 2018",
   "typographyMaterial2021": "Material 2021",
-  "typographySystem": "Typography default"
+  "typographySystem": "Typography default",
+  "inlineFramePage": "Inline frame"
 }

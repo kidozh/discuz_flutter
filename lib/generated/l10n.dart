@@ -5290,6 +5290,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Inline frame`
+  String get inlineFramePage {
+    return Intl.message(
+      'Inline frame',
+      name: 'inlineFramePage',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
