@@ -4081,10 +4081,10 @@ class S {
     );
   }
 
-  /// `No thread is currently fetched.`
+  /// `No thread is posted here, look around?.`
   String get emptyThreads {
     return Intl.message(
-      'No thread is currently fetched.',
+      'No thread is posted here, look around?.',
       name: 'emptyThreads',
       desc: '',
       args: [],
@@ -4101,10 +4101,10 @@ class S {
     );
   }
 
-  /// `No history is found in your device. Have you ever browse anything or never open the history recording in the setting?`
+  /// `No history found in your device. Have you ever browse anything or never open the history recording in the setting?`
   String get emptyHistory {
     return Intl.message(
-      'No history is found in your device. Have you ever browse anything or never open the history recording in the setting?',
+      'No history found in your device. Have you ever browse anything or never open the history recording in the setting?',
       name: 'emptyHistory',
       desc: '',
       args: [],
@@ -4121,10 +4121,10 @@ class S {
     );
   }
 
-  /// `No notification here.`
+  /// `You haven't recieved any notification.`
   String get emptyNotification {
     return Intl.message(
-      'No notification here.',
+      'You haven\'t recieved any notification.',
       name: 'emptyNotification',
       desc: '',
       args: [],

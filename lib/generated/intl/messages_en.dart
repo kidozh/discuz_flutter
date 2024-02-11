@@ -371,17 +371,17 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Insert smiley emoij"),
         "emptyForum": MessageLookupByLibrary.simpleMessage("No fourm here"),
         "emptyHistory": MessageLookupByLibrary.simpleMessage(
-            "No history is found in your device. Have you ever browse anything or never open the history recording in the setting?"),
+            "No history found in your device. Have you ever browse anything or never open the history recording in the setting?"),
         "emptyListDescription":
             MessageLookupByLibrary.simpleMessage("The content is empty"),
-        "emptyNotification":
-            MessageLookupByLibrary.simpleMessage("No notification here."),
+        "emptyNotification": MessageLookupByLibrary.simpleMessage(
+            "You haven\'t recieved any notification."),
         "emptyPosts": MessageLookupByLibrary.simpleMessage(
             "No post is currently listed."),
         "emptyScreenTitle":
             MessageLookupByLibrary.simpleMessage("The content here is empty."),
         "emptyThreads": MessageLookupByLibrary.simpleMessage(
-            "No thread is currently fetched."),
+            "No thread is posted here, look around?."),
         "emptyTrustHost": MessageLookupByLibrary.simpleMessage(
             "You haven\'t trusted any hosts."),
         "emptyUser": MessageLookupByLibrary.simpleMessage("No user here."),

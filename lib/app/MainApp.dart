@@ -452,6 +452,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     // need to check whether discuz exists in dataset
+    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    if(user == null && _bottomNavigationbarIndex >= 2){
+      _bottomNavigationbarIndex = 0;
+    }
 
     return PlatformScaffold(
       //iosContentPadding: true,
@@ -518,30 +522,47 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           },
         ),
       ),
-      body: [
-        DashboardScreen(
-          onSelectTid: onSelectTid,
-        ),
-        if (!Platform.isIOS)
-          ExploreWebsitePage(
-            key: ValueKey(0),
-            onSelectTid: this.onSelectTid,
-          ),
-        // should not exist any
-
-        DiscuzPortalScreen(
-          key: ValueKey(1),
-        ),
-
-        NotificationScreen(
-          //key: ValueKey(3),
-          onSelectTid: this.onSelectTid,
-        ),
-        // FavoriteThreadScreen(),
-        DiscuzMessageScreen(
-          key: ValueKey(4),
-        )
-      ][_bottomNavigationbarIndex],
+      body: Consumer<DiscuzAndUserNotifier>(
+        builder: (context, value, child){
+          List<Widget> bodyWidgetList = [
+            DashboardScreen(
+              onSelectTid: onSelectTid,
+            ),
+            if (!Platform.isIOS)
+              ExploreWebsitePage(
+                key: ValueKey(0),
+                onSelectTid: this.onSelectTid,
+              ),
+            // should not exist any
+            DiscuzPortalScreen(
+              key: ValueKey(1),
+            ),
+            NotificationScreen(
+              //key: ValueKey(3),
+              onSelectTid: this.onSelectTid,
+            ),
+            // FavoriteThreadScreen(),
+            DiscuzMessageScreen(
+              key: ValueKey(4),
+            )
+          ];
+          if(value.user == null){
+            print("Get btm index ${_bottomNavigationbarIndex}");
+            if(_bottomNavigationbarIndex < 2){
+              return bodyWidgetList[_bottomNavigationbarIndex];
+            }
+            else{
+              setState(() {
+                _bottomNavigationbarIndex = 0;
+              });
+              return bodyWidgetList[_bottomNavigationbarIndex];
+            }
+          }
+          else{
+            return bodyWidgetList[_bottomNavigationbarIndex];
+          }
+        },
+      ),
       bottomNavBar: PlatformNavBar(
         currentIndex: _bottomNavigationbarIndex,
         material: (context, _) => MaterialNavBarData(
@@ -549,7 +570,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             unselectedItemColor: Theme.of(context).unselectedWidgetColor,
             elevation: 0
         ),
-
         itemChanged: (index) {
           setState(() {
             VibrationUtils.vibrateWithClickIfPossible();
@@ -571,17 +591,14 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               icon: new Icon(AppPlatformIcons(context).discuzPortalOutlined),
               activeIcon: Icon(AppPlatformIcons(context).discuzPortalSolid),
               label: S.of(context).index),
-
+          if(user!= null)
           BottomNavigationBarItem(
               icon: new Icon(
                   AppPlatformIcons(context).discuzNotificationOutlined),
               activeIcon:
                   Icon(AppPlatformIcons(context).discuzNotificationSolid),
               label: S.of(context).notification),
-          // BottomNavigationBarItem(
-          //     icon: new Icon(Icons.stars_outlined),
-          //     activeIcon: Icon(Icons.stars),
-          //     label: S.of(context).favorites),
+          if(user!= null)
           BottomNavigationBarItem(
               icon: new Icon(AppPlatformIcons(context).discuzMessageOutlined),
               activeIcon: Icon(AppPlatformIcons(context).discuzMessageSolid),

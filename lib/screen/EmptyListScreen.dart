@@ -3,6 +3,7 @@
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class EmptyListScreen extends StatelessWidget{
   EmptyItemType emptyItemType = EmptyItemType.others;
@@ -11,6 +12,21 @@ class EmptyListScreen extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+
+    return Container(
+        padding: EdgeInsets.symmetric(vertical: 256, horizontal: 16),
+        alignment: Alignment.center,
+        child: Center(
+          child: Text(getTitleString(context),
+            style: TextStyle(
+              fontSize: 28,
+              color: Theme.of(context).disabledColor,
+
+            ),
+          ),
+        )
+    );
+
     return Container(
       padding: EdgeInsets.symmetric(vertical: 64, horizontal: 16),
       child: Center(
@@ -25,10 +41,11 @@ class EmptyListScreen extends StatelessWidget{
                   Container(
                     width: 50.0,
                     height: 50.0,
-                    child: getSpinkitWidget(context),
+                    child: Icon(Icons.abc),
+                    //child: getSpinkitWidget(context),
                   ),
                   Container(
-                    child: Text(getTitleString(context)),
+                    child: Text(getTitleString(context), style: Theme.of(context).textTheme.titleLarge,),
                   )
                 ],
               ),

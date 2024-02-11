@@ -23,6 +23,7 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumPartitionWidget.dart';
+import 'package:discuz_flutter/widget/LoadingStateWidget.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -61,6 +62,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
   DiscuzIndexResult result = DiscuzIndexResult();
   DiscuzError? _error;
   late EasyRefreshController _controller;
+
 
   // 控制结束
   bool _enableControlFinish = false;
@@ -136,7 +138,11 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       return IndicatorResult.noMore;
 
     }).catchError((onError) {
-
+      if(mounted){
+        setState(() {
+          _isFirstlyRefreshing = false;
+        });
+      }
       _controller.finishLoad(IndicatorResult.fail);
       switch (onError.runtimeType) {
         case DioException:
@@ -182,6 +188,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
                 _controller.callRefresh();
               }, errorType: _error!.errorType,
               ),
+
               Expanded(
                   child: getEasyRefreshWidget(discuzAndUser.discuz!,discuzAndUser.user)
               )
@@ -237,7 +244,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
 
           if(result.discuzIndexVariables.forumPartitionList.isEmpty)
             SliverList(delegate: SliverChildBuilderDelegate((context, index){
-              return EmptyListScreen(EmptyItemType.forum);
+              return _isFirstlyRefreshing? LoadingStateWidget(): EmptyListScreen(EmptyItemType.forum);
             }, childCount: 1)),
           SliverList(
             delegate: SliverChildBuilderDelegate(

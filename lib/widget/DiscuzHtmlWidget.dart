@@ -124,6 +124,9 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 padding: HtmlPaddings.zero,
                 margin: Margins.zero
             ),
+            "*": Style(
+              fontSize: defaultTextStyle?.fontSize == null? FontSize.medium:FontSize(defaultTextStyle!.fontSize!*scalingParameter),
+            ),
             ".reply_wrap" :Style(
               backgroundColor: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade200: Colors.grey.shade600,
               padding: HtmlPaddings.all(4.0),
