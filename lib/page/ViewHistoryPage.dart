@@ -75,7 +75,7 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
   }
 
   void _showDeleteAllDialog(BuildContext context){
-    showDialog(context: context, builder: (context) {
+    showPlatformDialog(context: context, builder: (context) {
       return PlatformAlertDialog(
         title: Text(S.of(context).clearAllViewHistories),
         content: Text(S.of(context).deleteViewHistoryWarnContent),
@@ -195,61 +195,67 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
                   return Dismissible(
                     background: Container(color: Colors.pinkAccent),
                     key: Key(viewHistory.key.toString()),
+
                     child: InkWell(
-                      child: Card(
-                        elevation: isCupertino(context)? 0: 4.0,
-                        child: Column(
-                          children: [
-                            ListTile(
-                              leading: Container(
-                                width: 48,
-                                child: viewHistory.type == "thread" ?
-                                getUserAvatar(viewHistory.authorId, viewHistory.author) :
-                                CircleAvatar(
-                                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                                  child: Icon(
-                                    AppPlatformIcons(context).forumOutlined,
-                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                    size: 24,
+                      child: PlatformWidgetBuilder(
+                        material: (context, child, platform){
+                          return Card(
+                              elevation: isCupertino(context)? 0: 4.0,
+                              child: child
+                          );
+                        },
+                        cupertino: (context, child, platform){
+                          return Column(
+                              children: [
+                                if(child!=null)
+                                  child!,
+                                Divider()
+                          ]);
+                        },
+                        child: ListTile(
+                          leading: Container(
+                            width: 48,
+                            child: viewHistory.type == "thread" ?
+                            getUserAvatar(viewHistory.authorId, viewHistory.author) :
+                            CircleAvatar(
+                              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                              child: Icon(
+                                AppPlatformIcons(context).forumOutlined,
+                                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                size: 24,
+                              ),
+                            )
+                            ,
+                          ),
+                          title: Text(viewHistory.title),
+                          subtitle: RichText(
+                            overflow: TextOverflow.ellipsis,
+                            text: TextSpan(
+                              text: "",
+                              style: DefaultTextStyle.of(context).style,
+                              children: [
+                                if(viewHistory.author.isNotEmpty)
+                                  TextSpan(
+                                      text: viewHistory.author,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)
                                   ),
-                                )
-                                ,
-                              ),
-                              title: Text(viewHistory.title),
-                              subtitle: RichText(
-                                overflow: TextOverflow.ellipsis,
-                                text: TextSpan(
-                                  text: "",
-                                  style: DefaultTextStyle.of(context).style,
-                                  children: [
-                                    if(viewHistory.author.isNotEmpty)
-                                    TextSpan(
-                                        text: viewHistory.author,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold)
-                                    ),
-                                    if(viewHistory.author.isNotEmpty)
-                                    TextSpan(
-                                        text: ' · ',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold)
-                                    ),
+                                if(viewHistory.author.isNotEmpty)
+                                  TextSpan(
+                                      text: ' · ',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)
+                                  ),
 
-                                    TextSpan(
-                                          text:  TimeDisplayUtils.getLocaledTimeDisplay(context,viewHistory.updateTime),
-                                          style: TextStyle(
-                                              color: Theme.of(context).colorScheme.primary,)
-                                    ),
-                                  ],
+                                TextSpan(
+                                    text:  TimeDisplayUtils.getLocaledTimeDisplay(context,viewHistory.updateTime),
+                                    style: TextStyle(
+                                      color: Theme.of(context).colorScheme.primary,)
                                 ),
-                              ),
+                              ],
                             ),
-                            if(isCupertino(context))
-                              Divider()
-                          ],
+                          ),
                         ),
-
-
                       ),
                       onTap: () async{
                         VibrationUtils.vibrateWithClickIfPossible();

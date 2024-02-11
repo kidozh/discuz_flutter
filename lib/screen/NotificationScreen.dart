@@ -15,6 +15,7 @@ import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzNotificationWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
+import 'package:discuz_flutter/widget/LoadingStateWidget.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -53,6 +54,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
   DiscuzError? _error;
   int _page = 1;
   List<DiscuzNotification> _noteList = [];
+  bool _isFirstLoading = true;
 
   late EasyRefreshController _controller;
 
@@ -87,6 +89,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
 
     return await _client.userNotificationResult(_page).then((value) async {
       setState(() {
+        _isFirstLoading = false;
         result = value;
         _error = null;
         if (_page == 1) {
@@ -138,6 +141,11 @@ class _NotificationState extends State<NotificationStatefulWidget> {
         return IndicatorResult.success;
       }
     }).catchError((onError) {
+      if(mounted){
+        setState(() {
+          _isFirstLoading = false;
+        });
+      }
       switch (onError.runtimeType) {
         case DioException:
           {
@@ -209,7 +217,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
           )),
           if(_noteList.isEmpty)
             SliverList(delegate: SliverChildBuilderDelegate(
-                    (context, index)=> EmptyListScreen(EmptyItemType.notification),
+                    (context, index)=> _isFirstLoading? LoadingStateWidget(hintText: S.of(context).notification,): EmptyListScreen(EmptyItemType.notification),
                 childCount: 1
             )),
           SliverList(delegate: SliverChildBuilderDelegate(

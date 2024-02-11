@@ -66,7 +66,9 @@ class ForumCardWidget extends StatelessWidget {
                 platformPageRoute(
                     context: context,
                     builder: (context) => DisplayForumTwoPanePage(
-                        _discuz, _user, _forum.getFid())));
+                        _discuz, _user, _forum.getFid(),
+                        forumTitle: _forum.name,
+                    )));
           },
         ));
   }

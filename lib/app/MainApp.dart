@@ -398,6 +398,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       await showPlatformModalSheet(
           context: context, //BuildContext对象
           builder: (BuildContext context) {
+
             return SimpleDialog(
                 title: Text(S.of(context).chooseDiscuz), children: widgetList);
           });
@@ -406,6 +407,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           context: context, //BuildContext对象
           builder: (BuildContext context) {
             return SimpleDialog(
+                backgroundColor: Theme.of(context).colorScheme.background,
                 title: Text(S.of(context).chooseDiscuz), children: widgetList);
           });
     }

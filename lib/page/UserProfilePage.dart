@@ -38,6 +38,7 @@ class UserProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("get uid profile in page: ${uid} ${username}");
     return UserProfileStatefulWidget(discuz, user, uid, username: this.username);
   }
 }
@@ -52,6 +53,7 @@ class UserProfileStatefulWidget extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
+    print("get uid profile in state: ${uid} ${username}");
     return UserProfileState(discuz, user, uid, username: this.username);
   }
 }
@@ -73,7 +75,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
     setState(() {
       isUpdating = true;
     });
-    print("get uid profile : ${uid}");
+    print("get uid profile : ${uid} ${username}");
     User? user =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     var dio = await NetworkUtils.getDioWithPersistCookieJar(user);
@@ -115,7 +117,11 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
         iosContentPadding: true,
         iosContentBottomPadding: true,
         appBar: PlatformAppBar(title: Text(S.of(context).userProfile)),
-        body: isUpdating? LoadingStateWidget(hintText: this.username,): _discuzError == null ?BlankScreen(): ErrorCard(_discuzError!, () {
+        body: isUpdating? Container(
+          padding: EdgeInsets.all(16),
+          alignment: Alignment.center,
+          child: LoadingStateWidget(hintText: this.username,),
+        ): _discuzError == null ? BlankScreen(): ErrorCard(_discuzError!, () {
           VibrationUtils.vibrateWithClickIfPossible();
           _loadUserProfile();
         }),
@@ -762,11 +768,9 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
 
                                           ),
                                           title: medal.name,
-                                          titleColor: Theme.of(context).primaryColor,
+                                          titleColor: Theme.of(context).colorScheme.primary,
                                           describe: medal.description,
-                                          describeColor: Theme.of(context).brightness == Brightness.light
-                                              ? Colors.black45
-                                              : Colors.white60,
+                                          describeColor: Theme.of(context).disabledColor,
                                         )
                                     ],
                                   ),

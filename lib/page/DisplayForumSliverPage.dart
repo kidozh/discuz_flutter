@@ -50,13 +50,14 @@ class DisplayForumSliverPage extends StatelessWidget {
   late final Discuz discuz;
   late final User? user;
   int fid = 0;
+  String? forumTitle = null;
 
-  DisplayForumSliverPage(this.discuz, this.user, this.fid);
+  DisplayForumSliverPage(this.discuz, this.user, this.fid, {this.forumTitle});
 
   @override
   Widget build(BuildContext context) {
     // try ios
-    return DisplayForumTwoPanePage(discuz, user, fid);
+    return DisplayForumTwoPanePage(discuz, user, fid, forumTitle:forumTitle);
   }
 }
 
@@ -65,13 +66,14 @@ class DisplayForumAltSliverPage extends StatelessWidget {
   late final User? user;
   int fid = 0;
   final ValueChanged<int>? onSelectTid;
+  String? forumTitle = null;
 
-  DisplayForumAltSliverPage(this.discuz, this.user, this.fid, {this.onSelectTid});
+  DisplayForumAltSliverPage(this.discuz, this.user, this.fid, {this.onSelectTid, this.forumTitle});
 
   @override
   Widget build(BuildContext context) {
     // try ios
-    return DisplayForumSliverStatefulWidget(discuz, user, fid, onSelectTid: this.onSelectTid,);
+    return DisplayForumSliverStatefulWidget(discuz, user, fid, onSelectTid: this.onSelectTid, forumTitle:this.forumTitle);
   }
 }
 
@@ -81,12 +83,13 @@ class DisplayForumSliverStatefulWidget extends StatefulWidget {
   int fid = 0;
 
   final ValueChanged<int>? onSelectTid;
+  String? forumTitle = null;
 
-  DisplayForumSliverStatefulWidget(this.discuz, this.user, this.fid, {this.onSelectTid});
+  DisplayForumSliverStatefulWidget(this.discuz, this.user, this.fid, {this.onSelectTid, this.forumTitle});
 
   @override
   _DisplayForumSliverState createState() {
-    return _DisplayForumSliverState(this.discuz, this.user, this.fid, onSelectTid: this.onSelectTid);
+    return _DisplayForumSliverState(this.discuz, this.user, this.fid, onSelectTid: this.onSelectTid, forumTitle:this.forumTitle);
   }
 }
 
@@ -104,8 +107,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   bool historySaved = false;
 
   final ValueChanged<int>? onSelectTid;
+  String? forumTitle = null;
 
-  _DisplayForumSliverState(this.discuz, this.user, this.fid, {required this.onSelectTid});
+  _DisplayForumSliverState(this.discuz, this.user, this.fid, {required this.onSelectTid, this.forumTitle});
 
   late EasyRefreshController _controller;
   late Dio dio;
@@ -524,7 +528,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
             if(_forumThreadList.isEmpty)
               SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
-                  return _isFirstLoading? LoadingStateWidget() : EmptyListScreen(EmptyItemType.thread);
+                  return _isFirstLoading? LoadingStateWidget(hintText: forumTitle,) : EmptyListScreen(EmptyItemType.thread);
                 }, childCount: 1),
 
               ),
@@ -1073,13 +1077,18 @@ class DisplayForumTwoPanePage extends StatelessWidget{
   final Discuz discuz;
   final User? user;
   final int fid;
+  String? forumTitle = null;
 
-  const DisplayForumTwoPanePage(this.discuz, this.user, this.fid);
+  DisplayForumTwoPanePage(this.discuz, this.user, this.fid, {this.forumTitle});
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints){
-      return DisplayForumTwoPaneStatefulWidget(discuz: discuz, fid: fid, restorationId: "DisplayForumFid", type: TwoPaneUtils.getTwoPaneType(constraints));
+      return DisplayForumTwoPaneStatefulWidget(discuz: discuz, fid: fid,
+          restorationId: "DisplayForumFid",
+          type: TwoPaneUtils.getTwoPaneType(constraints),
+          forumTitle: this.forumTitle,
+      );
     });
 
   }
@@ -1092,19 +1101,21 @@ class DisplayForumTwoPaneStatefulWidget extends StatefulWidget{
   final Discuz discuz;
   final User? user;
   final int fid;
+  String? forumTitle = null;
 
 
-  const DisplayForumTwoPaneStatefulWidget({
+  DisplayForumTwoPaneStatefulWidget({
     required this.discuz,
     this.user,
     required this.fid,
     required this.restorationId,
     required this.type,
+    this.forumTitle
   });
 
   @override
   State<StatefulWidget> createState() {
-    return DisplayForumTwoPaneState(this.discuz, this.user, this.fid);
+    return DisplayForumTwoPaneState(this.discuz, this.user, this.fid, forumTitle: this.forumTitle);
   }
 }
 
@@ -1114,8 +1125,9 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
   User? user;
   int fid;
   int tid = 0;
+  String? forumTitle = null;
 
-  DisplayForumTwoPaneState(this.discuz, this.user, this.fid){
+  DisplayForumTwoPaneState(this.discuz, this.user, this.fid, {this.forumTitle}){
     _currentFid = RestorableInt(fid);
   }
 
@@ -1145,7 +1157,7 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
     if (widget.type == TwoPaneType.smallScreen){
       panePriority = _currentTid.value == 0? TwoPanePriority.start : TwoPanePriority.end;
       return DisplayForumAltSliverPage(
-        discuz, user, fid,
+        discuz, user, fid, forumTitle: forumTitle,
       );
     }
 
@@ -1179,9 +1191,9 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget> 
                     });
                     log("Changed current tid ${_currentTid.value}");
                   }
-
-
                 },
+                forumTitle: this.forumTitle,
+
               ),
 
               endPane: _currentTid.value == 0 ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText) :ViewThreadSliverPage(
