@@ -257,7 +257,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                       text: TextSpan(
                         text: " ",
                         style: TextStyle(
-                          fontWeight: viewed? FontWeight.w200:FontWeight.w300,
+                          fontWeight: viewed? FontWeight.w300:FontWeight.normal,
                           color: selected? Theme.of(context).colorScheme.onPrimaryContainer:viewed? Theme.of(context).unselectedWidgetColor: Theme.of(context).textTheme.bodySmall?.color,
                         ),
                         children: [

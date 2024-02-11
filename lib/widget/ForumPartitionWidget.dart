@@ -38,7 +38,7 @@ class ForumPartitionWidget extends StatelessWidget{
               title: Text(_forumPartition.name,
                 style: TextStyle(
                     color: Theme.of(context).colorScheme.primary,
-                    fontWeight: isCupertino(context)?FontWeight.w200: FontWeight.normal,
+                    fontWeight: isCupertino(context)?FontWeight.w300: FontWeight.normal,
                 ),
               ),
             ),

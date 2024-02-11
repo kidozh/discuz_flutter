@@ -30,6 +30,7 @@ class LoadingStateWidget extends StatelessWidget{
               fontSize: 24,
               fontWeight: Theme.of(context).brightness == Brightness.dark? FontWeight.normal: FontWeight.w300
             ),
+              textAlign: TextAlign.center,
             )
 
 

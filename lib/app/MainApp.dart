@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:discuz_flutter/dao/DiscuzDao.dart';
 import 'package:discuz_flutter/dao/UserDao.dart';
@@ -122,14 +123,53 @@ class MyApp extends StatelessWidget {
       builder: (context, themeColorEntity, _) {
         ThemeMode? themeMode = null;
 
+        Typography typography = Typography.material2021();
+        String platformName = Provider.of<ThemeNotifierProvider>(context, listen: false).platformName;
+        TargetPlatform targetPlatform = TargetPlatform.android;
+
+        TypeSettingNotifierProvider typeSetting = Provider.of<TypeSettingNotifierProvider>(context, listen:false);
+
+        switch(platformName){
+          case "ios":{
+            targetPlatform = TargetPlatform.iOS;
+            break;
+          }
+          case "android":{
+            targetPlatform = TargetPlatform.android;
+            break;
+          }
+          case "":{
+            targetPlatform = Theme.of(context).platform;
+          }
+        }
+
+        switch (typeSetting.typographyTheme){
+          case "material2014":{
+            typography = Typography.material2014(platform: targetPlatform);
+            break;
+          }
+          case "material2018":{
+            typography = Typography.material2018(platform: targetPlatform);
+            break;
+          }
+          case "material2021":{
+            typography = Typography.material2021(platform: targetPlatform);
+            break;
+          }
+          default:{
+            typography = Theme.of(context).typography;
+          }
+        }
+
         final materialThemeDataLight = ThemeData.from(
             colorScheme: ColorScheme.fromSeed(
                 seedColor: themeColorEntity.themeColor,
               brightness: Brightness.light,
-              background: Colors.white
+              background: Colors.white,
             )//.harmonized()
             ,
             useMaterial3: themeColorEntity.useMaterial3,
+            textTheme: typography.black.useSystemChineseFont(),
         );
         final materialThemeDataDark = ThemeData.from(
             colorScheme: ColorScheme.fromSeed(
@@ -138,7 +178,8 @@ class MyApp extends StatelessWidget {
               background: Colors.black54
             )//.harmonized()
             ,
-            useMaterial3: themeColorEntity.useMaterial3
+            useMaterial3: themeColorEntity.useMaterial3,
+            textTheme: typography.white.useSystemChineseFont(),
         );
         const darkDefaultCupertinoTheme =
             CupertinoThemeData(brightness: Brightness.dark);
