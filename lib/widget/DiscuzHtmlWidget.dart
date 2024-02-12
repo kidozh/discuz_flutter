@@ -102,7 +102,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
           }
         }
 
-        TextTheme textTheme = typography.dense;
+        TextTheme textTheme = typography.dense.useSystemChineseFont();
         TextStyle? defaultTextStyle = textTheme.bodyLarge;
         double? themeFontSize = defaultTextStyle?.fontSize == null? 14 : defaultTextStyle?.fontSize!;
 
@@ -129,7 +129,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
             ),
             "font": Style(
               backgroundColor: Theme.of(context).brightness == Brightness.dark? Colors.transparent: null,
-              color: Theme.of(context).brightness == Brightness.dark? defaultTextStyle?.color: null,
+              color: Theme.of(context).brightness == Brightness.dark? Theme.of(context).textTheme.bodySmall?.color: null,
               fontSize: defaultTextStyle?.fontSize == null? FontSize.medium:FontSize(defaultTextStyle!.fontSize!*scalingParameter),
               fontWeight: defaultTextStyle?.fontWeight,
             ),
