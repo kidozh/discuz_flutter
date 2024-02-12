@@ -3,6 +3,7 @@ import 'dart:core';
 import 'dart:developer';
 
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
+import 'package:discuz_flutter/converter/ThreadTypesConverter.dart';
 import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -136,6 +137,7 @@ class ThreadType{
 
 
   @JsonKey(name:"types",defaultValue: {})
+  @ThreadTypeConverter()
   Map<String,String> idNameMap = {};
 
   List<ThreadTypeInfo> getThreadTypeList(){

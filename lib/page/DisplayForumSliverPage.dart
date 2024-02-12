@@ -316,15 +316,16 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       //log("set successful result ${_displayForumResult} ${_forumThreadList.length}");
     }).catchError((onError) {
       if(!mounted){
-        setState(() {
-          _isFirstLoading = false;
-        });
+
         return IndicatorResult.fail;
       }
       VibrationUtils.vibrateErrorIfPossible();
       //log(onError);
       EasyLoading.showError('${onError}');
       _controller.finishRefresh();
+      setState(() {
+        _isFirstLoading = false;
+      });
 
 
       switch (onError.runtimeType) {
@@ -333,6 +334,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
             DioException dioError = onError;
             log("${dioError.message} >-> ${dioError.type}");
             EasyLoading.showError("${dioError.message} (${dioError})");
+            print(dioError.stackTrace);
             setState((){
               _error =
                   DiscuzError(dioError.message==null?S.of(context).error: dioError.message!,dioError.type.name, dioError: dioError);
@@ -348,6 +350,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
             });
           }
       }
+      print(onError.stackTrace);
 
       return IndicatorResult.fail;
 

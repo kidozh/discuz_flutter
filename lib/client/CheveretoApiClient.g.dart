@@ -25,7 +25,7 @@ class _CheveretoApiClient implements CheveretoApiClient {
     String apiToken,
     String base64String,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'X-API-Key': apiToken};
     _headers.removeWhere((k, v) => v == null);

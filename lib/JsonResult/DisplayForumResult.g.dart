@@ -129,10 +129,9 @@ ThreadType _$ThreadTypeFromJson(Map<String, dynamic> json) => ThreadType()
   ..required = json['required'] as String
   ..listable = json['listable'] as String
   ..prefix = json['prefix'] as String? ?? ''
-  ..idNameMap = (json['types'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, e as String),
-      ) ??
-      {}
+  ..idNameMap = json['types'] == null
+      ? {}
+      : const ThreadTypeConverter().fromJson(json['types'])
   ..idIconMap = (json['icons'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ) ??
@@ -147,7 +146,7 @@ Map<String, dynamic> _$ThreadTypeToJson(ThreadType instance) =>
       'required': instance.required,
       'listable': instance.listable,
       'prefix': instance.prefix,
-      'types': instance.idNameMap,
+      'types': const ThreadTypeConverter().toJson(instance.idNameMap),
       'icons': instance.idIconMap,
       'moderators': instance.idModeratorMap,
     };

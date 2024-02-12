@@ -25,13 +25,13 @@ class _PushServiceClient implements PushServiceClient {
     String host,
     String token,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'host': host,
       r'token': token,
     };
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<SubscribeChannelResult>(Options(
       method: 'GET',
@@ -62,7 +62,7 @@ class _PushServiceClient implements PushServiceClient {
     String packageId,
     String pushPlatform,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'host': host,
       r'token': token,
@@ -72,7 +72,7 @@ class _PushServiceClient implements PushServiceClient {
       r'platform': pushPlatform,
     };
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<SubscribeChannelResult>(Options(
       method: 'POST',
@@ -102,7 +102,7 @@ class _PushServiceClient implements PushServiceClient {
     String packageId,
     String pushPlatform,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'host': host,
       r'token': token,
@@ -111,7 +111,7 @@ class _PushServiceClient implements PushServiceClient {
       r'platform': pushPlatform,
     };
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<SubscribeChannelResult>(Options(
       method: 'PUT',
@@ -141,7 +141,7 @@ class _PushServiceClient implements PushServiceClient {
     String packageId,
     String pushPlatform,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'host': host,
       r'token': token,
@@ -150,7 +150,7 @@ class _PushServiceClient implements PushServiceClient {
       r'platform': pushPlatform,
     };
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<SubscribeChannelResult>(Options(
       method: 'DELETE',
@@ -175,10 +175,10 @@ class _PushServiceClient implements PushServiceClient {
   @override
   Future<ThreadSlideShowResult> getThreadSlideShowResultByHost(
       String host) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'host': host};
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<ThreadSlideShowResult>(Options(
       method: 'GET',

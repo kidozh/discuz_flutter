@@ -22,11 +22,11 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<CheckResult> getCheckResult() async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'Content-Type': 'application/json'};
     _headers.removeWhere((k, v) => v == null);
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<CheckResult>(Options(
       method: 'GET',
@@ -51,11 +51,11 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<String> getCheckResultInString() async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'Content-Type': 'application/json'};
     _headers.removeWhere((k, v) => v == null);
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
       method: 'GET',
       headers: _headers,
@@ -85,7 +85,7 @@ class _MobileApiClient implements MobileApiClient {
     String captchaType,
     String verification,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
@@ -125,7 +125,7 @@ class _MobileApiClient implements MobileApiClient {
     String captchaType,
     String verification,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
@@ -158,10 +158,10 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<DiscuzIndexResult> getDiscuzPortalResult() async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<DiscuzIndexResult>(Options(
       method: 'GET',
@@ -185,10 +185,10 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<String> getDiscuzPortalRaw() async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
       method: 'GET',
       headers: _headers,
@@ -215,14 +215,14 @@ class _MobileApiClient implements MobileApiClient {
     int page,
     Map<String, dynamic> queries,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'fid': fid,
       r'page': page,
     };
     queryParameters.addAll(queries);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<DisplayForumResult>(Options(
       method: 'GET',
@@ -250,14 +250,14 @@ class _MobileApiClient implements MobileApiClient {
     int page,
     Map<String, dynamic> queries,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'fid': fid,
       r'page': page,
     };
     queryParameters.addAll(queries);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
       method: 'GET',
       headers: _headers,
@@ -284,14 +284,14 @@ class _MobileApiClient implements MobileApiClient {
     int page,
     Map<String, dynamic> queries,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'tid': tid,
       r'page': page,
     };
     queryParameters.addAll(queries);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<ViewThreadResult>(Options(
       method: 'GET',
@@ -319,14 +319,14 @@ class _MobileApiClient implements MobileApiClient {
     int page,
     Map<String, dynamic> queries,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'tid': tid,
       r'page': page,
     };
     queryParameters.addAll(queries);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
       method: 'GET',
       headers: _headers,
@@ -358,7 +358,7 @@ class _MobileApiClient implements MobileApiClient {
     String verification,
     Map<String, dynamic> queries,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.addAll(queries);
     final _headers = <String, dynamic>{};
@@ -406,7 +406,7 @@ class _MobileApiClient implements MobileApiClient {
     String verification,
     Map<String, dynamic> queries,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'repquote': replyPId};
     queryParameters.addAll(queries);
     queryParameters.removeWhere((k, v) => v == null);
@@ -447,10 +447,10 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<String> userNotificationRaw(int page) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
       method: 'GET',
       headers: _headers,
@@ -473,10 +473,10 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<UserDiscuzNotificationResult> userNotificationResult(int page) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<UserDiscuzNotificationResult>(Options(
       method: 'GET',
@@ -500,10 +500,10 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<String> hotThreadRaw(int page) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
       method: 'GET',
       headers: _headers,
@@ -526,10 +526,10 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<HotThreadResult> hotThreadResult(int page) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<HotThreadResult>(Options(
       method: 'GET',
@@ -553,10 +553,10 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<CaptchaResult> captchaResult(String type) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'type': type};
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<CaptchaResult>(Options(
       method: 'GET',
@@ -585,7 +585,7 @@ class _MobileApiClient implements MobileApiClient {
     String formHash,
     List<String> checkedOptionId,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'fid': fid,
       r'tid': tid,
@@ -624,7 +624,7 @@ class _MobileApiClient implements MobileApiClient {
     String formHash,
     List<int> checkedOptionId,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'fid': fid,
       r'tid': tid,
@@ -657,10 +657,10 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<CheckLoginResult> checkLoginResult() async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<CheckLoginResult>(Options(
       method: 'GET',
@@ -684,10 +684,10 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<UserProfileResult> userProfileResult(int uid) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'uid': uid};
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<UserProfileResult>(Options(
       method: 'GET',
@@ -711,10 +711,10 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<String> userProfileResultRaw(int uid) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'uid': uid};
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
       method: 'GET',
       headers: _headers,
@@ -737,10 +737,10 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<SmileyResult> smileyResult() async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<SmileyResult>(Options(
       method: 'GET',
@@ -765,10 +765,10 @@ class _MobileApiClient implements MobileApiClient {
   @override
   Future<PrivateMessagePortalResult> privateMessagePortalResult(
       int page) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<PrivateMessagePortalResult>(Options(
       method: 'GET',
@@ -795,13 +795,13 @@ class _MobileApiClient implements MobileApiClient {
     int toUid,
     int page,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'touid': toUid,
       r'page': page,
     };
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<PrivateMessageDetailResult>(Options(
       method: 'GET',
@@ -829,7 +829,7 @@ class _MobileApiClient implements MobileApiClient {
     String message,
     int toUid,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
@@ -861,10 +861,10 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<PublicMessagePortalResult> publicMessagePortalResult(int page) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<PublicMessagePortalResult>(Options(
       method: 'GET',
@@ -888,10 +888,10 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<FavoriteThreadResult> favoriteThreadResult(int page) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<FavoriteThreadResult>(Options(
       method: 'GET',
@@ -919,7 +919,7 @@ class _MobileApiClient implements MobileApiClient {
     String uploadHash,
     File file,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = FormData();
@@ -964,14 +964,14 @@ class _MobileApiClient implements MobileApiClient {
     int? fid,
     int? tid,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'fid': fid,
       r'tid': tid,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<CheckPostResult>(Options(
       method: 'GET',
@@ -1001,7 +1001,7 @@ class _MobileApiClient implements MobileApiClient {
     String rtype,
     int rid,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
@@ -1037,7 +1037,7 @@ class _MobileApiClient implements MobileApiClient {
     String formhash,
     int tid,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
@@ -1071,7 +1071,7 @@ class _MobileApiClient implements MobileApiClient {
     String formhash,
     int favid,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
@@ -1102,10 +1102,10 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<FavoriteForumResult> favoriteForumResult(int page) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'page': page};
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<FavoriteForumResult>(Options(
       method: 'GET',
@@ -1132,7 +1132,7 @@ class _MobileApiClient implements MobileApiClient {
     String formhash,
     int fid,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
@@ -1166,7 +1166,7 @@ class _MobileApiClient implements MobileApiClient {
     String formhash,
     int favid,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
@@ -1200,13 +1200,13 @@ class _MobileApiClient implements MobileApiClient {
     String fids,
     int start,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'fids': fids,
       r'start': start,
     };
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<NewThreadResult>(Options(
       method: 'GET',
@@ -1230,10 +1230,10 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<PushTokenListResult> getPushTokenListResult() async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final Map<String, dynamic>? _data = null;
+    const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<PushTokenListResult>(Options(
       method: 'GET',
@@ -1263,7 +1263,7 @@ class _MobileApiClient implements MobileApiClient {
     String packageId,
     String pushChannel,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
@@ -1308,7 +1308,7 @@ class _MobileApiClient implements MobileApiClient {
     List<String> attachAid,
     Map<String, dynamic> formMap,
   ) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.addAll(formMap);
     final _headers = <String, dynamic>{};
@@ -1347,7 +1347,7 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<ApiResult> mobileSignResult(String formhash) async {
-    const _extra = <String, dynamic>{};
+    final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {'hash': formhash};
