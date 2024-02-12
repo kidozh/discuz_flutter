@@ -513,13 +513,17 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       elevation: 4,
                       child: ListTile(
                         title: Text(subForum.name, style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer,)),
-                        leading: Icon(AppPlatformIcons(context).forumSolid, color: Theme.of(context).colorScheme.onSecondaryContainer),
+                        leading: Icon(AppPlatformIcons(context).forumOutlined, color: Theme.of(context).colorScheme.onSecondaryContainer),
                         trailing: Icon(AppPlatformIcons(context).goToSolid, color: Theme.of(context).colorScheme.onSecondaryContainer),
                         onTap: () async {
                           VibrationUtils.vibrateWithClickIfPossible();
                           await Navigator.push(
                               context,
-                              platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz, user, subForum.fid))
+                              platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz,
+                                  user,
+                                  subForum.fid,
+                                  forumTitle: subForum.name,
+                              ))
                           );
                         },
                       ),

@@ -61,7 +61,7 @@ class ForumCardWidget extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: _forum.description.length != 0
-              ? Text(_forum.description, maxLines: 2)
+              ? Text(_forum.description, maxLines: 2, overflow: TextOverflow.ellipsis,)
               : null,
           onTap: () async {
             VibrationUtils.vibrateWithClickIfPossible();

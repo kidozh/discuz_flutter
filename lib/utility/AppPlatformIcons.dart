@@ -87,6 +87,8 @@ class AppPlatformIcons{
 
   IconData get forumSolid => isMaterial(context)? Icons.forum : CupertinoIcons.chat_bubble_2_fill;
 
+  IconData get forumOutlined => isMaterial(context)? Icons.forum_outlined : CupertinoIcons.chat_bubble_2;
+
   IconData get formatSizeSolid => isMaterial(context)? Icons.format_size : CupertinoIcons.textformat_size;
 
   IconData get manageDiscuzSolid => isMaterial(context)? Icons.account_tree : CupertinoIcons.rectangle_fill_on_rectangle_angled_fill;
@@ -104,8 +106,6 @@ class AppPlatformIcons{
   IconData get subscribeChannelSolid => isMaterial(context)? Icons.subscriptions : CupertinoIcons.news_solid;
 
   IconData get notificationSolid => isMaterial(context)? Icons.notifications : CupertinoIcons.bell_fill;
-
-  IconData get forumOutlined => isMaterial(context)? Icons.forum_outlined : CupertinoIcons.chat_bubble_2;
 
   IconData get authenticationSecureSolid => isMaterial(context)? Icons.lock : CupertinoIcons.lock_shield_fill;
 
