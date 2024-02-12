@@ -543,7 +543,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       ForumThreadWidget(discuz, user, _forumThreadList[index],
-                          _displayForumResult.discuzIndexVariables.threadType, onSelectTid),
+                          _displayForumResult.discuzIndexVariables.threadType, onSelectTid,
+                        afterTid: index < _forumThreadList.length-1 ? _forumThreadList[index +1].getTid() : null,
+                      ),
                       if(index % 15 == 0 && index != 0)
                         AppBannerAdWidget(),
                     ],

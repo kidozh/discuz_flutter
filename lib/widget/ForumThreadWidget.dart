@@ -35,14 +35,18 @@ class ForumThreadWidget extends StatelessWidget{
   User? _user;
   ThreadType? threadType;
   final ValueChanged<int>? onSelectTid;
+  int? afterTid = null;
 
-  ForumThreadWidget(this._discuz,this._user,this._forumThread, this.threadType, this.onSelectTid);
+  ForumThreadWidget(this._discuz,this._user,this._forumThread, this.threadType, this.onSelectTid, {this.afterTid});
 
 
 
   @override
   Widget build(BuildContext context) {
-    return ForumThreadStatefulWidget(this._discuz,this._user,this._forumThread, this.threadType, onSelectTid);
+    return ForumThreadStatefulWidget(this._discuz,
+      this._user,this._forumThread,
+      this.threadType, onSelectTid,
+      afterTid: afterTid,);
   }
 
 
@@ -54,13 +58,13 @@ class ForumThreadStatefulWidget extends StatefulWidget{
   User? _user;
   ThreadType? threadType;
   ValueChanged<int>? onSelectTid;
+  int? afterTid = null;
 
-  ForumThreadStatefulWidget(this._discuz,this._user,this._forumThread, this.threadType, this.onSelectTid);
+  ForumThreadStatefulWidget(this._discuz,this._user,this._forumThread, this.threadType, this.onSelectTid, {this.afterTid});
 
   @override
   ForumThreadState createState() {
-
-    return ForumThreadState(this._discuz,this._user,this._forumThread, this.threadType, this.onSelectTid);
+    return ForumThreadState(this._discuz,this._user,this._forumThread, this.threadType, this.onSelectTid, afterTid: afterTid);
   }
 
 }
@@ -72,10 +76,13 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
   User? _user;
   ThreadType? threadType;
   bool read = false;
+  int? afterTid = null;
 
   final ValueChanged<int>? onSelectTid;
 
-  ForumThreadState(this._discuz,this._user,this._forumThread, this.threadType, this.onSelectTid);
+  ForumThreadState(this._discuz,this._user,this._forumThread, this.threadType, this.onSelectTid, {this.afterTid}){
+    log("Last selected during forum in init thread state ${_forumThread.tid} ${afterTid}");
+  }
 
   @override
   void initState() {
@@ -128,10 +135,11 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
   }
 
   Widget getForumThreadCard(bool viewed){
-    Brightness brightness = MediaQuery.of(context).platformBrightness;
     return Consumer<SelectedTidNotifierProvider>(
       builder: (context, selectedTid, child){
         bool selected = selectedTid.tid == _forumThread.getTid();
+        bool lastSelected = selectedTid.tid == afterTid;
+        log("Select changed ${_forumThread.tid} ${selected} ${afterTid} ${lastSelected}");
         return InkWell(
           child: PlatformWidgetBuilder(
               material: (context, child, platform) => Card(
@@ -159,7 +167,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                       //color: ,
                       child: child,
                     ),
-                  if(!selected)
+                  if(!selected && !lastSelected)
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: Divider(),

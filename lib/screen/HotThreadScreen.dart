@@ -20,6 +20,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/DiscuzNotificationProvider.dart';
+import '../provider/SelectedTidNotifierProvider.dart';
 import '../utility/EasyRefreshUtils.dart';
 import '../utility/MobileSignUtils.dart';
 import '../widget/AppBannerAdWidget.dart';
@@ -237,7 +238,9 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
                   (context, index) => Column(
                         children: [
                           if(index == 0) ThreadSlideShowCarouselWidget(onSelectTid: onSelectTid,),
-                          HotThreadWidget(discuz, user, _hotThreadList[index], onSelectTid),
+                          HotThreadWidget(discuz, user, _hotThreadList[index], onSelectTid,
+                              afterTid: index < _hotThreadList.length - 1 ? _hotThreadList[index+1].tid: null
+                          ),
                           if (index % 15 == 0 && index != 0) AppBannerAdWidget()
                         ],
                       ),

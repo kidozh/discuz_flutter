@@ -35,17 +35,21 @@ class ForumCardWidget extends StatelessWidget {
           leading: Container(
             width: 40,
             height: 40,
-            child: CachedNetworkImage(
-              imageUrl: _forum.iconUrl,
-              progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  CircularProgressIndicator(value: downloadProgress.progress),
-              errorWidget: (context, url, error) => CircleAvatar(
-                backgroundColor:
-                    Theme.of(context).colorScheme.secondaryContainer,
-                child: Icon(
-                  PlatformIcons(context).tagSolid,
-                  color: Theme.of(context).colorScheme.onSecondaryContainer,
-                  size: 20,
+            child: Badge(
+              label: _forum.todayPosts !="0"? Text(_forum.todayPosts) : null,
+              isLabelVisible: _forum.todayPosts !="0" ?true: false,
+              child: CachedNetworkImage(
+                imageUrl: _forum.iconUrl,
+                progressIndicatorBuilder: (context, url, downloadProgress) =>
+                    CircularProgressIndicator(value: downloadProgress.progress),
+                errorWidget: (context, url, error) => CircleAvatar(
+                  backgroundColor:
+                  Theme.of(context).colorScheme.secondaryContainer,
+                  child: Icon(
+                    PlatformIcons(context).tagSolid,
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    size: 20,
+                  ),
                 ),
               ),
             ),

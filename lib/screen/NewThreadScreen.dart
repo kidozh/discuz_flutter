@@ -225,7 +225,9 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
                 (context, index) => Column(
                       children: [
                         if(index == 0) ThreadSlideShowCarouselWidget(onSelectTid: onSelectTid),
-                        NewThreadWidget(discuz, user, _newThreadList[index], this.onSelectTid),
+                        NewThreadWidget(discuz, user, _newThreadList[index], this.onSelectTid,
+                            afterTid: index < _newThreadList.length - 1 ? _newThreadList[index+1].tid: null
+                        ),
                         if (index % 15 == 0 && index != 0) AppBannerAdWidget()
                       ],
                     ),
