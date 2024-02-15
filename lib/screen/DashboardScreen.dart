@@ -51,7 +51,13 @@ class MaterialDashboardScreen extends StatelessWidget{
           children: [
             TabBar(
               tabs: [
-
+                Tab(
+                  icon: Icon(
+                    CupertinoIcons.today_fill,
+                    semanticLabel: S.of(context).newThread,
+                  ),
+                  //text: S.of(context).newThread,
+                ),
                 Tab(
                   icon: Icon(
                     Icons.whatshot,
@@ -60,13 +66,7 @@ class MaterialDashboardScreen extends StatelessWidget{
 
                   //text: S.of(context).hotThread,
                 ),
-                Tab(
-                  icon: Icon(
-                      CupertinoIcons.today_fill,
-                    semanticLabel: S.of(context).newThread,
-                  ),
-                  //text: S.of(context).newThread,
-                ),
+
               ],
               labelColor: Theme.of(context).colorScheme.primary,
               indicatorColor: Theme.of(context).colorScheme.primary,
@@ -76,8 +76,8 @@ class MaterialDashboardScreen extends StatelessWidget{
             ),
             Expanded(
               child: TabBarView(children: [
-                HotThreadScreen(onSelectTid: this.onSelectTid,),
-                NewThreadScreen(onSelectTid: onSelectTid,)
+                NewThreadScreen(onSelectTid: onSelectTid,),
+                HotThreadScreen(onSelectTid: this.onSelectTid,)
               ]),
             )
           ],
@@ -130,8 +130,8 @@ class CupertinoDashboardState extends State<CupertinoDashboardStatefulWidget>{
           child: Padding(padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
             child: CupertinoSlidingSegmentedControl<int>(
                 children: <int, Widget>{
-                  0: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).hotThread),),
-                  1: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).newThread),)
+                  1: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).newThread),),
+                  0: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).hotThread),)
                 },
                 groupValue: _selectedScreenIndex,
                 onValueChanged: (int? value){

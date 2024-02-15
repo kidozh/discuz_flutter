@@ -787,5 +787,7 @@
   "typographyMaterial2021": "2021版质感设计",
   "typographySystem": "默认排版",
   "inlineFramePage": "访问嵌入式页面",
-  "useThinFont": "细体文字"
+  "useThinFont": "细体文字",
+  "noForumIsCachedTitle": "在此设备上没有板块信息",
+  "noForumIsCachedSubtitle": "请点击‘索引’，然后加载所有板块信息后，再回来看看？"
 }

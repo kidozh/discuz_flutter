@@ -143,9 +143,10 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
         return InkWell(
           child: PlatformWidgetBuilder(
               material: (context, child, platform) => Card(
-                elevation: 4.0,
-                color: selected? Theme.of(context).colorScheme.primaryContainer: null,
-                //surfaceTintColor: selected? Theme.of(context).colorScheme.primary: brightness == Brightness.light? Colors.white: Colors.black45,
+                elevation: selected ? 0.0: 2.0,
+                color: selected? Theme.of(context).colorScheme.primaryContainer: Theme.of(context).colorScheme.background,
+                surfaceTintColor: selected? Theme.of(context).colorScheme.primaryContainer:
+                Theme.of(context).brightness == Brightness.light? Colors.white: Colors.black45,
                 // color: Theme.of(context).colorScheme.background,
                 child: Container(
                   padding: EdgeInsets.only(bottom: 12.0),

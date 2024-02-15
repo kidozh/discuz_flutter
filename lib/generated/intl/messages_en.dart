@@ -381,7 +381,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "emptyScreenTitle":
             MessageLookupByLibrary.simpleMessage("The content here is empty."),
         "emptyThreads": MessageLookupByLibrary.simpleMessage(
-            "No thread is posted here, look around?."),
+            "No thread is posted here, look around?"),
         "emptyTrustHost": MessageLookupByLibrary.simpleMessage(
             "You haven\'t trusted any hosts."),
         "emptyUser": MessageLookupByLibrary.simpleMessage("No user here."),
@@ -566,6 +566,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "No discuz site is added to this device."),
         "noFavoriteThreadInDb": MessageLookupByLibrary.simpleMessage(
             "No favorite thread is stored in your device"),
+        "noForumIsCachedSubtitle": MessageLookupByLibrary.simpleMessage(
+            "Could you please open index page once to get a cache of all forums?"),
+        "noForumIsCachedTitle":
+            MessageLookupByLibrary.simpleMessage("No forum is cached"),
         "noImagePicked":
             MessageLookupByLibrary.simpleMessage("No Image picked"),
         "noMore": MessageLookupByLibrary.simpleMessage("No more"),

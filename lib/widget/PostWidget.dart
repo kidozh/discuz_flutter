@@ -190,7 +190,9 @@ class PostState extends State<PostStatefulWidget> {
       // show blocked user interface
       return Container(
         child: Card(
-          elevation: 4.0,
+          elevation: 2.0,
+          surfaceTintColor: Theme.of(context).colorScheme.background,
+          color: Theme.of(context).colorScheme.background,
           child: Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(
@@ -234,8 +236,9 @@ class PostState extends State<PostStatefulWidget> {
       // should return the container
       return PlatformWidgetBuilder(
         material: (_, child, platform) => Card(
-          surfaceTintColor: Theme.of(context).colorScheme.surface,
-          elevation: _post.first ? 0 : 8,
+          surfaceTintColor: Theme.of(context).colorScheme.background,
+          color: Theme.of(context).colorScheme.background,
+          elevation: _post.first ? 0 : 2.0,
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 12.0),
             child: child,

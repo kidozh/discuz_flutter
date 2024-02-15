@@ -484,6 +484,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("此设备上并未添加任何一个论坛站点。"),
         "noFavoriteThreadInDb":
             MessageLookupByLibrary.simpleMessage("还没有收藏一个帖子"),
+        "noForumIsCachedSubtitle":
+            MessageLookupByLibrary.simpleMessage("请点击‘索引’，然后加载所有板块信息后，再回来看看？"),
+        "noForumIsCachedTitle":
+            MessageLookupByLibrary.simpleMessage("在此设备上没有板块信息"),
         "noImagePicked": MessageLookupByLibrary.simpleMessage("您可能没有选择任何一张图片。"),
         "noMore": MessageLookupByLibrary.simpleMessage("没有更多数据"),
         "noSignature": MessageLookupByLibrary.simpleMessage("不使用签名"),

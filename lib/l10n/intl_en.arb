@@ -612,7 +612,7 @@
   "noCaptachaRequired": "No captcha needed.",
   "emptyTrustHost": "You haven't trusted any hosts.",
   "emptyPosts": "No post is currently listed.",
-  "emptyThreads": "No thread is posted here, look around?.",
+  "emptyThreads": "No thread is posted here, look around?",
   "emptyUser": "No user here.",
   "emptyHistory": "No history found in your device. Have you ever browse anything or never open the history recording in the setting?",
   "emptyForum": "No fourm here",
@@ -786,5 +786,7 @@
   "typographyMaterial2021": "Material 2021",
   "typographySystem": "Typography default",
   "inlineFramePage": "Inline frame",
-  "useThinFont": "Thin font"
+  "useThinFont": "Thin font",
+  "noForumIsCachedTitle": "No forum is cached",
+  "noForumIsCachedSubtitle": "Could you please open index page once to get a cache of all forums?"
 }

@@ -88,7 +88,17 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
     //
     // });
     String fids = await UserPreferencesUtils.getDiscuzForumFids(discuz);
-
+    if(fids.isEmpty){
+      // if discuz forum list is not fully retrieved
+      setState(() {
+        _error = DiscuzError(S.of(context).noForumIsCachedTitle,
+            S.of(context).noForumIsCachedSubtitle);
+        _isFirstLoading = false;
+      });
+      _controller.finishRefresh(IndicatorResult.noMore);
+      _controller.finishLoad(IndicatorResult.noMore);
+      return IndicatorResult.none;
+    }
 
     return await _client.newThreadsResult(fids, (_page - 1) * 20).then((value) async {
       Provider.of<DiscuzNotificationProvider>(context, listen: false).setNotificationCount(value.variables.noticeCount);
@@ -224,7 +234,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
             delegate: SliverChildBuilderDelegate(
                 (context, index) => Column(
                       children: [
-                        if(index == 0) ThreadSlideShowCarouselWidget(onSelectTid: onSelectTid),
+                        //if(index == 0) ThreadSlideShowCarouselWidget(onSelectTid: onSelectTid),
                         NewThreadWidget(discuz, user, _newThreadList[index], this.onSelectTid,
                             afterTid: index < _newThreadList.length - 1 ? _newThreadList[index+1].tid: null
                         ),

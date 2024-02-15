@@ -4081,10 +4081,10 @@ class S {
     );
   }
 
-  /// `No thread is posted here, look around?.`
+  /// `No thread is posted here, look around?`
   String get emptyThreads {
     return Intl.message(
-      'No thread is posted here, look around?.',
+      'No thread is posted here, look around?',
       name: 'emptyThreads',
       desc: '',
       args: [],
@@ -5306,6 +5306,26 @@ class S {
     return Intl.message(
       'Thin font',
       name: 'useThinFont',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No forum is cached`
+  String get noForumIsCachedTitle {
+    return Intl.message(
+      'No forum is cached',
+      name: 'noForumIsCachedTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could you please open index page once to get a cache of all forums?`
+  String get noForumIsCachedSubtitle {
+    return Intl.message(
+      'Could you please open index page once to get a cache of all forums?',
+      name: 'noForumIsCachedSubtitle',
       desc: '',
       args: [],
     );

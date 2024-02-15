@@ -237,7 +237,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
               delegate: SliverChildBuilderDelegate(
                   (context, index) => Column(
                         children: [
-                          if(index == 0) ThreadSlideShowCarouselWidget(onSelectTid: onSelectTid,),
+                          //if(index == 0) ThreadSlideShowCarouselWidget(onSelectTid: onSelectTid,),
                           HotThreadWidget(discuz, user, _hotThreadList[index], onSelectTid,
                               afterTid: index < _hotThreadList.length - 1 ? _hotThreadList[index+1].tid: null
                           ),
