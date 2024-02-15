@@ -785,5 +785,6 @@
   "typographyMaterial2018": "Material 2018",
   "typographyMaterial2021": "Material 2021",
   "typographySystem": "Typography default",
-  "inlineFramePage": "Inline frame"
+  "inlineFramePage": "Inline frame",
+  "useThinFont": "Thin font"
 }

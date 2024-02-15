@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 class TypeSettingNotifierProvider with ChangeNotifier{
   double _scalingParameter = 1.0;
 
+
+
   setScalingParameter(double scalingParameter){
     _scalingParameter = scalingParameter;
     notifyListeners();
@@ -50,6 +52,16 @@ class TypeSettingNotifierProvider with ChangeNotifier{
   static List<String> getTypographyThemeNameList(BuildContext context){
     return typographyList.map((e) => getTypographyThemeByName(context,e)).toList();
   }
+
+  bool _useThinFontWeight = false;
+
+  set useThinFontWeight(bool value){
+    this._useThinFontWeight = value;
+    notifyListeners();
+  }
+
+  bool get useThinFontWeight => _useThinFontWeight;
+
 
 
 }

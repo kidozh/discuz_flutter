@@ -5300,6 +5300,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Thin font`
+  String get useThinFont {
+    return Intl.message(
+      'Thin font',
+      name: 'useThinFont',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -69,6 +69,7 @@ class MyApp extends StatelessWidget {
     bool allowPush = await UserPreferencesUtils.getPushPreference();
     String signature = await UserPreferencesUtils.getSignaturePreference();
     String? typography = await UserPreferencesUtils.getTypographyThemePreference();
+    bool useThinFont = await UserPreferencesUtils.getUseThinFontPreference();
 
     print("Get brightness ${brightness}");
 
@@ -91,6 +92,8 @@ class MyApp extends StatelessWidget {
     if(typography != null){
       Provider.of<TypeSettingNotifierProvider>(context, listen: false).typographyTheme = typography;
     }
+
+    Provider.of<TypeSettingNotifierProvider>(context, listen: false).useThinFontWeight = useThinFont;
   }
 
   TargetPlatform? getTargetPlatformByName(String name) {

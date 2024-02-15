@@ -784,6 +784,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("使用Material 3属性"),
         "useMaterial3YesSubtitle": MessageLookupByLibrary.simpleMessage(
             "迁移到 Material 3 的组件将使用 Material 3 的新颜色、排版和其他功能。"),
+        "useThinFont": MessageLookupByLibrary.simpleMessage("细体文字"),
         "userCredit": MessageLookupByLibrary.simpleMessage("积分"),
         "userExpiredSubtitle":
             MessageLookupByLibrary.simpleMessage("当前用户授权已过期，你需要重新登录以重新激活此用户。"),

@@ -65,7 +65,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
 
       child: Consumer<TypeSettingNotifierProvider>(builder: (context, typesetting, _) {
         double scalingParameter = typesetting.scalingParameter;
-
+        bool useThinFont = typesetting.useThinFontWeight;
         Typography typography = Typography.material2021();
         String platformName = Provider.of<ThemeNotifierProvider>(context, listen: false).platformName;
         TargetPlatform targetPlatform = TargetPlatform.android;
@@ -120,12 +120,14 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 fontSize: defaultTextStyle?.fontSize == null? FontSize.medium:FontSize(defaultTextStyle!.fontSize!*scalingParameter),
                 fontWeight: defaultTextStyle?.fontWeight,
                 wordSpacing: defaultTextStyle?.wordSpacing,
-                //lineHeight: LineHeight(1.3),
+
                 padding: HtmlPaddings.zero,
                 margin: Margins.zero
             ),
             "*": Style(
               fontSize: defaultTextStyle?.fontSize == null? FontSize.medium:FontSize(defaultTextStyle!.fontSize!*scalingParameter),
+              fontWeight: useThinFont? FontWeight.w300: null,
+              lineHeight: LineHeight(1.6),
             ),
             "font": Style(
               backgroundColor: Theme.of(context).brightness == Brightness.dark? Colors.transparent: null,
@@ -136,7 +138,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
             ".reply_wrap" :Style(
               backgroundColor: Theme.of(context).brightness == Brightness.light ? Colors.grey.shade200: Colors.grey.shade600,
               padding: HtmlPaddings.all(4.0),
-              margin: Margins(bottom: Margin(0.0)),
+              margin: Margins(bottom: Margin(4.0)),
               border: Border(left: BorderSide(color: Theme.of(context).colorScheme.primary, width: 4)),
               width: Width.auto()
             ),

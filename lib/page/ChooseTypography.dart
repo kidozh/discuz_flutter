@@ -31,6 +31,7 @@ String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
 class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
   double _scalingParamter = 1.0;
 
+
   Post generateMockedPost(){
     Post mockedPost = Post();
     mockedPost.authorId = _rnd.nextInt(100);
@@ -44,6 +45,7 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
   }
 
   bool ignoreCustomFontStyle = false;
+  bool _useThinFont = true;
 
   @override
   void initState() {
@@ -54,8 +56,10 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
 
   void getPreference() async {
     bool ignoreCustomFontStyleSetting = await UserPreferencesUtils.getDisableFontCustomizationPreference();
+    bool useThinFont = await UserPreferencesUtils.getUseThinFontPreference();
     setState(() {
       ignoreCustomFontStyle = ignoreCustomFontStyleSetting;
+      _useThinFont = useThinFont;
     });
   }
 
@@ -108,6 +112,19 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
                       ignoreCustomFontStyle = value;
                     });
                   }, initialValue: ignoreCustomFontStyle,
+                ),
+                SettingsTile.switchTile(
+                  title: Text(S.of(context).useThinFont),
+                  activeSwitchColor: Theme.of(context).colorScheme.primary,
+                  leading: Icon(PlatformIcons(context).edit),
+                  onToggle: (bool value) {
+                    VibrationUtils.vibrateWithSwitchIfPossible();
+                    UserPreferencesUtils.putUseThinFontPreference(value);
+                    Provider.of<TypeSettingNotifierProvider>(context, listen: false).useThinFontWeight = value;
+                    setState(() {
+                      _useThinFont = value;
+                    });
+                  }, initialValue: _useThinFont,
                 ),
                 SettingsTile.navigation(
                   title: Text(S.of(context).chooseTypographyTheme),

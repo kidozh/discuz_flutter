@@ -924,6 +924,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Use Material You design"),
         "useMaterial3YesSubtitle": MessageLookupByLibrary.simpleMessage(
             "Components that have been migrated to Material 3 will use new colors, typography and other features of Material 3."),
+        "useThinFont": MessageLookupByLibrary.simpleMessage("Thin font"),
         "userCredit": MessageLookupByLibrary.simpleMessage("Credits"),
         "userExpiredSubtitle": MessageLookupByLibrary.simpleMessage(
             "The current user is expired, some function may not work."),

@@ -445,6 +445,19 @@ class UserPreferencesUtils{
     return brightness;
   }
 
+  static final String useThinFontPreferenceKey = "useThinFontPreferenceKey";
+
+  static Future<void> putUseThinFontPreference(bool value) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(useThinFontPreferenceKey, value);
+  }
+
+  static Future<bool> getUseThinFontPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool? value =  prefs.getBool(useThinFontPreferenceKey);
+    return value == null? true: value;
+  }
+
 
 
 }
