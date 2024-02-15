@@ -1,5 +1,6 @@
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
@@ -91,6 +92,7 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
                   ColorPickerType.bw: S.of(context).blackAndWhiteColorPickerType,
                   ColorPickerType.both: S.of(context).bothColorPickerType
                 },
+                selectedColorIcon: AppPlatformIcons(context).check,
 
               ),
           ),

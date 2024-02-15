@@ -49,9 +49,9 @@ class AppPlatformIcons{
 
   IconData get discuzExploreOutlined => isMaterial(context)? Icons.explore_outlined : CupertinoIcons.compass;
 
-  IconData get discuzNotificationSolid => isMaterial(context)? Icons.notifications : CupertinoIcons.square_stack_3d_down_right_fill;
+  IconData get discuzNotificationSolid => isMaterial(context)? Icons.notifications : CupertinoIcons.bell_circle_fill;
 
-  IconData get discuzNotificationOutlined => isMaterial(context)? Icons.notifications_outlined : CupertinoIcons.square_stack_3d_down_right;
+  IconData get discuzNotificationOutlined => isMaterial(context)? Icons.notifications_outlined : CupertinoIcons.bell_circle;
 
   IconData get discuzMessageSolid => isMaterial(context)? Icons.message : CupertinoIcons.chat_bubble_fill;
 
@@ -78,6 +78,8 @@ class AppPlatformIcons{
   IconData get checkCircleSolid => isMaterial(context)? Icons.check_circle : CupertinoIcons.check_mark_circled_solid;
 
   IconData get checkCircleOutlined => isMaterial(context)? Icons.check_circle_outline : CupertinoIcons.check_mark_circled;
+
+  IconData get check => isMaterial(context)? Icons.check : CupertinoIcons.check_mark;
 
   IconData get optionWinnerOutlined => isMaterial(context)? Icons.stars : CupertinoIcons.star_circle_fill;
 

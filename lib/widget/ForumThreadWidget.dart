@@ -359,7 +359,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                   text: "",
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       color: selected? Theme.of(context).colorScheme.primary: Theme.of(context).disabledColor,
-                      fontWeight: viewed? FontWeight.w300: null,
+                      fontWeight: selected? FontWeight.normal : viewed? FontWeight.w300: null,
                       //fontSize: 12
                   ),
                   //style: ..copyWith(color: selected? Theme.of(context).colorScheme.onPrimary: null),

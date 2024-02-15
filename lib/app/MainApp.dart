@@ -166,7 +166,7 @@ class MyApp extends StatelessWidget {
                 seedColor: themeColorEntity.themeColor,
               brightness: Brightness.light,
               background: Colors.white,
-            )//.harmonized()
+            ).harmonized()
             ,
             useMaterial3: themeColorEntity.useMaterial3,
             textTheme: typography.black.useSystemChineseFont(),
@@ -176,7 +176,7 @@ class MyApp extends StatelessWidget {
               seedColor: themeColorEntity.themeColor,
               brightness: Brightness.dark,
               background: Colors.black54
-            )//.harmonized()
+            ).harmonized()
             ,
             useMaterial3: themeColorEntity.useMaterial3,
             textTheme: typography.white.useSystemChineseFont(),
@@ -621,13 +621,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         },
         items: [
           BottomNavigationBarItem(
-              icon: new Icon(AppPlatformIcons(context).discuzExploreOutlined),
-              activeIcon: Icon(AppPlatformIcons(context).discuzExploreSolid),
+              icon: new Icon(AppPlatformIcons(context).discuzSiteOutlined),
+              activeIcon: Icon(AppPlatformIcons(context).discuzSiteSolid),
               label: S.of(context).dashboard),
           if (!Platform.isIOS)
             BottomNavigationBarItem(
-                icon: new Icon(AppPlatformIcons(context).discuzSiteOutlined),
-                activeIcon: Icon(AppPlatformIcons(context).discuzSiteSolid),
+                icon: new Icon(AppPlatformIcons(context).discuzExploreOutlined),
+                activeIcon: Icon(AppPlatformIcons(context).discuzExploreSolid),
                 label: S.of(context).sitePage),
 
           BottomNavigationBarItem(
