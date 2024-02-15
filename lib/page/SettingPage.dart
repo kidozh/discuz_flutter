@@ -294,24 +294,32 @@ class _SettingPageState extends State<SettingPage> {
                     _launchURL("https://discuzhub.kidozh.com/privacy_policy/");
                   },
                 ),
-                SettingsTile.navigation(
-                  title: Text(S.of(context).dhPushServiceTitle),
-                  leading: Icon(AppPlatformIcons(context).pushServiceOutlined),
-
-                  onPressed: (_) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    _launchURL("https:/dhp.kidozh.com");
-                  },
-                ),
                 // SettingsTile.navigation(
-                //   title: Text(S.of(context).contactUsViaWeibo),
-                //   leading: Icon(AppPlatformIcons(context).termsOfServiceOutlined),
+                //   title: Text(S.of(context).dhPushServiceTitle),
+                //   leading: Icon(AppPlatformIcons(context).pushServiceOutlined),
                 //
                 //   onPressed: (_) {
                 //     VibrationUtils.vibrateWithClickIfPossible();
-                //     _launchURL("https://weibo.com/u/7436177109");
+                //     _launchURL("https:/dhp.kidozh.com");
                 //   },
                 // ),
+                SettingsTile.navigation(
+                  title: Text(S.of(context).openSoftwareTitle),
+                  leading: Icon(PlatformIcons(context).bookmark),
+
+                  onPressed: (_) {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    showLicensePage(
+                        context: context,
+                        applicationName: S.of(context).appName,
+                        applicationIcon: Image(
+                          image: AssetImage("assets/images/icon-large.png",),
+                          width: 64,
+                        ),
+                        applicationVersion: packageVersion
+                    );
+                  },
+                ),
               ],
             ),
             CustomSettingsSection(

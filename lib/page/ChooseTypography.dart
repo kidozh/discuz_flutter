@@ -116,7 +116,7 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
                 SettingsTile.switchTile(
                   title: Text(S.of(context).useThinFont),
                   activeSwitchColor: Theme.of(context).colorScheme.primary,
-                  leading: Icon(PlatformIcons(context).edit),
+                  leading: Icon(AppPlatformIcons(context).fontWeightOutline),
                   onToggle: (bool value) {
                     VibrationUtils.vibrateWithSwitchIfPossible();
                     UserPreferencesUtils.putUseThinFontPreference(value);

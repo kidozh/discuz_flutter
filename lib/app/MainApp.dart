@@ -169,11 +169,11 @@ class MyApp extends StatelessWidget {
                 seedColor: themeColorEntity.themeColor,
               brightness: Brightness.light,
               background: Colors.white,
-            ).harmonized()
-            ,
+            ).harmonized(),
             useMaterial3: themeColorEntity.useMaterial3,
             textTheme: typography.black.useSystemChineseFont(),
         );
+
         final materialThemeDataDark = ThemeData.from(
             colorScheme: ColorScheme.fromSeed(
               seedColor: themeColorEntity.themeColor,
