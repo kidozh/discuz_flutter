@@ -452,6 +452,9 @@ class DiscuzHtmlWidget extends StatelessWidget{
                   collapsedBackgroundColor: Theme.of(context).colorScheme.primary,
                   collapsedTextColor: Theme.of(context).colorScheme.onPrimary,
                   collapsedIconColor: Theme.of(context).colorScheme.onPrimary,
+                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                  textColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                  iconColor: Theme.of(context).colorScheme.onPrimaryContainer,
                 );
               }
             ),
@@ -577,7 +580,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.link,color: Colors.red,),
+                        Icon(AppPlatformIcons(context).linkSolid,color: Colors.red, size: 12,),
                         SizedBox(width: 8.0),
                         Expanded(
                             child: Text(urlString,softWrap: true,style: TextStyle(color: Colors.red,),)
