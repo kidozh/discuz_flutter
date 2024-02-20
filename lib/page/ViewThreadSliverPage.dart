@@ -449,6 +449,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     if (_postList.length >=
         _viewThreadResult.threadVariables.threadInfo.replies + 1) {
       _controller.finishLoad(IndicatorResult.noMore);
+      _controller.finishRefresh(IndicatorResult.success);
       _page -= 1;
       return IndicatorResult.noMore;
     }
@@ -487,6 +488,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
           _postList.length >= value.threadVariables.threadInfo.replies + 1
               ? IndicatorResult.noMore
               : IndicatorResult.success);
+      _controller.finishRefresh(IndicatorResult.success);
 
       if (value.getErrorString() != null) {
         EasyLoading.showError(value.getErrorString()!);
@@ -537,18 +539,19 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       VibrationUtils.vibrateErrorIfPossible();
 
       log("${onError} ${stack}");
-      _controller.finishRefresh();
+      _controller.finishRefresh(IndicatorResult.fail);
+      _controller.finishLoad(IndicatorResult.fail);
       if (onError is DioException) {
         DioException dioError = onError;
-        log("DIOERROR ${dioError.message} >-> ${dioError.type}");
-        EasyLoading.showError("${dioError.message} (${dioError})");
+        log("DIOERROR ${dioError.message} >-> ${dioError.type} ${dioError.error}");
+        // EasyLoading.showError("${dioError.message} (${dioError})");
         setState(() {
           _isFirstLoading = false;
           _error = DiscuzError(
               dioError.type.name,
-              dioError.message == null
+              dioError.response?.statusMessage == null
                   ? S.of(context).error
-                  : dioError.message!,
+                  : dioError.response!.statusMessage!,
               dioError: dioError);
         });
       } else {

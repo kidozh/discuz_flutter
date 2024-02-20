@@ -130,8 +130,8 @@ class CupertinoDashboardState extends State<CupertinoDashboardStatefulWidget>{
           child: Padding(padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
             child: CupertinoSlidingSegmentedControl<int>(
                 children: <int, Widget>{
-                  1: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).newThread),),
-                  0: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).hotThread),)
+                  0: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).newThread),),
+                  1: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).hotThread),)
                 },
                 groupValue: _selectedScreenIndex,
                 onValueChanged: (int? value){
@@ -152,8 +152,9 @@ class CupertinoDashboardState extends State<CupertinoDashboardStatefulWidget>{
 
         Expanded(
             child: [
+              NewThreadScreen(onSelectTid: onSelectTid,),
               HotThreadScreen(onSelectTid: onSelectTid,),
-              NewThreadScreen(onSelectTid: onSelectTid,)
+
             ][_selectedScreenIndex]
         )
       ],

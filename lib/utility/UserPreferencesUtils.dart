@@ -455,7 +455,7 @@ class UserPreferencesUtils{
   static Future<bool> getUseThinFontPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool? value =  prefs.getBool(useThinFontPreferenceKey);
-    return value == null? true: value;
+    return value == null? false: value;
   }
 
 

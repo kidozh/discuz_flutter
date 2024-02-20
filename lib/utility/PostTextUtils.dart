@@ -66,5 +66,12 @@ class PostTextUtils{
     ;
   }
 
+  static String matchIsolatedURL(String message){
+    // only accept HTTP(S) link
+    // but not in url aready
+    RegExp urlREgex = RegExp(r'(?! (<a.*?> |"))*(https?)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]');
+    return "";
+  }
+
 
 }
