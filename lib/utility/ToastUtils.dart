@@ -1,8 +1,9 @@
 
 
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:toastification/toastification.dart';
 
 class ToastUtils{
   static Future<void> showSuccessfulToast(String msg) {
@@ -12,21 +13,30 @@ class ToastUtils{
 
   }
 
-  static Future<bool?> showInfoToast(BuildContext context, String msg) {
-    return Fluttertoast.showToast(
-      msg: msg,
-      gravity: ToastGravity.CENTER,
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      textColor: Theme.of(context).colorScheme.onPrimary,
+  static void showInfoToast(BuildContext context, String msg) {
+    // EasyLoading.showSuccess(
+    //   msg,
+    // );
+
+    toastification.show(context: context,
+        title: Text(msg),
+        style: ToastificationStyle.fillColored,
+        autoCloseDuration: const Duration(seconds: 2),
+        showProgressBar: false,
+        type: ToastificationType.info,
+        icon: Icon(AppPlatformIcons(context).check),
+        alignment: Alignment.topCenter
+
+
     );
   }
 
-  static Future<bool?> showErrorToast(BuildContext context, String msg) {
-    return Fluttertoast.showToast(
-      msg: msg,
-      gravity: ToastGravity.CENTER,
-      backgroundColor: Theme.of(context).colorScheme.error,
-      textColor: Theme.of(context).colorScheme.onError,
+  static void showErrorToast(BuildContext context, String msg) {
+    toastification.show(context: context,
+      title: Text(msg),
+      style: ToastificationStyle.fillColored,
+      autoCloseDuration: const Duration(milliseconds: 500),
+      type: ToastificationType.error
     );
   }
 }

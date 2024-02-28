@@ -171,7 +171,7 @@ class MyApp extends StatelessWidget {
               background: Colors.white,
             ).harmonized(),
             useMaterial3: themeColorEntity.useMaterial3,
-            textTheme: typography.black.useSystemChineseFont(),
+            textTheme: typography.black.useSystemChineseFont(Brightness.light),
         );
 
         final materialThemeDataDark = ThemeData.from(
@@ -182,7 +182,7 @@ class MyApp extends StatelessWidget {
             ).harmonized()
             ,
             useMaterial3: themeColorEntity.useMaterial3,
-            textTheme: typography.white.useSystemChineseFont(),
+            textTheme: typography.white.useSystemChineseFont(Brightness.dark),
         );
         const darkDefaultCupertinoTheme =
             CupertinoThemeData(brightness: Brightness.dark);

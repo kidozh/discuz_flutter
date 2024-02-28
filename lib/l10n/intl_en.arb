@@ -788,5 +788,6 @@
   "inlineFramePage": "Inline frame",
   "useThinFont": "Thin font",
   "noForumIsCachedTitle": "No forum is cached",
-  "noForumIsCachedSubtitle": "Could you please open index page once to get a cache of all forums?"
+  "noForumIsCachedSubtitle": "Could you please open index page once to get a cache of all forums?",
+  "animateToLastReadingPosition": "Scroll to last read position."
 }

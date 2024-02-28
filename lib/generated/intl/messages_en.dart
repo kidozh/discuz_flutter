@@ -139,6 +139,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "addDiscuzTitle":
             MessageLookupByLibrary.simpleMessage("Add a discuz! BBS"),
         "addNewDiscuz": MessageLookupByLibrary.simpleMessage("Add a Discuz"),
+        "animateToLastReadingPosition": MessageLookupByLibrary.simpleMessage(
+            "Scroll to last read position."),
         "anonymous": MessageLookupByLibrary.simpleMessage("A"),
         "appName": MessageLookupByLibrary.simpleMessage("DisFly"),
         "appearanceOptimizedPlatform":

@@ -134,6 +134,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "addDiscuzSuccessfully": m0,
         "addDiscuzTitle": MessageLookupByLibrary.simpleMessage("添加Discuz! 论坛"),
         "addNewDiscuz": MessageLookupByLibrary.simpleMessage("添加一个论坛"),
+        "animateToLastReadingPosition":
+            MessageLookupByLibrary.simpleMessage("已为你跳转到上次阅读的进度."),
         "anonymous": MessageLookupByLibrary.simpleMessage("未知"),
         "appName": MessageLookupByLibrary.simpleMessage("谈坛"),
         "appearanceOptimizedPlatform":

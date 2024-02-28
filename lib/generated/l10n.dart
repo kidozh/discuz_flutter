@@ -5330,6 +5330,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Scroll to last read position.`
+  String get animateToLastReadingPosition {
+    return Intl.message(
+      'Scroll to last read position.',
+      name: 'animateToLastReadingPosition',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

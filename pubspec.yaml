@@ -82,7 +82,7 @@ dependencies:
   skeletons: ^0.0.3
   push: ^1.0.5
   google_mobile_ads: ^4.0.0
-  gallery_saver: ^2.3.2
+  image_gallery_saver: ^2.0.3
   dynamic_color: ^1.6.7
   intl_utils: ^2.8.1
   dual_screen: ^1.0.3
@@ -97,8 +97,9 @@ dependencies:
   local_auth: ^2.1.7
   flex_color_picker: ^3.3.1
   google_fonts: ^4.0.4
-  chinese_font_library: ^1.0.1
-  fluttertoast: ^8.2.4
+  chinese_font_library: ^1.1.0
+  toastification: ^1.2.1
+
 
 dev_dependencies:
   flutter_test:

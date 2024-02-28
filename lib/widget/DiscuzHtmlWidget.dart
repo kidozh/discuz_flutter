@@ -102,7 +102,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
           }
         }
 
-        TextTheme textTheme = typography.dense.useSystemChineseFont();
+        TextTheme textTheme = typography.dense.useSystemChineseFont(Theme.of(context).brightness);
         TextStyle? defaultTextStyle = textTheme.bodyLarge;
         double? themeFontSize = defaultTextStyle?.fontSize == null? 14 : defaultTextStyle?.fontSize!;
 
@@ -427,7 +427,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 VibrationUtils.vibrateWithClickIfPossible();
                 Navigator.push(
                     context,
-                    platformPageRoute(context:context,builder: (context) => FullImagePage(src!))
+                    platformPageRoute(context:context,builder: (context) => FullImagePage(src))
                 );
               }
 
