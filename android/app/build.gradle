@@ -37,10 +37,12 @@ if (flutterVersionName == null) {
 //apply plugin: 'com.android.application'
 //apply plugin: 'kotlin-android'
 //apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-apply plugin: 'com.google.gms.google-services'  // Google Services plugin
+//apply plugin: 'com.google.gms.google-services'  // Google Services plugin
 
 android {
-    compileSdkVersion 34
+    namespace 'com.kidozh.discuz_flutter'
+    compileSdk 34
+    //ndkVersion "25.1.8937393"
 
 
     sourceSets {
@@ -56,13 +58,7 @@ android {
 
     }
     kotlinOptions {
-        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-            kotlinOptions.jvmTarget = "1.8"
-        }
-    }
-
-    kotlin {
-        jvmToolchain(17)
+        jvmTarget = '1.8'
     }
 
 
@@ -97,7 +93,7 @@ android {
             signingConfig signingConfigs.release
         }
     }
-    namespace 'com.kidozh.discuz_flutter'
+
     lint {
         disable 'InvalidPackage'
     }

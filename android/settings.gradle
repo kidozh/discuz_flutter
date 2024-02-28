@@ -1,15 +1,3 @@
-//include ':app'
-//
-//def localPropertiesFile = new File(rootProject.projectDir, "local.properties")
-//def properties = new Properties()
-//
-//assert localPropertiesFile.exists()
-//localPropertiesFile.withReader("UTF-8") { reader -> properties.load(reader) }
-//
-//def flutterSdkPath = properties.getProperty("flutter.sdk")
-//assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
-//apply from: "$flutterSdkPath/packages/flutter_tools/gradle/app_plugin_loader.gradle"
-
 pluginManagement {
     def flutterSdkPath = {
         def properties = new Properties()
@@ -18,6 +6,8 @@ pluginManagement {
         assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
         return flutterSdkPath
     }()
+
+    // settings.ext.flutterSdkPath = flutterSdkPath()
 
     includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
 
@@ -31,10 +21,7 @@ pluginManagement {
 plugins {
     id "dev.flutter.flutter-plugin-loader" version "1.0.0"
     id "com.android.application" version "8.2.2" apply false
-    id 'com.android.library' version '8.2.2' apply false
     id "org.jetbrains.kotlin.android" version "1.9.20" apply false
-    id "com.google.gms.google-services" version "4.4.0" apply false
-    id "com.google.firebase.crashlytics" version "2.9.9" apply false
 
 }
 
