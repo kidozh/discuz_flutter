@@ -62,26 +62,29 @@ void main() async{
   initialPlatform = await UserPreferencesUtils.getPlatformPreference();
   Discuz discuz = exclusiveDiscuz;
   // save them to database first
-  if(isExclusiveDiscuz){
+  if(isExclusiveDiscuz) {
     // save discuz to database first
     DiscuzDao discuzDao = await AppDatabase.getDiscuzDao();
-    Discuz? existDiscuz = await discuzDao.findDiscuzByBaseURL(exclusiveDiscuz.baseURL);
-    if(existDiscuz == null){
+    Discuz? existDiscuz = await discuzDao.findDiscuzByBaseURL(
+        exclusiveDiscuz.baseURL);
+    if (existDiscuz == null) {
       // insert it if not exist
       var insertKey = await discuzDao.insertDiscuz(exclusiveDiscuz);
       print(insertKey);
     }
     // final extract
-    Discuz? savedDiscuz = await discuzDao.findDiscuzByBaseURL(exclusiveDiscuz.baseURL);
-    if(savedDiscuz != null){
+    Discuz? savedDiscuz = await discuzDao.findDiscuzByBaseURL(
+        exclusiveDiscuz.baseURL);
+    if (savedDiscuz != null) {
       print("find the discuz!");
       discuz = savedDiscuz;
     }
-    else{
+    else {
       print("Can't find the saved discuz in dataset");
     }
   }
 
+  await AppDatabase.removeAllExpiredRecord();
   FlutterNativeSplash.remove();
 
   runApp(

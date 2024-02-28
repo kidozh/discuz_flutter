@@ -61,5 +61,15 @@ class ViewThreadScrollDistanceDao{
     });
   }
 
+  Future<void> deleteAllExpiredViewThreadCache() async{
+    DateTime oneWeekAgo = DateTime.now().subtract(Duration(days:7));
+
+    return viewThreadScrollDistanceBox.values.where(
+            (element) => element.updateTime.isBefore(oneWeekAgo)
+    ).forEach((element) {
+      viewThreadScrollDistanceBox.delete(element.key);
+    });
+  }
+
 
 }

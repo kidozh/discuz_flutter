@@ -200,5 +200,13 @@ class AppDatabase{
     return ViewThreadScrollDistanceDao(viewThreadScrollDistanceBox);
   }
 
+  static Future<void> removeAllExpiredRecord() async{
+    ViewThreadScrollDistanceDao viewThreadScrollDistanceDao = await getViewThreadScrollDistanceDao();
+    ViewThreadCacheDao viewThreadCacheDao = await getViewThreadCacheDao();
+    viewThreadScrollDistanceDao.deleteAllExpiredViewThreadCache();
+    viewThreadCacheDao.deleteAllExpiredViewThreadCache();
+
+  }
+
 
 }
