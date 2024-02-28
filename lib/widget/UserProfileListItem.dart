@@ -25,9 +25,9 @@ class UserProfileListItem extends StatefulWidget {
     this.onPressed,
     this.icon,
     this.title,
-    this.titleColor: Colors.black,
+    this.titleColor = Colors.black,
     this.describe,
-    this.describeColor: Colors.grey,
+    this.describeColor = Colors.grey,
     this.rightWidget,
   }) : super(key: key);
 

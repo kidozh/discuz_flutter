@@ -34,7 +34,7 @@ Map<String, dynamic> _$BaseVariableResultToJson(BaseVariableResult instance) =>
       'groupid': const StringToIntConverter().toJson(instance.groupId),
       'readaccess': const StringToIntConverter().toJson(instance.readAccess),
       'formhash': instance.formHash,
-      'notice': instance.noticeCount,
+      'notice': instance.noticeCount.toJson(),
     };
 
 NoticeCount _$NoticeCountFromJson(Map<String, dynamic> json) => NoticeCount()

@@ -263,9 +263,6 @@ class PostState extends State<PostStatefulWidget> {
   Widget getPostContent(BuildContext context) {
     String _html = _post.message;
 
-    if(_post.first){
-      log("${_html}");
-    }
 
     if (this.isFontStyleIgnored()) {
       // regex

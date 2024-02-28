@@ -21,9 +21,9 @@ Map<String, dynamic> _$ViewThreadResultToJson(ViewThreadResult instance) =>
     <String, dynamic>{
       'Version': instance.version,
       'Charset': instance.charset,
-      'Message': instance.errorResult,
+      'Message': instance.errorResult?.toJson(),
       'error': instance.error,
-      'Variables': instance.threadVariables,
+      'Variables': instance.threadVariables.toJson(),
     };
 
 ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) =>
@@ -72,17 +72,17 @@ Map<String, dynamic> _$ThreadVariablesToJson(ThreadVariables instance) =>
       'readaccess': const StringToIntConverter().toJson(instance.readAccess),
       'formhash': instance.formHash,
       'ismoderator': instance.ismoderator,
-      'notice': instance.noticeCount,
-      'thread': instance.threadInfo,
+      'notice': instance.noticeCount.toJson(),
+      'thread': instance.threadInfo.toJson(),
       'fid': const StringToIntConverter().toJson(instance.fid),
-      'postlist': instance.postList,
+      'postlist': instance.postList.map((e) => e.toJson()).toList(),
       'comments':
           const ViewThreadCommentConverter().toJson(instance.commentList),
       'setting_rewriterule':
           const RewriteRuleConverter().toJson(instance.rewriteRule),
       'ppp': instance.ppp,
       'page': instance.page,
-      'special_poll': instance.poll,
+      'special_poll': instance.poll?.toJson(),
     };
 
 DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) =>
@@ -216,7 +216,8 @@ Map<String, dynamic> _$PollToJson(Poll instance) => <String, dynamic>{
           const StringToBoolConverter().toJson(instance.isResultVisible),
       'allowvote': const StringToBoolConverter().toJson(instance.allowVote),
       'voterscount': const StringToIntConverter().toJson(instance.votersCount),
-      'polloptions': instance.pollOptionsMap,
+      'polloptions':
+          instance.pollOptionsMap.map((k, e) => MapEntry(k, e.toJson())),
     };
 
 PollOption _$PollOptionFromJson(Map<String, dynamic> json) => PollOption()

@@ -18,7 +18,13 @@ class StringToBoolConverter implements JsonConverter<bool, String?> {
 
   @override
   String toJson(bool object) {
-    return json.encode(object);
+    if(object){
+      return "1";
+    }
+    else{
+      return "0";
+    }
+    //return json.encode(object);
 
   }
   

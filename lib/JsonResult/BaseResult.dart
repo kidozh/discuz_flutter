@@ -3,7 +3,7 @@ import 'package:discuz_flutter/JsonResult/ErrorResult.dart';
 
 part 'BaseResult.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class BaseResult{
     @JsonKey(name: "Version")
     String version = "";

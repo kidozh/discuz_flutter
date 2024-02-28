@@ -18,6 +18,6 @@ Map<String, dynamic> _$BaseResultToJson(BaseResult instance) =>
     <String, dynamic>{
       'Version': instance.version,
       'Charset': instance.charset,
-      'Message': instance.errorResult,
+      'Message': instance.errorResult?.toJson(),
       'error': instance.error,
     };

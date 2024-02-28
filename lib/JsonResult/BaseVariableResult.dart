@@ -7,7 +7,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'BaseVariableResult.g.dart';
 
-@JsonSerializable(ignoreUnannotated: true)
+@JsonSerializable(ignoreUnannotated: true, explicitToJson: true)
 class BaseVariableResult{
   @JsonKey(name:"cookiepre")
   String cookiepre = "";
@@ -62,7 +62,7 @@ class BaseVariableResult{
 
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class NoticeCount{
 
   @StringToIntConverter()

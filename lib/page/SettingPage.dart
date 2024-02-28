@@ -22,6 +22,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../utility/AppPlatformIcons.dart';
 import '../utility/PostTextFieldUtils.dart';
 import 'ChooseThemeColorPage.dart';
+import 'ConfigurePictureBedPage.dart';
 
 class SettingPage extends StatefulWidget {
   @override

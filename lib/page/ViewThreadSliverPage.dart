@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -7,6 +8,8 @@ import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/dao/FavoriteThreadDao.dart';
 import 'package:discuz_flutter/dao/ImageAttachmentDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
+import 'package:discuz_flutter/dao/ViewThreadCacheDao.dart';
+import 'package:discuz_flutter/dao/ViewThreadScrollDistanceDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
@@ -16,6 +19,8 @@ import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/entity/Smiley.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
+import 'package:discuz_flutter/entity/ViewThreadCache.dart';
+import 'package:discuz_flutter/entity/ViewThreadScrollDistance.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
@@ -25,6 +30,7 @@ import 'package:discuz_flutter/screen/SmileyListScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
+import 'package:discuz_flutter/utility/ToastUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -106,11 +112,11 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
   late final Discuz discuz;
   late final User? user;
+
   int tid;
 
   bool historySaved = false;
   VoidCallback? onClosed;
-
   _ViewThreadSliverState(this.discuz, this.user, this.tid,
       {this.passedSubject, this.onClosed});
 
@@ -131,6 +137,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   final int SHOW_SMILEY_DIALOG = 1;
   final int SHOW_EXTRA_DIALOG = 2;
   final int SHOW_NONE_DIALOG = 0;
+  // cache status
+  bool cached = false;
+  int _initialPage = 1;
+  int preCachedItemNum = 0;
 
   @override
   void initState() {
@@ -148,9 +158,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
   void _loadDao() async {
     FavoriteThreadDao dao = await AppDatabase.getFavoriteThreadDao();
+
+
+    // should check with record first
     setState(() {
       favoriteThreadDao = dao;
     });
+
+
   }
 
   void bindFocusNode() {
@@ -190,6 +205,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   void dispose() {
     _focusNode.dispose();
     _replyController.dispose();
+    // save with distance
+    double offset = _scrollController.offset;
+    if(viewThreadScrollDistanceDao!=null){
+      ViewThreadScrollDistance element = ViewThreadScrollDistance(tid, offset, discuz, DateTime.now(), viewThreadQuery.timeAscend);
+      viewThreadScrollDistanceDao!.insertViewThreadScrollDistance(element);
+    }
 
     super.dispose();
   }
@@ -200,6 +221,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     ignoreFontCustomization =
         await UserPreferencesUtils.getDisableFontCustomizationPreference();
   }
+
+
 
   void _saveViewHistory(DetailedThreadInfo threadInfo, String contents) async {
     // check if needed
@@ -230,8 +253,70 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   }
 
   Future<IndicatorResult> _invalidateContent() async {
+    _initialPage = 1;
+
+    if(viewThreadCacheDao == null || viewThreadScrollDistanceDao == null){
+      // retrieve cache
+      viewThreadCacheDao = await AppDatabase.getViewThreadCacheDao();
+      viewThreadScrollDistanceDao = await AppDatabase.getViewThreadScrollDistanceDao();
+      List<ViewThreadCache> viewThreadCacheList = viewThreadCacheDao!.findAllViewThreadCacheListByDiscuz(discuz, tid, viewThreadQuery.timeAscend);
+      if(viewThreadCacheList.isEmpty){
+        cached = false;
+
+      }
+      else{
+        // point to the last cached page
+        cached = true;
+        _initialPage = viewThreadCacheList.last.page;
+
+        List<Post> cachedPost = [];
+        bool isCacheSuccessful = true;
+
+        for(var threadCache in viewThreadCacheList){
+          try{
+            ViewThreadResult result = ViewThreadResult.fromJson(jsonDecode(threadCache.json));
+            cachedPost.addAll(result.threadVariables.postList);
+            if(threadCache != viewThreadCacheList.last){
+              preCachedItemNum += result.threadVariables.postList.length;
+            }
+          }
+          catch(e){
+            log("Not Successful decode!!! ${threadCache.json}");
+            isCacheSuccessful = false;
+            break;
+          }
+        }
+
+        if(isCacheSuccessful){
+          // cache integrity successful
+          ViewThreadResult lastResult = ViewThreadResult.fromJson(jsonDecode(viewThreadCacheList.last.json));
+          setState(() {
+            _viewThreadResult = lastResult;
+            _postList = cachedPost;
+          });
+          double? offset = viewThreadScrollDistanceDao!.findViewThreadCacheListByDiscuz(discuz, tid, viewThreadQuery.timeAscend)?.offset;
+          if(offset!=null){
+            _scrollController.animateTo(offset, duration: Durations.short2, curve: Curves.easeInOut);
+          }
+          // Toast here
+          ToastUtils.showSuccessfulToast("Cached successful");
+        }
+
+      }
+
+    }
+    else{
+      // should delete all cache now!!!
+      _initialPage = 1;
+      // clear cache
+      viewThreadCacheDao!.deleteAllViewThreadCacheByTid(discuz, tid);
+      viewThreadScrollDistanceDao!.deleteAllViewThreadScrollDistanceByTid(discuz, tid);
+
+    }
+
+
     setState(() {
-      _page = 1;
+      _page = _initialPage;
     });
     return await _loadForumContent();
   }
@@ -243,6 +328,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       _postList = [];
     });
     _loadForumContent();
+  }
+
+  void _saveViewThreadCache(ViewThreadResult result, int tid, int page, bool isAscend) async {
+    // check if needed
+    String json = jsonEncode(result);
+    ViewThreadCache viewThreadCache = ViewThreadCache(tid, json, discuz, DateTime.now(), page, isAscend);
+    viewThreadCacheDao?.insertViewThreadCache(viewThreadCache);
+
   }
 
   Future<void> _sendReply(BuildContext context) async {
@@ -360,9 +453,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       setState(() {
         _sendReplyStatus = ButtonState.fail;
       });
-      if (onError is DioError) {
-        DioError dioError = onError;
-        EasyLoading.showError("${dioError.message}");
+      if (onError is DioException) {
+        DioException dioError = onError;
+        EasyLoading.showError("${dioError.type.name}");
       } else {
         EasyLoading.showError('${onError}');
       }
@@ -437,6 +530,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   }
 
   FavoriteThreadDao? favoriteThreadDao;
+  ViewThreadCacheDao? viewThreadCacheDao;
+  ViewThreadScrollDistanceDao? viewThreadScrollDistanceDao;
+
+  Future<void> checkWithCacheResponse() async{
+
+  }
 
   Future<IndicatorResult> _loadForumContent() async {
     // check the availability
@@ -464,8 +563,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             value.threadVariables.postList.first.message);
       }
 
+
       Provider.of<DiscuzNotificationProvider>(context, listen: false)
           .setNotificationCount(value.threadVariables.noticeCount);
+
 
       setState(() {
         _viewThreadResult = value;
@@ -473,7 +574,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         _error = null;
         if (_page == 1) {
           _postList = value.threadVariables.postList;
-        } else {
+        }
+        else if(_page == _initialPage){
+          // is a cached page?
+          List<Post> preCachedPostList = _postList.sublist(0, preCachedItemNum);
+          preCachedPostList.addAll(value.threadVariables.postList);
+          _postList = preCachedPostList;
+        }
+        else {
           _postList.addAll(value.threadVariables.postList);
           _postList = _postList;
         }
@@ -504,6 +612,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
           _error = null;
         });
       }
+      // cache the result
+      if(value.getErrorString() == null && value.errorResult == null){
+        // cache the response if this is correct
+        _saveViewThreadCache(value, tid, _page, viewThreadQuery.timeAscend);
+      }
+
       if (user != null && value.threadVariables.member_uid != user.uid) {
         log("recv user uid different! ${user.uid} ${value.threadVariables.member_uid} ${value.threadVariables.member_username}");
         setState(() {

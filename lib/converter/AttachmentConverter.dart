@@ -36,9 +36,8 @@ class AttachmentConverter implements JsonConverter<Map<String,Attachment>, Objec
   }
 
   @override
-  List<Attachment> toJson(Map<String, Attachment> object) {
-    // TODO: implement toJson
-    throw [];
+  Map<String, Attachment> toJson(Map<String, Attachment> object) {
+    return object;
   }
 
   

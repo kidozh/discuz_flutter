@@ -14,7 +14,7 @@ import 'ErrorResult.dart';
 
 part "ViewThreadResult.g.dart";
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class ViewThreadResult extends BaseResult{
 
   @JsonKey(name: "Variables")
@@ -25,9 +25,11 @@ class ViewThreadResult extends BaseResult{
   factory ViewThreadResult.fromJson(Map<String, dynamic> json) => _$ViewThreadResultFromJson(json);
   Map<String, dynamic> toJson() => _$ViewThreadResultToJson(this);
 
+
+
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class ThreadVariables extends BaseVariableResult{
 
   @JsonKey(name:"thread")
@@ -75,7 +77,7 @@ class ThreadVariables extends BaseVariableResult{
 
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class DetailedThreadInfo {
 
   @StringToIntConverter()
@@ -172,7 +174,7 @@ class DetailedThreadInfo {
   Map<String, dynamic> toJson() => _$DetailedThreadInfoToJson(this);
 }
 
-@JsonSerializable(ignoreUnannotated: true, disallowUnrecognizedKeys: false)
+@JsonSerializable(ignoreUnannotated: true, disallowUnrecognizedKeys: false, explicitToJson: true)
 class ReplyCreditRule{
 
   final String tid = "0";
@@ -190,7 +192,7 @@ class ReplyCreditRule{
   Map<String, dynamic> toJson() => _$ReplyCreditRuleToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class Comment{
   @StringToIntConverter()
   int id = 0;
@@ -212,7 +214,7 @@ class Comment{
   Map<String, dynamic> toJson() => _$CommentToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class RewriteRule{
   @JsonKey(name: "portal_topic",defaultValue: "")
   String portalTopic = "";
@@ -239,7 +241,7 @@ class RewriteRule{
 
 }
 
-@JsonSerializable(ignoreUnannotated: true)
+@JsonSerializable(ignoreUnannotated: true, explicitToJson: true)
 class Poll{
   @JsonKey(name:"expirations")
   @SecondToDateTimeConverter()
@@ -268,7 +270,7 @@ class Poll{
   Map<String, dynamic> toJson() => _$PollToJson(this);
 }
 
-@JsonSerializable(ignoreUnannotated: true)
+@JsonSerializable(ignoreUnannotated: true, explicitToJson: true)
 class PollOption{
   @JsonKey(name: "polloptionid")
   @StringToIntConverter()

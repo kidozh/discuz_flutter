@@ -4,6 +4,7 @@
 import 'package:discuz_flutter/dao/DiscuzDao.dart';
 import 'package:discuz_flutter/dao/ImageAttachmentDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
+import 'package:discuz_flutter/dao/ViewThreadScrollDistanceDao.dart';
 import 'package:discuz_flutter/entity/BlockUser.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzAuthentication.dart';
@@ -13,6 +14,8 @@ import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
 import 'package:discuz_flutter/entity/ImageAttachment.dart';
 import 'package:discuz_flutter/entity/TrustHost.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
+import 'package:discuz_flutter/entity/ViewThreadCache.dart';
+import 'package:discuz_flutter/entity/ViewThreadScrollDistance.dart';
 import 'package:hive/hive.dart';
 
 import '../dao/BlockUserDao.dart';
@@ -22,6 +25,7 @@ import '../dao/FavoriteThreadDao.dart';
 import '../dao/SmileyDao.dart';
 import '../dao/TrustHostDao.dart';
 import '../dao/UserDao.dart';
+import '../dao/ViewThreadCacheDao.dart';
 import '../entity/Smiley.dart';
 import '../entity/User.dart';
 
@@ -38,6 +42,8 @@ class AppDatabase{
   static Box<ImageAttachment>? imageAttachmentBox;
   static Box<Draft>? draftBox;
   static Box<String>? discuzConfigBox;
+  static Box<ViewThreadScrollDistance>? viewThreadScrollDistanceBox;
+  static Box<ViewThreadCache>? viewThreadCacheBox;
 
   static Future<void> initBoxes() async {
     Hive
@@ -52,6 +58,8 @@ class AppDatabase{
       ..registerAdapter(ImageAttachmentAdapter())
       ..registerAdapter(DiscuzAuthenticationAdapter())
       ..registerAdapter(DraftAdapter())
+      ..registerAdapter(ViewThreadCacheAdapter())
+      ..registerAdapter(ViewThreadScrollDistanceAdapter())
     ;
 
 
@@ -68,6 +76,8 @@ class AppDatabase{
     await getImageAttachmentDao();
     await getDraftDao();
     await getDiscuzConfigBox();
+    await getViewThreadCacheBox();
+    await getViewThreadScrollDistanceBox();
   }
 
 
@@ -158,6 +168,36 @@ class AppDatabase{
     }
 
     return discuzConfigBox!;
+  }
+
+  static Future<Box<ViewThreadCache>> getViewThreadCacheBox() async {
+    if(viewThreadCacheBox == null){
+      viewThreadCacheBox = await Hive.openBox<ViewThreadCache>('${hiveBoxPrefix}_viewthread_cache');
+    }
+
+    return viewThreadCacheBox!;
+  }
+
+  static Future<ViewThreadCacheDao> getViewThreadCacheDao() async {
+    Box<ViewThreadCache> viewThreadCacheBox = await getViewThreadCacheBox();
+
+    return ViewThreadCacheDao(viewThreadCacheBox);
+  }
+
+
+
+  static Future<Box<ViewThreadScrollDistance>> getViewThreadScrollDistanceBox() async {
+    if(viewThreadScrollDistanceBox == null){
+      viewThreadScrollDistanceBox = await Hive.openBox<ViewThreadScrollDistance>('${hiveBoxPrefix}_viewthread_scroll_distance');
+    }
+
+    return viewThreadScrollDistanceBox!;
+  }
+
+  static Future<ViewThreadScrollDistanceDao> getViewThreadScrollDistanceDao() async {
+    Box<ViewThreadScrollDistance> viewThreadScrollDistanceBox = await getViewThreadScrollDistanceBox();
+
+    return ViewThreadScrollDistanceDao(viewThreadScrollDistanceBox);
   }
 
 
