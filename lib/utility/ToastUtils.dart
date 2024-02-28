@@ -9,6 +9,7 @@ class ToastUtils{
   static Future<void> showSuccessfulToast(String msg) {
     return EasyLoading.showSuccess(
         msg,
+        duration: Durations.medium1
     );
 
   }

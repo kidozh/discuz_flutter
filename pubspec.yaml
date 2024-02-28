@@ -57,7 +57,6 @@ dependencies:
   webview_cookie_manager: ^2.0.6
   intl: ^0.18.0
   flutter_platform_widgets: ^6.0.2
-  vibration: ^1.8.4
   flutter_launcher_icons: ^0.13.1
   extended_text_field: ^13.0.1
   image_picker: ^1.0.4
@@ -99,6 +98,7 @@ dependencies:
   google_fonts: ^4.0.4
   chinese_font_library: ^1.1.0
   toastification: ^1.2.1
+  haptic_feedback: ^0.4.2
 
 
 dev_dependencies:

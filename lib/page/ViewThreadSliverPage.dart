@@ -305,7 +305,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             _scrollController.animateTo(offset, duration: Durations.medium4, curve: Curves.easeInOut);
           }
           // Toast here
-          ToastUtils.showInfoToast(context, S.of(context).animateToLastReadingPosition);
+          ToastUtils.showSuccessfulToast(S.of(context).animateToLastReadingPosition);
         }
 
       }
