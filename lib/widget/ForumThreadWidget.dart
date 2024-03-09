@@ -144,7 +144,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
           child: PlatformWidgetBuilder(
               material: (context, child, platform) => Card(
                 elevation: selected ? 0.0: 2.0,
-                color: selected? Theme.of(context).colorScheme.primaryContainer: Theme.of(context).colorScheme.background,
+                //color: selected? Theme.of(context).colorScheme.primaryContainer: Theme.of(context).colorScheme.background,
                 surfaceTintColor: selected? Theme.of(context).colorScheme.primaryContainer:
                 Theme.of(context).brightness == Brightness.light? Colors.white: Colors.black45,
                 // color: Theme.of(context).colorScheme.background,
@@ -348,12 +348,13 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
               selected: selected,
               leading: UserAvatar(
                 _discuz, _forumThread.getAuthorId(), _forumThread.author,
-                size: 48,
+                size: 40,
                 disableTap: true,
               ),
               title: Text(_forumThread.subject, style: TextStyle(
                   color: selected? Theme.of(context).colorScheme.primary: viewed? Theme.of(context).disabledColor :null,
                   fontWeight: selected? FontWeight.bold: viewed? FontWeight.w400: FontWeight.normal,
+                  fontSize: Theme.of(context).textTheme.titleMedium?.fontSize
               )),
               subtitle: RichText(
                 text: TextSpan(
@@ -361,6 +362,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       color: selected? Theme.of(context).colorScheme.primary: Theme.of(context).disabledColor,
                       fontWeight: selected? FontWeight.normal : viewed? FontWeight.w300: null,
+                      fontSize: Theme.of(context).textTheme.bodySmall?.fontSize
                       //fontSize: 12
                   ),
                   //style: ..copyWith(color: selected? Theme.of(context).colorScheme.onPrimary: null),
@@ -401,11 +403,11 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                     text: TextSpan(
                         text: "",
                         style: TextStyle(
-
+                          fontSize: 12
                         ),
                         children: <TextSpan>[
                           if(threadCategory.isNotEmpty)
-                            TextSpan(text: " · ", style: viewed? TextStyle(color: Theme.of(context).disabledColor) : TextStyle(
+                            TextSpan(text: "   ", style: viewed? TextStyle(color: Theme.of(context).disabledColor) : TextStyle(
                                 color:  Theme.of(context).disabledColor
                             )),
 

@@ -26,16 +26,17 @@ class DiscuzNotificationWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if(child!=null)
-            child!,
+            child,
             Divider(),
           ],
         );
       },
       material: (context, child, platform){
         return Card(
-          elevation: 6.0,
+          elevation: 8.0,
+
           // color: brightness == Brightness.light? Colors.white: Colors.black45,
-          // surfaceTintColor: brightness == Brightness.light? Colors.white: Colors.black45,
+          surfaceTintColor: brightness == Brightness.light? Colors.white: Colors.black45,
           child: Padding(
             padding: EdgeInsets.all(4.0),
             child: child,

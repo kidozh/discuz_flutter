@@ -46,7 +46,7 @@ class ErrorCard extends StatelessWidget{
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(discuzError.content, style: Theme.of(context).textTheme.headlineSmall),
-                  Text(getErrorLocalizedKey(context), style: Theme.of(context).textTheme.bodyMedium,),
+                  //Text(getErrorLocalizedKey(context), style: Theme.of(context).textTheme.bodyMedium,),
 
                 ],
               ),
@@ -67,7 +67,8 @@ class ErrorCard extends StatelessWidget{
     else{
       return MaterialBanner(
         leading: Icon(getErrorIcon(context), color: Theme.of(context).colorScheme.error,),
-        content: Text("${discuzError.content}(${getErrorLocalizedKey(context)})"),
+        content: Text("${discuzError.content}"),
+        //content: Text("${discuzError.content}(${getErrorLocalizedKey(context)})"),
         actions: [
           if(errorType!= ErrorType.userExpired && onRefreshCallback!=null)
             TextButton(

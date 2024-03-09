@@ -236,9 +236,10 @@ class PostState extends State<PostStatefulWidget> {
       // should return the container
       return PlatformWidgetBuilder(
         material: (_, child, platform) => Card(
-          surfaceTintColor: Theme.of(context).colorScheme.background,
-          color: Theme.of(context).colorScheme.background,
-          elevation: _post.first ? 0 : 2.0,
+          //surfaceTintColor: Theme.of(context).colorScheme.background,
+          surfaceTintColor: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.black38,
+          //color: Theme.of(context).colorScheme.background,
+          elevation: _post.first ? 0 : 8.0,
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 12.0),
             child: child,
@@ -286,6 +287,7 @@ class PostState extends State<PostStatefulWidget> {
         // banned or warn
         if (_post.status & POST_BLOCKED != 0) getPostBlockedBlock(context),
         if (_post.status & POST_WARNED != 0) getPostWarnBlock(context),
+        if (_post.status & POST_REVISED != 0) getPostRevisedBlock(context),
 
         // rich text rendering
         Padding(
