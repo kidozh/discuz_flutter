@@ -172,6 +172,7 @@ class MyApp extends StatelessWidget {
             ).harmonized(),
             useMaterial3: themeColorEntity.useMaterial3,
             textTheme: typography.black.useSystemChineseFont(Brightness.light),
+            
         );
 
         final materialThemeDataDark = ThemeData.from(
