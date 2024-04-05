@@ -1,5 +1,7 @@
 
 
+import '../provider/TypeSettingNotifierProvider.dart';
+
 class PostTextUtils{
   static String replaceCollapseTag(String string){
     //log("Recv html $string");
@@ -24,7 +26,7 @@ class PostTextUtils{
 
   static String replaceSpoilTag(String string){
     string = string
-        .replaceAll(RegExp(r"\[spoil.*?\]"), r'<spoil><br/>')
+        .replaceAll(RegExp(r"\[spoil.*?\]"), r'<spoil>')
         .replaceAll(RegExp(r"\[/spoil\]"), r"</spoil>");
 
     return string;
@@ -51,12 +53,16 @@ class PostTextUtils{
     return string;
   }
 
-  static String getDecodedString(String html){
+  static String getDecodedString(String html, bool useCompactParagraph){
     String decodedString = replaceCollapseTag(html);
     decodedString = replaceSpoilTag(decodedString);
     decodedString = replaceCountDownTag(decodedString);
     decodedString = replaceMediaTag(decodedString);
     decodedString = decodedString;
+    // if(useCompactParagraph){
+    //   decodedString = decodedString.replaceAll(RegExp(r"<br.*?/>"), "");
+    // }
+
     return decodedString;
   }
 

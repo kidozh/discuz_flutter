@@ -790,5 +790,6 @@
   "useThinFont": "细体文字",
   "noForumIsCachedTitle": "在此设备上没有板块信息",
   "noForumIsCachedSubtitle": "请点击‘索引’，然后加载所有板块信息后，再回来看看？",
-  "animateToLastReadingPosition": "已为你跳转到上次阅读的进度."
+  "animateToLastReadingPosition": "已为你跳转到上次阅读的进度.",
+  "compactTypography": "紧凑文本段落"
 }

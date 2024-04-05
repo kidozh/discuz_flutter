@@ -130,4 +130,6 @@ class AppPlatformIcons{
   IconData get fontWeightOutline => isMaterial(context)? Icons.font_download_outlined : CupertinoIcons.f_cursive_circle;
 
   IconData get linkSolid => isMaterial(context)? Icons.link_rounded : CupertinoIcons.link;
+
+  IconData get compactParagraphOutline => isMaterial(context)? Icons.text_fields : CupertinoIcons.text_insert;
 }

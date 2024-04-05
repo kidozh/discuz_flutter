@@ -258,6 +258,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "colorTeal": MessageLookupByLibrary.simpleMessage("Teal"),
         "colorYellow": MessageLookupByLibrary.simpleMessage("Yellow"),
         "common": MessageLookupByLibrary.simpleMessage("Common"),
+        "compactTypography":
+            MessageLookupByLibrary.simpleMessage("Compact paragraph"),
         "completeLoad": MessageLookupByLibrary.simpleMessage("Load done"),
         "completeRefresh": MessageLookupByLibrary.simpleMessage("Refresh done"),
         "connectServerWhenAdding": MessageLookupByLibrary.simpleMessage(

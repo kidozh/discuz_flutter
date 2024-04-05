@@ -67,6 +67,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
         Typography typography = Typography.material2021();
         String platformName = Provider.of<ThemeNotifierProvider>(context, listen: false).platformName;
         TargetPlatform targetPlatform = TargetPlatform.android;
+        bool useCompactParagraph = typesetting.useCompactParagraph;
 
         switch(platformName){
           case "ios":{
@@ -106,7 +107,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
 
         return Html(
           //shrinkWrap: true,
-          data: PostTextUtils.getDecodedString(html),
+          data: PostTextUtils.getDecodedString(html, useCompactParagraph),
 
           style: {
             "p": Style(
@@ -195,6 +196,9 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 fontStyle: textTheme.titleSmall?.fontStyle,
                 backgroundColor: textTheme.titleSmall?.backgroundColor
             ),
+            "br": Style(
+              lineHeight: useCompactParagraph? LineHeight(0.4): null,
+            )
 
 
           },

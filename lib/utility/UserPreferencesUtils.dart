@@ -456,6 +456,19 @@ class UserPreferencesUtils{
     return value == null? false: value;
   }
 
+  static final String useCompactParagraphPreferenceKey = "useCompactParagraphPreferenceKey";
+
+  static Future<void> putUseCompactParagraphPreference(bool value) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(useCompactParagraphPreferenceKey, value);
+  }
+
+  static Future<bool> getUseCompactParagraphPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool? value =  prefs.getBool(useCompactParagraphPreferenceKey);
+    return value == null? true: value;
+  }
+
 
 
 }

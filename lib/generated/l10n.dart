@@ -5340,6 +5340,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Compact paragraph`
+  String get compactTypography {
+    return Intl.message(
+      'Compact paragraph',
+      name: 'compactTypography',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

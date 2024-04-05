@@ -62,6 +62,15 @@ class TypeSettingNotifierProvider with ChangeNotifier{
 
   bool get useThinFontWeight => _useThinFontWeight;
 
+  bool _useCompactParagraph = false;
+
+  set useCompactParagraph(bool value){
+    this._useCompactParagraph = value;
+    notifyListeners();
+  }
+
+  bool get useCompactParagraph => _useCompactParagraph;
+
 
 
 }

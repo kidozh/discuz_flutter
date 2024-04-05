@@ -45,6 +45,7 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
 
   bool ignoreCustomFontStyle = false;
   bool _useThinFont = true;
+  bool _useCompactParagraph = true;
 
   @override
   void initState() {
@@ -56,9 +57,11 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
   void getPreference() async {
     bool ignoreCustomFontStyleSetting = await UserPreferencesUtils.getDisableFontCustomizationPreference();
     bool useThinFont = await UserPreferencesUtils.getUseThinFontPreference();
+    bool useCompactParagraph = await UserPreferencesUtils.getUseCompactParagraphPreference();
     setState(() {
       ignoreCustomFontStyle = ignoreCustomFontStyleSetting;
       _useThinFont = useThinFont;
+      _useCompactParagraph = useCompactParagraph;
     });
   }
 
@@ -124,6 +127,19 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
                       _useThinFont = value;
                     });
                   }, initialValue: _useThinFont,
+                ),
+                SettingsTile.switchTile(
+                  title: Text(S.of(context).compactTypography),
+                  activeSwitchColor: Theme.of(context).colorScheme.primary,
+                  leading: Icon(AppPlatformIcons(context).compactParagraphOutline),
+                  onToggle: (bool value) {
+                    VibrationUtils.vibrateWithSwitchIfPossible();
+                    UserPreferencesUtils.putUseCompactParagraphPreference(value);
+                    Provider.of<TypeSettingNotifierProvider>(context, listen: false).useCompactParagraph = value;
+                    setState(() {
+                      _useCompactParagraph = value;
+                    });
+                  }, initialValue: _useCompactParagraph,
                 ),
                 SettingsTile.navigation(
                   title: Text(S.of(context).chooseTypographyTheme),
