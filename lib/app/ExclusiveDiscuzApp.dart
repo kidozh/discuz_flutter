@@ -128,6 +128,7 @@ class ExclusiveDiscuzApp extends StatelessWidget {
                           print(
                               "Locale ${locale.languageCode},${locale.scriptCode}, ${locale.countryCode}");
                         }
+                        return null;
                       },
                       builder: EasyLoading.init(),
                       home: ExclusiveDiscuzPortalPage(_discuz),

@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:discuz_flutter/JsonResult/UserProfileResult.dart';
-import 'package:discuz_flutter/entity/Post.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 class MedalListConverter implements JsonConverter<List<Medal>, Object?> {

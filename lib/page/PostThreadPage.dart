@@ -6,7 +6,6 @@ import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/PostTextField.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -420,7 +419,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                                 S.of(context).send,
                                 style: TextStyle(
                                     color:
-                                    Theme.of(context).primaryTextTheme.button?.color),
+                                    Theme.of(context).primaryTextTheme.labelLarge?.color),
                               ),
                               onPressed: () {
                                 VibrationUtils.vibrateWithClickIfPossible();

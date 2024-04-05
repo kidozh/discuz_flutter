@@ -49,17 +49,12 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
       deviceSignature = _deviceSignature == null? "": _deviceSignature;
     });
     String? signatureInPreference = await UserPreferencesUtils.getSignaturePreference();
-    if(signatureInPreference == null){
-      setSignature(PostTextFieldUtils.NO_SIGNATURE);
+    setSignature(signatureInPreference);
+    log("Get signature $signatureInPreference");
+    if(signatureInPreference != PostTextFieldUtils.USE_DEVICE_SIGNATURE){
+      controller.text= signatureInPreference;
     }
-    else{
-      setSignature(signatureInPreference);
-      log("Get signature $signatureInPreference");
-      if(signatureInPreference != PostTextFieldUtils.USE_DEVICE_SIGNATURE){
-        controller.text= signatureInPreference;
-      }
-    }
-
+  
   }
 
   @override

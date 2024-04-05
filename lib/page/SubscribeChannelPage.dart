@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:discuz_flutter/JsonResult/SubscribeChannelResult.dart';
 import 'package:discuz_flutter/client/PushServiceClient.dart';
@@ -8,8 +7,6 @@ import 'package:discuz_flutter/screen/LoadingScreen.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';

@@ -13,14 +13,12 @@ import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/HotThreadWidget.dart';
-import 'package:discuz_flutter/widget/ThreadSlideShowCarouselWidget.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/DiscuzNotificationProvider.dart';
-import '../provider/SelectedTidNotifierProvider.dart';
 import '../utility/EasyRefreshUtils.dart';
 import '../utility/MobileSignUtils.dart';
 import '../widget/AppBannerAdWidget.dart';

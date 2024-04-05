@@ -101,6 +101,7 @@ dependencies:
   haptic_feedback: ^0.4.2
 
 
+  firebase_core: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

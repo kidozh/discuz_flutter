@@ -1,6 +1,5 @@
 
 
-import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
 import 'dart:async';
 import 'dart:io';

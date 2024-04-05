@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
-import 'package:discuz_flutter/entity/Post.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 class ViewThreadCommentConverter implements JsonConverter<Map<String, List<Comment>>, Object?> {

@@ -24,7 +24,6 @@ import '../widget/AppBannerAdWidget.dart';
 import '../widget/ErrorCard.dart';
 import '../widget/LoadingStateWidget.dart';
 import '../widget/NewThreadWidget.dart';
-import '../widget/ThreadSlideShowCarouselWidget.dart';
 import 'EmptyListScreen.dart';
 import 'NullDiscuzScreen.dart';
 

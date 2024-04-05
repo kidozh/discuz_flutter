@@ -14,7 +14,6 @@ import 'package:provider/provider.dart';
 import '../entity/Discuz.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../provider/UserPreferenceNotifierProvider.dart';
-import '../utility/AppPlatformIcons.dart';
 import '../utility/PushServiceUtils.dart';
 import 'SubscribeChannelPage.dart';
 

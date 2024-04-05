@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
@@ -18,7 +17,6 @@ import '../entity/Discuz.dart';
 import '../entity/DiscuzAuthentication.dart';
 import '../generated/l10n.dart';
 import '../utility/AppPlatformIcons.dart';
-import '../utility/CustomizeColor.dart';
 
 class DiscuzAuthenticationPage extends StatefulWidget {
   @override

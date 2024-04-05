@@ -135,7 +135,7 @@ class _PrivateMessagePortalState
       try {
         //_controller.resetLoadState();
         _controller.finishRefresh();
-      } catch (e, s) {}
+      } catch (e) {}
       return IndicatorResult.fail;
       setState(() {
         _error =

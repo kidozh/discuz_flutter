@@ -2,7 +2,6 @@ import 'package:discuz_flutter/entity/NewThread.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:discuz_flutter/converter/StringToIntConverter.dart';
-import 'package:discuz_flutter/entity/Post.dart';
 
 
 import 'BaseResult.dart';

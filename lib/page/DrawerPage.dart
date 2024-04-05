@@ -7,9 +7,7 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/FavoriteThreadPage.dart';
 import 'package:discuz_flutter/page/ShortcutPage.dart';
-import 'package:discuz_flutter/page/SubscribeChannelPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -25,7 +23,6 @@ import 'LoginPage.dart';
 import 'ManageAccountPage.dart';
 import 'ManageDiscuzPage.dart';
 import 'ManageTrustHostPage.dart';
-import 'PushServicePage.dart';
 import 'SettingPage.dart';
 import 'ViewHistoryPage.dart';
 

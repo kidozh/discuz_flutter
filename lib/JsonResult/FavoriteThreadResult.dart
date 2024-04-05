@@ -1,6 +1,5 @@
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:discuz_flutter/converter/SecondToDateTimeConverter.dart';
-import 'package:discuz_flutter/converter/StringToBoolConverter.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
 import 'package:json_annotation/json_annotation.dart';

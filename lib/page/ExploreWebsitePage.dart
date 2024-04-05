@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -66,8 +65,7 @@ class ExploreWebsiteState extends State<ExploreWebsitePage> {
 }
 
 class NavigationControls extends StatelessWidget {
-  const NavigationControls(this._webViewControllerFuture)
-      : assert(_webViewControllerFuture != null);
+  const NavigationControls(this._webViewControllerFuture);
 
   final Future<WebViewController> _webViewControllerFuture;
 

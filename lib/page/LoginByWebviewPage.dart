@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
@@ -210,7 +209,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           EasyLoading.showSuccess(S.of(context).signInSuccessTitle(user.username, discuz.siteName));
           Navigator.pop(context);
         }
-        catch(e,s){
+        catch(e){
           VibrationUtils.vibrateErrorIfPossible();
           EasyLoading.showError(e.toString());
         }
@@ -233,8 +232,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
 
 
 class NavigationControls extends StatelessWidget {
-  const NavigationControls(this._webViewControllerFuture)
-      : assert(_webViewControllerFuture != null);
+  const NavigationControls(this._webViewControllerFuture);
 
   final Future<WebViewController> _webViewControllerFuture;
 

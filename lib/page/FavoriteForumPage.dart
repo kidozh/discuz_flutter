@@ -9,7 +9,6 @@ import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
@@ -132,31 +131,26 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget>{
 
   @override
   Widget build(BuildContext context) {
-    if(_favoriteForumDao == null){
-      return BlankScreen();
-    }
-    else{
-      return ValueListenableBuilder(
-        valueListenable: _favoriteForumDao.favoriteForumBox.listenable(),
-        builder: (BuildContext context, Box<FavoriteForumInDatabase> value, Widget? child) {
-          List<FavoriteForumInDatabase> favoriteForumList = _favoriteForumDao.getFavoriteForumList(_discuz);
-          if(favoriteForumList.isNotEmpty){
-            return ListView.builder(
-                itemBuilder:(context, index){
-                  return FavoriteForumCardWidget(_discuz, _user, favoriteForumList[index]);
-                },
+    return ValueListenableBuilder(
+      valueListenable: _favoriteForumDao.favoriteForumBox.listenable(),
+      builder: (BuildContext context, Box<FavoriteForumInDatabase> value, Widget? child) {
+        List<FavoriteForumInDatabase> favoriteForumList = _favoriteForumDao.getFavoriteForumList(_discuz);
+        if(favoriteForumList.isNotEmpty){
+          return ListView.builder(
+              itemBuilder:(context, index){
+                return FavoriteForumCardWidget(_discuz, _user, favoriteForumList[index]);
+              },
 
-                itemCount: favoriteForumList.length
-            );
-          }
-          else{
-            return EmptyListScreen(EmptyItemType.forum);
-          }
-        },
+              itemCount: favoriteForumList.length
+          );
+        }
+        else{
+          return EmptyListScreen(EmptyItemType.forum);
+        }
+      },
 
-      );
+    );
     }
-  }
 
 }
 

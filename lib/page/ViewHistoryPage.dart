@@ -208,7 +208,7 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
                           return Column(
                               children: [
                                 if(child!=null)
-                                  child!,
+                                  child,
                                 Divider()
                           ]);
                         },

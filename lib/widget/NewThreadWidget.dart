@@ -1,29 +1,11 @@
 
-import 'dart:developer';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:discuz_flutter/dao/BlockUserDao.dart';
-import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
-import 'package:discuz_flutter/database/AppDatabase.dart';
-import 'package:discuz_flutter/entity/BlockUser.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/NewThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
-import 'package:discuz_flutter/generated/l10n.dart';
-import 'package:discuz_flutter/page/UserProfilePage.dart';
-import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
-import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/utility/CustomizeColor.dart';
-import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
-import 'package:discuz_flutter/utility/URLUtils.dart';
-import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart';
 
-import '../entity/ViewHistory.dart';
 
 // ignore: must_be_immutable
 class NewThreadWidget extends StatelessWidget{

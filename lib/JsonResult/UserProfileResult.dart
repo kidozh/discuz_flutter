@@ -125,7 +125,7 @@ class SpaceVariables{
     try{
       return _$SpaceVariablesFromJson(json);
     }
-    catch (e,s){
+    catch (e){
       return SpaceVariables();
     }
   }

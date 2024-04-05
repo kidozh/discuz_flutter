@@ -93,7 +93,7 @@ class ManageDiscuzState extends State<ManageDiscuzStateWidget>{
         valueListenable: _discuzDao!.discuzBox.listenable(),
         builder: (BuildContext context, value, Widget? child) {
           List<Discuz>? discuzList =  _discuzDao!.findAllDiscuzs();
-          if(discuzList == null || discuzList.isEmpty){
+          if(discuzList.isEmpty){
             return NullUserScreen();
           }
           else {

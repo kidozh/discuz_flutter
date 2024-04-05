@@ -13,7 +13,6 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -414,7 +413,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
       }
 
     }
-    catch(e,s){
+    catch(e){
       print("response ${respString} is not a integer");
     };
 
@@ -534,7 +533,7 @@ class ExtraFuncBlockButton extends StatelessWidget{
           children: [
             Icon(icons, size: 24, color: Theme.of(context).unselectedWidgetColor,),
             SizedBox(height: 6,),
-            Text(text, style: Theme.of(context).textTheme.subtitle1,)
+            Text(text, style: Theme.of(context).textTheme.titleMedium,)
           ],
         ),
       ),

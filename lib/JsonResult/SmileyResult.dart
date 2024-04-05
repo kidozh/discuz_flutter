@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:discuz_flutter/entity/Smiley.dart';

@@ -1,5 +1,4 @@
 
-import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 class ThreadTypeConverter implements JsonConverter<Map<String,String>, Object?> {

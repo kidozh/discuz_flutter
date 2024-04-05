@@ -80,7 +80,7 @@ class ManageTrustHostState extends State<ManageTrustHostStateWidget>{
           valueListenable: _trustHostDao!.trustHostBox.listenable(),
         builder: (BuildContext context, Box<TrustHost> value, Widget? child) {
             List<TrustHost> list = _trustHostDao!.findAllTrustHosts();
-            if(list == null || list.isEmpty){
+            if(list.isEmpty){
               return EmptyListScreen(EmptyItemType.trustHost);
             }
             else {
