@@ -33,7 +33,6 @@ class ManageTrustHostStateWidget extends StatefulWidget{
 
   @override
   ManageTrustHostState createState() {
-    // TODO: implement createState
     return ManageTrustHostState();
   }
 
