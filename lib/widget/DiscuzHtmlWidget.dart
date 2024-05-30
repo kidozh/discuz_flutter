@@ -483,7 +483,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                             children: [
                               SlideCountdown(
                                 duration: duration,
-                                textStyle: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.bold),
+                                style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.bold),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.all(Radius.circular(20)),
                                   color: Theme.of(context).colorScheme.primary,

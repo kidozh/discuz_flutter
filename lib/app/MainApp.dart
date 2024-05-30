@@ -296,8 +296,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    print("Update token to all applicable discuzes");
-    PushServiceUtils.updateTokenToAllApplicableDiscuzes(context);
+    // print("Update token to all applicable discuzes");
+    // PushServiceUtils.updateTokenToAllApplicableDiscuzes(context);
 
   }
 
@@ -305,27 +305,27 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
 
   Future<void> checkIfNotificationIsTap()async {
-    Push.Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data){
-      if (data == null) {
-        print("App was not launched by tapping a notification");
-      } else {
-
-        try{
-          Map<String, dynamic> msgData = data.cast<String, dynamic>();
-          PushServiceUtils.handleMessage(msgData, this.navigatorKey);
-
-
-        }
-        catch (e){
-
-        }
-
-        //PushServiceUtils.firebaseMessagingBackgroundHandlerByMsg(data);
-        print('Notification tap launched app from terminated state:\n'
-            'RemoteMessage: ${data} \n');
-      }
-
-    });
+    // Push.Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data){
+    //   if (data == null) {
+    //     print("App was not launched by tapping a notification");
+    //   } else {
+    //
+    //     try{
+    //       Map<String, dynamic> msgData = data.cast<String, dynamic>();
+    //       //PushServiceUtils.handleMessage(msgData, this.navigatorKey);
+    //
+    //
+    //     }
+    //     catch (e){
+    //
+    //     }
+    //
+    //     //PushServiceUtils.firebaseMessagingBackgroundHandlerByMsg(data);
+    //     print('Notification tap launched app from terminated state:\n'
+    //         'RemoteMessage: ${data} \n');
+    //   }
+    //
+    // });
   }
 
 

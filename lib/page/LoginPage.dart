@@ -265,48 +265,6 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
             await _saveAuthentificationToSecureDatabase();
           }
 
-          // to popup a token
-          bool allowPush = await UserPreferencesUtils.getPushPreference();
-          if (allowPush) {
-            showPlatformDialog(
-                context: context,
-                builder: (_) => PlatformAlertDialog(
-                      title: Text(S.of(context).registerPushTokenTitle),
-                      content: Text(S.of(context).registerPushTokenMessage),
-                      actions: [
-                        PlatformDialogAction(
-                          child: Text(S.of(context).ok),
-                          onPressed: () async {
-                            VibrationUtils.vibrateWithClickIfPossible();
-                            Provider.of<DiscuzAndUserNotifier>(context,
-                                    listen: false)
-                                .setUser(user);
-                            await Navigator.push(
-                                context,
-                                platformPageRoute(
-                                    context: context,
-                                    builder: (context) => PushServicePage()));
-                          },
-                        ),
-                        PlatformDialogAction(
-                          child: Text(S.of(context).cancel),
-                          onPressed: () {
-                            VibrationUtils.vibrateWithClickIfPossible();
-                            Provider.of<DiscuzAndUserNotifier>(context,
-                                    listen: false)
-                                .setUser(user);
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                          },
-                        )
-                      ],
-                    ));
-          } else {
-            Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-                .setUser(user);
-            Navigator.pop(context);
-          }
-
         } catch (e, s) {
           VibrationUtils.vibrateErrorIfPossible();
           log("${e},${s}");

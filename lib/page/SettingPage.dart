@@ -119,27 +119,27 @@ class _SettingPageState extends State<SettingPage> {
                     });
                   }, initialValue: recordHistory,
                 ),
-                SettingsTile.navigation(
-                  title: Text(S.of(context).pushNotification),
-                  leading: Icon(AppPlatformIcons(context).pushServiceOutlined),
-                  value: Consumer<UserPreferenceNotifierProvider>(
-                    builder: (context, userPreference, child){
-                      if(userPreference.allowPush){
-                        return Text(S.of(context).pushNotificationOn);
-                      }
-                      else{
-                        return Text(S.of(context).pushNotificationOff);
-                      }
-                    },
-                  ),
-                  onPressed: (context){
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.of(context).push(platformPageRoute(
-                      builder: (_) => SetPushNotificationPage(),
-                      context: context,
-                    ));
-                  },
-                )
+                // SettingsTile.navigation(
+                //   title: Text(S.of(context).pushNotification),
+                //   leading: Icon(AppPlatformIcons(context).pushServiceOutlined),
+                //   value: Consumer<UserPreferenceNotifierProvider>(
+                //     builder: (context, userPreference, child){
+                //       if(userPreference.allowPush){
+                //         return Text(S.of(context).pushNotificationOn);
+                //       }
+                //       else{
+                //         return Text(S.of(context).pushNotificationOff);
+                //       }
+                //     },
+                //   ),
+                //   onPressed: (context){
+                //     VibrationUtils.vibrateWithClickIfPossible();
+                //     Navigator.of(context).push(platformPageRoute(
+                //       builder: (_) => SetPushNotificationPage(),
+                //       context: context,
+                //     ));
+                //   },
+                // )
               ],
             ),
             SettingsSection(

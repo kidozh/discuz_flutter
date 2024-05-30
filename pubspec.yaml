@@ -50,37 +50,37 @@ dependencies:
   path_provider: ^2.0.8
   progress_state_button: ^1.0.4
   url_launcher: ^6.0.17
-  photo_view: ^0.14.0
+  photo_view: ^0.15.0
   permission_handler: ^11.0.0
   # open_file: ^3.2.1
   flutter_slidable:
   webview_cookie_manager: ^2.0.6
   intl: ^0.18.0
-  flutter_platform_widgets: ^6.0.2
+  flutter_platform_widgets: ^7.0.0
   flutter_launcher_icons: ^0.13.1
-  extended_text_field: ^13.0.1
+  extended_text_field: ^14.0.0
   image_picker: ^1.0.4
   flutter_image_compress: ^2.0.4
-  package_info_plus: ^4.1.0
+  package_info_plus: ^8.0.0
   flutter_native_splash: ^2.3.2
-  slide_countdown: ^0.6.0
+  slide_countdown: ^1.6.1
 
   hive: any
   hive_flutter: any
-  device_info_plus: ^9.0.3
-  share_plus: ^7.1.0
+  device_info_plus: ^10.1.0
+  share_plus: ^9.0.0
   firebase_messaging: ^14.7.15
   font_awesome_flutter: ^10.1.0
   firebase_analytics: ^10.8.5
-  flutter_local_notifications: ^15.1.1
+  flutter_local_notifications: ^17.1.2
   # flutter_apns: ^1.6.0
   scroll_to_index: any
   easy_refresh: ^3.0.2+2
   open_filex: ^4.0.1
   flutter_polls: ^0.1.0
   skeletons: ^0.0.3
-  push: ^1.0.5
-  google_mobile_ads: ^4.0.0
+  push: ^2.3.0
+  google_mobile_ads: ^5.1.0
   image_gallery_saver: ^2.0.3
   dynamic_color: ^1.6.7
   intl_utils: ^2.8.1
@@ -91,13 +91,13 @@ dependencies:
   flutter_html_svg: ^3.0.0-beta.2
   flutter_html_table: ^3.0.0-beta.2
   flutter_html_video: ^3.0.0-beta.2
-  upgrader: ^8.1.0
+  upgrader: ^10.3.0
   flutter_secure_storage: ^9.0.0
   local_auth: ^2.1.7
   flex_color_picker: ^3.3.1
-  google_fonts: ^4.0.4
+  google_fonts: ^6.2.1
   chinese_font_library: ^1.1.0
-  toastification: ^1.2.1
+  toastification: ^2.0.0
   haptic_feedback: ^0.4.2
 
 

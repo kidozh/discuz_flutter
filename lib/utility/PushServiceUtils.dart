@@ -190,24 +190,24 @@ class PushServiceUtils{
 
     });
 
-    Push.instance.onMessage.listen((message) {
-      print('RemoteMessage received while app is in foreground:\n'
-          'RemoteMessage.Notification: ${message.notification} \n'
-          ' title: ${message.notification?.title.toString()}\n'
-          ' body: ${message.notification?.body.toString()}\n'
-          'RemoteMessage.Data: ${message.data}');
-      firebaseMessagingBackgroundHandler(message);
-    });
+    // Push.instance.onMessage.listen((message) {
+    //   print('RemoteMessage received while app is in foreground:\n'
+    //       'RemoteMessage.Notification: ${message.notification} \n'
+    //       ' title: ${message.notification?.title.toString()}\n'
+    //       ' body: ${message.notification?.body.toString()}\n'
+    //       'RemoteMessage.Data: ${message.data}');
+    //   firebaseMessagingBackgroundHandler(message);
+    // });
 
     // Handle push notifications
-    Push.instance.onBackgroundMessage.listen((message) {
-      print('RemoteMessage received while app is in background:\n'
-          'RemoteMessage.Notification: ${message.notification} \n'
-          ' title: ${message.notification?.title.toString()}\n'
-          ' body: ${message.notification?.body.toString()}\n'
-          'RemoteMessage.Data: ${message.data}');
-      firebaseMessagingBackgroundHandler(message);
-    });
+    // Push.instance.onBackgroundMessage.listen((message) {
+    //   print('RemoteMessage received while app is in background:\n'
+    //       'RemoteMessage.Notification: ${message.notification} \n'
+    //       ' title: ${message.notification?.title.toString()}\n'
+    //       ' body: ${message.notification?.body.toString()}\n'
+    //       'RemoteMessage.Data: ${message.data}');
+    //   firebaseMessagingBackgroundHandler(message);
+    // });
 
     // Handle notification taps
     Push.instance.onNotificationTap.listen((data) {
