@@ -286,21 +286,37 @@ class FavoriteForumCardWidget extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Theme.of(context).colorScheme.primaryContainer,
-      elevation: isMaterial(context)?2.0:0.0,
+    return PlatformWidgetBuilder(
+      material: (context, child, platform){
+        return Card(
+          color: Theme.of(context).brightness == Brightness.light? Colors.red.shade50: Colors.red.shade800,
+          elevation: 4.0,
+          child: child,
+        );
+      },
+      cupertino: (context, child, platform){
+        return Column(
+          children: [
+            if(child!=null) Container(
+              child: child,
+            ),
+            Divider()
+          ],
+        );
+      },
       child: PlatformListTile(
+
         //dense: true,
-        leading: Icon(PlatformIcons(context).favoriteSolid, color: Theme.of(context).colorScheme.onPrimaryContainer,),
+        leading: Icon(PlatformIcons(context).favoriteSolid, color: Theme.of(context).brightness == Brightness.light? Colors.red.shade700: Colors.red.shade200,),
         title: Text(favoriteForumInDatabase.title,
           style: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-              //fontWeight: FontWeight.bold
+            color: Theme.of(context).brightness == Brightness.light? Colors.black87: Colors.white,
+            //fontWeight: FontWeight.bold
           ),
         ),
         subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, favoriteForumInDatabase.date),
           style: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              color: Theme.of(context).brightness == Brightness.light? Colors.black54: Colors.white54,
               fontWeight: FontWeight.normal
           ),
         ),
