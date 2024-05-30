@@ -59,6 +59,9 @@ class PostTextUtils{
     decodedString = replaceCountDownTag(decodedString);
     decodedString = replaceMediaTag(decodedString);
     decodedString = decodedString;
+    if(useCompactParagraph){
+      decodedString = decodedString.replaceAll(RegExp(r"<br.*?/>\s+<br.*?/>"), r"<br />");
+    }
     // if(useCompactParagraph){
     //   decodedString = decodedString.replaceAll(RegExp(r"<br.*?/>"), "");
     // }
