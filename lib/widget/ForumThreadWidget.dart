@@ -143,6 +143,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
         return InkWell(
           child: PlatformWidgetBuilder(
               material: (context, child, platform) => Card(
+
                 elevation: selected ? 0.0: 4.0,
                 color: selected? Theme.of(context).colorScheme.primaryContainer: Theme.of(context).colorScheme.background,
                 surfaceTintColor: selected? Theme.of(context).colorScheme.primaryContainer:
@@ -152,6 +153,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                   padding: EdgeInsets.only(bottom: 12.0),
                   child: child,
                 ),
+
               ),
               cupertino: (_, child, __) => Column(
                 mainAxisSize: MainAxisSize.min,
@@ -159,18 +161,21 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                 children: [
                   if(child!= null)
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 4.0),
-                      padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
+                      margin: selected? EdgeInsets.symmetric(horizontal: 4.0): null,
+                      padding: selected? EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0):null,
+
                       decoration: BoxDecoration(
                         color: selected? Theme.of(context).colorScheme.primaryContainer: null,
-                        borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                        borderRadius: selected? BorderRadius.all(Radius.circular(8.0)): null,
                       ),
                       //color: ,
                       child: child,
+
                     ),
                   if(!selected && !lastSelected)
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: EdgeInsets.symmetric(horizontal: 0),
+                    // padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: Divider(),
                   )
 

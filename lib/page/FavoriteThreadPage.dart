@@ -181,36 +181,24 @@ class FavoriteThreadCardWidget extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2.0,
+    return PlatformWidgetBuilder(
+
+      material: (context, child, platform) => Card(
+        elevation: 2.0,
+        child: child,
+      ),
+      cupertino: (_, child, __) => Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if(child!= null)
+            child,
+          Divider()
+
+        ],
+      ),
+
       child: ListTile(
-        leading: InkWell(
-          child: ClipRRect(
-
-            borderRadius: BorderRadius.circular(10000.0),
-            child: CachedNetworkImage(
-              imageUrl: URLUtils.getAvatarURL(discuz, favoriteThreadInDatabase.spaceUid.toString()),
-              progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-              errorWidget: (context, url, error) =>
-                  CircleAvatar(
-
-                    backgroundColor: CustomizeColor.getColorBackgroundById(favoriteThreadInDatabase.spaceUid),
-                    child: Text(favoriteThreadInDatabase.author.length !=0 ? favoriteThreadInDatabase.author[0].toUpperCase()
-                        : S.of(context).anonymous,
-                        style: TextStyle(color: Colors.white)),
-                  )
-              ,
-            ),
-          ),
-          onTap: () async{
-            VibrationUtils.vibrateWithClickIfPossible();
-            User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-            await Navigator.push(
-                context,
-                platformPageRoute(context:context,builder: (context) => UserProfilePage(discuz,user, favoriteThreadInDatabase.spaceUid)));
-          },
-        ),
-        title: Text(favoriteThreadInDatabase.title, style: Theme.of(context).textTheme.headlineSmall,),
+        title: Text(favoriteThreadInDatabase.title, style: Theme.of(context).textTheme.bodyLarge,),
         subtitle: RichText(
           text: TextSpan(
             text: "",

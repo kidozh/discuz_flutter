@@ -70,7 +70,6 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
 
@@ -161,8 +160,6 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-
     return Consumer<DiscuzAndUserNotifier>(builder: (context,discuzAndUser, child){
       if(discuzAndUser.discuz == null){
         return NullDiscuzScreen();
@@ -207,32 +204,7 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
                   FavoriteThread favoriteThread = _pmList[index];
                   return Container(
                     child: ListTile(
-                      leading: InkWell(
-                        child: ClipRRect(
 
-                          borderRadius: BorderRadius.circular(10000.0),
-                          child: CachedNetworkImage(
-                            imageUrl: URLUtils.getAvatarURL(discuz, favoriteThread.uid.toString()),
-                            progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-                            errorWidget: (context, url, error) =>
-                                CircleAvatar(
-
-                                  backgroundColor: CustomizeColor.getColorBackgroundById(favoriteThread.uid),
-                                  child: Text(favoriteThread.author.length !=0 ? favoriteThread.author[0].toUpperCase()
-                                      : S.of(context).anonymous,
-                                      style: TextStyle(color: Colors.white)),
-                                )
-                            ,
-                          ),
-                        ),
-                        onTap: () async{
-                          VibrationUtils.vibrateWithClickIfPossible();
-                          User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-                          await Navigator.push(
-                              context,
-                              platformPageRoute(context:context,builder: (context) => UserProfilePage(discuz,user, favoriteThread.uid)));
-                        },
-                      ),
                       title: Text(favoriteThread.title,style: TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: RichText(
                         text: TextSpan(
