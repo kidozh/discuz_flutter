@@ -126,7 +126,8 @@ class ManageAccountState extends State<ManageAccountStateWidget>{
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => LoginPage(discuz, user.username)));
+                        platformPageRoute(
+                            context: context,builder: (context) => LoginPage(discuz, user.username)));
                   },)
             ],
           ),

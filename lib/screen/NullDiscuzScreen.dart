@@ -2,6 +2,7 @@
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/AddDiscuzPage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class NullDiscuzScreen extends StatelessWidget{
   @override
@@ -25,7 +26,8 @@ class NullDiscuzScreen extends StatelessWidget{
                         child: Text(S.of(context).addNewDiscuz),
                         onPressed: () async{
                           await Navigator.push(
-                              context, MaterialPageRoute(builder: (context) => AddDiscuzPage()));
+                              context, platformPageRoute(
+                              context: context,builder: (context) => AddDiscuzPage()));
                         },
                       ),
                       const SizedBox(width: 16),

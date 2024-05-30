@@ -24,6 +24,7 @@ import '../widget/AppBannerAdWidget.dart';
 import '../widget/ErrorCard.dart';
 import '../widget/LoadingStateWidget.dart';
 import '../widget/NewThreadWidget.dart';
+import '../widget/ThreadSlideShowCarouselWidget.dart';
 import 'EmptyListScreen.dart';
 import 'NullDiscuzScreen.dart';
 
@@ -233,7 +234,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
             delegate: SliverChildBuilderDelegate(
                 (context, index) => Column(
                       children: [
-                        //if(index == 0) ThreadSlideShowCarouselWidget(onSelectTid: onSelectTid),
+                        if(index == 0) ThreadSlideShowCarouselWidget(onSelectTid: onSelectTid),
                         NewThreadWidget(discuz, user, _newThreadList[index], this.onSelectTid,
                             afterTid: index < _newThreadList.length - 1 ? _newThreadList[index+1].tid: null
                         ),

@@ -102,6 +102,7 @@ dependencies:
 
 
   firebase_core: any
+  html: ^0.15.4
 dev_dependencies:
   flutter_test:
     sdk: flutter

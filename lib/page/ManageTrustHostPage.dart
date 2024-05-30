@@ -23,14 +23,7 @@ class ManageTrustHostPage extends StatelessWidget{
         title: Text(S.of(context).trustHostTitle),
       ),
       body: ManageTrustHostStateWidget(),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () async{
-      //     await Navigator.push(context,
-      //         MaterialPageRoute(builder: (context) => AddDiscuzPage()));
-      //   },
-      //   tooltip: S.of(context).trustHostTitle,
-      //   child: Icon(Icons.add),
-      // ),
+
     );
   }
 

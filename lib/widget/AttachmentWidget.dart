@@ -101,6 +101,31 @@ class AttachmentWidget extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     Discuz discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
+    
+    if(["jpg","png","svg","bmp","gif"].contains(_attachment.ext.toLowerCase())){
+      return InkWell(
+        child: Card(
+
+          child: CachedNetworkImage(
+            imageUrl: _attachment.getAttachmentRealUrl(_discuz),
+            errorWidget: (context, url, error) => Icon(Icons.error),
+            progressIndicatorBuilder: (context, url, progress) => PlatformCircularProgressIndicator(
+              material: (_, __) => MaterialProgressIndicatorData(
+                  value: progress.progress
+              ),
+            ),
+          ),
+        ),
+        onTap: (){
+          VibrationUtils.vibrateWithClickIfPossible();
+
+          Navigator.push(
+              context,
+              platformPageRoute(context:context, builder: (context) => FullImagePage(URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode)))
+          );
+        },
+      );
+    }
 
 
     return Card(
@@ -141,7 +166,7 @@ class AttachmentWidget extends StatelessWidget{
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => FullImagePage(URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode)))
+                        platformPageRoute(context:context, builder: (context) => FullImagePage(URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode)))
                     );
               }, label: Text(S.of(context).watchPictureInFullScreen))
             ],

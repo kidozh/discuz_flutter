@@ -522,7 +522,8 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                                 VibrationUtils.vibrateWithClickIfPossible();
                                 Navigator.push(
                                     context,
-                                    MaterialPageRoute(
+                                    platformPageRoute(
+                                        context: context,
                                         builder: (context) =>
                                             LoginByWebviewPage(discuz)));
                               },
