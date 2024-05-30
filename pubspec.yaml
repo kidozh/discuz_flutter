@@ -78,7 +78,6 @@ dependencies:
   easy_refresh: ^3.0.2+2
   open_filex: ^4.0.1
   flutter_polls: ^0.1.0
-  skeletons: ^0.0.3
   push: ^2.3.0
   google_mobile_ads: ^5.1.0
   image_gallery_saver: ^2.0.3
