@@ -264,6 +264,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
             log("Save authentification to secure storage");
             await _saveAuthentificationToSecureDatabase();
           }
+          Navigator.pop(context);
 
         } catch (e, s) {
           VibrationUtils.vibrateErrorIfPossible();

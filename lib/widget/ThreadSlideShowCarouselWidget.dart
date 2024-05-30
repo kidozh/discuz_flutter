@@ -92,11 +92,11 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
 
     dio.get(keylolBaseUrl).then((html){
         var document = parse(html.data);
-        print("document ->  ${document}");
+        //print("document ->  ${document}");
         List<KeylolCarouselItem> carouselItemList = [];
 
         var slideshowElementList= document.getElementsByClassName("slideshow");
-        print("Get slide show length ${slideshowElementList.length}");
+        //print("Get slide show length ${slideshowElementList.length}");
         if(slideshowElementList.length >= 1){
 
           var slideshowELement = slideshowElementList.first;
@@ -109,7 +109,7 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
             var slide = slide_a_list.first;
             String? link = slide.attributes["href"];
             var img_element_list = slide.getElementsByTagName("img");
-            print("Get img element link ${link}");
+            //print("Get img element link ${link}");
             if(img_element_list.isEmpty || link == null){
               continue;
             }
@@ -118,7 +118,7 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
               String? img_src = img_element.attributes["src"];
               String? img_title = img_element.attributes["title"];
               var span_title = slide_li.getElementsByClassName("title");
-              print("Get img element detail ${img_src} ${img_title} ${span_title}");
+              //print("Get img element detail ${img_src} ${img_title} ${span_title}");
               if(span_title.isEmpty ||
                   span_title.first.innerHtml.isEmpty ||
                   img_src == null ||
@@ -147,26 +147,13 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
             }
 
           }
-          print("Set carousel item length-> ${carouselItemList.length}");
+          //print("Set carousel item length-> ${carouselItemList.length}");
 
           setState(() {
             keylolCarouselItemList = carouselItemList;
           });
         }
     });
-
-    // client.getThreadSlideShowResultByHost("keylol.com").then((value){
-    //   setState(() {
-    //     isLoading = false;
-    //   });
-    //   if(value.isSuccess()){
-    //     // set it
-    //     setState(() {
-    //       threadSlideShowResult = value;
-    //     });
-    //
-    //   }
-    // });
   }
 
   @override
@@ -322,7 +309,7 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
         VibrationUtils.vibrateWithClickIfPossible();
         Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
         User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-        if(onSelectTid != null){
+        if(slideShow.tid!= 0 && onSelectTid != null){
           return onSelectTid!(slideShow.tid);
         }
 
