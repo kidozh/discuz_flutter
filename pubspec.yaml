@@ -58,7 +58,7 @@ dependencies:
   intl: ^0.19.0
   flutter_platform_widgets: ^7.0.0
   flutter_launcher_icons: ^0.13.1
-  extended_text_field: ^14.0.0
+  extended_text_field: ^15.0.0
   image_picker: ^1.0.4
   flutter_image_compress: ^2.0.4
   package_info_plus: ^8.0.0
