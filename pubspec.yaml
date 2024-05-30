@@ -55,7 +55,7 @@ dependencies:
   # open_file: ^3.2.1
   flutter_slidable:
   webview_cookie_manager: ^2.0.6
-  intl: ^0.18.0
+  intl: ^0.19.0
   flutter_platform_widgets: ^7.0.0
   flutter_launcher_icons: ^0.13.1
   extended_text_field: ^14.0.0
