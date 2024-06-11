@@ -1,6 +1,5 @@
 
 
-import '../provider/TypeSettingNotifierProvider.dart';
 
 class PostTextUtils{
   static String replaceCollapseTag(String string){

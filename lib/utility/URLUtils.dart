@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -144,7 +143,7 @@ class URLUtils{
                     );
                   }
                   else{
-                    onSelectTid!(tid);
+                    onSelectTid(tid);
                   }
                   return;
                 }
@@ -206,7 +205,7 @@ class URLUtils{
             );
           }
           else{
-            onSelectTid!(int.tryParse(tid)!);
+            onSelectTid(int.tryParse(tid)!);
           }
 
           return;

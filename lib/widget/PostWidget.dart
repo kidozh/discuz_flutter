@@ -190,8 +190,8 @@ class PostState extends State<PostStatefulWidget> {
       return Container(
         child: Card(
           elevation: 2.0,
-          surfaceTintColor: Theme.of(context).colorScheme.background,
-          color: Theme.of(context).colorScheme.background,
+          surfaceTintColor: Theme.of(context).colorScheme.surface,
+          color: Theme.of(context).colorScheme.surface,
           child: Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(

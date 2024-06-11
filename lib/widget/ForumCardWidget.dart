@@ -20,7 +20,7 @@ class ForumCardWidget extends StatelessWidget {
     return PlatformWidgetBuilder(
         cupertino: (context, child, target) => Container(
               decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.background,
+                  color: Theme.of(context).colorScheme.surface,
                   border: Border.all(
                       color: Theme.of(context).disabledColor,
                     width: 0.1

@@ -12,11 +12,9 @@ import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/LoginByWebviewPage.dart';
-import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/SecureStorageUtils.dart';
-import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
@@ -28,11 +26,9 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
-import 'package:provider/provider.dart';
 
 import '../dao/DiscuzAuthenticationDao.dart';
 import '../entity/DiscuzAuthentication.dart';
-import 'PushServicePage.dart';
 
 class LoginPage extends StatelessWidget {
   late final Discuz discuz;
@@ -564,7 +560,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
     showPlatformModalSheet(
         context: context,
         builder: (context) => Container(
-          color: Theme.of(context).colorScheme.background,
+          color: Theme.of(context).colorScheme.surface,
           padding: EdgeInsets.symmetric(vertical: 32, horizontal: 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,

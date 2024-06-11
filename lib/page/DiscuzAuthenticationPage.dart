@@ -344,7 +344,7 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(16)),
-                        color: Theme.of(context).colorScheme.background,
+                        color: Theme.of(context).colorScheme.surface,
                       ),
                       child: Column(
                         // header
@@ -430,7 +430,7 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
                         child: Text(S.of(context).deleteAccount,
                             style: TextStyle(
                                 color: Theme.of(context).colorScheme.error)),
-                        color: Theme.of(context).colorScheme.background,
+                        color: Theme.of(context).colorScheme.surface,
                         onPressed: () async {
                           VibrationUtils.vibrateWithClickIfPossible();
                           discuzAuthenticationDao!
@@ -502,7 +502,7 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
                                     margin: EdgeInsets.only(
                                       bottom: MediaQuery.of(context).viewInsets.bottom,
                                     ),
-                                    color: Theme.of(context).colorScheme.background,
+                                    color: Theme.of(context).colorScheme.surface,
                                     child: SafeArea(
                                       child: CupertinoPicker(
                                           itemExtent: 32,

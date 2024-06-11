@@ -166,7 +166,7 @@ class PollState extends State<PollStatefulWidget>{
           pollTitle: poll.allowVote?Text(S.of(context).pollTitle):Text(S.of(context).pollNotAllowed),
           pollOptions: flutterPollOptionList,
           pollEnded: poll.expiredAt.isBefore(DateTime.now()),
-          votedBackgroundColor: Theme.of(context).colorScheme.background,
+          votedBackgroundColor: Theme.of(context).colorScheme.surface,
           votedProgressColor: Theme.of(context).colorScheme.primary.withOpacity(0.3),
           leadingVotedProgessColor: Theme.of(context).colorScheme.primary.withOpacity(0.6),
           votedCheckmark: Icon(AppPlatformIcons(context).checkCircleOutlined, color: Theme.of(context).textTheme.bodySmall?.color,),

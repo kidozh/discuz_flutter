@@ -75,7 +75,7 @@ class AppBannerAdState extends State<AppBannerAdWidget>{
       }
     }
     return _isAdLoaded && _anchoredAdaptiveAd!=null ? Container(
-      color: Theme.of(context).colorScheme.background,
+      color: Theme.of(context).colorScheme.surface,
       width: _anchoredAdaptiveAd!.size.width.toDouble(),
       height: _anchoredAdaptiveAd!.size.height.toDouble(),
       child: AdWidget(ad: _anchoredAdaptiveAd!),

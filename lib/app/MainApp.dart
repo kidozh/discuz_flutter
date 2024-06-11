@@ -25,7 +25,6 @@ import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
 import 'package:discuz_flutter/screen/DiscuzPortalScreen.dart';
 import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
-import 'package:discuz_flutter/utility/PushServiceUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:dual_screen/dual_screen.dart';
@@ -37,7 +36,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:push/push.dart' as Push;
 import 'package:upgrader/upgrader.dart';
 
 import '../main.dart';
@@ -450,7 +448,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           context: context, //BuildContext对象
           builder: (BuildContext context) {
             return SimpleDialog(
-                backgroundColor: Theme.of(context).colorScheme.background,
+                backgroundColor: Theme.of(context).colorScheme.surface,
                 title: Text(S.of(context).chooseDiscuz), children: widgetList);
           });
     }

@@ -575,7 +575,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
             constraints: BoxConstraints(
               maxHeight: MediaQuery.of(context).size.height * 0.65
             ),
-            color: Theme.of(context).colorScheme.background,
+            color: Theme.of(context).colorScheme.surface,
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.max,

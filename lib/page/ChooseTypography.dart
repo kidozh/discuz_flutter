@@ -245,7 +245,7 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
       margin: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      color: Theme.of(context).colorScheme.background,
+      color: Theme.of(context).colorScheme.surface,
       child: SafeArea(
         child: CupertinoPicker(
             itemExtent: 32,

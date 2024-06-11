@@ -6,7 +6,6 @@ import 'package:discuz_flutter/page/ChoosePlatformPage.dart';
 import 'package:discuz_flutter/page/ChooseTypography.dart';
 import 'package:discuz_flutter/page/DiscuzAuthenticationPage.dart';
 import 'package:discuz_flutter/page/SelectSignatureStylePage.dart';
-import 'package:discuz_flutter/page/SetPushNotificationPage.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
