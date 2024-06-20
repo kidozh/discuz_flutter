@@ -102,16 +102,19 @@ class AttachmentWidget extends StatelessWidget{
   Widget build(BuildContext context) {
     Discuz discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
     
-    if(["jpg","png","svg","bmp","gif"].contains(_attachment.ext.toLowerCase())){
+    if(["jpg","png","svg","bmp","gif","jpeg"].contains(_attachment.ext.toLowerCase())){
       return InkWell(
         child: Card(
-
+          elevation: 4.0,
           child: CachedNetworkImage(
             imageUrl: _attachment.getAttachmentRealUrl(_discuz),
             errorWidget: (context, url, error) => Icon(Icons.error),
-            progressIndicatorBuilder: (context, url, progress) => PlatformCircularProgressIndicator(
-              material: (_, __) => MaterialProgressIndicatorData(
-                  value: progress.progress
+            progressIndicatorBuilder: (context, url, progress) => Container(
+              padding: EdgeInsets.all(4.0),
+              child: PlatformCircularProgressIndicator(
+                material: (_, __) => MaterialProgressIndicatorData(
+                    value: progress.progress
+                ),
               ),
             ),
           ),

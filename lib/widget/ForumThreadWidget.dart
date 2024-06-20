@@ -145,7 +145,8 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
               material: (context, child, platform) => Card(
 
                 elevation: selected ? 0.0: 4.0,
-                color: selected? Theme.of(context).colorScheme.primaryContainer: Theme.of(context).colorScheme.surface,
+                color: selected? Theme.of(context).colorScheme.primaryContainer:
+                Theme.of(context).brightness == Brightness.light? Colors.white: Colors.black45,
                 surfaceTintColor: selected? Theme.of(context).colorScheme.primaryContainer:
                 Theme.of(context).brightness == Brightness.light? Colors.white: Colors.black45,
                 // color: Theme.of(context).colorScheme.background,
