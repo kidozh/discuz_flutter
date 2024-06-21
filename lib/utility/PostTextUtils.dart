@@ -49,6 +49,13 @@ class PostTextUtils{
       }
       return "";
     });
+
+    string = string.replaceAllMapped(RegExp(r"\[media\](.*?)\[/media\]"), (match) {
+      if(match.groupCount == 1){
+        return '<iframe src="${match.group(1)}"></iframe>';
+      }
+      return "";
+    });
     return string;
   }
 

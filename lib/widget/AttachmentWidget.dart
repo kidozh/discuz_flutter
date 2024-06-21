@@ -111,9 +111,13 @@ class AttachmentWidget extends StatelessWidget{
             errorWidget: (context, url, error) => Icon(Icons.error),
             progressIndicatorBuilder: (context, url, progress) => Container(
               padding: EdgeInsets.all(4.0),
-              child: PlatformCircularProgressIndicator(
-                material: (_, __) => MaterialProgressIndicatorData(
-                    value: progress.progress
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: PlatformCircularProgressIndicator(
+                  material: (_, __) => MaterialProgressIndicatorData(
+                      value: progress.progress
+                  ),
                 ),
               ),
             ),

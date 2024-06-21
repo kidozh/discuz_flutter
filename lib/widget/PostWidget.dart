@@ -255,12 +255,12 @@ class PostState extends State<PostStatefulWidget> {
 
           ],
         ),
-        child: getPostContent(context),
+        child: getPostContent(context, typesetting.useCompactParagraph),
       );
     });
   }
 
-  Widget getPostContent(BuildContext context) {
+  Widget getPostContent(BuildContext context, bool compactParagraph) {
     String _html = _post.message;
 
 
@@ -273,6 +273,13 @@ class PostState extends State<PostStatefulWidget> {
       //     //.replaceAll(RegExp(r'\\n'), '<br />')
       // ;
       _html = PostTextUtils.decodePostMessage(_html);
+    }
+
+    if(compactParagraph){
+      _html = _html
+          .replaceAll(RegExp(r"<br.?/>[(<br.?/>)]+", multiLine: true), "<br />")
+          .replaceAll(RegExp(r"\s+$"), "")
+          .replaceAll(RegExp(r"[(<br.?/>)\s]+$"), "");
     }
 
 
