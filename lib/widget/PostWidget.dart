@@ -282,6 +282,7 @@ class PostState extends State<PostStatefulWidget> {
           //.replaceAll(RegExp(r"[(<br.?/>)]+$"), "")
       ;
       _html = _html..replaceAll(RegExp(r"[(<br.?/>)\s]+$"), "");
+      print(_html);
     }
 
 
