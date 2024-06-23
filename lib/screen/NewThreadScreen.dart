@@ -153,12 +153,15 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
       } else {
         return IndicatorResult.success;
       }
-    }).catchError((onError) {
+    }).catchError((onError, stacktrace) {
       if(mounted){
         setState(() {
           _isFirstLoading = false;
         });
       }
+
+      print(onError.toString());
+      print(stacktrace);
 
       switch (onError.runtimeType) {
         case DioException:

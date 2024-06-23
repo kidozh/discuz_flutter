@@ -278,7 +278,7 @@ class PostState extends State<PostStatefulWidget> {
     if(compactParagraph){
       _html = _html
           .replaceAll(RegExp(r"<br.?/>[(<br.?/>)]+", multiLine: true), "<br />")
-          .replaceAll(RegExp(r"\s+$"), "")
+          //.replaceAll(RegExp(r"\s+$"), "")
           .replaceAll(RegExp(r"[(<br.?/>)\s]+$"), "");
     }
 

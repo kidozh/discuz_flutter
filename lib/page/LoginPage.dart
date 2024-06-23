@@ -12,6 +12,7 @@ import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/LoginByWebviewPage.dart';
+import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/SecureStorageUtils.dart';
@@ -26,6 +27,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
+import 'package:provider/provider.dart';
 
 import '../dao/DiscuzAuthenticationDao.dart';
 import '../entity/DiscuzAuthentication.dart';
@@ -260,6 +262,8 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
             log("Save authentification to secure storage");
             await _saveAuthentificationToSecureDatabase();
           }
+          Provider.of<DiscuzAndUserNotifier>(context, listen: false).user = user;
+
           Navigator.pop(context);
 
         } catch (e, s) {

@@ -230,7 +230,6 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     }
     else{
       textStyle = TextStyle(
-
         fontWeight: FontWeight.normal,
       );
 
@@ -241,51 +240,51 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     if(threadType!=null && threadType!.idNameMap.isNotEmpty && threadType!.idNameMap.containsKey(_forumThread.typeId)){
       threadCategory = threadType!.idNameMap[_forumThread.typeId]!;
     }
+
     if(_forumThread.message.isNotEmpty){
       // special card design
+      String message = _forumThread.message
+          .replaceAll("\n", "")
+          .replaceAll(RegExp("本帖最后由.*?编辑"), "")
+
+      ;
       return Padding(
-          padding: EdgeInsets.all(12.0),
+          padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
           child: Column(
             // like zhihu layout
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(_forumThread.subject, style: TextStyle(
-                fontSize: FontSize.xLarge.value,
-                fontWeight: viewed? FontWeight.normal:FontWeight.bold,
-                color: selected? Theme.of(context).colorScheme.onPrimaryContainer: viewed? Theme.of(context).unselectedWidgetColor: null,)
-              ),
-              // then user interface
-              SizedBox(height: 4,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   // user avatar
                   UserAvatar(
-                    _discuz, _forumThread.getAuthorId(), _forumThread.author, size:16,
+                    _discuz, _forumThread.getAuthorId(), _forumThread.author, size: FontSize.small.value,
                   ),
-                  SizedBox(width: 6,),
+                  SizedBox(width: 2,),
                   Expanded(
                     child: RichText(
                       text: TextSpan(
                         text: " ",
                         style: TextStyle(
+                          fontSize: FontSize.small.value,
                           fontWeight: viewed? FontWeight.w300:FontWeight.normal,
                           color: selected? Theme.of(context).colorScheme.onPrimaryContainer:viewed? Theme.of(context).unselectedWidgetColor: Theme.of(context).textTheme.bodySmall?.color,
                         ),
                         children: [
                           TextSpan(text: _forumThread.author,
                               style:  TextStyle(
-                                fontWeight: FontWeight.w300,
+                                fontWeight: FontWeight.normal,
                                 color: selected? Theme.of(context).colorScheme.onPrimaryContainer:viewed? Theme.of(context).unselectedWidgetColor: Theme.of(context).textTheme.bodySmall?.color,
                               )
                           ),
                           TextSpan(text: " · ", style: textStyle),
                           TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,_forumThread.dbdatelineMinutes),
                               style: TextStyle(
-                                fontWeight: FontWeight.w300,
+                                fontWeight: FontWeight.normal,
                                 color: selected? Theme.of(context).colorScheme.onPrimaryContainer: viewed? Theme.of(context).unselectedWidgetColor: Theme.of(context).textTheme.bodySmall?.color,
                               )
                           ),
@@ -310,15 +309,26 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                   )
                 ],
               ),
+              SizedBox(height: 4,),
+
+              Text(_forumThread.subject, style: TextStyle(
+                fontSize: FontSize.large.value*1.2,
+                fontWeight: viewed? FontWeight.normal:FontWeight.bold,
+                color: selected? Theme.of(context).colorScheme.onPrimaryContainer:
+                viewed? Theme.of(context).unselectedWidgetColor: null,
+              )
+              ),
+              // then user interface
               SizedBox(height: 8,),
               // message
               Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Expanded(
-                      child: Text(_forumThread.message,
+                      child: Text(message,
                         style: TextStyle(
-                          fontWeight: viewed? FontWeight.w300:FontWeight.w400,
+                          fontWeight: viewed? FontWeight.w300:FontWeight.normal,
+                          fontSize: FontSize.large.value,
                           color: selected? Theme.of(context).colorScheme.onPrimaryContainer: viewed? Theme.of(context).unselectedWidgetColor: null,
                         ),
                         maxLines: 3,

@@ -39,7 +39,7 @@ class ErrorCard extends StatelessWidget{
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(getErrorIcon(context),color: Theme.of(context).colorScheme.error,size: 64,),
+              Icon(getErrorIcon(context),color: Theme.of(context).colorScheme.error,size: 48,),
               SizedBox(height: 6.0,),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,

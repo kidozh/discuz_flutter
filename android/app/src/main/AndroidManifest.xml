@@ -43,7 +43,7 @@
         android:allowBackup="false"
         android:fullBackupContent="@xml/backup_rules"
 
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@drawable/adaptive_icon">
         <!--        android:enableOnBackInvokedCallback="true"-->
         <!--            android:name="io.flutter.embedding.android.FlutterFragmentActivity"-->
         <!--            android:name="com.kidozh.discuz_flutter.MainActivity"-->
