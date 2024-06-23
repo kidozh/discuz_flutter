@@ -105,12 +105,13 @@ class AttachmentWidget extends StatelessWidget{
     if(["jpg","png","svg","bmp","gif","jpeg"].contains(_attachment.ext.toLowerCase())){
       return InkWell(
         child: Card(
-          elevation: 4.0,
+          elevation: 8.0,
           child: CachedNetworkImage(
             imageUrl: _attachment.getAttachmentRealUrl(_discuz),
+            fit: BoxFit.fill,
             errorWidget: (context, url, error) => Icon(Icons.error),
             progressIndicatorBuilder: (context, url, progress) => Container(
-              padding: EdgeInsets.all(4.0),
+              padding: EdgeInsets.all(16.0),
               child: SizedBox(
                 width: 24,
                 height: 24,

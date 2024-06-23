@@ -141,6 +141,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   bool cached = false;
   int _initialPage = 1;
   int preCachedItemNum = 0;
+  DateTime lastFocusAt = DateTime.now();
 
   @override
   void initState() {
@@ -170,17 +171,27 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
   void bindFocusNode() {
     _focusNode.addListener(() {
+      //print("In focus node");
       if (_focusNode.hasFocus) {
         setState(() {
           dialogStatus = SHOW_NONE_DIALOG;
         });
+
+      }
+      else{
+        lastFocusAt = DateTime.now();
       }
     });
 
     _scrollController.addListener(() {
       // remove focus when
       if (_focusNode.hasFocus) {
-        _focusNode.unfocus();
+        DateTime now = DateTime.now();
+        if(now.difference(lastFocusAt).inSeconds > 1){
+          print("Unfocus node due to scroll ${now.difference(lastFocusAt).inSeconds}");
+          _focusNode.unfocus();
+        }
+
       }
       if (dialogStatus != SHOW_NONE_DIALOG) {
         setState(() {
