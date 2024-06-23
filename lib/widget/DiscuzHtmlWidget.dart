@@ -183,7 +183,7 @@ class DiscuzHtmlWidget extends StatelessWidget{
                 backgroundColor: textTheme.titleSmall?.backgroundColor
             ),
             "br": Style(
-              lineHeight: useCompactParagraph? LineHeight(0.4): null,
+              lineHeight: useCompactParagraph? LineHeight(1): null,
             )
 
 

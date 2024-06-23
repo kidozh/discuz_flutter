@@ -251,8 +251,8 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
                 image: DecorationImage(
                   fit: BoxFit.cover,
                   colorFilter: Theme.of(context).brightness == Brightness.light?
-                  ColorFilter.mode(Color(0xD3FFFFFF), BlendMode.lighten):
-                  ColorFilter.mode(Color(0xFF3D3D3D), BlendMode.darken),
+                  ColorFilter.mode(Color(0xD1FFFFFF), BlendMode.lighten):
+                  ColorFilter.mode(Color(0xD13D3D3D), BlendMode.darken),
 
                   image: CachedNetworkImageProvider(
                       slideShow.image_src
