@@ -62,7 +62,7 @@ class PostTextFieldUtils {
       return androidInfo.model;
     } else if (Platform.isIOS) {
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-      return iosInfo.model == null ? "" : iosInfo.model;
+      return iosInfo.model;
     } else if (Platform.isWindows) {
       WindowsDeviceInfo windowsDeviceInfo = await deviceInfo.windowsInfo;
       return S.of(context).windowsDeviceName(windowsDeviceInfo.computerName);
@@ -79,6 +79,7 @@ class PostTextFieldUtils {
   }
 
   static const String USE_DEVICE_SIGNATURE = "USE_DEVICE_SIGNATURE";
+  static const String USE_APP_SIGNATURE = "USE_APP_SIGNATURE";
   static const String NO_SIGNATURE = "";
 
   static const String EXAMPLE_HTML_LONG_DATA = r"""

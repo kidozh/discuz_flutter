@@ -505,7 +505,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                         SizedBox(
                           height: 24,
                         ),
-                        if (!Platform.isIOS)
+                        //if (!Platform.isIOS)
                           SizedBox(
                             width: double.infinity,
                             child: PlatformElevatedButton(

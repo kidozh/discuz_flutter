@@ -13,8 +13,11 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+
+import '../provider/DiscuzAndUserNotifier.dart';
 
 
 class LoginByWebviewPage extends StatelessWidget{
@@ -180,8 +183,8 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
     _dio.interceptors.add(DioCookieManager.CookieManager(cookieJar));
 
     final client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
-
-    client.checkLoginResult().then((value) async {
+    
+    client.userProfileResult(0).then((value) async{
       if(value.variables.member_uid!=0){
         // it's a success
         try{
@@ -194,7 +197,11 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
             user = userInDataBase;
           }
           else{
-            await dao.insert(user);
+            int id = await dao.insert(user);
+            // User? userInDataBase = dao.findUsersByDiscuzAndUid(discuz, value.variables.member_uid);
+            // if(userInDataBase != null){
+            //   user = userInDataBase;
+            // }
           }
 
 
@@ -207,6 +214,8 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           savedCookieJar.saveFromResponse(Uri.parse(discuz.baseURL), cookies);
           // pop the activity
           EasyLoading.showSuccess(S.of(context).signInSuccessTitle(user.username, discuz.siteName));
+          Provider.of<DiscuzAndUserNotifier>(context, listen: false).user = user;
+
           Navigator.pop(context);
         }
         catch(e){
@@ -219,13 +228,59 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
         // trigger a alert
         EasyLoading.showToast(S.of(context).websiteNotLogined);
       }
-    })
-    .catchError((e,s){
+    }).catchError((e,s){
       print("${e}");
       VibrationUtils.vibrateErrorIfPossible();
       EasyLoading.showError(S.of(context).networkFailed);
 
-    });
+    })
+    ;
+
+    // client.checkLoginResult().then((value) async {
+    //   if(value.variables.member_uid!=0){
+    //     // it's a success
+    //     try{
+    //       final dao = await AppDatabase.getUserDao();
+    //       User user = value.variables.getUser(discuz);
+    //       user.discuz = discuz;
+    //       // search in database first
+    //       User? userInDataBase = dao.findUsersByDiscuzAndUid(discuz, value.variables.member_uid);
+    //       if(userInDataBase != null){
+    //         user = userInDataBase;
+    //       }
+    //       else{
+    //         await dao.insert(user);
+    //       }
+    //
+    //
+    //
+    //
+    //       // save it in cookiejar
+    //       List<Cookie> cookies = await cookieJar.loadForRequest(Uri.parse(discuz.baseURL));
+    //       PersistCookieJar savedCookieJar = await NetworkUtils.getPersistentCookieJarByUser(user);
+    //       print("cookies ${cookies}");
+    //       savedCookieJar.saveFromResponse(Uri.parse(discuz.baseURL), cookies);
+    //       // pop the activity
+    //       EasyLoading.showSuccess(S.of(context).signInSuccessTitle(user.username, discuz.siteName));
+    //       Navigator.pop(context);
+    //     }
+    //     catch(e){
+    //       VibrationUtils.vibrateErrorIfPossible();
+    //       EasyLoading.showError(e.toString());
+    //     }
+    //   }
+    //   else{
+    //     print("Get auth ${value.variables.auth} ${value.variables.formHash} ${value}");
+    //     // trigger a alert
+    //     EasyLoading.showToast(S.of(context).websiteNotLogined);
+    //   }
+    // })
+    // .catchError((e,s){
+    //   print("${e}");
+    //   VibrationUtils.vibrateErrorIfPossible();
+    //   EasyLoading.showError(S.of(context).networkFailed);
+    //
+    // });
 
   }
 }

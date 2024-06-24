@@ -5350,6 +5350,36 @@ class S {
       args: [],
     );
   }
+
+  /// `Support us by adding the app information`
+  String get signatureWithDisFly {
+    return Intl.message(
+      'Support us by adding the app information',
+      name: 'signatureWithDisFly',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sent by {device}'s [url=https://discuzhub.kidozh.com/]DisFly[/url] v{version}.`
+  String fromAppSignature(Object device, Object version) {
+    return Intl.message(
+      'Sent by $device\'s [url=https://discuzhub.kidozh.com/]DisFly[/url] v$version.',
+      name: 'fromAppSignature',
+      desc: '',
+      args: [device, version],
+    );
+  }
+
+  /// `Preview`
+  String get signaturePreview {
+    return Intl.message(
+      'Preview',
+      name: 'signaturePreview',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

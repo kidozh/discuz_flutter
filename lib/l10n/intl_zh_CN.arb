@@ -791,5 +791,14 @@
   "noForumIsCachedTitle": "在此设备上没有板块信息",
   "noForumIsCachedSubtitle": "请点击‘索引’，然后加载所有板块信息后，再回来看看？",
   "animateToLastReadingPosition": "已为你跳转到上次阅读的进度.",
-  "compactTypography": "紧凑文本段落"
+  "compactTypography": "紧凑文本段落",
+  "signatureWithDisFly": "使用带有客户端名称的签名支持本应用",
+  "fromAppSignature": "来自 {device} 的 [url=https://discuzhub.kidozh.com/]谈坛[/url] v{version}.",
+  "@fromAppSignature": {
+    "placeholders": {
+      "device": {},
+      "version": {}
+    }
+  },
+  "signaturePreview": "预览"
 }
