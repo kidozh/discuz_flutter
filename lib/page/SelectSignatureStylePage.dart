@@ -134,7 +134,7 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
                       child: PlatformTextField(
-                        enabled: (signature!= PostTextFieldUtils.NO_SIGNATURE && signature!= PostTextFieldUtils.USE_DEVICE_SIGNATURE),
+                        enabled: (signature!= PostTextFieldUtils.NO_SIGNATURE && signature!= PostTextFieldUtils.USE_DEVICE_SIGNATURE && signature!= PostTextFieldUtils.USE_APP_SIGNATURE),
                         hintText: S.of(context).signatureHint,
                         onChanged: (String string){
                           if(string != signature){
@@ -148,7 +148,7 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
                     )
 
                 ),
-              if(signature!= PostTextFieldUtils.USE_APP_SIGNATURE || signature!= PostTextFieldUtils.USE_DEVICE_SIGNATURE)
+              if(signature == PostTextFieldUtils.USE_APP_SIGNATURE || signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE)
                 CustomSettingsSection(
 
                     child: Container(
@@ -160,6 +160,7 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
                             fontWeight: FontWeight.bold,
                             fontSize: FontSize.xLarge.value
                           )),
+                          SizedBox(height: 8,),
                           Container(
                             decoration: BoxDecoration(
                               color: Theme.of(context).canvasColor,
