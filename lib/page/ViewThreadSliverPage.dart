@@ -47,6 +47,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:intl/intl.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:progress_state_button/iconed_button.dart';
 import 'package:progress_state_button/progress_button.dart';
 import 'package:provider/provider.dart';
@@ -379,7 +380,18 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         if (deviceName.isNotEmpty) {
           message += "\n\n${S.of(context).fromDeviceSignature(deviceName)}";
         }
-      } else {
+      }
+      else if (signaturePreference == PostTextFieldUtils.USE_APP_SIGNATURE) {
+        String deviceName = await PostTextFieldUtils.getDeviceName(context);
+        PackageInfo packageInfo = await PackageInfo.fromPlatform();
+        String packageVersion = packageInfo.version;
+        String signature = S.of(context).fromAppSignature(deviceName, packageVersion);
+        if (deviceName.isNotEmpty) {
+          message += "\n\n${signature}";
+        }
+      }
+
+      else {
         message += "\n\n${signaturePreference}";
       }
     }
