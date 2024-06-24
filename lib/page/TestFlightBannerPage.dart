@@ -67,7 +67,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent>{
                   UserPreferencesUtils.putSignaturePreference(PostTextFieldUtils.USE_APP_SIGNATURE);
                   // update provider
                   Provider.of<UserPreferenceNotifierProvider>(context,listen: false).signature = PostTextFieldUtils.USE_APP_SIGNATURE;
-
+                  Navigator.of(context).pop();
                 },
               ),
               PlatformDialogAction(
