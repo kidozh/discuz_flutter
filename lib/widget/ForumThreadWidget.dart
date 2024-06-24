@@ -120,7 +120,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
   Widget? getTailingWidget(){
     if(_forumThread.getDisplayOrder() > 0){
-      return Icon(AppPlatformIcons(context).pinContentSolid, color: Theme.of(context).colorScheme.primary,);
+      return Icon(AppPlatformIcons(context).pinContentSolid, size: 16, color: Theme.of(context).colorScheme.primary,);
     }
 
     else{
