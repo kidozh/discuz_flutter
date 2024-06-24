@@ -400,7 +400,7 @@
   "dataBackupInTestTitle": "数据备份",
   "dataBackupInTestSubtitle": "版本变更有可能会引发数据的丢失，因此请务必做好数据备份工作。",
   "welcomeTitle": "你好",
-  "welcomeSubtitle": "欢迎使用我们的服务，我们基于Discuz！移动插件为您服务。",
+  "welcomeSubtitle": "谈坛是支持Discuz X论坛的第三方客户端，欢迎使用我们的服务。",
   "continueToDo": "继续",
   "finishLoginInWeb": "完成登录",
   "invalidCookie": "服务器的响应中包含一个或多个含有错误字符的Cookie,无法解析Cookie,无法登录.",
@@ -793,12 +793,14 @@
   "animateToLastReadingPosition": "已为你跳转到上次阅读的进度.",
   "compactTypography": "紧凑文本段落",
   "signatureWithDisFly": "使用带有客户端名称的签名支持本应用",
-  "fromAppSignature": "来自 {device} 的 [url=https://discuzhub.kidozh.com/]谈坛[/url] v{version}.",
+  "signatureSupportUS": "支持我们",
+  "fromAppSignature": "来自 {device} 的 [url=https://discuzhub.kidozh.com/]谈坛[/url] v{version}。",
   "@fromAppSignature": {
     "placeholders": {
       "device": {},
       "version": {}
     }
   },
-  "signaturePreview": "预览"
+  "signaturePreview": "预览",
+  "signatureWithDisFlyDescription": "您可以使用带有本应用后缀的小尾巴发帖支持本应用，您可以随时在设置中更换发帖小尾巴。"
 }

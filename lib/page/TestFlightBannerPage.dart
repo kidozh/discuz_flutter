@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 import '../entity/Discuz.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../provider/UserPreferenceNotifierProvider.dart';
+import '../utility/PostTextFieldUtils.dart';
 import '../utility/PushServiceUtils.dart';
 import 'SubscribeChannelPage.dart';
 
@@ -49,50 +50,23 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent>{
 
   Future<void> _checkPushService(BuildContext context) async{
 
-    bool? enablePush = await UserPreferencesUtils.checkPushPreference();
-    if(enablePush == null){
+    String signaturePreference =
+    await UserPreferencesUtils.getSignaturePreference();
+    if(signaturePreference != PostTextFieldUtils.USE_APP_SIGNATURE){
       // prompt push notification
       await showPlatformDialog(
           context: context,
           builder: (_) => PlatformAlertDialog(
-            title: Text(S.of(context).pushNotificationEnable),
-            content: Text(S.of(context).pushServiceEnableDescription),
+            title: Text(S.of(context).signatureSupportUS),
+            content: Text(S.of(context).signatureWithDisFlyDescription),
             actions: [
               PlatformDialogAction(
                 child: Text(S.of(context).ok),
                 onPressed: () async {
                   VibrationUtils.vibrateWithClickIfPossible();
-
-                  PushTokenChannel? pushTokenChannel = await PushServiceUtils.getPushToken(context);
-                  if(pushTokenChannel != null){
-                    FirebaseMessaging messaging = FirebaseMessaging.instance;
-                    NotificationSettings settings = await messaging.requestPermission(
-                      alert: true,
-                      announcement: false,
-                      badge: true,
-                      carPlay: false,
-                      criticalAlert: false,
-                      provisional: false,
-                      sound: true,
-                    );
-                    if (settings.authorizationStatus == AuthorizationStatus.authorized || settings.authorizationStatus == AuthorizationStatus.provisional){
-                      Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = true;
-                      await UserPreferencesUtils.putPushPreference(true);
-                      EasyLoading.showSuccess(S.of(context).pushServiceOnDescription);
-                    }
-                    else{
-                      EasyLoading.showInfo(S.of(context).pushNotificationPermissionNotAuthorized);
-                      Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = false;
-                      await UserPreferencesUtils.putPushPreference(false);
-                    }
-                    Navigator.of(context).pop();
-                  }
-                  else{
-                    EasyLoading.showError(S.of(context).pushDeviceNotSupportedDescription);
-                    Navigator.of(context).pop();
-                  }
-
-
+                  UserPreferencesUtils.putSignaturePreference(PostTextFieldUtils.USE_APP_SIGNATURE);
+                  // update provider
+                  Provider.of<UserPreferenceNotifierProvider>(context,listen: false).signature = PostTextFieldUtils.USE_APP_SIGNATURE;
 
                 },
               ),
@@ -137,44 +111,44 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent>{
 
               ),textAlign: TextAlign.center,),
               SizedBox(height: 30,),
-              Card(
-
-                color: Colors.indigo,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 4.0),
-                  child: ListTile(
-                    leading: Icon(Icons.stop_circle_rounded,color: Colors.white, size: 40,),
-                    // leading: CircleAvatar(
-                    //   backgroundColor: Colors.white,
-                    //   child: Icon(PlatformIcons(context).checkMarkCircled,color: Colors.green),
-                    // ),
-                    title: Text(S.of(context).upgrade_notification_title,
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(S.of(context).upgrade_notification_subtitle,
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.normal)
-                    ),
-                    onTap: (){
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      Discuz? discuz =
-                          Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
-                      bool allowPush =
-                          Provider.of<UserPreferenceNotifierProvider>(context, listen: false).allowPush;
-                      if(discuz != null){
-                        if(allowPush){
-                          Navigator.push(context,platformPageRoute(context:context,builder: (context) => SubscribeChannelPage()));
-                        }
-                        else{
-                          EasyLoading.showError(S.of(context).pushServiceOff);
-                        }
-                      }
-                      else{
-                        EasyLoading.showError(S.of(context).noDiscuzNotFound);
-                      }
-                    },
-                  ),
-                ),
-              ),
+              // Card(
+              //
+              //   color: Colors.indigo,
+              //   child: Padding(
+              //     padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 4.0),
+              //     child: ListTile(
+              //       leading: Icon(Icons.stop_circle_rounded,color: Colors.white, size: 40,),
+              //       // leading: CircleAvatar(
+              //       //   backgroundColor: Colors.white,
+              //       //   child: Icon(PlatformIcons(context).checkMarkCircled,color: Colors.green),
+              //       // ),
+              //       title: Text(S.of(context).upgrade_notification_title,
+              //         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              //       ),
+              //       subtitle: Text(S.of(context).upgrade_notification_subtitle,
+              //           style: TextStyle(color: Colors.white, fontWeight: FontWeight.normal)
+              //       ),
+              //       onTap: (){
+              //         VibrationUtils.vibrateWithClickIfPossible();
+              //         Discuz? discuz =
+              //             Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+              //         bool allowPush =
+              //             Provider.of<UserPreferenceNotifierProvider>(context, listen: false).allowPush;
+              //         if(discuz != null){
+              //           if(allowPush){
+              //             Navigator.push(context,platformPageRoute(context:context,builder: (context) => SubscribeChannelPage()));
+              //           }
+              //           else{
+              //             EasyLoading.showError(S.of(context).pushServiceOff);
+              //           }
+              //         }
+              //         else{
+              //           EasyLoading.showError(S.of(context).noDiscuzNotFound);
+              //         }
+              //       },
+              //     ),
+              //   ),
+              // ),
               ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.redAccent,
@@ -183,6 +157,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent>{
                 title: Text(S.of(context).preventAbuseUser),
                 subtitle: Text(S.of(context).preventAbuseUserDescription),
               ),
+              Divider(),
               ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.green,
@@ -195,6 +170,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent>{
                   URLUtils.launchURL("https://discuzhub.kidozh.com/privacy_policy/");
                 },
               ),
+              Divider(),
               ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.amber,
@@ -207,6 +183,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent>{
                   URLUtils.launchURL("https://policies.google.com/privacy");
                 },
               ),
+              Divider(),
               ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.indigo,
@@ -219,6 +196,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent>{
                   URLUtils.launchURL("https://discuzhub.kidozh.com/zh/term_of_use/");
                 },
               ),
+              Divider(),
               ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.purple,

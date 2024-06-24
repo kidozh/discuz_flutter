@@ -817,8 +817,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "signaturePreview": MessageLookupByLibrary.simpleMessage("Preview"),
         "signatureStyle":
             MessageLookupByLibrary.simpleMessage("Signature style"),
+        "signatureSupportUS":
+            MessageLookupByLibrary.simpleMessage("Support us"),
         "signatureWithDisFly": MessageLookupByLibrary.simpleMessage(
             "Support us by adding the app information"),
+        "signatureWithDisFlyDescription": MessageLookupByLibrary.simpleMessage(
+            "You can support us by adding the app information to your post signature. You may opt it out any time in the setting."),
         "siteDoesNotSupportPushService": MessageLookupByLibrary.simpleMessage(
             "The site may not install DHP Service."),
         "sitePage": MessageLookupByLibrary.simpleMessage("Homepage"),

@@ -5361,6 +5361,16 @@ class S {
     );
   }
 
+  /// `Support us`
+  String get signatureSupportUS {
+    return Intl.message(
+      'Support us',
+      name: 'signatureSupportUS',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Sent by {device}'s [url=https://discuzhub.kidozh.com/]DisFly[/url] v{version}.`
   String fromAppSignature(Object device, Object version) {
     return Intl.message(
@@ -5376,6 +5386,16 @@ class S {
     return Intl.message(
       'Preview',
       name: 'signaturePreview',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You can support us by adding the app information to your post signature. You may opt it out any time in the setting.`
+  String get signatureWithDisFlyDescription {
+    return Intl.message(
+      'You can support us by adding the app information to your post signature. You may opt it out any time in the setting.',
+      name: 'signatureWithDisFlyDescription',
       desc: '',
       args: [],
     );

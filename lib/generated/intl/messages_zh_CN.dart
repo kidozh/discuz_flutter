@@ -56,7 +56,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m16(size) => "${size}倍";
 
   static String m17(device, version) =>
-      "来自 ${device} 的 [url=https://discuzhub.kidozh.com/]谈坛[/url] v${version}.";
+      "来自 ${device} 的 [url=https://discuzhub.kidozh.com/]谈坛[/url] v${version}。";
 
   static String m18(device) => "消息由${device}发出。";
 
@@ -690,8 +690,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "signatureHint": MessageLookupByLibrary.simpleMessage("在此键入签名"),
         "signaturePreview": MessageLookupByLibrary.simpleMessage("预览"),
         "signatureStyle": MessageLookupByLibrary.simpleMessage("发帖签名样式"),
+        "signatureSupportUS": MessageLookupByLibrary.simpleMessage("支持我们"),
         "signatureWithDisFly":
             MessageLookupByLibrary.simpleMessage("使用带有客户端名称的签名支持本应用"),
+        "signatureWithDisFlyDescription": MessageLookupByLibrary.simpleMessage(
+            "您可以使用带有本应用后缀的小尾巴发帖支持本应用，您可以随时在设置中更换发帖小尾巴。"),
         "siteDoesNotSupportPushService":
             MessageLookupByLibrary.simpleMessage("该论坛未开启推送插件。"),
         "sitePage": MessageLookupByLibrary.simpleMessage("主页"),
@@ -823,7 +826,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "websiteNotLogined": MessageLookupByLibrary.simpleMessage(
             "在网页中没有完成登录，请登陆后点击右上方登录按钮完成录入。"),
         "welcomeSubtitle": MessageLookupByLibrary.simpleMessage(
-            "欢迎使用我们的服务，我们基于Discuz！移动插件为您服务。"),
+            "谈坛是支持Discuz X论坛的第三方客户端，欢迎使用我们的服务。"),
         "welcomeTitle": MessageLookupByLibrary.simpleMessage("你好"),
         "wheelColorPickerType": MessageLookupByLibrary.simpleMessage("轮抽选色"),
         "windowsDeviceName": m50,
