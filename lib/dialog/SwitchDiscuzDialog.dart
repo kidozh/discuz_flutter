@@ -50,11 +50,12 @@ class SimpleDialogItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 36.0, color: color),
           Padding(
             padding: const EdgeInsetsDirectional.only(start: 16.0),
-            child: Text(text),
+            child: Text(text, overflow: TextOverflow.ellipsis,),
           ),
         ],
       ),

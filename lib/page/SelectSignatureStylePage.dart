@@ -97,7 +97,7 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
                     },
                   ),
                   SettingsTile.navigation(
-                    title: Text(S.of(context).deviceNameSignature+" (${deviceSignature})"),
+                    title: Text(S.of(context).deviceNameSignature),
                     //value: Text(deviceSignature),
                     trailing: signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE?Icon(PlatformIcons(context).checkMark, color: Theme.of(context).colorScheme.primary):Icon(null),
                     onPressed: (BuildContext context){
@@ -152,7 +152,7 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
                 CustomSettingsSection(
 
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
+                      padding: EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

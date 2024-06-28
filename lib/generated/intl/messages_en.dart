@@ -819,8 +819,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Signature style"),
         "signatureSupportUS":
             MessageLookupByLibrary.simpleMessage("Support us"),
-        "signatureWithDisFly": MessageLookupByLibrary.simpleMessage(
-            "Support us by adding the app information"),
+        "signatureWithDisFly":
+            MessageLookupByLibrary.simpleMessage("Use app signature"),
         "signatureWithDisFlyDescription": MessageLookupByLibrary.simpleMessage(
             "You can support us by adding the app information to your post signature. You may opt it out any time in the setting."),
         "siteDoesNotSupportPushService": MessageLookupByLibrary.simpleMessage(

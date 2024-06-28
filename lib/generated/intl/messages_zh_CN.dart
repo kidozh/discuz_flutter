@@ -691,8 +691,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "signaturePreview": MessageLookupByLibrary.simpleMessage("预览"),
         "signatureStyle": MessageLookupByLibrary.simpleMessage("发帖签名样式"),
         "signatureSupportUS": MessageLookupByLibrary.simpleMessage("支持我们"),
-        "signatureWithDisFly":
-            MessageLookupByLibrary.simpleMessage("使用带有客户端名称的签名支持本应用"),
+        "signatureWithDisFly": MessageLookupByLibrary.simpleMessage("使用应用名称"),
         "signatureWithDisFlyDescription": MessageLookupByLibrary.simpleMessage(
             "您可以使用带有本应用后缀的小尾巴发帖支持本应用，您可以随时在设置中更换发帖小尾巴。"),
         "siteDoesNotSupportPushService":

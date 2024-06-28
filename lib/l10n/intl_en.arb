@@ -791,7 +791,7 @@
   "noForumIsCachedSubtitle": "Could you please open index page once to get a cache of all forums?",
   "animateToLastReadingPosition": "Scroll to last read position.",
   "compactTypography": "Compact paragraph",
-  "signatureWithDisFly": "Support us by adding the app information",
+  "signatureWithDisFly": "Use app signature",
   "signatureSupportUS": "Support us",
   "fromAppSignature": "Sent by {device}'s [url=https://discuzhub.kidozh.com/]DisFly[/url] v{version}.",
   "@fromAppSignature": {

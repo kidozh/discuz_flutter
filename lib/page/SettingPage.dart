@@ -246,6 +246,9 @@ class _SettingPageState extends State<SettingPage> {
                       else if(userPreference.signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE){
                         return Text(S.of(context).deviceNameSignature);
                       }
+                      else if(userPreference.signature == PostTextFieldUtils.USE_APP_SIGNATURE){
+                        return Text(S.of(context).signatureWithDisFly);
+                      }
                       else {
                         return Text(S.of(context).customSignature);
                       }

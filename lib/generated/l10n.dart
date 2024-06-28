@@ -5351,10 +5351,10 @@ class S {
     );
   }
 
-  /// `Support us by adding the app information`
+  /// `Use app signature`
   String get signatureWithDisFly {
     return Intl.message(
-      'Support us by adding the app information',
+      'Use app signature',
       name: 'signatureWithDisFly',
       desc: '',
       args: [],

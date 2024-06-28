@@ -510,7 +510,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             } else {
               return Column(
                 children: [
-                  Text(value.discuz!.siteName),
+                  Text(value.discuz!.siteName, maxLines: 1, overflow: TextOverflow.ellipsis,),
                   if (value.user == null)
                     Text(S.of(context).incognitoTitle,
                         style: TextStyle(fontSize: 12)),
