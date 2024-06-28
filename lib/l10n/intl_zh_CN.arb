@@ -794,7 +794,7 @@
   "compactTypography": "紧凑文本段落",
   "signatureWithDisFly": "使用应用名称",
   "signatureSupportUS": "支持我们",
-  "fromAppSignature": "来自 {device} 的 [url=https://discuzhub.kidozh.com/]谈坛[/url] v{version}。",
+  "fromAppSignature": "消息由 {device} 的 [url=https://discuzhub.kidozh.com/]谈坛（v{version}）[/url]发出。",
   "@fromAppSignature": {
     "placeholders": {
       "device": {},

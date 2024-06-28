@@ -56,7 +56,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m16(size) => "${size}倍";
 
   static String m17(device, version) =>
-      "来自 ${device} 的 [url=https://discuzhub.kidozh.com/]谈坛[/url] v${version}。";
+      "消息由 ${device} 的 [url=https://discuzhub.kidozh.com/]谈坛（v${version}）[/url]发出。";
 
   static String m18(device) => "消息由${device}发出。";
 

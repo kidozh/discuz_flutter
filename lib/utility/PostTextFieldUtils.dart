@@ -5,6 +5,7 @@ import 'dart:io' show Platform;
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:discuz_flutter/entity/Smiley.dart';
 import 'package:flutter/widgets.dart';
+import 'package:ios_utsname_ext/extension.dart';
 
 import '../generated/l10n.dart';
 
@@ -62,7 +63,7 @@ class PostTextFieldUtils {
       return androidInfo.model;
     } else if (Platform.isIOS) {
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-      return iosInfo.model;
+      return iosInfo.utsname.machine.iOSProductName;
     } else if (Platform.isWindows) {
       WindowsDeviceInfo windowsDeviceInfo = await deviceInfo.windowsInfo;
       return S.of(context).windowsDeviceName(windowsDeviceInfo.computerName);
