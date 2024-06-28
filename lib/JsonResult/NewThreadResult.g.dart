@@ -43,10 +43,9 @@ NewThreadVariables _$NewThreadVariablesFromJson(Map<String, dynamic> json) =>
       ..ismoderator = json['ismoderator'] as String?
       ..noticeCount =
           NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
-      ..newThreadList = (json['data'] as List<dynamic>?)
-              ?.map((e) => NewThread.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [];
+      ..newThreadList = json['data'] == null
+          ? []
+          : const NewThreadListConverter().fromJson(json['data']);
 
 Map<String, dynamic> _$NewThreadVariablesToJson(NewThreadVariables instance) =>
     <String, dynamic>{
@@ -61,5 +60,5 @@ Map<String, dynamic> _$NewThreadVariablesToJson(NewThreadVariables instance) =>
       'formhash': instance.formHash,
       'ismoderator': instance.ismoderator,
       'notice': instance.noticeCount,
-      'data': instance.newThreadList,
+      'data': const NewThreadListConverter().toJson(instance.newThreadList),
     };

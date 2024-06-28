@@ -9,7 +9,7 @@ part of 'ChevertoUploadResult.dart';
 ChevertoUploadResult _$ChevertoUploadResultFromJson(
         Map<String, dynamic> json) =>
     ChevertoUploadResult()
-      ..status_code = json['status_code'] as int
+      ..status_code = (json['status_code'] as num).toInt()
       ..status_txt = json['status_txt'] as String
       ..success = ChevertoSuccessMessage.fromJson(
           json['success'] as Map<String, dynamic>)
@@ -29,7 +29,7 @@ ChevertoSuccessMessage _$ChevertoSuccessMessageFromJson(
         Map<String, dynamic> json) =>
     ChevertoSuccessMessage()
       ..message = json['message'] as String
-      ..code = json['code'] as int;
+      ..code = (json['code'] as num).toInt();
 
 Map<String, dynamic> _$ChevertoSuccessMessageToJson(
         ChevertoSuccessMessage instance) =>
@@ -43,9 +43,9 @@ ChevertoUploadedImage _$ChevertoUploadedImageFromJson(
     ChevertoUploadedImage()
       ..name = json['name'] as String
       ..extension = json['extension'] as String
-      ..size = json['size'] as int
-      ..width = json['width'] as int
-      ..height = json['height'] as int
+      ..size = (json['size'] as num).toInt()
+      ..width = (json['width'] as num).toInt()
+      ..height = (json['height'] as num).toInt()
       ..date = json['date'] as String
       ..date_gmt = json['date_gmt'] as String
       ..nsfw = json['nsfw'] as String
@@ -58,7 +58,7 @@ ChevertoUploadedImage _$ChevertoUploadedImageFromJson(
       ..ratio = (json['ratio'] as num).toDouble()
       ..size_formatted = json['size_formatted'] as String
       ..mime = json['mime'] as String
-      ..bits = json['bits'] as int
+      ..bits = (json['bits'] as num).toInt()
       ..url = json['url'] as String
       ..url_viewer = json['url_viewer'] as String
       ..views_label = json['views_label'] as String
@@ -104,14 +104,14 @@ ChevertoCompressedImage _$ChevertoCompressedImageFromJson(
     ChevertoCompressedImage()
       ..filename = json['filename'] as String
       ..name = json['name'] as String
-      ..width = json['width'] as int
-      ..height = json['height'] as int
+      ..width = (json['width'] as num).toInt()
+      ..height = (json['height'] as num).toInt()
       ..ratio = (json['ratio'] as num).toDouble()
-      ..size = json['size'] as int
+      ..size = (json['size'] as num).toInt()
       ..size_formatted = json['size_formatted'] as String
       ..mime = json['mime'] as String
       ..extension = json['extension'] as String
-      ..bits = json['bits'] as int
+      ..bits = (json['bits'] as num).toInt()
       ..url = json['url'] as String;
 
 Map<String, dynamic> _$ChevertoCompressedImageToJson(

@@ -9,7 +9,7 @@ part of 'PushTokenListResult.dart';
 PushTokenListResult _$PushTokenListResultFromJson(Map<String, dynamic> json) =>
     PushTokenListResult()
       ..result = json['result'] as String
-      ..maxToken = json['maxToken'] as int
+      ..maxToken = (json['maxToken'] as num).toInt()
       ..formhash = json['formhash'] as String
       ..list = (json['list'] as List<dynamic>)
           .map((e) => PushToken.fromJson(e as Map<String, dynamic>))

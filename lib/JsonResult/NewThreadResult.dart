@@ -1,3 +1,4 @@
+import 'package:discuz_flutter/converter/NewThreadListConverter.dart';
 import 'package:discuz_flutter/entity/NewThread.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
@@ -26,6 +27,7 @@ class NewThreadResult extends BaseResult{
 @JsonSerializable()
 class NewThreadVariables extends BaseVariableResult{
   @JsonKey(name: "data",defaultValue: [])
+  @NewThreadListConverter()
   List<NewThread> newThreadList = [];
 
 
