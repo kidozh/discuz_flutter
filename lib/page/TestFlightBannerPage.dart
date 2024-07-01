@@ -3,20 +3,14 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
-import '../entity/Discuz.dart';
-import '../provider/DiscuzAndUserNotifier.dart';
 import '../provider/UserPreferenceNotifierProvider.dart';
 import '../utility/PostTextFieldUtils.dart';
-import '../utility/PushServiceUtils.dart';
-import 'SubscribeChannelPage.dart';
 
 class TestFlightBannerPage extends StatelessWidget{
 
