@@ -164,7 +164,7 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(
                 seedColor: themeColorEntity.themeColor,
               brightness: Brightness.light,
-              background: Colors.white,
+              surface: Colors.white,
             ).harmonized(),
             useMaterial3: themeColorEntity.useMaterial3,
             textTheme: typography.black.useSystemChineseFont(Brightness.light),
@@ -175,7 +175,7 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(
               seedColor: themeColorEntity.themeColor,
               brightness: Brightness.dark,
-              background: Colors.black54
+              surface: Colors.black54
             ).harmonized()
             ,
             useMaterial3: themeColorEntity.useMaterial3,
@@ -285,9 +285,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   void didChangePlatformBrightness() {
     super.didChangePlatformBrightness();
     // change now
-    var window = WidgetsBinding.instance.window;
+    final MediaQueryData data = MediaQueryData.fromView(WidgetsBinding.instance.platformDispatcher.views.single);
     Provider.of<ThemeNotifierProvider>(context, listen: false)
-        .setBrightness(window.platformBrightness);
+        .setBrightness(data.platformBrightness);
     //Theme.of(context).brightness = window.platformBrightness;
   }
 
