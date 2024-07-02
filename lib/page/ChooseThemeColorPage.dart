@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
+import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -116,5 +120,8 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
     Provider.of<ThemeNotifierProvider>(context,listen: false).setTheme(colorValue);
     UserPreferencesUtils.putThemeColor(colorValue);
     VibrationUtils.vibrateSuccessfullyIfPossible();
+
+    CustomizeColor.updateAndroidNavigationbar(context);
+
   }
 }

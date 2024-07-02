@@ -1,5 +1,8 @@
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomizeColor{
   static final error = Color.fromRGBO(244,67,54,1);
@@ -23,6 +26,16 @@ class CustomizeColor{
   ];
   static Color getColorBackgroundById(int id){
     return colorBackgroundList[id%colorBackgroundList.length];
+  }
+
+  static void updateAndroidNavigationbar(BuildContext context){
+    if(Platform.isAndroid){
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+          systemNavigationBarColor: Theme.of(context).colorScheme.surfaceContainer,
+          systemNavigationBarIconBrightness: Theme.of(context).brightness,
+          systemNavigationBarDividerColor: Colors.transparent
+      ));
+    }
   }
 }
 

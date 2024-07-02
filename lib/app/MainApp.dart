@@ -31,6 +31,7 @@ import 'package:dual_screen/dual_screen.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -41,6 +42,7 @@ import 'package:upgrader/upgrader.dart';
 import '../main.dart';
 import '../provider/SelectedTidNotifierProvider.dart';
 import '../screen/TwoPaneEmptyScreen.dart';
+import '../utility/CustomizeColor.dart';
 import '../utility/TwoPaneScaffold.dart';
 import '../utility/TwoPaneUtils.dart';
 import '../widget/DiscuzNotificationAppbarIconWidget.dart';
@@ -205,8 +207,10 @@ class MyApp extends StatelessWidget {
         final cupertinoLightTheme = MaterialBasedCupertinoThemeData(
             materialTheme: materialThemeDataLight);
         // check the system setting
+
         if (themeColorEntity.brightness == null) {
           themeMode = ThemeMode.system;
+
         } else if (themeColorEntity.brightness == Brightness.light) {
           themeMode = ThemeMode.light;
         } else if (themeColorEntity.brightness == Brightness.dark) {
@@ -341,6 +345,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _checkAcceptVersionFlag(context);
     setupInteractedMessage();
+
 
 
   }
@@ -499,6 +504,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     if(user == null && _bottomNavigationbarIndex >= 2){
       _bottomNavigationbarIndex = 0;
     }
+
+
+
+
+
 
     return PlatformScaffold(
       //iosContentPadding: true,
@@ -660,6 +670,7 @@ class MainTwoPanePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return LayoutBuilder(builder: (context, constraints) {
       return MainTwoPaneStatefulWidget(
           navigatorKey: this.navigatorKey,

@@ -10,6 +10,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../generated/l10n.dart';
+import '../utility/CustomizeColor.dart';
 import 'HotThreadScreen.dart';
 
 class DashboardScreen extends StatelessWidget{
@@ -19,6 +20,7 @@ class DashboardScreen extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+    CustomizeColor.updateAndroidNavigationbar(context);
     return Consumer<DiscuzAndUserNotifier>(
       builder: (BuildContext context, DiscuzAndUserNotifier value, Widget? child) {
         return PlatformWidgetBuilder(
