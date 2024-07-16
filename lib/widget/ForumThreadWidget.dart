@@ -312,7 +312,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
               SizedBox(height: 4,),
 
               Text(_forumThread.subject, style: TextStyle(
-                fontSize: FontSize.large.value*1.2,
+                fontSize: FontSize.large.value,
                 fontWeight: viewed? FontWeight.normal:FontWeight.bold,
                 color: selected? Theme.of(context).colorScheme.onPrimaryContainer:
                 viewed? Theme.of(context).unselectedWidgetColor: null,
@@ -328,7 +328,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                       child: Text(message,
                         style: TextStyle(
                           fontWeight: viewed? FontWeight.w300:FontWeight.normal,
-                          fontSize: FontSize.large.value,
+                          fontSize: FontSize.medium.value,
                           color: selected? Theme.of(context).colorScheme.onPrimaryContainer: viewed? Theme.of(context).unselectedWidgetColor: null,
                         ),
                         maxLines: 3,

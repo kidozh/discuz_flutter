@@ -300,7 +300,7 @@ class PostState extends State<PostStatefulWidget> {
 
         // rich text rendering
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.0),
+          padding: EdgeInsets.symmetric(horizontal: 0.0),
           child: Column(
 
             children: [

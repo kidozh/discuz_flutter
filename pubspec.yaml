@@ -35,7 +35,7 @@ dependencies:
   logger: any  #for logging purpose
   settings_ui: ^2.0.2
   form_validator: ^2.1.1
-  persistent_bottom_nav_bar: ^5.0.2
+  # persistent_bottom_nav_bar: ^5.0.2
   cached_network_image: ^3.2.0
   provider: ^6.0.1
   flutter_localizations:
@@ -69,9 +69,9 @@ dependencies:
   hive_flutter: any
   device_info_plus: ^10.1.0
   share_plus: ^9.0.0
-  firebase_messaging: ^14.7.15
+  firebase_messaging: ^15.0.3
   font_awesome_flutter: ^10.1.0
-  firebase_analytics: ^10.8.5
+  firebase_analytics: ^11.2.0
   flutter_local_notifications: ^17.1.2
   # flutter_apns: ^1.6.0
   scroll_to_index: any

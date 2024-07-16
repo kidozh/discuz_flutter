@@ -340,9 +340,9 @@ class DiscuzHtmlWidget extends StatelessWidget{
                         child: Container(
                           decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.primary,
-                              borderRadius: BorderRadius.all(Radius.circular(16.0))
+                              borderRadius: BorderRadius.all(Radius.circular(4.0))
                           ),
-                          padding: EdgeInsets.all(isCupertino(context)? 4.0: 0.0),
+
                           child: PlatformListTile(
                             leading: Icon(AppPlatformIcons(context).iframeOutline,
                               color: Theme.of(context).colorScheme.onPrimary,),
