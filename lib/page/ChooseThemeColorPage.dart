@@ -19,6 +19,7 @@ class ChooseThemeColorPage extends StatefulWidget {
 class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
 
   int _selectedColorValue = Colors.blue.value;
+  DynamicSchemeVariant dynamicSchemeVariant = DynamicSchemeVariant.fidelity;
 
   Widget getLeadingCircleWidget(BuildContext context, Color color){
     return Container(

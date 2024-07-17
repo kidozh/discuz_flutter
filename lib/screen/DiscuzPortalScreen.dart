@@ -314,7 +314,7 @@ class FavoriteForumCardWidget extends StatelessWidget{
             :null,
         title: Text(favoriteForumInDatabase.title,
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimaryContainer
+            color: Theme.of(context).colorScheme.primary
             //fontWeight: FontWeight.bold
           ),
         ),
@@ -325,7 +325,7 @@ class FavoriteForumCardWidget extends StatelessWidget{
               platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz, user, favoriteForumInDatabase.idKey))
           );
         },
-        trailing: Icon(PlatformIcons(context).forward, color: Theme.of(context).colorScheme.onPrimaryContainer,),
+        trailing: Icon(PlatformIcons(context).forward),
 
 
       ),

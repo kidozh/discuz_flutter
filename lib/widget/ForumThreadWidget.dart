@@ -204,7 +204,19 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
         fit: BoxFit.cover,
         imageUrl: "${_discuz.getBaseURLWithAfterfix()}/data/attachment/forum/${attachmentPreview.attachment}",
-        progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+        progressIndicatorBuilder: (context, url, downloadProgress) => Container(
+            color: Theme.of(context).colorScheme.secondaryContainer,
+
+            child: PlatformCircularProgressIndicator(
+              material: (context, platform) => MaterialProgressIndicatorData(
+                value: downloadProgress.progress,
+                color: Theme.of(context).colorScheme.onSecondaryContainer
+              ),
+              cupertino: (context, platform) => CupertinoProgressIndicatorData(
+                color: Theme.of(context).colorScheme.onSecondaryContainer
+              ),
+            )
+        ),
         errorWidget: (context, url, error) {
           return Container(
             width: 64/0.618,

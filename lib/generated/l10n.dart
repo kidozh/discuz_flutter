@@ -5400,6 +5400,216 @@ class S {
       args: [],
     );
   }
+
+  /// `Scheme variant`
+  String get dynamicSchemeVariant {
+    return Intl.message(
+      'Scheme variant',
+      name: 'dynamicSchemeVariant',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `In some cases, the tones can prevent colors from appearing as intended, such as when a color is too light to offer enough contrast for accessibility.`
+  String get dynamicSchemeVariantNotification {
+    return Intl.message(
+      'In some cases, the tones can prevent colors from appearing as intended, such as when a color is too light to offer enough contrast for accessibility.',
+      name: 'dynamicSchemeVariantNotification',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `'Fidelity' is a feature that adjusts tones in these cases to produce the intended visual results without harming visual contrast.`
+  String get dynamicSchemeVariantFidelityNotification {
+    return Intl.message(
+      '\'Fidelity\' is a feature that adjusts tones in these cases to produce the intended visual results without harming visual contrast.',
+      name: 'dynamicSchemeVariantFidelityNotification',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tonal`
+  String get dynamicSchemeVariantTonalSpotKey {
+    return Intl.message(
+      'Tonal',
+      name: 'dynamicSchemeVariantTonalSpotKey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pastel palettes with a low chroma.`
+  String get dynamicSchemeVariantTonalSpotDescription {
+    return Intl.message(
+      'Pastel palettes with a low chroma.',
+      name: 'dynamicSchemeVariantTonalSpotDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fidelity`
+  String get dynamicSchemeVariantFidelityKey {
+    return Intl.message(
+      'Fidelity',
+      name: 'dynamicSchemeVariantFidelityKey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pastel palettes with a low chroma.`
+  String get dynamicSchemeVariantFidelityDescription {
+    return Intl.message(
+      'Pastel palettes with a low chroma.',
+      name: 'dynamicSchemeVariantFidelityDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Monochrome`
+  String get dynamicSchemeVariantMonochromeKey {
+    return Intl.message(
+      'Monochrome',
+      name: 'dynamicSchemeVariantMonochromeKey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Gray scale color, no chroma.`
+  String get dynamicSchemeVariantMonochromeDescription {
+    return Intl.message(
+      'Gray scale color, no chroma.',
+      name: 'dynamicSchemeVariantMonochromeDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Neutral`
+  String get dynamicSchemeVariantNeutralKey {
+    return Intl.message(
+      'Neutral',
+      name: 'dynamicSchemeVariantNeutralKey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close to grayscale, a hint of chroma.`
+  String get dynamicSchemeVariantNeutralDescription {
+    return Intl.message(
+      'Close to grayscale, a hint of chroma.',
+      name: 'dynamicSchemeVariantNeutralDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Vibrant`
+  String get dynamicSchemeVariantVibrantKey {
+    return Intl.message(
+      'Vibrant',
+      name: 'dynamicSchemeVariantVibrantKey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pastel colors, high chroma palettes.`
+  String get dynamicSchemeVariantVibrantDescription {
+    return Intl.message(
+      'Pastel colors, high chroma palettes.',
+      name: 'dynamicSchemeVariantVibrantDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Expressive`
+  String get dynamicSchemeVariantExpressiveKey {
+    return Intl.message(
+      'Expressive',
+      name: 'dynamicSchemeVariantExpressiveKey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pastel colors, medium chroma palettes.`
+  String get dynamicSchemeVariantExpressiveDescription {
+    return Intl.message(
+      'Pastel colors, medium chroma palettes.',
+      name: 'dynamicSchemeVariantExpressiveDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Content`
+  String get dynamicSchemeVariantContentKey {
+    return Intl.message(
+      'Content',
+      name: 'dynamicSchemeVariantContentKey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tokens and palettes match the seed color.`
+  String get dynamicSchemeVariantContentDescription {
+    return Intl.message(
+      'Tokens and palettes match the seed color.',
+      name: 'dynamicSchemeVariantContentDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rainbow`
+  String get dynamicSchemeVariantRainbowKey {
+    return Intl.message(
+      'Rainbow',
+      name: 'dynamicSchemeVariantRainbowKey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A playful theme.`
+  String get dynamicSchemeVariantRainbowDescription {
+    return Intl.message(
+      'A playful theme.',
+      name: 'dynamicSchemeVariantRainbowDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `FruitSalad`
+  String get dynamicSchemeVariantFruitSaladKey {
+    return Intl.message(
+      'FruitSalad',
+      name: 'dynamicSchemeVariantFruitSaladKey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A playful theme.`
+  String get dynamicSchemeVariantFruitSaladDescription {
+    return Intl.message(
+      'A playful theme.',
+      name: 'dynamicSchemeVariantFruitSaladDescription',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

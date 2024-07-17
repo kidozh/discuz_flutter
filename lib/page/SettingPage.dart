@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/page/ChooseDynamicSchemeVariantPage.dart';
 import 'package:discuz_flutter/page/ChooseInterfaceBrightnessPage.dart';
 import 'package:discuz_flutter/page/ChoosePlatformPage.dart';
 import 'package:discuz_flutter/page/ChooseTypography.dart';
@@ -152,6 +153,18 @@ class _SettingPageState extends State<SettingPage> {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
                       builder: (_) => ChooseThemeColorPage(),
+                      context: context,
+                    ));
+                  },
+                ),
+                SettingsTile.navigation(
+                  title: Text(S.of(context).dynamicSchemeVariant),
+                  value: Text(themeEntity.getDynamicSchemeVariantName(context)),
+                  leading: Icon(AppPlatformIcons(context).dynamicSchemeVariantOutlined),
+                  onPressed: (context) {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    Navigator.of(context).push(platformPageRoute(
+                      builder: (_) => ChooseDynamicSchemeVariantPage(),
                       context: context,
                     ));
                   },

@@ -801,5 +801,26 @@
     }
   },
   "signaturePreview": "Preview",
-  "signatureWithDisFlyDescription": "You can support us by adding the app information to your post signature. You may opt it out any time in the setting."
+  "signatureWithDisFlyDescription": "You can support us by adding the app information to your post signature. You may opt it out any time in the setting.",
+  "dynamicSchemeVariant": "Scheme variant",
+  "dynamicSchemeVariantNotification": "In some cases, the tones can prevent colors from appearing as intended, such as when a color is too light to offer enough contrast for accessibility.",
+  "dynamicSchemeVariantFidelityNotification": "'Fidelity' is a feature that adjusts tones in these cases to produce the intended visual results without harming visual contrast.",
+  "dynamicSchemeVariantTonalSpotKey": "Tonal",
+  "dynamicSchemeVariantTonalSpotDescription": "Pastel palettes with a low chroma.",
+  "dynamicSchemeVariantFidelityKey": "Fidelity",
+  "dynamicSchemeVariantFidelityDescription": "Pastel palettes with a low chroma.",
+  "dynamicSchemeVariantMonochromeKey": "Monochrome",
+  "dynamicSchemeVariantMonochromeDescription": "Gray scale color, no chroma.",
+  "dynamicSchemeVariantNeutralKey": "Neutral",
+  "dynamicSchemeVariantNeutralDescription": "Close to grayscale, a hint of chroma.",
+  "dynamicSchemeVariantVibrantKey": "Vibrant",
+  "dynamicSchemeVariantVibrantDescription": "Pastel colors, high chroma palettes.",
+  "dynamicSchemeVariantExpressiveKey": "Expressive",
+  "dynamicSchemeVariantExpressiveDescription": "Pastel colors, medium chroma palettes.",
+  "dynamicSchemeVariantContentKey": "Content",
+  "dynamicSchemeVariantContentDescription": "Tokens and palettes match the seed color.",
+  "dynamicSchemeVariantRainbowKey": "Rainbow",
+  "dynamicSchemeVariantRainbowDescription": "A playful theme.",
+  "dynamicSchemeVariantFruitSaladKey": "FruitSalad",
+  "dynamicSchemeVariantFruitSaladDescription": "A playful theme."
 }

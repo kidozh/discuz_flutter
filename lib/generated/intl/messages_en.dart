@@ -336,6 +336,56 @@ class MessageLookup extends MessageLookupByLibrary {
         "downloadingFiles": m11,
         "duplicatedPost":
             MessageLookupByLibrary.simpleMessage("Duplicated Posts"),
+        "dynamicSchemeVariant":
+            MessageLookupByLibrary.simpleMessage("Scheme variant"),
+        "dynamicSchemeVariantContentDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "Tokens and palettes match the seed color."),
+        "dynamicSchemeVariantContentKey":
+            MessageLookupByLibrary.simpleMessage("Content"),
+        "dynamicSchemeVariantExpressiveDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "Pastel colors, medium chroma palettes."),
+        "dynamicSchemeVariantExpressiveKey":
+            MessageLookupByLibrary.simpleMessage("Expressive"),
+        "dynamicSchemeVariantFidelityDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "Pastel palettes with a low chroma."),
+        "dynamicSchemeVariantFidelityKey":
+            MessageLookupByLibrary.simpleMessage("Fidelity"),
+        "dynamicSchemeVariantFidelityNotification":
+            MessageLookupByLibrary.simpleMessage(
+                "\'Fidelity\' is a feature that adjusts tones in these cases to produce the intended visual results without harming visual contrast."),
+        "dynamicSchemeVariantFruitSaladDescription":
+            MessageLookupByLibrary.simpleMessage("A playful theme."),
+        "dynamicSchemeVariantFruitSaladKey":
+            MessageLookupByLibrary.simpleMessage("FruitSalad"),
+        "dynamicSchemeVariantMonochromeDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "Gray scale color, no chroma."),
+        "dynamicSchemeVariantMonochromeKey":
+            MessageLookupByLibrary.simpleMessage("Monochrome"),
+        "dynamicSchemeVariantNeutralDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "Close to grayscale, a hint of chroma."),
+        "dynamicSchemeVariantNeutralKey":
+            MessageLookupByLibrary.simpleMessage("Neutral"),
+        "dynamicSchemeVariantNotification": MessageLookupByLibrary.simpleMessage(
+            "In some cases, the tones can prevent colors from appearing as intended, such as when a color is too light to offer enough contrast for accessibility."),
+        "dynamicSchemeVariantRainbowDescription":
+            MessageLookupByLibrary.simpleMessage("A playful theme."),
+        "dynamicSchemeVariantRainbowKey":
+            MessageLookupByLibrary.simpleMessage("Rainbow"),
+        "dynamicSchemeVariantTonalSpotDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "Pastel palettes with a low chroma."),
+        "dynamicSchemeVariantTonalSpotKey":
+            MessageLookupByLibrary.simpleMessage("Tonal"),
+        "dynamicSchemeVariantVibrantDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "Pastel colors, high chroma palettes."),
+        "dynamicSchemeVariantVibrantKey":
+            MessageLookupByLibrary.simpleMessage("Vibrant"),
         "easyRefreshClassicFooterArmedText":
             MessageLookupByLibrary.simpleMessage("Release ready"),
         "easyRefreshClassicFooterDragText":

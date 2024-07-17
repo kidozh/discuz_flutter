@@ -65,13 +65,16 @@ class MyApp extends StatelessWidget {
     String? typography = await UserPreferencesUtils.getTypographyThemePreference();
     bool useThinFont = await UserPreferencesUtils.getUseThinFontPreference();
     bool useCompactParagraph = await UserPreferencesUtils.getUseCompactParagraphPreference();
+    DynamicSchemeVariant dynamicSchemeVariant = await UserPreferencesUtils.getInterfaceDynamicSchemeVariantPreference();
 
-    print("Get brightness ${brightness}");
+
 
     Provider.of<ThemeNotifierProvider>(context, listen: false)
         .setTheme(colorName);
     Provider.of<ThemeNotifierProvider>(context, listen: false)
         .setPlatformName(platformName);
+    Provider.of<ThemeNotifierProvider>(context, listen: false)
+        .setDynamicSchemeVariant(dynamicSchemeVariant);
     Provider.of<TypeSettingNotifierProvider>(context, listen: false)
         .setScalingParameter(scale);
     Provider.of<ThemeNotifierProvider>(context, listen: false)
@@ -163,8 +166,9 @@ class MyApp extends StatelessWidget {
         final materialThemeDataLight = ThemeData.from(
             colorScheme: ColorScheme.fromSeed(
                 seedColor: themeColorEntity.themeColor,
+              dynamicSchemeVariant: themeColorEntity.dynamicSchemeVariant,
               brightness: Brightness.light,
-              surface: Colors.white,
+              //surface: Colors.white,
             ).harmonized(),
             useMaterial3: themeColorEntity.useMaterial3,
             textTheme: typography.black.useSystemChineseFont(Brightness.light),
@@ -174,8 +178,9 @@ class MyApp extends StatelessWidget {
         final materialThemeDataDark = ThemeData.from(
             colorScheme: ColorScheme.fromSeed(
               seedColor: themeColorEntity.themeColor,
+              dynamicSchemeVariant: themeColorEntity.dynamicSchemeVariant,
               brightness: Brightness.dark,
-              surface: Colors.black54
+              //surface: Colors.black54
             ).harmonized()
             ,
             useMaterial3: themeColorEntity.useMaterial3,

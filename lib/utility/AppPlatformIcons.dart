@@ -25,6 +25,8 @@ class AppPlatformIcons{
 
   IconData get appThemeOutlined => isMaterial(context)? Icons.color_lens_outlined : CupertinoIcons.color_filter;
 
+
+
   IconData get appAppearanceOutlined => isMaterial(context)? Icons.highlight_outlined : CupertinoIcons.wand_rays;
 
   IconData get material3Outlined => isMaterial(context)? Icons.format_paint_outlined : CupertinoIcons.skew;
@@ -132,4 +134,8 @@ class AppPlatformIcons{
   IconData get linkSolid => isMaterial(context)? Icons.link_rounded : CupertinoIcons.link;
 
   IconData get compactParagraphOutline => isMaterial(context)? Icons.text_fields : CupertinoIcons.text_insert;
+
+  IconData get dynamicSchemeVariantOutlined => isMaterial(context)? Icons.colorize : CupertinoIcons.paintbrush;
+
+  IconData get dynamicSchemeDescriptionOutlined => isMaterial(context)? Icons.invert_colors_on : CupertinoIcons.brightness;
 }

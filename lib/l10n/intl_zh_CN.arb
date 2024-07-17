@@ -802,5 +802,26 @@
     }
   },
   "signaturePreview": "预览",
-  "signatureWithDisFlyDescription": "您可以使用带有本应用后缀的小尾巴发帖支持本应用，您可以随时在设置中更换发帖小尾巴。"
+  "signatureWithDisFlyDescription": "您可以使用带有本应用后缀的小尾巴发帖支持本应用，您可以随时在设置中更换发帖小尾巴。",
+  "dynamicSchemeVariant": "色调变体",
+  "dynamicSchemeVariantNotification": "颜色可能因对比度不足影响可读性。",
+  "dynamicSchemeVariantFidelityNotification": "和谐色调会提供足够的对比度以确保可读性和预定的视觉效果。",
+  "dynamicSchemeVariantTonalSpotKey": "柔和色调",
+  "dynamicSchemeVariantTonalSpotDescription": "低饱和度的油画色调。",
+  "dynamicSchemeVariantFidelityKey": "和谐色调",
+  "dynamicSchemeVariantFidelityDescription": "提供最接近色彩的和谐色调组合。",
+  "dynamicSchemeVariantMonochromeKey": "单色色调",
+  "dynamicSchemeVariantMonochromeDescription": "黑白配色。明度根据主选色所确定。",
+  "dynamicSchemeVariantNeutralKey": "中性色调",
+  "dynamicSchemeVariantNeutralDescription": "略带色调的灰色配色。",
+  "dynamicSchemeVariantVibrantKey": "饱和色调",
+  "dynamicSchemeVariantVibrantDescription": "高饱和度的油画色调。其会选择当前颜色档位中最为艳丽的色彩。",
+  "dynamicSchemeVariantExpressiveKey": "鲜艳色调",
+  "dynamicSchemeVariantExpressiveDescription": "中饱和度的油画色调。这个色调会选择不同于主选色的颜色以提供色彩多样性。",
+  "dynamicSchemeVariantContentKey": "原色色调",
+  "dynamicSchemeVariantContentDescription": "提供原始色调组合。其实与和谐色相近，但是与之不同的是一些界面的底色是主选色以确保与背景的对比。",
+  "dynamicSchemeVariantRainbowKey": "彩虹色调",
+  "dynamicSchemeVariantRainbowDescription": "色调将会来自不同的颜色，色谱中会排除主选色。",
+  "dynamicSchemeVariantFruitSaladKey": "沙拉色调",
+  "dynamicSchemeVariantFruitSaladDescription": "提供来自沙拉灵感的配色，色谱中会排除主选色。"
 }

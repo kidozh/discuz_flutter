@@ -55,6 +55,42 @@ class ThemeNotifierProvider with ChangeNotifier{
 
   int _themeColor = Colors.blue.value;
 
+  DynamicSchemeVariant _dynamicSchemeVariant = DynamicSchemeVariant.fidelity;
+
+  String getDynamicSchemeVariantName(BuildContext context){
+    switch (_dynamicSchemeVariant){
+      case DynamicSchemeVariant.tonalSpot: return S.of(context).dynamicSchemeVariantTonalSpotKey;
+      case DynamicSchemeVariant.fidelity: return S.of(context).dynamicSchemeVariantFidelityKey;
+      case DynamicSchemeVariant.monochrome : return S.of(context).dynamicSchemeVariantMonochromeKey;
+      case DynamicSchemeVariant.neutral : return S.of(context).dynamicSchemeVariantNeutralKey;
+      case DynamicSchemeVariant.vibrant : return S.of(context).dynamicSchemeVariantVibrantKey;
+      case DynamicSchemeVariant.expressive : return S.of(context).dynamicSchemeVariantExpressiveKey;
+      case DynamicSchemeVariant.content : return S.of(context).dynamicSchemeVariantContentKey;
+      case DynamicSchemeVariant.rainbow : return S.of(context).dynamicSchemeVariantRainbowKey;
+      case DynamicSchemeVariant.fruitSalad : return S.of(context).dynamicSchemeVariantFruitSaladKey;
+      default:
+        return S.of(context).dynamicSchemeVariantFidelityKey;
+    }
+
+  }
+
+  String getDynamicSchemeVariantDescription(BuildContext context){
+    switch (_dynamicSchemeVariant){
+      case DynamicSchemeVariant.tonalSpot: return S.of(context).dynamicSchemeVariantTonalSpotDescription;
+      case DynamicSchemeVariant.fidelity: return S.of(context).dynamicSchemeVariantFidelityDescription;
+      case DynamicSchemeVariant.monochrome : return S.of(context).dynamicSchemeVariantMonochromeDescription;
+      case DynamicSchemeVariant.neutral : return S.of(context).dynamicSchemeVariantNeutralDescription;
+      case DynamicSchemeVariant.vibrant : return S.of(context).dynamicSchemeVariantVibrantDescription;
+      case DynamicSchemeVariant.expressive : return S.of(context).dynamicSchemeVariantExpressiveDescription;
+      case DynamicSchemeVariant.content : return S.of(context).dynamicSchemeVariantContentDescription;
+      case DynamicSchemeVariant.rainbow : return S.of(context).dynamicSchemeVariantRainbowDescription;
+      case DynamicSchemeVariant.fruitSalad : return S.of(context).dynamicSchemeVariantFruitSaladDescription;
+      default:
+        return S.of(context).dynamicSchemeVariantFidelityDescription;
+    }
+
+  }
+
   String _platformName ="";
 
   String get themeColorName => ColorTools.nameThatColor(Color(_themeColor));
@@ -94,6 +130,13 @@ class ThemeNotifierProvider with ChangeNotifier{
     _platformName = platformName;
     notifyListeners();
   }
+
+  setDynamicSchemeVariant(DynamicSchemeVariant dynamicSchemeVariant){
+    _dynamicSchemeVariant = dynamicSchemeVariant;
+    notifyListeners();
+  }
+
+  DynamicSchemeVariant get dynamicSchemeVariant => _dynamicSchemeVariant;
 
   Color get themeColor => Color(_themeColor);
 

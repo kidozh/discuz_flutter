@@ -483,5 +483,75 @@ class UserPreferencesUtils{
   }
 
 
+  static final String interfaceDynamicSchemeVariantPreferenceKey = "interfaceDynamicSchemeVariantPreferenceKey";
+  static Future<void> putInterfaceDynamicSchemeVariantPreference(DynamicSchemeVariant dynamicVariant) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String dynamicVariantString = "fidelity";
+    switch (dynamicVariant){
+
+      case DynamicSchemeVariant.tonalSpot:{
+        dynamicVariantString = "totalSpot";
+        break;
+      }
+
+      case DynamicSchemeVariant.fidelity:{
+        dynamicVariantString = "fidelity";
+        break;
+      }
+      case DynamicSchemeVariant.monochrome:{
+        dynamicVariantString = "monochrome";
+        break;
+      }
+      case DynamicSchemeVariant.neutral:{
+        dynamicVariantString = "neutral";
+        break;
+      }
+      case DynamicSchemeVariant.vibrant:{
+        dynamicVariantString = "vibrant";
+        break;
+      }
+      case DynamicSchemeVariant.expressive:{
+        dynamicVariantString = "expressive";
+        break;
+      }
+      case DynamicSchemeVariant.content:{
+        dynamicVariantString = "content";
+        break;
+      }
+      case DynamicSchemeVariant.rainbow:{
+        dynamicVariantString = "rainbow";
+        break;
+      }
+      case DynamicSchemeVariant.fruitSalad:{
+        dynamicVariantString = "fruitSalad";
+        break;
+      }
+    }
+    await prefs.setString(interfaceDynamicSchemeVariantPreferenceKey, dynamicVariantString);
+  }
+
+  static Future<String?> getInterfaceDynamicSchemeVariantStringPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var brightness =  prefs.getString(interfaceDynamicSchemeVariantPreferenceKey);
+    return brightness;
+  }
+
+  static Future<DynamicSchemeVariant> getInterfaceDynamicSchemeVariantPreference() async {
+    String? dynamicVariantString = await getInterfaceDynamicSchemeVariantStringPreference();
+    switch (dynamicVariantString){
+      case "tonalSpot": return DynamicSchemeVariant.tonalSpot;
+      case "fidelity": return DynamicSchemeVariant.fidelity;
+      case "monochrome" : return DynamicSchemeVariant.monochrome;
+      case "neutral" : return DynamicSchemeVariant.neutral;
+      case "vibrant" : return DynamicSchemeVariant.vibrant;
+      case "expressive" : return DynamicSchemeVariant.expressive;
+      case "content" : return DynamicSchemeVariant.content;
+      case "rainbow" : return DynamicSchemeVariant.rainbow;
+      case "fruitSalad" : return DynamicSchemeVariant.fruitSalad;
+      default:
+        return DynamicSchemeVariant.fidelity;
+    }
+  }
+
 
 }

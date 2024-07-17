@@ -296,6 +296,51 @@ class MessageLookup extends MessageLookupByLibrary {
         "downloadAttachment": MessageLookupByLibrary.simpleMessage("下载附件"),
         "downloadingFiles": m11,
         "duplicatedPost": MessageLookupByLibrary.simpleMessage("重复发帖"),
+        "dynamicSchemeVariant": MessageLookupByLibrary.simpleMessage("色调变体"),
+        "dynamicSchemeVariantContentDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "提供原始色调组合。其实与和谐色相近，但是与之不同的是一些界面的底色是主选色以确保与背景的对比。"),
+        "dynamicSchemeVariantContentKey":
+            MessageLookupByLibrary.simpleMessage("原色色调"),
+        "dynamicSchemeVariantExpressiveDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "中饱和度的油画色调。这个色调会选择不同于主选色的颜色以提供色彩多样性。"),
+        "dynamicSchemeVariantExpressiveKey":
+            MessageLookupByLibrary.simpleMessage("鲜艳色调"),
+        "dynamicSchemeVariantFidelityDescription":
+            MessageLookupByLibrary.simpleMessage("提供最接近色彩的和谐色调组合。"),
+        "dynamicSchemeVariantFidelityKey":
+            MessageLookupByLibrary.simpleMessage("和谐色调"),
+        "dynamicSchemeVariantFidelityNotification":
+            MessageLookupByLibrary.simpleMessage(
+                "和谐色调会提供足够的对比度以确保可读性和预定的视觉效果。"),
+        "dynamicSchemeVariantFruitSaladDescription":
+            MessageLookupByLibrary.simpleMessage("提供来自沙拉灵感的配色，色谱中会排除主选色。"),
+        "dynamicSchemeVariantFruitSaladKey":
+            MessageLookupByLibrary.simpleMessage("沙拉色调"),
+        "dynamicSchemeVariantMonochromeDescription":
+            MessageLookupByLibrary.simpleMessage("黑白配色。明度根据主选色所确定。"),
+        "dynamicSchemeVariantMonochromeKey":
+            MessageLookupByLibrary.simpleMessage("单色色调"),
+        "dynamicSchemeVariantNeutralDescription":
+            MessageLookupByLibrary.simpleMessage("略带色调的灰色配色。"),
+        "dynamicSchemeVariantNeutralKey":
+            MessageLookupByLibrary.simpleMessage("中性色调"),
+        "dynamicSchemeVariantNotification":
+            MessageLookupByLibrary.simpleMessage("颜色可能因对比度不足影响可读性。"),
+        "dynamicSchemeVariantRainbowDescription":
+            MessageLookupByLibrary.simpleMessage("色调将会来自不同的颜色，色谱中会排除主选色。"),
+        "dynamicSchemeVariantRainbowKey":
+            MessageLookupByLibrary.simpleMessage("彩虹色调"),
+        "dynamicSchemeVariantTonalSpotDescription":
+            MessageLookupByLibrary.simpleMessage("低饱和度的油画色调。"),
+        "dynamicSchemeVariantTonalSpotKey":
+            MessageLookupByLibrary.simpleMessage("柔和色调"),
+        "dynamicSchemeVariantVibrantDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "高饱和度的油画色调。其会选择当前颜色档位中最为艳丽的色彩。"),
+        "dynamicSchemeVariantVibrantKey":
+            MessageLookupByLibrary.simpleMessage("饱和色调"),
         "easyRefreshClassicFooterArmedText":
             MessageLookupByLibrary.simpleMessage("释放开始"),
         "easyRefreshClassicFooterDragText":
