@@ -19,6 +19,7 @@ class SmileyResult extends BaseResult{
   SmileyResult(){}
 
   factory SmileyResult.fromJson(Map<String, dynamic> json) => _$SmileyResultFromJson(json);
+  Map<String, dynamic> toJson() => _$SmileyResultToJson(this);
 }
 
 @JsonSerializable()
@@ -27,6 +28,7 @@ class SmileyVariables extends BaseVariableResult{
 
   SmileyVariables(){}
   factory SmileyVariables.fromJson(Map<String, dynamic> json) => _$SmileyVariablesFromJson(json);
+  Map<String, dynamic> toJson() => _$SmileyVariablesToJson(this);
 
 }
 

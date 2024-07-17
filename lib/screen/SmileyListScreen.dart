@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -18,6 +19,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../utility/UserPreferencesUtils.dart';
 import 'BlankScreen.dart';
 
 typedef SmileyPressedFunc = void Function(Smiley);
@@ -64,6 +66,7 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
 
   void _initDB() async {
 
+
     _smileyDao = await AppDatabase.getSmileyDao();
     Discuz? discuz = Provider
         .of<DiscuzAndUserNotifier>(context, listen: false)
@@ -71,6 +74,20 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
     if (discuz == null) {
       return;
     }
+    // load cache first
+    String simleyJson = await UserPreferencesUtils.getDiscuzSmileyCacheJson(discuz);
+    // try to recover from Simley
+    try{
+      SmileyResult smileyResult = SmileyResult.fromJson(jsonDecode(simleyJson));
+      setState(() {
+        result = smileyResult;
+      });
+    }
+    catch (e){
+      log("Loading smiley json error ${simleyJson} \n --- \n ${e} ");
+    }
+
+
     var smileyList = await _smileyDao.findAllSmileyByDiscuz(discuz);
     setState(() {
       _savedSmileyList = smileyList;
@@ -97,6 +114,7 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
       setState(() {
         result = value;
       });
+      UserPreferencesUtils.putDiscuzSmileyCacheJson(discuz, jsonEncode(value.toJson()));
     });
   }
 
