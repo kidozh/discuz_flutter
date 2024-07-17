@@ -289,7 +289,7 @@ class FavoriteForumCardWidget extends StatelessWidget{
     return PlatformWidgetBuilder(
       material: (context, child, platform){
         return Card(
-          color: Theme.of(context).brightness == Brightness.light? Colors.red.shade50: Colors.red.shade800,
+          color: Theme.of(context).colorScheme.primaryContainer,
           elevation: 4.0,
           child: child,
         );
@@ -307,19 +307,21 @@ class FavoriteForumCardWidget extends StatelessWidget{
       child: PlatformListTile(
 
         //dense: true,
-        leading: Icon(PlatformIcons(context).favoriteSolid, color: Theme.of(context).brightness == Brightness.light? Colors.red.shade700: Colors.red.shade200,),
+        leading: isCupertino(context)?
+            Icon(PlatformIcons(context).favoriteSolid, color: Theme.of(context).colorScheme.primary,)
+            :null,
         title: Text(favoriteForumInDatabase.title,
           style: TextStyle(
-            color: Theme.of(context).brightness == Brightness.light? Colors.black87: Colors.white,
+            color: Theme.of(context).colorScheme.onPrimaryContainer
             //fontWeight: FontWeight.bold
           ),
         ),
-        subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, favoriteForumInDatabase.date),
-          style: TextStyle(
-              color: Theme.of(context).brightness == Brightness.light? Colors.black54: Colors.white54,
-              fontWeight: FontWeight.normal
-          ),
-        ),
+        // subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, favoriteForumInDatabase.description),
+        //   style: TextStyle(
+        //       color: Theme.of(context).brightness == Brightness.light? Colors.black54: Colors.white54,
+        //       fontWeight: FontWeight.normal
+        //   ),
+        // ),
         onTap: () async {
           VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(
