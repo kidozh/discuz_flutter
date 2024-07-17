@@ -231,7 +231,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
 
                     delegate: SliverChildBuilderDelegate((context, index) {
                       return FavoriteForumCardWidget(
-                          discuz, user, favoriteForumInDbList[index]);
+                          discuz, user, favoriteForumInDbList[index], index == favoriteForumInDbList.length - 1);
                     },
                         childCount: favoriteForumInDbList.length
                     )
@@ -282,7 +282,8 @@ class FavoriteForumCardWidget extends StatelessWidget{
   FavoriteForumInDatabase favoriteForumInDatabase;
   Discuz discuz;
   User? user;
-  FavoriteForumCardWidget(this.discuz, this.user,this.favoriteForumInDatabase);
+  bool lastItem = false;
+  FavoriteForumCardWidget(this.discuz, this.user,this.favoriteForumInDatabase, this.lastItem);
 
   @override
   Widget build(BuildContext context) {
@@ -300,7 +301,8 @@ class FavoriteForumCardWidget extends StatelessWidget{
             if(child!=null) Container(
               child: child,
             ),
-            Divider()
+            if(!lastItem)
+              Divider()
           ],
         );
       },
@@ -316,12 +318,6 @@ class FavoriteForumCardWidget extends StatelessWidget{
             //fontWeight: FontWeight.bold
           ),
         ),
-        // subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, favoriteForumInDatabase.description),
-        //   style: TextStyle(
-        //       color: Theme.of(context).brightness == Brightness.light? Colors.black54: Colors.white54,
-        //       fontWeight: FontWeight.normal
-        //   ),
-        // ),
         onTap: () async {
           VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(

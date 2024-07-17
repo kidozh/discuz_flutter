@@ -33,8 +33,8 @@ class ForumCardWidget extends StatelessWidget {
             ),
         child: ListTile(
           leading: Container(
-            width: 40,
-            height: 40,
+            width: 36,
+            height: 36,
             child: Badge(
               label: _forum.todayPosts !="0"? Text(_forum.todayPosts) : null,
               isLabelVisible: _forum.todayPosts !="0" ?true: false,
@@ -61,7 +61,7 @@ class ForumCardWidget extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: _forum.description.length != 0
-              ? Text(_forum.description, maxLines: 2, overflow: TextOverflow.ellipsis,)
+              ? Text(_forum.description, maxLines: 1, overflow: TextOverflow.ellipsis,)
               : null,
           onTap: () async {
             VibrationUtils.vibrateWithClickIfPossible();
