@@ -188,7 +188,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       // remove focus when
       if (_focusNode.hasFocus) {
         DateTime now = DateTime.now();
-        if(now.difference(lastFocusAt).inSeconds > 1){
+        if(now.difference(lastFocusAt).inSeconds > 10){
           print("Unfocus node due to scroll ${now.difference(lastFocusAt).inSeconds}");
           _focusNode.unfocus();
         }
