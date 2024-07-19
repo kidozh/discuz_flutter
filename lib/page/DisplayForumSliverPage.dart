@@ -42,8 +42,10 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../provider/DiscuzNotificationProvider.dart';
+import '../provider/UserPreferenceNotifierProvider.dart';
 import '../screen/TwoPaneEmptyScreen.dart';
 import '../utility/EasyRefreshUtils.dart';
+import '../utility/PostTextFieldUtils.dart';
 import 'SettingPage.dart';
 
 class DisplayForumSliverPage extends StatelessWidget {
@@ -551,7 +553,14 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                         afterTid: index < _forumThreadList.length-1 ? _forumThreadList[index +1].getTid() : null,
                       ),
                       if(index % 15 == 0 && index != 0)
-                        AppBannerAdWidget(),
+                        Consumer<UserPreferenceNotifierProvider>(builder: (context, value, child){
+                          if(value.signature == PostTextFieldUtils.USE_APP_SIGNATURE && index > 10){
+                            return Container();
+                          }
+                          else{
+                            return AppBannerAdWidget();
+                          }
+                        })
                     ],
                   );
                 },

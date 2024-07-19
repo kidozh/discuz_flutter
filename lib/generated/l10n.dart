@@ -5610,6 +5610,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Thank you for letting our app heard by more people. The number of inline app will be reduced to appreciate your assistance.`
+  String get acknowledgeAppSignatureAndAdDiminish {
+    return Intl.message(
+      'Thank you for letting our app heard by more people. The number of inline app will be reduced to appreciate your assistance.',
+      name: 'acknowledgeAppSignatureAndAdDiminish',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

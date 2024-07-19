@@ -49,7 +49,6 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getPreference();
   }

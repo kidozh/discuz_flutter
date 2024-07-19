@@ -134,6 +134,9 @@ class MessageLookup extends MessageLookupByLibrary {
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "accentColorPickerType": MessageLookupByLibrary.simpleMessage("Accent"),
         "account": MessageLookupByLibrary.simpleMessage("Username"),
+        "acknowledgeAppSignatureAndAdDiminish":
+            MessageLookupByLibrary.simpleMessage(
+                "Thank you for letting our app heard by more people. The number of inline app will be reduced to appreciate your assistance."),
         "adLoadingText":
             MessageLookupByLibrary.simpleMessage("AD provided by Google"),
         "addAPhoto": MessageLookupByLibrary.simpleMessage("Photo"),

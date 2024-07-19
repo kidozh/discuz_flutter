@@ -55,6 +55,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../provider/DiscuzNotificationProvider.dart';
+import '../provider/UserPreferenceNotifierProvider.dart';
 import '../utility/EasyRefreshUtils.dart';
 import '../widget/AppBannerAdWidget.dart';
 import '../widget/DiscuzNotificationAppbarIconWidget.dart';
@@ -977,7 +978,15 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                               ),
                             ),
                             if (index % 10 == 0 && index != 0)
-                              AppBannerAdWidget()
+                              Consumer<UserPreferenceNotifierProvider>(builder: (context, value, child){
+                                if(value.signature == PostTextFieldUtils.USE_APP_SIGNATURE && index > 10){
+                                  return Container();
+                                }
+                                else{
+                                  return AppBannerAdWidget();
+                                }
+                              })
+
                           ],
                         );
                       },

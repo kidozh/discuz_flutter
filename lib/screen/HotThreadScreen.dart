@@ -19,8 +19,10 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/DiscuzNotificationProvider.dart';
+import '../provider/UserPreferenceNotifierProvider.dart';
 import '../utility/EasyRefreshUtils.dart';
 import '../utility/MobileSignUtils.dart';
+import '../utility/PostTextFieldUtils.dart';
 import '../widget/AppBannerAdWidget.dart';
 import '../widget/LoadingStateWidget.dart';
 import '../widget/ThreadSlideShowCarouselWidget.dart';
@@ -240,7 +242,15 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
                           HotThreadWidget(discuz, user, _hotThreadList[index], onSelectTid,
                               afterTid: index < _hotThreadList.length - 1 ? _hotThreadList[index+1].tid: null
                           ),
-                          if (index % 15 == 0 && index != 0) AppBannerAdWidget()
+                          if (index % 15 == 0 && index != 0)
+                            Consumer<UserPreferenceNotifierProvider>(builder: (context, value, child){
+                              if(value.signature == PostTextFieldUtils.USE_APP_SIGNATURE && index > 10){
+                                return Container();
+                              }
+                              else{
+                                return AppBannerAdWidget();
+                              }
+                            })
                         ],
                       ),
                   childCount: _hotThreadList.length))

@@ -251,6 +251,16 @@ class _SettingPageState extends State<SettingPage> {
                 SettingsTile.navigation(
                   title: Text(S.of(context).signatureStyle),
                   leading: Icon(AppPlatformIcons(context).signatureOutlined),
+                  description: Consumer<UserPreferenceNotifierProvider>(
+                     builder: (context, userPreference, child){
+                       if(userPreference.signature == PostTextFieldUtils.USE_APP_SIGNATURE){
+                       return Text(S.of(context).acknowledgeAppSignatureAndAdDiminish);
+                       }
+                       else{
+                         return Text("");
+                       }
+
+                     }),
                   value: Consumer<UserPreferenceNotifierProvider>(
                     builder: (context, userPreference, child){
                       if(userPreference.signature == PostTextFieldUtils.NO_SIGNATURE){

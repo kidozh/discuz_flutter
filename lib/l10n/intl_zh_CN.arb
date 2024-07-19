@@ -823,5 +823,6 @@
   "dynamicSchemeVariantRainbowKey": "彩虹色调",
   "dynamicSchemeVariantRainbowDescription": "色调将会来自不同的颜色，色谱中会排除主选色。",
   "dynamicSchemeVariantFruitSaladKey": "沙拉色调",
-  "dynamicSchemeVariantFruitSaladDescription": "提供来自沙拉灵感的配色，色谱中会排除主选色。"
+  "dynamicSchemeVariantFruitSaladDescription": "提供来自沙拉灵感的配色，色谱中会排除主选色。",
+  "acknowledgeAppSignatureAndAdDiminish": "感谢您使用带有应用标签的小尾巴。应用内的广告会被减少展示。"
 }

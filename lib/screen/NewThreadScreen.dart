@@ -17,9 +17,11 @@ import '../entity/User.dart';
 import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../provider/DiscuzNotificationProvider.dart';
+import '../provider/UserPreferenceNotifierProvider.dart';
 import '../utility/EasyRefreshUtils.dart';
 import '../utility/MobileSignUtils.dart';
 import '../utility/NetworkUtils.dart';
+import '../utility/PostTextFieldUtils.dart';
 import '../widget/AppBannerAdWidget.dart';
 import '../widget/ErrorCard.dart';
 import '../widget/LoadingStateWidget.dart';
@@ -241,7 +243,15 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
                         NewThreadWidget(discuz, user, _newThreadList[index], this.onSelectTid,
                             afterTid: index < _newThreadList.length - 1 ? _newThreadList[index+1].tid: null
                         ),
-                        if (index % 15 == 0 && index != 0) AppBannerAdWidget()
+                        if (index % 15 == 0 && index != 0)
+                          Consumer<UserPreferenceNotifierProvider>(builder: (context, value, child){
+                            if(value.signature == PostTextFieldUtils.USE_APP_SIGNATURE && index > 10){
+                              return Container();
+                            }
+                            else{
+                              return AppBannerAdWidget();
+                            }
+                          })
                       ],
                     ),
                 childCount: _newThreadList.length),

@@ -382,7 +382,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
               title: Text(_forumThread.subject, style: TextStyle(
                   color: selected? Theme.of(context).colorScheme.primary: viewed? Theme.of(context).disabledColor :null,
                   fontWeight: selected? FontWeight.bold: viewed? FontWeight.w400: FontWeight.normal,
-                  fontSize: Theme.of(context).textTheme.titleSmall?.fontSize
+                  fontSize: Theme.of(context).textTheme.titleMedium?.fontSize
               )),
               subtitle: RichText(
                 text: TextSpan(

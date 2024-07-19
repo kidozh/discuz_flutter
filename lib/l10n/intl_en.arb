@@ -822,5 +822,6 @@
   "dynamicSchemeVariantRainbowKey": "Rainbow",
   "dynamicSchemeVariantRainbowDescription": "A playful theme.",
   "dynamicSchemeVariantFruitSaladKey": "FruitSalad",
-  "dynamicSchemeVariantFruitSaladDescription": "A playful theme."
+  "dynamicSchemeVariantFruitSaladDescription": "A playful theme.",
+  "acknowledgeAppSignatureAndAdDiminish": "Thank you for letting our app heard by more people. The number of inline app will be reduced to appreciate your assistance."
 }
