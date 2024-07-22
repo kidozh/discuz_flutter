@@ -87,7 +87,6 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
       });
       // try to save the group information
       UserPreferencesUtils.putDiscuzGroupNameById(discuz,value.variables.getSpace().groupId, value.variables.getSpace().groupInfo.groupTitle);
-      UserPreferencesUtils.putDiscuzGroupStarById(discuz,value.variables.getSpace().groupId, value.variables.getSpace().groupInfo.stars);
     }).catchError((e){
       if(mounted){
         setState(() {

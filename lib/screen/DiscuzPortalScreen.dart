@@ -1,4 +1,5 @@
 
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -72,10 +73,10 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
     _loadFavoriteForum();
+    _loadPortalCache();
   }
 
   FavoriteForumDao? favoriteForumDao;
@@ -87,6 +88,29 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
     });
 
   }
+
+  void _loadPortalCache() async{
+    // load cache first
+    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    if(discuz != null) {
+      String portalJson = await UserPreferencesUtils.getDiscuzPortalResultCacheJson(discuz);
+      // try to recover from Simley
+      if(portalJson == ""){
+        return;
+      }
+      try{
+        DiscuzIndexResult discuzIndexResult = DiscuzIndexResult.fromJson(jsonDecode(portalJson));
+        setState(() {
+          result = discuzIndexResult;
+        });
+      }
+      catch (e){
+        log("Loading portal json error ${portalJson} \n --- \n ${e} ");
+      }
+    }
+
+  }
+
 
   Future<IndicatorResult> _loadPortalContent(Discuz discuz) async {
     User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
@@ -108,6 +132,14 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
         }
         UserPreferencesUtils.putDiscuzForumFids(discuz, fids);
         log("Save fids ${fids} to User Preference");
+        // save cache
+        UserPreferencesUtils.putDiscuzPortalResultCacheJson(discuz, jsonEncode(value.toJson()));
+        // save group title and id mapping
+        if(value.discuzIndexVariables.groupInfo.getGroupId() != 0){
+          UserPreferencesUtils.putDiscuzGroupNameById(discuz,
+              value.discuzIndexVariables.groupInfo.getGroupId(),
+              value.discuzIndexVariables.groupInfo.groupTitle);
+        }
       }
       if(value.getErrorString()!= null){
         EasyLoading.showError(value.getErrorString()!);

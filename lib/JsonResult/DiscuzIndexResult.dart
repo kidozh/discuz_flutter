@@ -16,6 +16,7 @@ class DiscuzIndexResult extends BaseResult{
   DiscuzIndexResult(){}
 
   factory DiscuzIndexResult.fromJson(Map<String, dynamic> json) => _$DiscuzIndexResultFromJson(json);
+  Map<String, dynamic> toJson() => _$DiscuzIndexResultToJson(this);
 }
 
 @JsonSerializable()
@@ -39,6 +40,7 @@ class DiscuzIndexVariables extends BaseVariableResult{
   DiscuzIndexVariables();
 
   factory DiscuzIndexVariables.fromJson(Map<String, dynamic> json) => _$DiscuzIndexVariablesFromJson(json);
+  Map<String, dynamic> toJson() => _$DiscuzIndexVariablesToJson(this);
 
 }
 
@@ -71,6 +73,7 @@ class GroupInfo{
   List<String> allowThreadPlugins = [];
   GroupInfo();
   factory GroupInfo.fromJson(Map<String, dynamic> json) => _$GroupInfoFromJson(json);
+  Map<String, dynamic> toJson() => _$GroupInfoToJson(this);
 }
 
 @JsonSerializable()
@@ -85,6 +88,7 @@ class ForumPartition{
 
   ForumPartition();
   factory ForumPartition.fromJson(Map<String, dynamic> json) => _$ForumPartitionFromJson(json);
+  Map<String, dynamic> toJson() => _$ForumPartitionToJson(this);
 
   List<Forum> getForumList(List<Forum> forumList){
     List<Forum> subforumList = [];
@@ -113,21 +117,22 @@ class Forum{
   @JsonKey(required: false,defaultValue: "")
   String description = "";
   String name = "";
+  @JsonKey(defaultValue: "0")
   String threads = "0", posts = "0";
   @JsonKey(name:"icon",required: false, defaultValue: "")
   String iconUrl = "";
 
-  @JsonKey(name:"todayposts")
+  @JsonKey(name:"todayposts", defaultValue: "")
   String todayPosts = "0";
 
   @JsonKey(name:"sublist",required: false, defaultValue: [])
   List<Forum> subForumList = [];
   Forum();
   factory Forum.fromJson(Map<String, dynamic> json) => _$ForumFromJson(json);
+  Map<String, dynamic> toJson() => _$ForumToJson(this);
 
   @override
   String toString() {
-    // TODO: implement toString
     return "Forum ${fid}, ${name}";
   }
 }

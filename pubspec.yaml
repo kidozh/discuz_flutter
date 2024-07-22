@@ -97,10 +97,10 @@ dependencies:
   google_fonts: ^6.2.1
   chinese_font_library: ^1.1.0
   toastification: ^2.0.0
-  haptic_feedback: ^0.4.2
+  haptic_feedback: ^0.5.1+1
 
 
-  firebase_core: any
+  firebase_core: ^3.2.0
   html: ^0.15.4
   ios_utsname_ext: ^2.3.0
 dev_dependencies:
