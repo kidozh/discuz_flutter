@@ -839,7 +839,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "uploadingImageToServer":
             MessageLookupByLibrary.simpleMessage("向服务器传输数据中。。。"),
         "useGoogleAnalyticsContent": MessageLookupByLibrary.simpleMessage(
-            "本应用使用谷歌统计收集所有必要信息以减少崩溃次数、完成推送服务以及优化应用。您的设备信息与应用使用情况将会被记录，其包括但不限于：版本信息、设备型号、语言所在地、本应用版本号、会话时长、应用功能使用次数。开发者承诺以下信息并不会被记录：电话号码、电子邮件地址、IMEI。根据我们的隐私政策，我们不会收集或者跟踪您的任何个人信息。被记录的数据会由 Google Analytics for Firebase 进行分析，分析报表仅可被本应用开发者访问。"),
+            "本应用使用谷歌统计收集所有必要信息以减少崩溃次数、完成推送服务以及优化应用。"),
         "useGoogleAnalyticsTitle":
             MessageLookupByLibrary.simpleMessage("谷歌统计已开启"),
         "useMaterial3NoSubtitle":

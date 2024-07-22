@@ -29,6 +29,7 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:dual_screen/dual_screen.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -240,6 +241,9 @@ class MyApp extends StatelessWidget {
                     //title: S.of(context).appName,
                     navigatorKey: navigatorKey,
                     debugShowCheckedModeBanner: false,
+                    navigatorObservers: [
+                      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+                    ],
                     localizationsDelegates: [
                       S.delegate,
                       GlobalCupertinoLocalizations.delegate,

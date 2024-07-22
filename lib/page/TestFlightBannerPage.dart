@@ -5,6 +5,7 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -62,6 +63,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent>{
                   // update provider
                   Provider.of<UserPreferenceNotifierProvider>(context,listen: false).signature = PostTextFieldUtils.USE_APP_SIGNATURE;
                   Navigator.of(context).pop();
+                  EasyLoading.showInfo(S.of(context).acknowledgeAppSignatureAndAdDiminish);
                 },
               ),
               PlatformDialogAction(

@@ -636,7 +636,7 @@
   "mobileTemplateNotFound": "此界面更适合使用网页访问",
   "navigateToWebPage": "在网页中继续",
   "useGoogleAnalyticsTitle": "谷歌统计已开启",
-  "useGoogleAnalyticsContent": "本应用使用谷歌统计收集所有必要信息以减少崩溃次数、完成推送服务以及优化应用。您的设备信息与应用使用情况将会被记录，其包括但不限于：版本信息、设备型号、语言所在地、本应用版本号、会话时长、应用功能使用次数。开发者承诺以下信息并不会被记录：电话号码、电子邮件地址、IMEI。根据我们的隐私政策，我们不会收集或者跟踪您的任何个人信息。被记录的数据会由 Google Analytics for Firebase 进行分析，分析报表仅可被本应用开发者访问。",
+  "useGoogleAnalyticsContent": "本应用使用谷歌统计收集所有必要信息以减少崩溃次数、完成推送服务以及优化应用。",
   "pushChannelFCM": "Firebase 云消息传递",
   "pushChannelAPN": "Apple 推送通知服务",
   "pushChannelXMI": "小米推送服务",
