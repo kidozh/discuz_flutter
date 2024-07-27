@@ -378,7 +378,7 @@ class _AddDiscuzFormFieldState
                                     ])),
                                 subtitle: Text(
                                     supportDiscuzListResult.list[index].desc,
-                                    maxLines: 2,
+                                    maxLines: 3,
                                 ),
                                 leading: SizedBox(
                                   width: 64,
