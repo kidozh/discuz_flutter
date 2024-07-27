@@ -244,7 +244,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
                           ),
                           if (index % 15 == 0 && index != 0)
                             Consumer<UserPreferenceNotifierProvider>(builder: (context, value, child){
-                              if(value.signature == PostTextFieldUtils.USE_APP_SIGNATURE && index > 10){
+                              if(value.signature == PostTextFieldUtils.USE_APP_SIGNATURE && index > 20){
                                 return Container();
                               }
                               else{

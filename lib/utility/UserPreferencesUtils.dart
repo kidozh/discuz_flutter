@@ -566,5 +566,37 @@ class UserPreferencesUtils{
     await prefs.setString(discuzSmileyCacheJsonKey, value);
   }
 
+  static Future<int> getLastReportAnalyticsTime() async {
+    String discuzForumFidsKey = "discuz_last_report_in_analytics";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var signaturePreference =  prefs.getInt(discuzForumFidsKey);
+    return signaturePreference == null? 0: signaturePreference;
+  }
+
+  static Future<void> _putLastReportAnalyticsTime(int value) async{
+    String discuzForumFidsKey = "discuz_last_report_in_analytics";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(discuzForumFidsKey, value);
+  }
+
+  static Future<void> putLastReportAnalyticsTime() async{
+    int nowTimestampSecond = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    _putLastReportAnalyticsTime(nowTimestampSecond);
+  }
+
+  static Future<bool> shouldReportAnalytics() async{
+    int lastMobileSignTimestampSecond = await getLastReportAnalyticsTime();
+    DateTime lastSignDate = DateTime.fromMillisecondsSinceEpoch(lastMobileSignTimestampSecond * 1000);
+    DateTime now = DateTime.now();
+
+    if (!isTheSameDay(lastSignDate, now)){
+      // if not in the same day, a mobile sign is neccessary
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
 
 }

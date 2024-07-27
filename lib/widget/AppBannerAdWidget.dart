@@ -79,7 +79,7 @@ class AppBannerAdState extends State<AppBannerAdWidget>{
       width: _anchoredAdaptiveAd!.size.width.toDouble(),
       height: _anchoredAdaptiveAd!.size.height.toDouble(),
       child: AdWidget(ad: _anchoredAdaptiveAd!),
-    ):Container();
+    ):LinearProgressIndicator();
   }
 
   @override

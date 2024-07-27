@@ -352,9 +352,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _checkAcceptVersionFlag(context);
     setupInteractedMessage();
-
-
-
+    reportDiscuzListToAnalytics();
   }
 
   Future<void> _checkAcceptVersionFlag(BuildContext context) async {
@@ -369,6 +367,30 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           platformPageRoute(
               context: context, builder: (context) => TestFlightBannerPage()));
     }
+  }
+
+  Future<void> reportDiscuzListToAnalytics() async{
+    // check with last submission
+
+    bool shouldSendReport = await UserPreferencesUtils.shouldReportAnalytics();
+    if(shouldSendReport){
+      log("Send Discuz report to Google analytics");
+      DiscuzDao _discuzDao = await AppDatabase.getDiscuzDao();
+      List<Discuz> discuzList = await _discuzDao.findAllDiscuzs();
+      discuzList.forEach((discuz) async{
+        await FirebaseAnalytics.instance.logEvent(
+          name: "discuz_maintain",
+          parameters: {
+            "url": discuz.host,
+            "sitename": discuz.siteName,
+            "full_result": discuz.toString()
+          },
+        );
+      });
+      await UserPreferencesUtils.putLastReportAnalyticsTime();
+    }
+
+
   }
 
   @override

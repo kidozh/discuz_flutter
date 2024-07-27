@@ -138,4 +138,6 @@ class AppPlatformIcons{
   IconData get dynamicSchemeVariantOutlined => isMaterial(context)? Icons.colorize : CupertinoIcons.paintbrush;
 
   IconData get dynamicSchemeDescriptionOutlined => isMaterial(context)? Icons.invert_colors_on : CupertinoIcons.brightness;
+
+  IconData get reportInformationToUsSolid => isMaterial(context)? Icons.settings_applications : CupertinoIcons.hammer_fill;
 }

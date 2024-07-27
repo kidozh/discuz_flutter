@@ -698,6 +698,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "replyPost": MessageLookupByLibrary.simpleMessage("回复"),
         "replyPostTrimMessage": m34,
         "reportContentTitle": m35,
+        "reportDiscuzApiInformationToAnalytics":
+            MessageLookupByLibrary.simpleMessage("向我们报告论坛API可用性"),
+        "reportDiscuzApiInformationToAnalyticsDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "我们会针对最常见的TOP10论坛进行针对优化，需要您的帮助来告诉我们论坛大致的分布。请放心，您的报告将会是匿名的并不会与任何您的信息挂钩。我们非常感谢您的报告以帮助我们做得更好。"),
+        "reportDiscuzApiInformationToAnalyticsTitle":
+            MessageLookupByLibrary.simpleMessage("帮助我们优化应用"),
         "reportOtherReasonHint": MessageLookupByLibrary.simpleMessage("提供举报原因"),
         "reportSuccessfully": m36,
         "reportThreadTooltip": MessageLookupByLibrary.simpleMessage("举报不当内容"),
@@ -861,6 +868,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "usernameIsEmpty": MessageLookupByLibrary.simpleMessage("用户名为空"),
         "viewAuthorInfo": MessageLookupByLibrary.simpleMessage("查看用户详情"),
         "viewHistory": MessageLookupByLibrary.simpleMessage("浏览历史"),
+        "viewPrivacyPolicy": MessageLookupByLibrary.simpleMessage("查看隐私政策"),
         "viewPushServiceHomePage":
             MessageLookupByLibrary.simpleMessage("关于推送服务 ↗️"),
         "viewThreadTitle": MessageLookupByLibrary.simpleMessage("查看帖子"),

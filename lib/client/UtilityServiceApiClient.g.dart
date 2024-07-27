@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'CheveretoApiClient.dart';
+part of 'UtilityServiceApiClient.dart';
 
 // **************************************************************************
 // RetrofitGenerator
@@ -8,12 +8,12 @@ part of 'CheveretoApiClient.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element
 
-class _CheveretoApiClient implements CheveretoApiClient {
-  _CheveretoApiClient(
+class _UtilityServiceApiClient implements UtilityServiceApiClient {
+  _UtilityServiceApiClient(
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'https://sm.ms';
+    baseUrl ??= 'https://discuzhub.kidozh.com';
   }
 
   final Dio _dio;
@@ -21,34 +21,28 @@ class _CheveretoApiClient implements CheveretoApiClient {
   String? baseUrl;
 
   @override
-  Future<ChevertoUploadResult> uploadImageToChevereto(
-    String apiToken,
-    String base64String,
-  ) async {
+  Future<String> getAllSuggestedDiscuzList() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{r'X-API-Key': apiToken};
-    _headers.removeWhere((k, v) => v == null);
-    final _data = {'source': base64String};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<ChevertoUploadResult>(Options(
-      method: 'POST',
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
+      method: 'GET',
       headers: _headers,
       extra: _extra,
-      contentType: 'application/x-www-form-urlencoded',
     )
-            .compose(
-              _dio.options,
-              '/api/1/upload/',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(
-                baseUrl: _combineBaseUrls(
-              _dio.options.baseUrl,
-              baseUrl,
-            ))));
-    final _value = ChevertoUploadResult.fromJson(_result.data!);
+        .compose(
+          _dio.options,
+          '/support-discuz-list.min.json',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        ))));
+    final _value = _result.data!;
     return _value;
   }
 

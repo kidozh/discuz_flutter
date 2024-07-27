@@ -22,7 +22,7 @@ class Smiley extends HiveObject{
   @HiveField(2)
   DateTime dateTime = DateTime.now();
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @HiveField(3)
   Discuz discuz = Discuz("", "discuzVersion", "charset", 4, "pluginVersion", "regname", true, "wsqqqconnect", "wsqhideregister", "siteName", "siteId", "uCenterURL", "defaultFid");
 

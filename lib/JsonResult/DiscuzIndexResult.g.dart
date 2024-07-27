@@ -109,10 +109,10 @@ Forum _$ForumFromJson(Map<String, dynamic> json) => Forum()
   ..fid = json['fid'] as String
   ..description = json['description'] as String? ?? ''
   ..name = json['name'] as String
-  ..threads = json['threads'] as String
-  ..posts = json['posts'] as String
+  ..threads = json['threads'] as String? ?? '0'
+  ..posts = json['posts'] as String? ?? '0'
   ..iconUrl = json['icon'] as String? ?? ''
-  ..todayPosts = json['todayposts'] as String
+  ..todayPosts = json['todayposts'] as String? ?? ''
   ..subForumList = (json['sublist'] as List<dynamic>?)
           ?.map((e) => Forum.fromJson(e as Map<String, dynamic>))
           .toList() ??

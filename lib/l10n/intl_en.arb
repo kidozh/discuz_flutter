@@ -823,5 +823,9 @@
   "dynamicSchemeVariantRainbowDescription": "A playful theme.",
   "dynamicSchemeVariantFruitSaladKey": "FruitSalad",
   "dynamicSchemeVariantFruitSaladDescription": "A playful theme.",
-  "acknowledgeAppSignatureAndAdDiminish": "Thank you for letting our app heard by more people. The number of inline app will be reduced to appreciate your assistance."
+  "acknowledgeAppSignatureAndAdDiminish": "Thank you for letting our app heard by more people. The number of inline app will be reduced to appreciate your assistance.",
+  "reportDiscuzApiInformationToAnalytics": "Report availability to us",
+  "reportDiscuzApiInformationToAnalyticsTitle": "Report availability to us",
+  "reportDiscuzApiInformationToAnalyticsDescription": "Your report to this site is truly important to us. Our app is optimised for Discuz! forum, and it is important for us to know which our app should be optimised for. The report itself is anonymous and we will not record any information related with you.",
+  "viewPrivacyPolicy": "View our privacy policy"
 }

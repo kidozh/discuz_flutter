@@ -815,6 +815,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "replyPost": MessageLookupByLibrary.simpleMessage("Reply"),
         "replyPostTrimMessage": m34,
         "reportContentTitle": m35,
+        "reportDiscuzApiInformationToAnalytics":
+            MessageLookupByLibrary.simpleMessage("Report availability to us"),
+        "reportDiscuzApiInformationToAnalyticsDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "Your report to this site is truly important to us. Our app is optimised for Discuz! forum, and it is important for us to know which our app should be optimised for. The report itself is anonymous and we will not record any information related with you."),
+        "reportDiscuzApiInformationToAnalyticsTitle":
+            MessageLookupByLibrary.simpleMessage("Report availability to us"),
         "reportOtherReasonHint":
             MessageLookupByLibrary.simpleMessage("Type to report other reason"),
         "reportSuccessfully": m36,
@@ -1012,6 +1019,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewAuthorInfo":
             MessageLookupByLibrary.simpleMessage("View author\'s profile"),
         "viewHistory": MessageLookupByLibrary.simpleMessage("View History"),
+        "viewPrivacyPolicy":
+            MessageLookupByLibrary.simpleMessage("View our privacy policy"),
         "viewPushServiceHomePage":
             MessageLookupByLibrary.simpleMessage("About push service ↗️"),
         "viewThreadTitle":

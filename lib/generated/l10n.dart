@@ -5620,6 +5620,46 @@ class S {
       args: [],
     );
   }
+
+  /// `Report availability to us`
+  String get reportDiscuzApiInformationToAnalytics {
+    return Intl.message(
+      'Report availability to us',
+      name: 'reportDiscuzApiInformationToAnalytics',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Report availability to us`
+  String get reportDiscuzApiInformationToAnalyticsTitle {
+    return Intl.message(
+      'Report availability to us',
+      name: 'reportDiscuzApiInformationToAnalyticsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your report to this site is truly important to us. Our app is optimised for Discuz! forum, and it is important for us to know which our app should be optimised for. The report itself is anonymous and we will not record any information related with you.`
+  String get reportDiscuzApiInformationToAnalyticsDescription {
+    return Intl.message(
+      'Your report to this site is truly important to us. Our app is optimised for Discuz! forum, and it is important for us to know which our app should be optimised for. The report itself is anonymous and we will not record any information related with you.',
+      name: 'reportDiscuzApiInformationToAnalyticsDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View our privacy policy`
+  String get viewPrivacyPolicy {
+    return Intl.message(
+      'View our privacy policy',
+      name: 'viewPrivacyPolicy',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

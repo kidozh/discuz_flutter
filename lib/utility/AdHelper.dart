@@ -35,7 +35,8 @@ class AdHelper {
     return [
       "keylol.com",
       "www.keylol.com",
-      "bbs.aeroflight.cn"
+      "bbs.aeroflight.cn",
+      "bbs.qzzn.com"
     ];
   }
 }

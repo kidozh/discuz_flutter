@@ -6,7 +6,7 @@ part of 'MobileApiClient.dart';
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element
 
 class _MobileApiClient implements MobileApiClient {
   _MobileApiClient(
@@ -45,8 +45,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = CheckResult.fromJson(_result.data!);
-    return value;
+    final _value = CheckResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -73,8 +73,8 @@ class _MobileApiClient implements MobileApiClient {
           _dio.options.baseUrl,
           baseUrl,
         ))));
-    final value = _result.data!;
-    return value;
+    final _value = _result.data!;
+    return _value;
   }
 
   @override
@@ -113,8 +113,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = LoginResult.fromJson(_result.data!);
-    return value;
+    final _value = LoginResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -152,8 +152,8 @@ class _MobileApiClient implements MobileApiClient {
           _dio.options.baseUrl,
           baseUrl,
         ))));
-    final value = _result.data!;
-    return value;
+    final _value = _result.data!;
+    return _value;
   }
 
   @override
@@ -179,8 +179,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = DiscuzIndexResult.fromJson(_result.data!);
-    return value;
+    final _value = DiscuzIndexResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -205,8 +205,8 @@ class _MobileApiClient implements MobileApiClient {
           _dio.options.baseUrl,
           baseUrl,
         ))));
-    final value = _result.data!;
-    return value;
+    final _value = _result.data!;
+    return _value;
   }
 
   @override
@@ -240,8 +240,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = DisplayForumResult.fromJson(_result.data!);
-    return value;
+    final _value = DisplayForumResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -274,8 +274,8 @@ class _MobileApiClient implements MobileApiClient {
           _dio.options.baseUrl,
           baseUrl,
         ))));
-    final value = _result.data!;
-    return value;
+    final _value = _result.data!;
+    return _value;
   }
 
   @override
@@ -309,8 +309,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = ViewThreadResult.fromJson(_result.data!);
-    return value;
+    final _value = ViewThreadResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -343,8 +343,8 @@ class _MobileApiClient implements MobileApiClient {
           _dio.options.baseUrl,
           baseUrl,
         ))));
-    final value = _result.data!;
-    return value;
+    final _value = _result.data!;
+    return _value;
   }
 
   @override
@@ -388,8 +388,8 @@ class _MobileApiClient implements MobileApiClient {
           _dio.options.baseUrl,
           baseUrl,
         ))));
-    final value = _result.data!;
-    return value;
+    final _value = _result.data!;
+    return _value;
   }
 
   @override
@@ -441,8 +441,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = ApiResult.fromJson(_result.data!);
-    return value;
+    final _value = ApiResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -467,8 +467,8 @@ class _MobileApiClient implements MobileApiClient {
           _dio.options.baseUrl,
           baseUrl,
         ))));
-    final value = _result.data!;
-    return value;
+    final _value = _result.data!;
+    return _value;
   }
 
   @override
@@ -494,8 +494,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = UserDiscuzNotificationResult.fromJson(_result.data!);
-    return value;
+    final _value = UserDiscuzNotificationResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -520,8 +520,8 @@ class _MobileApiClient implements MobileApiClient {
           _dio.options.baseUrl,
           baseUrl,
         ))));
-    final value = _result.data!;
-    return value;
+    final _value = _result.data!;
+    return _value;
   }
 
   @override
@@ -547,8 +547,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = HotThreadResult.fromJson(_result.data!);
-    return value;
+    final _value = HotThreadResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -574,8 +574,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = CaptchaResult.fromJson(_result.data!);
-    return value;
+    final _value = CaptchaResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -613,8 +613,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = ApiResult.fromJson(_result.data!);
-    return value;
+    final _value = ApiResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -651,8 +651,8 @@ class _MobileApiClient implements MobileApiClient {
           _dio.options.baseUrl,
           baseUrl,
         ))));
-    final value = _result.data!;
-    return value;
+    final _value = _result.data!;
+    return _value;
   }
 
   @override
@@ -678,8 +678,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = CheckLoginResult.fromJson(_result.data!);
-    return value;
+    final _value = CheckLoginResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -705,8 +705,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = UserProfileResult.fromJson(_result.data!);
-    return value;
+    final _value = UserProfileResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -731,8 +731,8 @@ class _MobileApiClient implements MobileApiClient {
           _dio.options.baseUrl,
           baseUrl,
         ))));
-    final value = _result.data!;
-    return value;
+    final _value = _result.data!;
+    return _value;
   }
 
   @override
@@ -758,8 +758,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = SmileyResult.fromJson(_result.data!);
-    return value;
+    final _value = SmileyResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -786,8 +786,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = PrivateMessagePortalResult.fromJson(_result.data!);
-    return value;
+    final _value = PrivateMessagePortalResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -819,8 +819,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = PrivateMessageDetailResult.fromJson(_result.data!);
-    return value;
+    final _value = PrivateMessageDetailResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -855,8 +855,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = ApiResult.fromJson(_result.data!);
-    return value;
+    final _value = ApiResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -882,8 +882,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = PublicMessagePortalResult.fromJson(_result.data!);
-    return value;
+    final _value = PublicMessagePortalResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -909,8 +909,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = FavoriteThreadResult.fromJson(_result.data!);
-    return value;
+    final _value = FavoriteThreadResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -955,8 +955,8 @@ class _MobileApiClient implements MobileApiClient {
           _dio.options.baseUrl,
           baseUrl,
         ))));
-    final value = _result.data!;
-    return value;
+    final _value = _result.data!;
+    return _value;
   }
 
   @override
@@ -989,8 +989,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = CheckPostResult.fromJson(_result.data!);
-    return value;
+    final _value = CheckPostResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -1028,8 +1028,8 @@ class _MobileApiClient implements MobileApiClient {
           _dio.options.baseUrl,
           baseUrl,
         ))));
-    final value = _result.data!;
-    return value;
+    final _value = _result.data!;
+    return _value;
   }
 
   @override
@@ -1062,8 +1062,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = ApiResult.fromJson(_result.data!);
-    return value;
+    final _value = ApiResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -1096,8 +1096,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = ApiResult.fromJson(_result.data!);
-    return value;
+    final _value = ApiResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -1123,8 +1123,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = FavoriteForumResult.fromJson(_result.data!);
-    return value;
+    final _value = FavoriteForumResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -1157,8 +1157,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = ApiResult.fromJson(_result.data!);
-    return value;
+    final _value = ApiResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -1191,8 +1191,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = ApiResult.fromJson(_result.data!);
-    return value;
+    final _value = ApiResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -1224,8 +1224,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = NewThreadResult.fromJson(_result.data!);
-    return value;
+    final _value = NewThreadResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -1251,8 +1251,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = PushTokenListResult.fromJson(_result.data!);
-    return value;
+    final _value = PushTokenListResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -1291,8 +1291,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = PostTokenResult.fromJson(_result.data!);
-    return value;
+    final _value = PostTokenResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -1341,8 +1341,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = ApiResult.fromJson(_result.data!);
-    return value;
+    final _value = ApiResult.fromJson(_result.data!);
+    return _value;
   }
 
   @override
@@ -1369,8 +1369,8 @@ class _MobileApiClient implements MobileApiClient {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = ApiResult.fromJson(_result.data!);
-    return value;
+    final _value = ApiResult.fromJson(_result.data!);
+    return _value;
   }
 
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
