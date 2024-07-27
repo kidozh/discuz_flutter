@@ -138,6 +138,21 @@ class MessageLookup extends MessageLookupByLibrary {
         "addAPhoto": MessageLookupByLibrary.simpleMessage("照片"),
         "addAuthentication": MessageLookupByLibrary.simpleMessage("添加到凭证集中"),
         "addDiscuzSuccessfully": m0,
+        "addDiscuzSuggestionAnnotation":
+            MessageLookupByLibrary.simpleMessage("反馈问题"),
+        "addDiscuzSuggestionDialogButtonTitle":
+            MessageLookupByLibrary.simpleMessage("联系我们"),
+        "addDiscuzSuggestionDialogDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "除了统计来自用户使用的论坛，我们也非常希望得到您的反馈。您可以通过邮件向我们推荐论坛。如果您作为网站的管理员，不想让论坛出现在推荐界面，您也可以联系我们 （kidozh@gmail.com）。"),
+        "addDiscuzSuggestionDialogTitle":
+            MessageLookupByLibrary.simpleMessage("向我们推荐或者移除一个站点"),
+        "addDiscuzSuggestionStatement": MessageLookupByLibrary.simpleMessage(
+            "谈坛是一个Discuz！的第三方客户端，我们和任何论坛都没有联系，也不提供任何担保。"),
+        "addDiscuzSuggestionTitle":
+            MessageLookupByLibrary.simpleMessage("已知兼容论坛"),
+        "addDiscuzSuggestionVerifiedDiscuz":
+            MessageLookupByLibrary.simpleMessage("的论坛已通过ICP备案。"),
         "addDiscuzTitle": MessageLookupByLibrary.simpleMessage("添加Discuz! 论坛"),
         "addNewDiscuz": MessageLookupByLibrary.simpleMessage("添加一个论坛"),
         "animateToLastReadingPosition":
@@ -702,7 +717,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("向我们报告论坛API可用性"),
         "reportDiscuzApiInformationToAnalyticsDescription":
             MessageLookupByLibrary.simpleMessage(
-                "我们会针对最常见的TOP10论坛进行针对优化，需要您的帮助来告诉我们论坛大致的分布。请放心，您的报告将会是匿名的并不会与任何您的信息挂钩。我们非常感谢您的报告以帮助我们做得更好。"),
+                "我们会针对最常见的TOP10论坛进行针对优化，需要您的帮助来告诉我们论坛大致的分布。请放心，您的报告将由谷歌统计收集，且将会是匿名的，并不会与任何您的信息挂钩。我们非常感谢您的报告以帮助我们做得更好。"),
         "reportDiscuzApiInformationToAnalyticsTitle":
             MessageLookupByLibrary.simpleMessage("帮助我们优化应用"),
         "reportOtherReasonHint": MessageLookupByLibrary.simpleMessage("提供举报原因"),

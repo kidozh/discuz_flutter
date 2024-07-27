@@ -598,5 +598,18 @@ class UserPreferencesUtils{
     }
   }
 
+  static Future<String> getSupportDiscuzListResultCacheJson() async {
+    String discuzSmileyCacheJsonKey = "discuz_support_list_caches";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var string =  prefs.getString(discuzSmileyCacheJsonKey);
+    return string == null? "": string;
+  }
+
+  static Future<void> putSupportDiscuzListResultCacheJson(String value) async{
+    String discuzSmileyCacheJsonKey = "discuz_support_list_caches";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(discuzSmileyCacheJsonKey, value);
+  }
+
 
 }

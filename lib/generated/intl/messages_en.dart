@@ -142,6 +142,22 @@ class MessageLookup extends MessageLookupByLibrary {
         "addAPhoto": MessageLookupByLibrary.simpleMessage("Photo"),
         "addAuthentication": MessageLookupByLibrary.simpleMessage("Add"),
         "addDiscuzSuccessfully": m0,
+        "addDiscuzSuggestionAnnotation":
+            MessageLookupByLibrary.simpleMessage("Feedback"),
+        "addDiscuzSuggestionDialogButtonTitle":
+            MessageLookupByLibrary.simpleMessage("Tell us your voice"),
+        "addDiscuzSuggestionDialogDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "We love to hear your suggestion. If you would like to recommend or hide a Discuz site, you are welcomed to contact us via email (kidozh@gmail.com)."),
+        "addDiscuzSuggestionDialogTitle":
+            MessageLookupByLibrary.simpleMessage("Have any suggestion?"),
+        "addDiscuzSuggestionStatement": MessageLookupByLibrary.simpleMessage(
+            "Disfly is a third-party app for Discuz ! forum site. We have no relation with any Discuz forum."),
+        "addDiscuzSuggestionTitle":
+            MessageLookupByLibrary.simpleMessage("Are you looking for"),
+        "addDiscuzSuggestionVerifiedDiscuz":
+            MessageLookupByLibrary.simpleMessage(
+                " of discuz has ICP license from MIIT."),
         "addDiscuzTitle":
             MessageLookupByLibrary.simpleMessage("Add a discuz! BBS"),
         "addNewDiscuz": MessageLookupByLibrary.simpleMessage("Add a Discuz"),

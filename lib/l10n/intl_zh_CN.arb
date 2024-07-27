@@ -827,6 +827,13 @@
   "acknowledgeAppSignatureAndAdDiminish": "感谢您使用带有应用标签的小尾巴。应用内的广告会被减少展示。",
   "reportDiscuzApiInformationToAnalytics": "向我们报告论坛API可用性",
   "reportDiscuzApiInformationToAnalyticsTitle": "帮助我们优化应用",
-  "reportDiscuzApiInformationToAnalyticsDescription": "我们会针对最常见的TOP10论坛进行针对优化，需要您的帮助来告诉我们论坛大致的分布。请放心，您的报告将会是匿名的并不会与任何您的信息挂钩。我们非常感谢您的报告以帮助我们做得更好。",
-  "viewPrivacyPolicy": "查看隐私政策"
+  "reportDiscuzApiInformationToAnalyticsDescription": "我们会针对最常见的TOP10论坛进行针对优化，需要您的帮助来告诉我们论坛大致的分布。请放心，您的报告将由谷歌统计收集，且将会是匿名的，并不会与任何您的信息挂钩。我们非常感谢您的报告以帮助我们做得更好。",
+  "viewPrivacyPolicy": "查看隐私政策",
+  "addDiscuzSuggestionTitle": "已知兼容论坛",
+  "addDiscuzSuggestionAnnotation": "反馈问题",
+  "addDiscuzSuggestionStatement": "谈坛是一个Discuz！的第三方客户端，我们和任何论坛都没有联系，也不提供任何担保。",
+  "addDiscuzSuggestionDialogTitle": "向我们推荐或者移除一个站点",
+  "addDiscuzSuggestionDialogDescription": "除了统计来自用户使用的论坛，我们也非常希望得到您的反馈。您可以通过邮件向我们推荐论坛。如果您作为网站的管理员，不想让论坛出现在推荐界面，您也可以联系我们 （kidozh@gmail.com）。",
+  "addDiscuzSuggestionDialogButtonTitle": "联系我们",
+  "addDiscuzSuggestionVerifiedDiscuz": "的论坛已通过ICP备案。"
 }

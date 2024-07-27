@@ -5660,6 +5660,76 @@ class S {
       args: [],
     );
   }
+
+  /// `Are you looking for`
+  String get addDiscuzSuggestionTitle {
+    return Intl.message(
+      'Are you looking for',
+      name: 'addDiscuzSuggestionTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Feedback`
+  String get addDiscuzSuggestionAnnotation {
+    return Intl.message(
+      'Feedback',
+      name: 'addDiscuzSuggestionAnnotation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Disfly is a third-party app for Discuz ! forum site. We have no relation with any Discuz forum.`
+  String get addDiscuzSuggestionStatement {
+    return Intl.message(
+      'Disfly is a third-party app for Discuz ! forum site. We have no relation with any Discuz forum.',
+      name: 'addDiscuzSuggestionStatement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Have any suggestion?`
+  String get addDiscuzSuggestionDialogTitle {
+    return Intl.message(
+      'Have any suggestion?',
+      name: 'addDiscuzSuggestionDialogTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `We love to hear your suggestion. If you would like to recommend or hide a Discuz site, you are welcomed to contact us via email (kidozh@gmail.com).`
+  String get addDiscuzSuggestionDialogDescription {
+    return Intl.message(
+      'We love to hear your suggestion. If you would like to recommend or hide a Discuz site, you are welcomed to contact us via email (kidozh@gmail.com).',
+      name: 'addDiscuzSuggestionDialogDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tell us your voice`
+  String get addDiscuzSuggestionDialogButtonTitle {
+    return Intl.message(
+      'Tell us your voice',
+      name: 'addDiscuzSuggestionDialogButtonTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ` of discuz has ICP license from MIIT.`
+  String get addDiscuzSuggestionVerifiedDiscuz {
+    return Intl.message(
+      ' of discuz has ICP license from MIIT.',
+      name: 'addDiscuzSuggestionVerifiedDiscuz',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

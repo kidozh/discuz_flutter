@@ -827,5 +827,12 @@
   "reportDiscuzApiInformationToAnalytics": "Report availability to us",
   "reportDiscuzApiInformationToAnalyticsTitle": "Report availability to us",
   "reportDiscuzApiInformationToAnalyticsDescription": "Your report to this site is truly important to us. Our app is optimised for Discuz! forum, and it is important for us to know which our app should be optimised for. The report itself is anonymous and we will not record any information related with you.",
-  "viewPrivacyPolicy": "View our privacy policy"
+  "viewPrivacyPolicy": "View our privacy policy",
+  "addDiscuzSuggestionTitle": "Are you looking for",
+  "addDiscuzSuggestionAnnotation": "Feedback",
+  "addDiscuzSuggestionStatement": "Disfly is a third-party app for Discuz ! forum site. We have no relation with any Discuz forum.",
+  "addDiscuzSuggestionDialogTitle": "Have any suggestion?",
+  "addDiscuzSuggestionDialogDescription": "We love to hear your suggestion. If you would like to recommend or hide a Discuz site, you are welcomed to contact us via email (kidozh@gmail.com).",
+  "addDiscuzSuggestionDialogButtonTitle": "Tell us your voice",
+  "addDiscuzSuggestionVerifiedDiscuz": " of discuz has ICP license from MIIT."
 }

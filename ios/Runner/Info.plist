@@ -278,5 +278,11 @@
 	<false/>
 	<key>NSFaceIDUsageDescription</key>
     <string>请验证以使用应用安全功能。</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>mailto</string>
+      <string>http</string>
+      <string>https</string>
+    </array>
 </dict>
 </plist>
