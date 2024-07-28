@@ -299,6 +299,7 @@ class _AddDiscuzFormFieldState
             ),
 
             // the following things
+            if(supportDiscuzListResult.list.isNotEmpty)
             Container(
               margin: EdgeInsets.symmetric(horizontal: 0),
               padding: EdgeInsets.all(8.0),
