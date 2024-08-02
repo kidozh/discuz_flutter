@@ -564,6 +564,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "noSmileyFoundInDB": MessageLookupByLibrary.simpleMessage("要不使用一个表情包？"),
         "noSubscribeChannelProvided": m27,
         "notification": MessageLookupByLibrary.simpleMessage("通知"),
+        "nullDiscuzScreenSubtitle":
+            MessageLookupByLibrary.simpleMessage("现在开始添加一个Discuz X论坛以开始使用谈坛。"),
+        "nullDiscuzScreenTitle":
+            MessageLookupByLibrary.simpleMessage("从添加论坛开始"),
         "nullDiscuzSubTitle":
             MessageLookupByLibrary.simpleMessage("现在就添加一个论坛吗？"),
         "nullDiscuzTitle": MessageLookupByLibrary.simpleMessage("还没有指定一个论坛"),

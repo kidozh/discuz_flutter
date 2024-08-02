@@ -5730,6 +5730,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Let's get started`
+  String get nullDiscuzScreenTitle {
+    return Intl.message(
+      'Let\'s get started',
+      name: 'nullDiscuzScreenTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add discuz ! now to Disfly to enjoy the app.`
+  String get nullDiscuzScreenSubtitle {
+    return Intl.message(
+      'Add discuz ! now to Disfly to enjoy the app.',
+      name: 'nullDiscuzScreenSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

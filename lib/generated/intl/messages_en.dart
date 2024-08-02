@@ -655,6 +655,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "Try to use the first smiley?"),
         "noSubscribeChannelProvided": m27,
         "notification": MessageLookupByLibrary.simpleMessage("Notification"),
+        "nullDiscuzScreenSubtitle": MessageLookupByLibrary.simpleMessage(
+            "Add discuz ! now to Disfly to enjoy the app."),
+        "nullDiscuzScreenTitle":
+            MessageLookupByLibrary.simpleMessage("Let\'s get started"),
         "nullDiscuzSubTitle": MessageLookupByLibrary.simpleMessage(
             "Why not consider add a discuz forum?"),
         "nullDiscuzTitle":

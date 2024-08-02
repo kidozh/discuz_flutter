@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NewThreadScreen.dart';
+import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -23,6 +24,10 @@ class DashboardScreen extends StatelessWidget{
     CustomizeColor.updateAndroidNavigationbar(context);
     return Consumer<DiscuzAndUserNotifier>(
       builder: (BuildContext context, DiscuzAndUserNotifier value, Widget? child) {
+        if(value.discuz == null){
+          return NullDiscuzScreen();
+        }
+
         return PlatformWidgetBuilder(
           material: (context,child,target){
             return MaterialDashboardScreen(onSelectTid: onSelectTid,);

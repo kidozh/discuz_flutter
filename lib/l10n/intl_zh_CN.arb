@@ -835,5 +835,7 @@
   "addDiscuzSuggestionDialogTitle": "向我们推荐或者移除一个站点",
   "addDiscuzSuggestionDialogDescription": "除了统计来自用户使用的论坛，我们也非常希望得到您的反馈。您可以通过邮件向我们推荐论坛。如果您作为网站的管理员，不想让论坛出现在推荐界面，您也可以联系我们 （kidozh@gmail.com）。",
   "addDiscuzSuggestionDialogButtonTitle": "联系我们",
-  "addDiscuzSuggestionVerifiedDiscuz": "的论坛已通过ICP备案。"
+  "addDiscuzSuggestionVerifiedDiscuz": "的论坛已通过ICP备案。",
+  "nullDiscuzScreenTitle": "从添加论坛开始",
+  "nullDiscuzScreenSubtitle": "现在开始添加一个Discuz X论坛以开始使用谈坛。"
 }
