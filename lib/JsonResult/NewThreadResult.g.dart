@@ -40,7 +40,8 @@ NewThreadVariables _$NewThreadVariablesFromJson(Map<String, dynamic> json) =>
       ..readAccess =
           const StringToIntConverter().fromJson(json['readaccess'] as String?)
       ..formHash = json['formhash'] as String
-      ..ismoderator = json['ismoderator'] as String?
+      ..isModerator =
+          const StringToIntConverter().fromJson(json['ismoderator'] as String?)
       ..noticeCount =
           NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
       ..newThreadList = json['data'] == null
@@ -58,7 +59,7 @@ Map<String, dynamic> _$NewThreadVariablesToJson(NewThreadVariables instance) =>
       'groupid': const StringToIntConverter().toJson(instance.groupId),
       'readaccess': const StringToIntConverter().toJson(instance.readAccess),
       'formhash': instance.formHash,
-      'ismoderator': instance.ismoderator,
+      'ismoderator': const StringToIntConverter().toJson(instance.isModerator),
       'notice': instance.noticeCount,
       'data': const NewThreadListConverter().toJson(instance.newThreadList),
     };

@@ -43,7 +43,8 @@ DiscuzNotificationVariables _$DiscuzNotificationVariablesFromJson(
       ..readAccess =
           const StringToIntConverter().fromJson(json['readaccess'] as String?)
       ..formHash = json['formhash'] as String
-      ..ismoderator = json['ismoderator'] as String?
+      ..isModerator =
+          const StringToIntConverter().fromJson(json['ismoderator'] as String?)
       ..noticeCount =
           NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
       ..notificationList = (json['list'] as List<dynamic>?)
@@ -68,7 +69,7 @@ Map<String, dynamic> _$DiscuzNotificationVariablesToJson(
       'groupid': const StringToIntConverter().toJson(instance.groupId),
       'readaccess': const StringToIntConverter().toJson(instance.readAccess),
       'formhash': instance.formHash,
-      'ismoderator': instance.ismoderator,
+      'ismoderator': const StringToIntConverter().toJson(instance.isModerator),
       'notice': instance.noticeCount,
       'list': instance.notificationList,
       'count': const StringToIntConverter().toJson(instance.count),

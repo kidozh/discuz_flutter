@@ -39,8 +39,9 @@ class BaseVariableResult{
   int readAccess = 0;
   @JsonKey(name: "formhash")
   String formHash = "";
-
-  String? ismoderator;
+  @StringToIntConverter()
+  @JsonKey(name: "ismoderator")
+  int isModerator = 0;
 
   @JsonKey(name: "notice")
   NoticeCount noticeCount = NoticeCount();

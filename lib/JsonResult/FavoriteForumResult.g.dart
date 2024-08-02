@@ -42,7 +42,8 @@ FavoriteForumVariables _$FavoriteForumVariablesFromJson(
       ..readAccess =
           const StringToIntConverter().fromJson(json['readaccess'] as String?)
       ..formHash = json['formhash'] as String
-      ..ismoderator = json['ismoderator'] as String?
+      ..isModerator =
+          const StringToIntConverter().fromJson(json['ismoderator'] as String?)
       ..noticeCount =
           NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
       ..pmList = (json['list'] as List<dynamic>)
@@ -64,7 +65,7 @@ Map<String, dynamic> _$FavoriteForumVariablesToJson(
       'groupid': const StringToIntConverter().toJson(instance.groupId),
       'readaccess': const StringToIntConverter().toJson(instance.readAccess),
       'formhash': instance.formHash,
-      'ismoderator': instance.ismoderator,
+      'ismoderator': const StringToIntConverter().toJson(instance.isModerator),
       'notice': instance.noticeCount,
       'list': instance.pmList,
       'count': const StringToIntConverter().toJson(instance.count),

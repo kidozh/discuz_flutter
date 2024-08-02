@@ -475,7 +475,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     margin: EdgeInsets.only(top: 4),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.all(Radius.circular(8.0)),
-      color: Theme.of(context).colorScheme.tertiaryContainer.withOpacity(0.2),
+      color: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
     ),
     child: ListView.builder(
         physics: new NeverScrollableScrollPhysics(),
@@ -490,34 +490,41 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
             children: [
               RichText(
                 textAlign: TextAlign.start,
-                //overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 text: TextSpan(
                   text: "",
-                  style: TextStyle(color: Theme.of(context).colorScheme.onTertiaryContainer),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    fontSize: FontSize.small.value
+
+                  ),
                   children: [
-                    WidgetSpan(
-                        child: UserAvatar(_discuz, shortReply.authorId, shortReply.author, size: 16,),
-                    ),
-                    TextSpan(text: ' '),
+                    // WidgetSpan(
+                    //     child: UserAvatar(_discuz, shortReply.authorId, shortReply.author, size: 16,),
+                    // ),
+                    //TextSpan(text: ' '),
                     TextSpan(
                         text: shortReply.author,
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            // color: Theme.of(context).colorScheme.tertiary,
-                            fontSize: 12 )),
-                    TextSpan(text: ' · '),
+                            color: Theme.of(context).colorScheme.secondary,
+                             )),
+                    TextSpan(text: ' '),
                     TextSpan(
-                        text: shortReply.message.replaceAll("&nbsp;", ""),
+                        text: shortReply.message.replaceAll("&nbsp;", "").replaceAll("\n", " "),
+
                         style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 12 )),
+                            fontWeight: FontWeight.w300,
+                        )
+                    ),
                   ],
                 ),
               ),
 
               if(index != _forumThread.reply.length-1)
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 0.0),
+                  padding: EdgeInsets.symmetric(horizontal: 2.0),
                   child: Divider(),
                 )
 

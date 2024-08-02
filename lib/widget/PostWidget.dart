@@ -475,21 +475,7 @@ class PostState extends State<PostStatefulWidget> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // if (_post.status & POST_MOBILE != 0)
-        //   Padding(
-        //     padding: EdgeInsets.only(right: 2.0),
-        //     child: Icon(Icons.smartphone, size: 16),
-        //   ),
-        // Padding(
-        //   padding: EdgeInsets.only(right: 0.0),
-        //   child: Text(
-        //     S.of(context).postPosition(_post.position),
-        //     style: TextStyle(
-        //         fontWeight: FontWeight.w400,
-        //         fontSize: 12,
-        //         color: Theme.of(context).disabledColor),
-        //   ),
-        // ),
+
         if (_user != null)
           IconButton(
             icon: Icon(
