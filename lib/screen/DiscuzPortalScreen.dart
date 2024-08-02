@@ -18,7 +18,6 @@ import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/MobileSignUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
-import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';

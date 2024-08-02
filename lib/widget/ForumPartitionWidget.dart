@@ -28,42 +28,39 @@ class ForumPartitionWidget extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Container(
-            color: Theme.of(context).colorScheme.onPrimary,
-            child: PlatformListTile(
-              leading: Icon(AppPlatformIcons(context).forumOutlined,color: Theme.of(context).colorScheme.primary,),
-              title: Text(_forumPartition.name,
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: isCupertino(context)?FontWeight.w300: FontWeight.normal,
-                ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          color: Theme.of(context).colorScheme.onPrimary,
+          child: PlatformListTile(
+            leading: Icon(AppPlatformIcons(context).forumOutlined,color: Theme.of(context).colorScheme.primary,),
+            title: Text(_forumPartition.name,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: isCupertino(context)?FontWeight.w300: FontWeight.normal,
               ),
             ),
-          )
-          ,
-
-          GridView.builder(
-              physics: new NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.all(0),
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 300,
-                  childAspectRatio: 2.6
-              ),
-              itemCount: _subForumList.length,
-              itemBuilder: (context, index){
-                Forum subForum = _subForumList[index];
-                // log("_subforum length ${_subForumList.length} ${_subForumList}");
-                return ForumCardWidget(_discuz,_user,subForum);
-              },
           ),
-          // if(isCupertino(context))
-          // Divider()
-        ],
-      ),
+        ),
+        GridView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.all(0),
+          shrinkWrap: true,
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 200,
+              childAspectRatio: 2.6
+          ),
+          itemCount: _subForumList.length,
+          itemBuilder: (context, index){
+            Forum subForum = _subForumList[index];
+            // log("_subforum length ${_subForumList.length} ${_subForumList}");
+            return ForumCardWidget(_discuz,_user,subForum);
+          },
+        )
+        // if(isCupertino(context))
+        // Divider()
+      ],
     );
   }
 
