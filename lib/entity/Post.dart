@@ -4,6 +4,7 @@ import 'package:discuz_flutter/converter/StringToBoolConverter.dart';
 import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../widget/PostWidget.dart';
 import 'Discuz.dart';
 
 part 'Post.g.dart';
@@ -36,6 +37,11 @@ class Post{
   int attachment = 0;
   @StringToIntConverter()
   int status = 0,replycredit = 0, number = 0, position = 0;
+
+  bool get warned => status & POST_WARNED != 0;
+  bool get blocked => status & POST_BLOCKED != 0;
+  bool get revised => status & POST_REVISED != 0;
+
   @JsonKey(name:"adminid",ignore: true, required: false)
   // @StringToIntConverter()
   String adminId = "0";

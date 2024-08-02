@@ -510,7 +510,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.secondary,
                              )),
-                    TextSpan(text: ' '),
+                    TextSpan(text: ': '),
                     TextSpan(
                         text: shortReply.message.replaceAll("&nbsp;", "").replaceAll("\n", " "),
 

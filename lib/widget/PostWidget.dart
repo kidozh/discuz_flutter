@@ -1,5 +1,7 @@
 
+import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
+import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/BlockUser.dart';
@@ -10,19 +12,24 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/ReportContentPage.dart';
 import 'package:discuz_flutter/page/UserProfilePage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/provider/DiscuzNotificationProvider.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/PostTextUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/AttachmentWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/PostCommentWidget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../utility/NetworkUtils.dart';
 import '../utility/UserPreferencesUtils.dart';
 import 'UserAvatar.dart';
 
@@ -41,12 +48,14 @@ class PostWidget extends StatelessWidget {
   Map<String, List<Comment>>? postCommentList;
   bool? ignoreFontCustomization = false;
   int? tid;
+  int? fid;
 
   PostWidget(this._discuz, this._post, this._authorId, this.formhash,
       {this.onAuthorSelectedCallback,
       this.postCommentList,
       this.ignoreFontCustomization,
       this.jumpToPidCallback,
+        this.fid,
       this.tid});
 
   @override
@@ -60,6 +69,7 @@ class PostWidget extends StatelessWidget {
       postCommentList: this.postCommentList,
       ignoreFontCustomization: this.ignoreFontCustomization,
       jumpToPidCallback: this.jumpToPidCallback,
+      fid: this.fid,
       tid: this.tid,
     );
   }
@@ -75,12 +85,14 @@ class PostStatefulWidget extends StatefulWidget {
   Map<String, List<Comment>>? postCommentList;
   bool? ignoreFontCustomization = false;
   int? tid;
+  int? fid;
 
   PostStatefulWidget(this._discuz, this._post, this._authorId, this.formhash,
       {this.onAuthorSelectedCallback,
       this.postCommentList,
       this.ignoreFontCustomization,
       this.jumpToPidCallback,
+        this.fid,
       this.tid});
 
   @override
@@ -90,6 +102,7 @@ class PostStatefulWidget extends StatefulWidget {
         postCommentList: this.postCommentList,
         ignoreFontCustomization: this.ignoreFontCustomization,
         jumpToPidCallback: this.jumpToPidCallback,
+        fid: this.fid,
         tid: this.tid);
   }
 }
@@ -106,6 +119,7 @@ class PostState extends State<PostStatefulWidget> {
   bool? ignoreFontCustomization = false;
   String formhash;
   int? tid;
+  int? fid;
 
   bool isFontStyleIgnored() {
     if (ignoreFontCustomization == null || ignoreFontCustomization == false) {
@@ -132,6 +146,7 @@ class PostState extends State<PostStatefulWidget> {
       this.postCommentList,
       this.ignoreFontCustomization,
       this.jumpToPidCallback,
+        this.fid,
       this.tid});
 
   @override
@@ -376,7 +391,7 @@ class PostState extends State<PostStatefulWidget> {
   Widget getPostPopupMenu(BuildContext context) {
     return PlatformPopupMenu(
         icon: Padding(
-          padding: EdgeInsets.only(right: isCupertino(context)?8.0:0.0),
+          padding: EdgeInsets.symmetric(horizontal: isCupertino(context)?8.0:0.0),
           child: Icon(
               PlatformIcons(context).ellipsis,
               size: 24,
@@ -476,24 +491,41 @@ class PostState extends State<PostStatefulWidget> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
 
-        if (_user != null)
-          IconButton(
-            icon: Icon(
-              Icons.flag,
-              size: 16,
-              color: Theme.of(context).disabledColor,
-              semanticLabel: S.of(context).reportContentTitle(_post.author),
-            ),
-            onPressed: () {
-              VibrationUtils.vibrateWithClickIfPossible();
-              Navigator.push(
-                  context,
-                  platformPageRoute(
-                      context: context,
-                      builder: (context) => ReportContentPage(
-                          _post.author, _post.pid, 0, formhash)));
-            },
-          ),
+
+        Consumer<DiscuzNotificationProvider>(
+          builder: (BuildContext context, DiscuzNotificationProvider value, Widget? child) {
+            if(value.baseVariableResult.isModerator == 0){
+              if (_user != null){
+                return IconButton(
+                  icon: Icon(
+                    Icons.flag,
+                    size: 16,
+                    color: Theme.of(context).disabledColor,
+                    semanticLabel: S.of(context).reportContentTitle(_post.author),
+                  ),
+                  onPressed: () {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    Navigator.push(
+                        context,
+                        platformPageRoute(
+                            context: context,
+                            builder: (context) => ReportContentPage(
+                                _post.author, _post.pid, 0, formhash)));
+                  },
+                );
+              }
+              else{
+                return Container();
+              }
+            }
+            if(fid == null){
+              return Container();
+            }
+            else{
+              return adminPostPopupMenu;
+
+            }
+          }),
         getPostPopupMenu(context)
       ],
     );
@@ -507,6 +539,7 @@ class PostState extends State<PostStatefulWidget> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          if(groupStar != 0)
           Padding(
             padding: EdgeInsets.only(left: 6.0),
             child: Container(
@@ -524,7 +557,7 @@ class PostState extends State<PostStatefulWidget> {
             ),
           ),
           Padding(
-              padding: EdgeInsets.only(right: 6.0),
+              padding: EdgeInsets.only(right: 6.0, left: groupStar == 0? 6.0: 0.0),
               child: Container(
                 color: Theme.of(context)
                     .colorScheme
@@ -789,5 +822,151 @@ class PostState extends State<PostStatefulWidget> {
         ),
       ),
     );
+  }
+
+  Widget get adminPostPopupMenu => PlatformPopupMenu(
+    icon: Icon(AppPlatformIcons(context).adminPostSolid, size: 16,),
+    options: [
+      PopupMenuOption(
+          label: _post.warned? S.of(context).adminUnwarnPost : S.of(context).adminWarnPost,
+
+          onTap: (option){
+            VibrationUtils.vibrateWithClickIfPossible();
+            toggleAdminWarnRequest();
+          }
+      ),
+      PopupMenuOption(
+          label: _post.blocked? S.of(context).adminUnblockPost : S.of(context).adminBlockPost,
+          onTap: (option){
+            VibrationUtils.vibrateWithClickIfPossible();
+            toggleAdminBlockRequest();
+
+          }
+      ),
+      PopupMenuOption(
+          label: S.of(context).adminDeletePost,
+          cupertino: (context, platform)=> CupertinoPopupMenuOptionData(
+            isDestructiveAction: true
+          ),
+          onTap: (option){
+            VibrationUtils.vibrateWithClickIfPossible();
+            adminDeletePostRequest();
+          }
+      ),
+    ]
+  );
+
+  bool isSendingAdminRequest = false;
+
+
+  Future<void> toggleAdminBlockRequest() async {
+    setState((){
+      isSendingAdminRequest = true;
+    });
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    Discuz? discuz =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    if(discuz == null || fid == null){
+      return;
+    }
+    Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
+
+    int banned = _post.blocked? 0 : 1;
+
+
+    client.banPostResult(formhash, fid!, _post.tid, [_post.pid], banned, "").then((value){
+      if(value.errorResult?.key == "admin_succeed"){
+        // it should be banned
+        Post newPostStage = _post;
+        newPostStage.status = newPostStage.status ^ POST_BLOCKED;
+        setState(() {
+          _post = newPostStage;
+        });
+        EasyLoading.showSuccess(value.errorResult?.content == null? S.of(context).ok: value.errorResult!.content);
+      }
+      else{
+        EasyLoading.showError(value.errorResult?.content == null? S.of(context).error: value.errorResult!.content);
+      }
+      setState((){
+        isSendingAdminRequest = false;
+
+      });
+    });
+  }
+
+  Future<void> toggleAdminWarnRequest() async {
+    setState((){
+      isSendingAdminRequest = true;
+    });
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    Discuz? discuz =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    if(discuz == null || fid == null){
+      return;
+    }
+    Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
+
+    int banned = _post.blocked? 0 : 1;
+
+
+    client.warnPostResult(formhash, fid!, _post.tid, [_post.pid], banned, "").then((value){
+      if(value.errorResult?.key == "admin_succeed"){
+        // it should be banned
+        Post newPostStage = _post;
+        newPostStage.status = newPostStage.status ^ POST_WARNED;
+        setState(() {
+          _post = newPostStage;
+        });
+        EasyLoading.showSuccess(value.errorResult?.content == null? S.of(context).ok: value.errorResult!.content);
+      }
+      else{
+        EasyLoading.showError(value.errorResult?.content == null? S.of(context).error: value.errorResult!.content);
+      }
+      setState((){
+        isSendingAdminRequest = false;
+      });
+
+    });
+  }
+
+  Future<void> adminDeletePostRequest() async {
+    setState((){
+      isSendingAdminRequest = true;
+    });
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    Discuz? discuz =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    if(discuz == null || fid == null){
+      return;
+    }
+    Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
+
+    int banned = _post.blocked? 0 : 1;
+
+
+    client.deletePostResult(formhash, fid!, _post.tid, [_post.pid], banned, "").then((value){
+      if(value.errorResult?.key == "admin_succeed"){
+        // it should be banned
+        Post newPostStage = _post;
+        newPostStage.status = newPostStage.status ^ POST_BLOCKED;
+        setState(() {
+          _post = newPostStage;
+        });
+        EasyLoading.showSuccess(value.errorResult?.content == null? S.of(context).ok: value.errorResult!.content);
+      }
+      else{
+        EasyLoading.showError(value.errorResult?.content == null? S.of(context).error: value.errorResult!.content);
+      }
+      setState((){
+        isSendingAdminRequest = false;
+      });
+      // Navigator.of(context).pop();
+    });
   }
 }

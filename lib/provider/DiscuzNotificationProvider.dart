@@ -14,5 +14,13 @@ class DiscuzNotificationProvider with ChangeNotifier{
     notifyListeners();
   }
 
+  BaseVariableResult _baseVariableResult = BaseVariableResult();
+
+  BaseVariableResult get baseVariableResult => _baseVariableResult;
+
+  void setBaseVariableResult(BaseVariableResult baseVariableResult){
+    this._baseVariableResult = baseVariableResult;
+    notifyListeners();
+  }
 
 }

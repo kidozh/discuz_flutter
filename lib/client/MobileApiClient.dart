@@ -300,7 +300,7 @@ abstract class MobileApiClient {
   );
 
   @POST(
-      "/api/mobile/index.php?version=4&module=topicadmin&action=ban&modsubmit=yes&sendreasonpm=on")
+      "/api/mobile/index.php?version=4&module=topicadmin&action=banpost&modsubmit=yes&sendreasonpm=on")
   @FormUrlEncoded()
   Future<ApiResult> banPostResult(
       @Field("formhash") String formhash,

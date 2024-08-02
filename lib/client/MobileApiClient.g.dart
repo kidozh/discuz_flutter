@@ -1444,7 +1444,7 @@ class _MobileApiClient implements MobileApiClient {
     )
             .compose(
               _dio.options,
-              '/api/mobile/index.php?version=4&module=topicadmin&action=ban&modsubmit=yes&sendreasonpm=on',
+              '/api/mobile/index.php?version=4&module=topicadmin&action=banpost&modsubmit=yes&sendreasonpm=on',
               queryParameters: queryParameters,
               data: _data,
             )

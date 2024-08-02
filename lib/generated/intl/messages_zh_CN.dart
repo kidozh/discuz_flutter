@@ -155,6 +155,11 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("的论坛已通过ICP备案。"),
         "addDiscuzTitle": MessageLookupByLibrary.simpleMessage("添加Discuz! 论坛"),
         "addNewDiscuz": MessageLookupByLibrary.simpleMessage("添加一个论坛"),
+        "adminBlockPost": MessageLookupByLibrary.simpleMessage("屏蔽"),
+        "adminDeletePost": MessageLookupByLibrary.simpleMessage("删除帖子"),
+        "adminUnblockPost": MessageLookupByLibrary.simpleMessage("解除屏蔽"),
+        "adminUnwarnPost": MessageLookupByLibrary.simpleMessage("解除警告"),
+        "adminWarnPost": MessageLookupByLibrary.simpleMessage("警告"),
         "animateToLastReadingPosition":
             MessageLookupByLibrary.simpleMessage("已为你跳转到上次阅读的进度."),
         "anonymous": MessageLookupByLibrary.simpleMessage("未知"),

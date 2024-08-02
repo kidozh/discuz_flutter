@@ -596,6 +596,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       Provider.of<DiscuzNotificationProvider>(context, listen: false)
           .setNotificationCount(value.threadVariables.noticeCount);
 
+      Provider.of<DiscuzNotificationProvider>(context, listen: false)
+          .setBaseVariableResult(value.threadVariables);
+
 
       setState(() {
         _viewThreadResult = value;
@@ -948,6 +951,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                     .threadVariables.threadInfo.authorId,
                                 _viewThreadResult.threadVariables.formHash,
                                 tid: tid,
+                                fid: _viewThreadResult.threadVariables.fid,
                                 onAuthorSelectedCallback: () {
                                   if (viewThreadQuery.authorId == 0) {
                                     viewThreadQuery.authorId =

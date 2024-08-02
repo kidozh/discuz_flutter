@@ -836,5 +836,10 @@
   "addDiscuzSuggestionDialogButtonTitle": "Tell us your voice",
   "addDiscuzSuggestionVerifiedDiscuz": " of discuz has ICP license from MIIT.",
   "nullDiscuzScreenTitle": "Let's get started",
-  "nullDiscuzScreenSubtitle": "Add discuz ! now to Disfly to enjoy the app."
+  "nullDiscuzScreenSubtitle": "Add discuz ! now to Disfly to enjoy the app.",
+  "adminBlockPost": "Block",
+  "adminUnblockPost": "Unblock",
+  "adminWarnPost": "Warn",
+  "adminUnwarnPost": "Redo warn",
+  "adminDeletePost": "Delete"
 }

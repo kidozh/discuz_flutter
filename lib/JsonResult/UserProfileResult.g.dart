@@ -41,6 +41,8 @@ UserProfileVariables _$UserProfileVariablesFromJson(
       ..readAccess =
           const StringToIntConverter().fromJson(json['readaccess'] as String?)
       ..formHash = json['formhash'] as String
+      ..isModerator =
+          const StringToIntConverter().fromJson(json['ismoderator'] as String?)
       ..noticeCount =
           NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
       ..space = json['space'] == null
@@ -64,6 +66,7 @@ Map<String, dynamic> _$UserProfileVariablesToJson(
       'groupid': const StringToIntConverter().toJson(instance.groupId),
       'readaccess': const StringToIntConverter().toJson(instance.readAccess),
       'formhash': instance.formHash,
+      'ismoderator': const StringToIntConverter().toJson(instance.isModerator),
       'notice': instance.noticeCount,
       'space': instance.space,
       'extcredits': instance.extendCreditMap,

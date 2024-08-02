@@ -837,5 +837,10 @@
   "addDiscuzSuggestionDialogButtonTitle": "联系我们",
   "addDiscuzSuggestionVerifiedDiscuz": "的论坛已通过ICP备案。",
   "nullDiscuzScreenTitle": "从添加论坛开始",
-  "nullDiscuzScreenSubtitle": "现在开始添加一个Discuz X论坛以开始使用谈坛。"
+  "nullDiscuzScreenSubtitle": "现在开始添加一个Discuz X论坛以开始使用谈坛。",
+  "adminBlockPost": "屏蔽",
+  "adminUnblockPost": "解除屏蔽",
+  "adminWarnPost": "警告",
+  "adminUnwarnPost": "解除警告",
+  "adminDeletePost": "删除帖子"
 }

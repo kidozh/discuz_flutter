@@ -144,4 +144,6 @@ class AppPlatformIcons{
   IconData get recommendDiscuzToUsSolid => isMaterial(context)? Icons.query_stats_sharp : CupertinoIcons.question_square;
 
   IconData get addDiscuzSolid => isMaterial(context)? Icons.view_in_ar_rounded : CupertinoIcons.bubble_left_bubble_right_fill;
+
+  IconData get adminPostSolid => isMaterial(context)? Icons.settings : CupertinoIcons.hammer_fill;
 }

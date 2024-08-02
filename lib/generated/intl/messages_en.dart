@@ -161,6 +161,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "addDiscuzTitle":
             MessageLookupByLibrary.simpleMessage("Add a discuz! BBS"),
         "addNewDiscuz": MessageLookupByLibrary.simpleMessage("Add a Discuz"),
+        "adminBlockPost": MessageLookupByLibrary.simpleMessage("Block"),
+        "adminDeletePost": MessageLookupByLibrary.simpleMessage("Delete"),
+        "adminUnblockPost": MessageLookupByLibrary.simpleMessage("Unblock"),
+        "adminUnwarnPost": MessageLookupByLibrary.simpleMessage("Redo warn"),
+        "adminWarnPost": MessageLookupByLibrary.simpleMessage("Warn"),
         "animateToLastReadingPosition": MessageLookupByLibrary.simpleMessage(
             "Scroll to last read position."),
         "anonymous": MessageLookupByLibrary.simpleMessage("A"),

@@ -5750,6 +5750,56 @@ class S {
       args: [],
     );
   }
+
+  /// `Block`
+  String get adminBlockPost {
+    return Intl.message(
+      'Block',
+      name: 'adminBlockPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unblock`
+  String get adminUnblockPost {
+    return Intl.message(
+      'Unblock',
+      name: 'adminUnblockPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Warn`
+  String get adminWarnPost {
+    return Intl.message(
+      'Warn',
+      name: 'adminWarnPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Redo warn`
+  String get adminUnwarnPost {
+    return Intl.message(
+      'Redo warn',
+      name: 'adminUnwarnPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete`
+  String get adminDeletePost {
+    return Intl.message(
+      'Delete',
+      name: 'adminDeletePost',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
