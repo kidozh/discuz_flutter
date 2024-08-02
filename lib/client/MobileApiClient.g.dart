@@ -1373,6 +1373,132 @@ class _MobileApiClient implements MobileApiClient {
     return _value;
   }
 
+  @override
+  Future<ApiResult> warnPostResult(
+    String formhash,
+    int fid,
+    int tid,
+    List<int> pids,
+    int warned,
+    String reason,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'formhash': formhash,
+      'fid': fid,
+      'tid': tid,
+      'topiclist[]': pids,
+      'warned': warned,
+      'reason': reason,
+    };
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<ApiResult>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=topicadmin&action=warn&modsubmit=yes&sendreasonpm=on',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final _value = ApiResult.fromJson(_result.data!);
+    return _value;
+  }
+
+  @override
+  Future<ApiResult> banPostResult(
+    String formhash,
+    int fid,
+    int tid,
+    List<int> pids,
+    int banned,
+    String reason,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'formhash': formhash,
+      'fid': fid,
+      'tid': tid,
+      'topiclist[]': pids,
+      'banned': banned,
+      'reason': reason,
+    };
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<ApiResult>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=topicadmin&action=ban&modsubmit=yes&sendreasonpm=on',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final _value = ApiResult.fromJson(_result.data!);
+    return _value;
+  }
+
+  @override
+  Future<ApiResult> deletePostResult(
+    String formhash,
+    int fid,
+    int tid,
+    List<int> pids,
+    int warned,
+    String reason,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'formhash': formhash,
+      'fid': fid,
+      'tid': tid,
+      'topiclist[]': pids,
+      'warned': warned,
+      'reason': reason,
+    };
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<ApiResult>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'application/x-www-form-urlencoded',
+    )
+            .compose(
+              _dio.options,
+              '/api/mobile/index.php?version=4&module=topicadmin&action=delpost&modsubmit=yes&sendreasonpm=on',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final _value = ApiResult.fromJson(_result.data!);
+    return _value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

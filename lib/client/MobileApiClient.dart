@@ -264,7 +264,8 @@ abstract class MobileApiClient {
       @Field("packageId") String packageId,
       @Field("channel") String pushChannel);
 
-  @POST("/api/mobile/index.php?version=4&module=newthread&topicsubmit=yes&usesig=1")
+  @POST(
+      "/api/mobile/index.php?version=4&module=newthread&topicsubmit=yes&usesig=1")
   @FormUrlEncoded()
   Future<ApiResult> postNewThread(
       @Field("formhash") String formhash,
@@ -277,13 +278,48 @@ abstract class MobileApiClient {
       @Field("seccodemodid") String captchaType,
       @Field("seccodeverify") String verification,
       @Field("unused[]") List<String> attachAid,
-      @Queries() Map<String, dynamic> formMap
-      );
+      @Queries() Map<String, dynamic> formMap);
 
   @POST(
       "/api/mobile/index.php?version=4&module=mobilesign&type=thread&ac=favorite&deletesubmit=true&op=delete")
   @FormUrlEncoded()
   Future<ApiResult> mobileSignResult(
-      @Field("hash") String formhash,
+    @Field("hash") String formhash,
+  );
+
+  @POST(
+      "/api/mobile/index.php?version=4&module=topicadmin&action=warn&modsubmit=yes&sendreasonpm=on")
+  @FormUrlEncoded()
+  Future<ApiResult> warnPostResult(
+    @Field("formhash") String formhash,
+    @Field("fid") int fid,
+    @Field("tid") int tid,
+    @Field("topiclist[]") List<int> pids,
+    @Field("warned") int warned,
+    @Field("reason") String reason,
+  );
+
+  @POST(
+      "/api/mobile/index.php?version=4&module=topicadmin&action=ban&modsubmit=yes&sendreasonpm=on")
+  @FormUrlEncoded()
+  Future<ApiResult> banPostResult(
+      @Field("formhash") String formhash,
+      @Field("fid") int fid,
+      @Field("tid") int tid,
+      @Field("topiclist[]") List<int> pids,
+      @Field("banned") int banned,
+      @Field("reason") String reason,
+      );
+
+  @POST(
+      "/api/mobile/index.php?version=4&module=topicadmin&action=delpost&modsubmit=yes&sendreasonpm=on")
+  @FormUrlEncoded()
+  Future<ApiResult> deletePostResult(
+      @Field("formhash") String formhash,
+      @Field("fid") int fid,
+      @Field("tid") int tid,
+      @Field("topiclist[]") List<int> pids,
+      @Field("warned") int warned,
+      @Field("reason") String reason,
       );
 }

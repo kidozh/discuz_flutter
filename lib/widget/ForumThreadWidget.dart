@@ -360,6 +360,8 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
               ),
               // start image
               getAttachmentGridLayout(),
+              // get reply layout
+              replyWidget,
             ],
           )
       );
@@ -460,12 +462,70 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                   )
                 ],
               ),
-            )
+            ),
+            replyWidget
           ],
         );
       }
     );
   }
+
+  Widget get replyWidget => _forumThread.reply.isEmpty? Container():Container(
+    padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+    margin: EdgeInsets.only(top: 4),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.all(Radius.circular(8.0)),
+      color: Theme.of(context).colorScheme.tertiaryContainer.withOpacity(0.2),
+    ),
+    child: ListView.builder(
+        physics: new NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        padding: EdgeInsets.zero,
+        itemCount: _forumThread.reply.length,
+        itemBuilder: (context, index) {
+          ShortReply shortReply = _forumThread.reply[index];
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RichText(
+                textAlign: TextAlign.start,
+                //overflow: TextOverflow.ellipsis,
+                text: TextSpan(
+                  text: "",
+                  style: TextStyle(color: Theme.of(context).colorScheme.onTertiaryContainer),
+                  children: [
+                    WidgetSpan(
+                        child: UserAvatar(_discuz, shortReply.authorId, shortReply.author, size: 16,),
+                    ),
+                    TextSpan(text: ' '),
+                    TextSpan(
+                        text: shortReply.author,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            // color: Theme.of(context).colorScheme.tertiary,
+                            fontSize: 12 )),
+                    TextSpan(text: ' · '),
+                    TextSpan(
+                        text: shortReply.message.replaceAll("&nbsp;", ""),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 12 )),
+                  ],
+                ),
+              ),
+
+              if(index != _forumThread.reply.length-1)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 0.0),
+                  child: Divider(),
+                )
+
+            ],
+          );
+        }
+    ),
+  );
 
   Widget getAttachmentGridLayout(){
     if(_forumThread.attachmentImagePreviewList.length > 1){

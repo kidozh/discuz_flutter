@@ -93,7 +93,6 @@ class ForumThread{
 
   @override
   String toString() {
-    // TODO: implement toString
     return "ForumThread ${author} in ${tid}";
   }
 
@@ -106,10 +105,11 @@ class ShortReply{
   String pid = "0";
   String author = "";
   @JsonKey(name: "authorid")
-  String authorId = "0";
+  @StringToIntConverter()
+  int authorId = 0;
   String message = "";
-  @JsonKey(defaultValue: "")
-  String avatar = "";
+  // @JsonKey(defaultValue: "", required: false)
+  // String avatar = "";
 
   ShortReply();
   factory ShortReply.fromJson(Map<String, dynamic> json) => _$ShortReplyFromJson(json);

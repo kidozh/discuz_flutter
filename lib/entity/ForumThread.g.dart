@@ -79,17 +79,16 @@ Map<String, dynamic> _$ForumThreadToJson(ForumThread instance) =>
 ShortReply _$ShortReplyFromJson(Map<String, dynamic> json) => ShortReply()
   ..pid = json['pid'] as String
   ..author = json['author'] as String
-  ..authorId = json['authorid'] as String
-  ..message = json['message'] as String
-  ..avatar = json['avatar'] as String? ?? '';
+  ..authorId =
+      const StringToIntConverter().fromJson(json['authorid'] as String?)
+  ..message = json['message'] as String;
 
 Map<String, dynamic> _$ShortReplyToJson(ShortReply instance) =>
     <String, dynamic>{
       'pid': instance.pid,
       'author': instance.author,
-      'authorid': instance.authorId,
+      'authorid': const StringToIntConverter().toJson(instance.authorId),
       'message': instance.message,
-      'avatar': instance.avatar,
     };
 
 AttachmentPreview _$AttachmentPreviewFromJson(Map<String, dynamic> json) =>
