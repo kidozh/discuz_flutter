@@ -782,6 +782,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "sortThreadInDescendOrder":
             MessageLookupByLibrary.simpleMessage("从新到旧排列"),
         "spam": MessageLookupByLibrary.simpleMessage("恶意灌水"),
+        "stickyThread": MessageLookupByLibrary.simpleMessage("置顶帖"),
         "style": MessageLookupByLibrary.simpleMessage("样式"),
         "submitPoll": m40,
         "subscribe": MessageLookupByLibrary.simpleMessage("订阅"),

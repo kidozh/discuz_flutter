@@ -841,5 +841,6 @@
   "adminUnblockPost": "Unblock",
   "adminWarnPost": "Warn",
   "adminUnwarnPost": "Redo warn",
-  "adminDeletePost": "Delete"
+  "adminDeletePost": "Delete",
+  "stickyThread": "Sticky Thread"
 }

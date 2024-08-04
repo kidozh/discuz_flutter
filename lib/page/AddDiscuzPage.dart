@@ -174,7 +174,7 @@ class _AddDiscuzFormFieldState
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: SingleChildScrollView(
           child: Form(
         key: _formKey,
@@ -184,6 +184,7 @@ class _AddDiscuzFormFieldState
             // input fields
             Container(
               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              margin: EdgeInsets.only(top: 16.0),
               decoration: isCupertino(context)
                   ? BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
@@ -295,13 +296,13 @@ class _AddDiscuzFormFieldState
               ),
             ),
             SizedBox(
-              height: 32,
+              height: 16,
             ),
 
             // the following things
             if(supportDiscuzListResult.list.isNotEmpty)
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 0),
+              margin: EdgeInsets.symmetric(horizontal: 0, vertical: 16.0),
               padding: EdgeInsets.all(8.0),
               decoration: BoxDecoration(
                 color: Theme.of(context).disabledColor.withOpacity(0.1),
@@ -422,7 +423,7 @@ class _AddDiscuzFormFieldState
                                   _checkApiAvailable();
                                 },
                               ),
-                              if (isCupertino(context) &&
+                              if (
                                   index !=
                                       supportDiscuzListResult.list.length - 1)
                                 Divider()

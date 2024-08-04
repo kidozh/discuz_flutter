@@ -842,5 +842,6 @@
   "adminUnblockPost": "解除屏蔽",
   "adminWarnPost": "警告",
   "adminUnwarnPost": "解除警告",
-  "adminDeletePost": "删除帖子"
+  "adminDeletePost": "删除帖子",
+  "stickyThread": "置顶帖"
 }

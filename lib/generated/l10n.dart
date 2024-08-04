@@ -5800,6 +5800,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Sticky Thread`
+  String get stickyThread {
+    return Intl.message(
+      'Sticky Thread',
+      name: 'stickyThread',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

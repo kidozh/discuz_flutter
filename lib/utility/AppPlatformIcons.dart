@@ -146,4 +146,6 @@ class AppPlatformIcons{
   IconData get addDiscuzSolid => isMaterial(context)? Icons.view_in_ar_rounded : CupertinoIcons.bubble_left_bubble_right_fill;
 
   IconData get adminPostSolid => isMaterial(context)? Icons.settings : CupertinoIcons.hammer_fill;
+
+  IconData get stickyPostSolid => isMaterial(context)? Icons.vertical_align_top_rounded : CupertinoIcons.sort_up_circle_fill;
 }

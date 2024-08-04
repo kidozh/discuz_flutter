@@ -917,6 +917,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "sortThreadInDescendOrder": MessageLookupByLibrary.simpleMessage(
             "Sort thread in descent order"),
         "spam": MessageLookupByLibrary.simpleMessage("Spam"),
+        "stickyThread": MessageLookupByLibrary.simpleMessage("Sticky Thread"),
         "style": MessageLookupByLibrary.simpleMessage("Style"),
         "submitPoll": m40,
         "subscribe": MessageLookupByLibrary.simpleMessage("Subscribe"),
