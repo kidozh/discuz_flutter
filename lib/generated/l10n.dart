@@ -5801,10 +5801,10 @@ class S {
     );
   }
 
-  /// `Sticky Thread`
+  /// `Pinned thread`
   String get stickyThread {
     return Intl.message(
-      'Sticky Thread',
+      'Pinned thread',
       name: 'stickyThread',
       desc: '',
       args: [],

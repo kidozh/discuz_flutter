@@ -37,6 +37,15 @@ class ForumThread{
   }
   @JsonKey(defaultValue: "")
   String subject = "";
+  
+  String get decodedSubject => subject
+      .replaceAll("&amp;", "&")
+      .replaceAll("&gt;", ">")
+      .replaceAll("&lt;", "<")
+      .replaceAll("&nbsp;", " ")
+      .replaceAll("&quot;", "\"")
+  ;
+  
   @JsonKey(defaultValue: "")
   String dateline = "";
   @JsonKey(defaultValue: "")

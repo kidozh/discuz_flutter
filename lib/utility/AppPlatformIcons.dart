@@ -147,5 +147,5 @@ class AppPlatformIcons{
 
   IconData get adminPostSolid => isMaterial(context)? Icons.settings : CupertinoIcons.hammer_fill;
 
-  IconData get stickyPostSolid => isMaterial(context)? Icons.vertical_align_top_rounded : CupertinoIcons.sort_up_circle_fill;
+  IconData get stickyPostSolid => isMaterial(context)? Icons.push_pin_outlined : CupertinoIcons.pin;
 }
