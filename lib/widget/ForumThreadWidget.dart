@@ -118,16 +118,6 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
   }
 
-  Widget? getTailingWidget(){
-    if(_forumThread.getDisplayOrder() > 0){
-      return Icon(AppPlatformIcons(context).pinContentSolid, size: 16, color: Theme.of(context).colorScheme.primary,);
-    }
-
-    else{
-      return null;
-    }
-  }
-
   void markThreadAsRead(){
     setState(() {
       read = true;
@@ -314,13 +304,6 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                               if((_user == null && _forumThread.readPerm > 0)||(_user!= null && _forumThread.readPerm >_user!.readPerm))
                                 TextSpan(text: " / " + S.of(context).threadReadAccess(_forumThread.readPerm),
                                     style: viewed? textStyle: textStyle.copyWith(color: Theme.of(context).colorScheme.error)
-                                ),
-                              if(_forumThread.replies > 0)
-                                WidgetSpan(
-                                    child: Padding(
-                                      padding: EdgeInsets.only(left: 8.0),
-                                      child: getTailingWidget(),
-                                    )
                                 ),
                             ],
                           ),
