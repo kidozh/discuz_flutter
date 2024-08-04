@@ -321,7 +321,7 @@ class FavoriteForumCardWidget extends StatelessWidget{
     return PlatformWidgetBuilder(
       material: (context, child, platform){
         return Card(
-          color: Theme.of(context).colorScheme.primaryContainer,
+          color: Theme.of(context).colorScheme.onPrimary,
           elevation: 4.0,
           child: child,
         );
@@ -356,7 +356,7 @@ class FavoriteForumCardWidget extends StatelessWidget{
               platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz, user, favoriteForumInDatabase.idKey))
           );
         },
-        trailing: Icon(PlatformIcons(context).forward),
+        trailing: Icon(PlatformIcons(context).forward, color: Theme.of(context).colorScheme.primary),
 
 
       ),
