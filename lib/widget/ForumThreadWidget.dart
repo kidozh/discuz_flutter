@@ -136,9 +136,9 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
                 elevation: selected ? 0.0: 4.0,
                 color: selected? Theme.of(context).colorScheme.primaryContainer:
-                Theme.of(context).brightness == Brightness.light? Colors.white: Colors.black45,
+                Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white24,
                 surfaceTintColor: selected? Theme.of(context).colorScheme.primaryContainer:
-                Theme.of(context).brightness == Brightness.light? Colors.white: Colors.black45,
+                Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white24,
                 // color: Theme.of(context).colorScheme.background,
                 child: Container(
                   padding: EdgeInsets.only(bottom: 12.0),
@@ -595,7 +595,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
           child: Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: MainAxisSize.max,
                 children: [
                   Text(S.of(context).contentPostByBlockUserTitle(_forumThread.author),style:Theme.of(context).textTheme.titleLarge),
                   Row(

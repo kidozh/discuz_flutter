@@ -252,7 +252,7 @@ class PostState extends State<PostStatefulWidget> {
         material: (_, child, platform) => Card(
           //surfaceTintColor: Theme.of(context).colorScheme.background,
           surfaceTintColor: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.black38,
-          color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.black38,
+          color: Theme.of(context).brightness == Brightness.light? Colors.white70: Colors.white24,
           elevation: _post.first ? 0 : 8.0,
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 12.0),
