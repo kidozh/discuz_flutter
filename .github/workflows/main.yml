@@ -4,10 +4,12 @@ on:
     branches:
       - dev
       - test
+      - master
   push:
     branches:
       - dev
       - test
+      - master
 jobs:  # Telling what jobs we need to happen
   build:      # Specify the building name and machine
     name: Build & Release  # you can name the build whatever you want
