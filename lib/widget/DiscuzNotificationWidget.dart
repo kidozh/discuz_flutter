@@ -35,8 +35,8 @@ class DiscuzNotificationWidget extends StatelessWidget {
         return Card(
           elevation: 8.0,
 
-          // color: brightness == Brightness.light? Colors.white: Colors.black45,
-          surfaceTintColor: brightness == Brightness.light? Colors.white: Colors.black45,
+          color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white10,
+          surfaceTintColor: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white10,
           child: Padding(
             padding: EdgeInsets.all(4.0),
             child: child,

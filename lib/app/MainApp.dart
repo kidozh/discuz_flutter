@@ -548,6 +548,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               return Text(S.of(context).appName);
             } else {
               return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(value.discuz!.siteName, maxLines: 1, overflow: TextOverflow.ellipsis,),
                   if (value.user == null)

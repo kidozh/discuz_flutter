@@ -59,9 +59,9 @@ class AppPlatformIcons{
 
   IconData get discuzMessageOutlined => isMaterial(context)? Icons.message_outlined : CupertinoIcons.chat_bubble;
 
-  IconData get discuzSiteSolid => isMaterial(context)? Icons.home : CupertinoIcons.today_fill;
+  IconData get discuzSiteSolid => isMaterial(context)? Icons.home : CupertinoIcons.today;
 
-  IconData get discuzSiteOutlined => isMaterial(context)? Icons.home_outlined : CupertinoIcons.today;
+  IconData get discuzSiteOutlined => isMaterial(context)? Icons.home_outlined : CupertinoIcons.today_fill;
 
   IconData get contactUserSolid => isMaterial(context)? Icons.message : CupertinoIcons.chat_bubble_fill;
 
@@ -95,7 +95,7 @@ class AppPlatformIcons{
 
   IconData get formatSizeSolid => isMaterial(context)? Icons.format_size : CupertinoIcons.textformat_size;
 
-  IconData get manageDiscuzSolid => isMaterial(context)? Icons.account_tree : CupertinoIcons.rectangle_fill_on_rectangle_angled_fill;
+  IconData get manageDiscuzSolid => isMaterial(context)? Icons.account_tree : CupertinoIcons.arrow_swap;
 
   IconData get menuSolid => isMaterial(context)? Icons.menu : CupertinoIcons.line_horizontal_3;
 
@@ -148,4 +148,10 @@ class AppPlatformIcons{
   IconData get adminPostSolid => isMaterial(context)? Icons.settings : CupertinoIcons.hammer_fill;
 
   IconData get stickyPostSolid => isMaterial(context)? Icons.push_pin_outlined : CupertinoIcons.pin;
+
+  IconData get loginUserSolid => isMaterial(context)? Icons.login : CupertinoIcons.person_crop_circle;
+
+  IconData get loginUserFailedSolid => isMaterial(context)? Icons.error_outline : CupertinoIcons.person_crop_circle_badge_exclam;
+
+  IconData get loginUserSuccessSolid => isMaterial(context)? Icons.check_circle : CupertinoIcons.person_crop_circle_badge_checkmark;
 }

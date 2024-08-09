@@ -473,8 +473,9 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                               iconedButtons: {
                                 ButtonState.idle: IconedButton(
                                     text: S.of(context).loginTitle,
-                                    icon: Icon(Icons.login,
-                                        color: Colors.white60),
+                                    icon: Icon(AppPlatformIcons(context).loginUserSolid,
+                                        color: Theme.of(context).colorScheme.onPrimary
+                                    ),
                                     color:
                                         Theme.of(context).colorScheme.primary),
                                 ButtonState.loading: IconedButton(
@@ -484,14 +485,14 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                                     text:
                                         S.of(context).progressButtonLoginFailed,
                                     icon:
-                                        Icon(Icons.cancel, color: Colors.white),
+                                        Icon(AppPlatformIcons(context).loginUserFailedSolid, color: Colors.white),
                                     color: Colors.red.shade300),
                                 ButtonState.success: IconedButton(
                                     text: S
                                         .of(context)
                                         .progressButtonLoginSuccess,
                                     icon: Icon(
-                                      Icons.check_circle,
+                                      AppPlatformIcons(context).loginUserSuccessSolid,
                                       color: Colors.white,
                                     ),
                                     color: Colors.green.shade400)

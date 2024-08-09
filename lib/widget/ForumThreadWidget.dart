@@ -136,9 +136,9 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
                 elevation: selected ? 0.0: 4.0,
                 color: selected? Theme.of(context).colorScheme.primaryContainer:
-                Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white24,
+                Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white10,
                 surfaceTintColor: selected? Theme.of(context).colorScheme.primaryContainer:
-                Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white24,
+                Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white10,
                 // color: Theme.of(context).colorScheme.background,
                 child: Container(
                   padding: EdgeInsets.only(bottom: 12.0),
