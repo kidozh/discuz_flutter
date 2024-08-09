@@ -592,12 +592,19 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
       return Container(
         child: Card(
           elevation: 4.0,
+          color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white10,
+          surfaceTintColor: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white10,
           child: Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Text(S.of(context).contentPostByBlockUserTitle(_forumThread.author),style:Theme.of(context).textTheme.titleLarge),
+                  Text(S.of(context).contentPostByBlockUserTitle(_forumThread.author),
+                      style:TextStyle(
+                        fontSize: FontSize.large.value,
+                        color: Theme.of(context).textTheme.titleMedium?.color,
+                      )
+                  ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
