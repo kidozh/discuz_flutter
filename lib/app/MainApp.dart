@@ -63,12 +63,13 @@ class MyApp extends StatelessWidget {
         await UserPreferencesUtils.getMaterial3PropertyPreference();
     bool allowPush = await UserPreferencesUtils.getPushPreference();
     String signature = await UserPreferencesUtils.getSignaturePreference();
-    String? typography = await UserPreferencesUtils.getTypographyThemePreference();
+    String? typography =
+        await UserPreferencesUtils.getTypographyThemePreference();
     bool useThinFont = await UserPreferencesUtils.getUseThinFontPreference();
-    bool useCompactParagraph = await UserPreferencesUtils.getUseCompactParagraphPreference();
-    DynamicSchemeVariant dynamicSchemeVariant = await UserPreferencesUtils.getInterfaceDynamicSchemeVariantPreference();
-
-
+    bool useCompactParagraph =
+        await UserPreferencesUtils.getUseCompactParagraphPreference();
+    DynamicSchemeVariant dynamicSchemeVariant =
+        await UserPreferencesUtils.getInterfaceDynamicSchemeVariantPreference();
 
     Provider.of<ThemeNotifierProvider>(context, listen: false)
         .setTheme(colorName);
@@ -86,14 +87,18 @@ class MyApp extends StatelessWidget {
         .allowPush = allowPush;
     Provider.of<UserPreferenceNotifierProvider>(context, listen: false)
         .signature = signature;
-    Provider.of<DiscuzNotificationProvider>(context, listen: false).setNotificationCount(NoticeCount());
+    Provider.of<DiscuzNotificationProvider>(context, listen: false)
+        .setNotificationCount(NoticeCount());
 
-    if(typography != null){
-      Provider.of<TypeSettingNotifierProvider>(context, listen: false).typographyTheme = typography;
+    if (typography != null) {
+      Provider.of<TypeSettingNotifierProvider>(context, listen: false)
+          .typographyTheme = typography;
     }
 
-    Provider.of<TypeSettingNotifierProvider>(context, listen: false).useThinFontWeight = useThinFont;
-    Provider.of<TypeSettingNotifierProvider>(context, listen: false).useCompactParagraph = useCompactParagraph;
+    Provider.of<TypeSettingNotifierProvider>(context, listen: false)
+        .useThinFontWeight = useThinFont;
+    Provider.of<TypeSettingNotifierProvider>(context, listen: false)
+        .useCompactParagraph = useCompactParagraph;
   }
 
   TargetPlatform? getTargetPlatformByName(String name) {
@@ -127,64 +132,73 @@ class MyApp extends StatelessWidget {
         ThemeMode? themeMode = null;
 
         Typography typography = Typography.material2021();
-        String platformName = Provider.of<ThemeNotifierProvider>(context, listen: false).platformName;
+        String platformName =
+            Provider.of<ThemeNotifierProvider>(context, listen: false)
+                .platformName;
         TargetPlatform targetPlatform = TargetPlatform.android;
 
-        TypeSettingNotifierProvider typeSetting = Provider.of<TypeSettingNotifierProvider>(context, listen:false);
+        TypeSettingNotifierProvider typeSetting =
+            Provider.of<TypeSettingNotifierProvider>(context, listen: false);
 
-        switch(platformName){
-          case "ios":{
-            targetPlatform = TargetPlatform.iOS;
-            break;
-          }
-          case "android":{
-            targetPlatform = TargetPlatform.android;
-            break;
-          }
-          case "":{
-            targetPlatform = Theme.of(context).platform;
-          }
+        switch (platformName) {
+          case "ios":
+            {
+              targetPlatform = TargetPlatform.iOS;
+              break;
+            }
+          case "android":
+            {
+              targetPlatform = TargetPlatform.android;
+              break;
+            }
+          case "":
+            {
+              targetPlatform = Theme.of(context).platform;
+            }
         }
 
-        switch (typeSetting.typographyTheme){
-          case "material2014":{
-            typography = Typography.material2014(platform: targetPlatform);
-            break;
-          }
-          case "material2018":{
-            typography = Typography.material2018(platform: targetPlatform);
-            break;
-          }
-          case "material2021":{
-            typography = Typography.material2021(platform: targetPlatform);
-            break;
-          }
-          default:{
-            typography = Theme.of(context).typography;
-          }
+        switch (typeSetting.typographyTheme) {
+          case "material2014":
+            {
+              typography = Typography.material2014(platform: targetPlatform);
+              break;
+            }
+          case "material2018":
+            {
+              typography = Typography.material2018(platform: targetPlatform);
+              break;
+            }
+          case "material2021":
+            {
+              typography = Typography.material2021(platform: targetPlatform);
+              break;
+            }
+          default:
+            {
+              typography = Theme.of(context).typography;
+            }
         }
 
         final materialThemeDataLight = ThemeData.from(
-            colorScheme: ColorScheme.fromSeed(
-                seedColor: themeColorEntity.themeColor,
-              dynamicSchemeVariant: themeColorEntity.dynamicSchemeVariant,
-              brightness: Brightness.light,
-              //surface: Colors.white,
-            ).harmonized(),
-            useMaterial3: themeColorEntity.useMaterial3,
-            textTheme: typography.black.useSystemChineseFont(Brightness.light),
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: themeColorEntity.themeColor,
+            dynamicSchemeVariant: themeColorEntity.dynamicSchemeVariant,
+            brightness: Brightness.light,
+            //surface: Colors.white,
+          ).harmonized(),
+          useMaterial3: themeColorEntity.useMaterial3,
+          textTheme: typography.black.useSystemChineseFont(Brightness.light),
         );
 
         final materialThemeDataDark = ThemeData.from(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: themeColorEntity.themeColor,
-              dynamicSchemeVariant: themeColorEntity.dynamicSchemeVariant,
-              brightness: Brightness.dark,
-              //surface: Colors.black54
-            ).harmonized()
-            ,
-            useMaterial3: themeColorEntity.useMaterial3,
-            textTheme: typography.white.useSystemChineseFont(Brightness.dark),
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: themeColorEntity.themeColor,
+            dynamicSchemeVariant: themeColorEntity.dynamicSchemeVariant,
+            brightness: Brightness.dark,
+            //surface: Colors.black54
+          ).harmonized(),
+          useMaterial3: themeColorEntity.useMaterial3,
+          textTheme: typography.white.useSystemChineseFont(Brightness.dark),
         );
         const darkDefaultCupertinoTheme =
             CupertinoThemeData(brightness: Brightness.dark);
@@ -213,7 +227,6 @@ class MyApp extends StatelessWidget {
 
         if (themeColorEntity.brightness == null) {
           themeMode = ThemeMode.system;
-
         } else if (themeColorEntity.brightness == Brightness.light) {
           themeMode = ThemeMode.light;
         } else if (themeColorEntity.brightness == Brightness.dark) {
@@ -227,34 +240,36 @@ class MyApp extends StatelessWidget {
           settings: PlatformSettingsData(),
           builder: (context) {
             return PlatformTheme(
-                themeMode: themeMode,
-                materialLightTheme: materialThemeDataLight,
-                materialDarkTheme: materialThemeDataDark,
-                cupertinoLightTheme: cupertinoLightTheme,
-                cupertinoDarkTheme: cupertinoDarkTheme,
-                onThemeModeChanged: (themeMode) {
-                  themeMode = themeMode;
-                },
-
-                builder: (context) => UpgradeAlert(
+              themeMode: themeMode,
+              materialLightTheme: materialThemeDataLight,
+              materialDarkTheme: materialThemeDataDark,
+              cupertinoLightTheme: cupertinoLightTheme,
+              cupertinoDarkTheme: cupertinoDarkTheme,
+              onThemeModeChanged: (themeMode) {
+                themeMode = themeMode;
+              },
+              builder: (context) => UpgradeAlert(
                   child: PlatformApp(
-                    //title: S.of(context).appName,
-                    navigatorKey: navigatorKey,
-                    debugShowCheckedModeBanner: false,
-                    navigatorObservers: [
-                      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
-                    ],
-                    localizationsDelegates: [
-                      S.delegate,
-                      GlobalCupertinoLocalizations.delegate,
-                      GlobalMaterialLocalizations.delegate,
-                      GlobalWidgetsLocalizations.delegate
-                    ],
-                    supportedLocales: S.delegate.supportedLocales,
-                    builder: EasyLoading.init(),
-                    home: MainTwoPanePage(navigatorKey: this.navigatorKey,),
-                  )),
-                );
+                //title: S.of(context).appName,
+                navigatorKey: navigatorKey,
+                debugShowCheckedModeBanner: false,
+                navigatorObservers: [
+                  FirebaseAnalyticsObserver(
+                      analytics: FirebaseAnalytics.instance),
+                ],
+                localizationsDelegates: [
+                  S.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate
+                ],
+                supportedLocales: S.delegate.supportedLocales,
+                builder: EasyLoading.init(),
+                home: MainTwoPanePage(
+                  navigatorKey: this.navigatorKey,
+                ),
+              )),
+            );
           },
         );
       },
@@ -264,7 +279,11 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   GlobalKey<NavigatorState> navigatorKey;
-  MyHomePage({Key? key, required this.title, this.onSelectTid, required this.navigatorKey})
+  MyHomePage(
+      {Key? key,
+      required this.title,
+      this.onSelectTid,
+      required this.navigatorKey})
       : super(key: key);
 
   final ValueChanged<int>? onSelectTid;
@@ -272,8 +291,8 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() =>
-      _MyHomePageState(onSelectTid: this.onSelectTid, navigatorKey: this.navigatorKey);
+  _MyHomePageState createState() => _MyHomePageState(
+      onSelectTid: this.onSelectTid, navigatorKey: this.navigatorKey);
 }
 
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
@@ -288,7 +307,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   //
   List<Discuz> _allDiscuzs = [];
 
-  _MyHomePageState({this.onSelectTid,required this.navigatorKey}) {
+  _MyHomePageState({this.onSelectTid, required this.navigatorKey}) {
     _queryDiscuzList();
   }
 
@@ -296,7 +315,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   void didChangePlatformBrightness() {
     super.didChangePlatformBrightness();
     // change now
-    final MediaQueryData data = MediaQueryData.fromView(WidgetsBinding.instance.platformDispatcher.views.single);
+    final MediaQueryData data = MediaQueryData.fromView(
+        WidgetsBinding.instance.platformDispatcher.views.single);
     Provider.of<ThemeNotifierProvider>(context, listen: false)
         .setBrightness(data.platformBrightness);
     //Theme.of(context).brightness = window.platformBrightness;
@@ -307,13 +327,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     super.didChangeDependencies();
     // print("Update token to all applicable discuzes");
     // PushServiceUtils.updateTokenToAllApplicableDiscuzes(context);
-
   }
 
   StreamSubscription<Map<String?, Object?>>? _onNotificationTap = null;
 
-
-  Future<void> checkIfNotificationIsTap()async {
+  Future<void> checkIfNotificationIsTap() async {
     // Push.Push.instance.notificationTapWhichLaunchedAppFromTerminated.then((data){
     //   if (data == null) {
     //     print("App was not launched by tapping a notification");
@@ -336,7 +354,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     //
     // });
   }
-
 
   Future<void> setupInteractedMessage() async {
     // Get any messages which caused the application to open from
@@ -369,15 +386,15 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> reportDiscuzListToAnalytics() async{
+  Future<void> reportDiscuzListToAnalytics() async {
     // check with last submission
 
     bool shouldSendReport = await UserPreferencesUtils.shouldReportAnalytics();
-    if(shouldSendReport){
+    if (shouldSendReport) {
       log("Send Discuz report to Google analytics");
       DiscuzDao _discuzDao = await AppDatabase.getDiscuzDao();
       List<Discuz> discuzList = await _discuzDao.findAllDiscuzs();
-      discuzList.forEach((discuz) async{
+      discuzList.forEach((discuz) async {
         await FirebaseAnalytics.instance.logEvent(
           name: "discuz_maintain",
           parameters: {
@@ -389,14 +406,12 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       });
       await UserPreferencesUtils.putLastReportAnalyticsTime();
     }
-
-
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    if(_onNotificationTap != null){
+    if (_onNotificationTap != null) {
       _onNotificationTap!.cancel();
     }
     super.dispose();
@@ -456,7 +471,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       padding: EdgeInsets.fromLTRB(24.0, 12.0, 24.0, 16.0),
       child: PlatformElevatedButton(
         color: Theme.of(context).colorScheme.primaryContainer,
-        child: Text(S.of(context).addNewDiscuz, style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),),
+        child: Text(
+          S.of(context).addNewDiscuz,
+          style: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimaryContainer),
+        ),
         //color: Theme.of(context).colorScheme.onPrimaryContainer,
         onPressed: () {
           VibrationUtils.vibrateWithClickIfPossible();
@@ -473,7 +492,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       await showPlatformModalSheet(
           context: context, //BuildContext对象
           builder: (BuildContext context) {
-
             return SimpleDialog(
                 title: Text(S.of(context).chooseDiscuz), children: widgetList);
           });
@@ -483,7 +501,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           builder: (BuildContext context) {
             return SimpleDialog(
                 backgroundColor: Theme.of(context).colorScheme.surface,
-                title: Text(S.of(context).chooseDiscuz), children: widgetList);
+                title: Text(S.of(context).chooseDiscuz),
+                children: widgetList);
           });
     }
   }
@@ -529,15 +548,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     // need to check whether discuz exists in dataset
-    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    if(user == null && _bottomNavigationbarIndex >= 2){
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    if (user == null && _bottomNavigationbarIndex >= 2) {
       _bottomNavigationbarIndex = 0;
     }
-
-
-
-
-
 
     return PlatformScaffold(
       //iosContentPadding: true,
@@ -551,7 +566,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(value.discuz!.siteName, maxLines: 1, overflow: TextOverflow.ellipsis,),
+                  Text(
+                    value.discuz!.siteName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   if (value.user == null)
                     Text(S.of(context).incognitoTitle,
                         style: TextStyle(fontSize: 12)),
@@ -567,13 +586,12 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         ),
         trailingActions: [
           DiscuzNotificationAppbarIconWidget(),
-
           PlatformIconButton(
             padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
             onPressed: _triggerSwitchDiscuzDialog,
-
             icon: Icon(
               AppPlatformIcons(context).manageDiscuzSolid,
+              size: 24,
               color: Theme.of(context).textTheme.titleSmall?.color,
               semanticLabel: S.of(context).selectDiscuzIconTooltip,
             ),
@@ -586,28 +604,30 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               return Container();
             } else {
               return PlatformIconButton(
+                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
 
-                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-                  onPressed: () async {
-                    // open drawer
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    await Navigator.push(
-                        context,
-                        platformPageRoute(
-                            context: context,
-                            builder: (context) => DrawerPage()));
-                  },
-                  icon: Icon(
+                onPressed: () async {
+                  // open drawer
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  await Navigator.push(
+                      context,
+                      platformPageRoute(
+                          context: context,
+                          builder: (context) => DrawerPage()));
+                },
+                icon: Icon(AppPlatformIcons(context).menuSolid,
+                    semanticLabel: S.of(context).menuIconTooltip,
+                    color: Theme.of(context).textTheme.titleSmall?.color,
+                  size: 24,
+                ),
 
-                      AppPlatformIcons(context).menuSolid,
-                      semanticLabel: S.of(context).menuIconTooltip,
-                      color: Theme.of(context).textTheme.titleSmall?.color));
+              );
             }
           },
         ),
       ),
       body: Consumer<DiscuzAndUserNotifier>(
-        builder: (context, value, child){
+        builder: (context, value, child) {
           List<Widget> bodyWidgetList = [
             DashboardScreen(
               onSelectTid: onSelectTid,
@@ -630,19 +650,17 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               key: ValueKey(4),
             )
           ];
-          if(value.user == null){
+          if (value.user == null) {
             print("Get btm index ${_bottomNavigationbarIndex}");
-            if(_bottomNavigationbarIndex < 2){
+            if (_bottomNavigationbarIndex < 2) {
               return bodyWidgetList[_bottomNavigationbarIndex];
-            }
-            else{
+            } else {
               setState(() {
                 _bottomNavigationbarIndex = 0;
               });
               return bodyWidgetList[_bottomNavigationbarIndex];
             }
-          }
-          else{
+          } else {
             return bodyWidgetList[_bottomNavigationbarIndex];
           }
         },
@@ -652,8 +670,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         material: (context, _) => MaterialNavBarData(
             selectedItemColor: Theme.of(context).colorScheme.primary,
             unselectedItemColor: Theme.of(context).unselectedWidgetColor,
-            elevation: 0
-        ),
+            elevation: 0),
         itemChanged: (index) {
           setState(() {
             VibrationUtils.vibrateWithClickIfPossible();
@@ -675,18 +692,18 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               icon: new Icon(AppPlatformIcons(context).discuzPortalOutlined),
               activeIcon: Icon(AppPlatformIcons(context).discuzPortalSolid),
               label: S.of(context).index),
-          if(user!= null)
-          BottomNavigationBarItem(
-              icon: new Icon(
-                  AppPlatformIcons(context).discuzNotificationOutlined),
-              activeIcon:
-                  Icon(AppPlatformIcons(context).discuzNotificationSolid),
-              label: S.of(context).notification),
-          if(user!= null)
-          BottomNavigationBarItem(
-              icon: new Icon(AppPlatformIcons(context).discuzMessageOutlined),
-              activeIcon: Icon(AppPlatformIcons(context).discuzMessageSolid),
-              label: S.of(context).chatMessage),
+          if (user != null)
+            BottomNavigationBarItem(
+                icon: new Icon(
+                    AppPlatformIcons(context).discuzNotificationOutlined),
+                activeIcon:
+                    Icon(AppPlatformIcons(context).discuzNotificationSolid),
+                label: S.of(context).notification),
+          if (user != null)
+            BottomNavigationBarItem(
+                icon: new Icon(AppPlatformIcons(context).discuzMessageOutlined),
+                activeIcon: Icon(AppPlatformIcons(context).discuzMessageSolid),
+                label: S.of(context).chatMessage),
         ],
       ),
       material: (_, __) => MaterialScaffoldData(),
@@ -701,7 +718,6 @@ class MainTwoPanePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return LayoutBuilder(builder: (context, constraints) {
       return MainTwoPaneStatefulWidget(
           navigatorKey: this.navigatorKey,
@@ -715,7 +731,8 @@ class MainTwoPaneStatefulWidget extends StatefulWidget {
   final TwoPaneType type;
   GlobalKey<NavigatorState> navigatorKey;
 
-  MainTwoPaneStatefulWidget({super.key, required this.type, required this.navigatorKey});
+  MainTwoPaneStatefulWidget(
+      {super.key, required this.type, required this.navigatorKey});
 
   @override
   State<StatefulWidget> createState() {
@@ -750,7 +767,10 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
     if (widget.type == TwoPaneType.smallScreen) {
       panePriority =
           _currentTid.value == 0 ? TwoPanePriority.start : TwoPanePriority.end;
-      return MyHomePage(title: "", navigatorKey: this.navigatorKey,);
+      return MyHomePage(
+        title: "",
+        navigatorKey: this.navigatorKey,
+      );
     }
     double paneProportion = 0.35;
     // directly give
