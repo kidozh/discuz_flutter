@@ -173,7 +173,6 @@ class MyApp extends StatelessWidget {
             ).harmonized(),
             useMaterial3: themeColorEntity.useMaterial3,
             textTheme: typography.black.useSystemChineseFont(Brightness.light),
-            
         );
 
         final materialThemeDataDark = ThemeData.from(
@@ -236,6 +235,7 @@ class MyApp extends StatelessWidget {
                 onThemeModeChanged: (themeMode) {
                   themeMode = themeMode;
                 },
+
                 builder: (context) => UpgradeAlert(
                   child: PlatformApp(
                     //title: S.of(context).appName,

@@ -13,6 +13,7 @@ import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -324,7 +325,15 @@ class DrawerState extends State<DrawerStatefulWidget> {
                         },
                         title: Text(S.of(context).incognitoTitle),
                         subtitle: Text(S.of(context).incognitoTitle),
-                        leading: Icon(Icons.person_pin));
+                        leading: CircleAvatar(
+                          backgroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+                          child: Icon(
+                            AppPlatformIcons(context).userIncognitoSolid,
+                            color: Theme.of(context).colorScheme.secondaryContainer,
+                            size: 24,
+                          ),
+                        )
+                    );
                   }
                 });
           }
@@ -349,12 +358,33 @@ class DrawerState extends State<DrawerStatefulWidget> {
             if (value.discuz == null || value.user == null) {
               return UserAccountsDrawerHeader(
                 margin: EdgeInsets.zero,
-                accountEmail: Text(S.of(context).incognitoSubtitle),
-                accountName: Text(S.of(context).incognitoTitle),
-                currentAccountPicture: Icon(
-                  Icons.person_pin,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondaryContainer
                 ),
+                accountEmail: Text(
+                  S.of(context).incognitoSubtitle,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSecondaryContainer
+                  ),
+
+                ),
+                accountName: Text(
+                  S.of(context).incognitoTitle,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                      fontWeight: FontWeight.bold
+                  ),
+                ),
+                currentAccountPictureSize: Size.square(64),
+                currentAccountPicture: CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+                  child: Icon(
+                    AppPlatformIcons(context).userIncognitoSolid,
+                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    size: 40,
+                  ),
+                ),
+                arrowColor: Theme.of(context).colorScheme.onSecondaryContainer,
                 onDetailsPressed: () {
                   setState(() {
                     _showUserDetail = !_showUserDetail;
@@ -364,14 +394,30 @@ class DrawerState extends State<DrawerStatefulWidget> {
             } else {
               return UserAccountsDrawerHeader(
                 margin: EdgeInsets.zero,
-                accountEmail: Text(value.user!.uid.toString()),
-                accountName: Text(value.user!.username),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary
+                ),
+                accountEmail: Text(
+                  value.user!.uid.toString(),
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary
+                  ),
+                ),
+                accountName: Text(
+                  value.user!.username,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontWeight: FontWeight.bold
+                  ),
+                ),
+                currentAccountPictureSize: Size.square(64),
                 currentAccountPicture: UserAvatar(
                   value.discuz!,
                   value.user!.uid,
                   value.user!.username,
                   size: 32,
                 ),
+                arrowColor: Theme.of(context).colorScheme.onPrimary,
                 onDetailsPressed: () {
                   setState(() {
                     _showUserDetail = !_showUserDetail;
