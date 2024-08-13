@@ -443,7 +443,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         key: UniqueKey(),
         icon: (_selecteddiscuz != null && _selecteddiscuz == discuz)
             ? PlatformIcons(context).checkMarkCircledSolid
-            : Icons.amp_stories,
+            : AppPlatformIcons(context).discuzSolid,
         color: (_selecteddiscuz != null && _selecteddiscuz == discuz)
             ? Theme.of(context).colorScheme.primary
             : Theme.of(context).unselectedWidgetColor,

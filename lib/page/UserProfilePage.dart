@@ -283,14 +283,13 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                             children: [
                               InkWell(
                                 child: Card(
-
                                   child: Padding(
                                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                     child: Column(
                                       children: [
                                         Text(S.of(context).userThread, style: Theme.of(context).textTheme.bodySmall,),
                                         Text(_userProfileResult!.variables.getSpace().threads.toString(),
-                                          style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer),)
+                                          style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Theme.of(context).colorScheme.primary),)
                                       ],
                                     ),
                                   ),
@@ -313,7 +312,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                                       children: [
                                         Text(S.of(context).userPost, style: Theme.of(context).textTheme.bodySmall,),
                                         Text(_userProfileResult!.variables.getSpace().posts.toString(),
-                                          style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer,))
+                                          style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Theme.of(context).colorScheme.primary,))
                                       ],
                                     ),
                                   ),
@@ -335,7 +334,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                                     children: [
                                       Text(S.of(context).userCredit, style: Theme.of(context).textTheme.bodySmall,),
                                       Text(_userProfileResult!.variables.getSpace().credits.toString(),
-                                        style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer))
+                                        style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Theme.of(context).colorScheme.primary))
                                     ],
                                   ),
                                 ),

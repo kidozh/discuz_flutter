@@ -156,4 +156,6 @@ class AppPlatformIcons{
   IconData get loginUserSuccessSolid => isMaterial(context)? Icons.check_circle : CupertinoIcons.person_crop_circle_badge_checkmark;
 
   IconData get userIncognitoSolid => isMaterial(context)? Icons.airplanemode_active : CupertinoIcons.eyeglasses;
+
+  IconData get discuzSolid => isMaterial(context)? Icons.amp_stories : Icons.amp_stories;
 }

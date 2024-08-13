@@ -10,6 +10,7 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
@@ -26,47 +27,57 @@ class PrivateMessagePortalWidget extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    int uid = 0;
+    if(user != null){
+      uid = user.uid;
+    }
 
-    return Container(
+    return PlatformWidgetBuilder(
+      material: (context, child, platform) => Card(
+        elevation: 4.0,
+        color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white10,
+        surfaceTintColor: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white10,
+        child: Padding(padding: EdgeInsets.all(4.0),
+          child: child,
+        ),
+      ),
+      cupertino: (context, child, platform) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if(child!=null)
+            child,
+          Divider()
+
+        ],
+      ),
       child: ListTile(
-        leading: InkWell(
-          child: ClipRRect(
+        leading: UserAvatar(_discuz,  _privateMessagePortal.toUid, _privateMessagePortal.toUserName, size: 36,),
 
-            borderRadius: BorderRadius.circular(10000.0),
-            child: CachedNetworkImage(
-              imageUrl: URLUtils.getAvatarURL(_discuz, _privateMessagePortal.msgFromId.toString()),
-              progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-              errorWidget: (context, url, error) =>
-                  CircleAvatar(
+        title: Text(_privateMessagePortal.subject,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 2,
+        ),
+        subtitle: Text(
+            "${_privateMessagePortal.msgFromName}: ${_privateMessagePortal.message}",
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+        ),
 
-                    backgroundColor: CustomizeColor.getColorBackgroundById(_privateMessagePortal.msgFromId),
-                    child: Text(_privateMessagePortal.msgFromName.length !=0 ? _privateMessagePortal.msgFromName[0].toUpperCase()
-                        : S.of(context).anonymous,
-                        style: TextStyle(color: Colors.white)),
-                  )
-              ,
-            ),
-          ),
-          onTap: () async{
-            User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-            VibrationUtils.vibrateWithClickIfPossible();
-            await Navigator.push(
-                context,
-                platformPageRoute(context:context,builder: (context) => UserProfilePage(_discuz,user, _privateMessagePortal.msgFromId)));
-          },
-        ),
-        title: Text(_privateMessagePortal.message,style: TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: RichText(
-          text: TextSpan(
-            text: _privateMessagePortal.msgFromName,
-            style: DefaultTextStyle.of(context).style,
-            children: <TextSpan>[
-              //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
-              TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
-              TextSpan(text: _privateMessagePortal.readableString),
-            ],
-          ),
-        ),
+        // subtitle: RichText(
+        //   text: TextSpan(
+        //     text: "${_privateMessagePortal.msgFromName}:${_privateMessagePortal.message}",
+        //     style: DefaultTextStyle.of(context).style,
+        //     children: <TextSpan>[
+        //       TextSpan(text: "\n"),
+        //       TextSpan(text: _privateMessagePortal.toUserName),
+        //       //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
+        //       TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
+        //       TextSpan(text: _privateMessagePortal.readableString),
+        //     ],
+        //   ),
+        // ),
         trailing: _privateMessagePortal.isNew ? Icon(Icons.new_releases_outlined, color: Theme.of(context).colorScheme.primary,) :null,
         onTap: () async {
           VibrationUtils.vibrateWithClickIfPossible();

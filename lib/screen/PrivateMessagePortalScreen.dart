@@ -175,12 +175,7 @@ class _PrivateMessagePortalState
                 },
                 child: ListView.builder(
                   itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        PrivateMessagePortalWidget(discuzAndUser.discuz!, discuzAndUser.user, _pmList[index]),
-                        Divider()
-                      ],
-                    );
+                    return PrivateMessagePortalWidget(discuzAndUser.discuz!, discuzAndUser.user, _pmList[index]);
                   },
                   itemCount: _pmList.length,
                 ),
