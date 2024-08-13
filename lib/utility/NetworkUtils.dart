@@ -45,7 +45,7 @@ class NetworkUtils{
       return Dio();
     }
     else{
-      var dio =  Dio();
+      var dio = Dio();
       PersistCookieJar cookieJar = await getPersistentCookieJarByUser(user);
       dio.interceptors.add(CookieManager(cookieJar));
       return dio;
