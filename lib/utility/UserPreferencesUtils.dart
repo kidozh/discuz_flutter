@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../entity/User.dart';
+
 class UserPreferencesUtils{
   static final String recordHistoryKey = "recordHistoryKey";
 
@@ -611,5 +613,17 @@ class UserPreferencesUtils{
     await prefs.setString(discuzSmileyCacheJsonKey, value);
   }
 
+  static Future<String> getDiscuzPrivateMessageResultCacheJson(Discuz discuz, User user) async {
+    String discuzSmileyCacheJsonKey = "discuz_private_message_caches_${discuz.baseURL}_${user.uid}";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var string =  prefs.getString(discuzSmileyCacheJsonKey);
+    return string == null? "": string;
+  }
+
+  static Future<void> putDiscuzPrivateMessageResultCacheJson(Discuz discuz, User user,String value) async{
+    String discuzSmileyCacheJsonKey = "discuz_private_message_caches_${discuz.baseURL}_${user.uid}";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(discuzSmileyCacheJsonKey, value);
+  }
 
 }

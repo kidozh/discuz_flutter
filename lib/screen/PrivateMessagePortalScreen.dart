@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -20,13 +21,13 @@ import 'package:provider/provider.dart';
 
 import '../provider/DiscuzNotificationProvider.dart';
 import '../utility/EasyRefreshUtils.dart';
+import '../utility/UserPreferencesUtils.dart';
 
 class PrivateMessagePortalScreen extends StatelessWidget {
   PrivateMessagePortalScreen();
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return PrivateMessagePortalStatefulWidget();
   }
 }
@@ -54,10 +55,35 @@ class _PrivateMessagePortalState
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    _loadPrivateMessageCache();
     _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
+  }
+  
+  Future<void> _loadPrivateMessageCache() async{
+    log("Load private message cache");
+    Discuz? discuz =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    if(discuz!= null && user!= null){
+      String jsonString = await UserPreferencesUtils.getDiscuzPrivateMessageResultCacheJson(discuz, user!);
+      try{
+        PrivateMessagePortalResult cacheResult = PrivateMessagePortalResult.fromJson(jsonDecode(jsonString));
+        log("Set state ->");
+        setState(() {
+          result = cacheResult;
+          _pmList = cacheResult.variables.pmList;
+        });
+      }
+      catch(e,s){
 
+        log(e.toString());
+      }
+      log("Load private message string -> ${jsonString}");
+
+    }
+    
   }
 
   Future<IndicatorResult> _invalidateHotThreadContent(Discuz discuz) async {
@@ -78,12 +104,18 @@ class _PrivateMessagePortalState
     //
     // });
     Provider.of<DiscuzNotificationProvider>(context, listen: false).setNotificationCount(result.variables.noticeCount);
-    if(result.variables.count != 0 && _pmList.length >= result.variables.count){
-      _controller.finishLoad(IndicatorResult.noMore);
-      return IndicatorResult.noMore;
+    // if(result.variables.count != 0 && _pmList.length >= result.variables.count){
+    //   _controller.finishLoad(IndicatorResult.noMore);
+    //   return IndicatorResult.noMore;
+    // }
+    
+    if(user == null){
+      return IndicatorResult.fail;
     }
 
-    return await _client.privateMessagePortalResult(_page).then((value) {
+    return await _client.privateMessagePortalResult(_page).then((value) async{
+      String cacheString = jsonEncode(value.toJson());
+      await UserPreferencesUtils.putDiscuzPrivateMessageResultCacheJson(discuz, user!, cacheString);
       setState(() {
         result = value;
         _error = null;
@@ -93,11 +125,13 @@ class _PrivateMessagePortalState
           _pmList.addAll(value.variables.pmList);
         }
       });
+
       _page += 1;
       _controller.finishRefresh();
 
+
       // check for loaded all?
-      log("Get HotThread ${_pmList.length} ${value.variables.count}");
+      log("Get pm list ${_pmList.length} ${value.variables.count}");
       _controller.finishLoad(_pmList.length >= value.variables.count
           ? IndicatorResult.noMore
           : IndicatorResult.success);

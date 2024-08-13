@@ -158,4 +158,6 @@ class AppPlatformIcons{
   IconData get userIncognitoSolid => isMaterial(context)? Icons.airplanemode_active : CupertinoIcons.eyeglasses;
 
   IconData get discuzSolid => isMaterial(context)? Icons.amp_stories : Icons.amp_stories;
+
+  IconData get userProfileSolid => isMaterial(context)? Icons.person_outline : CupertinoIcons.person_crop_circle;
 }

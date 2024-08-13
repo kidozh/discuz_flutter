@@ -21,6 +21,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../utility/AppPlatformIcons.dart';
 import '../utility/EasyRefreshUtils.dart';
 import 'UserProfilePage.dart';
 
@@ -71,7 +72,6 @@ class _PrivateMessageDetailState
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
 
@@ -219,8 +219,8 @@ class _PrivateMessageDetailState
         appBar: PlatformAppBar(
           title: Text(toUsername),
           trailingActions: [
-            PlatformIconButton(
-              icon: Icon(PlatformIcons(context).ellipsis),
+            IconButton(
+              icon: Icon(AppPlatformIcons(context).userProfileSolid, size: 28,),
               onPressed: () {
                 Navigator.push(
                     context,

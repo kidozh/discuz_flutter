@@ -38,7 +38,7 @@ class PrivateMessagePortalWidget extends StatelessWidget{
         elevation: 4.0,
         color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white10,
         surfaceTintColor: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white10,
-        child: Padding(padding: EdgeInsets.all(4.0),
+        child: Padding(padding: EdgeInsets.zero,
           child: child,
         ),
       ),
@@ -52,16 +52,22 @@ class PrivateMessagePortalWidget extends StatelessWidget{
 
         ],
       ),
-      child: ListTile(
-        leading: UserAvatar(_discuz,  _privateMessagePortal.toUid, _privateMessagePortal.toUserName, size: 36,),
+      child: PlatformListTile(
+        leading: UserAvatar(_discuz,  _privateMessagePortal.toUid, _privateMessagePortal.toUserName, size: 48,),
 
         title: Text(_privateMessagePortal.subject,
           overflow: TextOverflow.ellipsis,
-          maxLines: 2,
+          style: TextStyle(
+            fontWeight: FontWeight.bold
+          ),
+          maxLines: 1,
         ),
         subtitle: Text(
             "${_privateMessagePortal.msgFromName}: ${_privateMessagePortal.message}",
             overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontWeight: FontWeight.w300
+            ),
             maxLines: 1,
         ),
 

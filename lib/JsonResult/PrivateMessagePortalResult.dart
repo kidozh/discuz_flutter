@@ -17,6 +17,7 @@ class PrivateMessagePortalResult extends BaseResult{
   PrivateMessagePortalResult(){}
 
   factory PrivateMessagePortalResult.fromJson(Map<String, dynamic> json) => _$PrivateMessagePortalResultFromJson(json);
+  Map<String, dynamic> toJson() => _$PrivateMessagePortalResultToJson(this);
 }
 
 @JsonSerializable()
@@ -33,7 +34,7 @@ class PrivateMessagePortalVariables extends BaseVariableResult{
 
   PrivateMessagePortalVariables(){}
   factory PrivateMessagePortalVariables.fromJson(Map<String, dynamic> json) => _$PrivateMessagePortalVariablesFromJson(json);
-
+  Map<String, dynamic> toJson() => _$PrivateMessagePortalVariablesToJson(this);
 }
 
 @JsonSerializable()
@@ -67,5 +68,6 @@ class PrivateMessagePortal{
   PrivateMessagePortal();
 
   factory PrivateMessagePortal.fromJson(Map<String, dynamic> json) => _$PrivateMessagePortalFromJson(json);
+  Map<String, dynamic> toJson() => _$PrivateMessagePortalToJson(this);
 }
 
