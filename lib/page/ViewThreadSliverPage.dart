@@ -27,6 +27,7 @@ import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/screen/ExtraFuncInThreadScreen.dart';
 import 'package:discuz_flutter/screen/SmileyListScreen.dart';
+import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
@@ -157,6 +158,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     // set reply post as null
     Provider.of<ReplyPostNotifierProvider>(context, listen: false)
         .setPost(null);
+
   }
 
   void _loadDao() async {
@@ -729,6 +731,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
   @override
   Widget build(BuildContext context) {
+    CustomizeColor.updateAndroidNavigationbar(context);
     return PlatformScaffold(
       appBar: PlatformAppBar(
         automaticallyImplyLeading: this.onClosed == null ? true : false,

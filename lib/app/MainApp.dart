@@ -42,6 +42,7 @@ import 'package:upgrader/upgrader.dart';
 import '../main.dart';
 import '../provider/SelectedTidNotifierProvider.dart';
 import '../screen/TwoPaneEmptyScreen.dart';
+import '../utility/CustomizeColor.dart';
 import '../utility/TwoPaneScaffold.dart';
 import '../utility/TwoPaneUtils.dart';
 import '../widget/DiscuzNotificationAppbarIconWidget.dart';
@@ -130,6 +131,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     _loadPreference(context);
     //_listenToChanges(context);
+    CustomizeColor.updateAndroidNavigationbar(context);
     return Consumer<ThemeNotifierProvider>(
       builder: (context, themeColorEntity, _) {
         ThemeMode? themeMode = null;
@@ -373,7 +375,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     _checkAcceptVersionFlag(context);
     setupInteractedMessage();
     reportDiscuzListToAnalytics();
+
   }
+
+
 
   Future<void> _checkAcceptVersionFlag(BuildContext context) async {
     String flag = await UserPreferencesUtils.getAcceptVersionCodeFlag();
@@ -556,6 +561,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     if (user == null && _bottomNavigationbarIndex >= 2) {
       _bottomNavigationbarIndex = 0;
     }
+    CustomizeColor.updateAndroidNavigationbarColorWithDashboard(context);
+
 
     return PlatformScaffold(
       //iosContentPadding: true,

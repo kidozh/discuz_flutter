@@ -21,7 +21,7 @@ class DashboardScreen extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    CustomizeColor.updateAndroidNavigationbar(context);
+
     return Consumer<DiscuzAndUserNotifier>(
       builder: (BuildContext context, DiscuzAndUserNotifier value, Widget? child) {
         if(value.discuz == null){

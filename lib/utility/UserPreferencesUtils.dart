@@ -488,7 +488,7 @@ class UserPreferencesUtils{
   static final String interfaceDynamicSchemeVariantPreferenceKey = "interfaceDynamicSchemeVariantPreferenceKey";
   static Future<void> putInterfaceDynamicSchemeVariantPreference(DynamicSchemeVariant dynamicVariant) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String dynamicVariantString = "fidelity";
+    String dynamicVariantString = "totalSpot";
     switch (dynamicVariant){
 
       case DynamicSchemeVariant.tonalSpot:{

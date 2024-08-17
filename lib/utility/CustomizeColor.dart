@@ -31,7 +31,18 @@ class CustomizeColor{
   static void updateAndroidNavigationbar(BuildContext context){
     if(Platform.isAndroid){
       SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-          systemNavigationBarColor: Theme.of(context).colorScheme.surfaceContainer,
+          systemNavigationBarColor: Theme.of(context).colorScheme.surface,
+          systemNavigationBarIconBrightness: Theme.of(context).brightness,
+          systemNavigationBarDividerColor: Colors.transparent
+      ));
+    }
+  }
+
+
+  static void updateAndroidNavigationbarColorWithDashboard(BuildContext context){
+    if(Platform.isAndroid){
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+          systemNavigationBarColor: Theme.of(context).colorScheme.primary,
           systemNavigationBarIconBrightness: Theme.of(context).brightness,
           systemNavigationBarDividerColor: Colors.transparent
       ));
