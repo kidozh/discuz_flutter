@@ -101,13 +101,20 @@ class _ChooseAdExemptState extends State<ChooseAdExemptPage> {
                           title: Text(discuz.siteName),
                           trailing: _adExemptHost == discuz.host? Icon(AppPlatformIcons(context).check): null,
                           onPressed: (context){
+                            VibrationUtils.vibrateWithClickIfPossible();
+                            String adExemptHost = "";
+                            if(_adExemptHost == discuz.host){
+                              adExemptHost = "";
+                            }
+                            else{
+                              adExemptHost = discuz.host;
+                            }
                             setState(() {
-                              VibrationUtils.vibrateWithClickIfPossible();
-                              _adExemptHost = discuz.host;
+                              _adExemptHost = adExemptHost;
                               log("Set advertisement ${_adExemptHost}");
                             });
-                            UserPreferencesUtils.putAdExemptDiscuzHostPreference(discuz.host);
-                            Provider.of<UserPreferenceNotifierProvider>(context,listen: false).adExemptHost = discuz.host;
+                            UserPreferencesUtils.putAdExemptDiscuzHostPreference(adExemptHost);
+                            Provider.of<UserPreferenceNotifierProvider>(context,listen: false).adExemptHost = adExemptHost;
                           },
                       )
               ).toList()
