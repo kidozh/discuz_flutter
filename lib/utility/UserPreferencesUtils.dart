@@ -626,4 +626,17 @@ class UserPreferencesUtils{
     await prefs.setString(discuzSmileyCacheJsonKey, value);
   }
 
+  static final String adExemptDiscuzHostPreferenceKey = "adExemptDiscuzHostPreferenceKey";
+
+  static Future<void> putAdExemptDiscuzHostPreference(String value) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(adExemptDiscuzHostPreferenceKey, value);
+  }
+
+  static Future<String> getAdExemptDiscuzHostPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? value =  prefs.getString(adExemptDiscuzHostPreferenceKey);
+    return value == null? "": value;
+  }
+
 }

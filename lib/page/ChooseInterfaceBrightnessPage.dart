@@ -18,7 +18,6 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 

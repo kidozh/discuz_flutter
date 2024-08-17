@@ -794,7 +794,7 @@
   "compactTypography": "紧凑文本段落",
   "signatureWithDisFly": "使用应用名称",
   "signatureSupportUS": "支持我们",
-  "fromAppSignature": "消息由 {device} 的 [url=https://discuzhub.kidozh.com/]谈坛（v{version}）[/url]发出。",
+  "fromAppSignature": "--- 消息由 {device} 的 [url=https://discuzhub.kidozh.com/]谈坛（v{version}）[/url]发出。",
   "@fromAppSignature": {
     "placeholders": {
       "device": {},
@@ -843,5 +843,11 @@
   "adminWarnPost": "警告",
   "adminUnwarnPost": "解除警告",
   "adminDeletePost": "删除帖子",
-  "stickyThread": "置顶帖"
+  "stickyThread": "置顶帖",
+  "adExemptTitle": "免广告设置",
+  "adExemptDescription": "你可以额外选择一个论坛豁免广告。",
+  "adExemptCondition": "感谢您使用应用小尾巴，你可以选择一个论坛不显示其所有的广告。",
+  "adExemptEmbeddedList": "下列Discuz论坛已经内置于广告白名单中。",
+  "adExemptNeedConfirm": "选择下列论坛免广告",
+  "adExemptNoNeedToConfirm": "目前还没有需要免广告的论坛站点"
 }

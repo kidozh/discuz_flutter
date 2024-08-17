@@ -793,7 +793,7 @@
   "compactTypography": "Compact paragraph",
   "signatureWithDisFly": "Use app signature",
   "signatureSupportUS": "Support us",
-  "fromAppSignature": "Sent by {device}'s [url=https://discuzhub.kidozh.com/]DisFly[/url] v{version}.",
+  "fromAppSignature": "- Sent by {device}'s [url=https://discuzhub.kidozh.com/]DisFly[/url] v{version}.",
   "@fromAppSignature": {
     "placeholders": {
       "device": {},
@@ -842,5 +842,11 @@
   "adminWarnPost": "Warn",
   "adminUnwarnPost": "Redo warn",
   "adminDeletePost": "Delete",
-  "stickyThread": "Pinned thread"
+  "stickyThread": "Pinned thread",
+  "adExemptTitle": "AD exempt",
+  "adExemptDescription": "You can choose one discuz to exempt its advertisement by App.",
+  "adExemptCondition": "As a gift, you can opt one discuz forum out of advertisement.",
+  "adExemptEmbeddedList": "The following discuz forums have already been exempted out of advertisement.",
+  "adExemptNeedConfirm": "Choose one discuz to exempt AD",
+  "adExemptNoNeedToConfirm": "There is no discuz forum needs to opt out of advertisement"
 }

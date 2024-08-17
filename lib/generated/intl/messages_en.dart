@@ -57,7 +57,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m16(size) => "x ${size}";
 
   static String m17(device, version) =>
-      "Sent by ${device}\'s [url=https://discuzhub.kidozh.com/]DisFly[/url] v${version}.";
+      "- Sent by ${device}\'s [url=https://discuzhub.kidozh.com/]DisFly[/url] v${version}.";
 
   static String m18(device) => "Sent by ${device}.";
 
@@ -137,6 +137,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "acknowledgeAppSignatureAndAdDiminish":
             MessageLookupByLibrary.simpleMessage(
                 "Thank you for letting our app heard by more people. The number of inline app will be reduced to appreciate your assistance."),
+        "adExemptCondition": MessageLookupByLibrary.simpleMessage(
+            "As a gift, you can opt one discuz forum out of advertisement."),
+        "adExemptDescription": MessageLookupByLibrary.simpleMessage(
+            "You can choose one discuz to exempt its advertisement by App."),
+        "adExemptEmbeddedList": MessageLookupByLibrary.simpleMessage(
+            "The following discuz forums have already been exempted out of advertisement."),
+        "adExemptNeedConfirm": MessageLookupByLibrary.simpleMessage(
+            "Choose one discuz to exempt AD"),
+        "adExemptNoNeedToConfirm": MessageLookupByLibrary.simpleMessage(
+            "There is no discuz forum needs to opt out of advertisement"),
+        "adExemptTitle": MessageLookupByLibrary.simpleMessage("AD exempt"),
         "adLoadingText":
             MessageLookupByLibrary.simpleMessage("AD provided by Google"),
         "addAPhoto": MessageLookupByLibrary.simpleMessage("Photo"),

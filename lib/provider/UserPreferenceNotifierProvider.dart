@@ -26,5 +26,15 @@ class UserPreferenceNotifierProvider with ChangeNotifier{
     notifyListeners();
   }
 
+  String _adExemptHost = "";
+
+  String get adExemptHost => _adExemptHost;
+
+  set adExemptHost(String value){
+    _adExemptHost = value;
+    notifyListeners();
+  }
+
+
   UserPreferenceNotifierProvider();
 }

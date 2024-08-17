@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../entity/Discuz.dart';
 import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
+import '../provider/UserPreferenceNotifierProvider.dart';
 
 class AppBannerAdWidget extends StatefulWidget{
   @override
@@ -39,7 +40,6 @@ class AppBannerAdState extends State<AppBannerAdWidget>{
     }
 
     _anchoredAdaptiveAd = BannerAd(
-      // TODO: replace these test ad units with your own ad unit.
       adUnitId: AdHelper.bannerAdUnitTestId,
       size: size,
       request: AdRequest(),
@@ -66,10 +66,11 @@ class AppBannerAdState extends State<AppBannerAdWidget>{
   @override
   Widget build(BuildContext context) {
     Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    String adExemptHost = Provider.of<UserPreferenceNotifierProvider>(context,listen: false).adExemptHost;
     if(discuz!= null){
       // check with list
       Uri uri = Uri.parse(discuz.baseURL);
-      if (AdHelper.adWhiteDiscuzHostList.contains(uri.host) && true){
+      if (AdHelper.adWhiteDiscuzHostList.contains(uri.host) || adExemptHost == uri.host){
         // not showing ad
         return Container();
       }

@@ -5371,10 +5371,10 @@ class S {
     );
   }
 
-  /// `Sent by {device}'s [url=https://discuzhub.kidozh.com/]DisFly[/url] v{version}.`
+  /// `- Sent by {device}'s [url=https://discuzhub.kidozh.com/]DisFly[/url] v{version}.`
   String fromAppSignature(Object device, Object version) {
     return Intl.message(
-      'Sent by $device\'s [url=https://discuzhub.kidozh.com/]DisFly[/url] v$version.',
+      '- Sent by $device\'s [url=https://discuzhub.kidozh.com/]DisFly[/url] v$version.',
       name: 'fromAppSignature',
       desc: '',
       args: [device, version],
@@ -5806,6 +5806,66 @@ class S {
     return Intl.message(
       'Pinned thread',
       name: 'stickyThread',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `AD exempt`
+  String get adExemptTitle {
+    return Intl.message(
+      'AD exempt',
+      name: 'adExemptTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You can choose one discuz to exempt its advertisement by App.`
+  String get adExemptDescription {
+    return Intl.message(
+      'You can choose one discuz to exempt its advertisement by App.',
+      name: 'adExemptDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `As a gift, you can opt one discuz forum out of advertisement.`
+  String get adExemptCondition {
+    return Intl.message(
+      'As a gift, you can opt one discuz forum out of advertisement.',
+      name: 'adExemptCondition',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The following discuz forums have already been exempted out of advertisement.`
+  String get adExemptEmbeddedList {
+    return Intl.message(
+      'The following discuz forums have already been exempted out of advertisement.',
+      name: 'adExemptEmbeddedList',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose one discuz to exempt AD`
+  String get adExemptNeedConfirm {
+    return Intl.message(
+      'Choose one discuz to exempt AD',
+      name: 'adExemptNeedConfirm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There is no discuz forum needs to opt out of advertisement`
+  String get adExemptNoNeedToConfirm {
+    return Intl.message(
+      'There is no discuz forum needs to opt out of advertisement',
+      name: 'adExemptNoNeedToConfirm',
       desc: '',
       args: [],
     );

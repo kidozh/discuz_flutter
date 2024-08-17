@@ -56,7 +56,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m16(size) => "${size}倍";
 
   static String m17(device, version) =>
-      "消息由 ${device} 的 [url=https://discuzhub.kidozh.com/]谈坛（v${version}）[/url]发出。";
+      "--- 消息由 ${device} 的 [url=https://discuzhub.kidozh.com/]谈坛（v${version}）[/url]发出。";
 
   static String m18(device) => "消息由${device}发出。";
 
@@ -133,6 +133,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "acknowledgeAppSignatureAndAdDiminish":
             MessageLookupByLibrary.simpleMessage(
                 "感谢您使用带有应用标签的小尾巴。应用内的广告会被减少展示。"),
+        "adExemptCondition": MessageLookupByLibrary.simpleMessage(
+            "感谢您使用应用小尾巴，你可以选择一个论坛不显示其所有的广告。"),
+        "adExemptDescription":
+            MessageLookupByLibrary.simpleMessage("你可以额外选择一个论坛豁免广告。"),
+        "adExemptEmbeddedList":
+            MessageLookupByLibrary.simpleMessage("下列Discuz论坛已经内置于广告白名单中。"),
+        "adExemptNeedConfirm":
+            MessageLookupByLibrary.simpleMessage("选择下列论坛免广告"),
+        "adExemptNoNeedToConfirm":
+            MessageLookupByLibrary.simpleMessage("目前还没有需要免广告的论坛站点"),
+        "adExemptTitle": MessageLookupByLibrary.simpleMessage("免广告设置"),
         "adLoadingText":
             MessageLookupByLibrary.simpleMessage("由Google提供的广告，与论坛无关。"),
         "addAPhoto": MessageLookupByLibrary.simpleMessage("照片"),

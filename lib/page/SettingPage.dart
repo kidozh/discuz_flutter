@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/page/ChooseAdExemptPage.dart';
 import 'package:discuz_flutter/page/ChooseDynamicSchemeVariantPage.dart';
 import 'package:discuz_flutter/page/ChooseInterfaceBrightnessPage.dart';
 import 'package:discuz_flutter/page/ChoosePlatformPage.dart';
@@ -251,16 +252,6 @@ class _SettingPageState extends State<SettingPage> {
                 SettingsTile.navigation(
                   title: Text(S.of(context).signatureStyle),
                   leading: Icon(AppPlatformIcons(context).signatureOutlined),
-                  description: Consumer<UserPreferenceNotifierProvider>(
-                     builder: (context, userPreference, child){
-                       if(userPreference.signature == PostTextFieldUtils.USE_APP_SIGNATURE){
-                       return Text(S.of(context).acknowledgeAppSignatureAndAdDiminish);
-                       }
-                       else{
-                         return Text("");
-                       }
-
-                     }),
                   value: Consumer<UserPreferenceNotifierProvider>(
                     builder: (context, userPreference, child){
                       if(userPreference.signature == PostTextFieldUtils.NO_SIGNATURE){
@@ -285,6 +276,31 @@ class _SettingPageState extends State<SettingPage> {
                     ));
                   },
                 ),
+                CustomSettingsTile(
+                    child: Consumer<UserPreferenceNotifierProvider>(
+                      builder: (context, userPreference, child){
+                        if(userPreference.signature == PostTextFieldUtils.USE_APP_SIGNATURE){
+                          return SettingsTile.navigation(
+                            leading: Icon(AppPlatformIcons(context).advertisementExemptSolid),
+                            title: Text(S.of(context).adExemptTitle),
+                            description: Text(S.of(context).adExemptDescription),
+                            value: Text(userPreference.adExemptHost),
+                            onPressed: (context) {
+                              VibrationUtils.vibrateWithClickIfPossible();
+                              Navigator.of(context).push(platformPageRoute(
+                                builder: (_) => ChooseAdExemptPage(),
+                                context: context,
+                              ));
+                            },
+                          );
+                        }
+                        else {
+                          return Container();
+                        }
+                      },
+                    )
+                ),
+
                 // SettingsTile.navigation(
                 //   title: Text(S.of(context).pictureBedTitle),
                 //   leading: Icon(AppPlatformIcons(context).pictureBedOutlined),

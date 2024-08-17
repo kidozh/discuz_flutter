@@ -70,6 +70,7 @@ class MyApp extends StatelessWidget {
         await UserPreferencesUtils.getUseCompactParagraphPreference();
     DynamicSchemeVariant dynamicSchemeVariant =
         await UserPreferencesUtils.getInterfaceDynamicSchemeVariantPreference();
+    String adExemptHost = await UserPreferencesUtils.getAdExemptDiscuzHostPreference();
 
     Provider.of<ThemeNotifierProvider>(context, listen: false)
         .setTheme(colorName);
@@ -89,6 +90,8 @@ class MyApp extends StatelessWidget {
         .signature = signature;
     Provider.of<DiscuzNotificationProvider>(context, listen: false)
         .setNotificationCount(NoticeCount());
+
+    Provider.of<UserPreferenceNotifierProvider>(context, listen: false).adExemptHost = adExemptHost;
 
     if (typography != null) {
       Provider.of<TypeSettingNotifierProvider>(context, listen: false)

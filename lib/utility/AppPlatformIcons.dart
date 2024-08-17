@@ -160,4 +160,8 @@ class AppPlatformIcons{
   IconData get discuzSolid => isMaterial(context)? Icons.amp_stories : Icons.amp_stories;
 
   IconData get userProfileSolid => isMaterial(context)? Icons.person_outline : CupertinoIcons.person_crop_circle;
+
+  IconData get advertisementExemptSolid => isMaterial(context)? Icons.card_giftcard : CupertinoIcons.minus_slash_plus;
+
+  IconData get advertisementExemptCheckSolid => isMaterial(context)? Icons.verified : CupertinoIcons.checkmark_seal_fill;
 }
