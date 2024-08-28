@@ -507,7 +507,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                         text: shortReply.author,
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.secondary,
+                            color: Theme.of(context).colorScheme.onSecondaryContainer,
                              )),
                     TextSpan(text: ': '),
                     TextSpan(

@@ -171,13 +171,13 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
           title: Text(S.of(context).viewHistory),
           automaticallyImplyLeading: true,
           trailingActions: [
-            PlatformIconButton(
+            IconButton(
               onPressed: () {
                 VibrationUtils.vibrateWithClickIfPossible();
                 _showDeleteAllDialog(context);
               },
               //label: S.of(context).clearAllViewHistories,
-              icon: Icon(PlatformIcons(context).deleteSolid),
+              icon: Icon(AppPlatformIcons(context).deleteSolid, size: isCupertino(context)? 24: null,),
             )
           ],
         ),

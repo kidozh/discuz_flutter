@@ -25,7 +25,7 @@ class DiscuzNotificationAppbarIconWidget extends StatelessWidget{
             icon: Badge.count(
                 count: discuzNotification.noticeCount.newprompt + discuzNotification.noticeCount.newmypost,
                 alignment: AlignmentDirectional.topEnd,
-                child: Icon(AppPlatformIcons(context).notificationSolid),
+                child: Icon(AppPlatformIcons(context).notificationSolid, size: isCupertino(context)? 18 : 24,),
             ),
             onPressed: () async {
                 // go to notification

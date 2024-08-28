@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
@@ -277,7 +279,7 @@ class PostState extends State<PostStatefulWidget> {
 
   Widget getPostContent(BuildContext context, bool compactParagraph) {
     String _html = _post.message;
-
+    log("Original HTML ${_html}");
 
     if (this.isFontStyleIgnored()) {
       // regex
@@ -290,16 +292,30 @@ class PostState extends State<PostStatefulWidget> {
       _html = PostTextUtils.decodePostMessage(_html);
     }
 
+
     if(compactParagraph){
+      _html = _html.replaceAll(RegExp("[\r\n]+"), "");
       _html = _html
-          .replaceAll(RegExp(r"<br.?/>[(<br.?/>)]+", multiLine: true), "<br />")
+          .replaceAll(RegExp(r"<br.?/>(<br.?/>)+", multiLine: true), "<br />")
           //.replaceAll(RegExp(r"\s+$"), "")
           //.replaceAll(RegExp(r"[(<br.?/>)]+$"), "")
       ;
-      _html = _html.replaceAll(RegExp(r"(<br />)+$"), "");
+
+      _html = _html.replaceAllMapped(RegExp("<br\\W+/>"), (match){
+        print("match! ${match.group(0)} ${match.end} ${_html.length}");
+        if(_html.length - match.end < 3){
+          return "";
+        }
+        else{
+          return "<br />";
+        }
+      });
+
+      // _html = _html.replaceAll(RegExp(r"<br.?/>$"), "");
       _html = _html.replaceAll(RegExp(r"\s+$"), "");
     }
 
+    log("AFTER HTML ${_html}");
 
 
     return Column(
@@ -329,6 +345,7 @@ class PostState extends State<PostStatefulWidget> {
               ),
               if (_post.attachmentMapper.isNotEmpty)
                 ListView.builder(
+                  padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
                     Attachment attachment = _post.getAttachmentList()[index];
                     return AttachmentWidget(_discuz, attachment);
@@ -344,7 +361,7 @@ class PostState extends State<PostStatefulWidget> {
                     padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                        color: Theme.of(context).disabledColor.withOpacity(0.04),
+                        color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.1),
                         // boxShadow: [
                         //   if(isMaterial(context))
                         //     BoxShadow(

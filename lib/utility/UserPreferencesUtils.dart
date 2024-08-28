@@ -490,7 +490,6 @@ class UserPreferencesUtils{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String dynamicVariantString = "totalSpot";
     switch (dynamicVariant){
-
       case DynamicSchemeVariant.tonalSpot:{
         dynamicVariantString = "totalSpot";
         break;
@@ -551,7 +550,7 @@ class UserPreferencesUtils{
       case "rainbow" : return DynamicSchemeVariant.rainbow;
       case "fruitSalad" : return DynamicSchemeVariant.fruitSalad;
       default:
-        return DynamicSchemeVariant.fidelity;
+        return DynamicSchemeVariant.tonalSpot;
     }
   }
 

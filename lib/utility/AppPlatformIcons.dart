@@ -164,4 +164,6 @@ class AppPlatformIcons{
   IconData get advertisementExemptSolid => isMaterial(context)? Icons.card_giftcard : CupertinoIcons.minus_slash_plus;
 
   IconData get advertisementExemptCheckSolid => isMaterial(context)? Icons.verified : CupertinoIcons.checkmark_seal_fill;
+
+  IconData get deleteSolid => isMaterial(context)? Icons.delete_forever : CupertinoIcons.delete_left_fill;
 }
