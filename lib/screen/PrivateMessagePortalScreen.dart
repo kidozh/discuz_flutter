@@ -67,7 +67,7 @@ class _PrivateMessagePortalState
     User? user =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     if(discuz!= null && user!= null){
-      String jsonString = await UserPreferencesUtils.getDiscuzPrivateMessageResultCacheJson(discuz, user!);
+      String jsonString = await UserPreferencesUtils.getDiscuzPrivateMessageResultCacheJson(discuz, user);
       try{
         PrivateMessagePortalResult cacheResult = PrivateMessagePortalResult.fromJson(jsonDecode(jsonString));
         log("Set state ->");
@@ -76,7 +76,7 @@ class _PrivateMessagePortalState
           _pmList = cacheResult.variables.pmList;
         });
       }
-      catch(e,s){
+      catch(e){
 
         log(e.toString());
       }
@@ -115,7 +115,7 @@ class _PrivateMessagePortalState
 
     return await _client.privateMessagePortalResult(_page).then((value) async{
       String cacheString = jsonEncode(value.toJson());
-      await UserPreferencesUtils.putDiscuzPrivateMessageResultCacheJson(discuz, user!, cacheString);
+      await UserPreferencesUtils.putDiscuzPrivateMessageResultCacheJson(discuz, user, cacheString);
       setState(() {
         result = value;
         _error = null;
@@ -137,7 +137,7 @@ class _PrivateMessagePortalState
           : IndicatorResult.success);
 
 
-      if (user != null && value.variables.member_uid != user.uid) {
+      if (value.variables.member_uid != user.uid) {
         setState(() {
           _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
               S.of(context).userExpiredSubtitle);

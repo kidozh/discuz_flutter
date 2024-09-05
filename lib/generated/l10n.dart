@@ -2921,10 +2921,10 @@ class S {
     );
   }
 
-  /// `Send compressed image(Recommended)`
+  /// `Send compressed image`
   String get uploadCompressedImageToServer {
     return Intl.message(
-      'Send compressed image(Recommended)',
+      'Send compressed image',
       name: 'uploadCompressedImageToServer',
       desc: '',
       args: [],
@@ -5866,6 +5866,46 @@ class S {
     return Intl.message(
       'There is no discuz forum needs to opt out of advertisement',
       name: 'adExemptNoNeedToConfirm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The attachment is too large`
+  String get attachmentUploadExceedingSizeTitle {
+    return Intl.message(
+      'The attachment is too large',
+      name: 'attachmentUploadExceedingSizeTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The attachment shall be compressed to be accepted by the forum.`
+  String get attachmentUploadExceedingSizeDescription {
+    return Intl.message(
+      'The attachment shall be compressed to be accepted by the forum.',
+      name: 'attachmentUploadExceedingSizeDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unable to recognise the discuz!`
+  String get addDiscuzApiBrowseUnsuccessfully {
+    return Intl.message(
+      'Unable to recognise the discuz!',
+      name: 'addDiscuzApiBrowseUnsuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The mobile plugin is not recognisable.`
+  String get addDiscuzApiParseUnsuccessfully {
+    return Intl.message(
+      'The mobile plugin is not recognisable.',
+      name: 'addDiscuzApiParseUnsuccessfully',
       desc: '',
       args: [],
     );

@@ -1,5 +1,6 @@
 
 
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:discuz_flutter/JsonResult/CheckPostResult.dart';
@@ -119,6 +120,10 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
         // then upload to the server
         if(image != null){
           XFile file = XFile(image.path);
+          // check with the size
+          int file_size = await file.length();
+          bool file_not_exceeding_size = file_size < _checkPostResult.variables.allowPerm.attachRemain.size;
+          log("Get file size ${file_size} <-> ${_checkPostResult.variables.allowPerm.attachRemain.size} HASH ${_checkPostResult.variables.allowPerm.uploadHash}");
           // confirm with user
           showPlatformDialog(
               context: context,
@@ -127,16 +132,40 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
                 return PlatformAlertDialog(
                   title: Text(S.of(context).uploadImageToServerDialogTitle),
                   content: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       if(isUploadingPicture)
                         ListTile(
                           leading: PlatformCircularProgressIndicator(),
                           title: Text(S.of(context).uploadingImageToServer),
                         ),
+                      if(!file_not_exceeding_size)
+                        Container(
+                          child: PlatformListTile(
+                            // title: Text(S.of(context).attachmentUploadExceedingSizeTitle,
+                            //   style: TextStyle(
+                            //       color: Theme.of(context).colorScheme.onPrimary,
+                            //       fontSize: FontSize.small.value
+                            //   ),
+                            //
+                            // ),
+                            title: Text(S.of(context).attachmentUploadExceedingSizeDescription,
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onPrimary,
+                              ),
+                            ),
+                          ),
+                          padding: EdgeInsets.all(4.0),
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
                       Image.file(File(file.path)),
+
                     ],
                   ),
                   actions: [
+                    
                     PlatformDialogAction(
                       child: Text(S.of(context).uploadCompressedImageToServer),
                       onPressed: () async{
@@ -170,6 +199,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
                         Navigator.of(context).pop();
                       },
                     ),
+                    if(file_not_exceeding_size)
                     PlatformDialogAction(
                       child: Text(S.of(context).uploadRawImageToServer),
                       onPressed: () async{
@@ -214,6 +244,8 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
         final XFile? image = await _picker.pickImage(source: ImageSource.camera);
         if(image != null){
           File file = File(image.path);
+          int file_size = await file.length();
+          bool file_not_exceeding_size = file_size > _checkPostResult.variables.allowPerm.attachRemain.size;
 
           showPlatformDialog(
               context: context,
@@ -266,6 +298,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
                         Navigator.of(context).pop();
                       },
                     ),
+                    if(file_not_exceeding_size)
                     PlatformDialogAction(
                       child: Text(S.of(context).uploadRawImageToServer),
                       onPressed: () async{

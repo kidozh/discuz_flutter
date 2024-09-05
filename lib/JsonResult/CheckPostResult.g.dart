@@ -87,8 +87,12 @@ AllowUpload _$AllowUploadFromJson(Map<String, dynamic> json) => AllowUpload();
 Map<String, dynamic> _$AllowUploadToJson(AllowUpload instance) =>
     <String, dynamic>{};
 
-AttachRemain _$AttachRemainFromJson(Map<String, dynamic> json) =>
-    AttachRemain();
+AttachRemain _$AttachRemainFromJson(Map<String, dynamic> json) => AttachRemain()
+  ..size = const StringToIntConverter().fromJson(json['size'] as String?)
+  ..count = const StringToIntConverter().fromJson(json['count'] as String?);
 
 Map<String, dynamic> _$AttachRemainToJson(AttachRemain instance) =>
-    <String, dynamic>{};
+    <String, dynamic>{
+      'size': const StringToIntConverter().toJson(instance.size),
+      'count': const StringToIntConverter().toJson(instance.count),
+    };

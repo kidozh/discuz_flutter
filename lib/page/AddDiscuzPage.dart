@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
@@ -80,7 +79,7 @@ class _AddDiscuzFormFieldState
       setState(() {
         supportDiscuzListResult = _supportDiscuzListResult;
       });
-    } catch (e, s) {}
+    } catch (e) {}
 
     final dio = Dio();
     final client =
@@ -95,7 +94,7 @@ class _AddDiscuzFormFieldState
         });
         // then cache it
         UserPreferencesUtils.putSupportDiscuzListResultCacheJson(string);
-      } catch (e, s) {}
+      } catch (e) {}
     });
   }
 
@@ -141,7 +140,7 @@ class _AddDiscuzFormFieldState
       setState(() {
         _isLoading = false;
       });
-      log(value.toString());
+      // log(value.toString());
       // convert string to json
       Map<String, dynamic> checkResultJson = jsonDecode(value);
       CheckResult checkResult = CheckResult.fromJson(checkResultJson);
@@ -156,16 +155,21 @@ class _AddDiscuzFormFieldState
       setState(() {
         _isLoading = false;
       });
+      log("GET ADD discuz error ${onError}");
       if (onError is DioException) {
-        //log("GET ADD discuz error ${onError}");
+
         DioException dioError = onError;
-        error = DiscuzError(dioError.type.name,
-            dioError.message == null ? S.of(context).error : dioError.message!,
+        error = DiscuzError("AddDiscuzDioException",
+            S.of(context).addDiscuzApiBrowseUnsuccessfully,
+            errorURL: _urlController.text,
             dioError: dioError);
       } else {
         //log("GET ADD discuz error NOT in DIO ${onError}");
         setState(() {
-          error = DiscuzError("", onError.toString());
+          error = DiscuzError("AddDiscuzParseError",
+              errorURL: _urlController.text,
+              S.of(context).addDiscuzApiParseUnsuccessfully,
+          );
         });
       }
     });
@@ -188,7 +192,7 @@ class _AddDiscuzFormFieldState
               decoration: isCupertino(context)
                   ? BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      color: Theme.of(context).disabledColor.withOpacity(0.1))
+                      color: Theme.of(context).disabledColor.withOpacity(0.05))
                   : null,
               child: PlatformTextFormField(
                 controller: _urlController,

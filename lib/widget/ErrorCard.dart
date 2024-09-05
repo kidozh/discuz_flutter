@@ -8,6 +8,7 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../entity/Discuz.dart';
 import '../entity/DiscuzError.dart';
@@ -77,6 +78,16 @@ class ErrorCard extends StatelessWidget{
                 VibrationUtils.vibrateWithClickIfPossible();
                 onRefreshCallback!();
               },
+            ),
+          if(discuzError.key == "AddDiscuzParseError" || discuzError.key == "AddDiscuzDioException")
+            TextButton(
+              child: Text(S.of(context).contactUsViaEmail),
+              onPressed: () async{
+                VibrationUtils.vibrateWithClickIfPossible();
+                await launchUrl(Uri.parse("mailto:kidozh@gmail.com?subject=${discuzError.errorURL == null?"":discuzError.errorURL}"));
+                //Navigator.of(context).pop();
+              },
+
             ),
           if(errorType == ErrorType.userExpired)
             // should directly re-login here

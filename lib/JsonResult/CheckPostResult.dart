@@ -53,6 +53,7 @@ class AllowPerm{
 
 @JsonSerializable(ignoreUnannotated: true)
 class AllowUpload{
+  @StringToIntConverter()
   int jpg = 0, jpeg = 0, gif = 0, png = 0, mp3 = 0, txt = 0, zip = -1, rar = -1, pdf = -1;
 
   AllowUpload();
@@ -60,8 +61,9 @@ class AllowUpload{
   factory AllowUpload.fromJson(Map<String, dynamic> json) => _$AllowUploadFromJson(json);
 }
 
-@JsonSerializable(ignoreUnannotated: true)
+@JsonSerializable()
 class AttachRemain{
+  @StringToIntConverter()
   int size = 0, count = 0;
 
   AttachRemain();

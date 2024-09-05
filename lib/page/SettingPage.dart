@@ -21,7 +21,6 @@ import 'package:settings_ui/settings_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../utility/AppPlatformIcons.dart';
-import '../utility/CustomizeColor.dart';
 import '../utility/PostTextFieldUtils.dart';
 import 'ChooseThemeColorPage.dart';
 

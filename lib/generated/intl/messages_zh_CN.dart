@@ -148,6 +148,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("由Google提供的广告，与论坛无关。"),
         "addAPhoto": MessageLookupByLibrary.simpleMessage("照片"),
         "addAuthentication": MessageLookupByLibrary.simpleMessage("添加到凭证集中"),
+        "addDiscuzApiBrowseUnsuccessfully":
+            MessageLookupByLibrary.simpleMessage("无法识别论坛掌上论坛插件，请联系管理员开启本插件。"),
+        "addDiscuzApiParseUnsuccessfully": MessageLookupByLibrary.simpleMessage(
+            "掌上论坛API插件未被正确配置，其返回了一个无法识别的错误，。"),
         "addDiscuzSuccessfully": m0,
         "addDiscuzSuggestionAnnotation":
             MessageLookupByLibrary.simpleMessage("反馈问题"),
@@ -180,6 +184,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "appearanceOptimizedPlatformSubtitle":
             MessageLookupByLibrary.simpleMessage("你可以选择对应平台下应用的显示样式"),
         "attachFile": m1,
+        "attachmentUploadExceedingSizeDescription":
+            MessageLookupByLibrary.simpleMessage("附件需要被压缩以满足限额"),
+        "attachmentUploadExceedingSizeTitle":
+            MessageLookupByLibrary.simpleMessage("上传的附件超出了论坛限制大小"),
         "authenticateBySystem":
             MessageLookupByLibrary.simpleMessage("请验证您的身份以查看本地存储的保存密码。"),
         "authenticationEmpty":
@@ -847,7 +855,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "upgrade_notification_title":
             MessageLookupByLibrary.simpleMessage("服务终止"),
         "uploadCompressedImageToServer":
-            MessageLookupByLibrary.simpleMessage("适当压缩的图片（推荐）"),
+            MessageLookupByLibrary.simpleMessage("发送压缩图片"),
         "uploadImageError1": MessageLookupByLibrary.simpleMessage("不支持此类扩展名."),
         "uploadImageError10": MessageLookupByLibrary.simpleMessage("非法操作"),
         "uploadImageError11":
@@ -874,7 +882,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "uploadImageUnknownError":
             MessageLookupByLibrary.simpleMessage("上传文件时遇到了一个未知错误。"),
         "uploadRawImageToServer":
-            MessageLookupByLibrary.simpleMessage("原始图片（可能因为太大被服务器拒绝）"),
+            MessageLookupByLibrary.simpleMessage("发送原始图片"),
         "uploadTokenSuccessful":
             MessageLookupByLibrary.simpleMessage("您的设备令牌已经成功传入到论坛中。"),
         "uploadTokenUnsuccessful":

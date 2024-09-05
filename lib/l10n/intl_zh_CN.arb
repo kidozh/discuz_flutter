@@ -438,8 +438,8 @@
   "noSmileyFoundInDB": "要不使用一个表情包？",
   "uploadImageFailed": "上传图片失败",
   "uploadingImageToServer": "向服务器传输数据中。。。",
-  "uploadCompressedImageToServer": "适当压缩的图片（推荐）",
-  "uploadRawImageToServer": "原始图片（可能因为太大被服务器拒绝）",
+  "uploadCompressedImageToServer": "发送压缩图片",
+  "uploadRawImageToServer": "发送原始图片",
   "threadIsClosed": "此贴已关闭发帖。",
   "blockUser": "屏蔽此用户",
   "unblockUser": "解除屏蔽",
@@ -849,5 +849,9 @@
   "adExemptCondition": "感谢您使用应用小尾巴，你可以选择一个论坛不显示其所有的广告。",
   "adExemptEmbeddedList": "下列Discuz论坛已经内置于广告白名单中。",
   "adExemptNeedConfirm": "选择下列论坛免广告",
-  "adExemptNoNeedToConfirm": "目前还没有需要免广告的论坛站点"
+  "adExemptNoNeedToConfirm": "目前还没有需要免广告的论坛站点",
+  "attachmentUploadExceedingSizeTitle": "上传的附件超出了论坛限制大小",
+  "attachmentUploadExceedingSizeDescription": "附件需要被压缩以满足限额",
+  "addDiscuzApiBrowseUnsuccessfully": "无法识别论坛掌上论坛插件，请联系管理员开启本插件。",
+  "addDiscuzApiParseUnsuccessfully": "掌上论坛API插件未被正确配置，其返回了一个无法识别的错误，。"
 }

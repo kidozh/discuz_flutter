@@ -200,14 +200,14 @@ class DiscuzHtmlWidget extends StatelessWidget{
             const AudioHtmlExtension(),
             const TableHtmlExtension(),
             const VideoHtmlExtension(),
-            TagWrapExtension(
-                tagsToWrap: {"table"},
-                builder: (child) {
-                  return SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: child,
-                  );
-                }),
+            // TagWrapExtension(
+            //     tagsToWrap: {"table"},
+            //     builder: (child) {
+            //       return SingleChildScrollView(
+            //         scrollDirection: Axis.horizontal,
+            //         child: child,
+            //       );
+            //     }),
             ImageExtension(
                 //matchesAssetImages: false,
                 //matchesDataImages: false,

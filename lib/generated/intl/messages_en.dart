@@ -152,6 +152,11 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("AD provided by Google"),
         "addAPhoto": MessageLookupByLibrary.simpleMessage("Photo"),
         "addAuthentication": MessageLookupByLibrary.simpleMessage("Add"),
+        "addDiscuzApiBrowseUnsuccessfully":
+            MessageLookupByLibrary.simpleMessage(
+                "Unable to recognise the discuz!"),
+        "addDiscuzApiParseUnsuccessfully": MessageLookupByLibrary.simpleMessage(
+            "The mobile plugin is not recognisable."),
         "addDiscuzSuccessfully": m0,
         "addDiscuzSuggestionAnnotation":
             MessageLookupByLibrary.simpleMessage("Feedback"),
@@ -187,6 +192,11 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage(
                 "Choose the app appearance on preferred platform."),
         "attachFile": m1,
+        "attachmentUploadExceedingSizeDescription":
+            MessageLookupByLibrary.simpleMessage(
+                "The attachment shall be compressed to be accepted by the forum."),
+        "attachmentUploadExceedingSizeTitle":
+            MessageLookupByLibrary.simpleMessage("The attachment is too large"),
         "authenticateBySystem": MessageLookupByLibrary.simpleMessage(
             "Please authenticate to query saved password."),
         "authenticationEmpty": MessageLookupByLibrary.simpleMessage(
@@ -988,8 +998,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Due to ongoing incidences, push notification service has been terminated."),
         "upgrade_notification_title":
             MessageLookupByLibrary.simpleMessage("Service termination"),
-        "uploadCompressedImageToServer": MessageLookupByLibrary.simpleMessage(
-            "Send compressed image(Recommended)"),
+        "uploadCompressedImageToServer":
+            MessageLookupByLibrary.simpleMessage("Send compressed image"),
         "uploadImageError1": MessageLookupByLibrary.simpleMessage(
             "The file extension is not supported."),
         "uploadImageError10":

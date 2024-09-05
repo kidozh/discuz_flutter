@@ -11,7 +11,6 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../generated/l10n.dart';
-import '../utility/CustomizeColor.dart';
 import 'HotThreadScreen.dart';
 
 class DashboardScreen extends StatelessWidget{

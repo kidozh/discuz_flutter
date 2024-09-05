@@ -12,6 +12,7 @@ class _CheveretoApiClient implements CheveretoApiClient {
   _CheveretoApiClient(
     this._dio, {
     this.baseUrl,
+    this.errorLogger,
   }) {
     baseUrl ??= 'https://sm.ms';
   }
@@ -19,6 +20,8 @@ class _CheveretoApiClient implements CheveretoApiClient {
   final Dio _dio;
 
   String? baseUrl;
+
+  final ParseErrorLogger? errorLogger;
 
   @override
   Future<ChevertoUploadResult> uploadImageToChevereto(
@@ -30,25 +33,31 @@ class _CheveretoApiClient implements CheveretoApiClient {
     final _headers = <String, dynamic>{r'X-API-Key': apiToken};
     _headers.removeWhere((k, v) => v == null);
     final _data = {'source': base64String};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<ChevertoUploadResult>(Options(
+    final _options = _setStreamType<ChevertoUploadResult>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
       contentType: 'application/x-www-form-urlencoded',
     )
-            .compose(
-              _dio.options,
-              '/api/1/upload/',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(
-                baseUrl: _combineBaseUrls(
-              _dio.options.baseUrl,
-              baseUrl,
-            ))));
-    final _value = ChevertoUploadResult.fromJson(_result.data!);
+        .compose(
+          _dio.options,
+          '/api/1/upload/',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late ChevertoUploadResult _value;
+    try {
+      _value = ChevertoUploadResult.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
     return _value;
   }
 

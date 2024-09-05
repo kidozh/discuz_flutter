@@ -438,7 +438,7 @@
   "noSmileyFoundInDB": "Try to use the first smiley?",
   "uploadImageFailed": "Upload image failed",
   "uploadingImageToServer": "Upload the file to the server...",
-  "uploadCompressedImageToServer": "Send compressed image(Recommended)",
+  "uploadCompressedImageToServer": "Send compressed image",
   "uploadRawImageToServer": "Send raw image",
   "threadIsClosed": "Thread is closed.",
   "blockUser": "Block user",
@@ -848,5 +848,9 @@
   "adExemptCondition": "As a gift, you can opt one discuz forum out of advertisement.",
   "adExemptEmbeddedList": "The following discuz forums have already been exempted out of advertisement.",
   "adExemptNeedConfirm": "Choose one discuz to exempt AD",
-  "adExemptNoNeedToConfirm": "There is no discuz forum needs to opt out of advertisement"
+  "adExemptNoNeedToConfirm": "There is no discuz forum needs to opt out of advertisement",
+  "attachmentUploadExceedingSizeTitle": "The attachment is too large",
+  "attachmentUploadExceedingSizeDescription": "The attachment shall be compressed to be accepted by the forum.",
+  "addDiscuzApiBrowseUnsuccessfully": "Unable to recognise the discuz!",
+  "addDiscuzApiParseUnsuccessfully": "The mobile plugin is not recognisable."
 }
