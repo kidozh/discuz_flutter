@@ -361,15 +361,6 @@ class PostState extends State<PostStatefulWidget> {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(8.0)),
                         color: Theme.of(context).colorScheme.primaryContainer,
-                        boxShadow: [
-                          if(isMaterial(context))
-                            BoxShadow(
-                                color: Theme.of(context).colorScheme.shadow,
-                                spreadRadius: 5,
-                                blurRadius: 7,
-                                offset: Offset(0, 3)
-                            )
-                        ]
                     ),
                     child: ListView.builder(
                       padding: EdgeInsets.zero,
