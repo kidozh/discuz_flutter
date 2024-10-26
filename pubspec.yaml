@@ -165,4 +165,4 @@ flutter_launcher_icons:
   image_path_ios_dark_transparent: "assets/icon/icon-dark-ios-900px.png"
   image_path_ios_tinted_grayscale: "assets/icon/icon-grayscale-ios-900px.png"
   #desaturate_tinted_to_grayscale_ios: true
-  #remove_alpha_ios: true
+  remove_alpha_ios: true
