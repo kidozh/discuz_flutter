@@ -522,6 +522,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         _viewThreadResult.threadVariables.threadInfo.replies,
         DateTime.now(),
         discuz));
+    if(Provider.of<DiscuzAndUserNotifier>(context, listen: false).user == null) {
+      return;
+    }
     client
         .favoriteThreadActionResult(
             _viewThreadResult.threadVariables.formHash, tid)
@@ -543,6 +546,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         favoriteThreadDao.getFavoriteThreadByTid(tid, discuz);
     if (favoriteThreadInDatabase != null) {
       favoriteThreadDao.removeFavoriteThread(favoriteThreadInDatabase);
+      if(Provider.of<DiscuzAndUserNotifier>(context, listen: false).user == null) {
+        return;
+      }
       client
           .unfavoriteThreadActionResult(
               _viewThreadResult.threadVariables.formHash,

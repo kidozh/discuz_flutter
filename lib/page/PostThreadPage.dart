@@ -95,7 +95,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
         title: Text(S.of(context).pushThreadTitle),
         trailingActions: [
           PlatformIconButton(
-            icon: Icon(AppPlatformIcons(context).postThreadSolid),
+            icon: Icon(AppPlatformIcons(context).postThreadSolid, size: 24,),
             onPressed: () async {
               VibrationUtils.vibrateWithClickIfPossible();
               await _launchCaptchaDialog(context);
@@ -229,9 +229,9 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                             ));
                   },
                 ),
-                PlatformIconButton(
-                  icon: Icon(Icons.settings_backup_restore),
-                ),
+                // PlatformIconButton(
+                //   icon: Icon(Icons.settings_backup_restore),
+                // ),
               ],
             ),
           ],
@@ -389,50 +389,42 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     // MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
-    showDialog(
+    showPlatformDialog(
         context: context,
         builder: (context) {
-          return SimpleDialog(
+          return PlatformAlertDialog(
             title: Text(S.of(context).pushThreadTitle),
-            children: [
-              Padding(padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-                child: Column(
-                  children: [
-                    CaptchaWidget(
-                      dio,
-                      discuz,
-                      user,
-                      "post",
-                      captchaController: captchaController,
-                      showProgress: true,
-                    ),
-                    SizedBox(
-                      height: 16.0,
-                    ),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Expanded(
-                            child: PlatformElevatedButton(
-                              color: Theme.of(context).primaryColor,
-                              child: Text(
-                                S.of(context).send,
-                                style: TextStyle(
-                                    color:
-                                    Theme.of(context).primaryTextTheme.labelLarge?.color),
-                              ),
-                              onPressed: () {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                postThread();
-                                Navigator.of(context).pop();
-                              },
-                            )),
-                      ],
-                    )
-                  ],
-                ),
+            content: Padding(padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CaptchaWidget(
+                    dio,
+                    discuz,
+                    user,
+                    "post",
+                    captchaController: captchaController,
+                    showProgress: true,
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              PlatformDialogAction(
+                child: Text(S.of(context).send),
+                onPressed: () {
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  postThread();
+                  Navigator.of(context).pop();
+                },
+              ),
+              PlatformDialogAction(
+                child: Text(S.of(context).cancel),
+                onPressed: () {
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  Navigator.of(context).pop();
+                },
               )
-
             ],
           );
         });

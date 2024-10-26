@@ -160,6 +160,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
           DateTime.now(),
           discuz)
     );
+    if(Provider.of<DiscuzAndUserNotifier>(context, listen: false).user == null) {
+      return;
+    }
     client.favoriteForumActionResult(_displayForumResult.discuzIndexVariables.formHash, fid).then((value){
       if(value.errorResult!= null && value.errorResult!.key == "do_success"){
         EasyLoading.showSuccess(S.of(context).discuzOperationMessage(value.errorResult!.key, value.errorResult!.content));
@@ -176,6 +179,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     FavoriteForumInDatabase? favoriteForumInDatabase = favoriteForumDao.getFavoriteForumByFid(fid, discuz);
     if(favoriteForumInDatabase!= null){
       favoriteForumDao.removeFavoriteForum(favoriteForumInDatabase);
+      if(Provider.of<DiscuzAndUserNotifier>(context, listen: false).user == null) {
+        return;
+      }
       client.unfavoriteThreadActionResult(_displayForumResult.discuzIndexVariables.formHash, favoriteForumInDatabase.favid).then((value){
         if(value.errorResult!= null && value.errorResult!.key == "do_success"){
           EasyLoading.showSuccess(S.of(context).discuzOperationMessage(value.errorResult!.key, value.errorResult!.content));
@@ -401,23 +407,25 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 }
               },
             ),
-          if(user != null)
-          IconButton(
-              icon: Icon(AppPlatformIcons(context).publishPostOutlined,size: 24),
-              onPressed: () {
-                if(_displayForumResult.discuzIndexVariables.forum.fid != 0){
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  Navigator.push(
-                      context,
-                      platformPageRoute(
-                          context: context,
-                          builder: (context) => PostThreadPage(discuz,_displayForumResult.discuzIndexVariables.forum.fid, 0)));
-                }
-                else{
-                  EasyLoading.showInfo(S.of(context).loading);
-                }
+          Consumer<DiscuzAndUserNotifier>(
+              builder: (context, discuzAndUser, child) => discuzAndUser.user!= null? IconButton(
+                  icon: Icon(AppPlatformIcons(context).publishPostOutlined,size: 24),
+                  onPressed: () {
+                    if(_displayForumResult.discuzIndexVariables.forum.fid != 0){
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      Navigator.push(
+                          context,
+                          platformPageRoute(
+                              context: context,
+                              builder: (context) => PostThreadPage(discuz,_displayForumResult.discuzIndexVariables.forum.fid, 0)));
+                    }
+                    else{
+                      EasyLoading.showInfo(S.of(context).loading);
+                    }
 
-              }),
+                  }): Container(),
+          ),
+
           PlatformPopupMenu(
               icon: Icon(PlatformIcons(context).ellipsis, size: 24,),
               options: [
