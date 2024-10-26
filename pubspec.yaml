@@ -161,6 +161,8 @@ flutter_launcher_icons:
   # android: "launcher_icon"
   android: false
   ios: true
-  image_path: "assets/icon/icon-large.png"
-  desaturate_tinted_to_grayscale_ios: true
-  remove_alpha_ios: true
+  image_path_ios: "assets/icon/icon-light-ios-900px.png"
+  image_path_ios_dark_transparent: "assets/icon/icon-dark-ios-900px.png"
+  image_path_ios_tinted_grayscale: "assets/icon/icon-grayscale-ios-900px.png"
+  #desaturate_tinted_to_grayscale_ios: true
+  #remove_alpha_ios: true
