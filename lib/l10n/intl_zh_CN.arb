@@ -853,5 +853,17 @@
   "attachmentUploadExceedingSizeTitle": "上传的附件超出了论坛限制大小",
   "attachmentUploadExceedingSizeDescription": "附件需要被压缩以满足限额",
   "addDiscuzApiBrowseUnsuccessfully": "无法识别论坛掌上论坛插件，请联系管理员开启本插件。",
-  "addDiscuzApiParseUnsuccessfully": "掌上论坛API插件未被正确配置，其返回了一个无法识别的错误，。"
+  "addDiscuzApiParseUnsuccessfully": "掌上论坛API插件未被正确配置，其返回了一个无法识别的错误，。",
+  "discuzInAdExemptBuiltInList": "我们默认移除{sitename}的应用广告",
+  "@discuzInAdExemptBuiltInList": {
+    "placeholders": {
+      "sitename": {}
+    }
+  },
+  "discuzInAdExemptBuiltInListDescription": "欢迎使用谈坛访问{sitename}，在您浏览{sitename}的时候，我们不会展示应用内提供的广告。但论坛的帖子形式的软广告并不会被移除。",
+  "@discuzInAdExemptBuiltInListDescription": {
+    "placeholders": {
+      "sitename": {}
+    }
+  }
 }

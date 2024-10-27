@@ -5910,6 +5910,26 @@ class S {
       args: [],
     );
   }
+
+  /// `{sitename} is in AD exempt list`
+  String discuzInAdExemptBuiltInList(Object sitename) {
+    return Intl.message(
+      '$sitename is in AD exempt list',
+      name: 'discuzInAdExemptBuiltInList',
+      desc: '',
+      args: [sitename],
+    );
+  }
+
+  /// `The inner AD is invisible when browsing {sitename}. \nThanks for choosing DisFly.`
+  String discuzInAdExemptBuiltInListDescription(Object sitename) {
+    return Intl.message(
+      'The inner AD is invisible when browsing $sitename. \nThanks for choosing DisFly.',
+      name: 'discuzInAdExemptBuiltInListDescription',
+      desc: '',
+      args: [sitename],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

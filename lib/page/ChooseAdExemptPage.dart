@@ -4,6 +4,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/utility/AdHelper.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
+import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,6 @@ class ChooseAdExemptPage extends StatefulWidget {
 }
 
 class _ChooseAdExemptState extends State<ChooseAdExemptPage> {
-
   String _selectedPlatformName = "";
   List<Discuz> _unWaivedDiscuzList = [];
   List<Discuz> _whiteDiscuzList = [];
@@ -37,21 +37,21 @@ class _ChooseAdExemptState extends State<ChooseAdExemptPage> {
     _initDiscuzList();
   }
 
-
-  Future<void> _initDiscuzList() async{
+  Future<void> _initDiscuzList() async {
     _discuzDao = await AppDatabase.getDiscuzDao();
     List<Discuz> discuzList = await _discuzDao.findAllDiscuzs();
     List<String> adWhiteList = AdHelper.adWhiteDiscuzHostList;
-    _adExemptHost = Provider.of<UserPreferenceNotifierProvider>(context,listen: false).adExemptHost;
+    _adExemptHost =
+        Provider.of<UserPreferenceNotifierProvider>(context, listen: false)
+            .adExemptHost;
 
     List<Discuz> unWaivedDiscuzList = [];
     List<Discuz> whiteDiscuzList = [];
 
-    for(var discuz in discuzList){
-      if(adWhiteList.contains(discuz.host)){
+    for (var discuz in discuzList) {
+      if (adWhiteList.contains(discuz.host)) {
         whiteDiscuzList.add(discuz);
-      }
-      else{
+      } else {
         unWaivedDiscuzList.add(discuz);
       }
     }
@@ -60,14 +60,10 @@ class _ChooseAdExemptState extends State<ChooseAdExemptPage> {
       _unWaivedDiscuzList = unWaivedDiscuzList;
       _whiteDiscuzList = whiteDiscuzList;
     });
-
   }
 
   @override
   Widget build(BuildContext context) {
-
-
-
     return PlatformScaffold(
       iosContentPadding: true,
       appBar: PlatformAppBar(
@@ -75,69 +71,107 @@ class _ChooseAdExemptState extends State<ChooseAdExemptPage> {
       ),
       body: SettingsList(
         sections: [
-          if(_unWaivedDiscuzList.isEmpty)
+          if (_unWaivedDiscuzList.isEmpty)
             CustomSettingsSection(
                 child: Container(
-                  margin: EdgeInsets.all(16.0),
-                  padding: EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).disabledColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                  ),
-                  child: Text(
-                    S.of(context).adExemptNoNeedToConfirm,
-                    style: TextStyle(
-                      fontSize: FontSize.large.value,
-                      color: Theme.of(context).disabledColor,
-                    ),
-                  ),
-                )
-            ),
-          if(_unWaivedDiscuzList.isNotEmpty)
-          SettingsSection(
-            title: Text(S.of(context).adExemptNeedConfirm),
-              tiles: _unWaivedDiscuzList.map(
-                      (discuz) => SettingsTile(
+              margin: EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Theme.of(context).disabledColor.withOpacity(0.1),
+                borderRadius: BorderRadius.all(Radius.circular(8)),
+              ),
+              child: Text(
+                S.of(context).adExemptNoNeedToConfirm,
+                style: TextStyle(
+                  fontSize: FontSize.large.value,
+                  color: Theme.of(context).disabledColor,
+                ),
+              ),
+            )),
+          if (_unWaivedDiscuzList.isNotEmpty)
+            SettingsSection(
+                title: Text(S.of(context).adExemptNeedConfirm),
+                tiles: _unWaivedDiscuzList
+                    .map((discuz) => SettingsTile(
                           title: Text(discuz.siteName),
-                          trailing: _adExemptHost == discuz.host? Icon(AppPlatformIcons(context).check): null,
-                          onPressed: (context){
+                          trailing: _adExemptHost == discuz.host
+                              ? Icon(AppPlatformIcons(context).check)
+                              : null,
+                          onPressed: (context) {
                             VibrationUtils.vibrateWithClickIfPossible();
                             String adExemptHost = "";
-                            if(_adExemptHost == discuz.host){
+                            if (_adExemptHost == discuz.host) {
                               adExemptHost = "";
-                            }
-                            else{
+                            } else {
                               adExemptHost = discuz.host;
                             }
                             setState(() {
                               _adExemptHost = adExemptHost;
                               log("Set advertisement ${_adExemptHost}");
                             });
-                            UserPreferencesUtils.putAdExemptDiscuzHostPreference(adExemptHost);
-                            Provider.of<UserPreferenceNotifierProvider>(context,listen: false).adExemptHost = adExemptHost;
+                            UserPreferencesUtils
+                                .putAdExemptDiscuzHostPreference(adExemptHost);
+                            Provider.of<UserPreferenceNotifierProvider>(context,
+                                    listen: false)
+                                .adExemptHost = adExemptHost;
                           },
-                      )
-              ).toList()
-          ),
-          if(_whiteDiscuzList.isNotEmpty)
-          SettingsSection(
-              title: Text(S.of(context).adExemptEmbeddedList),
-              tiles: _whiteDiscuzList.map(
-                      (discuz) => SettingsTile(
-                    title: Text(discuz.siteName),
-                    trailing: Icon(AppPlatformIcons(context).advertisementExemptCheckSolid),
-
-                  )
-              ).toList()
-          ),
+                        ))
+                    .toList()),
+          if (_whiteDiscuzList.isNotEmpty)
+            SettingsSection(
+                title: Text(S.of(context).adExemptEmbeddedList),
+                tiles: _whiteDiscuzList
+                    .map((discuz) => SettingsTile(
+                        title: Text(discuz.siteName),
+                        trailing: Icon(AppPlatformIcons(context)
+                            .advertisementExemptCheckSolid),
+                        onPressed: (context) {
+                          showPlatformModalSheet(context: context, builder: (context) => Container(
+                            color: Theme.of(context).dialogBackgroundColor,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(AppPlatformIcons(context).checkCircleOutlined, size: 32,),
+                                  SizedBox(height: 16, width: double.infinity,),
+                                  Text(S.of(context).discuzInAdExemptBuiltInList(discuz.siteName), style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: FontSize.large.value
+                                      )
+                                    ),
+                                  SizedBox(height: 8, width: double.infinity,),
+                                  Text(S.of(context).discuzInAdExemptBuiltInListDescription(discuz.siteName), style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: FontSize.medium.value
+                                  )),
+                                  SizedBox(height: 16, width: double.infinity,),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: PlatformElevatedButton(
+                                      child: Text(discuz.siteName),
+                                      onPressed: (){
+                                        VibrationUtils.vibrateWithClickIfPossible();
+                                        URLUtils.launchURL(discuz.baseURL);
+                                      },
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                          ));
+                        }))
+                    .toList()),
         ],
       ),
     );
   }
 
   Widget trailingWidget(String platformName) {
-    return ( _selectedPlatformName == platformName)
-        ? Icon(PlatformIcons(context).checkMark, color: Theme.of(context).colorScheme.primary)
+    return (_selectedPlatformName == platformName)
+        ? Icon(PlatformIcons(context).checkMark,
+            color: Theme.of(context).colorScheme.primary)
         : Icon(null);
   }
 
@@ -147,23 +181,27 @@ class _ChooseAdExemptState extends State<ChooseAdExemptPage> {
     });
     print("change theme color to $platformName");
 
-    Provider.of<ThemeNotifierProvider>(context,listen: false).setPlatformName(platformName);
+    Provider.of<ThemeNotifierProvider>(context, listen: false)
+        .setPlatformName(platformName);
     UserPreferencesUtils.putPlatformPreference(platformName);
 
-    if(PlatformProvider.of(context)!=null){
-      switch (platformName){
-        case "":{
-          PlatformProvider.of(context)!.changeToAutoDetectPlatform();
-          break;
-        }
-        case "ios":{
-          PlatformProvider.of(context)!.changeToCupertinoPlatform();
-          break;
-        }
-        case "android":{
-          PlatformProvider.of(context)!.changeToMaterialPlatform();
-          break;
-        }
+    if (PlatformProvider.of(context) != null) {
+      switch (platformName) {
+        case "":
+          {
+            PlatformProvider.of(context)!.changeToAutoDetectPlatform();
+            break;
+          }
+        case "ios":
+          {
+            PlatformProvider.of(context)!.changeToCupertinoPlatform();
+            break;
+          }
+        case "android":
+          {
+            PlatformProvider.of(context)!.changeToMaterialPlatform();
+            break;
+          }
       }
     }
     VibrationUtils.vibrateSuccessfullyIfPossible();

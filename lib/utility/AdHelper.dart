@@ -36,7 +36,8 @@ class AdHelper {
       "keylol.com",
       "www.keylol.com",
       "bbs.aeroflight.cn",
-      "bbs.qzzn.com"
+      "bbs.qzzn.com",
+      "hostloc.com"
     ];
   }
 }

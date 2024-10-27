@@ -852,5 +852,17 @@
   "attachmentUploadExceedingSizeTitle": "The attachment is too large",
   "attachmentUploadExceedingSizeDescription": "The attachment shall be compressed to be accepted by the forum.",
   "addDiscuzApiBrowseUnsuccessfully": "Unable to recognise the discuz!",
-  "addDiscuzApiParseUnsuccessfully": "The mobile plugin is not recognisable."
+  "addDiscuzApiParseUnsuccessfully": "The mobile plugin is not recognisable.",
+  "discuzInAdExemptBuiltInList": "{sitename} is in AD exempt list",
+  "@discuzInAdExemptBuiltInList": {
+    "placeholders": {
+      "sitename": {}
+    }
+  },
+  "discuzInAdExemptBuiltInListDescription": "The inner AD is invisible when browsing {sitename}. \nThanks for choosing DisFly.",
+  "@discuzInAdExemptBuiltInListDescription": {
+    "placeholders": {
+      "sitename": {}
+    }
+  }
 }
