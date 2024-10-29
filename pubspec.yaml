@@ -44,7 +44,7 @@ dependencies:
   flutter_spinkit: ^5.1.0
   flutter_easyloading: ^3.0.3
   json_serializable: ^6.1.3
-  webview_flutter: ^4.0.0
+  webview_flutter: ^4.9.0
   cookie_jar: ^4.0.7
   dio_cookie_manager: ^3.1.0
   path_provider: ^2.0.8
@@ -63,11 +63,11 @@ dependencies:
   flutter_image_compress: ^2.0.4
   package_info_plus: ^8.0.0
   flutter_native_splash: ^2.3.2
-  slide_countdown: ^1.6.1
+  slide_countdown: ^2.0.0
 
   hive: any
   hive_flutter: any
-  device_info_plus: ^10.1.0
+  device_info_plus: ^11.1.0
   share_plus: ^10.0.0
   firebase_messaging: ^15.0.3
   font_awesome_flutter: ^10.1.0
@@ -90,7 +90,7 @@ dependencies:
   flutter_html_svg: ^3.0.0-beta.2
   flutter_html_table: ^3.0.0-beta.2
   flutter_html_video: ^3.0.0-beta.2
-  upgrader: ^10.3.0
+  upgrader: ^11.3.0
   flutter_secure_storage: ^9.0.0
   local_auth: ^2.1.7
   flex_color_picker: ^3.3.1
