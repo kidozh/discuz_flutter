@@ -192,19 +192,19 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent>{
                   URLUtils.launchURL("https://discuzhub.kidozh.com/zh/term_of_use/");
                 },
               ),
-              Divider(),
-              ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: Colors.purple,
-                  child: Icon(Icons.menu_open,color: Colors.white,),
-                ),
-                title: Text(S.of(context).openSoftwareTitle),
-                subtitle: Text(S.of(context).openSoftwareSubtitle),
-                onTap: (){
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  URLUtils.launchURL("https://github.com/kidozh/discuz_flutter");
-                },
-              ),
+              //Divider(),
+              // ListTile(
+              //   leading: CircleAvatar(
+              //     backgroundColor: Colors.purple,
+              //     child: Icon(Icons.menu_open,color: Colors.white,),
+              //   ),
+              //   title: Text(S.of(context).openSoftwareTitle),
+              //   subtitle: Text(S.of(context).openSoftwareSubtitle),
+              //   onTap: (){
+              //     VibrationUtils.vibrateWithClickIfPossible();
+              //     URLUtils.launchURL("https://github.com/kidozh/discuz_flutter");
+              //   },
+              // ),
               SizedBox(height: 24,),
               Row(
                 mainAxisSize: MainAxisSize.max,

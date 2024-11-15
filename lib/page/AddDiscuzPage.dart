@@ -11,6 +11,7 @@ import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
@@ -81,7 +82,7 @@ class _AddDiscuzFormFieldState
       });
     } catch (e) {}
 
-    final dio = Dio();
+    final dio = await NetworkUtils.getDioWithTempCookieJar();
     final client =
         UtilityServiceApiClient(dio, baseUrl: 'https://discuzhub.kidozh.com');
     client.getAllSuggestedDiscuzList().then((string) {
@@ -127,11 +128,11 @@ class _AddDiscuzFormFieldState
     Navigator.pop(context);
   }
 
-  void _checkApiAvailable() {
+  void _checkApiAvailable() async{
     String discuzUrl = _urlController.text;
     log("Recv url " + discuzUrl);
     // check the availability
-    final dio = Dio();
+    final dio = await NetworkUtils.getDioWithTempCookieJar();
     final client = MobileApiClient(dio, baseUrl: discuzUrl);
     setState(() {
       _isLoading = true;

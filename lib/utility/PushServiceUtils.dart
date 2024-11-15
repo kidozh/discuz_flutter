@@ -419,7 +419,7 @@ class PushServiceUtils{
         requestAlertPermission: false,
         requestBadgePermission: false,
         requestSoundPermission: false,
-        onDidReceiveLocalNotification: PushServiceUtils.onDidReceiveLocalNotification
+        //onDidReceiveLocalNotification: PushServiceUtils.onDidReceiveLocalNotification
     );
     final InitializationSettings initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid,

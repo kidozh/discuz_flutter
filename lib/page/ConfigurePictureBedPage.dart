@@ -113,7 +113,9 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
                   Center(
                     child: Text(
                       S.of(context).pictureBedTermsTitle(pictureBedName),
-                      style: Theme.of(context).textTheme.headlineSmall,
+                      style: Theme.of(context).textTheme.headlineMedium?..copyWith(
+                        fontWeight: FontWeight.bold
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -146,13 +148,17 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
                   SizedBox(
                     height: 16,
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 0),
-                    child: PlatformElevatedButton(
-                      child: Text(S.of(context).pictureBedAgreeToService),
-                      onPressed: onPressed,
+                  SizedBox(
+                    width: double.infinity,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 0),
+                      child: PlatformElevatedButton(
+                        child: Text(S.of(context).pictureBedAgreeToService),
+                        onPressed: onPressed,
+                      ),
                     ),
                   )
+
                 ],
               ),
             ),

@@ -103,7 +103,7 @@ class AppPlatformIcons{
 
   IconData get hapticFeedbackOutlined => isMaterial(context)? Icons.vibration_outlined : CupertinoIcons.dial;
 
-  IconData get pictureBedOutlined => isMaterial(context)? Icons.photo_album_outlined : CupertinoIcons.square_stack;
+  IconData get pictureBedOutlined => isMaterial(context)? Icons.photo_album_outlined : CupertinoIcons.archivebox;
 
   IconData get chevronSolid => isMaterial(context)? Icons.arrow_forward : CupertinoIcons.chevron_forward;
 
