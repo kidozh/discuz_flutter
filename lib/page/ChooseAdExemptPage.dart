@@ -8,7 +8,6 @@ import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -83,7 +82,7 @@ class _ChooseAdExemptState extends State<ChooseAdExemptPage> {
               child: Text(
                 S.of(context).adExemptNoNeedToConfirm,
                 style: TextStyle(
-                  fontSize: FontSize.large.value,
+                  fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
                   color: Theme.of(context).disabledColor,
                 ),
               ),
@@ -138,13 +137,13 @@ class _ChooseAdExemptState extends State<ChooseAdExemptPage> {
                                   SizedBox(height: 16, width: double.infinity,),
                                   Text(S.of(context).discuzInAdExemptBuiltInList(discuz.siteName), style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: FontSize.large.value
+                                      fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize
                                       )
                                     ),
                                   SizedBox(height: 8, width: double.infinity,),
                                   Text(S.of(context).discuzInAdExemptBuiltInListDescription(discuz.siteName), style: TextStyle(
                                       fontWeight: FontWeight.normal,
-                                      fontSize: FontSize.medium.value
+                                      fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize
                                   )),
                                   SizedBox(height: 16, width: double.infinity,),
                                   SizedBox(

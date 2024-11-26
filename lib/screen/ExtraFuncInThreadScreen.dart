@@ -16,7 +16,6 @@ import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:image_picker/image_picker.dart';
@@ -150,7 +149,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
                               child: Text(S.of(context).attachmentUploadExceedingSizeDescription,
                                 style: TextStyle(
                                     color: Theme.of(context).colorScheme.onPrimary,
-                                    fontSize: FontSize.medium.value
+                                    fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize
                                 ),
                               ),
                             ),

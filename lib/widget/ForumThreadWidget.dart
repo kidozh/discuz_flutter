@@ -18,7 +18,6 @@ import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
@@ -270,7 +269,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       UserAvatar(
-                        _discuz, _forumThread.getAuthorId(), _forumThread.author, size: FontSize.small.value,
+                        _discuz, _forumThread.getAuthorId(), _forumThread.author, size: Theme.of(context).textTheme.bodySmall?.fontSize,
                       ),
 
                       SizedBox(width: 2,),
@@ -279,7 +278,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                           text: TextSpan(
                             text: " ",
                             style: TextStyle(
-                              fontSize: FontSize.small.value,
+                              fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
                               fontWeight: viewed? FontWeight.w300:FontWeight.normal,
                               color: selected? Theme.of(context).colorScheme.onPrimaryContainer:viewed? Theme.of(context).unselectedWidgetColor: Theme.of(context).textTheme.bodySmall?.color,
                             ),
@@ -330,7 +329,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                           child: Text(message,
                             style: TextStyle(
                               fontWeight: viewed? FontWeight.w300:FontWeight.normal,
-                              fontSize: FontSize.medium.value,
+                              fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                               color: selected? Theme.of(context).colorScheme.onPrimaryContainer: viewed? Theme.of(context).unselectedWidgetColor: null,
                             ),
                             maxLines: 3,
@@ -495,7 +494,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                   text: "",
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onSecondaryContainer,
-                    fontSize: FontSize.small.value
+                    fontSize: Theme.of(context).textTheme.bodySmall?.fontSize
 
                   ),
                   children: [
@@ -601,7 +600,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                 children: [
                   Text(S.of(context).contentPostByBlockUserTitle(_forumThread.author),
                       style:TextStyle(
-                        fontSize: FontSize.large.value,
+                        fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
                         color: Theme.of(context).textTheme.titleMedium?.color,
                       )
                   ),
@@ -664,7 +663,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
               WidgetSpan(
                   child: Icon(
                     AppPlatformIcons(context).stickyPostSolid,
-                    size: FontSize.large.value,
+                    size: Theme.of(context).textTheme.bodyLarge?.fontSize,
                     color: selected?Theme.of(context).colorScheme.onSecondary: viewed? Theme.of(context).colorScheme.secondary: Theme.of(context).colorScheme.onSecondary,
                   )
               ),
@@ -672,7 +671,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
               TextSpan(
                   text: S.of(context).stickyThread,
                   style: TextStyle(
-                    fontSize: FontSize.large.value,
+                    fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
                     fontWeight: FontWeight.normal,
                     color: selected?Theme.of(context).colorScheme.onSecondary: viewed? Theme.of(context).colorScheme.secondary: Theme.of(context).colorScheme.onSecondary,
                   )

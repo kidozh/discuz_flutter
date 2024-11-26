@@ -19,7 +19,6 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:provider/provider.dart';
@@ -341,14 +340,14 @@ class _AddDiscuzFormFieldState
                                   child: Icon(
                                     Icons.verified,
                                     color: Colors.green,
-                                    size: FontSize.medium.value * 1.2,
+                                    size: 16,
                                   ),
                                 )),
                             TextSpan(
                                 text:S.of(context).addDiscuzSuggestionVerifiedDiscuz,
                                 style: TextStyle(
                                   fontWeight: FontWeight.normal,
-                                  fontSize: FontSize.medium.value,
+                                  fontSize: 16,
                                 )
                             ),
                           ]),
@@ -556,7 +555,7 @@ class _AddDiscuzFormFieldState
                                 .colorScheme
                                 .onPrimaryContainer,
                             fontWeight: FontWeight.normal,
-                            fontSize: FontSize.medium.value,
+                            fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                           )),
                       leading: Icon(PlatformIcons(context).info,
                           color:

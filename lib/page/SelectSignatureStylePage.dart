@@ -5,7 +5,6 @@ import 'dart:developer';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -155,7 +154,7 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
                     children: [
                       Text(S.of(context).signaturePreview, style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: FontSize.xLarge.value
+                          fontSize: Theme.of(context).textTheme.headlineMedium?.fontSize
                       )),
                       SizedBox(height: 8,),
                       Container(

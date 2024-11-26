@@ -26,7 +26,6 @@ import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/PostCommentWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
@@ -560,7 +559,7 @@ class PostState extends State<PostStatefulWidget> {
                           .colorScheme
                           .onPrimary,
                       fontWeight: FontWeight.bold,
-                      fontSize: FontSize.small.value)),
+                      fontSize: Theme.of(context).textTheme.bodySmall?.fontSize)),
             ),
           ),
           Padding(
@@ -576,7 +575,7 @@ class PostState extends State<PostStatefulWidget> {
                             .colorScheme
                             .onPrimaryContainer,
                         fontWeight: FontWeight.normal,
-                        fontSize: FontSize.small.value)),
+                        fontSize: Theme.of(context).textTheme.bodySmall?.fontSize)),
               )
           )
         ],
