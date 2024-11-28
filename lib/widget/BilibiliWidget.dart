@@ -166,7 +166,7 @@ class BilibiliState extends State<BilibiliWidget> {
             child: Row(
               children: [
                 Expanded(
-                  flex: 4,
+                  flex: 6,
                   child: CachedNetworkImage(
                       imageUrl: videoResult.data.viewData.pic),
                 ),
@@ -180,7 +180,7 @@ class BilibiliState extends State<BilibiliWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           RichText(
-                            maxLines: 2,
+                            maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                             text: TextSpan(children: [
                               WidgetSpan(
@@ -222,7 +222,7 @@ class BilibiliState extends State<BilibiliWidget> {
                                       color: Theme.of(context)
                                           .colorScheme
                                           .onPrimaryContainer,
-                                      fontSize: 18)),
+                                      fontSize: 16)),
                             ]),
                           ),
                           SizedBox(
@@ -237,8 +237,8 @@ class BilibiliState extends State<BilibiliWidget> {
                                   padding: EdgeInsets.zero,
                                   margin: EdgeInsets.only(top: 8,right: 8),
                                   child: SizedBox(
-                                    width: 18,
-                                    height: 18,
+                                    width: 16,
+                                    height: 16,
                                     child: CircleAvatar(
                                         backgroundImage:
                                             CachedNetworkImageProvider(
@@ -252,7 +252,7 @@ class BilibiliState extends State<BilibiliWidget> {
                               TextSpan(
                                   text: videoResult.data.viewData.owner.name,
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onPrimaryContainer,

@@ -48,7 +48,6 @@ BilibiliVideoViewData _$BilibiliVideoViewDataFromJson(
       ..desc = json['desc'] as String
       ..state = (json['state'] as num).toInt()
       ..duration = (json['duration'] as num).toInt()
-      ..mission_id = (json['mission_id'] as num).toInt()
       ..owner = BilibiliVideoViewDataOwner.fromJson(
           json['owner'] as Map<String, dynamic>);
 
@@ -68,7 +67,6 @@ Map<String, dynamic> _$BilibiliVideoViewDataToJson(
       'desc': instance.desc,
       'state': instance.state,
       'duration': instance.duration,
-      'mission_id': instance.mission_id,
       'owner': instance.owner,
     };
 

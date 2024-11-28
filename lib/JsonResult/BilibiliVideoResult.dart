@@ -45,7 +45,7 @@ class BilibiliVideoViewData{
   int pubdate = 0, ctime = 0;
   String desc = "";
   int state = 0;
-  int duration = 0, mission_id=0;
+  int duration = 0;
 
   BilibiliVideoViewDataOwner owner = BilibiliVideoViewDataOwner();
 
