@@ -40,7 +40,7 @@ class NetworkUtils{
   static Dio getDio(){
     return Dio(BaseOptions(
       headers: {
-        'Accept-Language': LanguageCode.code.name
+        'Accept-Language': LanguageCode.code.code
       }
     ));
   }
