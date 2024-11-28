@@ -300,7 +300,7 @@ class PostState extends State<PostStatefulWidget> {
       ;
 
       _html = _html.replaceAllMapped(RegExp("<br\\W+/>"), (match){
-        print("match! ${match.group(0)} ${match.end} ${_html.length}");
+        //print("match! ${match.group(0)} ${match.end} ${_html.length}");
         if(_html.length - match.end < 3){
           return "";
         }

@@ -864,5 +864,8 @@
     "placeholders": {
       "sitename": {}
     }
-  }
+  },
+  "openGameInSteam": "View in Steam",
+  "gameFreeOfCharge": "Free",
+  "gameComingSoon": "Coming Soon"
 }

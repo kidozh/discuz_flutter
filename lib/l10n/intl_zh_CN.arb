@@ -865,5 +865,9 @@
     "placeholders": {
       "sitename": {}
     }
-  }
+  },
+  "openGameInSteam": "在Steam中打开",
+  "gameFreeOfCharge": "免费",
+  "gameComingSoon": "即将发售"
+
 }

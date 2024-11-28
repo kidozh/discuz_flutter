@@ -47,6 +47,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:progress_state_button/iconed_button.dart';
@@ -759,7 +760,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         title: _viewThreadResult.threadVariables.threadInfo.subject.isEmpty
             ? Text(S.of(context).viewThreadTitle,
                 overflow: TextOverflow.ellipsis)
-            : Text(_viewThreadResult.threadVariables.threadInfo.subject,
+            : Text(HtmlUnescape().convert(_viewThreadResult.threadVariables.threadInfo.subject),
                 overflow: TextOverflow.ellipsis),
         trailingActions: [
           DiscuzNotificationAppbarIconWidget(),
@@ -897,9 +898,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                           _viewThreadResult.threadVariables.threadInfo.subject
                                       .isEmpty &&
                                   passedSubject != null
-                              ? passedSubject!
-                              : _viewThreadResult
-                                  .threadVariables.threadInfo.subject,
+                              ? HtmlUnescape().convert(passedSubject!)
+                              : HtmlUnescape().convert(_viewThreadResult
+                                  .threadVariables.threadInfo.subject),
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,

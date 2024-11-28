@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/page/ChooseThemeColorPage.dart';
 import 'package:discuz_flutter/page/FullImagePage.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
@@ -11,6 +12,7 @@ import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/PostTextUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/BilibiliWidget.dart';
+import 'package:discuz_flutter/widget/SteamGameWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
@@ -128,6 +130,12 @@ class DiscuzHtmlWidget extends StatelessWidget {
                 "margin": '0.1em 0',
                 "display" : "block"
               };
+            } else if(element.className == "reply_wrap"){
+              return {
+                "background-color": "#${Theme.of(context).colorScheme.primaryContainer.value.toRadixString(16).substring(2)}",
+                "padding" : "0.1em",
+                "margin-bottom": "0.1em"
+              };
             }
           },
           customWidgetBuilder: (element) {
@@ -205,6 +213,9 @@ class DiscuzHtmlWidget extends StatelessWidget {
 
             } else if (element.attributes["href"]!= null && element.attributes["href"]!.startsWith("https://www.bilibili.com")){
               return BilibiliWidget(element.attributes["href"]!);
+            }
+            else if (element.attributes["src"]!= null && element.attributes["src"]!.startsWith("https://store.steampowered.com/widget")){
+              return SteamGameWidget(element.attributes["src"]!);
             }
             return null;
           },

@@ -563,6 +563,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "fromAppSignature": m19,
         "fromDeviceSignature": m20,
         "fuchsia": MessageLookupByLibrary.simpleMessage("Fuchsia"),
+        "gameComingSoon": MessageLookupByLibrary.simpleMessage("Coming Soon"),
+        "gameFreeOfCharge": MessageLookupByLibrary.simpleMessage("Free"),
         "goToPushSetting":
             MessageLookupByLibrary.simpleMessage("Enable push service"),
         "googleAdSubTitle": MessageLookupByLibrary.simpleMessage(
@@ -705,6 +707,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Open"),
         "openFileInExternalAppContent": MessageLookupByLibrary.simpleMessage(
             "File downloads successfully. Do you want to open it now?"),
+        "openGameInSteam":
+            MessageLookupByLibrary.simpleMessage("View in Steam"),
         "openInBrowser":
             MessageLookupByLibrary.simpleMessage("Open in browser"),
         "openSoftwareSubtitle": MessageLookupByLibrary.simpleMessage(

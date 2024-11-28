@@ -11,6 +11,7 @@ import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 enum BilibiliWidgetType { video, live }
 
@@ -89,24 +90,33 @@ class BilibiliState extends State<BilibiliWidget> {
         {
           client
               .getVideoResultByAid(videoRequestParameter)
-              .then((result) => renderVideoResult(result));
+              .then((result) => renderVideoResult(result))
+              .catchError((onError) => callbackResultError(onError))
+          ;
           break;
         }
       case BilibiliVideoRequestType.bvid:
         {
           client
               .getVideoResultByBvid(videoRequestParameter)
-              .then((result) => renderVideoResult(result));
+              .then((result) => renderVideoResult(result))
+              .catchError((onError) => callbackResultError(onError))
+          ;
           break;
         }
     }
   }
 
   Future<void> renderVideoResult(BilibiliVideoResult result) async {
-    log("Recv bilibili result ${result}");
     setState(() {
       isLoadingApi = false;
       videoResult = result;
+    });
+  }
+
+  Future<void> callbackResultError(error) async {
+    setState(() {
+      isLoadingApi = false;
     });
   }
 
@@ -135,8 +145,8 @@ class BilibiliState extends State<BilibiliWidget> {
           child: Container(
             padding: EdgeInsets.all(4.0),
             child: PlatformListTile(
-                leading: Icon(
-                  PlatformIcons(context).playCircleSolid,
+                leading: isLoadingApi? PlatformCircularProgressIndicator(): Icon(
+                  FontAwesomeIcons.bilibili,
                   color: Color(bilibiliColorGray),
                 ),
                 title: Text(

@@ -5930,6 +5930,36 @@ class S {
       args: [sitename],
     );
   }
+
+  /// `View in Steam`
+  String get openGameInSteam {
+    return Intl.message(
+      'View in Steam',
+      name: 'openGameInSteam',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Free`
+  String get gameFreeOfCharge {
+    return Intl.message(
+      'Free',
+      name: 'gameFreeOfCharge',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Coming Soon`
+  String get gameComingSoon {
+    return Intl.message(
+      'Coming Soon',
+      name: 'gameComingSoon',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

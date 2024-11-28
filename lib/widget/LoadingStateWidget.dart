@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:html_unescape/html_unescape.dart';
 
 class LoadingStateWidget extends StatelessWidget{
   String? hintText;
@@ -24,7 +25,7 @@ class LoadingStateWidget extends StatelessWidget{
             height: 16,
           ),
           if(hintText!= null)
-            Text(hintText!, style: TextStyle(
+            Text(HtmlUnescape().convert(hintText!), style: TextStyle(
               color: Theme.of(context).disabledColor,
               fontSize: 24,
               fontWeight: Theme.of(context).brightness == Brightness.dark? FontWeight.normal: FontWeight.w300

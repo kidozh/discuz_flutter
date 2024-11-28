@@ -490,6 +490,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "fromAppSignature": m19,
         "fromDeviceSignature": m20,
         "fuchsia": MessageLookupByLibrary.simpleMessage("Fuchsia"),
+        "gameComingSoon": MessageLookupByLibrary.simpleMessage("即将发售"),
+        "gameFreeOfCharge": MessageLookupByLibrary.simpleMessage("免费"),
         "goToPushSetting": MessageLookupByLibrary.simpleMessage("开启推送"),
         "googleAdSubTitle":
             MessageLookupByLibrary.simpleMessage("由Google提供的广告"),
@@ -610,6 +612,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("打开"),
         "openFileInExternalAppContent":
             MessageLookupByLibrary.simpleMessage("您成功下载了文件，您想现在打开它吗？"),
+        "openGameInSteam": MessageLookupByLibrary.simpleMessage("在Steam中打开"),
         "openInBrowser": MessageLookupByLibrary.simpleMessage("在浏览器中打开"),
         "openSoftwareSubtitle":
             MessageLookupByLibrary.simpleMessage("我们的软件以MIT开源协议服务"),
