@@ -10,6 +10,7 @@ import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/PostTextUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:discuz_flutter/widget/BilibiliWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
@@ -113,11 +114,22 @@ class DiscuzHtmlWidget extends StatelessWidget {
           },
           textStyle: TextStyle(
             fontSize: themeFontSize * scalingParameter,
-            fontWeight: useThinFont? FontWeight.w300: FontWeight.normal
-          ),
+            fontWeight: useThinFont? FontWeight.w300: FontWeight.normal,
+            wordSpacing: defaultTextStyle?.wordSpacing,
+            height: defaultTextStyle?.height,
+            textBaseline: defaultTextStyle?.textBaseline,
+          ).useSystemChineseFont(),
           // textStyle: Theme.of(context).useSystemChineseFont(Theme.of(context).brightness).textTheme.bodyLarge?..copyWith(
           //   fontSize: 12 * scalingParameter
           // ),
+          customStylesBuilder: (element){
+            if (element.localName == "br"){
+              return {
+                "margin": '0.1em 0',
+                "display" : "block"
+              };
+            }
+          },
           customWidgetBuilder: (element) {
             // "collapse", "spoil"
             if (element.localName == "collapse" ||
@@ -191,6 +203,8 @@ class DiscuzHtmlWidget extends StatelessWidget {
                 return Text(S.of(context).brokenCountDown);
               }
 
+            } else if (element.attributes["href"]!= null && element.attributes["href"]!.startsWith("https://www.bilibili.com")){
+              return BilibiliWidget(element.attributes["href"]!);
             }
             return null;
           },

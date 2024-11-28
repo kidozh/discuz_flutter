@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'UtilityServiceApiClient.dart';
+part of 'BilibiliApiClient.dart';
 
 // **************************************************************************
 // RetrofitGenerator
@@ -8,13 +8,13 @@ part of 'UtilityServiceApiClient.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations
 
-class _UtilityServiceApiClient implements UtilityServiceApiClient {
-  _UtilityServiceApiClient(
+class _BilibiliApiClient implements BilibiliApiClient {
+  _BilibiliApiClient(
     this._dio, {
     this.baseUrl,
     this.errorLogger,
   }) {
-    baseUrl ??= 'https://discuzhub.kidozh.com';
+    baseUrl ??= 'https://api.bilibili.com';
   }
 
   final Dio _dio;
@@ -24,19 +24,19 @@ class _UtilityServiceApiClient implements UtilityServiceApiClient {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<String> getAllSuggestedDiscuzList() async {
+  Future<BilibiliVideoResult> getVideoResultByAid(String aid) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'aid': aid};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<String>(Options(
+    final _options = _setStreamType<BilibiliVideoResult>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
     )
         .compose(
           _dio.options,
-          '/support-discuz-list.min.json',
+          '/x/web-interface/view/detail',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -45,10 +45,43 @@ class _UtilityServiceApiClient implements UtilityServiceApiClient {
           _dio.options.baseUrl,
           baseUrl,
         )));
-    final _result = await _dio.fetch<String>(_options);
-    late String _value;
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BilibiliVideoResult _value;
     try {
-      _value = _result.data!;
+      _value = BilibiliVideoResult.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BilibiliVideoResult> getVideoResultByBvid(String bvid) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'bvid': bvid};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<BilibiliVideoResult>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/x/web-interface/view/detail',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BilibiliVideoResult _value;
+    try {
+      _value = BilibiliVideoResult.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

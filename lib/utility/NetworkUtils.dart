@@ -36,18 +36,13 @@ class NetworkUtils{
     return cookieJar;
   }
 
+  static Dio getDio(){
+    return Dio();
+  }
+
   static Future<Dio> getDioWithTempCookieJar() async{
-    String userAgent = ua;
-    final header =  await userAgentClientHintsHeader();
-    var dio =  Dio(
-      BaseOptions(
-        headers: {
-          'User-Agent': userAgent,
-          //'Accept-Language': 'en-US,en;q=0.9'
-        }
-      )
-    );
-    print("Running on UA ${ua} ${header}");
+
+    var dio = getDio();
     
     PersistCookieJar cookieJar = await getTemporaryCookieJar();
     dio.interceptors.add(CookieManager(cookieJar));
@@ -63,36 +58,14 @@ class NetworkUtils{
   static Future<Dio> getDioWithPersistCookieJar(User? user) async{
     if(user == null){
       String userAgent = ua;
-      var dio =  Dio(
-          BaseOptions(
-              headers: {
-                'User-Agent': userAgent
-              }
-          )
-      );
-      // dio.interceptors.add(InterceptorsWrapper(
-      //   onRequest: (options, handler) async{
-      //     options.headers.addAll(await userAgentClientHintsHeader());
-      //     //return options;
-      //   },
-      // ));
+      var dio = getDio();
+
+
       return dio;
     }
     else{
       String userAgent = ua;
-      var dio =  Dio(
-          BaseOptions(
-              headers: {
-                'User-Agent': userAgent
-              }
-          )
-      );
-      // dio.interceptors.add(InterceptorsWrapper(
-      //   onRequest: (options, handler) async{
-      //     options.headers.addAll(await userAgentClientHintsHeader());
-      //     //return options;
-      //   },
-      // ));
+      var dio = getDio();
       PersistCookieJar cookieJar = await getPersistentCookieJarByUser(user);
       dio.interceptors.add(CookieManager(cookieJar));
       return dio;
