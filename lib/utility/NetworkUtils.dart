@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/User.dart';
+import 'package:language_code/language_code.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:random_user_agents/random_user_agents.dart';
@@ -37,7 +38,11 @@ class NetworkUtils{
   }
 
   static Dio getDio(){
-    return Dio();
+    return Dio(BaseOptions(
+      headers: {
+        'Accept-Language': LanguageCode.code.name
+      }
+    ));
   }
 
   static Future<Dio> getDioWithTempCookieJar() async{
@@ -57,14 +62,12 @@ class NetworkUtils{
 
   static Future<Dio> getDioWithPersistCookieJar(User? user) async{
     if(user == null){
-      String userAgent = ua;
       var dio = getDio();
 
 
       return dio;
     }
     else{
-      String userAgent = ua;
       var dio = getDio();
       PersistCookieJar cookieJar = await getPersistentCookieJarByUser(user);
       dio.interceptors.add(CookieManager(cookieJar));
