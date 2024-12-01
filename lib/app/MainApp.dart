@@ -772,6 +772,24 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
   }
 
   @override
+  void initState() {
+
+    super.initState();
+    changeLayoutToMaterialIfInTablet();
+  }
+
+  Future<void> changeLayoutToMaterialIfInTablet() async{
+    if(isCupertino(context) && widget.type != TwoPaneType.smallScreen){
+      // change it to material despite the setting
+      // if(isCupertino(context))
+      Future.delayed(const Duration(seconds: 1), (){
+        PlatformProvider.of(context)?.changeToMaterialPlatform();
+      });
+
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     var panePriority = TwoPanePriority.both;
     if (widget.type == TwoPaneType.smallScreen) {
