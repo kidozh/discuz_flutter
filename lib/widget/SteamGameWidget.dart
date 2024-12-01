@@ -222,7 +222,7 @@ class SteamGameState extends State<SteamGameWidget> {
                           textAlign: TextAlign.start,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.primary,
+                            //color: Theme.of(context).colorScheme.primary,
                             fontSize: 24,
                           ),
                         )),
@@ -232,6 +232,7 @@ class SteamGameState extends State<SteamGameWidget> {
                             size: 30,
                           ),
                           onPressed: () {
+                            VibrationUtils.vibrateWithClickIfPossible();
                             Navigator.of(context).pop();
                           },
                         ),
@@ -490,6 +491,17 @@ class SteamGameState extends State<SteamGameWidget> {
                       height: 16,
                     ),
                     Divider(),
+                    PlatformIconButton(
+                      icon: Icon(
+                        AppPlatformIcons(context).clearAtEndSolid,
+                        size: 30,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
+                      ),
+                      onPressed: () {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        Navigator.of(context).pop();
+                      },
+                    ),
                     SizedBox(
                       height: 16,
                     )

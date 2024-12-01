@@ -47,7 +47,7 @@ import '../utility/TwoPaneScaffold.dart';
 import '../utility/TwoPaneUtils.dart';
 import '../widget/DiscuzNotificationAppbarIconWidget.dart';
 
-double mobileScreenSize = 600;
+
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -62,7 +62,7 @@ class MyApp extends StatelessWidget {
     // check the screen size
     double width = MediaQuery.sizeOf(context).width;
     log("Get screen width ${width}");
-    if(width > mobileScreenSize){
+    if(width >= TwoPaneUtils.mobileScreenSize){
       platformName = "android";
       //Provider.of<ThemeNotifierProvider>(context, listen: false).setPlatformName("android")
     }
@@ -179,7 +179,7 @@ class MyApp extends StatelessWidget {
             }
         }
 
-        if(MediaQuery.sizeOf(context).width > mobileScreenSize){
+        if(MediaQuery.sizeOf(context).width >= TwoPaneUtils.mobileScreenSize){
           platformName = "android";
           initialPlatform = 'android';
           targetPlatform = TargetPlatform.android;

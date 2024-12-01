@@ -168,4 +168,6 @@ class AppPlatformIcons{
   IconData get deleteSolid => isMaterial(context)? Icons.delete_forever : CupertinoIcons.delete_left_fill;
 
   IconData get clearCircleSolid => isMaterial(context)? Icons.clear : CupertinoIcons.clear_circled;
+
+  IconData get clearAtEndSolid => isMaterial(context)? Icons.clear_all : CupertinoIcons.clear_fill;
 }
