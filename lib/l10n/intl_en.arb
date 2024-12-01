@@ -867,5 +867,11 @@
   },
   "openGameInSteam": "View in Steam",
   "gameFreeOfCharge": "Free",
-  "gameComingSoon": "Coming Soon"
+  "gameComingSoon": "Coming Soon",
+  "gameLanguageNotSupported": "Not support {language}",
+  "@gameLanguageNotSupported": {
+    "placeholders": {
+      "language": {}
+    }
+  }
 }

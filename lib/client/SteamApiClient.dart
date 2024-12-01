@@ -15,5 +15,6 @@ abstract class SteamApiClient {
   @GET("/api/appdetails")
   Future<String> getSteamGameResultByAppId(
       @Query("appids") String appId,
+      @Query("l") String language
       );
 }

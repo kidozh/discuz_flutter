@@ -14,6 +14,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:html_unescape/html_unescape.dart';
+import 'package:language_code/language_code.dart';
 import 'package:provider/provider.dart';
 
 import '../generated/l10n.dart';
@@ -51,6 +52,7 @@ class SteamGameState extends State<SteamGameWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     loadGameState();
   }
 
@@ -68,7 +70,13 @@ class SteamGameState extends State<SteamGameWidget> {
         isLoading = true;
       });
 
-      client.getSteamGameResultByAppId(appId).then((text) {
+      String languageCode = LanguageCode.code.englishName
+          .replaceAll(RegExp(r"\(.*?\)"), "")
+          .replaceAll(RegExp(r"\s"), "")
+          .toLowerCase();
+      // check the chinese version there
+
+      client.getSteamGameResultByAppId(appId, languageCode).then((text) {
         Map<String, dynamic> appIdResultJson = jsonDecode(text);
         if (appIdResultJson.containsKey(appId)) {
           Map<String, dynamic> gameDataJson =
@@ -164,7 +172,8 @@ class SteamGameState extends State<SteamGameWidget> {
                   width: double.infinity,
                   child: CachedNetworkImage(
                     imageUrl: steamGameDataResult.data.header_image,
-                    width: double.infinity,
+                    //width: double.infinity,
+                    fit: BoxFit.fitWidth,
                   ),
                 ),
                 Padding(
@@ -205,7 +214,8 @@ class SteamGameState extends State<SteamGameWidget> {
                     SafeArea(child: Container()),
                     Row(
                       children: [
-                        Expanded(child: Text(
+                        Expanded(
+                            child: Text(
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           steamGameDataResult.data.name.toUpperCase(),
@@ -214,7 +224,6 @@ class SteamGameState extends State<SteamGameWidget> {
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.primary,
                             fontSize: 24,
-
                           ),
                         )),
                         PlatformIconButton(
@@ -228,27 +237,34 @@ class SteamGameState extends State<SteamGameWidget> {
                         ),
                       ],
                     ),
-                    CarouselSlider(
-                      options:
-                          CarouselOptions(
-                              height: 160.0,
-                              aspectRatio: 16 / 9,
-                              autoPlay: true
-                          ),
-                      items: steamGameDataResult.data.screenshots
-                          .map((screenshot) => Container(
-                                margin: EdgeInsets.symmetric(horizontal: 4.0),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(0.0),
-                                    image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: CachedNetworkImageProvider(
-                                          screenshot.path_full),
-                                    )),
-                              ))
-                          .toList(),
+                    LayoutBuilder(builder: (context, constraint) {
+                      log("Get constraint maxWidth ${constraint.maxWidth}");
+                      return CarouselSlider(
+                        options: CarouselOptions(
+                            height: constraint.maxWidth > 960
+                                ? constraint.maxWidth * 0.4
+                                : 160,
+                            aspectRatio: constraint.maxWidth > 960 ? 1 : 16 / 9,
+                            viewportFraction: 0.8,
+                            autoPlay: true),
+                        items: steamGameDataResult.data.screenshots
+                            .map((screenshot) => Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 4.0),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(16.0),
+                                      image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: CachedNetworkImageProvider(
+                                            screenshot.path_full),
+                                      )),
+                                ))
+                            .toList(),
+                      );
+                    }),
+
+                    SizedBox(
+                      height: 8,
                     ),
-                    SizedBox(height: 8,),
                     // SizedBox(
                     //   width: double.infinity,
                     //   child: Text(
@@ -266,114 +282,175 @@ class SteamGameState extends State<SteamGameWidget> {
                       children: [
                         Expanded(
                           flex: 3,
-                            child: RichText(
-                              text: TextSpan(
-                                  children: steamGameDataResult.data.categories
-                                      .map((element) => WidgetSpan(
-                                      child: Container(
-                                        padding: EdgeInsets.all(4),
-                                        margin: EdgeInsets.only(right: 8, bottom: 8),
-                                        decoration: BoxDecoration(
-                                            color: Theme.of(context).colorScheme.primaryContainer,
-                                            borderRadius: BorderRadius.circular(4.0)
-                                        ),
-                                        child: Text(element.description, style: TextStyle(
-                                            color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                            fontSize: 12
-                                        ),),
-                                      )))
-                                      .toList()),
-                            ),
+                          child: RichText(
+                            text: TextSpan(
+                                children: steamGameDataResult.data.categories
+                                    .map((element) => WidgetSpan(
+                                            child: Container(
+                                          padding: EdgeInsets.all(4),
+                                          margin: EdgeInsets.only(
+                                              right: 8, bottom: 8),
+                                          decoration: BoxDecoration(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primaryContainer,
+                                              borderRadius:
+                                                  BorderRadius.circular(4.0)),
+                                          child: Text(
+                                            element.description,
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimaryContainer,
+                                                fontSize: 12),
+                                          ),
+                                        )))
+                                    .toList()),
+                          ),
                         ),
                         // price
-                        if(steamGameDataResult.data.is_free)
+                        if (steamGameDataResult.data.is_free)
                           Expanded(
+                              child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Container(
+                                // padding: EdgeInsets.all(4.0),
+                                // margin: EdgeInsets.only(bottom: 8.0),
+                                //color: Theme.of(context).colorScheme.primary,
+                                child: Text(
+                                  S.of(context).gameFreeOfCharge.toUpperCase(),
+                                  style: TextStyle(
+                                      //color: Theme.of(context).colorScheme.onPrimary,
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 26),
+                                ),
+                              ),
+                            ],
+                          )),
+                        if (!steamGameDataResult.data.is_free &&
+                            steamGameDataResult
+                                .data.price_overview.currency.isNotEmpty)
+                          Expanded(
+                              flex: 1,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Container(
-                                    // padding: EdgeInsets.all(4.0),
-                                    // margin: EdgeInsets.only(bottom: 8.0),
-                                    //color: Theme.of(context).colorScheme.primary,
-                                    child: Text(
-                                      S.of(context).gameFreeOfCharge.toUpperCase(),
-                                      style: TextStyle(
-                                          //color: Theme.of(context).colorScheme.onPrimary,
-                                          fontWeight: FontWeight.normal,
-                                          fontSize: 26
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                          ),
-                        if(!steamGameDataResult.data.is_free && steamGameDataResult.data.price_overview.currency.isNotEmpty)
-                        Expanded(
-                          flex: 1,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                if(steamGameDataResult.data.release_date.coming_soon)
-                                  comingSoonContainer,
-                                if(steamGameDataResult.data.price_overview.discount_percent != 0)
-                                  Container(
-                                    padding: EdgeInsets.all(4.0),
-                                    margin: EdgeInsets.only(bottom: 8.0),
-                                    color: Colors.green,
-                                    child: Text(
+                                  if (steamGameDataResult
+                                      .data.release_date.coming_soon)
+                                    comingSoonContainer,
+                                  if (steamGameDataResult.data.price_overview
+                                          .discount_percent !=
+                                      0)
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 2.0, horizontal: 8),
+                                      margin: EdgeInsets.only(bottom: 8.0),
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      child: Text(
                                         "-${steamGameDataResult.data.price_overview.discount_percent}%",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w800
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimary),
                                       ),
                                     ),
-                                  ),
-                                Text(
-                                    steamGameDataResult.data.price_overview.final_formatted,
+                                  Text(
+                                    steamGameDataResult
+                                        .data.price_overview.final_formatted,
                                     textAlign: TextAlign.end,
                                     style: TextStyle(
-                                      fontSize: 26
-                                    ),
-                                ),
-                                if(steamGameDataResult.data.price_overview.discount_percent != 0)
-                                  Text(
-                                    steamGameDataResult.data.price_overview.initial_formatted,
-                                    style: TextStyle(
-                                        fontSize: 14,
-
-                                      decoration: TextDecoration.lineThrough
+                                      fontSize: 26,
                                     ),
                                   ),
-                                supportedPlatformRow,
-                              ],
-                            )
-                        ),
+                                  if (steamGameDataResult.data.price_overview
+                                          .discount_percent !=
+                                      0)
+                                    Text(
+                                      steamGameDataResult.data.price_overview
+                                          .initial_formatted,
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          decoration:
+                                              TextDecoration.lineThrough),
+                                    ),
+                                  supportedPlatformRow,
+                                ],
+                              )),
                       ],
                     ),
 
-                    SizedBox(height: 8,),
+                    SizedBox(
+                      height: 8,
+                    ),
+
                     Row(
                       children: [
-                        Icon(Icons.translate, size: 16,),
-                        SizedBox(width: 8.0,),
-                        Expanded(child: HtmlWidget(steamGameDataResult.data.supported_languages,
-                          textStyle: TextStyle(
-                            color: Theme.of(context).disabledColor,
-                            fontSize: 12
-                        ),)
-                        )
+                        Icon(
+                          Icons.translate,
+                          size: 16,
+                        ),
+                        SizedBox(
+                          width: 16.0,
+                        ),
+                        Expanded(
+                            child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            HtmlWidget(
+                              steamGameDataResult.data.supported_languages,
+                              textStyle: TextStyle(
+                                  color: Theme.of(context).disabledColor,
+                                  fontSize: 12),
+                            ),
+                            if (!steamGameDataResult.data.supported_languages
+                                .contains(LanguageCode.code.nativeName
+                                    .replaceAll(RegExp(r"\(.*?\)"), "")
+                                    .replaceAll(RegExp(r"\s"), "")))
+                              Container(
+                                padding: EdgeInsets.all(4.0),
+                                //margin: EdgeInsets.only(bottom: 8),
+                                //width: double.infinity,
+                                decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .errorContainer,
+                                    border: Border.all(
+                                      style: BorderStyle.none,
+                                      color:
+                                          Theme.of(context).colorScheme.error,
+                                    )),
+                                child: Text(
+                                  S.of(context).gameLanguageNotSupported(
+                                      LanguageCode.code.nativeName),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onErrorContainer,
+                                      fontSize: 12),
+                                ),
+                              ),
+                          ],
+                        ))
                       ],
-                    )
-                    ,
-                    SizedBox(height: 8,),
-
-
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
 
                     SizedBox(
                       width: double.infinity,
                       child: PlatformElevatedButton(
                         onPressed: () {
+                          // https://store.steampowered.com/app/990080
+                          String steamUrl =
+                              "https://store.steampowered.com/app/${appId}";
                           VibrationUtils.vibrateWithClickIfPossible();
-                          URLUtils.openURL(context, null, url, null, null);
+                          URLUtils.openURL(context, null, steamUrl, null, null);
                           Navigator.of(context).pop();
                         },
                         color: Theme.of(context).colorScheme.inverseSurface,
@@ -383,27 +460,29 @@ class SteamGameState extends State<SteamGameWidget> {
                                   color: Theme.of(context).colorScheme.surface,
                                 ),
                                 children: [
-                                  WidgetSpan(
-                                      child: Icon(
-                                        FontAwesomeIcons.steam,
-                                        size: 18,
-                                        color: Theme.of(context).colorScheme.surface,
-                                      )),
-                                  WidgetSpan(
-                                      child: SizedBox(
-                                        width: 8.0,
-                                      )),
-                                  TextSpan(
-                                    text: S.of(context).openGameInSteam,
-                                    style: TextStyle(
-                                        color:
+                              WidgetSpan(
+                                  child: Icon(
+                                FontAwesomeIcons.steam,
+                                size: 18,
+                                color: Theme.of(context).colorScheme.surface,
+                              )),
+                              WidgetSpan(
+                                  child: SizedBox(
+                                width: 8.0,
+                              )),
+                              TextSpan(
+                                text: S.of(context).openGameInSteam,
+                                style: TextStyle(
+                                    color:
                                         Theme.of(context).colorScheme.surface,
-                                        fontSize: 18),
-                                  )
-                                ])),
+                                    fontSize: 18),
+                              )
+                            ])),
                       ),
                     ),
-                    SizedBox(height: 16,),
+                    SizedBox(
+                      height: 16,
+                    ),
                     // HtmlWidget(steamGameDataResult.data.about_the_game),
                     // Divider(),
                     HtmlWidget(steamGameDataResult.data.detailed_description),
@@ -421,48 +500,46 @@ class SteamGameState extends State<SteamGameWidget> {
   }
 
   Widget get supportedPlatformRow => Row(
-    mainAxisAlignment: MainAxisAlignment.end,
-    children: [
-      if(steamGameDataResult.data.platforms.windows)
-        Container(
-          margin: EdgeInsets.only(top: 8.0, left: 6.0),
-          child: Icon(FontAwesomeIcons.windows, size: 14),
-        ),
-      if(steamGameDataResult.data.platforms.mac)
-        Container(
-          margin: EdgeInsets.only(top: 8.0,left: 6.0),
-          child: Icon(FontAwesomeIcons.apple, size: 14),
-        ),
-      if(steamGameDataResult.data.platforms.linux)
-        Container(
-          margin: EdgeInsets.only(top: 8.0, left: 6.0),
-          child: Icon(FontAwesomeIcons.linux, size: 14,),
-        )
-    ],
-  );
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (steamGameDataResult.data.platforms.windows)
+            Container(
+              margin: EdgeInsets.only(top: 8.0, left: 6.0),
+              child: Icon(FontAwesomeIcons.windows, size: 14),
+            ),
+          if (steamGameDataResult.data.platforms.mac)
+            Container(
+              margin: EdgeInsets.only(top: 8.0, left: 6.0),
+              child: Icon(FontAwesomeIcons.apple, size: 14),
+            ),
+          if (steamGameDataResult.data.platforms.linux)
+            Container(
+              margin: EdgeInsets.only(top: 8.0, left: 6.0),
+              child: Icon(
+                FontAwesomeIcons.linux,
+                size: 14,
+              ),
+            )
+        ],
+      );
 
   Widget get comingSoonContainer => Container(
-    padding: EdgeInsets.all(0),
-    margin: EdgeInsets.only(bottom: 4.0),
-    //color: Theme.of(context).colorScheme.primaryContainer,
-    child: RichText(
-      text: TextSpan(
-        children: [
-          //WidgetSpan(child: Icon(PlatformIcons(context).clockSolid, size: 14, color: Theme.of(context).colorScheme.onPrimaryContainer,)),
-          //WidgetSpan(child: SizedBox(width: 4,)),
-          TextSpan(
-            text: steamGameDataResult.data.release_date.date,
-              style: TextStyle(
-                  fontSize: 14,
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.normal,
-                  fontStyle: FontStyle.normal,
-                  decoration: TextDecoration.underline
-              )
-          )
-
-        ]
-      ),
-    ),
-  );
+        padding: EdgeInsets.all(0),
+        margin: EdgeInsets.only(bottom: 4.0),
+        //color: Theme.of(context).colorScheme.primaryContainer,
+        child: RichText(
+          text: TextSpan(children: [
+            //WidgetSpan(child: Icon(PlatformIcons(context).clockSolid, size: 14, color: Theme.of(context).colorScheme.onPrimaryContainer,)),
+            //WidgetSpan(child: SizedBox(width: 4,)),
+            TextSpan(
+                text: steamGameDataResult.data.release_date.date,
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.normal,
+                    fontStyle: FontStyle.normal,
+                    decoration: TextDecoration.underline))
+          ]),
+        ),
+      );
 }

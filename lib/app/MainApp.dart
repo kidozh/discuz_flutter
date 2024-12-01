@@ -782,6 +782,8 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
         navigatorKey: this.navigatorKey,
       );
     }
+
+
     double paneProportion = 0.35;
     // directly give
     return OrientationBuilder(builder: (context, orientation) {

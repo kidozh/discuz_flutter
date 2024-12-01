@@ -130,7 +130,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   ButtonState _sendReplyStatus = ButtonState.idle;
   ViewThreadQuery viewThreadQuery = ViewThreadQuery();
   Map<String, List<Comment>> postCommentList = {};
-  final FocusNode _focusNode = FocusNode();
+  final FocusNode _focusNode = FocusNode(debugLabel: "view_thread_textfield");
 
   // smiley=1, extra=2 or none = 0
   int dialogStatus = 0;
@@ -176,7 +176,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
   void bindFocusNode() {
     _focusNode.addListener(() {
-      //print("In focus node");
+      debugDumpFocusTree();
       if (_focusNode.hasFocus) {
         setState(() {
           dialogStatus = SHOW_NONE_DIALOG;
@@ -190,9 +190,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
     _scrollController.addListener(() {
       // remove focus when
+
       if (_focusNode.hasFocus) {
         DateTime now = DateTime.now();
-        if(now.difference(lastFocusAt).inSeconds > 10){
+        if(now.difference(lastFocusAt).inSeconds > 1){
           print("Unfocus node due to scroll ${now.difference(lastFocusAt).inSeconds}");
           _focusNode.unfocus();
         }

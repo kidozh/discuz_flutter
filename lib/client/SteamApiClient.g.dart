@@ -24,9 +24,15 @@ class _SteamApiClient implements SteamApiClient {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<String> getSteamGameResultByAppId(String appId) async {
+  Future<String> getSteamGameResultByAppId(
+    String appId,
+    String language,
+  ) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'appids': appId};
+    final queryParameters = <String, dynamic>{
+      r'appids': appId,
+      r'l': language,
+    };
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<String>(Options(

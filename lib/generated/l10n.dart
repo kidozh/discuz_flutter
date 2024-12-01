@@ -5960,6 +5960,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Not support {language}`
+  String gameLanguageNotSupported(Object language) {
+    return Intl.message(
+      'Not support $language',
+      name: 'gameLanguageNotSupported',
+      desc: '',
+      args: [language],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

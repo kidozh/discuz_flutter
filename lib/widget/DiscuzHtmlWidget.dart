@@ -132,8 +132,9 @@ class DiscuzHtmlWidget extends StatelessWidget {
               };
             } else if(element.className == "reply_wrap"){
               return {
-                "background-color": "#${Theme.of(context).colorScheme.primaryContainer.value.toRadixString(16).substring(2)}",
-                "padding" : "0.1em",
+                "border": "0.4rem dashed #${Theme.of(context).colorScheme.primary.value.toRadixString(16).substring(2)}",
+                "background-color" : "#${Theme.of(context).colorScheme.primaryContainer.value.toRadixString(16).substring(2)}",
+                "padding" : "0.5em",
                 "margin-bottom": "0.1em"
               };
             }

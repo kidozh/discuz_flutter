@@ -40,7 +40,7 @@ class NetworkUtils{
   static Dio getDio(){
     return Dio(BaseOptions(
       headers: {
-        'Accept-Language': LanguageCode.code.code
+        'Accept-Language': "zh-CN,zh;q=0.9,zh-TW;q=0.8,en;q=0.6"
       }
     ));
   }
