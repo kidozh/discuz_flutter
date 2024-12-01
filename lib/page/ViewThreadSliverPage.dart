@@ -176,7 +176,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
   void bindFocusNode() {
     _focusNode.addListener(() {
-      debugDumpFocusTree();
+      //debugDumpFocusTree();
       if (_focusNode.hasFocus) {
         setState(() {
           dialogStatus = SHOW_NONE_DIALOG;

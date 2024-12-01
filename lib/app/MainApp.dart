@@ -47,6 +47,8 @@ import '../utility/TwoPaneScaffold.dart';
 import '../utility/TwoPaneUtils.dart';
 import '../widget/DiscuzNotificationAppbarIconWidget.dart';
 
+double mobileScreenSize = 600;
+
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   String platformName = "";
@@ -56,7 +58,19 @@ class MyApp extends StatelessWidget {
 
   _loadPreference(BuildContext context) async {
     int colorName = await UserPreferencesUtils.getThemeColor();
-    platformName = await UserPreferencesUtils.getPlatformPreference();
+    // check the size
+    // check the screen size
+    double width = MediaQuery.sizeOf(context).width;
+    log("Get screen width ${width}");
+    if(width > mobileScreenSize){
+      platformName = "android";
+      //Provider.of<ThemeNotifierProvider>(context, listen: false).setPlatformName("android")
+    }
+    else{
+      platformName = await UserPreferencesUtils.getPlatformPreference();
+    }
+
+
     double scale = await UserPreferencesUtils.getTypesettingScalePreference();
     Brightness? brightness =
         await UserPreferencesUtils.getInterfaceBrightnessPreference();
@@ -140,6 +154,9 @@ class MyApp extends StatelessWidget {
         String platformName =
             Provider.of<ThemeNotifierProvider>(context, listen: false)
                 .platformName;
+        // if in tablet mode should choose material only
+
+
         TargetPlatform targetPlatform = TargetPlatform.android;
 
         TypeSettingNotifierProvider typeSetting =
@@ -161,6 +178,16 @@ class MyApp extends StatelessWidget {
               targetPlatform = Theme.of(context).platform;
             }
         }
+
+        if(MediaQuery.sizeOf(context).width > mobileScreenSize){
+          platformName = "android";
+          initialPlatform = 'android';
+          targetPlatform = TargetPlatform.android;
+          //Provider.of<ThemeNotifierProvider>(context, listen: false).setPlatformName("android");
+        }
+
+
+
 
         switch (typeSetting.typographyTheme) {
           case "material2014":
@@ -775,18 +802,7 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
   void initState() {
 
     super.initState();
-    changeLayoutToMaterialIfInTablet();
-  }
 
-  Future<void> changeLayoutToMaterialIfInTablet() async{
-    if(isCupertino(context) && widget.type != TwoPaneType.smallScreen){
-      // change it to material despite the setting
-      // if(isCupertino(context))
-      Future.delayed(const Duration(seconds: 1), (){
-        PlatformProvider.of(context)?.changeToMaterialPlatform();
-      });
-
-    }
   }
 
   @override
@@ -813,7 +829,7 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
       return TwoPaneScaffold(
           type: widget.type,
           child: TwoPane(
-              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
               paneProportion: paneProportion,
               panePriority: panePriority,
               startPane: MyHomePage(
