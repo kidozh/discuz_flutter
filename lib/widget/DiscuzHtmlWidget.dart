@@ -1,14 +1,11 @@
 import 'dart:developer';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
-import 'package:discuz_flutter/page/ChooseThemeColorPage.dart';
 import 'package:discuz_flutter/page/FullImagePage.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
-import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/PostTextUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/BilibiliWidget.dart';
@@ -16,6 +13,7 @@ import 'package:discuz_flutter/widget/SteamGameWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:html/parser.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_countdown/slide_countdown.dart';
 
@@ -110,7 +108,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
                   context,
                   platformPageRoute(
                       context: context,
-                      builder: (context) => FullImagePage(src)));
+                      builder: (context) => FullImagePage(src, getAllImageSrcList())));
                         }
 
           },
@@ -132,8 +130,19 @@ class DiscuzHtmlWidget extends StatelessWidget {
               };
             } else if(element.className == "reply_wrap"){
               return {
-                "border": "0.4rem dashed #${Theme.of(context).colorScheme.primary.value.toRadixString(16).substring(2)}",
+                "border": "0.05em dashed #${Theme.of(context).colorScheme.primary.value.toRadixString(16).substring(2)}",
+                "border-radius": "0.5em",
                 "background-color" : "#${Theme.of(context).colorScheme.primaryContainer.value.toRadixString(16).substring(2)}",
+                "color" : "#${Theme.of(context).colorScheme.onPrimaryContainer.value.toRadixString(16).substring(2)}",
+                "padding" : "0.5em",
+                "margin-bottom": "0.1em"
+              };
+            }
+            else if(element.className == "blockcode"){
+              return {
+                "border": "0.05em dashed #${Theme.of(context).colorScheme.secondary.value.toRadixString(16).substring(2)}",
+                "background-color" : "#${Theme.of(context).colorScheme.secondaryContainer.value.toRadixString(16).substring(2)}",
+                "color" : "#${Theme.of(context).colorScheme.onSecondaryContainer.value.toRadixString(16).substring(2)}",
                 "padding" : "0.5em",
                 "margin-bottom": "0.1em"
               };
@@ -223,5 +232,18 @@ class DiscuzHtmlWidget extends StatelessWidget {
         );
       }),
     );
+  }
+
+  List<String> getAllImageSrcList(){
+    var htmlDocument = parse(html);
+    var imageElementList = htmlDocument.getElementsByTagName("img");
+    List<String> imageSrcList = [];
+    for(var imageElement in imageElementList){
+      if(imageElement.attributes["src"] != null){
+        imageSrcList.add(imageElement.attributes["src"]!);
+      }
+    }
+
+    return imageSrcList;
   }
 }

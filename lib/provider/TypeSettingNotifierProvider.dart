@@ -71,6 +71,19 @@ class TypeSettingNotifierProvider with ChangeNotifier{
 
   bool get useCompactParagraph => _useCompactParagraph;
 
+  bool _ignoreCustomFontStyle = true;
+
+  bool get ignoreCustomFontStyle => _ignoreCustomFontStyle;
+
+  set ignoreCustomFontStyle(bool value){
+    this._ignoreCustomFontStyle = value;
+    notifyListeners();
+  }
+
+  void setIgnoreCustomFontStyle(bool value){
+    this._ignoreCustomFontStyle = value;
+    notifyListeners();
+  }
 
 
 }

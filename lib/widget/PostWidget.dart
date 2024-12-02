@@ -279,7 +279,7 @@ class PostState extends State<PostStatefulWidget> {
     String _html = _post.message;
     log("Original HTML ${_html}");
 
-    if (this.isFontStyleIgnored()) {
+    if (Provider.of<TypeSettingNotifierProvider>(context, listen: false).ignoreCustomFontStyle) {
       // regex
       // _html = _html
       //     .replaceAll(RegExp(r'<font.*?>', multiLine: true), "")

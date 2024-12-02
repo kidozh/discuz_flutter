@@ -102,6 +102,7 @@ dependencies:
   flutter_widget_from_html: ^0.15.3
   html_unescape: ^2.0.0
   language_code: ^0.5.5
+  web: ^1.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

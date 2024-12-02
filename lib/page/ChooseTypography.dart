@@ -112,6 +112,7 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
                     setState(() {
                       ignoreCustomFontStyle = value;
                     });
+                    Provider.of<TypeSettingNotifierProvider>(context, listen: false).ignoreCustomFontStyle = value;
                   }, initialValue: ignoreCustomFontStyle,
                 ),
                 SettingsTile.switchTile(

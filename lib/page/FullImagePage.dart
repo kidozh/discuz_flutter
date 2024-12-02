@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -13,92 +11,133 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 
 import '../utility/AppPlatformIcons.dart';
 
-class FullImagePage extends StatelessWidget{
+
+
+class FullImagePage extends StatefulWidget {
   String imageUrl;
-  FullImagePage(this.imageUrl);
-  late BuildContext _context;
+  List<String> imageUrlList = [];
+
+  FullImagePage(this.imageUrl, this.imageUrlList);
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return FullImagePageState(imageUrl, imageUrlList);
+  }
+
+
+
+}
+
+
+class FullImagePageState extends State<FullImagePage>{
+  String imageUrl;
+  List<String> imageUrlList = [];
+
+  late PageController pageController;
+
+  int currentPage = 0;
+  FullImagePageState(this.imageUrl, this.imageUrlList){
+    currentPage = initialPage;
+    pageController = PageController(initialPage: initialPage);
+
+  }
+
   @override
   Widget build(BuildContext context) {
-    _context = context;
+
+
     return PlatformScaffold(
-      appBar: PlatformAppBar(
-        title: Text(imageUrl.split("/").last,
-          maxLines: 1,
+        appBar: PlatformAppBar(
+          title: Text(
+            "${currentPage + 1} / ${imageUrlList.length}",
+            maxLines: 1,
+          ),
+          trailingActions: [
+            IconButton(
+              icon: Icon(AppPlatformIcons(context).saveOutline),
+              onPressed: () {
+                VibrationUtils.vibrateWithClickIfPossible();
+                _save(context);
+              },
+            )
+          ],
         ),
-        trailingActions: [
-          IconButton(
-            icon: Icon(AppPlatformIcons(context).saveOutline),
-            onPressed: (){
-              VibrationUtils.vibrateWithClickIfPossible();
-              _save();
-            },
-          )
-        ],
+        body: Container(
+            child: Column(
+              children: [
+                Expanded(
+                  child: photoViewGalleryListBuilder,
+                )
+              ],
+            )));
+  }
+
+  int get initialPage => imageUrlList.indexOf(imageUrl);
+
+  Widget get photoViewGalleryListBuilder => PhotoViewGallery.builder(
+    itemCount: imageUrlList.length,
+    scrollPhysics: const BouncingScrollPhysics(),
+    builder: (BuildContext context, int index) {
+      return PhotoViewGalleryPageOptions(
+        imageProvider: CachedNetworkImageProvider(imageUrlList[index]),
+        initialScale: PhotoViewComputedScale.contained * 0.8,
+        heroAttributes: PhotoViewHeroAttributes(tag: index),
+      );
+    },
+    pageController: pageController,
+    onPageChanged: (value){
+      setState(() {
+        currentPage = value;
+      });
+
+    },
+    loadingBuilder: (context, event) => Center(
+      child: Container(
+        width: 48,
+        height: 48,
+        child: PlatformCircularProgressIndicator(
+          material: (context, platform) => MaterialProgressIndicatorData(
+            value: (event == null || event.expectedTotalBytes == null)? 0: event.cumulativeBytesLoaded / event.expectedTotalBytes!
+          ),
+        ),
       ),
-      body: Container(
-          child: Column(
-            children: [
-              Expanded(
-                  child: PhotoView(
-                    imageProvider: CachedNetworkImageProvider(
-                      imageUrl,
+    ),
 
-                    ),
-                  )
+  );
 
-              ),
-
-                // ElevatedButton.icon(
-                //     icon: Icon(Icons.save),
-                //     onPressed: (){
-                //       _save();
-                //     },
-                //     label: Text(S.of(context).savePictureToDevice)
-                // )
-            ],
-          )
-      )
-    );
-
+  Future<void> _saveFigureInDevice() async {
+    if(currentPage < imageUrlList.length){
+      var response = await Dio()
+          .get(imageUrlList[currentPage], options: Options(responseType: ResponseType.bytes));
+      ImageGallerySaver.saveImage(Uint8List.fromList(response.data),
+          quality: 100);
+      EasyLoading.showSuccess(S.of(context).saveImageSuccessfully);
+    }
   }
 
-  Future<void> _saveFigureInDevice() async{
-    var response = await Dio().get(imageUrl,
-        options: Options(responseType: ResponseType.bytes)
-    );
-    ImageGallerySaver.saveImage(Uint8List.fromList(response.data), quality: 100);
-
-
-  }
-
-  _save() async {
-    if(Platform.isIOS || Platform.isAndroid){
+  _save(BuildContext context) async {
+    if (Platform.isIOS || Platform.isAndroid) {
       print(imageUrl);
       var status = await Permission.storage.status;
       print(status);
-      if(status.isGranted){
+      if (status.isGranted) {
         await _saveFigureInDevice();
-      }
-      else if(status.isPermanentlyDenied){
-        EasyLoading.showError(S.of(_context).writeStorageDenied);
-      }
-      else if(status.isDenied){
+      } else if (status.isPermanentlyDenied) {
+        EasyLoading.showError(S.of(context).writeStorageDenied);
+      } else if (status.isDenied) {
         PermissionStatus statusResult = await Permission.storage.request();
-        if(statusResult.isGranted){
+        if (statusResult.isGranted) {
           // save it
           await _saveFigureInDevice();
+        } else {
+          EasyLoading.showError(S.of(context).writeStorageDenied);
         }
-        else{
-          EasyLoading.showError(S.of(_context).writeStorageDenied);
-        }
-
       }
-
-
     }
-
   }
 }

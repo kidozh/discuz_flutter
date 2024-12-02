@@ -86,6 +86,7 @@ class MyApp extends StatelessWidget {
     DynamicSchemeVariant dynamicSchemeVariant =
         await UserPreferencesUtils.getInterfaceDynamicSchemeVariantPreference();
     String adExemptHost = await UserPreferencesUtils.getAdExemptDiscuzHostPreference();
+    bool ignoreCustomFontStyle = await UserPreferencesUtils.getDisableFontCustomizationPreference();
 
     Provider.of<ThemeNotifierProvider>(context, listen: false)
         .setTheme(colorName);
@@ -95,6 +96,8 @@ class MyApp extends StatelessWidget {
         .setDynamicSchemeVariant(dynamicSchemeVariant);
     Provider.of<TypeSettingNotifierProvider>(context, listen: false)
         .setScalingParameter(scale);
+    Provider.of<TypeSettingNotifierProvider>(context, listen: false)
+        .ignoreCustomFontStyle = ignoreCustomFontStyle;
     Provider.of<ThemeNotifierProvider>(context, listen: false)
         .setBrightness(brightness);
     Provider.of<ThemeNotifierProvider>(context, listen: false)

@@ -1,6 +1,8 @@
 
 
 
+import 'dart:developer';
+
 class PostTextUtils{
   static String replaceCollapseTag(String string){
     //log("Recv html $string");
@@ -67,8 +69,10 @@ class PostTextUtils{
     decodedString = replaceMediaTag(decodedString);
     decodedString = decodedString;
     if(useCompactParagraph){
-      decodedString = decodedString.replaceAll(RegExp(r"<br.*?/>\s+<br.*?/>"), r"<br />");
+      decodedString = decodedString.replaceAll(RegExp(r"<br\s+?/>\s+<br\s+?/>"), r"<br />");
     }
+
+
     // if(useCompactParagraph){
     //   decodedString = decodedString.replaceAll(RegExp(r"<br.*?/>"), "");
     // }
@@ -77,6 +81,9 @@ class PostTextUtils{
   }
 
   static String decodePostMessage(String message){
+    message = message.replaceAll(RegExp(r'style=".*?"'), "");
+    message = message.replaceAll(RegExp(r'color=".*?"'), "");
+    log("Get decoded remove style message ${message}");
     return message
 
     ;

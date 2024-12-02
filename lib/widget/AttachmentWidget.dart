@@ -129,7 +129,10 @@ class AttachmentWidget extends StatelessWidget{
 
           Navigator.push(
               context,
-              platformPageRoute(context:context, builder: (context) => FullImagePage(URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode)))
+              platformPageRoute(context:context, builder: (context) => FullImagePage(
+                  URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode),
+                  [URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode)]
+              ))
           );
         },
       );
@@ -174,7 +177,10 @@ class AttachmentWidget extends StatelessWidget{
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.push(
                         context,
-                        platformPageRoute(context:context, builder: (context) => FullImagePage(URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode)))
+                        platformPageRoute(context:context, builder: (context) => FullImagePage(
+                            URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode),
+                            [URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode)]
+                        ))
                     );
               }, label: Text(S.of(context).watchPictureInFullScreen))
             ],

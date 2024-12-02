@@ -1,13 +1,13 @@
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:io' show Platform;
+import "dart:convert";
+import "dart:developer";
+import "dart:io" show Platform;
 
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:discuz_flutter/entity/Smiley.dart';
-import 'package:flutter/widgets.dart';
-import 'package:ios_utsname_ext/extension.dart';
+import "package:device_info_plus/device_info_plus.dart";
+import "package:discuz_flutter/entity/Smiley.dart";
+import "package:flutter/widgets.dart";
+import "package:ios_utsname_ext/extension.dart";
 
-import '../generated/l10n.dart';
+import "../generated/l10n.dart";
 
 class PostTextFieldUtils {
   static String getPostMessage(String message) {
@@ -84,7 +84,7 @@ class PostTextFieldUtils {
   static const String NO_SIGNATURE = "";
 
   static const String EXAMPLE_HTML_LONG_DATA = r"""
-<p id='top'><a href='#bottom'>Scroll to bottom</a></p>
+<p id="top"><a href="#bottom">Scroll to bottom</a></p>
       <h1>Header 1</h1>
       <h2>Header 2</h2>
       <h3>Header 3</h3>
@@ -93,11 +93,11 @@ class PostTextFieldUtils {
       <h6>Header 6</h6>
       
       <h2>Inline Styles:</h2>
-      <p>The should be <span style='color: blue;'>BLUE style='color: blue;'</span></p>
-      <p>The should be <span style='color: red;'>RED style='color: red;'</span></p>
-      <p>The should be <span style='color: rgba(0, 0, 0, 0.10);'>BLACK with 10% alpha style='color: rgba(0, 0, 0, 0.10);</span></p>
-      <p>The should be <span style='color: rgb(0, 97, 0);'>GREEN style='color: rgb(0, 97, 0);</span></p>
-      <p>The should be <span style='background-color: red; color: rgb(0, 97, 0);'>GREEN style='color: rgb(0, 97, 0);</span></p>
+      <p>The should be <span style="color: blue;">BLUE style="color: blue;"</span></p>
+      <p>The should be <span style="color: red;">RED style="color: red;"</span></p>
+      <p>The should be <span style="color: rgba(0, 0, 0, 0.10);">BLACK with 10% alpha style="color: rgba(0, 0, 0, 0.10);</span></p>
+      <p>The should be <span style="color: rgb(0, 97, 0);">GREEN style="color: rgb(0, 97, 0);</span></p>
+      <p>The should be <span style="background-color: red; color: rgb(0, 97, 0);">GREEN style="color: rgb(0, 97, 0);</span></p>
       
       <h2>Text Alignment</h2>
       <p style="text-align: center;"><span style="color: rgba(0, 0, 0, 0.95);">Center Aligned Text</span></p>
@@ -122,16 +122,16 @@ class PostTextFieldUtils {
       
       <h2>Link support:</h2>
       <p>
-        Linking to <a href='https://github.com'>websites</a> has never been easier.
+        Linking to <a href="https://github.com">websites</a> has never been easier.
       </p>
       
-      <h2 id='middle'>SVG support:</h2>
-      <svg id='svg1' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'>
+      <h2 id="middle">SVG support:</h2>
+      <svg id="svg1" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <circle r="32" cx="35" cy="65" fill="#F00" opacity="0.5"/>
             <circle r="32" cx="65" cy="65" fill="#0F0" opacity="0.5"/>
             <circle r="32" cx="50" cy="35" fill="#00F" opacity="0.5"/>
       </svg>
       
-      <p id='bottom'><a href='#top'>Scroll to top</a></p>
+      <p id="bottom"><a href="#top">Scroll to top</a></p>
 """;
 }
