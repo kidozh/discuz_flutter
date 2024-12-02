@@ -337,7 +337,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   int _bottomNavigationbarIndex = 0;
   late List<Widget> bodies = [];
   late UserDao _userDao;
-  late DiscuzDao _discuzDao;
 
   //
   List<Discuz> _allDiscuzs = [];
@@ -457,7 +456,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   void _initDb() async {
     _userDao = await AppDatabase.getUserDao();
-    _discuzDao = await AppDatabase.getDiscuzDao();
   }
 
   void _setFirstUserInDiscuz(Discuz discuz) async {
@@ -588,14 +586,14 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     // need to check whether discuz exists in dataset
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    if (user == null && _bottomNavigationbarIndex >= 2) {
-      _bottomNavigationbarIndex = 0;
-    }
+
     CustomizeColor.updateAndroidNavigationbarColorWithDashboard(context);
-    double width = MediaQuery.sizeOf(context).width;
-    if(true){
+    return Consumer<DiscuzAndUserNotifier>(builder: (context, discuzAndUser, child){
+      User? user =
+          Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+      if (user == null && _bottomNavigationbarIndex >= 2) {
+        _bottomNavigationbarIndex = 0;
+      }
       return PlatformScaffold(
         appBar: PlatformAppBar(
           title: Consumer<DiscuzAndUserNotifier>(
@@ -615,7 +613,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     ),
                     if (value.user == null)
                       Text(S.of(context).incognitoTitle,
-                          style: TextStyle(fontSize: 12),
+                        style: TextStyle(fontSize: 12),
                         textAlign: TextAlign.center,
                       ),
                     if (value.user != null)
@@ -758,7 +756,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         ),
 
       );
-    }
+    });
+
   }
 
 }
