@@ -469,7 +469,7 @@ class SteamGameState extends State<SteamGameWidget> {
                               )),
                               WidgetSpan(
                                   child: SizedBox(
-                                width: 8.0,
+                                width: 12,
                               )),
                               TextSpan(
                                 text: S.of(context).openGameInSteam,

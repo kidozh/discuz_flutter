@@ -125,46 +125,51 @@ class _ChooseAdExemptState extends State<ChooseAdExemptPage> {
                         trailing: Icon(AppPlatformIcons(context)
                             .advertisementExemptCheckSolid),
                         onPressed: (context) {
-                          showPlatformModalSheet(context: context, builder: (context) => Container(
-                            color: Theme.of(context).dialogBackgroundColor,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(AppPlatformIcons(context).checkCircleOutlined, size: 32,),
-                                  SizedBox(height: 16, width: double.infinity,),
-                                  Text(S.of(context).discuzInAdExemptBuiltInList(discuz.siteName), style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize
-                                      )
-                                    ),
-                                  SizedBox(height: 8, width: double.infinity,),
-                                  Text(S.of(context).discuzInAdExemptBuiltInListDescription(discuz.siteName), style: TextStyle(
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize
-                                  )),
-                                  SizedBox(height: 16, width: double.infinity,),
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: PlatformElevatedButton(
-                                      child: Text(discuz.siteName),
-                                      onPressed: (){
-                                        VibrationUtils.vibrateWithClickIfPossible();
-                                        URLUtils.launchURL(discuz.baseURL);
-                                      },
-                                    ),
-                                  )
-                                ],
-                              ),
-                            )
-                          ));
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          launchAdExemptDialog(discuz);
                         }))
                     .toList()),
         ],
       ),
     );
+  }
+
+  void launchAdExemptDialog(Discuz discuz){
+    showPlatformModalSheet(context: context, builder: (context) => Container(
+        color: Theme.of(context).dialogBackgroundColor,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(AppPlatformIcons(context).checkCircleOutlined, size: 32,),
+              SizedBox(height: 16, width: double.infinity,),
+              Text(S.of(context).discuzInAdExemptBuiltInList(discuz.siteName), style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18
+              )
+              ),
+              SizedBox(height: 8, width: double.infinity,),
+              Text(S.of(context).discuzInAdExemptBuiltInListDescription(discuz.siteName), style: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: 14
+              )),
+              SizedBox(height: 16, width: double.infinity,),
+              SizedBox(
+                width: double.infinity,
+                child: PlatformElevatedButton(
+                  child: Text(discuz.siteName),
+                  onPressed: (){
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    URLUtils.launchURL(discuz.baseURL);
+                  },
+                ),
+              )
+            ],
+          ),
+        )
+    ));
   }
 
   Widget trailingWidget(String platformName) {

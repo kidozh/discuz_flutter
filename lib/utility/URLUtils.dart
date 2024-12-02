@@ -250,7 +250,10 @@ class URLUtils{
                 mainAxisSize: MainAxisSize.min,
                 children:[
                   Container(
-                    color: Colors.red.shade50,
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(8.0)
+                    ),
                     padding: EdgeInsets.symmetric(vertical: 4.0,horizontal: 4.0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
