@@ -98,6 +98,7 @@ class _SettingPageState extends State<SettingPage> {
                     onPressed: (context){
                       VibrationUtils.vibrateWithClickIfPossible();
                       Navigator.of(context).push(platformPageRoute(
+                        iosTitle: S.of(context).discuzAuthenticationTitle,
                         builder: (_) => DiscuzAuthenticationPage(),
                         context: context,
                       ));
@@ -166,6 +167,7 @@ class _SettingPageState extends State<SettingPage> {
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
+                      iosTitle: S.of(context).chooseThemeTitle,
                       builder: (_) => ChooseThemeColorPage(),
                       context: context,
                     ));
@@ -178,6 +180,7 @@ class _SettingPageState extends State<SettingPage> {
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
+                      iosTitle: S.of(context).dynamicSchemeVariant,
                       builder: (_) => ChooseDynamicSchemeVariantPage(),
                       context: context,
                     ));
@@ -190,6 +193,7 @@ class _SettingPageState extends State<SettingPage> {
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
+                      iosTitle: S.of(context).appearanceOptimizedPlatform,
                       builder: (_) => ChoosePlatformPage(),
                       context: context,
                     ));
@@ -203,6 +207,7 @@ class _SettingPageState extends State<SettingPage> {
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
+                      iosTitle: S.of(context).interfaceBrightness,
                       builder: (_) => ChooseInterfaceBrightnessPage(),
                       context: context,
                     ));
@@ -228,6 +233,7 @@ class _SettingPageState extends State<SettingPage> {
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
+                      iosTitle: S.of(context).typeSetting,
                       builder: (_) => ChooseTypeSettingScalePage(),
                       context: context,
                     ));
@@ -284,6 +290,7 @@ class _SettingPageState extends State<SettingPage> {
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.of(context).push(platformPageRoute(
+                      iosTitle: S.of(context).customSignature,
                       builder: (_) => SelectSignatureStylePage(),
                       context: context,
                     ));
@@ -301,6 +308,7 @@ class _SettingPageState extends State<SettingPage> {
                             onPressed: (context) {
                               VibrationUtils.vibrateWithClickIfPossible();
                               Navigator.of(context).push(platformPageRoute(
+                                iosTitle: S.of(context).adExemptTitle,
                                 builder: (_) => ChooseAdExemptPage(),
                                 context: context,
                               ));
@@ -354,6 +362,7 @@ class _SettingPageState extends State<SettingPage> {
                   onPressed: (_) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     showLicensePage(
+                        useRootNavigator: true,
                         context: context,
                         applicationName: S.of(context).appName,
                         applicationIcon: Image(

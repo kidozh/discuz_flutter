@@ -172,7 +172,10 @@ class FavoriteForumCardWidget extends StatelessWidget{
           VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(
               context,
-              platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz, user, favoriteForumInDatabase.idKey))
+              platformPageRoute(
+                  context:context,
+                  iosTitle: favoriteForumInDatabase.title,
+                  builder: (context) => DisplayForumTwoPanePage(discuz, user, favoriteForumInDatabase.idKey))
           );
         },
 

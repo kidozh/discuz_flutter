@@ -151,6 +151,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                   Navigator.push(
                       context,
                       platformPageRoute(
+                          iosTitle: S.of(context).privateMessage,
                           context: context,
                           builder: (context) => PrivateMessageDetailScreen(
                               uid,
@@ -299,6 +300,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                                   Navigator.push(
                                       context,
                                       platformPageRoute(
+                                          iosTitle: uid.toString(),
                                           context: context,
                                           builder: (context) => ExploreWebsiteScaffordPage(initialURL: discuz.baseURL+"/home.php?mod=space&uid=${uid}&do=thread&view=me&type=thread&from=space")));
                                 },
@@ -322,6 +324,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                                   Navigator.push(
                                       context,
                                       platformPageRoute(
+                                          iosTitle: S.of(context).openViaInternalBrowser,
                                           context: context,
                                           builder: (context) => ExploreWebsiteScaffordPage(initialURL: discuz.baseURL+"/home.php?mod=space&uid=${uid}&do=thread&view=me&type=reply&from=space")));
                                 },

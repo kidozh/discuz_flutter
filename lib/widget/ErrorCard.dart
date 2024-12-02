@@ -101,6 +101,7 @@ class ErrorCard extends StatelessWidget{
                   await Navigator.push(
                       context,
                       platformPageRoute(
+                          iosTitle: S.of(context).loginTitle,
                           context: context,
                           builder: (context) => LoginPage(discuz, user?.username)));
                 }
@@ -122,6 +123,7 @@ class ErrorCard extends StatelessWidget{
                       context,
                       platformPageRoute(
                           context: context,
+                          iosTitle: S.of(context).navigateToWebPage,
                           builder: (context) => InternalWebviewBrowserPage(
                               discuz,
                               user,

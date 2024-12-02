@@ -32,7 +32,7 @@
   "anonymous": "A",
   "publishAt": " published at ",
   "forumDisplayTitle": "Display a forum",
-  "viewThreadTitle": "View a thread",
+  "viewThreadTitle": "View thread",
   "postPosition": "# {pos}",
   "@postPosition": {
     "placeholders": {
@@ -873,5 +873,9 @@
     "placeholders": {
       "language": {}
     }
-  }
+  },
+  "menuDrawerTitle": "Menu",
+  "postThread": "Post thread",
+  "viewPicture": "Preview",
+  "history": "History"
 }

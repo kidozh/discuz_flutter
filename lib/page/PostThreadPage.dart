@@ -83,8 +83,17 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     if (_displayForumResult == null) {
-      return LoadingScreen(
-        loadingText: S.of(context).loadingForumInformation,
+      return Container(
+        width: 128,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            PlatformCircularProgressIndicator(),
+            SizedBox(height: 16,),
+            Text(S.of(context).loadingForumInformation)
+          ],
+        ),
       );
     }
 

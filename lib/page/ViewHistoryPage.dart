@@ -263,13 +263,19 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
                         if(viewHistory.type == "thread"){
                           await Navigator.push(
                               context,
-                              platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz,user, viewHistory.identification))
+                              platformPageRoute(
+                                  context:context,
+                                  iosTitle: viewHistory.title,
+                                  builder: (context) => ViewThreadSliverPage(discuz,user, viewHistory.identification))
                           );
                         }
                         else if(viewHistory.type == "forum"){
                           await Navigator.push(
                               context,
-                              platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz, user, viewHistory.identification))
+                              platformPageRoute(
+                                  context:context,
+                                  iosTitle: viewHistory.title,
+                                  builder: (context) => DisplayForumTwoPanePage(discuz, user, viewHistory.identification))
                           );
                         }
                       },

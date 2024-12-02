@@ -425,6 +425,7 @@ class PostState extends State<PostStatefulWidget> {
                     context,
                     platformPageRoute(
                         context: context,
+                        iosTitle: _post.author,
                         builder: (context) =>
                             UserProfilePage(_discuz, user, _post.authorId, username: _post.author,)));
               }
@@ -515,6 +516,7 @@ class PostState extends State<PostStatefulWidget> {
                         context,
                         platformPageRoute(
                             context: context,
+                            iosTitle: S.of(context).reportThreadTooltip,
                             builder: (context) => ReportContentPage(
                                 _post.author, _post.pid, 0, formhash)));
                   },

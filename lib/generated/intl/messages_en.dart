@@ -577,6 +577,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "habit": MessageLookupByLibrary.simpleMessage("Habits"),
         "hapticFeedbackTitle":
             MessageLookupByLibrary.simpleMessage("Vibration feedback"),
+        "history": MessageLookupByLibrary.simpleMessage("History"),
         "homepage": MessageLookupByLibrary.simpleMessage("Homepage"),
         "hostIsEmpty":
             MessageLookupByLibrary.simpleMessage("Host is empty in the form."),
@@ -660,6 +661,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "materialDesign":
             MessageLookupByLibrary.simpleMessage("Material Design"),
         "me": MessageLookupByLibrary.simpleMessage("Me"),
+        "menuDrawerTitle": MessageLookupByLibrary.simpleMessage("Menu"),
         "menuIconTooltip": MessageLookupByLibrary.simpleMessage("Menu"),
         "minute": MessageLookupByLibrary.simpleMessage("M"),
         "minuteAgo": m28,
@@ -758,6 +760,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "postAuthorLabel": MessageLookupByLibrary.simpleMessage("OP"),
         "postNumber": MessageLookupByLibrary.simpleMessage("Post number"),
         "postPosition": m35,
+        "postThread": MessageLookupByLibrary.simpleMessage("Post thread"),
         "preparingPage":
             MessageLookupByLibrary.simpleMessage("Preparing the page."),
         "preventAbuseUser": MessageLookupByLibrary.simpleMessage(
@@ -1080,12 +1083,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewAuthorInfo":
             MessageLookupByLibrary.simpleMessage("View author\'s profile"),
         "viewHistory": MessageLookupByLibrary.simpleMessage("View History"),
+        "viewPicture": MessageLookupByLibrary.simpleMessage("Preview"),
         "viewPrivacyPolicy":
             MessageLookupByLibrary.simpleMessage("View our privacy policy"),
         "viewPushServiceHomePage":
             MessageLookupByLibrary.simpleMessage("About push service ↗️"),
-        "viewThreadTitle":
-            MessageLookupByLibrary.simpleMessage("View a thread"),
+        "viewThreadTitle": MessageLookupByLibrary.simpleMessage("View thread"),
         "viewThreadTwoPaneText": MessageLookupByLibrary.simpleMessage(
             "Click thread to view posts inside."),
         "viewUserInfo": m52,

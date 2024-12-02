@@ -73,7 +73,6 @@ class PushServiceState extends State<PushServiceStateWidget>{
 
   @override
   void didChangeDependencies() async{
-    // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     pushTokenChannel = await PushServiceUtils.getPushToken(context);
   }

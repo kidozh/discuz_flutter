@@ -69,6 +69,7 @@ class ForumCardWidget extends StatelessWidget {
                 context,
                 platformPageRoute(
                     context: context,
+                    iosTitle: _forum.name,
                     builder: (context) => DisplayForumTwoPanePage(
                         _discuz, _user, _forum.getFid(),
                         forumTitle: _forum.name,

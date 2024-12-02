@@ -78,6 +78,7 @@ class ShortcutState extends State<ShortcutStatefulWidget> {
                               await Navigator.push(
                                   context,
                                   platformPageRoute(
+                                      iosTitle: S.of(context).forumDisplayTitle,
                                       context: context,
                                       builder: (context) =>
                                           DisplayForumTwoPanePage(
@@ -120,6 +121,7 @@ class ShortcutState extends State<ShortcutStatefulWidget> {
                                   context,
                                   platformPageRoute(
                                       context: context,
+                                      iosTitle: S.of(context).viewThreadTitle,
                                       builder: (context) =>
                                           ViewThreadSliverPage(
                                               _discuz, _user, tid)));
@@ -161,6 +163,7 @@ class ShortcutState extends State<ShortcutStatefulWidget> {
                                   context,
                                   platformPageRoute(
                                       context: context,
+                                      iosTitle: S.of(context).userProfile,
                                       builder: (context) => UserProfilePage(
                                           _discuz, _user, uid)));
                             },

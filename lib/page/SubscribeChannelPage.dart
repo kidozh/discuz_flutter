@@ -315,6 +315,7 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
                           Navigator.push(
                               context,
                               platformPageRoute(
+                                  iosTitle: S.of(context).goToPushSetting,
                                   context: context, builder: (context) => SetPushNotificationPage()));
 
                         },

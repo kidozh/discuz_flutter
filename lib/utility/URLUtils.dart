@@ -117,7 +117,10 @@ class URLUtils{
                   if(onSelectTid == null){
                     await Navigator.push(
                         context,
-                        platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( discuz,user, tid))
+                        platformPageRoute(
+                            context:context,
+                            iosTitle: S.of(context).viewThreadTitle,
+                            builder: (context) => ViewThreadSliverPage( discuz,user, tid))
                     );
                   }
                   else{
@@ -139,7 +142,10 @@ class URLUtils{
                   if(onSelectTid == null){
                     await Navigator.push(
                         context,
-                        platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( discuz,user, tid))
+                        platformPageRoute(
+                            context:context,
+                            iosTitle: S.of(context).viewThreadTitle,
+                            builder: (context) => ViewThreadSliverPage( discuz,user, tid))
                     );
                   }
                   else{
@@ -159,7 +165,9 @@ class URLUtils{
                   int fid = int.tryParse(fidString)!;
                   await Navigator.push(
                       context,
-                      platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz,user, fid))
+                      platformPageRoute(context:context,
+                          iosTitle: S.of(context).forumDisplayTitle,
+                          builder: (context) => DisplayForumTwoPanePage(discuz,user, fid))
                   );
                   return;
                 }
@@ -175,7 +183,9 @@ class URLUtils{
                   int uid = int.tryParse(uidString)!;
                   await Navigator.push(
                       context,
-                      platformPageRoute(context:context,builder: (context) => UserProfilePage(discuz,user,uid))
+                      platformPageRoute(context:context,
+                          iosTitle: S.of(context).userProfile,
+                          builder: (context) => UserProfilePage(discuz,user,uid))
                   );
                   return;
                 }
@@ -190,7 +200,9 @@ class URLUtils{
         if(fid!=null && int.tryParse(fid) != null){
           await Navigator.push(
               context,
-              platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz, user, int.tryParse(fid)!))
+              platformPageRoute(context:context,
+                  iosTitle: S.of(context).forumDisplayTitle,
+                  builder: (context) => DisplayForumTwoPanePage(discuz, user, int.tryParse(fid)!))
           );
           return;
         }
@@ -201,7 +213,9 @@ class URLUtils{
           if(onSelectTid == null){
             await Navigator.push(
                 context,
-                platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz, user, int.tryParse(tid)!))
+                platformPageRoute(context:context,
+                    iosTitle: S.of(context).viewThreadTitle,
+                    builder: (context) => ViewThreadSliverPage(discuz, user, int.tryParse(tid)!))
             );
           }
           else{
@@ -215,7 +229,9 @@ class URLUtils{
         if(uid!=null && int.tryParse(uid) != null){
           await Navigator.push(
               context,
-              platformPageRoute(context:context,builder: (context) => UserProfilePage(discuz, user, int.tryParse(uid)!))
+              platformPageRoute(context:context,
+                  iosTitle: S.of(context).userProfile,
+                  builder: (context) => UserProfilePage(discuz, user, int.tryParse(uid)!))
           );
           return;
         }

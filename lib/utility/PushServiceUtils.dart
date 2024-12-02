@@ -253,6 +253,7 @@ class PushServiceUtils{
             Navigator.push(
                 navigatorKey.currentState!.context,
                 platformPageRoute(
+                    iosTitle: S.of(navigatorKey.currentState!.context).viewThreadTitle,
                     context: navigatorKey.currentState!.context,
                     builder: (context) => ViewThreadSliverPage(_discuz, _user, tid)));
           }
@@ -267,6 +268,7 @@ class PushServiceUtils{
           Navigator.push(
               navigatorKey.currentState!.context,
               platformPageRoute(
+                  iosTitle: S.of(navigatorKey.currentState!.context).pushNotification,
                   context: navigatorKey.currentState!.context,
                   builder: (context) => PushServicePage()));
         }
@@ -290,6 +292,7 @@ class PushServiceUtils{
             Navigator.push(
                 navigatorKey.currentState!.context,
                 platformPageRoute(
+                  iosTitle: S.of(navigatorKey.currentState!.context).viewThreadTitle,
                     context: navigatorKey.currentState!.context,
                     builder: (context) => ViewThreadSliverPage(_discuz, _user, tid)));
           }

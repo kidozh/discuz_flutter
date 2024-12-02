@@ -78,7 +78,9 @@ class UserAvatar extends StatelessWidget{
           VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(
               context,
-              platformPageRoute(context:context,builder: (context) => UserProfilePage(discuz,user, uid, username: username,)));
+              platformPageRoute(context:context,
+                  iosTitle: username,
+                  builder: (context) => UserProfilePage(discuz,user, uid, username: username,)));
         }
 
       },

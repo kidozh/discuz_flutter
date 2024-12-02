@@ -525,6 +525,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                                 Navigator.push(
                                     context,
                                     platformPageRoute(
+                                        iosTitle: S.of(context).signInViaBrowser,
                                         context: context,
                                         builder: (context) =>
                                             LoginByWebviewPage(discuz)));

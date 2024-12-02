@@ -199,6 +199,7 @@ class _PublicMessagePortalState
                       context,
                       platformPageRoute(
                           context: context,
+                          iosTitle: _pmList[index].message,
                           builder: (context) => InternalWebviewBrowserPage(
                               discuz,
                               user,

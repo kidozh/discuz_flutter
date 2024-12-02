@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../generated/l10n.dart';
 import '../utility/VibrationUtils.dart';
 
 class DiscuzNotificationAppbarIconWidget extends StatelessWidget{
@@ -32,7 +33,9 @@ class DiscuzNotificationAppbarIconWidget extends StatelessWidget{
                 VibrationUtils.vibrateWithClickIfPossible();
                 await Navigator.push(
                     context,
-                    platformPageRoute(context:context,builder: (context) => DiscuzUserNotificationPage())
+                    platformPageRoute(context:context,
+                        iosTitle: S.of(context).notification,
+                        builder: (context) => DiscuzUserNotificationPage())
                 );
 
             },

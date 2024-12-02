@@ -70,6 +70,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
               await Navigator.push(
                   context,
                   platformPageRoute(
+                      iosTitle: S.of(context).loginTitle,
                       context: context,
                       builder: (context) => LoginPage(discuz, null)));
             }
@@ -87,6 +88,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
               await Navigator.push(
                   context,
                   platformPageRoute(
+                      iosTitle: S.of(context).manageAccount,
                       context: context,
                       builder: (context) => ManageAccountPage(
                             discuz,
@@ -102,6 +104,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
             await Navigator.push(
                 context,
                 platformPageRoute(
+                  iosTitle: S.of(context).manageDiscuz,
                     context: context,
                     builder: (context) => ManageDiscuzPage()));
           },
@@ -118,6 +121,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
               await Navigator.push(
                   context,
                   platformPageRoute(
+                      iosTitle: S.of(context).history,
                       context: context,
                       builder: (context) => ViewHistoryPage(discuz)));
             }
@@ -135,6 +139,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
               await Navigator.push(
                   context,
                   platformPageRoute(
+                      iosTitle: S.of(context).favoriteThread,
                       context: context,
                       builder: (context) => FavoriteThreadPage()));
             }
@@ -152,6 +157,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
               await Navigator.push(
                   context,
                   platformPageRoute(
+                      iosTitle: S.of(context).favoriteForum,
                       context: context,
                       builder: (context) => FavoriteForumPage()));
             }
@@ -169,6 +175,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
               await Navigator.push(
                   context,
                   platformPageRoute(
+                      iosTitle: S.of(context).shortcut,
                       context: context, builder: (context) => ShortcutPage()));
             }
           },
@@ -186,6 +193,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
               await Navigator.push(
                   context,
                   platformPageRoute(
+                      iosTitle: S.of(context).blockedUserList,
                       context: context,
                       builder: (context) => BlockUserPage(discuz)));
             }
@@ -199,6 +207,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
             await Navigator.push(
                 context,
                 platformPageRoute(
+                    iosTitle: S.of(context).trustHostTitle,
                     context: context,
                     builder: (context) => ManageTrustHostPage()));
           },
@@ -215,6 +224,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
         //           await Navigator.push(
         //               context,
         //               platformPageRoute(
+        //                   iosTitle: S.of(context).pushNotification
         //                   context: context,
         //                   builder: (context) => PushServicePage()));
         //         },
@@ -232,6 +242,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
         //     await Navigator.push(
         //         context,
         //         platformPageRoute(
+        //              iosTitle: S.of(context).subscribeChannel
         //             context: context,
         //             builder: (context) => SubscribeChannelPage()));
         //   },
@@ -244,6 +255,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
             await Navigator.push(
                 context,
                 platformPageRoute(
+                    iosTitle: S.of(context).settingTitle,
                     context: context, builder: (context) => SettingPage()));
           },
         )

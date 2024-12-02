@@ -50,6 +50,7 @@ class NullDiscuzScreen extends StatelessWidget{
                         VibrationUtils.vibrateWithClickIfPossible();
                         await Navigator.push(
                             context, platformPageRoute(
+                            iosTitle: S.of(context).addNewDiscuz,
                             context: context,builder: (context) => AddDiscuzPage()));
                       },
 
@@ -65,6 +66,7 @@ class NullDiscuzScreen extends StatelessWidget{
                         VibrationUtils.vibrateWithClickIfPossible();
                         await Navigator.push(
                             context, platformPageRoute(
+                          iosTitle: S.of(context).settings,
                             context: context,builder: (context) => SettingPage()));
                       },
 

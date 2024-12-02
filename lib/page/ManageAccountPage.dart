@@ -33,7 +33,10 @@ class ManageAccountPage extends StatelessWidget{
             onPressed: () async{
               VibrationUtils.vibrateWithClickIfPossible();
               await Navigator.push(context,
-                  platformPageRoute(context:context,builder: (context) => LoginPage(discuz, null)));
+                  platformPageRoute(
+                      context:context,
+                      iosTitle: S.of(context).loginTitle,
+                      builder: (context) => LoginPage(discuz, null)));
             },
           )
         ],
@@ -127,7 +130,9 @@ class ManageAccountState extends State<ManageAccountStateWidget>{
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.push(context,
                         platformPageRoute(
-                            context: context,builder: (context) => LoginPage(discuz, user.username)));
+                            context: context,
+                            iosTitle: S.of(context).loginTitle,
+                            builder: (context) => LoginPage(discuz, user.username)));
                   },)
             ],
           ),

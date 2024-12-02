@@ -129,7 +129,9 @@ class AttachmentWidget extends StatelessWidget{
 
           Navigator.push(
               context,
-              platformPageRoute(context:context, builder: (context) => FullImagePage(
+              platformPageRoute(context:context,
+                  iosTitle: S.of(context).viewPicture,
+                  builder: (context) => FullImagePage(
                   URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode),
                   [URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode)]
               ))
@@ -177,7 +179,10 @@ class AttachmentWidget extends StatelessWidget{
                     VibrationUtils.vibrateWithClickIfPossible();
                     Navigator.push(
                         context,
-                        platformPageRoute(context:context, builder: (context) => FullImagePage(
+                        platformPageRoute(context:context,
+                            iosTitle: S.of(context).viewPicture,
+                            builder: (context) => FullImagePage(
+
                             URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode),
                             [URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode)]
                         ))

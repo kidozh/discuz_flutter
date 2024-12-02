@@ -220,7 +220,10 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
                         VibrationUtils.vibrateWithClickIfPossible();
                         await Navigator.push(
                             context,
-                            platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( discuz,  user, favoriteThread.id,))
+                            platformPageRoute(
+                                context:context,
+                                iosTitle: favoriteThread.title,
+                                builder: (context) => ViewThreadSliverPage( discuz,  user, favoriteThread.id,))
                         );
                       },
 

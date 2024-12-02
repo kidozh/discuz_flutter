@@ -28,7 +28,10 @@ class ManageDiscuzPage extends StatelessWidget{
             onPressed: () async{
               VibrationUtils.vibrateWithClickIfPossible();
               await Navigator.push(context,
-                  platformPageRoute(context:context,builder: (context) => AddDiscuzPage()));
+                  platformPageRoute(
+                      context:context,
+                      iosTitle: S.of(context).addNewDiscuz,
+                      builder: (context) => AddDiscuzPage()));
             },
             icon: Icon(Icons.add),
           )
@@ -121,7 +124,10 @@ class ManageDiscuzState extends State<ManageDiscuzStateWidget>{
                     onTap: (){
                       VibrationUtils.vibrateWithClickIfPossible();
                       Navigator.push(context,
-                          platformPageRoute(context:context,builder: (context) => ExclusiveDiscuzPortalPage(discuz)));
+                          platformPageRoute(
+                              context:context,
+                              iosTitle: discuz.siteName,
+                              builder: (context) => ExclusiveDiscuzPortalPage(discuz)));
                     },
                   ),
                   endActionPane: ActionPane(

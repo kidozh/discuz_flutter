@@ -151,8 +151,8 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
                 children: [
                   if(child!= null)
                     Container(
-                      margin: selected? EdgeInsets.symmetric(horizontal: 4.0): null,
-                      padding: selected? EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0):null,
+                      margin: selected? EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0): null,
+                      padding: selected? EdgeInsets.only(bottom: 12.0, left: 2.0, right: 2.0):null,
 
                       decoration: BoxDecoration(
                         color: selected? Theme.of(context).colorScheme.primaryContainer: null,
@@ -567,7 +567,10 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     else{
       await Navigator.push(
           context,
-          platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(_discuz,_user, _forumThread.getTid(),
+          platformPageRoute(
+              context:context,
+              iosTitle: S.of(context).forumDisplayTitle,
+              builder: (context) => ViewThreadSliverPage(_discuz,_user, _forumThread.getTid(),
             passedSubject: _forumThread.subject,))
       );
     }

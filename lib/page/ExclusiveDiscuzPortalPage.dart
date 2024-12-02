@@ -76,6 +76,7 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
       Navigator.push(
           context,
           platformPageRoute(
+              //iosTitle: S.of(context).testVersion,
               context: context,
               builder: (context) => TestFlightBannerPage()));
     }

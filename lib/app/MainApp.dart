@@ -286,7 +286,6 @@ class MyApp extends StatelessWidget {
               },
               builder: (context) => UpgradeAlert(
                   child: PlatformApp(
-                //title: S.of(context).appName,
                 navigatorKey: navigatorKey,
                 debugShowCheckedModeBanner: false,
                 navigatorObservers: [
@@ -597,8 +596,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     CustomizeColor.updateAndroidNavigationbarColorWithDashboard(context);
     double width = MediaQuery.sizeOf(context).width;
     if(true){
-      return Scaffold(
-        appBar: AppBar(
+      return PlatformScaffold(
+        appBar: PlatformAppBar(
           title: Consumer<DiscuzAndUserNotifier>(
             builder: (context, value, child) {
               if (value.discuz == null) {
@@ -630,7 +629,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               }
             },
           ),
-          actions: [
+          trailingActions: [
             DiscuzNotificationAppbarIconWidget(),
             PlatformIconButton(
               padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
@@ -658,6 +657,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     await Navigator.push(
                         context,
                         platformPageRoute(
+                            iosTitle: S.of(context).menuDrawerTitle,
                             context: context,
                             builder: (context) => DrawerPage()));
                   },
@@ -672,84 +672,91 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             },
           ),
         ),
-        body: Consumer<DiscuzAndUserNotifier>(
-          builder: (context, value, child) {
+        body: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+                child: Consumer<DiscuzAndUserNotifier>(
+                  builder: (context, value, child) {
 
-            List<Widget> bodyWidgetList = [
-              DashboardScreen(
-                onSelectTid: onSelectTid,
-              ),
+                    List<Widget> bodyWidgetList = [
+                      DashboardScreen(
+                        onSelectTid: onSelectTid,
+                      ),
 
-              // should not exist any
-              DiscuzPortalScreen(
-                key: ValueKey(1),
-              ),
-              NotificationScreen(
-                //key: ValueKey(3),
-                onSelectTid: this.onSelectTid,
-              ),
-              // FavoriteThreadScreen(),
-              DiscuzMessageScreen(
-                key: ValueKey(4),
-              )
-            ];
-            if (value.user == null) {
-              print("Get btm index ${_bottomNavigationbarIndex}");
-              if (_bottomNavigationbarIndex < 2) {
-                return bodyWidgetList[_bottomNavigationbarIndex];
-              } else {
+                      // should not exist any
+                      DiscuzPortalScreen(
+                        key: ValueKey(1),
+                      ),
+                      NotificationScreen(
+                        //key: ValueKey(3),
+                        onSelectTid: this.onSelectTid,
+                      ),
+                      // FavoriteThreadScreen(),
+                      DiscuzMessageScreen(
+                        key: ValueKey(4),
+                      )
+                    ];
+                    if (value.user == null) {
+                      print("Get btm index ${_bottomNavigationbarIndex}");
+                      if (_bottomNavigationbarIndex < 2) {
+                        return bodyWidgetList[_bottomNavigationbarIndex];
+                      } else {
+                        setState(() {
+                          _bottomNavigationbarIndex = 0;
+                        });
+                        return bodyWidgetList[_bottomNavigationbarIndex];
+                      }
+                    } else {
+                      return bodyWidgetList[_bottomNavigationbarIndex];
+                    }
+                  },
+                )
+            ),
+            BottomNavigationBar(
+              elevation: 0,
+              selectedItemColor: Theme.of(context).colorScheme.primary,
+              unselectedItemColor: Theme.of(context).disabledColor,
+              //backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              currentIndex: _bottomNavigationbarIndex,
+              items: [
+                BottomNavigationBarItem(
+                    icon: new Icon(AppPlatformIcons(context).discuzSiteOutlined),
+                    activeIcon: Icon(AppPlatformIcons(context).discuzSiteSolid),
+                    label: S.of(context).dashboard),
+                // if (!Platform.isIOS)
+                //   BottomNavigationBarItem(
+                //       icon: new Icon(AppPlatformIcons(context).discuzExploreOutlined),
+                //       activeIcon: Icon(AppPlatformIcons(context).discuzExploreSolid),
+                //       label: S.of(context).sitePage),
+
+                BottomNavigationBarItem(
+                    icon: new Icon(AppPlatformIcons(context).discuzPortalOutlined),
+                    activeIcon: Icon(AppPlatformIcons(context).discuzPortalSolid),
+                    label: S.of(context).index),
+                if (user != null)
+                  BottomNavigationBarItem(
+                      icon: new Icon(
+                          AppPlatformIcons(context).discuzNotificationOutlined),
+                      activeIcon:
+                      Icon(AppPlatformIcons(context).discuzNotificationSolid),
+                      label: S.of(context).notification),
+                if (user != null)
+                  BottomNavigationBarItem(
+                      icon: new Icon(AppPlatformIcons(context).discuzMessageOutlined),
+                      activeIcon: Icon(AppPlatformIcons(context).discuzMessageSolid),
+                      label: S.of(context).chatMessage),
+              ],
+              onTap: (index){
+                VibrationUtils.vibrateWithClickIfPossible();
                 setState(() {
-                  _bottomNavigationbarIndex = 0;
+                  _bottomNavigationbarIndex = index;
                 });
-                return bodyWidgetList[_bottomNavigationbarIndex];
-              }
-            } else {
-              return bodyWidgetList[_bottomNavigationbarIndex];
-            }
-          },
-        ),
-
-        bottomNavigationBar: BottomNavigationBar(
-          elevation: 0,
-          selectedItemColor: Theme.of(context).colorScheme.primary,
-          unselectedItemColor: Theme.of(context).disabledColor,
-          //backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          currentIndex: _bottomNavigationbarIndex,
-          items: [
-            BottomNavigationBarItem(
-                icon: new Icon(AppPlatformIcons(context).discuzSiteOutlined),
-                activeIcon: Icon(AppPlatformIcons(context).discuzSiteSolid),
-                label: S.of(context).dashboard),
-            // if (!Platform.isIOS)
-            //   BottomNavigationBarItem(
-            //       icon: new Icon(AppPlatformIcons(context).discuzExploreOutlined),
-            //       activeIcon: Icon(AppPlatformIcons(context).discuzExploreSolid),
-            //       label: S.of(context).sitePage),
-
-            BottomNavigationBarItem(
-                icon: new Icon(AppPlatformIcons(context).discuzPortalOutlined),
-                activeIcon: Icon(AppPlatformIcons(context).discuzPortalSolid),
-                label: S.of(context).index),
-            if (user != null)
-              BottomNavigationBarItem(
-                  icon: new Icon(
-                      AppPlatformIcons(context).discuzNotificationOutlined),
-                  activeIcon:
-                  Icon(AppPlatformIcons(context).discuzNotificationSolid),
-                  label: S.of(context).notification),
-            if (user != null)
-              BottomNavigationBarItem(
-                  icon: new Icon(AppPlatformIcons(context).discuzMessageOutlined),
-                  activeIcon: Icon(AppPlatformIcons(context).discuzMessageSolid),
-                  label: S.of(context).chatMessage),
+              },
+            )
           ],
-          onTap: (index){
-            VibrationUtils.vibrateWithClickIfPossible();
-            setState(() {
-              _bottomNavigationbarIndex = index;
-            });
-          },
         ),
+
       );
     }
   }

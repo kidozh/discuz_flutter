@@ -833,6 +833,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                       Navigator.push(
                           context,
                           platformPageRoute(
+                              iosTitle: S.of(context).openViaInternalBrowser,
                               context: context,
                               builder: (context) => InternalWebviewBrowserPage(
                                   discuz,
@@ -854,6 +855,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                       await Navigator.push(
                           context,
                           platformPageRoute(
+                            iosTitle: S.of(context).settings,
                               context: context, builder: (context) => SettingPage()));
                     }),
               ]),

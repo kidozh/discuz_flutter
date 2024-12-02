@@ -34,6 +34,7 @@ class ConfigurationScreen extends StatelessWidget{
                 Navigator.push(
                     context,
                     platformPageRoute(
+                      iosTitle: S.of(context).viewHistory,
                         context: context,
                         builder: (context) => ViewHistoryPage(discuz)));
               }

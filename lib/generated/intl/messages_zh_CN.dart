@@ -502,6 +502,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "groupInfoDescription": m22,
         "habit": MessageLookupByLibrary.simpleMessage("爱好"),
         "hapticFeedbackTitle": MessageLookupByLibrary.simpleMessage("振动反馈"),
+        "history": MessageLookupByLibrary.simpleMessage("历史"),
         "homepage": MessageLookupByLibrary.simpleMessage("个人主页"),
         "hostIsEmpty": MessageLookupByLibrary.simpleMessage("请选择一个已有的论坛。"),
         "hotThread": MessageLookupByLibrary.simpleMessage("最新热门"),
@@ -571,6 +572,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("在质感设计的界面下，应用界面将跟随系统深浅设置 。"),
         "materialDesign": MessageLookupByLibrary.simpleMessage("质感设计"),
         "me": MessageLookupByLibrary.simpleMessage("我"),
+        "menuDrawerTitle": MessageLookupByLibrary.simpleMessage("菜单"),
         "menuIconTooltip": MessageLookupByLibrary.simpleMessage("菜单"),
         "minute": MessageLookupByLibrary.simpleMessage("分"),
         "minuteAgo": m28,
@@ -654,6 +656,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "postAuthorLabel": MessageLookupByLibrary.simpleMessage("楼主"),
         "postNumber": MessageLookupByLibrary.simpleMessage("回帖数"),
         "postPosition": m35,
+        "postThread": MessageLookupByLibrary.simpleMessage("发帖"),
         "preparingPage": MessageLookupByLibrary.simpleMessage("正在准备此界面。"),
         "preventAbuseUser":
             MessageLookupByLibrary.simpleMessage("请勿使用此应用发表令人反感的内容或其他滥用行为"),
@@ -925,6 +928,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "usernameIsEmpty": MessageLookupByLibrary.simpleMessage("用户名为空"),
         "viewAuthorInfo": MessageLookupByLibrary.simpleMessage("查看用户详情"),
         "viewHistory": MessageLookupByLibrary.simpleMessage("浏览历史"),
+        "viewPicture": MessageLookupByLibrary.simpleMessage("预览图片"),
         "viewPrivacyPolicy": MessageLookupByLibrary.simpleMessage("查看隐私政策"),
         "viewPushServiceHomePage":
             MessageLookupByLibrary.simpleMessage("关于推送服务 ↗️"),

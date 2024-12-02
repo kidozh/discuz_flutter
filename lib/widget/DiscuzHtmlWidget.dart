@@ -107,6 +107,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
               Navigator.push(
                   context,
                   platformPageRoute(
+                      iosTitle: S.of(context).viewPicture,
                       context: context,
                       builder: (context) => FullImagePage(src, getAllImageSrcList())));
                         }

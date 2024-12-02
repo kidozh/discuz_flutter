@@ -211,7 +211,9 @@ class FavoriteThreadCardWidget extends StatelessWidget{
           VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(
               context,
-              platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( discuz,  user, favoriteThreadInDatabase.idInServer,
+              platformPageRoute(context:context,
+                  iosTitle: S.of(context).viewThreadTitle,
+                  builder: (context) => ViewThreadSliverPage( discuz,  user, favoriteThreadInDatabase.idInServer,
                 passedSubject: favoriteThreadInDatabase.title,
               ))
           );

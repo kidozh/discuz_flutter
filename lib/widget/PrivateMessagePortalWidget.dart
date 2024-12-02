@@ -84,7 +84,9 @@ class PrivateMessagePortalWidget extends StatelessWidget{
           VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(
               context,
-              platformPageRoute(context:context,builder: (context) => PrivateMessageDetailScreen(_privateMessagePortal.toUid, _privateMessagePortal.toUserName))
+              platformPageRoute(context:context,
+                  iosTitle: _privateMessagePortal.toUserName,
+                  builder: (context) => PrivateMessageDetailScreen(_privateMessagePortal.toUid, _privateMessagePortal.toUserName))
           );
         },
 

@@ -17,6 +17,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../generated/l10n.dart';
 import 'DisplayForumSliverPage.dart';
 import 'UserProfilePage.dart';
 import 'ViewThreadSliverPage.dart';
@@ -307,7 +308,9 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
                 if(onSelectTid == null){
                   await Navigator.push(
                       context,
-                      platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( discuz,user, tid))
+                      platformPageRoute(context:context,
+                          iosTitle: S.of(context).viewThreadTitle,
+                          builder: (context) => ViewThreadSliverPage( discuz,user, tid))
                   );
                 }
                 else{
@@ -329,7 +332,10 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
                 if(onSelectTid == null){
                   await Navigator.push(
                       context,
-                      platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage( discuz,user, tid))
+                      platformPageRoute(
+                          context:context,
+                          iosTitle: S.of(context).viewThreadTitle,
+                          builder: (context) => ViewThreadSliverPage( discuz,user, tid))
                   );
                 }
                 else{
@@ -349,7 +355,9 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
                 int fid = int.tryParse(fidString)!;
                 await Navigator.push(
                     context,
-                    platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz,user, fid))
+                    platformPageRoute(context:context,
+                        iosTitle: S.of(context).forumDisplayTitle,
+                        builder: (context) => DisplayForumTwoPanePage(discuz,user, fid))
                 );
                 return;
               }
@@ -365,7 +373,10 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
                 int uid = int.tryParse(uidString)!;
                 await Navigator.push(
                     context,
-                    platformPageRoute(context:context,builder: (context) => UserProfilePage(discuz,user,uid))
+                    platformPageRoute(
+                        context:context,
+                        iosTitle: S.of(context).userProfileTitle,
+                        builder: (context) => UserProfilePage(discuz,user,uid))
                 );
                 return;
               }
@@ -381,7 +392,10 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
       if(fid!=null && int.tryParse(fid) != null){
         await Navigator.push(
             context,
-            platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz, user, int.tryParse(fid)!))
+            platformPageRoute(
+                context:context,
+                iosTitle: S.of(context).forumDisplayTitle,
+                builder: (context) => DisplayForumTwoPanePage(discuz, user, int.tryParse(fid)!))
         );
         return;
       }
@@ -393,7 +407,10 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
         if(onSelectTid == null){
           await Navigator.push(
               context,
-              platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz, user, int.tryParse(tid)!))
+              platformPageRoute(
+                  context:context,
+                  iosTitle: S.of(context).viewThreadTitle,
+                  builder: (context) => ViewThreadSliverPage(discuz, user, int.tryParse(tid)!))
           );
         }
         else{
@@ -407,7 +424,10 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
       if(uid!=null && int.tryParse(uid) != null){
         await Navigator.push(
             context,
-            platformPageRoute(context:context,builder: (context) => UserProfilePage(discuz, user, int.tryParse(uid)!))
+            platformPageRoute(
+                context:context,
+                iosTitle: S.of(context).userProfileTitle,
+                builder: (context) => UserProfilePage(discuz, user, int.tryParse(uid)!))
         );
         return;
       }

@@ -33,6 +33,7 @@ class DashboardScreen extends StatelessWidget{
           },
           cupertino: (context, child, target){
             return SafeArea(
+                bottom: false,
                 child: CupertinoDashboardScreen(onSelectTid: onSelectTid)
             );
           },

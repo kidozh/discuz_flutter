@@ -226,6 +226,7 @@ class _PrivateMessageDetailState
                     context,
                     platformPageRoute(
                         context: context,
+                        iosTitle: toUsername,
                         builder: (context) => UserProfilePage(
                             discuzAndUser.discuz!, discuzAndUser.user, toUid)));
               },

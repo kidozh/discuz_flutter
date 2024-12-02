@@ -46,6 +46,7 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
                             () {
                             VibrationUtils.vibrateWithClickIfPossible();
                             Navigator.of(context).push(platformPageRoute(
+                              iosTitle: S.of(context).pictureBedSMMS,
                               builder: (_) => ConfigureChevertoPage(ChevertoPictureBed.smms),
                               context: context,
                             ));
@@ -71,6 +72,7 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
                             () {
                           VibrationUtils.vibrateWithClickIfPossible();
                           Navigator.of(context).push(platformPageRoute(
+                            iosTitle: S.of(context).pictureBedImgloc,
                             builder: (_) => ConfigureChevertoPage(ChevertoPictureBed.imgloc),
                             context: context,
                           ));

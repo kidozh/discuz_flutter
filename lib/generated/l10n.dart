@@ -380,10 +380,10 @@ class S {
     );
   }
 
-  /// `View a thread`
+  /// `View thread`
   String get viewThreadTitle {
     return Intl.message(
-      'View a thread',
+      'View thread',
       name: 'viewThreadTitle',
       desc: '',
       args: [],
@@ -5968,6 +5968,46 @@ class S {
       name: 'gameLanguageNotSupported',
       desc: '',
       args: [language],
+    );
+  }
+
+  /// `Menu`
+  String get menuDrawerTitle {
+    return Intl.message(
+      'Menu',
+      name: 'menuDrawerTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Post thread`
+  String get postThread {
+    return Intl.message(
+      'Post thread',
+      name: 'postThread',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Preview`
+  String get viewPicture {
+    return Intl.message(
+      'Preview',
+      name: 'viewPicture',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `History`
+  String get history {
+    return Intl.message(
+      'History',
+      name: 'history',
+      desc: '',
+      args: [],
     );
   }
 }

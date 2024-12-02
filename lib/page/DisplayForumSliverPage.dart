@@ -417,6 +417,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                           context,
                           platformPageRoute(
                               context: context,
+                              iosTitle: S.of(context).postThread,
                               builder: (context) => PostThreadPage(discuz,_displayForumResult.discuzIndexVariables.forum.fid, 0)));
                     }
                     else{
@@ -451,6 +452,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                           context,
                           platformPageRoute(
                               context: context,
+                              iosTitle: S.of(context).openViaInternalBrowser,
                               builder: (context) => InternalWebviewBrowserPage(
                                   discuz,
                                   user,
@@ -471,6 +473,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       await Navigator.push(
                           context,
                           platformPageRoute(
+                            iosTitle: S.of(context).settings,
                               context: context, builder: (context) => SettingPage()));
                     }),
               ]
@@ -531,7 +534,10 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                           VibrationUtils.vibrateWithClickIfPossible();
                           await Navigator.push(
                               context,
-                              platformPageRoute(context:context,builder: (context) => DisplayForumTwoPanePage(discuz,
+                              platformPageRoute(
+                                  context:context,
+                                  iosTitle: subForum.name,
+                                  builder: (context) => DisplayForumTwoPanePage(discuz,
                                   user,
                                   subForum.fid,
                                   forumTitle: subForum.name,

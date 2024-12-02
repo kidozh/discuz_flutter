@@ -7,6 +7,7 @@ import 'package:discuz_flutter/JsonResult/SteamGameDataResult.dart';
 import 'package:discuz_flutter/client/SteamApiClient.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/utility/TwoPaneUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -204,8 +205,9 @@ class SteamGameState extends State<SteamGameWidget> {
         context: context,
         builder: (context) => SingleChildScrollView(
               child: Container(
+                //alignment: Alignment.centerRight,
                 color: Theme.of(context).dialogBackgroundColor,
-                width: double.infinity,
+                width: MediaQuery.sizeOf(context).width * 0.6 > TwoPaneUtils.mobileScreenSize? MediaQuery.sizeOf(context).width * 0.6: double.infinity,
                 padding: EdgeInsets.only(bottom: 16.0, left: 16, right: 16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -415,15 +417,15 @@ class SteamGameState extends State<SteamGameWidget> {
                                 padding: EdgeInsets.all(4.0),
                                 //margin: EdgeInsets.only(bottom: 8),
                                 //width: double.infinity,
-                                decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .errorContainer,
-                                    border: Border.all(
-                                      style: BorderStyle.none,
-                                      color:
-                                          Theme.of(context).colorScheme.error,
-                                    )),
+                                // decoration: BoxDecoration(
+                                //     color: Theme.of(context)
+                                //         .colorScheme
+                                //         .errorContainer,
+                                //     border: Border.all(
+                                //       style: BorderStyle.none,
+                                //       color:
+                                //           Theme.of(context).colorScheme.error,
+                                //     )),
                                 child: Text(
                                   S.of(context).gameLanguageNotSupported(
                                       LanguageCode.code.nativeName),
@@ -431,7 +433,7 @@ class SteamGameState extends State<SteamGameWidget> {
                                   style: TextStyle(
                                       color: Theme.of(context)
                                           .colorScheme
-                                          .onErrorContainer,
+                                          .error,
                                       fontSize: 12),
                                 ),
                               ),
