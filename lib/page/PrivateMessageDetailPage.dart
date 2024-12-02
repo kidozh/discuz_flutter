@@ -16,6 +16,7 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/PrivateMessageDetailWidget.dart';
 import 'package:easy_refresh/easy_refresh.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -213,11 +214,17 @@ class _PrivateMessageDetailState
           body: NullUserScreen(),
         );
       }
+      ModalRoute<Object?>? route = ModalRoute.of(context);
       return PlatformScaffold(
         iosContentBottomPadding: true,
         iosContentPadding: true,
         appBar: PlatformAppBar(
           title: Text(toUsername),
+          cupertino: (context, platform) => CupertinoNavigationBarData(
+              previousPageTitle: (route != null && route is CupertinoPageRoute<dynamic> && route.previousTitle.value!=null)?
+              route.previousTitle.value
+                  : Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz?.siteName
+          ),
           trailingActions: [
             IconButton(
               icon: Icon(AppPlatformIcons(context).userProfileSolid, size: 28,),
@@ -226,7 +233,7 @@ class _PrivateMessageDetailState
                     context,
                     platformPageRoute(
                         context: context,
-                        iosTitle: toUsername,
+                        iosTitle: S.of(context).userProfile,
                         builder: (context) => UserProfilePage(
                             discuzAndUser.discuz!, discuzAndUser.user, toUid)));
               },

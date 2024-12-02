@@ -877,5 +877,6 @@
   "menuDrawerTitle": "Menu",
   "postThread": "Post thread",
   "viewPicture": "Preview",
-  "history": "History"
+  "history": "History",
+  "thread": "Thread"
 }

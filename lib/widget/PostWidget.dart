@@ -425,7 +425,7 @@ class PostState extends State<PostStatefulWidget> {
                     context,
                     platformPageRoute(
                         context: context,
-                        iosTitle: _post.author,
+                        iosTitle: S.of(context).userProfile,
                         builder: (context) =>
                             UserProfilePage(_discuz, user, _post.authorId, username: _post.author,)));
               }

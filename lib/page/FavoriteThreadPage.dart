@@ -212,7 +212,7 @@ class FavoriteThreadCardWidget extends StatelessWidget{
           await Navigator.push(
               context,
               platformPageRoute(context:context,
-                  iosTitle: S.of(context).viewThreadTitle,
+                  iosTitle: favoriteThreadInDatabase.title.length > 12? S.of(context).viewThreadTitle: favoriteThreadInDatabase.title,
                   builder: (context) => ViewThreadSliverPage( discuz,  user, favoriteThreadInDatabase.idInServer,
                 passedSubject: favoriteThreadInDatabase.title,
               ))

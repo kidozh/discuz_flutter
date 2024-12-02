@@ -740,12 +740,18 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   @override
   Widget build(BuildContext context) {
     CustomizeColor.updateAndroidNavigationbar(context);
+    ModalRoute<Object?>? route = ModalRoute.of(context);
+
     return PlatformScaffold(
       appBar: PlatformAppBar(
         automaticallyImplyLeading: this.onClosed == null ? true : false,
         cupertino: (_, __) => CupertinoNavigationBarData(
             heroTag: this.onClosed == null ? null : "viewthread_${tid}",
-            transitionBetweenRoutes: false),
+            transitionBetweenRoutes: false,
+            previousPageTitle: (route != null && route is CupertinoPageRoute<dynamic> && route.previousTitle.value!=null)?
+            route.previousTitle.value
+                : Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz?.siteName
+        ),
         leading: this.onClosed == null
             ? null
             : PlatformIconButton(

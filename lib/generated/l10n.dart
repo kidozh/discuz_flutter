@@ -6010,6 +6010,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Thread`
+  String get thread {
+    return Intl.message(
+      'Thread',
+      name: 'thread',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

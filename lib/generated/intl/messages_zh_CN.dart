@@ -840,6 +840,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "此版本具有最新的开发进展，同时也伴有一定的错误。当您使用时，请做好数据备份，以防数据丢失。"),
         "testVersionNotificationTitle":
             MessageLookupByLibrary.simpleMessage("欢迎参与测试版本"),
+        "thread": MessageLookupByLibrary.simpleMessage("帖子"),
         "threadIsClosed": MessageLookupByLibrary.simpleMessage("此贴已关闭发帖。"),
         "threadReadAccess": m47,
         "threadReply": m48,

@@ -980,6 +980,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "The final product will be changed according to latest development."),
         "testVersionNotificationTitle":
             MessageLookupByLibrary.simpleMessage("Take a bite on beta test"),
+        "thread": MessageLookupByLibrary.simpleMessage("Thread"),
         "threadIsClosed":
             MessageLookupByLibrary.simpleMessage("Thread is closed."),
         "threadReadAccess": m47,

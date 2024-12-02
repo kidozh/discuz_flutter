@@ -40,11 +40,17 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ModalRoute<Object?>? route = ModalRoute.of(context);
     return PlatformScaffold(
         iosContentPadding: true,
         iosContentBottomPadding: true,
         appBar: PlatformAppBar(
           title: Text(discuz.siteName),
+          cupertino: (context, platform) => CupertinoNavigationBarData(
+              previousPageTitle: (route != null && route is CupertinoPageRoute<dynamic> && route.previousTitle.value!=null)?
+              route.previousTitle.value
+                  : Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz?.siteName
+          ),
         ),
         body: LoginForumFieldStatefulWidget(discuz, accountName));
   }

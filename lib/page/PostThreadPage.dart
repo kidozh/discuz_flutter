@@ -84,13 +84,18 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   Widget build(BuildContext context) {
     if (_displayForumResult == null) {
       return Container(
-        width: 128,
+        width: 64,
+        padding: EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            PlatformCircularProgressIndicator(),
-            SizedBox(height: 16,),
+            SizedBox(
+              width: 32,
+              height: 32,
+              child: PlatformCircularProgressIndicator(),
+            ),
+            SizedBox(height: 32,),
             Text(S.of(context).loadingForumInformation)
           ],
         ),

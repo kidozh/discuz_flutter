@@ -16,6 +16,7 @@ import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -31,11 +32,17 @@ import '../utility/URLUtils.dart';
 class AddDiscuzPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    ModalRoute<Object?>? route = ModalRoute.of(context);
     return PlatformScaffold(
         iosContentBottomPadding: true,
         iosContentPadding: true,
         appBar: PlatformAppBar(
           title: Text(S.of(context).addDiscuzTitle),
+          cupertino: (context, platform) => CupertinoNavigationBarData(
+              previousPageTitle: (route != null && route is CupertinoPageRoute<dynamic> && route.previousTitle.value!=null)?
+              route.previousTitle.value
+                  : S.of(context).appName
+          ),
         ),
         body: AddDiscuzForumFieldStatefulWidget());
   }

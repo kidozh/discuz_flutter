@@ -79,7 +79,7 @@ class UserAvatar extends StatelessWidget{
           await Navigator.push(
               context,
               platformPageRoute(context:context,
-                  iosTitle: username,
+                  iosTitle: S.of(context).userProfile,
                   builder: (context) => UserProfilePage(discuz,user, uid, username: username,)));
         }
 

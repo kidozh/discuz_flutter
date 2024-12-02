@@ -33,6 +33,7 @@ import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
 import 'package:discuz_flutter/widget/LoadingStateWidget.dart';
 import 'package:dual_screen/dual_screen.dart';
 import 'package:easy_refresh/easy_refresh.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -375,6 +376,8 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   @override
   Widget build(BuildContext context) {
 
+    ModalRoute<Object?>? route = ModalRoute.of(context);
+
     return PlatformScaffold(
       appBar: PlatformAppBar(
         //middle: Text(S.of(context).forumDisplayTitle),
@@ -483,6 +486,11 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
             ? Text(S.of(context).forumDisplayTitle,overflow: TextOverflow.ellipsis)
             : Text(_displayForumResult.discuzIndexVariables.forum.name,overflow: TextOverflow.ellipsis),
         backgroundColor: Theme.of(context).navigationBarTheme.backgroundColor?.withOpacity(0.5),
+        cupertino: (context, platform) => CupertinoNavigationBarData(
+          previousPageTitle: (route != null && route is CupertinoPageRoute<dynamic> && route.previousTitle.value!=null)?
+              route.previousTitle.value
+              : Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz?.siteName
+        ),
       ),
       body: EasyRefresh(
         controller: _controller,

@@ -569,7 +569,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
           context,
           platformPageRoute(
               context:context,
-              iosTitle: S.of(context).forumDisplayTitle,
+              iosTitle: S.of(context).viewThreadTitle,
               builder: (context) => ViewThreadSliverPage(_discuz,_user, _forumThread.getTid(),
             passedSubject: _forumThread.subject,))
       );
