@@ -103,6 +103,7 @@ dependencies:
   html_unescape: ^2.0.0
   language_code: ^0.5.5
   web: ^1.1.0
+  persistent_bottom_nav_bar: ^6.2.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

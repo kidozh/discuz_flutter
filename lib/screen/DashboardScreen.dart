@@ -127,7 +127,7 @@ class CupertinoDashboardState extends State<CupertinoDashboardStatefulWidget>{
   int _selectedScreenIndex = 0;
   @override
   Widget build(BuildContext context) {
-    log("Dash board when loading it ${onSelectTid}");
+    //log("Dash board when loading it ${onSelectTid}");
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [

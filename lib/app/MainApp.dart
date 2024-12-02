@@ -36,6 +36,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:upgrader/upgrader.dart';
 
@@ -62,13 +63,13 @@ class MyApp extends StatelessWidget {
     // check the screen size
     double width = MediaQuery.sizeOf(context).width;
     log("Get screen width ${width}");
-    if(width >= TwoPaneUtils.mobileScreenSize){
-      platformName = "android";
-      //Provider.of<ThemeNotifierProvider>(context, listen: false).setPlatformName("android")
-    }
-    else{
-      platformName = await UserPreferencesUtils.getPlatformPreference();
-    }
+    // if(width >= TwoPaneUtils.mobileScreenSize){
+    //   platformName = "android";
+    //   //Provider.of<ThemeNotifierProvider>(context, listen: false).setPlatformName("android")
+    // }
+    // else{
+    //   platformName = await UserPreferencesUtils.getPlatformPreference();
+    // }
 
 
     double scale = await UserPreferencesUtils.getTypesettingScalePreference();
@@ -182,12 +183,12 @@ class MyApp extends StatelessWidget {
             }
         }
 
-        if(MediaQuery.sizeOf(context).width >= TwoPaneUtils.mobileScreenSize){
-          platformName = "android";
-          initialPlatform = 'android';
-          targetPlatform = TargetPlatform.android;
-          //Provider.of<ThemeNotifierProvider>(context, listen: false).setPlatformName("android");
-        }
+        // if(MediaQuery.sizeOf(context).width >= TwoPaneUtils.mobileScreenSize){
+        //   platformName = "android";
+        //   initialPlatform = 'android';
+        //   targetPlatform = TargetPlatform.android;
+        //   //Provider.of<ThemeNotifierProvider>(context, listen: false).setPlatformName("android");
+        // }
 
 
 
@@ -583,6 +584,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     initialIndex: 0,
   );
 
+  var _controller = PersistentTabController(initialIndex: 0);
+
   @override
   Widget build(BuildContext context) {
     // need to check whether discuz exists in dataset
@@ -592,163 +595,165 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       _bottomNavigationbarIndex = 0;
     }
     CustomizeColor.updateAndroidNavigationbarColorWithDashboard(context);
-
-
-    return PlatformScaffold(
-      //iosContentPadding: true,
-      appBar: PlatformAppBar(
-        title: Consumer<DiscuzAndUserNotifier>(
-          builder: (context, value, child) {
-            if (value.discuz == null) {
-              return Text(S.of(context).appName);
-            } else {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    value.discuz!.siteName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (value.user == null)
-                    Text(S.of(context).incognitoTitle,
-                        style: TextStyle(fontSize: 12)),
-                  if (value.user != null)
+    double width = MediaQuery.sizeOf(context).width;
+    if(true){
+      return Scaffold(
+        appBar: AppBar(
+          title: Consumer<DiscuzAndUserNotifier>(
+            builder: (context, value, child) {
+              if (value.discuz == null) {
+                return Text(S.of(context).appName);
+              } else {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
                     Text(
-                      "${value.user!.username} (${value.user!.uid})",
-                      style: TextStyle(fontSize: 12),
-                    )
-                ],
-              );
-            }
-          },
-        ),
-        trailingActions: [
-          DiscuzNotificationAppbarIconWidget(),
-          PlatformIconButton(
-            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-            onPressed: _triggerSwitchDiscuzDialog,
-            icon: Icon(
-              AppPlatformIcons(context).manageDiscuzSolid,
-              size: 24,
-              color: Theme.of(context).textTheme.titleSmall?.color,
-              semanticLabel: S.of(context).selectDiscuzIconTooltip,
-            ),
-          )
-        ],
-        automaticallyImplyLeading: true,
-        leading: Consumer<DiscuzAndUserNotifier>(
-          builder: (context, value, child) {
-            if (value.discuz == null) {
-              return Container();
-            } else {
-              return PlatformIconButton(
-                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                      value.discuz!.siteName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                    ),
+                    if (value.user == null)
+                      Text(S.of(context).incognitoTitle,
+                          style: TextStyle(fontSize: 12),
+                        textAlign: TextAlign.center,
+                      ),
+                    if (value.user != null)
+                      Text(
+                        "${value.user!.username} (${value.user!.uid})",
+                        style: TextStyle(fontSize: 12),
+                        textAlign: TextAlign.center,
+                      )
+                  ],
+                );
+              }
+            },
+          ),
+          actions: [
+            DiscuzNotificationAppbarIconWidget(),
+            PlatformIconButton(
+              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+              onPressed: _triggerSwitchDiscuzDialog,
+              icon: Icon(
+                AppPlatformIcons(context).manageDiscuzSolid,
+                size: 24,
+                color: Theme.of(context).textTheme.titleSmall?.color,
+                semanticLabel: S.of(context).selectDiscuzIconTooltip,
+              ),
+            )
+          ],
+          automaticallyImplyLeading: true,
+          leading: Consumer<DiscuzAndUserNotifier>(
+            builder: (context, value, child) {
+              if (value.discuz == null) {
+                return Container();
+              } else {
+                return PlatformIconButton(
+                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
 
-                onPressed: () async {
-                  // open drawer
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  await Navigator.push(
-                      context,
-                      platformPageRoute(
-                          context: context,
-                          builder: (context) => DrawerPage()));
-                },
-                icon: Icon(AppPlatformIcons(context).menuSolid,
+                  onPressed: () async {
+                    // open drawer
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    await Navigator.push(
+                        context,
+                        platformPageRoute(
+                            context: context,
+                            builder: (context) => DrawerPage()));
+                  },
+                  icon: Icon(AppPlatformIcons(context).menuSolid,
                     semanticLabel: S.of(context).menuIconTooltip,
                     color: Theme.of(context).textTheme.titleSmall?.color,
-                  size: 24,
-                ),
+                    size: 24,
+                  ),
 
-              );
+                );
+              }
+            },
+          ),
+        ),
+        body: Consumer<DiscuzAndUserNotifier>(
+          builder: (context, value, child) {
+
+            List<Widget> bodyWidgetList = [
+              DashboardScreen(
+                onSelectTid: onSelectTid,
+              ),
+
+              // should not exist any
+              DiscuzPortalScreen(
+                key: ValueKey(1),
+              ),
+              NotificationScreen(
+                //key: ValueKey(3),
+                onSelectTid: this.onSelectTid,
+              ),
+              // FavoriteThreadScreen(),
+              DiscuzMessageScreen(
+                key: ValueKey(4),
+              )
+            ];
+            if (value.user == null) {
+              print("Get btm index ${_bottomNavigationbarIndex}");
+              if (_bottomNavigationbarIndex < 2) {
+                return bodyWidgetList[_bottomNavigationbarIndex];
+              } else {
+                setState(() {
+                  _bottomNavigationbarIndex = 0;
+                });
+                return bodyWidgetList[_bottomNavigationbarIndex];
+              }
+            } else {
+              return bodyWidgetList[_bottomNavigationbarIndex];
             }
           },
         ),
-      ),
-      body: Consumer<DiscuzAndUserNotifier>(
-        builder: (context, value, child) {
-          List<Widget> bodyWidgetList = [
-            DashboardScreen(
-              onSelectTid: onSelectTid,
-            ),
-            // if (!Platform.isIOS)
-            //   ExploreWebsitePage(
-            //     key: ValueKey(0),
-            //     onSelectTid: this.onSelectTid,
-            //   ),
-            // should not exist any
-            DiscuzPortalScreen(
-              key: ValueKey(1),
-            ),
-            NotificationScreen(
-              //key: ValueKey(3),
-              onSelectTid: this.onSelectTid,
-            ),
-            // FavoriteThreadScreen(),
-            DiscuzMessageScreen(
-              key: ValueKey(4),
-            )
-          ];
-          if (value.user == null) {
-            print("Get btm index ${_bottomNavigationbarIndex}");
-            if (_bottomNavigationbarIndex < 2) {
-              return bodyWidgetList[_bottomNavigationbarIndex];
-            } else {
-              setState(() {
-                _bottomNavigationbarIndex = 0;
-              });
-              return bodyWidgetList[_bottomNavigationbarIndex];
-            }
-          } else {
-            return bodyWidgetList[_bottomNavigationbarIndex];
-          }
-        },
-      ),
-      bottomNavBar: PlatformNavBar(
-        currentIndex: _bottomNavigationbarIndex,
-        material: (context, _) => MaterialNavBarData(
-            selectedItemColor: Theme.of(context).colorScheme.primary,
-            unselectedItemColor: Theme.of(context).unselectedWidgetColor,
-            elevation: 0),
-        itemChanged: (index) {
-          setState(() {
-            VibrationUtils.vibrateWithClickIfPossible();
-            _bottomNavigationbarIndex = index;
-          });
-        },
-        items: [
-          BottomNavigationBarItem(
-              icon: new Icon(AppPlatformIcons(context).discuzSiteOutlined),
-              activeIcon: Icon(AppPlatformIcons(context).discuzSiteSolid),
-              label: S.of(context).dashboard),
-          // if (!Platform.isIOS)
-          //   BottomNavigationBarItem(
-          //       icon: new Icon(AppPlatformIcons(context).discuzExploreOutlined),
-          //       activeIcon: Icon(AppPlatformIcons(context).discuzExploreSolid),
-          //       label: S.of(context).sitePage),
 
-          BottomNavigationBarItem(
-              icon: new Icon(AppPlatformIcons(context).discuzPortalOutlined),
-              activeIcon: Icon(AppPlatformIcons(context).discuzPortalSolid),
-              label: S.of(context).index),
-          if (user != null)
+        bottomNavigationBar: BottomNavigationBar(
+          elevation: 0,
+          selectedItemColor: Theme.of(context).colorScheme.primary,
+          unselectedItemColor: Theme.of(context).disabledColor,
+          //backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          currentIndex: _bottomNavigationbarIndex,
+          items: [
             BottomNavigationBarItem(
-                icon: new Icon(
-                    AppPlatformIcons(context).discuzNotificationOutlined),
-                activeIcon:
-                    Icon(AppPlatformIcons(context).discuzNotificationSolid),
-                label: S.of(context).notification),
-          if (user != null)
+                icon: new Icon(AppPlatformIcons(context).discuzSiteOutlined),
+                activeIcon: Icon(AppPlatformIcons(context).discuzSiteSolid),
+                label: S.of(context).dashboard),
+            // if (!Platform.isIOS)
+            //   BottomNavigationBarItem(
+            //       icon: new Icon(AppPlatformIcons(context).discuzExploreOutlined),
+            //       activeIcon: Icon(AppPlatformIcons(context).discuzExploreSolid),
+            //       label: S.of(context).sitePage),
+
             BottomNavigationBarItem(
-                icon: new Icon(AppPlatformIcons(context).discuzMessageOutlined),
-                activeIcon: Icon(AppPlatformIcons(context).discuzMessageSolid),
-                label: S.of(context).chatMessage),
-        ],
-      ),
-      material: (_, __) => MaterialScaffoldData(),
-    );
+                icon: new Icon(AppPlatformIcons(context).discuzPortalOutlined),
+                activeIcon: Icon(AppPlatformIcons(context).discuzPortalSolid),
+                label: S.of(context).index),
+            if (user != null)
+              BottomNavigationBarItem(
+                  icon: new Icon(
+                      AppPlatformIcons(context).discuzNotificationOutlined),
+                  activeIcon:
+                  Icon(AppPlatformIcons(context).discuzNotificationSolid),
+                  label: S.of(context).notification),
+            if (user != null)
+              BottomNavigationBarItem(
+                  icon: new Icon(AppPlatformIcons(context).discuzMessageOutlined),
+                  activeIcon: Icon(AppPlatformIcons(context).discuzMessageSolid),
+                  label: S.of(context).chatMessage),
+          ],
+          onTap: (index){
+            VibrationUtils.vibrateWithClickIfPossible();
+            setState(() {
+              _bottomNavigationbarIndex = index;
+            });
+          },
+        ),
+      );
+    }
   }
+
 }
 
 class MainTwoPanePage extends StatelessWidget {

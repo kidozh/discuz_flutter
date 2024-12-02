@@ -473,7 +473,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     margin: EdgeInsets.only(top: 4),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.all(Radius.circular(8.0)),
-      color: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
+      color: Theme.of(context).colorScheme.secondaryContainer,
     ),
     child: ListView.builder(
         physics: new NeverScrollableScrollPhysics(),
