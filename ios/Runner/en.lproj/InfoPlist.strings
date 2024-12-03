@@ -1,0 +1,14 @@
+/* 
+  InfoPlist.strings
+  Runner
+
+  Created by kidozh on 03/12/2024.
+  
+*/
+"CFBundleDisplayName" = "DisFly";
+"NSUserTrackingUsageDescription" = "My app will use this identifier to provide you with personalized ads.";
+"NSCameraUsageDescription" = "Disfly will use your camera to take a photo to insert into the message.";
+"NSPhotoLibraryUsageDescription" = "Inserting a photo from your device requires an access to the photo library.";
+"NSPhotoLibraryAddUsageDescription" = "Saving a photo to your device requires an access to the photo library.";
+"NSMicrophoneUsageDescription" = "Sending a video message requires an access to microphone";
+"NSFaceIDUsageDescription" = "Verify your identity via biometric authentication to access to the encrypted data.";

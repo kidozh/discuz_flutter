@@ -1,0 +1,13 @@
+/* 
+  InfoPlist.strings
+  Runner
+
+  Created by kidozh on 03/12/2024.
+  
+*/
+"CFBundleDisplayName" = "谈坛";
+"NSCameraUsageDescription" = "拍照插入到内容之中";
+"NSPhotoLibraryUsageDescription" = "应用保存图片至相册之中";
+"NSPhotoLibraryAddUsageDescription" = "访问图片库以便插入图片至内容之中";
+"NSMicrophoneUsageDescription" = "使用麦克风以允许发送语音消息";
+"NSFaceIDUsageDescription" = "请验证以使用应用安全功能";
