@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
-import 'package:discuz_flutter/screen/LoadingScreen.dart';
 import 'package:discuz_flutter/screen/SmileyListScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';

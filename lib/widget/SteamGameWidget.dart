@@ -5,18 +5,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:discuz_flutter/JsonResult/SteamGameDataResult.dart';
 import 'package:discuz_flutter/client/SteamApiClient.dart';
-import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/TwoPaneUtils.dart';
-import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:language_code/language_code.dart';
-import 'package:provider/provider.dart';
 
 import '../generated/l10n.dart';
 import '../utility/AppPlatformIcons.dart';

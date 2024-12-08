@@ -1,8 +1,6 @@
 
 
 import 'package:dio/dio.dart';
-import 'package:discuz_flutter/JsonResult/BilibiliVideoResult.dart';
-import 'package:discuz_flutter/JsonResult/SteamGameDataResult.dart';
 import 'package:retrofit/error_logger.dart';
 import 'package:retrofit/http.dart';
 

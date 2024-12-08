@@ -1,6 +1,5 @@
 
 
-import 'package:discuz_flutter/converter/SecondToDateTimeConverter.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'BilibiliVideoResult.g.dart';

@@ -1,6 +1,5 @@
 
 
-import 'dart:developer';
 
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NewThreadScreen.dart';

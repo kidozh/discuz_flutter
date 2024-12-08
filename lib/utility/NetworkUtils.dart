@@ -4,11 +4,9 @@ import 'dart:io';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/User.dart';
-import 'package:language_code/language_code.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:random_user_agents/random_user_agents.dart';
-import 'package:ua_client_hints/ua_client_hints.dart';
 
 class NetworkUtils{
 

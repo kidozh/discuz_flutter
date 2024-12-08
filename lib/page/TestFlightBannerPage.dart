@@ -10,7 +10,6 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
-import '../provider/ThemeNotifierProvider.dart';
 import '../provider/UserPreferenceNotifierProvider.dart';
 import '../utility/PostTextFieldUtils.dart';
 

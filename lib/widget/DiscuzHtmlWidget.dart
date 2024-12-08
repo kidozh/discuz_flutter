@@ -148,6 +148,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
                 "margin-bottom": "0.1em"
               };
             }
+            return null;
           },
           customWidgetBuilder: (element) {
             // "collapse", "spoil"
