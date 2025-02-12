@@ -24,6 +24,7 @@ import 'ManageAccountPage.dart';
 import 'ManageDiscuzPage.dart';
 import 'ManageTrustHostPage.dart';
 import 'SettingPage.dart';
+import 'SubscribeChannelPage.dart';
 import 'ViewHistoryPage.dart';
 
 class DrawerPage extends StatelessWidget {
@@ -234,19 +235,19 @@ class DrawerState extends State<DrawerStatefulWidget> {
         //     }
         //   },
         // ),
-        // ListTile(
-        //   title: Text(S.of(context).subscribeChannel),
-        //   leading: Icon(AppPlatformIcons(context).subscribeChannelSolid),
-        //   onTap: () async {
-        //     VibrationUtils.vibrateWithClickIfPossible();
-        //     await Navigator.push(
-        //         context,
-        //         platformPageRoute(
-        //              iosTitle: S.of(context).subscribeChannel
-        //             context: context,
-        //             builder: (context) => SubscribeChannelPage()));
-        //   },
-        // ),
+        ListTile(
+          title: Text(S.of(context).subscribeChannel),
+          leading: Icon(AppPlatformIcons(context).subscribeChannelSolid),
+          onTap: () async {
+            VibrationUtils.vibrateWithClickIfPossible();
+            await Navigator.push(
+                context,
+                platformPageRoute(
+                     iosTitle: S.of(context).subscribeChannel,
+                      context: context,
+                      builder: (context) => SubscribeChannelPage()));
+          },
+        ),
         ListTile(
           title: Text(S.of(context).settingTitle),
           leading: Icon(PlatformIcons(context).settingsSolid),

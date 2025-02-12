@@ -6020,6 +6020,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Locale`
+  String get pushLocale {
+    return Intl.message(
+      'Locale',
+      name: 'pushLocale',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

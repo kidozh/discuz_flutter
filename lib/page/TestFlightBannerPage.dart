@@ -3,6 +3,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -76,6 +77,34 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent>{
             ],
           )
       );
+    }
+
+    // check with push service
+
+
+  }
+
+  Future<void> triggerNotification(BuildContext context) async{
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+      providesAppNotificationSettings: true
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized || settings.authorizationStatus == AuthorizationStatus.provisional){
+      Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = true;
+      await UserPreferencesUtils.putPushPreference(true);
+    }
+    else{
+      EasyLoading.showInfo(S.of(context).pushNotificationPermissionNotAuthorized);
+      Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = false;
+      await UserPreferencesUtils.putPushPreference(false);
     }
   }
 

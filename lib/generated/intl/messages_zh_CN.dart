@@ -704,6 +704,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushHelpPages": MessageLookupByLibrary.simpleMessage("推送服务帮助"),
         "pushInformation":
             MessageLookupByLibrary.simpleMessage("下列信息将在同意后直接发送给论坛服务器"),
+        "pushLocale": MessageLookupByLibrary.simpleMessage("语言偏好"),
         "pushNotification": MessageLookupByLibrary.simpleMessage("通知推送服务"),
         "pushNotificationDescription": MessageLookupByLibrary.simpleMessage(
             "推送通知服务仅当对应的Discuz站点启用了dhpush插件并且通过验证后才能开启。"),

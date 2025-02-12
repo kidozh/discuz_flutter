@@ -107,7 +107,7 @@ class AppPlatformIcons{
 
   IconData get chevronSolid => isMaterial(context)? Icons.arrow_forward : CupertinoIcons.chevron_forward;
 
-  IconData get subscribeChannelSolid => isMaterial(context)? Icons.subscriptions : CupertinoIcons.news_solid;
+  IconData get subscribeChannelSolid => isMaterial(context)? Icons.subscriptions : CupertinoIcons.number_circle_fill;
 
   IconData get notificationSolid => isMaterial(context)? Icons.notifications : CupertinoIcons.bell_fill;
 

@@ -383,7 +383,7 @@ class SteamGameState extends State<SteamGameWidget> {
                     SizedBox(
                       height: 8,
                     ),
-
+                    if(steamGameDataResult.data.supported_languages.isNotEmpty)
                     Row(
                       children: [
                         Icon(
@@ -393,6 +393,7 @@ class SteamGameState extends State<SteamGameWidget> {
                         SizedBox(
                           width: 16.0,
                         ),
+
                         Expanded(
                             child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

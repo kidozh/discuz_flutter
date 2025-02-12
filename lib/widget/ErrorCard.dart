@@ -51,14 +51,17 @@ class ErrorCard extends StatelessWidget{
 
                 ],
               ),
-              SizedBox(height: 16.0,),
+              SizedBox(height: 32.0,),
               if(onRefreshCallback!=null)
-                PlatformElevatedButton(
-                  child: Text(S.of(context).retry),
-                  onPressed: () {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    onRefreshCallback!();
-                  },
+                SizedBox(
+                  width: double.infinity,
+                  child: PlatformElevatedButton(
+                    child: Text(S.of(context).retry),
+                    onPressed: () {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      onRefreshCallback!();
+                    },
+                  ),
                 ),
             ],
           ),

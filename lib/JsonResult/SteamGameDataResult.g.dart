@@ -31,7 +31,7 @@ SteamGameData _$SteamGameDataFromJson(Map<String, dynamic> json) =>
       ..detailed_description = json['detailed_description'] as String
       ..about_the_game = json['about_the_game'] as String
       ..short_description = json['short_description'] as String
-      ..supported_languages = json['supported_languages'] as String
+      ..supported_languages = json['supported_languages'] as String? ?? ''
       ..header_image = json['header_image'] as String
       ..capsule_image = json['capsule_image'] as String
       ..capsule_imagev5 = json['capsule_imagev5'] as String
@@ -46,9 +46,10 @@ SteamGameData _$SteamGameDataFromJson(Map<String, dynamic> json) =>
               json['price_overview'] as Map<String, dynamic>)
       ..platforms =
           AvailablePlatform.fromJson(json['platforms'] as Map<String, dynamic>)
-      ..categories = (json['categories'] as List<dynamic>)
-          .map((e) => GameCategory.fromJson(e as Map<String, dynamic>))
-          .toList()
+      ..categories = (json['categories'] as List<dynamic>?)
+              ?.map((e) => GameCategory.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          []
       ..screenshots = (json['screenshots'] as List<dynamic>)
           .map((e) => GameScreenshot.fromJson(e as Map<String, dynamic>))
           .toList()

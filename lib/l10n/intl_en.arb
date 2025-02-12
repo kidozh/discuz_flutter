@@ -878,5 +878,6 @@
   "postThread": "Post thread",
   "viewPicture": "Preview",
   "history": "History",
-  "thread": "Thread"
+  "thread": "Thread",
+  "pushLocale": "Locale"
 }

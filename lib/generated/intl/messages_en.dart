@@ -816,6 +816,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushHelpPages": MessageLookupByLibrary.simpleMessage("Helps"),
         "pushInformation":
             MessageLookupByLibrary.simpleMessage("Pushed information"),
+        "pushLocale": MessageLookupByLibrary.simpleMessage("Locale"),
         "pushNotification":
             MessageLookupByLibrary.simpleMessage("Push notification service"),
         "pushNotificationDescription": MessageLookupByLibrary.simpleMessage(

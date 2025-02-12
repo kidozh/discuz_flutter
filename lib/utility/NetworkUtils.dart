@@ -33,7 +33,7 @@ class NetworkUtils{
     // clear before using it
     cookieJar.deleteAll();
     return cookieJar;
-  }
+  } 
 
   static Dio getDio(){
     return Dio(BaseOptions(

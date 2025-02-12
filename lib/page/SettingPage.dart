@@ -23,6 +23,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../utility/AppPlatformIcons.dart';
 import '../utility/PostTextFieldUtils.dart';
 import 'ChooseThemeColorPage.dart';
+import 'SetPushNotificationPage.dart';
 
 class SettingPage extends StatefulWidget {
   @override
@@ -132,27 +133,27 @@ class _SettingPageState extends State<SettingPage> {
                 //     ));
                 //   },
                 // ),
-                // SettingsTile.navigation(
-                //   title: Text(S.of(context).pushNotification),
-                //   leading: Icon(AppPlatformIcons(context).pushServiceOutlined),
-                //   value: Consumer<UserPreferenceNotifierProvider>(
-                //     builder: (context, userPreference, child){
-                //       if(userPreference.allowPush){
-                //         return Text(S.of(context).pushNotificationOn);
-                //       }
-                //       else{
-                //         return Text(S.of(context).pushNotificationOff);
-                //       }
-                //     },
-                //   ),
-                //   onPressed: (context){
-                //     VibrationUtils.vibrateWithClickIfPossible();
-                //     Navigator.of(context).push(platformPageRoute(
-                //       builder: (_) => SetPushNotificationPage(),
-                //       context: context,
-                //     ));
-                //   },
-                // )
+                SettingsTile.navigation(
+                  title: Text(S.of(context).pushNotification),
+                  leading: Icon(AppPlatformIcons(context).pushServiceOutlined),
+                  value: Consumer<UserPreferenceNotifierProvider>(
+                    builder: (context, userPreference, child){
+                      if(userPreference.allowPush){
+                        return Text(S.of(context).pushNotificationOn);
+                      }
+                      else{
+                        return Text(S.of(context).pushNotificationOff);
+                      }
+                    },
+                  ),
+                  onPressed: (context){
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    Navigator.of(context).push(platformPageRoute(
+                      builder: (_) => SetPushNotificationPage(),
+                      context: context,
+                    ));
+                  },
+                )
               ],
             ),
             SettingsSection(

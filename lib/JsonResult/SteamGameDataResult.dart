@@ -23,7 +23,9 @@ class SteamGameData{
   bool is_free = false;
   @JsonKey(name: "dlc", defaultValue: [])
   List<int> dlc_app_list = [];
-  String detailed_description = "", about_the_game="", short_description="", supported_languages="";
+  String detailed_description = "", about_the_game="", short_description="";
+  @JsonKey(defaultValue: "")
+  String supported_languages="";
   String header_image = "", capsule_image = "", capsule_imagev5="";
   @JsonKey(defaultValue: "")
   String legal_notice = "";
@@ -31,6 +33,7 @@ class SteamGameData{
   @JsonKey(required: false, defaultValue: PriceOverview.new)
   PriceOverview price_overview = PriceOverview();
   AvailablePlatform platforms = AvailablePlatform();
+  @JsonKey(defaultValue: [])
   List<GameCategory> categories = [];
   List<GameScreenshot> screenshots = [];
   @JsonKey(required: false, defaultValue: [])

@@ -879,6 +879,7 @@
   "postThread": "发帖",
   "viewPicture": "预览图片",
   "history": "历史",
-  "thread": "帖子"
+  "thread": "帖子",
+  "pushLocale": "语言偏好"
 
 }

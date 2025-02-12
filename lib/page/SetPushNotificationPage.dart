@@ -113,9 +113,13 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
                   title: Text(S.of(context).pushChannel),
                   value: Text(pushTokenChannel!.getLocalizedChannelName(context)),
                 ),
-                SettingsTile(title: Text(pushTokenChannel!.channelName),
-                  description: Text(pushTokenChannel!.token),
-                ),
+                SettingsTile(
+                    title: Text(S.of(context).pushLocale),
+                    value: Text(Localizations.localeOf(context).languageCode),
+                )
+                // SettingsTile(title: Text(pushTokenChannel!.channelName),
+                //   value: Text(pushTokenChannel!.token, maxLines: 1,),
+                // ),
               ]
           ),
           SettingsSection(title: Text(S.of(context).legalInformation), tiles: [
