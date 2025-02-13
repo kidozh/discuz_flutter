@@ -43,6 +43,8 @@ class CheckResult {
   // int totalMembers = 0;
   @JsonKey(defaultValue: "")
   String? testcookie = "";
+  @JsonKey(name: 'truediscuzversion"', defaultValue: "X3.4")
+  String trueDiscuzVersion = "X3.4";
 
 
   CheckResult(
@@ -58,6 +60,7 @@ class CheckResult {
       this.siteId,
       this.uCenterURL,
       this.defaultFid,
+      this.trueDiscuzVersion
       // this.totalPosts,
       // this.totalMembers
     );
@@ -69,6 +72,7 @@ class CheckResult {
     return Discuz(baseURL,discuzVersion, charset, getApiVersion(),
         pluginVersion, regname, qqEnabled(),
         wsqqqconnect, wsqhideregister, siteName,
-        siteId, uCenterURL, defaultFid);
+        siteId, uCenterURL, defaultFid, trueDiscuzVersion: trueDiscuzVersion
+    );
   }
 }

@@ -21,9 +21,9 @@ class UserAdapter extends TypeAdapter<User> {
       fields[1] as String,
       fields[2] as String,
       fields[3] as String,
-      fields[4] as int,
-      fields[5] as int,
-      fields[6] as int,
+      (fields[4] as num).toInt(),
+      (fields[5] as num).toInt(),
+      (fields[6] as num).toInt(),
       fields[7] as Discuz,
     );
   }

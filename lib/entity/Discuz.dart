@@ -33,6 +33,8 @@ class Discuz extends HiveObject {
   String defaultFid = "";
   @HiveField(13)
   String baseURL = "";
+  @HiveField(14)
+  String trueDiscuzVersion;
 
   String getDiscuzAvatarURL(){
     return this.baseURL + "/static/image/common/logo.png";
@@ -63,7 +65,9 @@ class Discuz extends HiveObject {
       this.siteName,
       this.siteId,
       this.uCenterURL,
-      this.defaultFid);
+      this.defaultFid,
+      {this.trueDiscuzVersion = "X3.4"}
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -82,7 +86,9 @@ class Discuz extends HiveObject {
           siteId == other.siteId &&
           uCenterURL == other.uCenterURL &&
           defaultFid == other.defaultFid &&
-          baseURL == other.baseURL;
+          baseURL == other.baseURL &&
+          trueDiscuzVersion == other.trueDiscuzVersion
+  ;
 
   @override
   int get hashCode =>
@@ -98,5 +104,7 @@ class Discuz extends HiveObject {
       siteId.hashCode ^
       uCenterURL.hashCode ^
       defaultFid.hashCode ^
-      baseURL.hashCode;
+      baseURL.hashCode ^
+      trueDiscuzVersion.hashCode
+  ;
 }

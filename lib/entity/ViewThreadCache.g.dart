@@ -17,11 +17,11 @@ class ViewThreadCacheAdapter extends TypeAdapter<ViewThreadCache> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ViewThreadCache(
-      fields[0] as int,
+      (fields[0] as num).toInt(),
       fields[1] as String,
       fields[5] as Discuz,
       fields[2] as DateTime,
-      fields[3] as int,
+      (fields[3] as num).toInt(),
       fields[4] as bool,
     );
   }

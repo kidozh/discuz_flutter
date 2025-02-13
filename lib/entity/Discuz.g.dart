@@ -20,7 +20,7 @@ class DiscuzAdapter extends TypeAdapter<Discuz> {
       fields[13] as String,
       fields[1] as String,
       fields[2] as String,
-      fields[3] as int,
+      (fields[3] as num).toInt(),
       fields[4] as String,
       fields[5] as String,
       fields[6] as bool,
@@ -30,13 +30,14 @@ class DiscuzAdapter extends TypeAdapter<Discuz> {
       fields[10] as String,
       fields[11] as String,
       fields[12] as String,
+      trueDiscuzVersion: fields[14] == null ? "X3.4" : fields[14] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Discuz obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(14)
       ..writeByte(1)
       ..write(obj.discuzVersion)
       ..writeByte(2)
@@ -62,7 +63,9 @@ class DiscuzAdapter extends TypeAdapter<Discuz> {
       ..writeByte(12)
       ..write(obj.defaultFid)
       ..writeByte(13)
-      ..write(obj.baseURL);
+      ..write(obj.baseURL)
+      ..writeByte(14)
+      ..write(obj.trueDiscuzVersion);
   }
 
   @override

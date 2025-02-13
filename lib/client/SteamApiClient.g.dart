@@ -9,11 +9,7 @@ part of 'SteamApiClient.dart';
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations
 
 class _SteamApiClient implements SteamApiClient {
-  _SteamApiClient(
-    this._dio, {
-    this.baseUrl,
-    this.errorLogger,
-  }) {
+  _SteamApiClient(this._dio, {this.baseUrl, this.errorLogger}) {
     baseUrl ??= 'https://store.steampowered.com/';
   }
 
@@ -29,28 +25,19 @@ class _SteamApiClient implements SteamApiClient {
     String language,
   ) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{
-      r'appids': appId,
-      r'l': language,
-    };
+    final queryParameters = <String, dynamic>{r'appids': appId, r'l': language};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<String>(Options(
-      method: 'GET',
-      headers: _headers,
-      extra: _extra,
-    )
-        .compose(
-          _dio.options,
-          '/api/appdetails',
-          queryParameters: queryParameters,
-          data: _data,
-        )
-        .copyWith(
-            baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
+    final _options = _setStreamType<String>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/appdetails',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
     final _result = await _dio.fetch<String>(_options);
     late String _value;
     try {
@@ -75,10 +62,7 @@ class _SteamApiClient implements SteamApiClient {
     return requestOptions;
   }
 
-  String _combineBaseUrls(
-    String dioBaseUrl,
-    String? baseUrl,
-  ) {
+  String _combineBaseUrls(String dioBaseUrl, String? baseUrl) {
     if (baseUrl == null || baseUrl.trim().isEmpty) {
       return dioBaseUrl;
     }

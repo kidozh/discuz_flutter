@@ -18,8 +18,8 @@ class ViewThreadScrollDistanceAdapter
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ViewThreadScrollDistance(
-      fields[0] as int,
-      fields[1] as double,
+      (fields[0] as num).toInt(),
+      (fields[1] as num).toDouble(),
       fields[4] as Discuz,
       fields[2] as DateTime,
       fields[3] as bool,

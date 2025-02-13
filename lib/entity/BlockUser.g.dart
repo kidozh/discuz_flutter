@@ -17,7 +17,7 @@ class BlockUserAdapter extends TypeAdapter<BlockUser> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return BlockUser(
-      fields[1] as int,
+      (fields[1] as num).toInt(),
       fields[2] as String,
       fields[4] as DateTime,
       fields[5] as Discuz,

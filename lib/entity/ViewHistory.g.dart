@@ -21,9 +21,9 @@ class ViewHistoryAdapter extends TypeAdapter<ViewHistory> {
       fields[1] as String,
       fields[2] as String,
       fields[3] as String,
-      fields[4] as int,
+      (fields[4] as num).toInt(),
       fields[5] as String,
-      fields[6] as int,
+      (fields[6] as num).toInt(),
       fields[9] as Discuz,
       fields[8] as DateTime,
     )..insertTime = fields[7] as DateTime;

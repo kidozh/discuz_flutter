@@ -18,9 +18,9 @@ class FavoriteForumInDatabaseAdapter
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return FavoriteForumInDatabase(
-      fields[0] as int,
-      fields[1] as int,
-      fields[2] as int,
+      (fields[0] as num).toInt(),
+      (fields[1] as num).toInt(),
+      (fields[2] as num).toInt(),
       fields[3] as String,
       fields[4] as String,
       fields[5] as String,
