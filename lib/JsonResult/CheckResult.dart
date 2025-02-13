@@ -43,8 +43,8 @@ class CheckResult {
   // int totalMembers = 0;
   @JsonKey(defaultValue: "")
   String? testcookie = "";
-  @JsonKey(name: 'truediscuzversion"', defaultValue: "X3.4")
-  String trueDiscuzVersion = "X3.4";
+  @JsonKey(name: 'truediscuzversion', required: false, defaultValue: "")
+  String trueDiscuzVersion = "";
 
 
   CheckResult(

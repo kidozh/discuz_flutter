@@ -36,6 +36,8 @@ class Discuz extends HiveObject {
   @HiveField(14)
   String trueDiscuzVersion;
 
+  bool get isDiscuzVersion35 => trueDiscuzVersion == "X3.5";
+
   String getDiscuzAvatarURL(){
     return this.baseURL + "/static/image/common/logo.png";
   }

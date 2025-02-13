@@ -19,7 +19,7 @@ CheckResult _$CheckResultFromJson(Map<String, dynamic> json) => CheckResult(
       json['mysiteid'] as String,
       json['ucenterurl'] as String,
       json['defaultfid'] as String? ?? '0',
-      json['truediscuzversion"'] as String? ?? 'X3.4',
+      json['truediscuzversion'] as String? ?? '',
     )..testcookie = json['testcookie'] as String? ?? '';
 
 Map<String, dynamic> _$CheckResultToJson(CheckResult instance) =>
@@ -37,5 +37,5 @@ Map<String, dynamic> _$CheckResultToJson(CheckResult instance) =>
       'ucenterurl': instance.uCenterURL,
       'defaultfid': instance.defaultFid,
       'testcookie': instance.testcookie,
-      'truediscuzversion"': instance.trueDiscuzVersion,
+      'truediscuzversion': instance.trueDiscuzVersion,
     };

@@ -8,6 +8,7 @@ import 'package:discuz_flutter/page/AddDiscuzPage.dart';
 import 'package:discuz_flutter/page/ExclusiveDiscuzPortalPage.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -65,7 +66,6 @@ class ManageDiscuzState extends State<ManageDiscuzStateWidget>{
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _initDb();
 
@@ -81,10 +81,13 @@ class ManageDiscuzState extends State<ManageDiscuzStateWidget>{
   
   Widget _buildSecureIcon(BuildContext context,Discuz discuz){
     if(discuz.baseURL.startsWith("http://")){
-      return Icon(Icons.privacy_tip,color: Colors.deepOrange);
+      return Icon(AppPlatformIcons(context).inSecureHttpWarningSolid,color: Theme.of(context).splashColor);
+    }
+    if(discuz.isDiscuzVersion35){
+      return Icon(AppPlatformIcons(context).supportDiscuz35Solid, color: Theme.of(context).colorScheme.primary);
     }
     else{
-      return Icon(Icons.check_circle, color: Colors.teal,);
+      return Icon(AppPlatformIcons(context).secureHttpsSolid, color: Theme.of(context).colorScheme.secondary,);
     }
   }
 

@@ -147,11 +147,13 @@ class _AddDiscuzFormFieldState
       setState(() {
         _isLoading = false;
       });
-      // log(value.toString());
+      log(value.toString());
       // convert string to json
       Map<String, dynamic> checkResultJson = jsonDecode(value);
+      log("Json OBJ ${checkResultJson.toString()} ${checkResultJson[""]}");
       CheckResult checkResult = CheckResult.fromJson(checkResultJson);
-      log(checkResult.toString());
+      log("GET TRUE Discuz VERSION ${checkResult.trueDiscuzVersion}");
+      //log(checkResult.toString());
       setState(() {
         _checkResult = _checkResult;
         error = null;

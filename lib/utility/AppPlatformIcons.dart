@@ -170,4 +170,10 @@ class AppPlatformIcons{
   IconData get clearCircleSolid => isMaterial(context)? Icons.clear : CupertinoIcons.clear_circled;
 
   IconData get clearAtEndSolid => isMaterial(context)? Icons.clear_all : CupertinoIcons.clear_fill;
+
+  IconData get inSecureHttpWarningSolid => isMaterial(context)? Icons.lock_open_rounded : CupertinoIcons.lock_slash_fill;
+
+  IconData get secureHttpsSolid => isMaterial(context)? Icons.lock : CupertinoIcons.lock_circle_fill;
+
+  IconData get supportDiscuz35Solid => isMaterial(context)? Icons.check_circle : CupertinoIcons.checkmark_seal_fill;
 }
