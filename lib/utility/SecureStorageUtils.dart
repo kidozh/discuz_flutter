@@ -7,7 +7,7 @@ import 'package:discuz_flutter/entity/DiscuzAuthentication.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
 import '../dao/DiscuzAuthenticationDao.dart';

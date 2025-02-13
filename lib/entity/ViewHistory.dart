@@ -1,7 +1,7 @@
 
 
 
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 
 import '../utility/ConstUtils.dart';
 import 'Discuz.dart';

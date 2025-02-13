@@ -1,7 +1,7 @@
 
 
 import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 
 import '../entity/Discuz.dart';
 

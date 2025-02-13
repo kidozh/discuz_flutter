@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:math' as Math;
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
@@ -14,12 +15,14 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/SelectedTidNotifierProvider.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
+import 'package:discuz_flutter/utility/DiscuzImageDioCacheManager.dart';
+import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:hive_flutter/adapters.dart';
+import 'package:hive_ce_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/ViewHistory.dart';
@@ -76,6 +79,8 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
   ThreadType? threadType;
   bool read = false;
   int? afterTid = null;
+  Dio _dio = Dio();
+  DiscuzImageDioCacheManager? _discuzImageDioCacheManager;
 
   final ValueChanged<int>? onSelectTid;
 
@@ -84,9 +89,10 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
   }
 
   @override
-  void initState() {
+  void initState(){
     // set in case
     _user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+
     loadDatabase();
     super.initState();
 
@@ -98,7 +104,9 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
 
   void loadDatabase() async{
     ViewHistoryDao viewHistoryDao = await AppDatabase.getViewHistoryDao();
+    _dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
     setState((){
+      _discuzImageDioCacheManager = DiscuzImageDioCacheManager(_dio);
       dao = viewHistoryDao;
     });
     blockUserDao = await AppDatabase.getBlockUserDao();
@@ -114,6 +122,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
         this.isUserBlocked = true;
       });
     }
+
 
   }
 
@@ -190,6 +199,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget>{
     return ClipRRect(
       borderRadius: BorderRadius.circular(8.0),
       child: CachedNetworkImage(
+        cacheManager: _discuzImageDioCacheManager,
 
         fit: BoxFit.cover,
         imageUrl: "${_discuz.getBaseURLWithAfterfix()}/data/attachment/forum/${attachmentPreview.attachment}",

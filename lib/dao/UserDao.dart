@@ -1,6 +1,6 @@
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 
 class UserDao{
   Box<User> userBox;

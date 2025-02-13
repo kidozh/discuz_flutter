@@ -16,7 +16,7 @@ import 'package:discuz_flutter/entity/TrustHost.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/entity/ViewThreadCache.dart';
 import 'package:discuz_flutter/entity/ViewThreadScrollDistance.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 
 import '../dao/BlockUserDao.dart';
 import '../dao/DraftDao.dart';

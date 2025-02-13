@@ -1,6 +1,6 @@
 
 import 'package:discuz_flutter/utility/ConstUtils.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 
 part 'TrustHost.g.dart';
 

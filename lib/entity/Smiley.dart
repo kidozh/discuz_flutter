@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:discuz_flutter/utility/ConstUtils.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'Discuz.dart';

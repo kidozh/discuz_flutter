@@ -1,7 +1,7 @@
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce/hive.dart';
+import 'package:hive_ce_flutter/hive_flutter.dart';
 
 class ViewHistoryDao{
   Box<ViewHistory> viewHistoryBox;

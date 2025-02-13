@@ -9,7 +9,7 @@ import 'package:firebase_messaging/firebase_messaging.dart' as FCM;
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:hive_flutter/adapters.dart';
+import 'package:hive_ce_flutter/adapters.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:push/push.dart';
@@ -175,7 +175,7 @@ class PushServiceUtils{
 
   static Future<void> initPushInformation(GlobalKey<NavigatorState> navigatorKey) async {
     print("Initialize push settings");
-    Push.instance.onNewToken.listen((token) {
+    Push.instance.addOnNewToken((token) {
       print("Just got a new FCM registration token: ${token}");
     });
 
@@ -210,7 +210,7 @@ class PushServiceUtils{
     // });
 
     // Handle notification taps
-    Push.instance.onNotificationTap.listen((data) {
+    Push.instance.addOnNotificationTap((data) {
       print("Handle the data ${data["payload"]} RAW ${data}");
       if(data["payload"] != null){
         _handleMessage(jsonDecode(data["payload"] as String),navigatorKey);

@@ -1,5 +1,5 @@
 import 'package:discuz_flutter/entity/TrustHost.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 
 
 class TrustHostDao{

@@ -64,8 +64,8 @@ dependencies:
   flutter_native_splash: ^2.3.2
   slide_countdown: ^2.0.0
 
-  hive: any
-  hive_flutter: any
+  hive_ce: ^2.10.1
+  hive_ce_flutter: ^2.2.0
   device_info_plus: ^11.1.0
   share_plus: ^10.0.0
   firebase_messaging: ^15.0.3
@@ -77,7 +77,7 @@ dependencies:
   easy_refresh: ^3.0.2+2
   open_filex: ^4.0.1
   flutter_polls: ^0.1.0
-  push: ^2.3.0
+  push: ^3.3.3
   google_mobile_ads: ^5.1.0
   image_gallery_saver: ^2.0.3
   dynamic_color: ^1.6.7
@@ -104,12 +104,16 @@ dependencies:
   language_code: ^0.5.5
   web: ^1.1.0
   persistent_bottom_nav_bar: ^6.2.1
+  fwfh_cached_network_image: ^0.14.3
+  flutter_cache_manager: ^3.4.1
+  flutter_cache_manager_dio: ^4.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: any
   retrofit_generator: any
-  hive_generator: any
+  hive_ce_generator: ^1.8.2
 
 
 
