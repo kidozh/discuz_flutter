@@ -720,6 +720,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "pushPrivacyPolicy": MessageLookupByLibrary.simpleMessage("推送服务隐私政策"),
         "pushServiceEnableDescription":
             MessageLookupByLibrary.simpleMessage("您是否想要打开推送通知功能以接收实时消息？"),
+        "pushServiceLimitedInChinaMainlandSubtitle":
+            MessageLookupByLibrary.simpleMessage(
+                "FCM在国内使用可能面临不稳定的情况，其次各家国产手机厂商针对应用接受FCM拉起有各种奇奇怪怪的“优化”。为了及时接收消息，我们建议您允许应用自启动。"),
+        "pushServiceLimitedInChinaMainlandTitle":
+            MessageLookupByLibrary.simpleMessage("FCM在中国大陆地区可能使用受限"),
         "pushServiceNotEnabled":
             MessageLookupByLibrary.simpleMessage("请打开通知服务以允许频道推送"),
         "pushServiceOff":

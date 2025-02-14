@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../entity/User.dart';
+import 'PostTextFieldUtils.dart';
 
 class UserPreferencesUtils{
   static final String recordHistoryKey = "recordHistoryKey";
@@ -241,7 +242,7 @@ class UserPreferencesUtils{
   static Future<String> getSignaturePreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var signaturePreference =  prefs.getString(signaturePreferenceKey);
-    return signaturePreference == null? "": signaturePreference;
+    return signaturePreference == null? PostTextFieldUtils.USE_APP_SIGNATURE: signaturePreference;
   }
 
   static Future<void> putSignaturePreference(String value) async{

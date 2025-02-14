@@ -33,7 +33,7 @@ SubscribeChannel _$SubscribeChannelFromJson(Map<String, dynamic> json) =>
       ..type = json['type'] as String
       ..identification = json['identification'] as String
       ..date = json['date'] as String
-      ..note = json['note'] as String
+      ..note = json['note'] as String? ?? ''
       ..subscribe = json['subscribe'] as bool;
 
 Map<String, dynamic> _$SubscribeChannelToJson(SubscribeChannel instance) =>

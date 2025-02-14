@@ -31,6 +31,7 @@ class SubscribeChannel{
   String type = "";
   String identification = "";
   String date = "";
+  @JsonKey(required: false, defaultValue: "")
   String note = "";
   bool subscribe = false;
 

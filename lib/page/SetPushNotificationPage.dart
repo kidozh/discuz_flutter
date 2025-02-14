@@ -1,3 +1,4 @@
+import 'dart:io';
 
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
@@ -29,18 +30,18 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     _loadDeviceInformation();
   }
 
-  void _loadDeviceInformation() async{
+  void _loadDeviceInformation() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     deviceName = await PostTextFieldUtils.getDeviceName(context);
-    PushTokenChannel? _pushTokenChannel = await PushServiceUtils.getPushToken(context);
+    PushTokenChannel? _pushTokenChannel =
+        await PushServiceUtils.getPushToken(context);
     bool _allowPush = await UserPreferencesUtils.getPushPreference();
-    if(_pushTokenChannel!= null){
-      print("Get Token "+_pushTokenChannel.token);
+    if (_pushTokenChannel != null) {
+      print("Get Token " + _pushTokenChannel.token);
     }
 
     setState(() {
@@ -49,10 +50,9 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
       pushTokenChannel = _pushTokenChannel;
       allowPush = _allowPush;
     });
-    
-    Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = _allowPush;
 
-
+    Provider.of<UserPreferenceNotifierProvider>(context, listen: false)
+        .allowPush = _allowPush;
   }
 
   @override
@@ -63,64 +63,96 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
         title: Text(S.of(context).pushNotification),
       ),
       body: SettingsList(
-
         sections: [
-          if(pushTokenChannel == null)
-            SettingsSection(tiles: [
-              SettingsTile(
-                title: Text(S.of(context).pushDeviceNotSupported),
-                description: Text(S.of(context).pushDeviceNotSupportedDescription),
-                leading: Icon(PlatformIcons(context).removeCircledSolid),
-              )
-            ],
-            ),
-          if(pushTokenChannel != null)
-          SettingsSection(tiles: [
-            SettingsTile.switchTile(
-              title: Text(S.of(context).pushNotificationEnable),
-              description: Text(S.of(context).pushNotificationDescription),
-              activeSwitchColor: Theme.of(context).colorScheme.primary,
-              initialValue: allowPush,
-              onToggle: (value) async {
-                VibrationUtils.vibrateWithClickIfPossible();
-                // need to popup a dialog
-                if (value) {
-                  // popup dialog
-                  _triggerDialog(context);
-                } else {
-                  setState(() {
-                    allowPush = false;
-                  });
-                  Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = value;
-                  await UserPreferencesUtils.putPushPreference(false);
-
-                }
-              },
-            )
-          ]),
-          if(pushTokenChannel != null)
-          SettingsSection(
-              title: Text(S.of(context).pushInformation),
+          if (pushTokenChannel == null)
+            SettingsSection(
               tiles: [
                 SettingsTile(
-                  title: Text(S.of(context).pushDevice),
-                  value: Text(deviceName),
-                ),
-                SettingsTile(title: Text(S.of(context).pushPackageId),
-                  value: Text(packageId),
-                ),
-                SettingsTile(
-                  title: Text(S.of(context).pushChannel),
-                  value: Text(pushTokenChannel!.getLocalizedChannelName(context)),
-                ),
-                SettingsTile(
-                    title: Text(S.of(context).pushLocale),
-                    value: Text(Localizations.localeOf(context).languageCode),
+                  title: Text(S.of(context).pushDeviceNotSupported),
+                  description:
+                      Text(S.of(context).pushDeviceNotSupportedDescription),
+                  leading: Icon(PlatformIcons(context).removeCircledSolid),
                 )
-                // SettingsTile(title: Text(pushTokenChannel!.channelName),
-                //   value: Text(pushTokenChannel!.token, maxLines: 1,),
-                // ),
-              ]
+              ],
+            ),
+          if (pushTokenChannel != null)
+            SettingsSection(tiles: [
+              SettingsTile.switchTile(
+                title: Text(S.of(context).pushNotificationEnable),
+                description: Text(S.of(context).pushNotificationDescription),
+                activeSwitchColor: Theme.of(context).colorScheme.primary,
+                initialValue: allowPush,
+                onToggle: (value) async {
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  // need to popup a dialog
+                  if (value) {
+                    // popup dialog
+                    _triggerDialog(context);
+                  } else {
+                    setState(() {
+                      allowPush = false;
+                    });
+                    Provider.of<UserPreferenceNotifierProvider>(context,
+                            listen: false)
+                        .allowPush = value;
+                    await UserPreferencesUtils.putPushPreference(false);
+                  }
+                },
+              )
+            ]),
+          if (pushTokenChannel != null)
+            SettingsSection(title: Text(S.of(context).pushInformation), tiles: [
+              SettingsTile(
+                title: Text(S.of(context).pushDevice),
+                value: Text(deviceName),
+              ),
+              SettingsTile(
+                title: Text(S.of(context).pushPackageId),
+                value: Text(packageId),
+              ),
+              SettingsTile(
+                title: Text(S.of(context).pushChannel),
+                value: Text(pushTokenChannel!.getLocalizedChannelName(context)),
+              ),
+              SettingsTile(
+                title: Text(S.of(context).pushLocale),
+                value: Text(Localizations.localeOf(context).languageCode),
+              )
+              // SettingsTile(title: Text(pushTokenChannel!.channelName),
+              //   value: Text(pushTokenChannel!.token, maxLines: 1,),
+              // ),
+            ]),
+          if(Platform.isAndroid)
+          CustomSettingsSection(
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: EdgeInsets.symmetric(vertical: 4.0),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(12.0),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              child: PlatformListTile(
+                title: Text(
+                  S.of(context).pushServiceLimitedInChinaMainlandTitle,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+                subtitle: Text(
+                    S.of(context).pushServiceLimitedInChinaMainlandSubtitle,
+                    maxLines: 4,
+                    style: TextStyle(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onPrimaryContainer
+                          .withValues(alpha: 0.6),
+                    )),
+              ),
+            ),
           ),
           SettingsSection(title: Text(S.of(context).legalInformation), tiles: [
             SettingsTile.navigation(
@@ -128,7 +160,8 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
               leading: Icon(AppPlatformIcons(context).termsOfServiceOutlined),
               onPressed: (_) {
                 VibrationUtils.vibrateWithClickIfPossible();
-                URLUtils.launchURL("https://dhp.kidozh.com/document/user-terms-of-service");
+                URLUtils.launchURL(
+                    "https://dhp.kidozh.com/document/user-terms-of-service");
               },
             ),
             SettingsTile.navigation(
@@ -136,18 +169,19 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
               leading: Icon(AppPlatformIcons(context).privacyPolicyOutlined),
               onPressed: (_) {
                 VibrationUtils.vibrateWithClickIfPossible();
-                URLUtils.launchURL("https://dhp.kidozh.com/document/user-privacy-policy");
+                URLUtils.launchURL(
+                    "https://dhp.kidozh.com/document/user-privacy-policy");
               },
             ),
-
           ]),
-          SettingsSection(title: Text(S.of(context).pushHelpPages),tiles:[
+          SettingsSection(title: Text(S.of(context).pushHelpPages), tiles: [
             SettingsTile.navigation(
               title: Text(S.of(context).workProcedure),
               leading: Icon(PlatformIcons(context).helpOutline),
               onPressed: (_) {
                 VibrationUtils.vibrateWithClickIfPossible();
-                URLUtils.launchURL("https://dhp.kidozh.com/document/how-push-works");
+                URLUtils.launchURL(
+                    "https://dhp.kidozh.com/document/how-push-works");
               },
             ),
             SettingsTile.navigation(
@@ -176,7 +210,8 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
                   onPressed: () async {
                     VibrationUtils.vibrateWithClickIfPossible();
                     FirebaseMessaging messaging = FirebaseMessaging.instance;
-                    NotificationSettings settings = await messaging.requestPermission(
+                    NotificationSettings settings =
+                        await messaging.requestPermission(
                       alert: true,
                       announcement: false,
                       badge: true,
@@ -186,20 +221,27 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
                       sound: true,
                     );
 
-                    if (settings.authorizationStatus == AuthorizationStatus.authorized || settings.authorizationStatus == AuthorizationStatus.provisional){
+                    if (settings.authorizationStatus ==
+                            AuthorizationStatus.authorized ||
+                        settings.authorizationStatus ==
+                            AuthorizationStatus.provisional) {
                       setState(() {
                         allowPush = true;
                       });
-                      Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = true;
+                      Provider.of<UserPreferenceNotifierProvider>(context,
+                              listen: false)
+                          .allowPush = true;
                       await UserPreferencesUtils.putPushPreference(true);
-                    }
-                    else{
-                      EasyLoading.showInfo(S.of(context).pushNotificationPermissionNotAuthorized);
-                      Provider.of<UserPreferenceNotifierProvider>(context,listen: false).allowPush = false;
+                    } else {
+                      EasyLoading.showInfo(S
+                          .of(context)
+                          .pushNotificationPermissionNotAuthorized);
+                      Provider.of<UserPreferenceNotifierProvider>(context,
+                              listen: false)
+                          .allowPush = false;
                       await UserPreferencesUtils.putPushPreference(false);
                     }
                     Navigator.of(context).pop();
-
                   },
                 ),
                 PlatformDialogAction(

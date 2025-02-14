@@ -6030,6 +6030,26 @@ class S {
       args: [],
     );
   }
+
+  /// `FCM limited availability`
+  String get pushServiceLimitedInChinaMainlandTitle {
+    return Intl.message(
+      'FCM limited availability',
+      name: 'pushServiceLimitedInChinaMainlandTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The Firebase Cloud Messaging service is limited in China Mainland. To ensure a prompt notification, you are advised to turn on the auto-restart or add DisFly to the except list.`
+  String get pushServiceLimitedInChinaMainlandSubtitle {
+    return Intl.message(
+      'The Firebase Cloud Messaging service is limited in China Mainland. To ensure a prompt notification, you are advised to turn on the auto-restart or add DisFly to the except list.',
+      name: 'pushServiceLimitedInChinaMainlandSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

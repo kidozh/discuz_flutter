@@ -835,6 +835,11 @@ class MessageLookup extends MessageLookupByLibrary {
             "Privacy policy of push services"),
         "pushServiceEnableDescription": MessageLookupByLibrary.simpleMessage(
             "Do you wish to enable push service to receive the updated information?"),
+        "pushServiceLimitedInChinaMainlandSubtitle":
+            MessageLookupByLibrary.simpleMessage(
+                "The Firebase Cloud Messaging service is limited in China Mainland. To ensure a prompt notification, you are advised to turn on the auto-restart or add DisFly to the except list."),
+        "pushServiceLimitedInChinaMainlandTitle":
+            MessageLookupByLibrary.simpleMessage("FCM limited availability"),
         "pushServiceNotEnabled": MessageLookupByLibrary.simpleMessage(
             "Please enable push service to enable this function."),
         "pushServiceOff":

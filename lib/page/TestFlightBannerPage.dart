@@ -48,39 +48,39 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent>{
 
     String signaturePreference =
     await UserPreferencesUtils.getSignaturePreference();
-    if(signaturePreference != PostTextFieldUtils.USE_APP_SIGNATURE){
-      // prompt push notification
-      await showPlatformDialog(
-          context: context,
-          builder: (_) => PlatformAlertDialog(
-            title: Text(S.of(context).signatureSupportUS),
-            content: Text(S.of(context).signatureWithDisFlyDescription),
-            actions: [
-              PlatformDialogAction(
-                child: Text(S.of(context).ok),
-                onPressed: () async {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  UserPreferencesUtils.putSignaturePreference(PostTextFieldUtils.USE_APP_SIGNATURE);
-                  // update provider
-                  Provider.of<UserPreferenceNotifierProvider>(context,listen: false).signature = PostTextFieldUtils.USE_APP_SIGNATURE;
-                  Navigator.of(context).pop();
-                  EasyLoading.showInfo(S.of(context).acknowledgeAppSignatureAndAdDiminish);
-                },
-              ),
-              PlatformDialogAction(
-                child: Text(S.of(context).cancel),
-                onPressed: (){
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
-          )
-      );
-    }
+    // if(signaturePreference != PostTextFieldUtils.USE_APP_SIGNATURE){
+    //   // prompt push notification
+    //   await showPlatformDialog(
+    //       context: context,
+    //       builder: (_) => PlatformAlertDialog(
+    //         title: Text(S.of(context).signatureSupportUS),
+    //         content: Text(S.of(context).signatureWithDisFlyDescription),
+    //         actions: [
+    //           PlatformDialogAction(
+    //             child: Text(S.of(context).ok),
+    //             onPressed: () async {
+    //               VibrationUtils.vibrateWithClickIfPossible();
+    //               UserPreferencesUtils.putSignaturePreference(PostTextFieldUtils.USE_APP_SIGNATURE);
+    //               // update provider
+    //               Provider.of<UserPreferenceNotifierProvider>(context,listen: false).signature = PostTextFieldUtils.USE_APP_SIGNATURE;
+    //               Navigator.of(context).pop();
+    //               EasyLoading.showInfo(S.of(context).acknowledgeAppSignatureAndAdDiminish);
+    //             },
+    //           ),
+    //           PlatformDialogAction(
+    //             child: Text(S.of(context).cancel),
+    //             onPressed: (){
+    //               VibrationUtils.vibrateWithClickIfPossible();
+    //               Navigator.of(context).pop();
+    //             },
+    //           )
+    //         ],
+    //       )
+    //   );
+    // }
 
     // check with push service
-
+    await triggerNotification(context);
 
   }
 

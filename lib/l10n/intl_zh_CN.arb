@@ -880,6 +880,8 @@
   "viewPicture": "预览图片",
   "history": "历史",
   "thread": "帖子",
-  "pushLocale": "语言偏好"
+  "pushLocale": "语言偏好",
+  "pushServiceLimitedInChinaMainlandTitle": "FCM在中国大陆地区可能使用受限",
+  "pushServiceLimitedInChinaMainlandSubtitle": "FCM在国内使用可能面临不稳定的情况，其次各家国产手机厂商针对应用接受FCM拉起有各种奇奇怪怪的“优化”。为了及时接收消息，我们建议您允许应用自启动。"
 
 }
