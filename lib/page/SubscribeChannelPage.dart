@@ -51,8 +51,8 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
   bool isRefreshing = true;
   bool isSubmitting = false;
 
-  //String pushServerBaseUrl = "https://dhp.kidozh.com";
-  String pushServerBaseUrl = "http://192.168.0.121:9000";
+  String pushServerBaseUrl = "https://dhp.kidozh.com";
+  //String pushServerBaseUrl = "http://192.168.0.121:9000";
 
   void _loadChannel() async {
     User? user =

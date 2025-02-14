@@ -22,7 +22,7 @@
 		<string>zh</string>
 	</array>
 	<key>CFBundleName</key>
-	<string>谈坛</string>
+	<string>DisFly</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -48,15 +48,15 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>拍照插入到内容之中</string>
+	<string>Disfly will use your camera to take a photo to insert into the message.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>请验证以使用应用安全功能。</string>
+	<string>Verify your identity via biometric authentication to access to the encrypted data.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>使用麦克风以允许发送语音消息</string>
+	<string>Sending a audio message requires an access to microphone</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>应用保存图片至相册之中</string>
+	<string>Saving a photo to your device requires an access to the photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>访问图片库以便插入图片至内容之中</string>
+	<string>Inserting a photo from your device requires an access to the photo library.</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>

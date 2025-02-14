@@ -538,8 +538,8 @@ class PushServiceUtils{
     }
 
     // prepare the host first
-    // String pushServerBaseUrl = "https://dhp.kidozh.com";
-    String pushServerBaseUrl = "http://192.168.0.121:9000";
+    String pushServerBaseUrl = "https://dhp.kidozh.com";
+    //String pushServerBaseUrl = "http://192.168.0.121:9000";
     DiscuzDao discuzDao = await AppDatabase.getDiscuzDao();
     List<Discuz> allDiscuzList = await discuzDao.findAllDiscuzs();
     List<String> discuzHostList = allDiscuzList.map((e) => e.host).toList();
