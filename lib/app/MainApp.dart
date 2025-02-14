@@ -58,8 +58,8 @@ class MyApp extends StatelessWidget {
 
   MyApp(this.platformName, this.navigatorKey);
 
-  _init_push() async{
-    await PushServiceUtils.initPushInformation(navigatorKey);
+  _init_push(BuildContext context) async{
+    await PushServiceUtils.initPushInformation(navigatorKey, context);
   }
 
   _loadPreference(BuildContext context) async {
@@ -153,7 +153,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _loadPreference(context);
-    _init_push();
+    _init_push(context);
     //_listenToChanges(context);
     CustomizeColor.updateAndroidNavigationbar(context);
     return Consumer<ThemeNotifierProvider>(

@@ -406,7 +406,7 @@ class UserPreferencesUtils{
     DateTime lastPushDate = DateTime.fromMillisecondsSinceEpoch(lastMobileSignTimestampSecond * 1000);
     DateTime now = DateTime.now();
     // since last two days?
-    if (now.difference(lastPushDate).inHours > 48){
+    if (now.difference(lastPushDate).inHours > 12){
       // if not in the same day, a mobile sign is neccessary
       return true;
     }
@@ -637,6 +637,38 @@ class UserPreferencesUtils{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? value =  prefs.getString(adExemptDiscuzHostPreferenceKey);
     return value == null? "": value;
+  }
+
+  static Future<int> getLastRegisterSubscriptionTime() async {
+    String discuzForumFidsKey = "dh_push_subscription_last_time";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var signaturePreference =  prefs.getInt(discuzForumFidsKey);
+    return signaturePreference == null? 0: signaturePreference;
+  }
+
+  static Future<void> _putRegisterSubscriptionTime(int value) async{
+    String discuzForumFidsKey = "dh_push_subscription_last_time";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(discuzForumFidsKey, value);
+  }
+
+  static Future<void> putRegisterSubscriptionTime() async{
+    int nowTimestampSecond = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    _putRegisterSubscriptionTime(nowTimestampSecond);
+  }
+
+  static Future<bool> shouldRegisterSubscription() async{
+    int lastMobileSignTimestampSecond = await getLastRegisterSubscriptionTime();
+    DateTime lastSignDate = DateTime.fromMillisecondsSinceEpoch(lastMobileSignTimestampSecond * 1000);
+    DateTime now = DateTime.now();
+
+    if (!isTheSameDay(lastSignDate, now)){
+      // if not in the same day, a mobile sign is neccessary
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 
 }

@@ -1,5 +1,6 @@
 
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -173,7 +174,7 @@ class PushServiceUtils{
 
   }
 
-  static Future<void> initPushInformation(GlobalKey<NavigatorState> navigatorKey) async {
+  static Future<void> initPushInformation(GlobalKey<NavigatorState> navigatorKey, BuildContext context) async {
     print("Initialize push settings current navigator key is null ${navigatorKey.currentContext == null}");
     Push.instance.addOnNewToken((token) {
       print("Just got a new FCM registration token: ${token}");
@@ -227,6 +228,8 @@ class PushServiceUtils{
       }
 
     });
+    // register context here
+    registerSubscriptionToDhPushServer(context);
 
   }
 
@@ -524,6 +527,39 @@ class PushServiceUtils{
   static Future<void> putDiscuzPushPluginEnabled(Discuz discuz, bool value) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool(getDiscuzPushPluginEnabledKey(discuz), value);
+  }
+
+  static Future<void> registerSubscriptionToDhPushServer(BuildContext context) async{
+    log("Sending subscription to DH Push Server all");
+    // check with time
+    bool shouldSendTokenToDhServer = await UserPreferencesUtils.shouldRegisterSubscription();
+    if(!shouldSendTokenToDhServer){
+      return;
+    }
+
+    // prepare the host first
+    // String pushServerBaseUrl = "https://dhp.kidozh.com";
+    String pushServerBaseUrl = "http://192.168.0.121:9000";
+    DiscuzDao discuzDao = await AppDatabase.getDiscuzDao();
+    List<Discuz> allDiscuzList = await discuzDao.findAllDiscuzs();
+    List<String> discuzHostList = allDiscuzList.map((e) => e.host).toList();
+    // get token first
+    PushTokenChannel? pushTokenChannel = await PushServiceUtils.getPushToken(context);
+    if(pushTokenChannel != null) {
+      String token = pushTokenChannel.token;
+      String pushPlatform = pushTokenChannel.channelName;
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      String packageId = packageInfo.packageName;
+      final dio = await NetworkUtils.getDio();
+      final client = PushServiceClient(dio, baseUrl: pushServerBaseUrl);
+      client.registerSubscribeChannelByHost(
+          discuzHostList, token, [], packageId, pushPlatform).then((value){
+            log("Register successful ${value.isSuccess()}");
+      });
+
+    }
+    UserPreferencesUtils.putRegisterSubscriptionTime();
+
   }
 
 }

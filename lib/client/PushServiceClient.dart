@@ -44,4 +44,13 @@ abstract class PushServiceClient {
 
   @GET("/customize-slide/api")
   Future<ThreadSlideShowResult> getThreadSlideShowResultByHost(@Query("host") String host);
+
+  @PUT("/channel/api/register")
+  Future<SubscribeChannelResult> registerSubscribeChannelByHost(
+      @Query("host") List<String> host,
+      @Query("token") String token,
+      @Query("excludeChannel") List<String> excludeChannel,
+      @Query("packageId") String packageId,
+      @Query("platform") String pushPlatform,
+      );
 }

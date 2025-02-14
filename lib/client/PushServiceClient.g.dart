@@ -197,6 +197,45 @@ class _PushServiceClient implements PushServiceClient {
     return _value;
   }
 
+  @override
+  Future<SubscribeChannelResult> registerSubscribeChannelByHost(
+    List<String> host,
+    String token,
+    List<String> excludeChannel,
+    String packageId,
+    String pushPlatform,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'host': host,
+      r'token': token,
+      r'excludeChannel': excludeChannel,
+      r'packageId': packageId,
+      r'platform': pushPlatform,
+    };
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<SubscribeChannelResult>(
+      Options(method: 'PUT', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/channel/api/register',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late SubscribeChannelResult _value;
+    try {
+      _value = SubscribeChannelResult.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||
