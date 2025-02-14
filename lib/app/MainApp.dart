@@ -44,6 +44,7 @@ import '../main.dart';
 import '../provider/SelectedTidNotifierProvider.dart';
 import '../screen/TwoPaneEmptyScreen.dart';
 import '../utility/CustomizeColor.dart';
+import '../utility/PushServiceUtils.dart';
 import '../utility/TwoPaneScaffold.dart';
 import '../utility/TwoPaneUtils.dart';
 import '../widget/DiscuzNotificationAppbarIconWidget.dart';
@@ -56,6 +57,10 @@ class MyApp extends StatelessWidget {
   GlobalKey<NavigatorState> navigatorKey;
 
   MyApp(this.platformName, this.navigatorKey);
+
+  _init_push() async{
+    await PushServiceUtils.initPushInformation(navigatorKey);
+  }
 
   _loadPreference(BuildContext context) async {
     int colorName = await UserPreferencesUtils.getThemeColor();
@@ -148,6 +153,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _loadPreference(context);
+    _init_push();
     //_listenToChanges(context);
     CustomizeColor.updateAndroidNavigationbar(context);
     return Consumer<ThemeNotifierProvider>(

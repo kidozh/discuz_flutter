@@ -174,7 +174,7 @@ class PushServiceUtils{
   }
 
   static Future<void> initPushInformation(GlobalKey<NavigatorState> navigatorKey) async {
-    print("Initialize push settings");
+    print("Initialize push settings current navigator key is null ${navigatorKey.currentContext == null}");
     Push.instance.addOnNewToken((token) {
       print("Just got a new FCM registration token: ${token}");
     });
@@ -183,31 +183,38 @@ class PushServiceUtils{
       if (data == null) {
         print("App was not launched by tapping a notification");
       } else {
-        firebaseMessagingBackgroundHandlerByMsg(data);
+        //firebaseMessagingBackgroundHandlerByMsg(data);
+        // handleMessage(data, navigatorKey);
         print('Notification tap launched app from terminated state:\n'
             'RemoteMessage: ${data} \n');
+        if(data["payload"] != null){
+          _handleMessage(jsonDecode(data["payload"] as String),navigatorKey);
+        }
+        else{
+          _handleMessage(data, navigatorKey);
+        }
       }
 
     });
 
-    // Push.instance.onMessage.listen((message) {
-    //   print('RemoteMessage received while app is in foreground:\n'
-    //       'RemoteMessage.Notification: ${message.notification} \n'
-    //       ' title: ${message.notification?.title.toString()}\n'
-    //       ' body: ${message.notification?.body.toString()}\n'
-    //       'RemoteMessage.Data: ${message.data}');
-    //   firebaseMessagingBackgroundHandler(message);
-    // });
+    Push.instance.addOnMessage((message) {
+      print('RemoteMessage received while app is in foreground:\n'
+          'RemoteMessage.Notification: ${message.notification} \n'
+          ' title: ${message.notification?.title.toString()}\n'
+          ' body: ${message.notification?.body.toString()}\n'
+          'RemoteMessage.Data: ${message.data}');
+      firebaseMessagingBackgroundHandler(message);
+    });
 
-    // Handle push notifications
-    // Push.instance.onBackgroundMessage.listen((message) {
-    //   print('RemoteMessage received while app is in background:\n'
-    //       'RemoteMessage.Notification: ${message.notification} \n'
-    //       ' title: ${message.notification?.title.toString()}\n'
-    //       ' body: ${message.notification?.body.toString()}\n'
-    //       'RemoteMessage.Data: ${message.data}');
-    //   firebaseMessagingBackgroundHandler(message);
-    // });
+    //Handle push notifications
+    Push.instance.addOnBackgroundMessage((message) {
+      print('RemoteMessage received while app is in background:\n'
+          'RemoteMessage.Notification: ${message.notification} \n'
+          ' title: ${message.notification?.title.toString()}\n'
+          ' body: ${message.notification?.body.toString()}\n'
+          'RemoteMessage.Data: ${message.data}');
+      firebaseMessagingBackgroundHandler(message);
+    });
 
     // Handle notification taps
     Push.instance.addOnNotificationTap((data) {
@@ -281,7 +288,7 @@ class PushServiceUtils{
           List<User> _userList = _userDao.findAllUsers();
           User? _user = _userList.length == 0? null: _userList.first;
 
-          print("Receive user ${_user}");
+          print("Receive user ${_user} context is null? ${navigatorKey.currentState?.context == null} ${navigatorKey.currentContext == null}");
           if(navigatorKey.currentState!=null && navigatorKey.currentState?.context!=null){
 
             // set to current discuz now
@@ -295,6 +302,9 @@ class PushServiceUtils{
                   iosTitle: S.of(navigatorKey.currentState!.context).viewThreadTitle,
                     context: navigatorKey.currentState!.context,
                     builder: (context) => ViewThreadSliverPage(_discuz, _user, tid)));
+          }
+          else{
+
           }
         }
         break;

@@ -55,7 +55,7 @@ void main() async{
   }
   // await messaging.getToken();
   await PushServiceUtils.initFirebaseLocalNotification();
-  await PushServiceUtils.initPushInformation(navigatorKey);
+
 
 
   log("languages initialization");
