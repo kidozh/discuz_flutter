@@ -11,3 +11,4 @@
 "NSPhotoLibraryAddUsageDescription" = "访问图片库以便插入图片至内容之中";
 "NSMicrophoneUsageDescription" = "使用麦克风以允许发送语音消息";
 "NSFaceIDUsageDescription" = "请验证以使用应用安全功能";
+"NSUserTrackingUsageDescription" = "我们可能会使用您的数据以提升用户体验和修复问题";
