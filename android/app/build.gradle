@@ -2,8 +2,8 @@ plugins {
     id "com.android.application" //version '8.2.2' apply false
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
-    id "org.jetbrains.kotlin.android" version "1.9.20" apply false
-    id "org.jetbrains.kotlin.kapt" version "1.9.0" apply false
+    id "org.jetbrains.kotlin.android" version "2.1.0" apply false
+    id "org.jetbrains.kotlin.kapt" version "2.1.0" apply false
     // START: FlutterFire Configuration
     id 'com.google.gms.google-services'
     id 'com.google.firebase.firebase-perf'
@@ -60,10 +60,10 @@ android {
         // Flag to enable support for the new language APIs
         coreLibraryDesugaringEnabled true
         // Sets Java compatibility to Java 8
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = 17
+        targetCompatibility = 17
         kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_21
+            jvmTarget = "17"
         }
 
     }

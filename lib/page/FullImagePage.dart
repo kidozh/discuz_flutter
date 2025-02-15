@@ -8,10 +8,10 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:saver_gallery/saver_gallery.dart';
 
 import '../utility/AppPlatformIcons.dart';
 
@@ -114,8 +114,12 @@ class FullImagePageState extends State<FullImagePage>{
     if(currentPage < imageUrlList.length){
       var response = await Dio()
           .get(imageUrlList[currentPage], options: Options(responseType: ResponseType.bytes));
-      ImageGallerySaverPlus.saveImage(Uint8List.fromList(response.data),
-          quality: 100);
+      SaverGallery.saveImage(
+        Uint8List.fromList(response.data),
+          quality: 100,
+          fileName: imageUrlList[currentPage].split("/").last,
+          skipIfExists: false,
+      );
       EasyLoading.showSuccess(S.of(context).saveImageSuccessfully);
     }
   }

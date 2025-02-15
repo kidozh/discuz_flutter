@@ -3,10 +3,10 @@ buildscript {
         google()
         mavenCentral()
     }
-    ext {
-        agp_version = '8.2.0'
-        agp_version1 = '8.2.0'
-    }
+    ext.kotlin_version = '2.1.0'
+//    ext {
+//        agp_version = '7.4.2'
+//    }
     dependencies {
         // START: FlutterFire Configuration
         classpath 'com.google.gms:google-services:4.3.15'
@@ -16,7 +16,7 @@ buildscript {
 }
 
 allprojects {
-    ext.kotlin_version = '1.9.0'
+    ext.kotlin_version = '1.8.10'
     repositories {
         google()
         mavenCentral()
@@ -85,6 +85,6 @@ tasks.register("clean", Delete) {
 
 tasks.withType(JavaCompile).configureEach {
     javaCompiler = javaToolchains.compilerFor {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(18)
     }
 }
