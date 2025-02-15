@@ -53,10 +53,7 @@ dependencies:
   permission_handler: ^11.0.0
   # open_file: ^3.2.1
   flutter_slidable:
-  webview_cookie_manager:
-    git:
-      url: https://github.com/fryette/webview_cookie_manager.git
-      ref: 4bb434b4a47fe806e95ffc1be28fe4366e5bbd64
+  webview_cookie_manager: ^2.0.6
   intl: ^0.19.0
   flutter_platform_widgets: ^7.0.0
   flutter_launcher_icons: ^0.14.1
@@ -78,9 +75,7 @@ dependencies:
   # flutter_apns: ^1.6.0
   scroll_to_index: any
   easy_refresh: ^3.0.2+2
-  open_filex:
-    git:
-      url: https://github.com/mufassalhussain/open_filex
+  open_filex: ^4.0.1
   flutter_polls: ^0.1.0
   push: ^3.3.3
   google_mobile_ads: ^5.1.0
