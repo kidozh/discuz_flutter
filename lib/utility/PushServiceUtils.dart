@@ -288,7 +288,7 @@ class PushServiceUtils{
       // for RSS
       case 'RSS_FEED':{
         if(_discuz!=null){
-          List<User> _userList = _userDao.findAllUsers();
+          List<User> _userList = _userDao.findAllUsersByDiscuz(_discuz);
           User? _user = _userList.length == 0? null: _userList.first;
 
           print("Receive user ${_user} context is null? ${navigatorKey.currentState?.context == null} ${navigatorKey.currentContext == null}");
