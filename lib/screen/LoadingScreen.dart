@@ -11,8 +11,20 @@ class LoadingScreen extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    return Container(
-      child: PlatformCircularProgressIndicator(),
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 32,
+            height: 32,
+            child: PlatformCircularProgressIndicator(),
+          ),
+
+        ],
+      ),
     );
   }
 

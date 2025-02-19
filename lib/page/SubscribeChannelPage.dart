@@ -223,7 +223,10 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
                                 if (index ==
                                     subscribeChannelResult.channelList.length - 1 &&
                                     isSubmitting == true)
-                                  PlatformCircularProgressIndicator(),
+                                  Container(
+                                    padding: EdgeInsets.all(8),
+                                    child: PlatformCircularProgressIndicator()
+                                  ),
                               ],
                             );
                           });
@@ -231,7 +234,7 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
                       // no channel
                       return Center(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 64, horizontal: 32),
+                          padding: EdgeInsets.symmetric(vertical: 64, horizontal: 16),
                           child: Column(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.center,

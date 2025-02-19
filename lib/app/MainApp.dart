@@ -221,7 +221,16 @@ class MyApp extends StatelessWidget {
             }
         }
 
-        final materialThemeDataLight = ThemeData.from(
+        // final materialThemeDataLight = ThemeData(
+        //   colorScheme: ColorScheme.fromSeed(
+        //     seedColor: themeColorEntity.themeColor,
+        //     dynamicSchemeVariant: themeColorEntity.dynamicSchemeVariant,
+        //     brightness: Brightness.light,
+        //   )
+        //     //surface: Colors.white,
+        // );
+
+        final materialThemeDataLight = ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: themeColorEntity.themeColor,
             dynamicSchemeVariant: themeColorEntity.dynamicSchemeVariant,
@@ -230,9 +239,15 @@ class MyApp extends StatelessWidget {
           ).harmonized(),
           useMaterial3: themeColorEntity.useMaterial3,
           textTheme: typography.black.useSystemChineseFont(Brightness.light),
+          pageTransitionsTheme: Platform.isIOS?PageTransitionsTheme(
+              builders: {
+                TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+                TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+              }
+          ): null
         );
 
-        final materialThemeDataDark = ThemeData.from(
+        final materialThemeDataDark = ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: themeColorEntity.themeColor,
             dynamicSchemeVariant: themeColorEntity.dynamicSchemeVariant,
@@ -241,6 +256,12 @@ class MyApp extends StatelessWidget {
           ).harmonized(),
           useMaterial3: themeColorEntity.useMaterial3,
           textTheme: typography.white.useSystemChineseFont(Brightness.dark),
+            pageTransitionsTheme: Platform.isIOS?PageTransitionsTheme(
+                builders: {
+                  TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+                  TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+                }
+            ): null
         );
         const darkDefaultCupertinoTheme =
             CupertinoThemeData(brightness: Brightness.dark);
