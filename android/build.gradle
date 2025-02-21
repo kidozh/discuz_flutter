@@ -3,7 +3,7 @@ buildscript {
         google()
         mavenCentral()
     }
-    ext.kotlin_version = '2.1.0'
+    ext.kotlin_version = '1.9.22'
 //    ext {
 //        agp_version = '7.4.2'
 //    }
@@ -11,12 +11,12 @@ buildscript {
         // START: FlutterFire Configuration
         classpath 'com.google.gms:google-services:4.3.15'
         // END: FlutterFire Configuration
-        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.android.tools.build:gradle:8.7.3'
     }
 }
 
 allprojects {
-    ext.kotlin_version = '1.8.10'
+    // ext.kotlin_version = '1.8.10'
     repositories {
         google()
         mavenCentral()
@@ -40,7 +40,7 @@ rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 
-    afterEvaluate {
+    afterEvaluate { project ->
         // check if android block is available
 
         if (it.hasProperty('android')) {
@@ -52,25 +52,38 @@ subprojects {
                 android.namespace = packageName
             }
 
-//            def javaVersion = JavaVersion.VERSION_17
-//            android {
-//                def androidApiVersion = 34
-//                compileSdkVersion androidApiVersion
-//                defaultConfig {
-//                    targetSdkVersion androidApiVersion
+//            if (project.plugins.hasPlugin("com.android.application") ||
+//                    project.plugins.hasPlugin("com.android.library")) {
+//                project.android {
+//                    compileSdkVersion 34
+//                    buildToolsVersion "34.0.0"
+//
 //                }
-//                compileOptions {
-//                    sourceCompatibility javaVersion
-//                    targetCompatibility javaVersion
+//                project.android.defaultConfig{
+//                    minSdkVersion 30
+//                    //targetSdkVersion 34
 //                }
-//                tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-//                    kotlinOptions {
-//                        jvmTarget = javaVersion.toString()
-//                    }
-//                }
-//                println("Setting java version to ${javaVersion.toString()} which is $javaVersion")
-//                println("Setting compileSdkVersion and targetSdkVersion to $androidApiVersion")
 //            }
+
+            def javaVersion = JavaVersion.VERSION_18
+            android {
+                def androidApiVersion = 34
+                compileSdkVersion androidApiVersion
+                defaultConfig {
+                    targetSdkVersion androidApiVersion
+                }
+                compileOptions {
+                    sourceCompatibility javaVersion
+                    targetCompatibility javaVersion
+                }
+                tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+                    kotlinOptions {
+                        jvmTarget = javaVersion.toString()
+                    }
+                }
+                println("Setting java version to ${javaVersion.toString()} which is $javaVersion")
+                println("Setting compileSdkVersion and targetSdkVersion to $androidApiVersion")
+            }
         }
 
     }

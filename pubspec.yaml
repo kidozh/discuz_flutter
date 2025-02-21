@@ -53,7 +53,10 @@ dependencies:
   permission_handler: ^11.0.0
   # open_file: ^3.2.1
   flutter_slidable:
-  webview_cookie_manager: ^2.0.6
+  webview_cookie_manager:
+    git:
+      url: https://github.com/fryette/webview_cookie_manager
+      ref: 8572dd54c437c919aedc8dca6c5bffd25fe74b3
   intl: ^0.19.0
   flutter_platform_widgets: ^7.0.0
   flutter_launcher_icons: ^0.14.1
@@ -83,7 +86,9 @@ dependencies:
   google_mobile_ads: ^5.1.0
   dynamic_color: ^1.6.7
   intl_utils: ^2.8.1
-  dual_screen: ^1.0.3
+  dual_screen:
+    git:
+      url: https://github.com/mwdavis84/flutter-dualscreen
   carousel_slider: ^5.0.0
   upgrader: ^11.3.0
   flutter_secure_storage: ^9.0.0
@@ -91,7 +96,7 @@ dependencies:
   flex_color_picker: ^3.3.1
   google_fonts: ^6.2.1
   chinese_font_library: ^1.1.0
-  toastification: ^2.0.0
+  # toastification: ^2.0.0
   haptic_feedback: ^0.5.1+1
 
 
@@ -100,12 +105,12 @@ dependencies:
   ios_utsname_ext: ^2.3.0
   ua_client_hints: ^1.4.0
   random_user_agents: ^1.0.6
-  flutter_widget_from_html: ^0.15.3
+  flutter_widget_from_html: ^0.16.0
   html_unescape: ^2.0.0
   language_code: ^0.5.5
   web: ^1.1.0
   persistent_bottom_nav_bar: ^6.2.1
-  fwfh_cached_network_image: ^0.14.3
+  fwfh_cached_network_image: ^0.16.0
   flutter_cache_manager: ^3.4.1
   flutter_cache_manager_dio: ^4.0.0
   saver_gallery: ^4.0.1
