@@ -101,14 +101,6 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-4589701606972085~9689235640"/>
 
-        <service
-            android:name=".java.MyFirebaseMessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-
         <!-- Set custom default icon. This is used when no icon is set for incoming notification messages. -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
