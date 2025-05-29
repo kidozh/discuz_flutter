@@ -367,6 +367,8 @@ class DrawerState extends State<DrawerStatefulWidget> {
       ),
       body: Column(
         children: [
+
+
           Consumer<DiscuzAndUserNotifier>(builder: (context, value, child) {
             if (value.discuz == null || value.user == null) {
               return UserAccountsDrawerHeader(

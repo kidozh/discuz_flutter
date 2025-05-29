@@ -20,7 +20,7 @@ class ChooseThemeColorPage extends StatefulWidget {
 class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
 
   DynamicSchemeVariant dynamicSchemeVariant = DynamicSchemeVariant.fidelity;
-  FlexScheme _selectedThemeColor = FlexScheme.blueWhale;
+  FlexScheme _selectedThemeColor = FlexScheme.blue;
   String _selectedBrightnessName = "";
 
   Widget getLeadingCircleWidget(BuildContext context, Color color){
@@ -111,9 +111,12 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
                     // ),
 
                     GridView.count(
+                        primary: false,
                         crossAxisCount: 5,
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
+                        mainAxisSpacing: 5,
+                        crossAxisSpacing: 5,
                         children: FlexScheme.values.map((flexScheme){
                           return FlexSchemeCard(
                               flexScheme,
@@ -193,7 +196,7 @@ class FlexSchemeCard extends StatelessWidget{
             gestureTapCallback();
           },
           child: Container(
-            margin: EdgeInsets.all(4.0),
+            margin: EdgeInsets.all(0.0),
             padding: EdgeInsets.all(4.0),
             clipBehavior: Clip.antiAliasWithSaveLayer,
             decoration: BoxDecoration(

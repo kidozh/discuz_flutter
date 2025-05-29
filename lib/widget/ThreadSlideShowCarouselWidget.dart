@@ -172,7 +172,7 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
               }
               else{
                 return Padding(
-                  padding: EdgeInsets.only(top: 16),
+                  padding: EdgeInsets.only(top: 8),
                   child: CarouselSlider.builder(
                     itemCount: keylolCarouselItemList.length,
                     itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex){

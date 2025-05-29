@@ -105,161 +105,145 @@ class DiscuzHtmlWidget extends StatelessWidget {
         User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
         Future<Dio> futureDio = NetworkUtils.getDioWithPersistCookieJar(user);
 
-        return FutureBuilder(future: futureDio, builder: (context, snapshot){
-          if(snapshot.connectionState == ConnectionState.waiting){
-            return Container();
-          }
-          else if(snapshot.data == null){
-            return Container();
-          }
-          else{
-            Dio dio = snapshot.data!;
+        return HtmlWidget(
+          PostTextUtils.getDecodedString(html, useCompactParagraph),
+          onTapUrl: (url) {
+            URLUtils.openURL(context, onSelectTid, url, callback, tid);
+            return true;
+          },
+          //factoryBuilder: () => DiscuzHtmlWidgetFactory(dioCacheManager),
+          onTapImage: (imageMetaData){
+            for(var source in imageMetaData.sources){
+              String src = source.url;
+              VibrationUtils.vibrateWithClickIfPossible();
+              Navigator.push(
+                  context,
+                  platformPageRoute(
+                      iosTitle: S.of(context).viewPicture,
+                      context: context,
+                      builder: (context) => FullImagePage(src, getAllImageSrcList())));
+            }
 
-            // HtmlDioCacheManager.initialize(dio);
-            // HtmlDioCacheManager dioCacheManager = DioCacheManager.instance;
-            DiscuzImageDioCacheManager dioCacheManager = DiscuzImageDioCacheManager(dio);
+          },
+          textStyle: TextStyle(
+            fontSize: themeFontSize * scalingParameter,
+            fontWeight: useThinFont? FontWeight.w300: FontWeight.normal,
+            wordSpacing: defaultTextStyle?.wordSpacing,
+            height: defaultTextStyle?.height,
+            textBaseline: defaultTextStyle?.textBaseline,
+          ).useSystemChineseFont(),
+          // textStyle: Theme.of(context).useSystemChineseFont(Theme.of(context).brightness).textTheme.bodyLarge?..copyWith(
+          //   fontSize: 12 * scalingParameter
+          // ),
+          customStylesBuilder: (element){
+            if (element.localName == "br"){
+              return {
+                "margin": '0.1em 0',
+                "display" : "block"
+              };
+            } else if(element.className == "reply_wrap"){
+              return {
+                "border": "0.05em dashed #${Theme.of(context).colorScheme.primary.value.toRadixString(16).substring(2)}",
+                "border-radius": "0.5em",
+                "background-color" : "#${Theme.of(context).colorScheme.primaryContainer.value.toRadixString(16).substring(2)}",
+                "color" : "#${Theme.of(context).colorScheme.onPrimaryContainer.value.toRadixString(16).substring(2)}",
+                "padding" : "0.5em",
+                "margin-bottom": "0.1em"
+              };
+            }
+            else if(element.className == "blockcode"){
+              return {
+                "border": "0.05em dashed #${Theme.of(context).colorScheme.secondary.value.toRadixString(16).substring(2)}",
+                "background-color" : "#${Theme.of(context).colorScheme.secondaryContainer.value.toRadixString(16).substring(2)}",
+                "color" : "#${Theme.of(context).colorScheme.onSecondaryContainer.value.toRadixString(16).substring(2)}",
+                "padding" : "0.5em",
+                "margin-bottom": "0.1em"
+              };
+            }
+            return null;
+          },
+          customWidgetBuilder: (element) {
+            // "collapse", "spoil"
+            if (element.localName == "collapse" ||
+                element.localName == "spoil") {
+              String title = S.of(context).collapseItem;
+              if (element.attributes["title"] != null) {
+                title = element.attributes["title"]!;
+              }
 
-            return HtmlWidget(
-              PostTextUtils.getDecodedString(html, useCompactParagraph),
-              onTapUrl: (url) {
-                URLUtils.openURL(context, onSelectTid, url, callback, tid);
-                return true;
-              },
-              factoryBuilder: () => DiscuzHtmlWidgetFactory(dioCacheManager),
-              onTapImage: (imageMetaData){
-                for(var source in imageMetaData.sources){
-                  String src = source.url;
+              return ExpansionTile(
+                title: Text(title),
+                onExpansionChanged: (bool) {
                   VibrationUtils.vibrateWithClickIfPossible();
-                  Navigator.push(
-                      context,
-                      platformPageRoute(
-                          iosTitle: S.of(context).viewPicture,
-                          context: context,
-                          builder: (context) => FullImagePage(src, getAllImageSrcList())));
-                }
+                },
+                controlAffinity: ListTileControlAffinity.platform,
+                children: [DiscuzHtmlWidget(discuz, element.innerHtml)],
+                collapsedBackgroundColor: Theme.of(context).colorScheme.primary,
+                collapsedTextColor: Theme.of(context).colorScheme.onPrimary,
+                collapsedIconColor: Theme.of(context).colorScheme.onPrimary,
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                textColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                iconColor: Theme.of(context).colorScheme.onPrimaryContainer,
+              );
+            } else if (element.localName == "countdown") {
+              String timeString = "";
+              if (element.attributes["time"] != null) {
+                DateTime? datetime = DateTime.tryParse(timeString);
 
-              },
-              textStyle: TextStyle(
-                fontSize: themeFontSize * scalingParameter,
-                fontWeight: useThinFont? FontWeight.w300: FontWeight.normal,
-                wordSpacing: defaultTextStyle?.wordSpacing,
-                height: defaultTextStyle?.height,
-                textBaseline: defaultTextStyle?.textBaseline,
-              ).useSystemChineseFont(),
-              // textStyle: Theme.of(context).useSystemChineseFont(Theme.of(context).brightness).textTheme.bodyLarge?..copyWith(
-              //   fontSize: 12 * scalingParameter
-              // ),
-              customStylesBuilder: (element){
-                if (element.localName == "br"){
-                  return {
-                    "margin": '0.1em 0',
-                    "display" : "block"
-                  };
-                } else if(element.className == "reply_wrap"){
-                  return {
-                    "border": "0.05em dashed #${Theme.of(context).colorScheme.primary.value.toRadixString(16).substring(2)}",
-                    "border-radius": "0.5em",
-                    "background-color" : "#${Theme.of(context).colorScheme.primaryContainer.value.toRadixString(16).substring(2)}",
-                    "color" : "#${Theme.of(context).colorScheme.onPrimaryContainer.value.toRadixString(16).substring(2)}",
-                    "padding" : "0.5em",
-                    "margin-bottom": "0.1em"
-                  };
-                }
-                else if(element.className == "blockcode"){
-                  return {
-                    "border": "0.05em dashed #${Theme.of(context).colorScheme.secondary.value.toRadixString(16).substring(2)}",
-                    "background-color" : "#${Theme.of(context).colorScheme.secondaryContainer.value.toRadixString(16).substring(2)}",
-                    "color" : "#${Theme.of(context).colorScheme.onSecondaryContainer.value.toRadixString(16).substring(2)}",
-                    "padding" : "0.5em",
-                    "margin-bottom": "0.1em"
-                  };
-                }
-                return null;
-              },
-              customWidgetBuilder: (element) {
-                // "collapse", "spoil"
-                if (element.localName == "collapse" ||
-                    element.localName == "spoil") {
-                  String title = S.of(context).collapseItem;
-                  if (element.attributes["title"] != null) {
-                    title = element.attributes["title"]!;
-                  }
+                if (datetime != null) {
+                  // most of them located in Asia/Shanghai
+                  Duration duration = datetime.difference(DateTime.now());
 
-                  return ExpansionTile(
-                    title: Text(title),
-                    onExpansionChanged: (bool) {
-                      VibrationUtils.vibrateWithClickIfPossible();
-                    },
-                    controlAffinity: ListTileControlAffinity.platform,
-                    children: [DiscuzHtmlWidget(discuz, element.innerHtml)],
-                    collapsedBackgroundColor: Theme.of(context).colorScheme.primary,
-                    collapsedTextColor: Theme.of(context).colorScheme.onPrimary,
-                    collapsedIconColor: Theme.of(context).colorScheme.onPrimary,
-                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                    textColor: Theme.of(context).colorScheme.onPrimaryContainer,
-                    iconColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                  log("get time string ${timeString} ${datetime}");
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 32),
+                    child: ListTile(
+                      leading: Icon(Icons.timer),
+                      title: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SlideCountdown(
+                            duration: duration,
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                fontWeight: FontWeight.bold),
+                            decoration: BoxDecoration(
+                              borderRadius:
+                              BorderRadius.all(Radius.circular(20)),
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            separatorType: SeparatorType.title,
+                            durationTitle: DurationTitle(
+                              days: S.of(context).day,
+                              hours: S.of(context).hour,
+                              minutes: S.of(context).minute,
+                              seconds: S.of(context).second,
+                            ),
+                          )
+                        ],
+                      ),
+                      subtitle:
+                      DateTime.now().timeZoneOffset != Duration(hours: 8)
+                          ? Text(S.of(context).countDownTimeZoneNotify)
+                          : null,
+                    ),
                   );
-                } else if (element.localName == "countdown") {
-                  String timeString = "";
-                  if (element.attributes["time"] != null) {
-                    DateTime? datetime = DateTime.tryParse(timeString);
-
-                    if (datetime != null) {
-                      // most of them located in Asia/Shanghai
-                      Duration duration = datetime.difference(DateTime.now());
-
-                      log("get time string ${timeString} ${datetime}");
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 32),
-                        child: ListTile(
-                          leading: Icon(Icons.timer),
-                          title: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SlideCountdown(
-                                duration: duration,
-                                style: TextStyle(
-                                    color: Theme.of(context).colorScheme.onPrimary,
-                                    fontWeight: FontWeight.bold),
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                separatorType: SeparatorType.title,
-                                durationTitle: DurationTitle(
-                                  days: S.of(context).day,
-                                  hours: S.of(context).hour,
-                                  minutes: S.of(context).minute,
-                                  seconds: S.of(context).second,
-                                ),
-                              )
-                            ],
-                          ),
-                          subtitle:
-                          DateTime.now().timeZoneOffset != Duration(hours: 8)
-                              ? Text(S.of(context).countDownTimeZoneNotify)
-                              : null,
-                        ),
-                      );
-                    } else {
-                      return Text(S.of(context).brokenCountDown);
-                    }
-                  } else {
-                    return Text(S.of(context).brokenCountDown);
-                  }
-
-                } else if (element.attributes["href"]!= null && element.attributes["href"]!.startsWith("https://www.bilibili.com")){
-                  return BilibiliWidget(element.attributes["href"]!);
+                } else {
+                  return Text(S.of(context).brokenCountDown);
                 }
-                else if (element.attributes["src"]!= null && element.attributes["src"]!.startsWith("https://store.steampowered.com/widget")){
-                  return SteamGameWidget(element.attributes["src"]!);
-                }
-                return null;
-              },
-            );
-          }
-        });
+              } else {
+                return Text(S.of(context).brokenCountDown);
+              }
+
+            } else if (element.attributes["href"]!= null && element.attributes["href"]!.startsWith("https://www.bilibili.com")){
+              return BilibiliWidget(element.attributes["href"]!);
+            }
+            else if (element.attributes["src"]!= null && element.attributes["src"]!.startsWith("https://store.steampowered.com/widget")){
+              return SteamGameWidget(element.attributes["src"]!);
+            }
+            return null;
+          },
+        );
 
 
       }),
@@ -281,6 +265,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
 }
 
 class DiscuzHtmlWidgetFactory extends WidgetFactory with CachedNetworkImageFactory{
+
   DiscuzImageDioCacheManager dioCacheManager;
 
   DiscuzHtmlWidgetFactory(this.dioCacheManager) {

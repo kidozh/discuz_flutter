@@ -172,19 +172,19 @@ class _SettingPageState extends State<SettingPage> {
                     ));
                   },
                 ),
-                SettingsTile.navigation(
-                  title: Text(S.of(context).dynamicSchemeVariant),
-                  value: Text(themeEntity.getDynamicSchemeVariantName(context)),
-                  leading: Icon(AppPlatformIcons(context).dynamicSchemeVariantOutlined),
-                  onPressed: (context) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.of(context).push(platformPageRoute(
-                      iosTitle: S.of(context).dynamicSchemeVariant,
-                      builder: (_) => ChooseDynamicSchemeVariantPage(),
-                      context: context,
-                    ));
-                  },
-                ),
+                // SettingsTile.navigation(
+                //   title: Text(S.of(context).dynamicSchemeVariant),
+                //   value: Text(themeEntity.getDynamicSchemeVariantName(context)),
+                //   leading: Icon(AppPlatformIcons(context).dynamicSchemeVariantOutlined),
+                //   onPressed: (context) {
+                //     VibrationUtils.vibrateWithClickIfPossible();
+                //     Navigator.of(context).push(platformPageRoute(
+                //       iosTitle: S.of(context).dynamicSchemeVariant,
+                //       builder: (_) => ChooseDynamicSchemeVariantPage(),
+                //       context: context,
+                //     ));
+                //   },
+                // ),
                 SettingsTile.navigation(
                   title: Text(S.of(context).appearanceOptimizedPlatform),
                   value: Text(themeEntity.getPlatformLocaleName(context)),
@@ -212,19 +212,19 @@ class _SettingPageState extends State<SettingPage> {
                     ));
                   },
                 ),
-                SettingsTile.switchTile(
-                  title: Text(S.of(context).useMaterial3Title),
-                  leading: Icon(AppPlatformIcons(context).material3Outlined),
-                  activeSwitchColor: Theme.of(context).colorScheme.primary,
-                  onToggle: (bool value) {
-                    VibrationUtils.vibrateWithSwitchIfPossible();
-                    UserPreferencesUtils.putMaterial3PropertyPreference(value);
-                    Provider.of<ThemeNotifierProvider>(context,listen: false).setMaterial3(value);
-                    setState((){
-                      useMaterial3 = value;
-                    });
-                  }, initialValue: useMaterial3,
-                ),
+                // SettingsTile.switchTile(
+                //   title: Text(S.of(context).useMaterial3Title),
+                //   leading: Icon(AppPlatformIcons(context).material3Outlined),
+                //   activeSwitchColor: Theme.of(context).colorScheme.primary,
+                //   onToggle: (bool value) {
+                //     VibrationUtils.vibrateWithSwitchIfPossible();
+                //     UserPreferencesUtils.putMaterial3PropertyPreference(value);
+                //     Provider.of<ThemeNotifierProvider>(context,listen: false).setMaterial3(value);
+                //     setState((){
+                //       useMaterial3 = value;
+                //     });
+                //   }, initialValue: useMaterial3,
+                // ),
                 SettingsTile.navigation(
                   title: Text(S.of(context).typeSetting),
                   value: Text(S.of(context).fontSizeScaleParameterUnit(typeSetting.scalingParameter.toStringAsFixed(3))),

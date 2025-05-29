@@ -163,17 +163,18 @@ class BilibiliState extends State<BilibiliWidget> {
         child: Card(
           elevation: isCupertino(context) ? 1 : 4,
           child: Container(
+            clipBehavior: Clip.antiAliasWithSaveLayer,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: BorderRadius.all(Radius.circular(8)),
+              color: Color(bilibiliColorPink),
+              borderRadius: BorderRadius.all(Radius.circular(12)),
             ),
             foregroundDecoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(8)),
+              borderRadius: BorderRadius.all(Radius.circular(12)),
             ),
             child: Row(
               children: [
                 Expanded(
-                  flex: 6,
+                  flex: 8,
                   child: CachedNetworkImage(
                       imageUrl: videoResult.data.viewData.pic),
                 ),
@@ -194,9 +195,7 @@ class BilibiliState extends State<BilibiliWidget> {
                                 child: Container(
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(4),
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary),
+                                        color: Color(bilibiliColorGray)),
                                     padding: EdgeInsets.symmetric(
                                         horizontal: 8.0, vertical: 2.0),
                                     margin: EdgeInsets.only(right: 8.0),
@@ -205,9 +204,7 @@ class BilibiliState extends State<BilibiliWidget> {
                                       children: [
                                         Icon(PlatformIcons(context).playCircleSolid,
                                             size: 10,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onPrimary),
+                                            color: Color(bilibiliColorPink)),
                                         SizedBox(
                                           width: 4,
                                         ),
@@ -215,9 +212,7 @@ class BilibiliState extends State<BilibiliWidget> {
                                           videoResult.data.viewData.tname,
                                           style: TextStyle(
                                               fontSize: 12,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onPrimary),
+                                              color: Color(bilibiliColorPink)),
                                         ),
                                       ],
                                     )),
@@ -226,9 +221,7 @@ class BilibiliState extends State<BilibiliWidget> {
                                   text: videoResult.data.viewData.title,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimaryContainer,
+                                      color: Color(bilibiliColorGray),
                                       fontSize: 16)),
                             ]),
                           ),
@@ -260,9 +253,7 @@ class BilibiliState extends State<BilibiliWidget> {
                                   text: videoResult.data.viewData.owner.name,
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onPrimaryContainer,
+                                    color: Color(bilibiliColorGray),
                                   )),
                             ]),
                           ),
