@@ -161,7 +161,7 @@ class _SettingPageState extends State<SettingPage> {
               tiles: [
                 SettingsTile.navigation(
                   title: Text(S.of(context).chooseThemeTitle),
-                  value: Text(themeEntity.themeColorName),
+                  value: Text(themeEntity.themeColor.name),
                   leading: Icon(AppPlatformIcons(context).appThemeOutlined),
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();

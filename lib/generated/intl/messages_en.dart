@@ -512,7 +512,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "favorites": MessageLookupByLibrary.simpleMessage("Favorites"),
         "feedbackTitle": MessageLookupByLibrary.simpleMessage("Haptic"),
         "finishLoginInWeb": MessageLookupByLibrary.simpleMessage("Finish"),
-        "followSystem": MessageLookupByLibrary.simpleMessage("Follow system"),
+        "followSystem": MessageLookupByLibrary.simpleMessage("System"),
         "fontSizeInParagraph":
             MessageLookupByLibrary.simpleMessage("Font size in paragraph"),
         "fontSizeInParagraphUnit": m17,

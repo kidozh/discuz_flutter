@@ -303,7 +303,7 @@
   "ios": "iOS",
   "materialDesign": "Material Design",
   "fuchsia": "Fuchsia",
-  "followSystem": "Follow system",
+  "followSystem": "System",
   "addDiscuzTitle": "Add a discuz! BBS",
   "addDiscuzSuccessfully": "Add {discuz} to your device successfully.",
   "@addDiscuzSuccessfull": {

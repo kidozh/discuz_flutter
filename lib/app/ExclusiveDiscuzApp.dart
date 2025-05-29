@@ -4,6 +4,7 @@ import 'package:discuz_flutter/page/ExclusiveDiscuzPortalPage.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -20,14 +21,14 @@ class ExclusiveDiscuzApp extends StatelessWidget {
   ExclusiveDiscuzApp(this.platformName, this._discuz);
 
   _loadPreference(context) async {
-    int colorValue = await UserPreferencesUtils.getThemeColor();
+    FlexScheme colorScheme = await UserPreferencesUtils.getThemeColor();
     platformName = await UserPreferencesUtils.getPlatformPreference();
     double scale = await UserPreferencesUtils.getTypesettingScalePreference();
     Brightness? brightness =
         await UserPreferencesUtils.getInterfaceBrightnessPreference();
 
     Provider.of<ThemeNotifierProvider>(context, listen: false)
-        .setTheme(colorValue);
+        .setTheme(colorScheme);
     Provider.of<ThemeNotifierProvider>(context, listen: false)
         .setPlatformName(platformName);
     Provider.of<TypeSettingNotifierProvider>(context, listen: false)
@@ -56,12 +57,12 @@ class ExclusiveDiscuzApp extends StatelessWidget {
         final materialThemeDataLight = ThemeData(
             brightness: Brightness.light,
             //primarySwatch: themeColorEntity.themeColor,
-            primaryColor: themeColorEntity.themeColor,
+            primaryColor: Colors.blue,
             useMaterial3: themeColorEntity.useMaterial3);
         final materialThemeDataDark = ThemeData(
             brightness: Brightness.dark,
             //primarySwatch: themeColorEntity.themeColor,
-            primaryColor: themeColorEntity.themeColor,
+            primaryColor: Colors.amber,
             useMaterial3: themeColorEntity.useMaterial3);
         const darkDefaultCupertinoTheme =
             CupertinoThemeData(brightness: Brightness.dark);

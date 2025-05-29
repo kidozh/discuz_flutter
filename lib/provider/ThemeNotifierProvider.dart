@@ -1,5 +1,6 @@
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 
 Map<String, MaterialColor> themeColorMap = {
@@ -53,7 +54,7 @@ extension ColorsExt on Color {
 class ThemeNotifierProvider with ChangeNotifier{
 
 
-  int _themeColor = Colors.blue.value;
+  FlexScheme _themeColor = FlexScheme.blueWhale;
 
   DynamicSchemeVariant _dynamicSchemeVariant = DynamicSchemeVariant.fidelity;
 
@@ -93,7 +94,9 @@ class ThemeNotifierProvider with ChangeNotifier{
 
   String _platformName ="";
 
-  String get themeColorName => ColorTools.nameThatColor(Color(_themeColor));
+  //String get themeColorName => ColorTools.nameThatColor(Color(_themeColor));
+
+  FlexScheme get themeColor => _themeColor;
 
   Brightness? _brightnessPreference;
 
@@ -119,7 +122,7 @@ class ThemeNotifierProvider with ChangeNotifier{
   //Brightness? get brightness => null;
 
 
-  setTheme(int themeColorValue){
+  setTheme(FlexScheme themeColorValue){
     _themeColor = themeColorValue;
     notifyListeners();
   }
@@ -137,26 +140,6 @@ class ThemeNotifierProvider with ChangeNotifier{
   }
 
   DynamicSchemeVariant get dynamicSchemeVariant => _dynamicSchemeVariant;
-
-  Color get themeColor => Color(_themeColor);
-
-  MaterialColor get themeMaterialColor => themeColor.toMaterialColor();
-
-  MaterialColor getMaterialColor(Color color) {
-    final Map<int, Color> shades = {
-      50: Color.fromRGBO(136, 14, 79, .1),
-      100: Color.fromRGBO(136, 14, 79, .2),
-      200: Color.fromRGBO(136, 14, 79, .3),
-      300: Color.fromRGBO(136, 14, 79, .4),
-      400: Color.fromRGBO(136, 14, 79, .5),
-      500: Color.fromRGBO(136, 14, 79, .6),
-      600: Color.fromRGBO(136, 14, 79, .7),
-      700: Color.fromRGBO(136, 14, 79, .8),
-      800: Color.fromRGBO(136, 14, 79, .9),
-      900: Color.fromRGBO(136, 14, 79, 1),
-    };
-    return MaterialColor(color.value, shades);
-  }
 
   String getPlatformLocaleName(BuildContext context){
     Map<String, String> platformMap = {

@@ -3,6 +3,7 @@
 import 'dart:developer';
 
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -113,17 +114,31 @@ class UserPreferencesUtils{
 
   }
 
-  static final String themeColorKey = "themeColorValueKey";
+  static final String themeColorKey = "themeColorValueKeyV1";
 
   static Future<void> putThemeColor(int themeColorValue) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt(themeColorKey, themeColorValue);
   }
 
-  static Future<int> getThemeColor() async {
+  static List<FlexScheme> getAvailableThemes(){
+    List<FlexScheme> availableThemes = [];
+    for (var value in FlexScheme.values){
+      if(value != FlexScheme.custom){
+        availableThemes.add(value);
+      }
+    }
+    return availableThemes;
+
+  }
+
+
+
+  static Future<FlexScheme> getThemeColor() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var colorValue =  prefs.getInt(themeColorKey);
-    return colorValue == null ? Colors.blue.value : colorValue;
+    List<FlexScheme> availableThemes = getAvailableThemes();
+    var colorIndex =  prefs.getInt(themeColorKey);
+    return colorIndex == null ? FlexScheme.blueWhale : availableThemes[colorIndex];
   }
 
   static final String platformPreferenceKey = "platformPreferenceKey";

@@ -2121,10 +2121,10 @@ class S {
     );
   }
 
-  /// `Follow system`
+  /// `System`
   String get followSystem {
     return Intl.message(
-      'Follow system',
+      'System',
       name: 'followSystem',
       desc: '',
       args: [],

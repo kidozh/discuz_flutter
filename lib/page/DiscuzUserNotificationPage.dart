@@ -10,7 +10,7 @@ class DiscuzUserNotificationPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
-      iosContentPadding: true,
+      iosContentPadding: false,
       iosContentBottomPadding: true,
       appBar: PlatformAppBar(
         title: Text(S.of(context).notification),

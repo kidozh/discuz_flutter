@@ -57,8 +57,8 @@ dependencies:
     git:
       url: https://github.com/fryette/webview_cookie_manager
       ref: 8572dd54c437c919aedc8dca6c5bffd25fe74b3
-  intl: ^0.19.0
-  flutter_platform_widgets: ^7.0.0
+  intl: ^0.20.0
+  flutter_platform_widgets: ^8.0.0
   flutter_launcher_icons: ^0.14.1
   extended_text_field: ^16.0.0
   image_picker: ^1.0.4
@@ -78,9 +78,7 @@ dependencies:
   # flutter_apns: ^1.6.0
   scroll_to_index: any
   easy_refresh: ^3.0.2+2
-  open_filex:
-    git:
-      url: https://github.com/mufassalhussain/open_filex
+  open_filex: ^4.7.0
   flutter_polls: ^0.1.0
   push: ^3.3.3
   google_mobile_ads: ^5.1.0
@@ -115,6 +113,7 @@ dependencies:
   flutter_cache_manager: ^3.4.1
   flutter_cache_manager_dio: ^4.0.0
   saver_gallery: ^4.0.1
+  flex_color_scheme: ^8.2.0
 
 dev_dependencies:
   flutter_test:

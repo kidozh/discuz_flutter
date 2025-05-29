@@ -6,6 +6,7 @@ import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
@@ -18,8 +19,9 @@ class ChooseThemeColorPage extends StatefulWidget {
 
 class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
 
-  int _selectedColorValue = Colors.blue.value;
   DynamicSchemeVariant dynamicSchemeVariant = DynamicSchemeVariant.fidelity;
+  FlexScheme _selectedThemeColor = FlexScheme.blueWhale;
+  String _selectedBrightnessName = "";
 
   Widget getLeadingCircleWidget(BuildContext context, Color color){
     return Container(
@@ -38,65 +40,92 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
 
     //_selectedColorName = Provider.of<ThemeNotifierProvider>(context,listen: false).themeColorName;
 
-    _selectedColorValue = Provider.of<ThemeNotifierProvider>(context,listen: false).themeColor.value;
+    _selectedThemeColor = Provider.of<ThemeNotifierProvider>(context,listen: false).themeColor;
+    final ThemeMode themeMode;
+    final ValueChanged<ThemeMode> onThemeModeChanged;
+    final bool useMaterial3;
+    final ValueChanged<bool> onUseMaterial3Changed;
+    //final FlexSchemeData flexSchemeData = FlexSchemeData();
+
+    final ThemeData theme = Theme.of(context);
+    Brightness? _selectedBrightness = Provider.of<ThemeNotifierProvider>(context,listen: false).brightness;
+    if(_selectedBrightness == null){
+      _selectedBrightnessName = "";
+    }
+    else if(_selectedBrightness == Brightness.light){
+      _selectedBrightnessName = "light";
+    }
+    else if(_selectedBrightness == Brightness.dark){
+      _selectedBrightnessName = "dark";
+    }
+    else{
+      _selectedBrightnessName = "";
+    }
 
     return PlatformScaffold(
       iosContentPadding: true,
       appBar: PlatformAppBar(
-        title: Text(S.of(context).chooseThemeTitle),
+        //title: Text(S.of(context).chooseThemeTitle),
+        title: Text(_selectedThemeColor.name.toUpperCase()),
 
       ),
       body: SettingsList(
         sections: [
           CustomSettingsSection(
-              child: ColorPicker(
-                color: Color(_selectedColorValue),
-                onColorChanged: (Color color) {
-                  setState(() {
-                    _selectedColorValue = color.value;
-                  });
+              child: Container(
+                padding: EdgeInsets.all(4.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  //primary: true,
+                  children: <Widget>[
+                    // A 3-way theme mode toggle switch that shows the color scheme.
+                    FlexThemeModeSwitch(
+                      themeMode: ThemeMode.system,
+                      title: Text(S.of(context).interfaceBrightness, style: TextStyle(fontSize: 16),),
+                      labelLight: S.of(context).brightnessLight.toUpperCase(),
+                      labelDark: S.of(context).brightnessDark.toUpperCase(),
+                      labelSystem: S.of(context).followSystem.toUpperCase(),
+                      onThemeModeChanged: (themeMode){
+                        // not mention
+                        switch (themeMode){
+                          case ThemeMode.light:
+                            changePlatform("light");
+                            break;
+                          case ThemeMode.dark:
+                            changePlatform("dark");
+                            break;
+                          case ThemeMode.system:
+                            changePlatform("");
+                            break;
+                        }
 
-                  changeColor(color.value);
+                      },
+                      flexSchemeData: _selectedThemeColor.data,
+                      buttonOrder: FlexThemeModeButtonOrder.lightSystemDark,
+                    ),
+                    // Show theme name and description.
+                    // ListTile(
+                    //   contentPadding: EdgeInsets.zero,
+                    //   title: Text('${_selectedThemeColor.data.name} theme'),
+                    //   subtitle: Text(_selectedThemeColor.data.description),
+                    // ),
 
-                },
-                // heading: Text(
-                //   S.of(context).selectColorTitle,
-                //   style: Theme.of(context).textTheme.headlineSmall,
-                // ),
-                subheading: Text(
-                  S.of(context).selectColorShadeTitle,
-                  style: Theme.of(context).textTheme.titleSmall,
+                    GridView.count(
+                        crossAxisCount: 5,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        children: FlexScheme.values.map((flexScheme){
+                          return FlexSchemeCard(
+                              flexScheme,
+                              (){
+                                changeColor(flexScheme);
+                                VibrationUtils.vibrateWithClickIfPossible();
+                              }
+                          );
+                        }).toList(),
+                    ),
+                  ],
                 ),
-                wheelSubheading: Text(
-                  S.of(context).selectColorAndShadeTitle,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                showMaterialName: true,
-                showColorName: true,
-                showColorCode: true,
-                copyPasteBehavior: const ColorPickerCopyPasteBehavior(
-                  longPressMenu: true,
-                ),
-                materialNameTextStyle: Theme.of(context).textTheme.bodySmall,
-                colorNameTextStyle: Theme.of(context).textTheme.bodySmall,
-                colorCodeTextStyle: Theme.of(context).textTheme.bodySmall,
-                pickersEnabled: const <ColorPickerType, bool>{
-                  ColorPickerType.both: true,
-                  ColorPickerType.primary: false,
-                  ColorPickerType.accent: false,
-                  ColorPickerType.bw: false,
-                  ColorPickerType.custom: true,
-                  ColorPickerType.wheel: true,
-                },
-                pickerTypeLabels: <ColorPickerType, String>{
-                  ColorPickerType.primary: S.of(context).primaryColorPickerType,
-                  ColorPickerType.accent: S.of(context).accentColorPickerType,
-                  ColorPickerType.wheel: S.of(context).wheelColorPickerType,
-                  ColorPickerType.bw: S.of(context).blackAndWhiteColorPickerType,
-                  ColorPickerType.both: S.of(context).bothColorPickerType
-                },
-                selectedColorIcon: AppPlatformIcons(context).check,
-
               ),
           ),
         ],
@@ -104,23 +133,110 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
     );
   }
 
-  // Widget trailingWidget(String colorName) {
-  //   return ( _selectedColorName == colorName)
-  //       ? Icon(PlatformIcons(context).checkMark, color: Theme.of(context).colorScheme.primary)
-  //       : Icon(null);
-  // }
-
-  void changeColor(int colorValue) {
+  void changePlatform(String brightnessName) {
     setState(() {
-      _selectedColorValue = colorValue;
+      _selectedBrightnessName = brightnessName;
+    });
+    print("change brightness to $brightnessName");
+    Brightness? brightness;
+    if(brightnessName == ""){
+      brightness = null;
+    }
+    else if(brightnessName == "light"){
+      brightness = Brightness.light;
+    }
+    else if(brightnessName == "dark"){
+      brightness = Brightness.dark;
+    }
+    else{
+      brightness = null;
+    }
+
+    Provider.of<ThemeNotifierProvider>(context,listen: false).setBrightness(brightness);
+    UserPreferencesUtils.putInterfaceBrightnessPreference(brightnessName);
+    VibrationUtils.vibrateSuccessfullyIfPossible();
+  }
+
+  void changeColor(FlexScheme colorValue) {
+    setState(() {
+      _selectedThemeColor = colorValue;
     });
     print("change theme color to $colorValue");
 
     Provider.of<ThemeNotifierProvider>(context,listen: false).setTheme(colorValue);
-    UserPreferencesUtils.putThemeColor(colorValue);
+    List<FlexScheme> flexSchemeList = FlexScheme.values;
+    UserPreferencesUtils.putThemeColor(flexSchemeList.indexOf(colorValue));
     VibrationUtils.vibrateSuccessfullyIfPossible();
 
     CustomizeColor.updateAndroidNavigationbar(context);
 
+  }
+}
+
+class FlexSchemeCard extends StatelessWidget{
+
+  FlexScheme flexScheme;
+  GestureTapCallback gestureTapCallback;
+  FlexSchemeCard(this.flexScheme, this.gestureTapCallback);
+
+  @override
+  Widget build(BuildContext context) {
+    FlexSchemeColor flexSchemeColor = flexScheme.data.light;
+    if(Theme.of(context).brightness == Brightness.dark){
+      flexSchemeColor = flexScheme.data.dark;
+    }
+    
+    return Consumer<ThemeNotifierProvider>(builder: (context, theme, child){
+        bool isSelected = theme.themeColor == flexScheme;
+        return InkWell(
+          onTap: (){
+            gestureTapCallback();
+          },
+          child: Container(
+            margin: EdgeInsets.all(4.0),
+            padding: EdgeInsets.all(4.0),
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: isSelected? Border.all(color: flexSchemeColor.primary, width: 2):null,
+            ),
+            child: Container(
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: GridView.count(
+                physics: NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                children: [
+                  SizedBox(
+                    child: Container(
+                      color: flexSchemeColor.primary,
+                    ),
+                  ),
+                  SizedBox(
+                    child: Container(
+                      color: flexSchemeColor.secondary,
+                    ),
+                  ),
+                  SizedBox(
+
+                    child: Container(
+                      color: flexSchemeColor.appBarColor,
+                    ),
+                  ),
+                  SizedBox(
+
+                    child: Container(
+                      color: flexSchemeColor.primaryContainer,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          ),
+        );
+    });
   }
 }

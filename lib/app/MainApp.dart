@@ -30,6 +30,7 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:dual_screen/dual_screen.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -63,7 +64,7 @@ class MyApp extends StatelessWidget {
   }
 
   _loadPreference(BuildContext context) async {
-    int colorName = await UserPreferencesUtils.getThemeColor();
+    FlexScheme colorName = await UserPreferencesUtils.getThemeColor();
     // check the size
     // check the screen size
     double width = MediaQuery.sizeOf(context).width;
@@ -229,40 +230,46 @@ class MyApp extends StatelessWidget {
         //   )
         //     //surface: Colors.white,
         // );
-
-        final materialThemeDataLight = ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: themeColorEntity.themeColor,
-            dynamicSchemeVariant: themeColorEntity.dynamicSchemeVariant,
-            brightness: Brightness.light,
-            //surface: Colors.white,
-          ).harmonized(),
-          useMaterial3: themeColorEntity.useMaterial3,
-          textTheme: typography.black.useSystemChineseFont(Brightness.light),
-          pageTransitionsTheme: Platform.isIOS?PageTransitionsTheme(
-              builders: {
-                TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-                TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-              }
-          ): null
-        );
-
-        final materialThemeDataDark = ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: themeColorEntity.themeColor,
-            dynamicSchemeVariant: themeColorEntity.dynamicSchemeVariant,
-            brightness: Brightness.dark,
-            //surface: Colors.black54
-          ).harmonized(),
-          useMaterial3: themeColorEntity.useMaterial3,
-          textTheme: typography.white.useSystemChineseFont(Brightness.dark),
+        final materialThemeDataLight = FlexThemeData.light(
+            scheme: themeColorEntity.themeColor,
             pageTransitionsTheme: Platform.isIOS?PageTransitionsTheme(
                 builders: {
                   TargetPlatform.android: CupertinoPageTransitionsBuilder(),
                   TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
                 }
-            ): null
+            ): null,
+            useMaterial3: themeColorEntity.useMaterial3,
+            textTheme: typography.black.useSystemChineseFont(Brightness.light),
         );
+
+        final materialThemeDataDark = FlexThemeData.dark(
+          scheme: themeColorEntity.themeColor,
+          pageTransitionsTheme: Platform.isIOS?PageTransitionsTheme(
+              builders: {
+                TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+                TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+              }
+          ): null,
+          useMaterial3: themeColorEntity.useMaterial3,
+          textTheme: typography.black.useSystemChineseFont(Brightness.light),
+        );
+
+        // final materialThemeDataDark = ThemeData(
+        //   colorScheme: ColorScheme.fromSeed(
+        //     seedColor: themeColorEntity.themeColor,
+        //     dynamicSchemeVariant: themeColorEntity.dynamicSchemeVariant,
+        //     brightness: Brightness.dark,
+        //     //surface: Colors.black54
+        //   ).harmonized(),
+        //   useMaterial3: themeColorEntity.useMaterial3,
+        //   textTheme: typography.white.useSystemChineseFont(Brightness.dark),
+        //     pageTransitionsTheme: Platform.isIOS?PageTransitionsTheme(
+        //         builders: {
+        //           TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        //           TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        //         }
+        //     ): null
+        // );
         const darkDefaultCupertinoTheme =
             CupertinoThemeData(brightness: Brightness.dark);
         final cupertinoDarkTheme = MaterialBasedCupertinoThemeData(
