@@ -3,6 +3,9 @@
 
 import 'dart:developer';
 
+import 'package:html/dom.dart';
+import 'package:html/parser.dart';
+
 class PostTextUtils{
   static String replaceCollapseTag(String string){
     //log("Recv html $string");
@@ -62,6 +65,60 @@ class PostTextUtils{
     return string;
   }
 
+  static String wrapLinksInHtml(String htmlContent) {
+    Document document = parse(htmlContent);
+
+    void processNode(Node node) {
+      if (node is Text) {
+        final text = node.text;
+        final linkRegExp = RegExp(r'((https?:\/\/|www\.)[^\s<]+)', caseSensitive: false);
+
+        if (linkRegExp.hasMatch(text)) {
+          final parent = node.parent;
+          if (parent == null) return;
+
+          final matches = linkRegExp.allMatches(text).toList();
+          final fragments = <Node>[];
+          int lastIndex = 0;
+
+          for (final match in matches) {
+            final linkText = match.group(0)!;
+            final href = linkText.startsWith('http') ? linkText : 'http://$linkText';
+
+            if (match.start > lastIndex) {
+              fragments.add(Text(text.substring(lastIndex, match.start)));
+            }
+
+            final a = Element.tag('a')
+              ..attributes['href'] = href
+              ..text = linkText;
+            fragments.add(a);
+
+            lastIndex = match.end;
+          }
+
+          if (lastIndex < text.length) {
+            fragments.add(Text(text.substring(lastIndex)));
+          }
+
+          // 替换：插入新节点，然后删除原始 Text 节点
+          for (final frag in fragments) {
+            parent.insertBefore(frag, node);
+          }
+          node.remove();
+        }
+      } else {
+        // 递归处理子节点
+        for (final child in node.nodes.toList()) {
+          processNode(child);
+        }
+      }
+    }
+
+    document.body?.nodes.toList().forEach(processNode);
+    return document.body?.innerHtml ?? htmlContent;
+  }
+
   static String getDecodedString(String html, bool useCompactParagraph){
     String decodedString = replaceCollapseTag(html);
     decodedString = replaceSpoilTag(decodedString);
@@ -76,6 +133,8 @@ class PostTextUtils{
     // if(useCompactParagraph){
     //   decodedString = decodedString.replaceAll(RegExp(r"<br.*?/>"), "");
     // }
+
+    decodedString = wrapLinksInHtml(decodedString);
 
     return decodedString;
   }

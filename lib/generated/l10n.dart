@@ -6050,6 +6050,16 @@ class S {
       args: [],
     );
   }
+
+  /// `404 Not Found`
+  String get responseStatusError404 {
+    return Intl.message(
+      '404 Not Found',
+      name: 'responseStatusError404',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

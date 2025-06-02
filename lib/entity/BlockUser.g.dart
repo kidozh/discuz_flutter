@@ -8,7 +8,7 @@ part of 'BlockUser.dart';
 
 class BlockUserAdapter extends TypeAdapter<BlockUser> {
   @override
-  final int typeId = 2;
+  final typeId = 2;
 
   @override
   BlockUser read(BinaryReader reader) {

@@ -8,7 +8,7 @@ part of 'Smiley.dart';
 
 class SmileyAdapter extends TypeAdapter<Smiley> {
   @override
-  final int typeId = 7;
+  final typeId = 7;
 
   @override
   Smiley read(BinaryReader reader) {

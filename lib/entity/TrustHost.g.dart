@@ -8,7 +8,7 @@ part of 'TrustHost.dart';
 
 class TrustHostAdapter extends TypeAdapter<TrustHost> {
   @override
-  final int typeId = 5;
+  final typeId = 5;
 
   @override
   TrustHost read(BinaryReader reader) {

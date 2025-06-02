@@ -20,4 +20,14 @@ abstract class BilibiliApiClient {
   Future<BilibiliVideoResult> getVideoResultByBvid(
       @Query("bvid") String bvid,
       );
+
+  @GET("/x/article/viewinfo")
+  Future<BilibiliVideoResult> getArticleResultByCvid(
+      @Query("id") int cvid,
+      );
+
+  @GET("/x/polymer/web-dynamic/v1/detail")
+  Future<BilibiliVideoResult> getOpusedDynamicResultById(
+      @Query("id") int id,
+      );
 }

@@ -881,5 +881,6 @@
   "thread": "Thread",
   "pushLocale": "Locale",
   "pushServiceLimitedInChinaMainlandTitle": "FCM limited availability",
-  "pushServiceLimitedInChinaMainlandSubtitle": "The Firebase Cloud Messaging service is limited in China Mainland. To ensure a prompt notification, you are advised to turn on the auto-restart or add DisFly to the except list."
+  "pushServiceLimitedInChinaMainlandSubtitle": "The Firebase Cloud Messaging service is limited in China Mainland. To ensure a prompt notification, you are advised to turn on the auto-restart or add DisFly to the except list.",
+  "responseStatusError404": "404 Not Found"
 }

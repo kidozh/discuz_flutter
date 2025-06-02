@@ -9,7 +9,7 @@ part of 'ViewThreadScrollDistance.dart';
 class ViewThreadScrollDistanceAdapter
     extends TypeAdapter<ViewThreadScrollDistance> {
   @override
-  final int typeId = 12;
+  final typeId = 12;
 
   @override
   ViewThreadScrollDistance read(BinaryReader reader) {

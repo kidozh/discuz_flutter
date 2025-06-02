@@ -774,6 +774,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "reportSuccessfully": m39,
         "reportThreadTooltip": MessageLookupByLibrary.simpleMessage("举报不当内容"),
         "residentPlace": MessageLookupByLibrary.simpleMessage("居住地"),
+        "responseStatusError404":
+            MessageLookupByLibrary.simpleMessage("404 - 请求内容已经不存在"),
         "retry": MessageLookupByLibrary.simpleMessage("重试"),
         "revisedPost": MessageLookupByLibrary.simpleMessage("帖子审核后再编辑，以防重复加分。"),
         "sample": MessageLookupByLibrary.simpleMessage("示例"),

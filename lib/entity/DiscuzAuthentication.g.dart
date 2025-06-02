@@ -8,7 +8,7 @@ part of 'DiscuzAuthentication.dart';
 
 class DiscuzAuthenticationAdapter extends TypeAdapter<DiscuzAuthentication> {
   @override
-  final int typeId = 10;
+  final typeId = 10;
 
   @override
   DiscuzAuthentication read(BinaryReader reader) {

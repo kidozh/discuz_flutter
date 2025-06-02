@@ -20,16 +20,28 @@ class BilibiliWidget extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return BilibiliState(url);
+    // check the url
+    Uri? bilibiliUri = Uri.tryParse(url);
+    if (bilibiliUri != null) {
+      if (bilibiliUri.path.startsWith("/video")) {
+        return BilibiliVideoState(url);
+      }
+      else if (bilibiliUri.path.startsWith("opus")){
+
+      }
+    }
+
+    return BilibiliVideoState(url);
+
   }
 }
 
-class BilibiliState extends State<BilibiliWidget> {
+class BilibiliVideoState extends State<BilibiliWidget> {
   BilibiliApiClient client = BilibiliApiClient(NetworkUtils.getDio(),
       baseUrl: "https://api.bilibili.com");
 
   String url = "";
-  BilibiliState(this.url);
+  BilibiliVideoState(this.url);
 
   BilibiliWidgetType type = BilibiliWidgetType.video;
   BilibiliVideoRequestType videoRequestType = BilibiliVideoRequestType.bvid;
@@ -265,4 +277,13 @@ class BilibiliState extends State<BilibiliWidget> {
           ),
         ),
       );
+}
+
+
+class BilibiliArticlePreviewState extends State<BilibiliWidget>{
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+
 }

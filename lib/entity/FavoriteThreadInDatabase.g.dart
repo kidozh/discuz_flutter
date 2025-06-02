@@ -9,7 +9,7 @@ part of 'FavoriteThreadInDatabase.dart';
 class FavoriteThreadInDatabaseAdapter
     extends TypeAdapter<FavoriteThreadInDatabase> {
   @override
-  final int typeId = 4;
+  final typeId = 4;
 
   @override
   FavoriteThreadInDatabase read(BinaryReader reader) {

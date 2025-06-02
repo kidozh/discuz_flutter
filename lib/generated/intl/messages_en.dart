@@ -897,6 +897,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "reportThreadTooltip":
             MessageLookupByLibrary.simpleMessage("Report the post"),
         "residentPlace": MessageLookupByLibrary.simpleMessage("Resident place"),
+        "responseStatusError404":
+            MessageLookupByLibrary.simpleMessage("404 Not Found"),
         "retry": MessageLookupByLibrary.simpleMessage("Retry"),
         "revisedPost": MessageLookupByLibrary.simpleMessage(
             "The post is revised to prevent duplicated scoring."),

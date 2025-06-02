@@ -8,7 +8,7 @@ part of 'Discuz.dart';
 
 class DiscuzAdapter extends TypeAdapter<Discuz> {
   @override
-  final int typeId = 0;
+  final typeId = 0;
 
   @override
   Discuz read(BinaryReader reader) {

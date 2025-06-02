@@ -8,7 +8,7 @@ part of 'ViewThreadCache.dart';
 
 class ViewThreadCacheAdapter extends TypeAdapter<ViewThreadCache> {
   @override
-  final int typeId = 11;
+  final typeId = 11;
 
   @override
   ViewThreadCache read(BinaryReader reader) {

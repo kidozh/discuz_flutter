@@ -9,7 +9,7 @@ part of 'FavoriteForumInDatabase.dart';
 class FavoriteForumInDatabaseAdapter
     extends TypeAdapter<FavoriteForumInDatabase> {
   @override
-  final int typeId = 3;
+  final typeId = 3;
 
   @override
   FavoriteForumInDatabase read(BinaryReader reader) {

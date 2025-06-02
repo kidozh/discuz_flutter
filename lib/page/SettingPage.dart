@@ -23,6 +23,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../utility/AppPlatformIcons.dart';
 import '../utility/PostTextFieldUtils.dart';
 import 'ChooseThemeColorPage.dart';
+import 'ConfigurePictureBedPage.dart';
 import 'SetPushNotificationPage.dart';
 
 class SettingPage extends StatefulWidget {
@@ -122,17 +123,17 @@ class _SettingPageState extends State<SettingPage> {
                     });
                   }, initialValue: recordHistory,
                 ),
-                // SettingsTile.navigation(
-                //   title: Text(S.of(context).pictureBedTitle),
-                //   leading: Icon(AppPlatformIcons(context).pictureBedOutlined),
-                //   onPressed: (_) {
-                //     VibrationUtils.vibrateWithClickIfPossible();
-                //     Navigator.of(context).push(platformPageRoute(
-                //       builder: (_) => ConfigurePictureBedPage(),
-                //       context: context,
-                //     ));
-                //   },
-                // ),
+                SettingsTile.navigation(
+                  title: Text(S.of(context).pictureBedTitle),
+                  leading: Icon(AppPlatformIcons(context).pictureBedOutlined),
+                  onPressed: (_) {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    Navigator.of(context).push(platformPageRoute(
+                      builder: (_) => ConfigurePictureBedPage(),
+                      context: context,
+                    ));
+                  },
+                ),
                 SettingsTile.navigation(
                   title: Text(S.of(context).pushNotification),
                   leading: Icon(AppPlatformIcons(context).pushServiceOutlined),

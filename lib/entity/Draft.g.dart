@@ -8,7 +8,7 @@ part of 'Draft.dart';
 
 class DraftAdapter extends TypeAdapter<Draft> {
   @override
-  final int typeId = 9;
+  final typeId = 9;
 
   @override
   Draft read(BinaryReader reader) {

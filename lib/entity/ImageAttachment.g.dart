@@ -8,7 +8,7 @@ part of 'ImageAttachment.dart';
 
 class ImageAttachmentAdapter extends TypeAdapter<ImageAttachment> {
   @override
-  final int typeId = 8;
+  final typeId = 8;
 
   @override
   ImageAttachment read(BinaryReader reader) {

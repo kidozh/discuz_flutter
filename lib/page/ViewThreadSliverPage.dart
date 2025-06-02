@@ -897,7 +897,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                     },
                     childCount: 1,
                   )),
-                  if(!_isFirstLoading)
+                  if(!_isFirstLoading && _viewThreadResult.errorResult == null)
                   SliverList(
                       delegate: SliverChildBuilderDelegate(
                     (context, _) {

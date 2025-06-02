@@ -290,9 +290,10 @@ class _AddDiscuzFormFieldState
             SizedBox(
               width: double.infinity,
               child: PlatformElevatedButton(
+                color: Theme.of(context).colorScheme.primary,
                 child: _isLoading
                     ? PlatformCircularProgressIndicator()
-                    : Text(S.of(context).continueAdding),
+                    : Text(S.of(context).continueAdding, style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
                 onPressed: _isLoading
                     ? null
                     : () {
@@ -323,6 +324,7 @@ class _AddDiscuzFormFieldState
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
                     padding: EdgeInsets.only(left: 8.0, bottom: 16.0),

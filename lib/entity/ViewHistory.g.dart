@@ -8,7 +8,7 @@ part of 'ViewHistory.dart';
 
 class ViewHistoryAdapter extends TypeAdapter<ViewHistory> {
   @override
-  final int typeId = 6;
+  final typeId = 6;
 
   @override
   ViewHistory read(BinaryReader reader) {

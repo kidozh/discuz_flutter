@@ -27,9 +27,18 @@ class ErrorCard extends StatelessWidget{
   bool? largeSize = true;
   String? webpageUrl = null;
 
+  String getTranslatedMessage(BuildContext context, String string){
+    switch(string){
+      case "Not Found":
+        return S.of(context).responseStatusError404;
+    }
+    return string;
+  }
+
 
   @override
   Widget build(BuildContext context) {
+    log("GET ERROR ${discuzError.dioError} ${discuzError.key} ${discuzError.content}");
 
     if(errorType!= ErrorType.userExpired && (largeSize == null || largeSize == true ) && (discuzError.key!= "mobile_template_no_found")){
       return Padding(padding: EdgeInsets.symmetric(vertical: 32.0, horizontal: 8.0),
@@ -41,12 +50,17 @@ class ErrorCard extends StatelessWidget{
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(getErrorIcon(context),color: Theme.of(context).colorScheme.error,size: 48,),
-              SizedBox(height: 6.0,),
+              SizedBox(height: 24.0,),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(discuzError.content, style: Theme.of(context).textTheme.headlineSmall),
+                  Text(
+                      getTranslatedMessage(context, discuzError.content),
+                      style: Theme.of(context).textTheme.headlineSmall,
+
+                  ),
                   //Text(getErrorLocalizedKey(context), style: Theme.of(context).textTheme.bodyMedium,),
 
                 ],
@@ -56,7 +70,8 @@ class ErrorCard extends StatelessWidget{
                 SizedBox(
                   width: double.infinity,
                   child: PlatformElevatedButton(
-                    child: Text(S.of(context).retry),
+                    child: Text(S.of(context).retry, style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),),
+                    color: Theme.of(context).colorScheme.primaryContainer,
                     onPressed: () {
                       VibrationUtils.vibrateWithClickIfPossible();
                       onRefreshCallback!();
