@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.6.5+92
+version: 1.6.6+93
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -47,10 +47,9 @@ dependencies:
   cookie_jar: ^4.0.7
   dio_cookie_manager: ^3.1.0
   path_provider: ^2.0.8
-  progress_state_button: ^1.0.4
   url_launcher: ^6.0.17
   photo_view: ^0.15.0
-  permission_handler: ^11.0.0
+  permission_handler: ^12.0.0+1
   # open_file: ^3.2.1
   flutter_slidable:
   webview_cookie_manager:
@@ -58,7 +57,7 @@ dependencies:
       url: https://github.com/fryette/webview_cookie_manager
       ref: 8572dd54c437c919aedc8dca6c5bffd25fe74b3
   intl: ^0.20.0
-  flutter_platform_widgets: ^8.0.0
+  flutter_platform_widgets: ^9.0.0
   flutter_launcher_icons: ^0.14.1
   extended_text_field: ^16.0.0
   image_picker: ^1.0.4
@@ -70,18 +69,18 @@ dependencies:
   hive_ce: ^2.10.1
   hive_ce_flutter: ^2.2.0
   device_info_plus: ^11.1.0
-  share_plus: ^10.0.0
+  share_plus: ^11.0.0
   firebase_messaging: ^15.0.3
   font_awesome_flutter: ^10.1.0
   firebase_analytics: ^11.2.0
-  flutter_local_notifications: ^18.0.1
+  flutter_local_notifications: ^19.2.1
   # flutter_apns: ^1.6.0
   scroll_to_index: any
   easy_refresh: ^3.0.2+2
   open_filex: ^4.7.0
   flutter_polls: ^0.1.0
   push: ^3.3.3
-  google_mobile_ads: ^5.1.0
+  google_mobile_ads: ^6.0.0
   dynamic_color: ^1.6.7
   intl_utils: ^2.8.1
   dual_screen:
