@@ -67,13 +67,18 @@ class LoginForumFieldStatefulWidget extends StatefulWidget {
   }
 }
 
+enum LoginResultStatus {
+  idle,
+  loading
+}
+
 class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
   late final Discuz discuz;
   String? accountName;
-
+  LoginResultStatus _loginState = LoginResultStatus.idle;
   final _formKey = GlobalKey<FormState>();
   DiscuzError? error = null;
-  ButtonState _loginState = ButtonState.idle;
+
   final TextEditingController _accountController = new TextEditingController();
   final TextEditingController _passwdController = new TextEditingController();
   final CaptchaController _captchaController =
@@ -209,7 +214,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
     await _initDio();
     final client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
     setState(() {
-      _loginState = ButtonState.loading;
+      _loginState = LoginResultStatus.loading;
     });
 
     CaptchaFields? captchaFields = _captchaController.value;
@@ -239,7 +244,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
       if (value.errorResult!.key == "login_succeed") {
         // save it in database
         setState(() {
-          _loginState = ButtonState.success;
+          _loginState = LoginResultStatus.idle;
         });
         try {
           final dao = await AppDatabase.getUserDao();
@@ -281,14 +286,14 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
         setState(() {
           error =
               DiscuzError(value.errorResult!.key, value.errorResult!.content);
-          _loginState = ButtonState.fail;
+          _loginState = LoginResultStatus.idle;
         });
       }
     }).catchError((onError) {
       VibrationUtils.vibrateErrorIfPossible();
       _captchaController.reloadCaptcha();
       setState(() {
-        _loginState = ButtonState.fail;
+        _loginState = LoginResultStatus.idle;
       });
 
       switch (onError.runtimeType) {
@@ -474,40 +479,28 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                       children: [
                         SizedBox(
                           width: double.infinity,
-                          child: ProgressButton.icon(
-                              maxWidth: 230.0,
-                              iconedButtons: {
-                                ButtonState.idle: IconedButton(
-                                    text: S.of(context).loginTitle,
-                                    icon: Icon(AppPlatformIcons(context).loginUserSolid,
-                                        color: Theme.of(context).colorScheme.onPrimary
-                                    ),
-                                    color:
-                                        Theme.of(context).colorScheme.primary),
-                                ButtonState.loading: IconedButton(
-                                    text: S.of(context).progressButtonLogining,
-                                    color: Colors.blue.shade300),
-                                ButtonState.fail: IconedButton(
-                                    text:
-                                        S.of(context).progressButtonLoginFailed,
-                                    icon:
-                                        Icon(AppPlatformIcons(context).loginUserFailedSolid, color: Colors.white),
-                                    color: Colors.red.shade300),
-                                ButtonState.success: IconedButton(
-                                    text: S
-                                        .of(context)
-                                        .progressButtonLoginSuccess,
-                                    icon: Icon(
-                                      AppPlatformIcons(context).loginUserSuccessSolid,
-                                      color: Colors.white,
-                                    ),
-                                    color: Colors.green.shade400)
-                              },
-                              onPressed: () {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                _verifyAccountAndPassword();
-                              },
-                              state: _loginState),
+                          child: PlatformElevatedButton(
+                            color: Theme.of(context).colorScheme.primary,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _loginState == LoginResultStatus.idle?
+                                  Icon(AppPlatformIcons(context).loginUserSolid, color: Theme.of(context).colorScheme.onPrimary,):
+                                  PlatformCircularProgressIndicator(
+                                    material: (context, platform) => MaterialProgressIndicatorData(color: Theme.of(context).colorScheme.onPrimary),
+                                    cupertino: (context, platform) => CupertinoProgressIndicatorData(color: Theme.of(context).colorScheme.onPrimary),
+                                  ),
+                                SizedBox(width: 8,),
+                                Text(S.of(context).loginTitle, style: TextStyle(color: Theme.of(context).colorScheme.onPrimary))
+
+                              ],
+                            ),
+                            onPressed: _loginState == LoginResultStatus.idle? (){
+                              VibrationUtils.vibrateWithClickIfPossible();
+                              _verifyAccountAndPassword();
+                            }: null,
+                          ),
                         ),
                         SizedBox(
                           height: 24,
@@ -516,17 +509,25 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                           SizedBox(
                             width: double.infinity,
                             child: PlatformElevatedButton(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 16.0, horizontal: 4.0),
                               color: Theme.of(context)
                                   .colorScheme
-                                  .secondaryContainer,
-                              child: Text(S.of(context).signInViaBrowser,
-                                  style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSecondaryContainer)),
-                              onPressed: () {
+                                  .primaryContainer,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _loginState == LoginResultStatus.idle?
+                                  Icon(AppPlatformIcons(context).loginUserInWebSolid, color: Theme.of(context).colorScheme.onPrimaryContainer,):
+                                  PlatformCircularProgressIndicator(
+                                    material: (context, platform) => MaterialProgressIndicatorData(color: Theme.of(context).colorScheme.onPrimaryContainer),
+                                    cupertino: (context, platform) => CupertinoProgressIndicatorData(color: Theme.of(context).colorScheme.onPrimaryContainer),
+                                  ),
+                                  SizedBox(width: 8,),
+                                  Text(S.of(context).signInViaBrowser, style: TextStyle(color: _loginState == LoginResultStatus.idle? Theme.of(context).colorScheme.onPrimaryContainer: Theme.of(context).colorScheme.primary))
+
+                                ],
+                              ),
+                              onPressed: _loginState == LoginResultStatus.idle? () {
                                 VibrationUtils.vibrateWithClickIfPossible();
                                 Navigator.push(
                                     context,
@@ -535,7 +536,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                                         context: context,
                                         builder: (context) =>
                                             LoginByWebviewPage(discuz)));
-                              },
+                              }: null,
                             ),
                           ),
                       ],

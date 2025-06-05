@@ -27,6 +27,7 @@ import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/screen/ExtraFuncInThreadScreen.dart';
 import 'package:discuz_flutter/screen/SmileyListScreen.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
@@ -103,6 +104,13 @@ class ViewThreadStatefulSliverWidget extends StatefulWidget {
   }
 }
 
+enum SendReplyStatus{
+  idle,
+  loading,
+  success,
+  fail
+}
+
 class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   ViewThreadResult _viewThreadResult = ViewThreadResult();
   bool _isFirstLoading = true;
@@ -127,7 +135,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   EasyRefreshController _controller = EasyRefreshController(
       controlFinishLoad: true, controlFinishRefresh: true);
   ScrollController _scrollController = ScrollController();
-  ButtonState _sendReplyStatus = ButtonState.idle;
+  SendReplyStatus _sendReplyStatus = SendReplyStatus.idle;
   ViewThreadQuery viewThreadQuery = ViewThreadQuery();
   Map<String, List<Comment>> postCommentList = {};
   final FocusNode _focusNode = FocusNode(debugLabel: "view_thread_textfield");
@@ -369,7 +377,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       return;
     }
     setState(() {
-      _sendReplyStatus = ButtonState.loading;
+      _sendReplyStatus = SendReplyStatus.loading;
     });
     final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
@@ -456,24 +464,24 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         EasyLoading.showSuccess(
             '${value.errorResult!.content}(${value.errorResult!.key})');
         setState(() {
-          _sendReplyStatus = ButtonState.success;
+          _sendReplyStatus = SendReplyStatus.success;
           // just to clear the pic
           insertedAidList.clear();
         });
         // delay
         Future.delayed(Duration(seconds: 1), () {
           setState(() {
-            _sendReplyStatus = ButtonState.idle;
+            _sendReplyStatus = SendReplyStatus.idle;
             _replyController.clear();
           });
         });
       } else {
         setState(() {
-          _sendReplyStatus = ButtonState.fail;
+          _sendReplyStatus = SendReplyStatus.fail;
         });
         Future.delayed(Duration(seconds: 1), () {
           setState(() {
-            _sendReplyStatus = ButtonState.idle;
+            _sendReplyStatus = SendReplyStatus.idle;
             //_replyController.clear();
           });
         });
@@ -484,7 +492,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
       VibrationUtils.vibrateErrorIfPossible();
 
       setState(() {
-        _sendReplyStatus = ButtonState.fail;
+        _sendReplyStatus = SendReplyStatus.fail;
       });
       if (onError is DioException) {
         DioException dioError = onError;
@@ -1194,56 +1202,38 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                       valueListenable: showExtraButton,
                                       builder: (context, value, _) {
                                         if (value == false) {
-                                          return ProgressButton.icon(
-                                              maxWidth: 60.0,
-                                              iconedButtons: {
-                                                ButtonState.idle: IconedButton(
-                                                    //text: S.of(context).sendReply,
-                                                    icon: Icon(
-                                                      Icons.send,
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .onPrimaryContainer,
-                                                      semanticLabel: S
-                                                          .of(context)
-                                                          .sendReply,
-                                                    ),
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .primaryContainer),
-                                                ButtonState.loading:
-                                                    IconedButton(
-                                                        //text: S.of(context).progressButtonReplySending,
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .secondary),
-                                                ButtonState.fail: IconedButton(
-                                                    //text: S.of(context).progressButtonReplyFailed,
-                                                    icon: Icon(
-                                                      Icons.cancel,
-                                                      color: Colors.white,
-                                                      semanticLabel: S
-                                                          .of(context)
-                                                          .progressButtonReplyFailed,
-                                                    ),
-                                                    color: Colors.red.shade300),
-                                                ButtonState.success: IconedButton(
-                                                    //text: S.of(context).progressButtonReplySuccess,
-                                                    icon: Icon(
-                                                      Icons.check_circle,
-                                                      color: Colors.white,
-                                                      semanticLabel: S
-                                                          .of(context)
-                                                          .progressButtonReplySuccess,
-                                                    ),
-                                                    color: Colors.green.shade400)
-                                              },
+                                          if(_sendReplyStatus == SendReplyStatus.idle){
+                                            return IconButton(
+                                              icon: Icon(AppPlatformIcons(context).postThreadSolid),
                                               onPressed: () {
                                                 VibrationUtils
                                                     .vibrateWithClickIfPossible();
                                                 _sendReply(context);
                                               },
-                                              state: _sendReplyStatus);
+                                            );
+                                          }
+                                          else if(_sendReplyStatus == SendReplyStatus.loading){
+                                            return IconButton(
+                                              icon: PlatformCircularProgressIndicator(
+                                                cupertino: (context, platform) => CupertinoProgressIndicatorData(
+                                                    color: Theme.of(context).colorScheme.primary
+                                                ),
+                                                material: (context, platform) => MaterialProgressIndicatorData(
+                                                    color: Theme.of(context).colorScheme.primary
+                                                ),
+                                              ),
+                                              onPressed: (){
+
+                                              },
+                                            );
+                                          }
+                                          else if(_sendReplyStatus == SendReplyStatus.success){
+                                            return IconButton(icon: Icon(AppPlatformIcons(context).checkCircleSolid, color: Theme.of(context).colorScheme.primary), onPressed: (){},);
+                                          }
+                                          else if(_sendReplyStatus == SendReplyStatus.fail){
+                                            return IconButton(icon: Icon(AppPlatformIcons(context).errorOutline, color: Theme.of(context).colorScheme.error), onPressed: (){},);
+                                          }
+                                          return Container();
                                         } else {
                                           //return Container();
                                           return IconButton(

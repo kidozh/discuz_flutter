@@ -151,6 +151,8 @@ class AppPlatformIcons{
 
   IconData get loginUserSolid => isMaterial(context)? Icons.login : CupertinoIcons.person_crop_circle;
 
+  IconData get loginUserInWebSolid => isMaterial(context)? Icons.web : CupertinoIcons.arrow_right_circle;
+
   IconData get loginUserFailedSolid => isMaterial(context)? Icons.error_outline : CupertinoIcons.person_crop_circle_badge_exclam;
 
   IconData get loginUserSuccessSolid => isMaterial(context)? Icons.check_circle : CupertinoIcons.person_crop_circle_badge_checkmark;
@@ -176,4 +178,6 @@ class AppPlatformIcons{
   IconData get secureHttpsSolid => isMaterial(context)? Icons.lock : CupertinoIcons.lock_circle_fill;
 
   IconData get supportDiscuz35Solid => isMaterial(context)? Icons.check_circle : CupertinoIcons.checkmark_seal_fill;
+
+  IconData get errorOutline => isMaterial(context)? Icons.error_outline : CupertinoIcons.exclamationmark_circle;
 }

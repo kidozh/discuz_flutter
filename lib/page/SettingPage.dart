@@ -123,17 +123,17 @@ class _SettingPageState extends State<SettingPage> {
                     });
                   }, initialValue: recordHistory,
                 ),
-                SettingsTile.navigation(
-                  title: Text(S.of(context).pictureBedTitle),
-                  leading: Icon(AppPlatformIcons(context).pictureBedOutlined),
-                  onPressed: (_) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.of(context).push(platformPageRoute(
-                      builder: (_) => ConfigurePictureBedPage(),
-                      context: context,
-                    ));
-                  },
-                ),
+                // SettingsTile.navigation(
+                //   title: Text(S.of(context).pictureBedTitle),
+                //   leading: Icon(AppPlatformIcons(context).pictureBedOutlined),
+                //   onPressed: (_) {
+                //     VibrationUtils.vibrateWithClickIfPossible();
+                //     Navigator.of(context).push(platformPageRoute(
+                //       builder: (_) => ConfigurePictureBedPage(),
+                //       context: context,
+                //     ));
+                //   },
+                // ),
                 SettingsTile.navigation(
                   title: Text(S.of(context).pushNotification),
                   leading: Icon(AppPlatformIcons(context).pushServiceOutlined),
