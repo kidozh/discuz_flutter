@@ -180,4 +180,8 @@ class AppPlatformIcons{
   IconData get supportDiscuz35Solid => isMaterial(context)? Icons.check_circle : CupertinoIcons.checkmark_seal_fill;
 
   IconData get errorOutline => isMaterial(context)? Icons.error_outline : CupertinoIcons.exclamationmark_circle;
+
+  IconData get arrowUpRounded => isMaterial(context)? Icons.arrow_upward_rounded : CupertinoIcons.up_arrow;
+
+  IconData get arrowDownRounded => isMaterial(context)? Icons.arrow_downward_rounded : CupertinoIcons.down_arrow;
 }

@@ -365,87 +365,66 @@ class DrawerState extends State<DrawerStatefulWidget> {
       appBar: PlatformAppBar(
         automaticallyImplyLeading: true,
       ),
-      body: Column(
-        children: [
+      body: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Consumer<DiscuzAndUserNotifier>(builder: (context, value, child) {
+                if (value.discuz == null || value.user == null) {
+                  return Container(
+                    padding: EdgeInsets.symmetric(vertical: 0, horizontal: 4),
+                    child: Card(
+                      color: Theme.of(context).colorScheme.primary,
+                      elevation: _showUserDetail? 6 : 0,
+                      //padding: EdgeInsets.symmetric(vertical: 4, horizontal: 0),
+                      child: ListTile(
+                        leading: Icon(AppPlatformIcons(context).userIncognitoSolid, color: Theme.of(context).colorScheme.onPrimary),
+                        title: Text(S.of(context).incognitoTitle, style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+                        subtitle: Text(S.of(context).incognitoSubtitle, style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+                        trailing: Icon(_showUserDetail? AppPlatformIcons(context).arrowUpRounded: AppPlatformIcons(context).arrowDownRounded, color: Theme.of(context).colorScheme.onPrimary),
+                        onTap: () {
+                          setState(() {
+                            _showUserDetail = !_showUserDetail;
+                          });
+                        },
+                      ),
+                    ),
+                  );
+                }
+                else{
+                  return Container(
+                      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 4),
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        elevation: _showUserDetail? 6 : 0,
+                        child: ListTile(
+                            leading: UserAvatar(
+                              value.discuz!,
+                              value.user!.uid,
+                              value.user!.username,
+                              size: 32,
+                            ),
+                            title: Text(value.user!.username, style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer)),
+                            subtitle: Text("${value.user!.uid} (${value.discuz!.siteName})"),
+                            trailing: Icon(_showUserDetail? AppPlatformIcons(context).arrowUpRounded: AppPlatformIcons(context).arrowDownRounded, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                            onTap: () {
+                              setState(() {
+                                _showUserDetail = !_showUserDetail;
+                              });
+                            }
+                        ),
 
-
-          Consumer<DiscuzAndUserNotifier>(builder: (context, value, child) {
-            if (value.discuz == null || value.user == null) {
-              return UserAccountsDrawerHeader(
-                margin: EdgeInsets.zero,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondaryContainer
-                ),
-                accountEmail: Text(
-                  S.of(context).incognitoSubtitle,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondaryContainer
-                  ),
-
-                ),
-                accountName: Text(
-                  S.of(context).incognitoTitle,
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      fontWeight: FontWeight.bold
-                  ),
-                ),
-                currentAccountPictureSize: Size.square(64),
-                currentAccountPicture: CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
-                  child: Icon(
-                    AppPlatformIcons(context).userIncognitoSolid,
-                    color: Theme.of(context).colorScheme.secondaryContainer,
-                    size: 40,
-                  ),
-                ),
-                arrowColor: Theme.of(context).colorScheme.onSecondaryContainer,
-                onDetailsPressed: () {
-                  setState(() {
-                    _showUserDetail = !_showUserDetail;
-                  });
-                },
-              );
-            } else {
-              return UserAccountsDrawerHeader(
-                margin: EdgeInsets.zero,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary
-                ),
-                accountEmail: Text(
-                  value.user!.uid.toString(),
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary
-                  ),
-                ),
-                accountName: Text(
-                  value.user!.username,
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      fontWeight: FontWeight.bold
-                  ),
-                ),
-                currentAccountPictureSize: Size.square(64),
-                currentAccountPicture: UserAvatar(
-                  value.discuz!,
-                  value.user!.uid,
-                  value.user!.username,
-                  size: 32,
-                ),
-                arrowColor: Theme.of(context).colorScheme.onPrimary,
-                onDetailsPressed: () {
-                  setState(() {
-                    _showUserDetail = !_showUserDetail;
-                  });
-                },
-              );
-            }
-          }),
-          Expanded(
-              child: _showUserDetail
-                  ? _buildUserNavigationWidgetList()
-                  : _buildFunctionNavWidgetList())
-        ],
+                      )
+                  );
+                }
+              }),
+              Expanded(
+                  child: _showUserDetail
+                      ? _buildUserNavigationWidgetList()
+                      : _buildFunctionNavWidgetList())
+            ],
+          )
       ),
     );
   }

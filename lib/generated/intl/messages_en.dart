@@ -375,7 +375,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "disableFontCustomizationTitle": MessageLookupByLibrary.simpleMessage(
             "Ignore all customized font information"),
         "discuzAuthenticationTitle":
-            MessageLookupByLibrary.simpleMessage("Password & Authentication"),
+            MessageLookupByLibrary.simpleMessage("Authentication"),
         "discuzInAdExemptBuiltInList": m10,
         "discuzInAdExemptBuiltInListDescription": m11,
         "discuzOperationMessage": m12,

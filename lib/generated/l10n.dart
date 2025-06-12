@@ -4991,10 +4991,10 @@ class S {
     );
   }
 
-  /// `Password & Authentication`
+  /// `Authentication`
   String get discuzAuthenticationTitle {
     return Intl.message(
-      'Password & Authentication',
+      'Authentication',
       name: 'discuzAuthenticationTitle',
       desc: '',
       args: [],

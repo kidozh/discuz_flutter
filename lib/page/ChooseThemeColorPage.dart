@@ -110,22 +110,22 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
                     //   subtitle: Text(_selectedThemeColor.data.description),
                     // ),
 
-                    GridView.count(
-                        primary: false,
-                        crossAxisCount: 5,
+                    GridView.builder(
+                        padding: EdgeInsets.symmetric(vertical: 8),
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
-                        mainAxisSpacing: 5,
-                        crossAxisSpacing: 5,
-                        children: FlexScheme.values.map((flexScheme){
-                          return FlexSchemeCard(
-                              flexScheme,
-                              (){
-                                changeColor(flexScheme);
-                                VibrationUtils.vibrateWithClickIfPossible();
-                              }
-                          );
-                        }).toList(),
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 80,
+                            childAspectRatio: 1
+                        ),
+                        itemCount: FlexScheme.values.length,
+                        itemBuilder: (context, index){
+                          FlexScheme flexScheme = FlexScheme.values[index];
+                          return FlexSchemeCard(flexScheme, (){
+                            changeColor(flexScheme);
+                            VibrationUtils.vibrateWithClickIfPossible();
+                          });
+                        },
                     ),
                   ],
                 ),
@@ -210,6 +210,9 @@ class FlexSchemeCard extends StatelessWidget{
               ),
               child: GridView.count(
                 physics: NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                primary: false,
+                shrinkWrap: true,
                 crossAxisCount: 2,
                 children: [
                   SizedBox(
