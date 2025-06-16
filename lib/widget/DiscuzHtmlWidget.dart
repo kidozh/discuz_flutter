@@ -104,6 +104,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
             ? 14: defaultTextStyle.fontSize == null? 14 : defaultTextStyle.fontSize!;
         User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
         Future<Dio> futureDio = NetworkUtils.getDioWithPersistCookieJar(user);
+        //DiscuzImageDioCacheManager dioCacheManager = DiscuzImageDioCacheManager(futureDio);
 
         return HtmlWidget(
           PostTextUtils.getDecodedString(html, useCompactParagraph),
