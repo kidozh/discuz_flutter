@@ -107,6 +107,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
 
         return HtmlWidget(
           PostTextUtils.getDecodedString(html, useCompactParagraph),
+          enableCaching: true,
           onTapUrl: (url) {
             URLUtils.openURL(context, onSelectTid, url, callback, tid);
             return true;
@@ -157,7 +158,8 @@ class DiscuzHtmlWidget extends StatelessWidget {
                 "background-color" : "#${Theme.of(context).colorScheme.secondaryContainer.value.toRadixString(16).substring(2)}",
                 "color" : "#${Theme.of(context).colorScheme.onSecondaryContainer.value.toRadixString(16).substring(2)}",
                 "padding" : "0.5em",
-                "margin-bottom": "0.1em"
+                "margin-bottom": "0.1em",
+                "font-family": "monospace",
               };
             }
             return null;

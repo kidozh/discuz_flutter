@@ -62,6 +62,7 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget>{
     _user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     _discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
     // check with local data
+    
     _loadDb();
 
   }

@@ -379,7 +379,15 @@ class DrawerState extends State<DrawerStatefulWidget> {
                       elevation: _showUserDetail? 6 : 0,
                       //padding: EdgeInsets.symmetric(vertical: 4, horizontal: 0),
                       child: ListTile(
-                        leading: Icon(AppPlatformIcons(context).userIncognitoSolid, color: Theme.of(context).colorScheme.onPrimary),
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(10000.0),
+                          clipBehavior: Clip.antiAlias,
+                          child: Container(
+                            padding: EdgeInsets.all(8),
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            child: Icon(AppPlatformIcons(context).userIncognitoSolid, color: Theme.of(context).colorScheme.primary),
+                          ),
+                        ),
                         title: Text(S.of(context).incognitoTitle, style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
                         subtitle: Text(S.of(context).incognitoSubtitle, style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
                         trailing: Icon(_showUserDetail? AppPlatformIcons(context).arrowUpRounded: AppPlatformIcons(context).arrowDownRounded, color: Theme.of(context).colorScheme.onPrimary),

@@ -241,6 +241,7 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
 
     return InkWell(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             height: slideHeight,
