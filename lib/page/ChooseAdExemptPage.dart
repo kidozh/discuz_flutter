@@ -159,7 +159,11 @@ class _ChooseAdExemptState extends State<ChooseAdExemptPage> {
               SizedBox(
                 width: double.infinity,
                 child: PlatformElevatedButton(
-                  child: Text(discuz.siteName),
+                  color: Theme.of(context).colorScheme.primaryContainer,
+
+                  child: Text(discuz.siteName, style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimaryContainer
+                  ),),
                   onPressed: (){
                     VibrationUtils.vibrateWithClickIfPossible();
                     URLUtils.launchURL(discuz.baseURL);

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart' hide Headers;
 import 'package:discuz_flutter/JsonResult/ChevertoUploadResult.dart';
 import 'package:retrofit/error_logger.dart';
@@ -11,8 +13,15 @@ abstract class CheveretoApiClient {
 
   @POST("/api/1/upload/")
   @FormUrlEncoded()
-  Future<ChevertoUploadResult> uploadImageToChevereto(
+  Future<ChevertoUploadResult> uploadImageToCheveretoByBase64(
       @Header("X-API-Key") String apiToken,
       @Field("source") String base64String,
+      );
+
+  @POST("/api/1/upload/")
+  @FormUrlEncoded()
+  Future<ChevertoUploadResult> uploadImageToCheveretoByBinaryFile(
+      @Header("X-API-Key") String apiToken,
+      @Part() File source,
       );
 }

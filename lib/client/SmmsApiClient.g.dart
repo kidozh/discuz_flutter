@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'CheveretoApiClient.dart';
+part of 'SmmsApiClient.dart';
 
 // **************************************************************************
 // RetrofitGenerator
@@ -8,9 +8,9 @@ part of 'CheveretoApiClient.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter
 
-class _CheveretoApiClient implements CheveretoApiClient {
-  _CheveretoApiClient(this._dio, {this.baseUrl, this.errorLogger}) {
-    baseUrl ??= 'https://sm.ms';
+class _SmmsApiClient implements SmmsApiClient {
+  _SmmsApiClient(this._dio, {this.baseUrl, this.errorLogger}) {
+    baseUrl ??= 'https://sm.ms/api/v2';
   }
 
   final Dio _dio;
@@ -20,16 +20,13 @@ class _CheveretoApiClient implements CheveretoApiClient {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<ChevertoUploadResult> uploadImageToCheveretoByBase64(
-    String apiToken,
-    String base64String,
-  ) async {
+  Future<SmmsTokenResult> getApiTokenResult(String authorization) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{r'X-API-Key': apiToken};
+    final _headers = <String, dynamic>{r'Authorization': authorization};
     _headers.removeWhere((k, v) => v == null);
-    final _data = {'source': base64String};
-    final _options = _setStreamType<ChevertoUploadResult>(
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<SmmsTokenResult>(
       Options(
         method: 'POST',
         headers: _headers,
@@ -38,16 +35,16 @@ class _CheveretoApiClient implements CheveretoApiClient {
       )
           .compose(
             _dio.options,
-            '/api/1/upload/',
+            '/token',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late ChevertoUploadResult _value;
+    late SmmsTokenResult _value;
     try {
-      _value = ChevertoUploadResult.fromJson(_result.data!);
+      _value = SmmsTokenResult.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -56,25 +53,13 @@ class _CheveretoApiClient implements CheveretoApiClient {
   }
 
   @override
-  Future<ChevertoUploadResult> uploadImageToCheveretoByBinaryFile(
-    String apiToken,
-    File source,
-  ) async {
+  Future<SmmsProfileResult> getProfileResult(String authorization) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{r'X-API-Key': apiToken};
+    final _headers = <String, dynamic>{r'Authorization': authorization};
     _headers.removeWhere((k, v) => v == null);
-    final _data = FormData();
-    _data.files.add(
-      MapEntry(
-        'source',
-        MultipartFile.fromFileSync(
-          source.path,
-          filename: source.path.split(Platform.pathSeparator).last,
-        ),
-      ),
-    );
-    final _options = _setStreamType<ChevertoUploadResult>(
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<SmmsProfileResult>(
       Options(
         method: 'POST',
         headers: _headers,
@@ -83,16 +68,61 @@ class _CheveretoApiClient implements CheveretoApiClient {
       )
           .compose(
             _dio.options,
-            '/api/1/upload/',
+            '/profile',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late ChevertoUploadResult _value;
+    late SmmsProfileResult _value;
     try {
-      _value = ChevertoUploadResult.fromJson(_result.data!);
+      _value = SmmsProfileResult.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<SmmsUploadImageResult> uploadImageResult(
+    String authorization,
+    File smfile,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Authorization': authorization};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = FormData();
+    _data.files.add(
+      MapEntry(
+        'smfile',
+        MultipartFile.fromFileSync(
+          smfile.path,
+          filename: smfile.path.split(Platform.pathSeparator).last,
+        ),
+      ),
+    );
+    final _options = _setStreamType<SmmsUploadImageResult>(
+      Options(
+        method: 'POST',
+        headers: _headers,
+        extra: _extra,
+        contentType: 'application/x-www-form-urlencoded',
+      )
+          .compose(
+            _dio.options,
+            '/upload',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late SmmsUploadImageResult _value;
+    try {
+      _value = SmmsUploadImageResult.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

@@ -17,6 +17,27 @@ class ConfigurePictureBedPage extends StatefulWidget {
 }
 
 class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
+  
+  String imglocToken = "";
+  String smmsToken = "";
+  
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _refreshImglocState();
+  }
+  
+  Future<void> _refreshImglocState() async{
+    String imglocTokenInSF = await PictureBedUtils.getChevertoApiToken(ChevertoPictureBed.imgloc);
+    String smmsTokenInSF = await PictureBedUtils.getChevertoApiToken(ChevertoPictureBed.smms);
+    setState(() {
+      imglocToken = imglocTokenInSF;
+      smmsToken = smmsTokenInSF;
+    });
+    
+  }
+  
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
@@ -29,40 +50,48 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
             SettingsSection(
               title: Text(S.of(context).cheveretoPictureBed),
                 tiles: [
-              SettingsTile.navigation(
-                //leading: PlatformCircularProgressIndicator(),
-                title: Text(S.of(context).pictureBedSMMS),
-                value: Text(S.of(context).pictureBedNotPrepared),
-                onPressed: (context) async {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  bool isUserAcceptTerms =
-                      await PictureBedUtils.isSMMSTermAccepted();
-                  if (!isUserAcceptTerms) {
-                    showPictureBedTermsModal(
-                        ChevertoPictureBed.smms,
-                        S.of(context).pictureBedSMMS,
-                        "https://smms.app/terms-of-use/",
-                        "https://smms.app/privacy-policy/",
-                            () {
-                            VibrationUtils.vibrateWithClickIfPossible();
-                            Navigator.of(context).push(platformPageRoute(
-                              iosTitle: S.of(context).pictureBedSMMS,
-                              builder: (_) => ConfigureChevertoPage(ChevertoPictureBed.smms),
-                              context: context,
-                            ));
-                        }
-                    );
-                  }
-                },
-              ),
+              // SettingsTile.navigation(
+              //   //leading: PlatformCircularProgressIndicator(),
+              //   title: Text(S.of(context).pictureBedSMMS),
+              //   value: smmsToken == ""? Text(S.of(context).pictureBedNotPrepared): null,
+              //   onPressed: (context) async {
+              //     VibrationUtils.vibrateWithClickIfPossible();
+              //     bool isUserAcceptTerms =
+              //         await PictureBedUtils.isSMMSTermAccepted();
+              //     if (!isUserAcceptTerms) {
+              //       showPictureBedTermsModal(
+              //           ChevertoPictureBed.smms,
+              //           S.of(context).pictureBedSMMS,
+              //           "https://smms.app/terms-of-use/",
+              //           "https://smms.app/privacy-policy/",
+              //               () {
+              //               VibrationUtils.vibrateWithClickIfPossible();
+              //               PictureBedUtils.setSMMSTermAccepted(true);
+              //               Navigator.of(context).push(platformPageRoute(
+              //                 iosTitle: S.of(context).pictureBedSMMS,
+              //                 builder: (_) => ConfigureChevertoPage(ChevertoPictureBed.smms),
+              //                 context: context,
+              //               ));
+              //           }
+              //       );
+              //     }
+              //     else{
+              //       Navigator.of(context).push(platformPageRoute(
+              //         iosTitle: S.of(context).pictureBedSMMS,
+              //         builder: (_) => ConfigureChevertoPage(ChevertoPictureBed.smms),
+              //         context: context,
+              //       ));
+              //     }
+              //   },
+              // ),
               SettingsTile.navigation(
                 //leading: PlatformCircularProgressIndicator(),
                 title: Text(S.of(context).pictureBedImgloc),
-                value: Text(S.of(context).pictureBedNotPrepared),
+                value: imglocToken == ""? Text(S.of(context).pictureBedNotPrepared): null,
                 onPressed: (context) async {
                   VibrationUtils.vibrateWithClickIfPossible();
                   bool isUserAcceptTerms =
-                  await PictureBedUtils.isSMMSTermAccepted();
+                  await PictureBedUtils.isImglocTermAccepted();
                   if (!isUserAcceptTerms) {
                     showPictureBedTermsModal(
                         ChevertoPictureBed.imgloc,
@@ -71,6 +100,7 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
                         "https://imgloc.com/page/privacy",
                             () {
                           VibrationUtils.vibrateWithClickIfPossible();
+                          PictureBedUtils.setImglocTermAccepted(true);
                           Navigator.of(context).push(platformPageRoute(
                             iosTitle: S.of(context).pictureBedImgloc,
                             builder: (_) => ConfigureChevertoPage(ChevertoPictureBed.imgloc),
@@ -78,6 +108,13 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
                           ));
                         }
                     );
+                  }
+                  else{
+                    Navigator.of(context).push(platformPageRoute(
+                      iosTitle: S.of(context).pictureBedImgloc,
+                      builder: (_) => ConfigureChevertoPage(ChevertoPictureBed.imgloc),
+                      context: context,
+                    ));
                   }
                 },
               )

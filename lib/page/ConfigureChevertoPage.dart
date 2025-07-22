@@ -4,6 +4,9 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 import '../generated/l10n.dart';
+import '../utility/AppPlatformIcons.dart';
+import '../utility/URLUtils.dart';
+import '../utility/VibrationUtils.dart';
 
 class ConfigureChevertoPage extends StatefulWidget {
   ChevertoPictureBed chevertoPictureBed;
@@ -29,15 +32,35 @@ class ConfigureChevertoState extends State<ConfigureChevertoPage> {
     super.initState();
     // query for the state
     _loadToken();
+    loadUrlInfo();
   }
 
-  void _loadToken() async{
-    String token = await PictureBedUtils.getChevertoApiToken(chevertoPictureBed);
+  void _loadToken() async {
+    String token =
+        await PictureBedUtils.getChevertoApiToken(chevertoPictureBed);
     controller.text = token;
   }
 
-  String getChevertoTitle(){
-    switch (chevertoPictureBed){
+  String termsOfUseUrl = "";
+  String privacyPolicyUrl = "";
+
+  void loadUrlInfo() {
+    switch (chevertoPictureBed) {
+      case ChevertoPictureBed.smms:
+        {
+          termsOfUseUrl = "https://smms.app/terms-of-use/";
+          privacyPolicyUrl = "https://smms.app/privacy-policy/";
+        }
+      case ChevertoPictureBed.imgloc:
+        {
+          termsOfUseUrl = "https://imgloc.com/page/tos";
+          privacyPolicyUrl = "https://imgloc.com/page/privacy";
+        }
+    }
+  }
+
+  String getChevertoTitle() {
+    switch (chevertoPictureBed) {
       case ChevertoPictureBed.smms:
         return S.of(context).pictureBedSMMS;
       case ChevertoPictureBed.imgloc:
@@ -56,7 +79,9 @@ class ConfigureChevertoState extends State<ConfigureChevertoPage> {
           sections: [
             CustomSettingsSection(
                 child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+                    padding: isCupertino(context)
+                        ? EdgeInsets.symmetric(vertical: 4, horizontal: 16)
+                        : EdgeInsets.zero,
                     child: Container(
                         padding:
                             EdgeInsets.symmetric(horizontal: 16, vertical: 0),
@@ -65,11 +90,13 @@ class ConfigureChevertoState extends State<ConfigureChevertoPage> {
                                 borderRadius: BorderRadius.circular(8),
                                 color: Theme.of(context)
                                     .disabledColor
-                                    .withOpacity(0.1))
+                                    .withValues(alpha: 0.1))
                             : null,
                         child: Padding(
-                          padding:
-                              EdgeInsets.symmetric(vertical: 16, horizontal: 6),
+                          padding: isCupertino(context)
+                              ? EdgeInsets.symmetric(
+                                  vertical: 16, horizontal: 6)
+                              : EdgeInsets.zero,
                           child: Column(
                             children: [
                               PlatformTextFormField(
@@ -89,21 +116,55 @@ class ConfigureChevertoState extends State<ConfigureChevertoPage> {
                                           Text(S.of(context).cheveretoApiKey),
                                       decoration: BoxDecoration());
                                 },
-                                onChanged: (token) async{
-                                  PictureBedUtils.setChevertoApiToken(chevertoPictureBed, token);
+                                onChanged: (token) async {
+                                  PictureBedUtils.setChevertoApiToken(
+                                      chevertoPictureBed, token);
                                 },
                               ),
-                              Text(S.of(context).cheveretoApiDescription,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Theme.of(context).disabledColor
-                                ),
+                              Text(
+                                S.of(context).cheveretoApiDescription,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                        color: Theme.of(context).disabledColor),
                               )
                             ],
                           ),
-                        )
-                    )
-                )
-            ),
+                        )))),
+            CustomSettingsSection(
+                child: Padding(
+                    padding: isCupertino(context)
+                        ? EdgeInsets.symmetric(vertical: 16, horizontal: 16)
+                        : EdgeInsets.zero,
+                    child: Text(
+                      S.of(context).pictureBedTermsSubtitle,
+                      style: TextStyle(color: Theme.of(context).disabledColor),
+                    ))),
+            CustomSettingsSection(
+                child: Column(
+              children: [
+                PlatformListTile(
+                  title: Text(S.of(context).termsOfService),
+                  subtitle: Text(termsOfUseUrl),
+                  trailing: Icon(AppPlatformIcons(context).chevronSolid),
+                  onTap: () {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    URLUtils.launchURL(termsOfUseUrl);
+                  },
+                ),
+                PlatformListTile(
+                  title: Text(S.of(context).privacyPolicy),
+                  subtitle: Text(privacyPolicyUrl),
+                  trailing: Icon(AppPlatformIcons(context).chevronSolid),
+                  onTap: () {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    URLUtils.launchURL(privacyPolicyUrl);
+                  },
+                ),
+              ],
+            )),
+
           ],
         ),
       ),
