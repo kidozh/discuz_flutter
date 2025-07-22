@@ -46,10 +46,10 @@ class ConfigureChevertoState extends State<ConfigureChevertoPage> {
 
   void loadUrlInfo() {
     switch (chevertoPictureBed) {
-      case ChevertoPictureBed.smms:
+      case ChevertoPictureBed.imgbb:
         {
-          termsOfUseUrl = "https://smms.app/terms-of-use/";
-          privacyPolicyUrl = "https://smms.app/privacy-policy/";
+          termsOfUseUrl = "https://imgbb.com/tos";
+          privacyPolicyUrl = "https://imgbb.com/privacy";
         }
       case ChevertoPictureBed.imgloc:
         {
@@ -61,8 +61,8 @@ class ConfigureChevertoState extends State<ConfigureChevertoPage> {
 
   String getChevertoTitle() {
     switch (chevertoPictureBed) {
-      case ChevertoPictureBed.smms:
-        return S.of(context).pictureBedSMMS;
+      case ChevertoPictureBed.imgbb:
+        return S.of(context).pictureBedImgBB;
       case ChevertoPictureBed.imgloc:
         return S.of(context).pictureBedImgloc;
     }

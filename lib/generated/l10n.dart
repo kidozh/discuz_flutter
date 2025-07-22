@@ -4631,16 +4631,6 @@ class S {
     );
   }
 
-  /// `SM.MS`
-  String get pictureBedSMMS {
-    return Intl.message(
-      'SM.MS',
-      name: 'pictureBedSMMS',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Active`
   String get pictureBedActive {
     return Intl.message(
@@ -6056,6 +6046,16 @@ class S {
     return Intl.message(
       '404 Not Found',
       name: 'responseStatusError404',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `ImgBB`
+  String get pictureBedImgBB {
+    return Intl.message(
+      'ImgBB',
+      name: 'pictureBedImgBB',
       desc: '',
       args: [],
     );

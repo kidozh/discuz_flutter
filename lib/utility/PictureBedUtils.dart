@@ -1,32 +1,35 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum ChevertoPictureBed{
-  smms,
   imgloc,
+  imgbb
 }
 
 class PictureBedUtils{
 
-  static String _SMMS_KEY = "SMMS";
+  static String _IMGBB_KEY = "IMGBB";
   static String _IMGLOC_KEY = "IMGLOC";
   static String _TERM_OF_USE_ACCEPTED = "TERM_OF_USE_ACCEPTED";
   static String _TOKEN = "USER_TOKEN";
 
-  static String SMMS_TERM_OF_USE_ACCEPTED = "${_SMMS_KEY}_${_TERM_OF_USE_ACCEPTED}";
+  static String IMGBB_TERM_OF_USE_ACCEPTED = "${_IMGBB_KEY}_${_TERM_OF_USE_ACCEPTED}";
   static String IMGLOC_TERM_OF_USE_ACCEPTED = "${_IMGLOC_KEY}_${_TERM_OF_USE_ACCEPTED}";
 
-  static String SMMS_TOKEN = "${_SMMS_KEY}_${_TOKEN}";
+  static String IMGBB_TOKEN = "${_IMGBB_KEY}_${_TOKEN}";
   static String IMGLOC_TOKEN = "${_IMGLOC_KEY}_${_TOKEN}";
 
-  static Future<bool> isSMMSTermAccepted() async {
+  static String IMGBB_API_UPLOAD_BASE_URL = "https://api.imgbb.com/1/";
+  static String IMGLOC_API_UPLOAD_BASE_URL = "https://imgloc.com/api/1/";
+
+  static Future<bool> isImgbbTermAccepted() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var isSMMSTermAccepted =  prefs.getBool(SMMS_TERM_OF_USE_ACCEPTED);
+    var isSMMSTermAccepted =  prefs.getBool(IMGBB_TERM_OF_USE_ACCEPTED);
     return isSMMSTermAccepted == null? false: isSMMSTermAccepted;
   }
 
-  static Future<void> setSMMSTermAccepted(bool value) async{
+  static Future<void> setImgbbTermAccepted(bool value) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(SMMS_TERM_OF_USE_ACCEPTED, value);
+    await prefs.setBool(IMGBB_TERM_OF_USE_ACCEPTED, value);
   }
 
   static Future<bool> isImglocTermAccepted() async {
@@ -44,8 +47,8 @@ class PictureBedUtils{
     String prefKey = "";
     switch (chevertoPictureBed){
 
-      case ChevertoPictureBed.smms:
-        prefKey = SMMS_TOKEN;
+      case ChevertoPictureBed.imgbb:
+        prefKey = IMGBB_TOKEN;
         break;
       case ChevertoPictureBed.imgloc:
         prefKey = IMGLOC_TOKEN;

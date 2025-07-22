@@ -638,7 +638,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "pictureBedImgloc": MessageLookupByLibrary.simpleMessage("imgloc.com"),
         "pictureBedNotPrepared":
             MessageLookupByLibrary.simpleMessage("未就绪，轻触以继续"),
-        "pictureBedSMMS": MessageLookupByLibrary.simpleMessage("SMMS.app"),
         "pictureBedServiceNote": MessageLookupByLibrary.simpleMessage(
             "上述所有服务并非由谈坛（我们，第一方）或者您浏览的论坛，而是由第三方提供。根据我们的使用协议，我们并不担保和授权任何第三方服务，使用我们的服务也并不会自动授权、默许和担保您使用这些第三方服务。因此，您需要在使用服务前，同意他们的使用协议、隐私政策以及其他协议。您同样应当定时查看这些协议以防止政策变更给您带来的不便。最后，有些服务并非在中国展开，您需要注意其在中国的可使用性、可靠性以及相关的法律适用性。"),
         "pictureBedTermsSubtitle": MessageLookupByLibrary.simpleMessage(

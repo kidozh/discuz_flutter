@@ -30,7 +30,7 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
   
   Future<void> _refreshImglocState() async{
     String imglocTokenInSF = await PictureBedUtils.getChevertoApiToken(ChevertoPictureBed.imgloc);
-    String smmsTokenInSF = await PictureBedUtils.getChevertoApiToken(ChevertoPictureBed.smms);
+    String smmsTokenInSF = await PictureBedUtils.getChevertoApiToken(ChevertoPictureBed.imgbb);
     setState(() {
       imglocToken = imglocTokenInSF;
       smmsToken = smmsTokenInSF;
@@ -50,40 +50,40 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
             SettingsSection(
               title: Text(S.of(context).cheveretoPictureBed),
                 tiles: [
-              // SettingsTile.navigation(
-              //   //leading: PlatformCircularProgressIndicator(),
-              //   title: Text(S.of(context).pictureBedSMMS),
-              //   value: smmsToken == ""? Text(S.of(context).pictureBedNotPrepared): null,
-              //   onPressed: (context) async {
-              //     VibrationUtils.vibrateWithClickIfPossible();
-              //     bool isUserAcceptTerms =
-              //         await PictureBedUtils.isSMMSTermAccepted();
-              //     if (!isUserAcceptTerms) {
-              //       showPictureBedTermsModal(
-              //           ChevertoPictureBed.smms,
-              //           S.of(context).pictureBedSMMS,
-              //           "https://smms.app/terms-of-use/",
-              //           "https://smms.app/privacy-policy/",
-              //               () {
-              //               VibrationUtils.vibrateWithClickIfPossible();
-              //               PictureBedUtils.setSMMSTermAccepted(true);
-              //               Navigator.of(context).push(platformPageRoute(
-              //                 iosTitle: S.of(context).pictureBedSMMS,
-              //                 builder: (_) => ConfigureChevertoPage(ChevertoPictureBed.smms),
-              //                 context: context,
-              //               ));
-              //           }
-              //       );
-              //     }
-              //     else{
-              //       Navigator.of(context).push(platformPageRoute(
-              //         iosTitle: S.of(context).pictureBedSMMS,
-              //         builder: (_) => ConfigureChevertoPage(ChevertoPictureBed.smms),
-              //         context: context,
-              //       ));
-              //     }
-              //   },
-              // ),
+              SettingsTile.navigation(
+                //leading: PlatformCircularProgressIndicator(),
+                title: Text(S.of(context).pictureBedImgBB),
+                value: smmsToken == ""? Text(S.of(context).pictureBedNotPrepared): null,
+                onPressed: (context) async {
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  bool isUserAcceptTerms =
+                      await PictureBedUtils.isImgbbTermAccepted();
+                  if (!isUserAcceptTerms) {
+                    showPictureBedTermsModal(
+                        ChevertoPictureBed.imgbb,
+                        S.of(context).pictureBedImgBB,
+                        "https://imgbb.com/tos",
+                        "https://imgbb.com/privacy",
+                            () {
+                            VibrationUtils.vibrateWithClickIfPossible();
+                            PictureBedUtils.setImgbbTermAccepted(true);
+                            Navigator.of(context).push(platformPageRoute(
+                              iosTitle: S.of(context).pictureBedImgBB,
+                              builder: (_) => ConfigureChevertoPage(ChevertoPictureBed.imgbb),
+                              context: context,
+                            ));
+                        }
+                    );
+                  }
+                  else{
+                    Navigator.of(context).push(platformPageRoute(
+                      iosTitle: S.of(context).pictureBedImgBB,
+                      builder: (_) => ConfigureChevertoPage(ChevertoPictureBed.imgbb),
+                      context: context,
+                    ));
+                  }
+                },
+              ),
               SettingsTile.navigation(
                 //leading: PlatformCircularProgressIndicator(),
                 title: Text(S.of(context).pictureBedImgloc),

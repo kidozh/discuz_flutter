@@ -737,10 +737,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "pictureBedAgreeToService":
             MessageLookupByLibrary.simpleMessage("Agree"),
         "pictureBedDisabled": MessageLookupByLibrary.simpleMessage("Disabled"),
+        "pictureBedImgBB": MessageLookupByLibrary.simpleMessage("ImgBB"),
         "pictureBedImgloc": MessageLookupByLibrary.simpleMessage("imgloc.com"),
         "pictureBedNotPrepared": MessageLookupByLibrary.simpleMessage(
             "Not ready, click to continue"),
-        "pictureBedSMMS": MessageLookupByLibrary.simpleMessage("SM.MS"),
         "pictureBedServiceNote": MessageLookupByLibrary.simpleMessage(
             "These service are not provided by us but the 3rd party service. We exclude any warranties or obligation to them. Some of them are not operated in China and you shall carefully watch their policy change to accommodate your use."),
         "pictureBedTermsSubtitle": MessageLookupByLibrary.simpleMessage(
