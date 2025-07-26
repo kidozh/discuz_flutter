@@ -120,17 +120,34 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
               )
             ]),
             CustomSettingsSection(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  child: Text(
-                    S.of(context).pictureBedServiceNote,
-                    style: Theme.of(context).textTheme.bodyMedium?..copyWith(
-                      color: Theme.of(context).disabledColor
-                    ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(8)
                   ),
-
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  child: RichText(
+                      text: TextSpan(children: [
+                        WidgetSpan(
+                            child: Padding(
+                              padding: EdgeInsets.only(right: 8),
+                              child: Icon(
+                                AppPlatformIcons(context).errorOutline,
+                                size: 16,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            )),
+                        TextSpan(
+                          text: S.of(context).pictureBedServiceNote,
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimaryContainer,
+                              fontSize: 14
+                          ),
+                        )
+                      ])),
                 )
-            )
+            ),
           ],
         ),
       ),

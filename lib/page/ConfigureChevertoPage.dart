@@ -105,15 +105,21 @@ class ConfigureChevertoState extends State<ConfigureChevertoPage> {
                                 material: (context, platform) {
                                   return MaterialTextFormFieldData(
                                     decoration: InputDecoration(
-                                      labelText: S.of(context).cheveretoApiKey,
-                                      prefixIcon: Icon(Icons.vpn_key),
-                                    ),
+                                        labelText:
+                                            S.of(context).cheveretoApiKey,
+                                        prefixIcon: Icon(Icons.vpn_key),
+                                        labelStyle: TextStyle(
+                                            color: Theme.of(context)
+                                                .disabledColor)),
                                   );
                                 },
                                 cupertino: (context, platform) {
                                   return CupertinoTextFormFieldData(
-                                      prefix:
-                                          Text(S.of(context).cheveretoApiKey),
+                                      prefix: Text(
+                                          S.of(context).cheveretoApiKey,
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .disabledColor)),
                                       decoration: BoxDecoration());
                                 },
                                 onChanged: (token) async {
@@ -132,38 +138,24 @@ class ConfigureChevertoState extends State<ConfigureChevertoPage> {
                             ],
                           ),
                         )))),
-            CustomSettingsSection(
-                child: Padding(
-                    padding: isCupertino(context)
-                        ? EdgeInsets.symmetric(vertical: 16, horizontal: 16)
-                        : EdgeInsets.zero,
-                    child: Text(
-                      S.of(context).pictureBedTermsSubtitle,
-                      style: TextStyle(color: Theme.of(context).disabledColor),
-                    ))),
-            CustomSettingsSection(
-                child: Column(
-              children: [
-                PlatformListTile(
-                  title: Text(S.of(context).termsOfService),
-                  subtitle: Text(termsOfUseUrl),
-                  trailing: Icon(AppPlatformIcons(context).chevronSolid),
-                  onTap: () {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    URLUtils.launchURL(termsOfUseUrl);
-                  },
-                ),
-                PlatformListTile(
-                  title: Text(S.of(context).privacyPolicy),
-                  subtitle: Text(privacyPolicyUrl),
-                  trailing: Icon(AppPlatformIcons(context).chevronSolid),
-                  onTap: () {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    URLUtils.launchURL(privacyPolicyUrl);
-                  },
-                ),
-              ],
-            )),
+            SettingsSection(
+                title: Text(S.of(context).legalInformation),
+                tiles: [
+                  SettingsTile.navigation(
+                    title: Text(S.of(context).termsOfService),
+                    onPressed: (context) {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      URLUtils.launchURL(termsOfUseUrl);
+                    },
+                  ),
+                  SettingsTile.navigation(
+                    title: Text(S.of(context).privacyPolicy),
+                    onPressed: (context) {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      URLUtils.launchURL(privacyPolicyUrl);
+                    },
+                  )
+                ]),
 
           ],
         ),

@@ -2071,10 +2071,10 @@ class S {
     );
   }
 
-  /// `Platform preference`
+  /// `Display Style`
   String get appearanceOptimizedPlatform {
     return Intl.message(
-      'Platform preference',
+      'Display Style',
       name: 'appearanceOptimizedPlatform',
       desc: '',
       args: [],
@@ -4621,10 +4621,10 @@ class S {
     );
   }
 
-  /// `Image hosting website`
+  /// `Image hosting`
   String get pictureBedTitle {
     return Intl.message(
-      'Image hosting website',
+      'Image hosting',
       name: 'pictureBedTitle',
       desc: '',
       args: [],
@@ -6056,6 +6056,16 @@ class S {
     return Intl.message(
       'ImgBB',
       name: 'pictureBedImgBB',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Keylol Portal`
+  String get keylolPortal {
+    return Intl.message(
+      'Keylol Portal',
+      name: 'keylolPortal',
       desc: '',
       args: [],
     );

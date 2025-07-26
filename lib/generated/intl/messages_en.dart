@@ -194,7 +194,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "anonymous": MessageLookupByLibrary.simpleMessage("A"),
         "appName": MessageLookupByLibrary.simpleMessage("DisFly"),
         "appearanceOptimizedPlatform":
-            MessageLookupByLibrary.simpleMessage("Platform preference"),
+            MessageLookupByLibrary.simpleMessage("Display Style"),
         "appearanceOptimizedPlatformSubtitle":
             MessageLookupByLibrary.simpleMessage(
                 "Choose the app appearance on preferred platform."),
@@ -614,6 +614,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "iosDarkModeDisabledText": MessageLookupByLibrary.simpleMessage(
             "Display mode can not be adjusted manually when running on iOS platform mode."),
         "justNow": MessageLookupByLibrary.simpleMessage("Just Now"),
+        "keylolPortal": MessageLookupByLibrary.simpleMessage("Keylol Portal"),
         "largeRichText": MessageLookupByLibrary.simpleMessage(
             "Welcome to Discuzhub<br/>Thanks for using our products and <a href=\"https://discuzhub.kidozh.com/en/term_of_use/\">services</a> (“Services”).<br/>By using our Services, you are agreeing to these terms. Please read them <b>carefully</b>.<br/>Our Services are very diverse, so sometimes additional terms or product requirements (including age requirements) may apply. Additional terms will be available with the relevant Services, and those additional terms become part of your agreement with us if you use those Services"),
         "largeRichTextDescription": MessageLookupByLibrary.simpleMessage(
@@ -747,7 +748,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "This service is not provided by us but the 3rd party services and we exclude all warranties for it. Using our service does not mean you are granted with 3rd party service as mentioned in our terms. You shall agree to their terms before using 3rd party service."),
         "pictureBedTermsTitle": m32,
         "pictureBedTitle":
-            MessageLookupByLibrary.simpleMessage("Image hosting website"),
+            MessageLookupByLibrary.simpleMessage("Image hosting"),
         "pictureTagInMessage": MessageLookupByLibrary.simpleMessage("[Pic]"),
         "policy": MessageLookupByLibrary.simpleMessage("Our policy"),
         "pollExpireAt": m33,

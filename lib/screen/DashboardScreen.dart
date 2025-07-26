@@ -4,6 +4,7 @@
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NewThreadScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
+import 'package:discuz_flutter/widget/KeylolMobileTopicWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -46,13 +47,23 @@ class DashboardScreen extends StatelessWidget{
 
 class MaterialDashboardScreen extends StatelessWidget{
   final ValueChanged<int>? onSelectTid;
+  bool isKeylol = false;
 
   MaterialDashboardScreen({this.onSelectTid});
 
   @override
   Widget build(BuildContext context) {
+    String? _discuzHost = Provider.of<DiscuzAndUserNotifier>(context).discuz?.host;
+    if(_discuzHost == "keylol.com"){
+      isKeylol = true;
+    }
+    else{
+      isKeylol = false;
+    }
+
+
     return DefaultTabController(
-        length: 2,
+        length: isKeylol? 3: 2,
         child: Column(
           children: [
             TabBar(
@@ -72,6 +83,15 @@ class MaterialDashboardScreen extends StatelessWidget{
 
                   //text: S.of(context).hotThread,
                 ),
+                if(isKeylol)
+                  Tab(
+                    icon: Icon(
+                      Icons.today,
+                      semanticLabel: S.of(context).keylolPortal,
+                    ),
+
+                    //text: S.of(context).hotThread,
+                  ),
 
               ],
               labelColor: Theme.of(context).colorScheme.primary,
@@ -83,7 +103,9 @@ class MaterialDashboardScreen extends StatelessWidget{
             Expanded(
               child: TabBarView(children: [
                 NewThreadScreen(onSelectTid: onSelectTid,),
-                HotThreadScreen(onSelectTid: this.onSelectTid,)
+                HotThreadScreen(onSelectTid: this.onSelectTid,),
+                if(isKeylol)
+                  KeylolMobileTopicWidget(onSelectTid: this.onSelectTid,)
               ]),
             )
           ],
@@ -123,10 +145,18 @@ class CupertinoDashboardState extends State<CupertinoDashboardStatefulWidget>{
   final ValueChanged<int>? onSelectTid;
 
   CupertinoDashboardState({this.onSelectTid});
+  bool isKeylol = false;
 
   int _selectedScreenIndex = 0;
   @override
   Widget build(BuildContext context) {
+    String? _discuzHost = Provider.of<DiscuzAndUserNotifier>(context).discuz?.host;
+    if(_discuzHost == "keylol.com"){
+      isKeylol = true;
+    }
+    else{
+      isKeylol = false;
+    }
     //log("Dash board when loading it ${onSelectTid}");
     return Column(
       mainAxisSize: MainAxisSize.max,
@@ -137,11 +167,13 @@ class CupertinoDashboardState extends State<CupertinoDashboardStatefulWidget>{
             child: CupertinoSlidingSegmentedControl<int>(
                 children: <int, Widget>{
                   0: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).newThread),),
-                  1: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).hotThread),)
+                  1: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).hotThread),),
+                  2: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).keylolPortal),)
                 },
                 groupValue: _selectedScreenIndex,
                 onValueChanged: (int? value){
-                  if(value == null || ![0,1].contains(value)){
+                  List<int> slidingSegmentList = isKeylol? [0, 1, 2] : [0, 1];
+                  if(value == null || !slidingSegmentList.contains(value)){
                     setState((){
                       _selectedScreenIndex = 0;
                     });
@@ -160,6 +192,8 @@ class CupertinoDashboardState extends State<CupertinoDashboardStatefulWidget>{
             child: [
               NewThreadScreen(onSelectTid: onSelectTid,),
               HotThreadScreen(onSelectTid: onSelectTid,),
+              if(isKeylol)
+                KeylolMobileTopicWidget(onSelectTid: this.onSelectTid,)
 
             ][_selectedScreenIndex]
         )

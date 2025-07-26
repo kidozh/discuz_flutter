@@ -10,7 +10,7 @@ part of 'CheveretoApiClient.dart';
 
 class _CheveretoApiClient implements CheveretoApiClient {
   _CheveretoApiClient(this._dio, {this.baseUrl, this.errorLogger}) {
-    baseUrl ??= 'https://sm.ms';
+    baseUrl ??= 'https://api.imgbb.com/1/';
   }
 
   final Dio _dio;
@@ -38,7 +38,7 @@ class _CheveretoApiClient implements CheveretoApiClient {
       )
           .compose(
             _dio.options,
-            '/api/1/upload/',
+            '/upload/',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -83,7 +83,7 @@ class _CheveretoApiClient implements CheveretoApiClient {
       )
           .compose(
             _dio.options,
-            '/api/1/upload/',
+            '/upload/',
             queryParameters: queryParameters,
             data: _data,
           )

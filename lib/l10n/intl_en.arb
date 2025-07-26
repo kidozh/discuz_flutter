@@ -298,7 +298,7 @@
   },
   "pictureTagInMessage": "[Pic]",
   "httpBrowseWarn": "HTTP protocol warning",
-  "appearanceOptimizedPlatform": "Platform preference",
+  "appearanceOptimizedPlatform": "Display Style",
   "appearanceOptimizedPlatformSubtitle": "Choose the app appearance on preferred platform.",
   "ios": "iOS",
   "materialDesign": "Material Design",
@@ -666,7 +666,7 @@
   "emoijButtonTooltip": "Insert smiley emoij",
   "extraFuncButtonTooltip": "More functions",
   "closeKeyboardTooltip": "Close the keyboard",
-  "pictureBedTitle": "Image hosting website",
+  "pictureBedTitle": "Image hosting",
   "pictureBedActive": "Active",
   "pictureBedNotPrepared": "Not ready, click to continue",
   "pictureBedDisabled": "Disabled",
@@ -882,5 +882,6 @@
   "pushServiceLimitedInChinaMainlandTitle": "FCM limited availability",
   "pushServiceLimitedInChinaMainlandSubtitle": "The Firebase Cloud Messaging service is limited in China Mainland. To ensure a prompt notification, you are advised to turn on the auto-restart or add DisFly to the except list.",
   "responseStatusError404": "404 Not Found",
-  "pictureBedImgBB": "ImgBB"
+  "pictureBedImgBB": "ImgBB",
+  "keylolPortal": "Keylol Portal"
 }

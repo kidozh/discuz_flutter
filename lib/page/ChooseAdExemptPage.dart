@@ -143,7 +143,7 @@ class _ChooseAdExemptState extends State<ChooseAdExemptPage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(AppPlatformIcons(context).checkCircleOutlined, size: 32,),
+              Icon(AppPlatformIcons(context).checkCircleOutlined, size: 32, color: Theme.of(context).colorScheme.primary,),
               SizedBox(height: 16, width: double.infinity,),
               Text(S.of(context).discuzInAdExemptBuiltInList(discuz.siteName), style: TextStyle(
                   fontWeight: FontWeight.bold,

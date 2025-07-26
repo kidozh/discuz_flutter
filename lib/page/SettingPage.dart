@@ -123,17 +123,7 @@ class _SettingPageState extends State<SettingPage> {
                     });
                   }, initialValue: recordHistory,
                 ),
-                SettingsTile.navigation(
-                  title: Text(S.of(context).pictureBedTitle),
-                  leading: Icon(AppPlatformIcons(context).pictureBedOutlined),
-                  onPressed: (_) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.of(context).push(platformPageRoute(
-                      builder: (_) => ConfigurePictureBedPage(),
-                      context: context,
-                    ));
-                  },
-                ),
+
                 SettingsTile.navigation(
                   title: Text(S.of(context).pushNotification),
                   leading: Icon(AppPlatformIcons(context).pushServiceOutlined),
@@ -243,28 +233,7 @@ class _SettingPageState extends State<SettingPage> {
 
               ],
             ),
-            SettingsSection(
-              title: Text(S.of(context).feedbackTitle),
-                tiles: [
-                  SettingsTile.switchTile(
-                    title: Text(S.of(context).hapticFeedbackTitle),
-                    leading: Icon(AppPlatformIcons(context).hapticFeedbackOutlined),
-                    activeSwitchColor: Theme.of(context).colorScheme.primary,
-                    initialValue: hapticFeedback,
-                    onToggle: (bool value) async{
-                      if(value){
-                        VibrationUtils.vibrateWithClickIfPossible();
-                      }
-                      UserPreferencesUtils.putHapticFeedbackPreference(value);
-                      setState(() {
-                        hapticFeedback = value;
-                      });
 
-                    },
-
-                  )
-                ]
-            ),
             SettingsSection(
               title: Text(S.of(context).post),
               tiles: [
@@ -303,7 +272,7 @@ class _SettingPageState extends State<SettingPage> {
                           return SettingsTile.navigation(
                             leading: Icon(AppPlatformIcons(context).advertisementExemptSolid),
                             title: Text(S.of(context).adExemptTitle),
-                            description: Text(S.of(context).adExemptDescription),
+                            // description: Text(S.of(context).adExemptDescription),
                             value: Text(userPreference.adExemptHost),
                             onPressed: (context) {
                               VibrationUtils.vibrateWithClickIfPossible();
@@ -321,9 +290,43 @@ class _SettingPageState extends State<SettingPage> {
                       },
                     )
                 ),
+                SettingsTile.navigation(
+                  title: Text(S.of(context).pictureBedTitle),
+                  leading: Icon(AppPlatformIcons(context).pictureBedOutlined),
+                  onPressed: (_) {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    Navigator.of(context).push(platformPageRoute(
+                      builder: (_) => ConfigurePictureBedPage(),
+                      iosTitle: S.of(context).pictureBedTitle,
+                      context: context,
+                    ));
+                  },
+                ),
 
 
               ],
+            ),
+            SettingsSection(
+                title: Text(S.of(context).feedbackTitle),
+                tiles: [
+                  SettingsTile.switchTile(
+                    title: Text(S.of(context).hapticFeedbackTitle),
+                    leading: Icon(AppPlatformIcons(context).hapticFeedbackOutlined),
+                    activeSwitchColor: Theme.of(context).colorScheme.primary,
+                    initialValue: hapticFeedback,
+                    onToggle: (bool value) async{
+                      if(value){
+                        VibrationUtils.vibrateWithClickIfPossible();
+                      }
+                      UserPreferencesUtils.putHapticFeedbackPreference(value);
+                      setState(() {
+                        hapticFeedback = value;
+                      });
+
+                    },
+
+                  )
+                ]
             ),
             SettingsSection(
               title: Text(S.of(context).legalInformation),
