@@ -48,7 +48,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace 'com.kidozh.discuz_flutter'
-    compileSdk  = 35
+    compileSdk  = 36
     //ndkVersion "25.1.8937393"
 
 
@@ -87,7 +87,7 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.kidozh.discuz_flutter"
         minSdkVersion 30
-        targetSdkVersion 34
+        targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true

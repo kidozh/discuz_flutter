@@ -79,13 +79,13 @@ class KeylolMobileTopicState extends State<KeylolMobileTopicStatefulWidget>{
 
     dio.get(keylolBaseUrl).then((html){
         var document = parse(html.data);
-        print("document ->  ${html}");
+        //print("document ->  ${html}");
 
         List<String> mobileTopicTitleList = [];
 
         // parse the titletext first
         var slideTitleTextList = document.getElementsByClassName("titletext");
-        print("Get slide title length ${slideTitleTextList.length}");
+        //print("Get slide title length ${slideTitleTextList.length}");
         for(var slideTitleText in slideTitleTextList){
           var slideTitleLink = slideTitleText.getElementsByTagName("a").firstOrNull;
           if(slideTitleLink != null){
