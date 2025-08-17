@@ -1,226 +1,277 @@
-
-
 import 'package:json_annotation/json_annotation.dart';
 
 part 'BilibiliDynamicDetailResult.g.dart';
 
-@JsonSerializable()
-class BilibiliDynamicDetailResult{
+@JsonSerializable(explicitToJson: true)
+class BilibiliDynamicDetailResult {
+  int code;
+  String message;
+  int ttl;
+  BiliData data;
 
-  int code = 0;
-  String message = "";
-  int ttl = 0;
+  BilibiliDynamicDetailResult({
+    this.code = 0,
+    this.message = '',
+    this.ttl = 0,
+    BiliData? data,
+  }) : data = data ?? BiliData();
 
-  BilibiliDynamicDetailData data = BilibiliDynamicDetailData();
+  factory BilibiliDynamicDetailResult.fromJson(Map<String, dynamic> json) =>
+      _$BilibiliDynamicDetailResultFromJson(json);
 
-
-
-  BilibiliDynamicDetailResult();
-
-  factory BilibiliDynamicDetailResult.fromJson(Map<String, dynamic> json) => _$BilibiliDynamicDetailResultFromJson(json);
+  Map<String, dynamic> toJson() => _$BilibiliDynamicDetailResultToJson(this);
 }
 
-final int BILIBILI_ARTICLE_TYPE_ARTICLE = 0;
-final int BILIBILI_ARTICLE_TYPE_NOTE = 2;
+@JsonSerializable(explicitToJson: true)
+class BiliData {
+  BiliItem item;
 
-@JsonSerializable()
-class BilibiliDynamicDetailData{
+  BiliData({BiliItem? item}) : item = item ?? BiliItem();
 
+  factory BiliData.fromJson(Map<String, dynamic> json) =>
+      _$BiliDataFromJson(json);
 
-  BilibiliDynamicDetailItemData item = BilibiliDynamicDetailItemData();
-
-  BilibiliDynamicDetailData();
-
-  factory BilibiliDynamicDetailData.fromJson(Map<String, dynamic> json) => _$BilibiliDynamicDetailDataFromJson(json);
+  Map<String, dynamic> toJson() => _$BiliDataToJson(this);
 }
 
-@JsonSerializable()
-class BilibiliDynamicDetailItemData{
+@JsonSerializable(explicitToJson: true)
+class BiliItem {
+  @JsonKey(name: 'id_str')
+  String idStr;
+  Modules modules;
+  String type;
+  bool visible;
 
-  BilibiliDynamicDetailItemBasic basic = BilibiliDynamicDetailItemBasic();
-  String id_str = "";
-  BilibiliDynamicDetailItemModule module = BilibiliDynamicDetailItemModule();
-  String type = "";
-  bool visible = true;
+  BiliItem({
+    this.idStr = '',
+    Modules? modules,
+    this.type = '',
+    this.visible = false,
+  }) : modules = modules ?? Modules();
 
+  factory BiliItem.fromJson(Map<String, dynamic> json) =>
+      _$BiliItemFromJson(json);
 
-
-  BilibiliDynamicDetailItemData();
-
-  factory BilibiliDynamicDetailItemData.fromJson(Map<String, dynamic> json) => _$BilibiliDynamicDetailItemDataFromJson(json);
+  Map<String, dynamic> toJson() => _$BiliItemToJson(this);
 }
 
-@JsonSerializable()
-class BilibiliDynamicDetailItemBasic{
+@JsonSerializable(explicitToJson: true)
+class Modules {
+  @JsonKey(name: 'module_author')
+  ModuleAuthor moduleAuthor;
+  @JsonKey(name: 'module_dynamic')
+  ModuleDynamic moduleDynamic;
+  @JsonKey(name: 'module_stat')
+  ModuleStat moduleStat;
+  @JsonKey(name: 'module_more')
+  Map<String, dynamic> moduleMore;
 
-  String comment_id_str = "";
-  int comment_type = 0;
-  String rid_str = "";
-  BilibiliDynamicDetailItemBasicLike like_icon = BilibiliDynamicDetailItemBasicLike();
+  Modules({
+    ModuleAuthor? moduleAuthor,
+    ModuleDynamic? moduleDynamic,
+    ModuleStat? moduleStat,
+    Map<String, dynamic>? moduleMore,
+  })  : moduleAuthor = moduleAuthor ?? ModuleAuthor(),
+        moduleDynamic = moduleDynamic ?? ModuleDynamic(),
+        moduleStat = moduleStat ?? ModuleStat(),
+        moduleMore = moduleMore ?? {};
 
+  factory Modules.fromJson(Map<String, dynamic> json) =>
+      _$ModulesFromJson(json);
 
-  BilibiliDynamicDetailItemBasic();
-
-  factory BilibiliDynamicDetailItemBasic.fromJson(Map<String, dynamic> json) => _$BilibiliDynamicDetailItemBasicFromJson(json);
-
-}
-
-@JsonSerializable()
-class BilibiliDynamicDetailItemBasicLike{
-
-  String action_url = "";
-  String end_url = "";
-  int id = 0;
-  String start_url = "";
-
-
-  BilibiliDynamicDetailItemBasicLike();
-
-  factory BilibiliDynamicDetailItemBasicLike.fromJson(Map<String, dynamic> json) => _$BilibiliDynamicDetailItemBasicLikeFromJson(json);
-
-}
-
-@JsonSerializable()
-class BilibiliDynamicDetailItemModule{
-
-  BilibiliDynamicDetailItemModuleAuthor author = BilibiliDynamicDetailItemModuleAuthor();
-
-
-  BilibiliDynamicDetailItemModule();
-
-  factory BilibiliDynamicDetailItemModule.fromJson(Map<String, dynamic> json) => _$BilibiliDynamicDetailItemModuleFromJson(json);
-
+  Map<String, dynamic> toJson() => _$ModulesToJson(this);
 }
 
 @JsonSerializable()
-class BilibiliDynamicDetailItemModuleAuthor{
+class ModuleAuthor {
+  String name;
+  int mid;
+  String face;
+  @JsonKey(name: 'jump_url')
+  String jumpUrl;
+  @JsonKey(name: 'pub_time')
+  String pubTime;
+  @JsonKey(name: 'pub_ts')
+  int pubTs;
+  VipInfo vip;
 
-  //Object avatar = new Object();
-  String face = "";
-  String face_nft = "";
-  bool? following = false;
-  String jump_url = "";
-  String label = "";
-  int num = 0;
-  String name = "";
-  BilibiliDynamicDetailItemModuleAuthorOfficialVerify official_verify = BilibiliDynamicDetailItemModuleAuthorOfficialVerify();
-  BilibiliDynamicDetailItemModuleAuthorPendant pendant= BilibiliDynamicDetailItemModuleAuthorPendant();
-  String pub_action = "";
-  String? pub_location_text = "";
-  String pub_time = "";
-  int pub_ts = 0;
-  String type = "";
-  BilibiliDynamicDetailItemModuleAuthorVip vip= BilibiliDynamicDetailItemModuleAuthorVip();
-  //Object decorate= new Object();
-  //Object nft_info= new Object();
-  int gender = 0;
+  ModuleAuthor({
+    this.name = '',
+    this.mid = 0,
+    this.face = '',
+    this.jumpUrl = '',
+    this.pubTime = '',
+    this.pubTs = 0,
+    VipInfo? vip,
+  }) : vip = vip ?? VipInfo();
 
+  factory ModuleAuthor.fromJson(Map<String, dynamic> json) =>
+      _$ModuleAuthorFromJson(json);
 
-  BilibiliDynamicDetailItemModuleAuthor();
-
-  factory BilibiliDynamicDetailItemModuleAuthor.fromJson(Map<String, dynamic> json) => _$BilibiliDynamicDetailItemModuleAuthorFromJson(json);
-
+  Map<String, dynamic> toJson() => _$ModuleAuthorToJson(this);
 }
 
 @JsonSerializable()
-class BilibiliDynamicDetailItemModuleAuthorOfficialVerify{
+class VipInfo {
+  int status;
+  int type;
+  @JsonKey(name: 'theme_type')
+  int themeType;
 
-  String desc = "";
-  int type = 0;
+  VipInfo({
+    this.status = 0,
+    this.type = 0,
+    this.themeType = 0,
+  });
 
+  factory VipInfo.fromJson(Map<String, dynamic> json) =>
+      _$VipInfoFromJson(json);
 
-  BilibiliDynamicDetailItemModuleAuthorOfficialVerify();
+  Map<String, dynamic> toJson() => _$VipInfoToJson(this);
+}
 
-  factory BilibiliDynamicDetailItemModuleAuthorOfficialVerify.fromJson(Map<String, dynamic> json) => _$BilibiliDynamicDetailItemModuleAuthorOfficialVerifyFromJson(json);
+@JsonSerializable(explicitToJson: true)
+class ModuleDynamic {
+  ModuleDesc desc;
+  Major major;
 
+  ModuleDynamic({
+    ModuleDesc? desc,
+    Major? major,
+  })  : desc = desc ?? ModuleDesc(),
+        major = major ?? Major();
+
+  factory ModuleDynamic.fromJson(Map<String, dynamic> json) =>
+      _$ModuleDynamicFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ModuleDynamicToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class ModuleDesc {
+  String text;
+  @JsonKey(name: 'rich_text_nodes')
+  List<RichTextNode> richTextNodes;
+
+  ModuleDesc({
+    this.text = '',
+    List<RichTextNode>? richTextNodes,
+  }) : richTextNodes = richTextNodes ?? [];
+
+  String get displayText =>
+      text.isNotEmpty
+          ? text
+          : richTextNodes.map((e) => e.text.isNotEmpty ? e.text : e.origText).join();
+
+  factory ModuleDesc.fromJson(Map<String, dynamic> json) =>
+      _$ModuleDescFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ModuleDescToJson(this);
 }
 
 @JsonSerializable()
-class BilibiliDynamicDetailItemModuleAuthorPendant{
+class RichTextNode {
+  String type;
+  String text;
+  @JsonKey(name: 'orig_text')
+  String origText;
 
-  int expire = 0;
-  String image = "";
-  String image_enhance = "";
-  String image_enhance_frame = "";
-  String name = "";
-  int pid = 0, n_pid = 0;
+  RichTextNode({
+    this.type = '',
+    this.text = '',
+    this.origText = '',
+  });
 
+  factory RichTextNode.fromJson(Map<String, dynamic> json) =>
+      _$RichTextNodeFromJson(json);
 
-  BilibiliDynamicDetailItemModuleAuthorPendant();
+  Map<String, dynamic> toJson() => _$RichTextNodeToJson(this);
+}
 
-  factory BilibiliDynamicDetailItemModuleAuthorPendant.fromJson(Map<String, dynamic> json) => _$BilibiliDynamicDetailItemModuleAuthorPendantFromJson(json);
+@JsonSerializable(explicitToJson: true)
+class Major {
+  String type;
+  Draw draw;
 
+  Major({
+    this.type = '',
+    Draw? draw,
+  }) : draw = draw ?? Draw();
+
+  factory Major.fromJson(Map<String, dynamic> json) => _$MajorFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MajorToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class Draw {
+  int id;
+  List<DrawItem> items;
+
+  Draw({
+    this.id = 0,
+    List<DrawItem>? items,
+  }) : items = items ?? [];
+
+  factory Draw.fromJson(Map<String, dynamic> json) => _$DrawFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DrawToJson(this);
 }
 
 @JsonSerializable()
-class BilibiliDynamicDetailItemModuleAuthorVip{
+class DrawItem {
+  String src;
+  int width;
+  int height;
+  double size;
 
-  int avatar_subscript = 0;
-  String avatar_subscript_url = "";
-  int due_date = 0;
-  String nickname_color = "";
-  int status = 0;
-  int theme_type = 0;
-  int type = 0;
-  BilibiliDynamicDetailItemModuleAuthorVipLabel label = BilibiliDynamicDetailItemModuleAuthorVipLabel();
+  DrawItem({
+    this.src = '',
+    this.width = 0,
+    this.height = 0,
+    this.size = 0.0,
+  });
 
+  factory DrawItem.fromJson(Map<String, dynamic> json) =>
+      _$DrawItemFromJson(json);
 
-  BilibiliDynamicDetailItemModuleAuthorVip();
+  Map<String, dynamic> toJson() => _$DrawItemToJson(this);
+}
 
-  factory BilibiliDynamicDetailItemModuleAuthorVip.fromJson(Map<String, dynamic> json) => _$BilibiliDynamicDetailItemModuleAuthorVipFromJson(json);
+@JsonSerializable(explicitToJson: true)
+class ModuleStat {
+  StatField like;
+  StatField forward;
+  StatField comment;
 
+  ModuleStat({
+    StatField? like,
+    StatField? forward,
+    StatField? comment,
+  })  : like = like ?? StatField(),
+        forward = forward ?? StatField(),
+        comment = comment ?? StatField();
+
+  factory ModuleStat.fromJson(Map<String, dynamic> json) =>
+      _$ModuleStatFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ModuleStatToJson(this);
 }
 
 @JsonSerializable()
-class BilibiliDynamicDetailItemModuleAuthorVipLabel{
+class StatField {
+  int count;
+  bool forbidden;
+  bool status;
 
-  String bg_color = "";
-  int bg_style = 0;
-  String? border_color = "";
-  String img_label_uri_hans = "", img_label_uri_hant = "";
-  String img_label_uri_hans_static = "", img_label_uri_hant_static = "";
-  String label_theme = "";
-  String? path = "";
-  String text = "";
-  int text_color = 0;
-  bool use_img_label = false;
+  StatField({
+    this.count = 0,
+    this.forbidden = false,
+    this.status = false,
+  });
 
+  factory StatField.fromJson(Map<String, dynamic> json) =>
+      _$StatFieldFromJson(json);
 
-  BilibiliDynamicDetailItemModuleAuthorVipLabel();
-
-  factory BilibiliDynamicDetailItemModuleAuthorVipLabel.fromJson(Map<String, dynamic> json) => _$BilibiliDynamicDetailItemModuleAuthorVipLabelFromJson(json);
-
+  Map<String, dynamic> toJson() => _$StatFieldToJson(this);
 }
-
-@JsonSerializable()
-class BilibiliDynamicDetailItemModuleAuthorDecorate{
-
-  String card_url = "";
-  int id = 0;
-  String jump_url = "";
-  String name = "";
-  int type = 0;
-  BilibiliDynamicDetailItemModuleAuthorDecorateFan fan = BilibiliDynamicDetailItemModuleAuthorDecorateFan();
-
-
-  BilibiliDynamicDetailItemModuleAuthorDecorate();
-
-  factory BilibiliDynamicDetailItemModuleAuthorDecorate.fromJson(Map<String, dynamic> json) => _$BilibiliDynamicDetailItemModuleAuthorDecorateFromJson(json);
-
-}
-
-@JsonSerializable()
-class BilibiliDynamicDetailItemModuleAuthorDecorateFan{
-
-  String color = "";
-  bool is_fan = false;
-  String num_str = "";
-  int number = 0;
-
-
-  BilibiliDynamicDetailItemModuleAuthorDecorateFan();
-
-  factory BilibiliDynamicDetailItemModuleAuthorDecorateFan.fromJson(Map<String, dynamic> json) => _$BilibiliDynamicDetailItemModuleAuthorDecorateFanFromJson(json);
-
-}
-

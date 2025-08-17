@@ -686,4 +686,52 @@ class UserPreferencesUtils{
     }
   }
 
+  static String bilibiliWbiUpdateLastTimeKey = "bilibili_wbi_update_last_time";
+
+
+  static Future<int> getLastBilibiliWbiUpdateTime() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var signaturePreference =  prefs.getInt(bilibiliWbiUpdateLastTimeKey);
+    return signaturePreference == null? 0: signaturePreference;
+  }
+
+  static Future<void> _putLastBilibiliWbiUpdateTime(int value) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(bilibiliWbiUpdateLastTimeKey, value);
+  }
+
+  static Future<void> putLastBilibiliWbiUpdateTime() async{
+    int nowTimestampSecond = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    _putLastBilibiliWbiUpdateTime(nowTimestampSecond);
+  }
+
+  static Future<bool> shouldRegisterBilibiliWbi() async{
+    int lastMobileSignTimestampSecond = await getLastBilibiliWbiUpdateTime();
+    DateTime lastSignDate = DateTime.fromMillisecondsSinceEpoch(lastMobileSignTimestampSecond * 1000);
+    DateTime now = DateTime.now();
+
+    if (!isTheSameDay(lastSignDate, now)){
+      // if not in the same day, a mobile wbi is neccessary
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  static String bilibiliWbiMixinKey = "bilibili_wbi_mixin_key";
+
+  static Future<String> getBilibiliWbiMixinKey() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var signaturePreference =  prefs.getString(bilibiliWbiMixinKey);
+    return signaturePreference == null? "": signaturePreference;
+  }
+
+  static Future<void> putBilibiliWbiMixinKey(String value) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(bilibiliWbiMixinKey, value);
+  }
+
 }

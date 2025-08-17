@@ -70,9 +70,9 @@ dependencies:
   hive_ce_flutter: ^2.2.0
   device_info_plus: ^11.1.0
   share_plus: ^11.0.0
-  firebase_messaging: ^15.0.3
+  firebase_messaging: ^16.0.0
   font_awesome_flutter: ^10.1.0
-  firebase_analytics: ^11.2.0
+  firebase_analytics: ^12.0.0
   flutter_local_notifications: ^19.2.1
   # flutter_apns: ^1.6.0
   scroll_to_index: any
@@ -115,6 +115,7 @@ dependencies:
   flex_color_scheme: ^8.2.0
 
 
+  firebase_core: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

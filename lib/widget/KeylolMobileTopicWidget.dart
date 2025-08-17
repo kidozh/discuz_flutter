@@ -1,24 +1,16 @@
 
 
-import 'dart:developer';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/entity/ForumThread.dart';
 import 'package:discuz_flutter/screen/EmptyScreen.dart';
-import 'package:discuz_flutter/utility/URLUtils.dart';
-import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:html/parser.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/Discuz.dart';
 import '../entity/User.dart';
-import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../utility/NetworkUtils.dart';
 
@@ -227,9 +219,9 @@ class KeylolMobileTopicState extends State<KeylolMobileTopicStatefulWidget>{
     Discuz? _discuz = Provider.of<DiscuzAndUserNotifier>(context).discuz;
     User? _user = Provider.of<DiscuzAndUserNotifier>(context).user;
     if(_discuz == null){
-      return Container();
+      return EmptyScreen();
     }
-    return ForumThreadWidget(_discuz!, _user, _forumThread, threadType, onSelectTid);
+    return ForumThreadWidget(_discuz, _user, _forumThread, threadType, onSelectTid);
   }
 
 }

@@ -4,7 +4,6 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 import '../generated/l10n.dart';
-import '../utility/AppPlatformIcons.dart';
 import '../utility/URLUtils.dart';
 import '../utility/VibrationUtils.dart';
 

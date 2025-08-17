@@ -106,7 +106,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
 
         return HtmlWidget(
           PostTextUtils.getDecodedString(html, useCompactParagraph),
-          enableCaching: true,
+          //enableCaching: true,
           onTapUrl: (url) {
             URLUtils.openURL(context, onSelectTid, url, callback, tid);
             return true;

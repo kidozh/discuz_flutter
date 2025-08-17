@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/ChooseAdExemptPage.dart';
-import 'package:discuz_flutter/page/ChooseDynamicSchemeVariantPage.dart';
 import 'package:discuz_flutter/page/ChooseInterfaceBrightnessPage.dart';
 import 'package:discuz_flutter/page/ChoosePlatformPage.dart';
 import 'package:discuz_flutter/page/ChooseTypography.dart';

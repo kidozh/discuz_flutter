@@ -12,7 +12,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/UserPreferenceNotifierProvider.dart';
-import '../utility/PostTextFieldUtils.dart';
 
 class TestFlightBannerPage extends StatelessWidget{
 

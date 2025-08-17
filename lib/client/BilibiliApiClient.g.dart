@@ -101,12 +101,20 @@ class _BilibiliApiClient implements BilibiliApiClient {
   }
 
   @override
-  Future<BilibiliVideoResult> getOpusedDynamicResultById(int id) async {
+  Future<BilibiliDynamicDetailResult> getOpusDynamicResultById(
+    int id,
+    String w_rid,
+    int wts,
+  ) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'id': id};
+    final queryParameters = <String, dynamic>{
+      r'id': id,
+      r'w_rid': w_rid,
+      r'wts': wts,
+    };
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<BilibiliVideoResult>(
+    final _options = _setStreamType<BilibiliDynamicDetailResult>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -117,9 +125,39 @@ class _BilibiliApiClient implements BilibiliApiClient {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late BilibiliVideoResult _value;
+    late BilibiliDynamicDetailResult _value;
     try {
-      _value = BilibiliVideoResult.fromJson(_result.data!);
+      _value = BilibiliDynamicDetailResult.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<BilibiliDynamicDetailResult> getOpusDynamicResultByIdInMaps(
+    Map<String, dynamic> queries,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.addAll(queries);
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<BilibiliDynamicDetailResult>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/x/polymer/web-dynamic/v1/detail',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late BilibiliDynamicDetailResult _value;
+    try {
+      _value = BilibiliDynamicDetailResult.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

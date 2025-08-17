@@ -1,16 +1,21 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
+import 'package:discuz_flutter/JsonResult/BilibiliDynamicDetailResult.dart';
 import 'package:discuz_flutter/JsonResult/BilibiliVideoResult.dart';
 import 'package:discuz_flutter/client/BilibiliApiClient.dart';
+import 'package:discuz_flutter/utility/BilibiliWbiUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:discuz_flutter/utility/WbiSign.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
 
-enum BilibiliWidgetType { video, live }
+enum BilibiliWidgetType { video, live, opus }
 
 enum BilibiliVideoRequestType { aid, bvid }
 
@@ -37,8 +42,7 @@ class BilibiliWidget extends StatefulWidget {
 }
 
 class BilibiliVideoState extends State<BilibiliWidget> {
-  BilibiliApiClient client = BilibiliApiClient(NetworkUtils.getDio(),
-      baseUrl: "https://api.bilibili.com");
+
 
   String url = "";
   BilibiliVideoState(this.url);
@@ -47,6 +51,7 @@ class BilibiliVideoState extends State<BilibiliWidget> {
   BilibiliVideoRequestType videoRequestType = BilibiliVideoRequestType.bvid;
   String videoRequestParameter = "";
   BilibiliVideoResult videoResult = BilibiliVideoResult();
+  BilibiliDynamicDetailResult opusResult = BilibiliDynamicDetailResult();
 
   bool isLoadingApi = false;
 
@@ -69,7 +74,21 @@ class BilibiliVideoState extends State<BilibiliWidget> {
       // not the live
       if (bilibiliUri.host == "live.bilibili.com") {
         type = BilibiliWidgetType.live;
-      } else if (bilibiliUri.path.startsWith("/video")) {
+      }
+      else if(bilibiliUri.path.startsWith("/opus")){
+        type = BilibiliWidgetType.opus;
+        List<String> urlPathList = bilibiliUri.path.split("/");
+        List<String> urlPathFilteredList = urlPathList
+            .where((i) => i != "/" && i.isNotEmpty && i != "opus")
+            .toList();
+        String videoParameterAtLast = urlPathFilteredList.last;
+        if (int.tryParse(videoParameterAtLast) != null) {
+          videoRequestParameter = videoParameterAtLast;
+        }
+        log("load bilibili OPUS information ${url} with ${videoRequestParameter} from list : ${urlPathFilteredList}");
+        loadBilibiliVideoApi();
+      }
+      else if (bilibiliUri.path.startsWith("/video")) {
         type = BilibiliWidgetType.video;
         // judge whether it's bvid or avid
         List<String> urlPathList = bilibiliUri.path.split("/");
@@ -94,26 +113,69 @@ class BilibiliVideoState extends State<BilibiliWidget> {
     setState(() {
       isLoadingApi = true;
     });
-    switch (videoRequestType) {
-      case BilibiliVideoRequestType.aid:
+    Dio dio = await NetworkUtils.getDioWithPersistCookieJar(null);
+
+    BilibiliApiClient client = BilibiliApiClient(dio,
+        baseUrl: "https://api.bilibili.com");
+    switch (type){
+      case BilibiliWidgetType.video:
         {
-          client
-              .getVideoResultByAid(videoRequestParameter)
-              .then((result) => renderVideoResult(result))
-              .catchError((onError) => callbackResultError(onError))
-          ;
+          // if it is a video
+          switch (videoRequestType) {
+            case BilibiliVideoRequestType.aid:
+              {
+                client
+                    .getVideoResultByAid(videoRequestParameter)
+                    .then((result) => renderVideoResult(result))
+                    .catchError((onError) => callbackResultError(onError))
+                ;
+                break;
+              }
+            case BilibiliVideoRequestType.bvid:
+              {
+                client
+                    .getVideoResultByBvid(videoRequestParameter)
+                    .then((result) => renderVideoResult(result))
+                    .catchError((onError) => callbackResultError(onError))
+                ;
+                break;
+              }
+          }
+        }
+      case BilibiliWidgetType.live:
+        {
           break;
         }
-      case BilibiliVideoRequestType.bvid:
+      case BilibiliWidgetType.opus:
         {
+          // if it is a opus
+          log("Render opus information");
+          // generate w_rid and wts
+          Map<String, dynamic> tmp = {
+            "id": int.parse(videoRequestParameter)
+          };
+
+
+          WbiSign webSign = WbiSign();
+          final webSignedQueries = await webSign.makSign(tmp);
+          //final wbiResult = await BilibiliWbiUtils.signWithCache(tmp);
+
           client
-              .getVideoResultByBvid(videoRequestParameter)
-              .then((result) => renderVideoResult(result))
+              .getOpusDynamicResultByIdInMaps(webSignedQueries)
+              .then((result) => renderOpusResult(result))
               .catchError((onError) => callbackResultError(onError))
           ;
           break;
         }
     }
+
+  }
+
+  Future<void> renderOpusResult(BilibiliDynamicDetailResult result) async{
+    setState(() {
+      isLoadingApi = false;
+      opusResult = result;
+    });
   }
 
   Future<void> renderVideoResult(BilibiliVideoResult result) async {
@@ -133,11 +195,16 @@ class BilibiliVideoState extends State<BilibiliWidget> {
   Widget build(BuildContext context) {
     if (uri == null) {
       return Text("Not a valid Bilibili link ${url}");
-    } else {
+    }
+    else {
       if (videoResult.data.viewData.pic.isNotEmpty) {
         return bilibiliVideoPreviewWidget;
       }
+      else if(opusResult.code == 0){
+       return  bilibiliOpusPreviewWidget;
+      }
     }
+
     return bilibiliDefaultWidget;
   }
 
@@ -175,7 +242,7 @@ class BilibiliVideoState extends State<BilibiliWidget> {
         child: Card(
           elevation: isCupertino(context) ? 1 : 4,
           child: Container(
-            clipBehavior: Clip.antiAliasWithSaveLayer,
+            clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               color: Color(bilibiliColorPink),
               borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -188,10 +255,11 @@ class BilibiliVideoState extends State<BilibiliWidget> {
                 Expanded(
                   flex: 8,
                   child: CachedNetworkImage(
-                      imageUrl: videoResult.data.viewData.pic),
+                      imageUrl: videoResult.data.viewData.pic,
+                  ),
                 ),
                 Expanded(
-                    flex: 8,
+                    flex: 9,
                     child: Padding(
                       padding:
                           EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
@@ -277,6 +345,34 @@ class BilibiliVideoState extends State<BilibiliWidget> {
           ),
         ),
       );
+
+  Widget get bilibiliOpusPreviewWidget => InkWell(
+    onTap: () {
+      VibrationUtils.vibrateWithClickIfPossible();
+      URLUtils.openURL(context, null, url, null, null);
+    },
+    child: Card(
+      child: Container(
+        child: Column(
+          children: [
+            // author information first
+            PlatformListTile(
+              leading: CircleAvatar(
+                  backgroundImage:
+                  CachedNetworkImageProvider(
+                    opusResult.data.item.modules.moduleAuthor.face,
+                    maxWidth: 36,
+                    maxHeight: 36,
+                  )),
+                title: Text(opusResult.data.item.modules.moduleAuthor.name),
+                subtitle: Text(opusResult.data.item.modules.moduleAuthor.pubTime),
+            ),
+            Text(opusResult.data.item.modules.moduleDynamic.desc.text),
+          ]
+        ),
+      ),
+    ),
+  );
 }
 
 

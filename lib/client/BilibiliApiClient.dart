@@ -1,6 +1,7 @@
 
 
 import 'package:dio/dio.dart';
+import 'package:discuz_flutter/JsonResult/BilibiliDynamicDetailResult.dart';
 import 'package:discuz_flutter/JsonResult/BilibiliVideoResult.dart';
 import 'package:retrofit/error_logger.dart';
 import 'package:retrofit/http.dart';
@@ -27,7 +28,14 @@ abstract class BilibiliApiClient {
       );
 
   @GET("/x/polymer/web-dynamic/v1/detail")
-  Future<BilibiliVideoResult> getOpusedDynamicResultById(
+  Future<BilibiliDynamicDetailResult> getOpusDynamicResultById(
       @Query("id") int id,
+      @Query("w_rid") String w_rid,
+      @Query("wts") int wts,
+      );
+
+  @GET("/x/polymer/web-dynamic/v1/detail")
+  Future<BilibiliDynamicDetailResult> getOpusDynamicResultByIdInMaps(
+      @Queries() Map<String, dynamic> queries
       );
 }

@@ -46,7 +46,6 @@ class SteamGameState extends State<SteamGameWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     loadGameState();
@@ -114,19 +113,27 @@ class SteamGameState extends State<SteamGameWidget> {
         child: Card(
           color: Theme.of(context).colorScheme.secondaryContainer,
           child: Container(
-            padding: EdgeInsets.all(4.0),
-            child: PlatformListTile(
-                leading: Icon(
-                  FontAwesomeIcons.steam,
-                  color: Theme.of(context).colorScheme.onSecondaryContainer,
-                ),
-                title: Text(
-                  url,
-                  maxLines: 1,
-                  style: TextStyle(
-                      color:
+            padding: EdgeInsets.only(top: 4.0, left: 4.0, right: 4.0, bottom: isLoading? 0: 4.0),
+            child: Column(
+              children: [
+
+                PlatformListTile(
+                    leading: Icon(
+                      FontAwesomeIcons.steam,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    ),
+                    title: Text(
+                      url,
+                      maxLines: 1,
+                      style: TextStyle(
+                          color:
                           Theme.of(context).colorScheme.onSecondaryContainer),
-                )),
+                    )),
+                isLoading? LinearProgressIndicator(
+                  color: Theme.of(context).colorScheme.onSecondaryContainer,
+                ): Container(),
+              ],
+            ),
           ),
         ),
       );
@@ -159,8 +166,7 @@ class SteamGameState extends State<SteamGameWidget> {
                     style: TextStyle(
                         color: Theme.of(context)
                             .colorScheme
-                            .onPrimaryContainer
-                            .withOpacity(0.5),
+                            .onPrimaryContainer,
                         fontWeight: FontWeight.w300),
                   ),
                 ),
@@ -182,8 +188,7 @@ class SteamGameState extends State<SteamGameWidget> {
                         height: 1.2,
                         color: Theme.of(context)
                             .colorScheme
-                            .onPrimaryContainer
-                            .withOpacity(0.7),
+                            .onPrimaryContainer,
                         fontSize: 12),
                   ),
                 ),
@@ -201,7 +206,7 @@ class SteamGameState extends State<SteamGameWidget> {
         builder: (context) => SingleChildScrollView(
               child: Container(
                 //alignment: Alignment.centerRight,
-                color: Theme.of(context).dialogBackgroundColor,
+                color: Theme.of(context).colorScheme.surface,
                 width: MediaQuery.sizeOf(context).width * 0.6 > TwoPaneUtils.mobileScreenSize? MediaQuery.sizeOf(context).width * 0.6: double.infinity,
                 padding: EdgeInsets.only(bottom: 16.0, left: 16, right: 16),
                 child: Column(

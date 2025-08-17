@@ -43,6 +43,15 @@ class NetworkUtils{
     ));
   }
 
+  static Dio getDioInUserAgent(){
+    return Dio(BaseOptions(
+        headers: {
+          'Accept-Language': "zh-CN,zh;q=0.9,zh-TW;q=0.8,en;q=0.6",
+          'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0',
+        }
+    ));
+  }
+
   static Future<Dio> getDioWithTempCookieJar() async{
 
     var dio = getDio();

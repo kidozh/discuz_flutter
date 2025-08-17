@@ -8,12 +8,14 @@ part of 'BilibiliDynamicDetailResult.dart';
 
 BilibiliDynamicDetailResult _$BilibiliDynamicDetailResultFromJson(
         Map<String, dynamic> json) =>
-    BilibiliDynamicDetailResult()
-      ..code = (json['code'] as num).toInt()
-      ..message = json['message'] as String
-      ..ttl = (json['ttl'] as num).toInt()
-      ..data = BilibiliDynamicDetailData.fromJson(
-          json['data'] as Map<String, dynamic>);
+    BilibiliDynamicDetailResult(
+      code: (json['code'] as num?)?.toInt() ?? 0,
+      message: json['message'] as String? ?? '',
+      ttl: (json['ttl'] as num?)?.toInt() ?? 0,
+      data: json['data'] == null
+          ? null
+          : BiliData.fromJson(json['data'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$BilibiliDynamicDetailResultToJson(
         BilibiliDynamicDetailResult instance) =>
@@ -21,274 +23,199 @@ Map<String, dynamic> _$BilibiliDynamicDetailResultToJson(
       'code': instance.code,
       'message': instance.message,
       'ttl': instance.ttl,
-      'data': instance.data,
+      'data': instance.data.toJson(),
     };
 
-BilibiliDynamicDetailData _$BilibiliDynamicDetailDataFromJson(
-        Map<String, dynamic> json) =>
-    BilibiliDynamicDetailData()
-      ..item = BilibiliDynamicDetailItemData.fromJson(
-          json['item'] as Map<String, dynamic>);
+BiliData _$BiliDataFromJson(Map<String, dynamic> json) => BiliData(
+      item: json['item'] == null
+          ? null
+          : BiliItem.fromJson(json['item'] as Map<String, dynamic>),
+    );
 
-Map<String, dynamic> _$BilibiliDynamicDetailDataToJson(
-        BilibiliDynamicDetailData instance) =>
-    <String, dynamic>{
-      'item': instance.item,
+Map<String, dynamic> _$BiliDataToJson(BiliData instance) => <String, dynamic>{
+      'item': instance.item.toJson(),
     };
 
-BilibiliDynamicDetailItemData _$BilibiliDynamicDetailItemDataFromJson(
-        Map<String, dynamic> json) =>
-    BilibiliDynamicDetailItemData()
-      ..basic = BilibiliDynamicDetailItemBasic.fromJson(
-          json['basic'] as Map<String, dynamic>)
-      ..id_str = json['id_str'] as String
-      ..module = BilibiliDynamicDetailItemModule.fromJson(
-          json['module'] as Map<String, dynamic>)
-      ..type = json['type'] as String
-      ..visible = json['visible'] as bool;
+BiliItem _$BiliItemFromJson(Map<String, dynamic> json) => BiliItem(
+      idStr: json['id_str'] as String? ?? '',
+      modules: json['modules'] == null
+          ? null
+          : Modules.fromJson(json['modules'] as Map<String, dynamic>),
+      type: json['type'] as String? ?? '',
+      visible: json['visible'] as bool? ?? false,
+    );
 
-Map<String, dynamic> _$BilibiliDynamicDetailItemDataToJson(
-        BilibiliDynamicDetailItemData instance) =>
-    <String, dynamic>{
-      'basic': instance.basic,
-      'id_str': instance.id_str,
-      'module': instance.module,
+Map<String, dynamic> _$BiliItemToJson(BiliItem instance) => <String, dynamic>{
+      'id_str': instance.idStr,
+      'modules': instance.modules.toJson(),
       'type': instance.type,
       'visible': instance.visible,
     };
 
-BilibiliDynamicDetailItemBasic _$BilibiliDynamicDetailItemBasicFromJson(
-        Map<String, dynamic> json) =>
-    BilibiliDynamicDetailItemBasic()
-      ..comment_id_str = json['comment_id_str'] as String
-      ..comment_type = (json['comment_type'] as num).toInt()
-      ..rid_str = json['rid_str'] as String
-      ..like_icon = BilibiliDynamicDetailItemBasicLike.fromJson(
-          json['like_icon'] as Map<String, dynamic>);
+Modules _$ModulesFromJson(Map<String, dynamic> json) => Modules(
+      moduleAuthor: json['module_author'] == null
+          ? null
+          : ModuleAuthor.fromJson(
+              json['module_author'] as Map<String, dynamic>),
+      moduleDynamic: json['module_dynamic'] == null
+          ? null
+          : ModuleDynamic.fromJson(
+              json['module_dynamic'] as Map<String, dynamic>),
+      moduleStat: json['module_stat'] == null
+          ? null
+          : ModuleStat.fromJson(json['module_stat'] as Map<String, dynamic>),
+      moduleMore: json['module_more'] as Map<String, dynamic>?,
+    );
 
-Map<String, dynamic> _$BilibiliDynamicDetailItemBasicToJson(
-        BilibiliDynamicDetailItemBasic instance) =>
-    <String, dynamic>{
-      'comment_id_str': instance.comment_id_str,
-      'comment_type': instance.comment_type,
-      'rid_str': instance.rid_str,
-      'like_icon': instance.like_icon,
+Map<String, dynamic> _$ModulesToJson(Modules instance) => <String, dynamic>{
+      'module_author': instance.moduleAuthor.toJson(),
+      'module_dynamic': instance.moduleDynamic.toJson(),
+      'module_stat': instance.moduleStat.toJson(),
+      'module_more': instance.moduleMore,
     };
 
-BilibiliDynamicDetailItemBasicLike _$BilibiliDynamicDetailItemBasicLikeFromJson(
-        Map<String, dynamic> json) =>
-    BilibiliDynamicDetailItemBasicLike()
-      ..action_url = json['action_url'] as String
-      ..end_url = json['end_url'] as String
-      ..id = (json['id'] as num).toInt()
-      ..start_url = json['start_url'] as String;
+ModuleAuthor _$ModuleAuthorFromJson(Map<String, dynamic> json) => ModuleAuthor(
+      name: json['name'] as String? ?? '',
+      mid: (json['mid'] as num?)?.toInt() ?? 0,
+      face: json['face'] as String? ?? '',
+      jumpUrl: json['jump_url'] as String? ?? '',
+      pubTime: json['pub_time'] as String? ?? '',
+      pubTs: (json['pub_ts'] as num?)?.toInt() ?? 0,
+      vip: json['vip'] == null
+          ? null
+          : VipInfo.fromJson(json['vip'] as Map<String, dynamic>),
+    );
 
-Map<String, dynamic> _$BilibiliDynamicDetailItemBasicLikeToJson(
-        BilibiliDynamicDetailItemBasicLike instance) =>
+Map<String, dynamic> _$ModuleAuthorToJson(ModuleAuthor instance) =>
     <String, dynamic>{
-      'action_url': instance.action_url,
-      'end_url': instance.end_url,
-      'id': instance.id,
-      'start_url': instance.start_url,
-    };
-
-BilibiliDynamicDetailItemModule _$BilibiliDynamicDetailItemModuleFromJson(
-        Map<String, dynamic> json) =>
-    BilibiliDynamicDetailItemModule()
-      ..author = BilibiliDynamicDetailItemModuleAuthor.fromJson(
-          json['author'] as Map<String, dynamic>);
-
-Map<String, dynamic> _$BilibiliDynamicDetailItemModuleToJson(
-        BilibiliDynamicDetailItemModule instance) =>
-    <String, dynamic>{
-      'author': instance.author,
-    };
-
-BilibiliDynamicDetailItemModuleAuthor
-    _$BilibiliDynamicDetailItemModuleAuthorFromJson(
-            Map<String, dynamic> json) =>
-        BilibiliDynamicDetailItemModuleAuthor()
-          ..face = json['face'] as String
-          ..face_nft = json['face_nft'] as String
-          ..following = json['following'] as bool?
-          ..jump_url = json['jump_url'] as String
-          ..label = json['label'] as String
-          ..num = (json['num'] as num).toInt()
-          ..name = json['name'] as String
-          ..official_verify =
-              BilibiliDynamicDetailItemModuleAuthorOfficialVerify.fromJson(
-                  json['official_verify'] as Map<String, dynamic>)
-          ..pendant = BilibiliDynamicDetailItemModuleAuthorPendant.fromJson(
-              json['pendant'] as Map<String, dynamic>)
-          ..pub_action = json['pub_action'] as String
-          ..pub_location_text = json['pub_location_text'] as String?
-          ..pub_time = json['pub_time'] as String
-          ..pub_ts = (json['pub_ts'] as num).toInt()
-          ..type = json['type'] as String
-          ..vip = BilibiliDynamicDetailItemModuleAuthorVip.fromJson(
-              json['vip'] as Map<String, dynamic>)
-          ..gender = (json['gender'] as num).toInt();
-
-Map<String, dynamic> _$BilibiliDynamicDetailItemModuleAuthorToJson(
-        BilibiliDynamicDetailItemModuleAuthor instance) =>
-    <String, dynamic>{
+      'name': instance.name,
+      'mid': instance.mid,
       'face': instance.face,
-      'face_nft': instance.face_nft,
-      'following': instance.following,
-      'jump_url': instance.jump_url,
-      'label': instance.label,
-      'num': instance.num,
-      'name': instance.name,
-      'official_verify': instance.official_verify,
-      'pendant': instance.pendant,
-      'pub_action': instance.pub_action,
-      'pub_location_text': instance.pub_location_text,
-      'pub_time': instance.pub_time,
-      'pub_ts': instance.pub_ts,
-      'type': instance.type,
+      'jump_url': instance.jumpUrl,
+      'pub_time': instance.pubTime,
+      'pub_ts': instance.pubTs,
       'vip': instance.vip,
-      'gender': instance.gender,
     };
 
-BilibiliDynamicDetailItemModuleAuthorOfficialVerify
-    _$BilibiliDynamicDetailItemModuleAuthorOfficialVerifyFromJson(
-            Map<String, dynamic> json) =>
-        BilibiliDynamicDetailItemModuleAuthorOfficialVerify()
-          ..desc = json['desc'] as String
-          ..type = (json['type'] as num).toInt();
+VipInfo _$VipInfoFromJson(Map<String, dynamic> json) => VipInfo(
+      status: (json['status'] as num?)?.toInt() ?? 0,
+      type: (json['type'] as num?)?.toInt() ?? 0,
+      themeType: (json['theme_type'] as num?)?.toInt() ?? 0,
+    );
 
-Map<String, dynamic>
-    _$BilibiliDynamicDetailItemModuleAuthorOfficialVerifyToJson(
-            BilibiliDynamicDetailItemModuleAuthorOfficialVerify instance) =>
-        <String, dynamic>{
-          'desc': instance.desc,
-          'type': instance.type,
-        };
-
-BilibiliDynamicDetailItemModuleAuthorPendant
-    _$BilibiliDynamicDetailItemModuleAuthorPendantFromJson(
-            Map<String, dynamic> json) =>
-        BilibiliDynamicDetailItemModuleAuthorPendant()
-          ..expire = (json['expire'] as num).toInt()
-          ..image = json['image'] as String
-          ..image_enhance = json['image_enhance'] as String
-          ..image_enhance_frame = json['image_enhance_frame'] as String
-          ..name = json['name'] as String
-          ..pid = (json['pid'] as num).toInt()
-          ..n_pid = (json['n_pid'] as num).toInt();
-
-Map<String, dynamic> _$BilibiliDynamicDetailItemModuleAuthorPendantToJson(
-        BilibiliDynamicDetailItemModuleAuthorPendant instance) =>
-    <String, dynamic>{
-      'expire': instance.expire,
-      'image': instance.image,
-      'image_enhance': instance.image_enhance,
-      'image_enhance_frame': instance.image_enhance_frame,
-      'name': instance.name,
-      'pid': instance.pid,
-      'n_pid': instance.n_pid,
-    };
-
-BilibiliDynamicDetailItemModuleAuthorVip
-    _$BilibiliDynamicDetailItemModuleAuthorVipFromJson(
-            Map<String, dynamic> json) =>
-        BilibiliDynamicDetailItemModuleAuthorVip()
-          ..avatar_subscript = (json['avatar_subscript'] as num).toInt()
-          ..avatar_subscript_url = json['avatar_subscript_url'] as String
-          ..due_date = (json['due_date'] as num).toInt()
-          ..nickname_color = json['nickname_color'] as String
-          ..status = (json['status'] as num).toInt()
-          ..theme_type = (json['theme_type'] as num).toInt()
-          ..type = (json['type'] as num).toInt()
-          ..label = BilibiliDynamicDetailItemModuleAuthorVipLabel.fromJson(
-              json['label'] as Map<String, dynamic>);
-
-Map<String, dynamic> _$BilibiliDynamicDetailItemModuleAuthorVipToJson(
-        BilibiliDynamicDetailItemModuleAuthorVip instance) =>
-    <String, dynamic>{
-      'avatar_subscript': instance.avatar_subscript,
-      'avatar_subscript_url': instance.avatar_subscript_url,
-      'due_date': instance.due_date,
-      'nickname_color': instance.nickname_color,
+Map<String, dynamic> _$VipInfoToJson(VipInfo instance) => <String, dynamic>{
       'status': instance.status,
-      'theme_type': instance.theme_type,
       'type': instance.type,
-      'label': instance.label,
+      'theme_type': instance.themeType,
     };
 
-BilibiliDynamicDetailItemModuleAuthorVipLabel
-    _$BilibiliDynamicDetailItemModuleAuthorVipLabelFromJson(
-            Map<String, dynamic> json) =>
-        BilibiliDynamicDetailItemModuleAuthorVipLabel()
-          ..bg_color = json['bg_color'] as String
-          ..bg_style = (json['bg_style'] as num).toInt()
-          ..border_color = json['border_color'] as String?
-          ..img_label_uri_hans = json['img_label_uri_hans'] as String
-          ..img_label_uri_hant = json['img_label_uri_hant'] as String
-          ..img_label_uri_hans_static =
-              json['img_label_uri_hans_static'] as String
-          ..img_label_uri_hant_static =
-              json['img_label_uri_hant_static'] as String
-          ..label_theme = json['label_theme'] as String
-          ..path = json['path'] as String?
-          ..text = json['text'] as String
-          ..text_color = (json['text_color'] as num).toInt()
-          ..use_img_label = json['use_img_label'] as bool;
+ModuleDynamic _$ModuleDynamicFromJson(Map<String, dynamic> json) =>
+    ModuleDynamic(
+      desc: json['desc'] == null
+          ? null
+          : ModuleDesc.fromJson(json['desc'] as Map<String, dynamic>),
+      major: json['major'] == null
+          ? null
+          : Major.fromJson(json['major'] as Map<String, dynamic>),
+    );
 
-Map<String, dynamic> _$BilibiliDynamicDetailItemModuleAuthorVipLabelToJson(
-        BilibiliDynamicDetailItemModuleAuthorVipLabel instance) =>
+Map<String, dynamic> _$ModuleDynamicToJson(ModuleDynamic instance) =>
     <String, dynamic>{
-      'bg_color': instance.bg_color,
-      'bg_style': instance.bg_style,
-      'border_color': instance.border_color,
-      'img_label_uri_hans': instance.img_label_uri_hans,
-      'img_label_uri_hant': instance.img_label_uri_hant,
-      'img_label_uri_hans_static': instance.img_label_uri_hans_static,
-      'img_label_uri_hant_static': instance.img_label_uri_hant_static,
-      'label_theme': instance.label_theme,
-      'path': instance.path,
+      'desc': instance.desc.toJson(),
+      'major': instance.major.toJson(),
+    };
+
+ModuleDesc _$ModuleDescFromJson(Map<String, dynamic> json) => ModuleDesc(
+      text: json['text'] as String? ?? '',
+      richTextNodes: (json['rich_text_nodes'] as List<dynamic>?)
+          ?.map((e) => RichTextNode.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$ModuleDescToJson(ModuleDesc instance) =>
+    <String, dynamic>{
       'text': instance.text,
-      'text_color': instance.text_color,
-      'use_img_label': instance.use_img_label,
+      'rich_text_nodes': instance.richTextNodes.map((e) => e.toJson()).toList(),
     };
 
-BilibiliDynamicDetailItemModuleAuthorDecorate
-    _$BilibiliDynamicDetailItemModuleAuthorDecorateFromJson(
-            Map<String, dynamic> json) =>
-        BilibiliDynamicDetailItemModuleAuthorDecorate()
-          ..card_url = json['card_url'] as String
-          ..id = (json['id'] as num).toInt()
-          ..jump_url = json['jump_url'] as String
-          ..name = json['name'] as String
-          ..type = (json['type'] as num).toInt()
-          ..fan = BilibiliDynamicDetailItemModuleAuthorDecorateFan.fromJson(
-              json['fan'] as Map<String, dynamic>);
+RichTextNode _$RichTextNodeFromJson(Map<String, dynamic> json) => RichTextNode(
+      type: json['type'] as String? ?? '',
+      text: json['text'] as String? ?? '',
+      origText: json['orig_text'] as String? ?? '',
+    );
 
-Map<String, dynamic> _$BilibiliDynamicDetailItemModuleAuthorDecorateToJson(
-        BilibiliDynamicDetailItemModuleAuthorDecorate instance) =>
+Map<String, dynamic> _$RichTextNodeToJson(RichTextNode instance) =>
     <String, dynamic>{
-      'card_url': instance.card_url,
-      'id': instance.id,
-      'jump_url': instance.jump_url,
-      'name': instance.name,
       'type': instance.type,
-      'fan': instance.fan,
+      'text': instance.text,
+      'orig_text': instance.origText,
     };
 
-BilibiliDynamicDetailItemModuleAuthorDecorateFan
-    _$BilibiliDynamicDetailItemModuleAuthorDecorateFanFromJson(
-            Map<String, dynamic> json) =>
-        BilibiliDynamicDetailItemModuleAuthorDecorateFan()
-          ..color = json['color'] as String
-          ..is_fan = json['is_fan'] as bool
-          ..num_str = json['num_str'] as String
-          ..number = (json['number'] as num).toInt();
+Major _$MajorFromJson(Map<String, dynamic> json) => Major(
+      type: json['type'] as String? ?? '',
+      draw: json['draw'] == null
+          ? null
+          : Draw.fromJson(json['draw'] as Map<String, dynamic>),
+    );
 
-Map<String, dynamic> _$BilibiliDynamicDetailItemModuleAuthorDecorateFanToJson(
-        BilibiliDynamicDetailItemModuleAuthorDecorateFan instance) =>
+Map<String, dynamic> _$MajorToJson(Major instance) => <String, dynamic>{
+      'type': instance.type,
+      'draw': instance.draw.toJson(),
+    };
+
+Draw _$DrawFromJson(Map<String, dynamic> json) => Draw(
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      items: (json['items'] as List<dynamic>?)
+          ?.map((e) => DrawItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$DrawToJson(Draw instance) => <String, dynamic>{
+      'id': instance.id,
+      'items': instance.items.map((e) => e.toJson()).toList(),
+    };
+
+DrawItem _$DrawItemFromJson(Map<String, dynamic> json) => DrawItem(
+      src: json['src'] as String? ?? '',
+      width: (json['width'] as num?)?.toInt() ?? 0,
+      height: (json['height'] as num?)?.toInt() ?? 0,
+      size: (json['size'] as num?)?.toDouble() ?? 0.0,
+    );
+
+Map<String, dynamic> _$DrawItemToJson(DrawItem instance) => <String, dynamic>{
+      'src': instance.src,
+      'width': instance.width,
+      'height': instance.height,
+      'size': instance.size,
+    };
+
+ModuleStat _$ModuleStatFromJson(Map<String, dynamic> json) => ModuleStat(
+      like: json['like'] == null
+          ? null
+          : StatField.fromJson(json['like'] as Map<String, dynamic>),
+      forward: json['forward'] == null
+          ? null
+          : StatField.fromJson(json['forward'] as Map<String, dynamic>),
+      comment: json['comment'] == null
+          ? null
+          : StatField.fromJson(json['comment'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$ModuleStatToJson(ModuleStat instance) =>
     <String, dynamic>{
-      'color': instance.color,
-      'is_fan': instance.is_fan,
-      'num_str': instance.num_str,
-      'number': instance.number,
+      'like': instance.like.toJson(),
+      'forward': instance.forward.toJson(),
+      'comment': instance.comment.toJson(),
+    };
+
+StatField _$StatFieldFromJson(Map<String, dynamic> json) => StatField(
+      count: (json['count'] as num?)?.toInt() ?? 0,
+      forbidden: json['forbidden'] as bool? ?? false,
+      status: json['status'] as bool? ?? false,
+    );
+
+Map<String, dynamic> _$StatFieldToJson(StatField instance) => <String, dynamic>{
+      'count': instance.count,
+      'forbidden': instance.forbidden,
+      'status': instance.status,
     };
