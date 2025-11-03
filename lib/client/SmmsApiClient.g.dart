@@ -2,6 +2,8 @@
 
 part of 'SmmsApiClient.dart';
 
+// dart format off
+
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
@@ -157,3 +159,5 @@ class _SmmsApiClient implements SmmsApiClient {
     return Uri.parse(dioBaseUrl).resolveUri(url).toString();
   }
 }
+
+// dart format on

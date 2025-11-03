@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:local_auth/error_codes.dart' as auth_error;
+
 import '../dao/DiscuzAuthenticationDao.dart';
 import '../generated/l10n.dart';
 
@@ -64,15 +64,11 @@ class SecureStorageUtils{
     try {
       final bool didAuthenticate = await auth.authenticate(
           localizedReason: S.of(context).authenticateBySystem,
-          options: const AuthenticationOptions(
-            useErrorDialogs: true
-          )
+
       );
       return didAuthenticate;
     } on PlatformException catch(e) {
-      if(e.code == auth_error.notAvailable){
 
-      }
       log("message ${e.code}");
       return false;
     }

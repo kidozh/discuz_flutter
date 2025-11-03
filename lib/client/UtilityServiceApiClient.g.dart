@@ -2,6 +2,8 @@
 
 part of 'UtilityServiceApiClient.dart';
 
+// dart format off
+
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
@@ -73,3 +75,5 @@ class _UtilityServiceApiClient implements UtilityServiceApiClient {
     return Uri.parse(dioBaseUrl).resolveUri(url).toString();
   }
 }
+
+// dart format on

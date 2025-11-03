@@ -2,6 +2,8 @@
 
 part of 'SteamApiClient.dart';
 
+// dart format off
+
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
@@ -76,3 +78,5 @@ class _SteamApiClient implements SteamApiClient {
     return Uri.parse(dioBaseUrl).resolveUri(url).toString();
   }
 }
+
+// dart format on

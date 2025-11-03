@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.6.9+153
+version: 1.6.10+154
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -61,15 +61,16 @@ dependencies:
   flutter_launcher_icons: ^0.14.1
   extended_text_field: ^16.0.0
   image_picker: ^1.0.4
-  flutter_image_compress: ^2.0.4
-  package_info_plus: ^8.0.0
+  flutter_image_compress: ^2.4.0
+
+  package_info_plus: ^9.0.0
   flutter_native_splash: ^2.3.2
   slide_countdown: ^2.0.0
 
   hive_ce: ^2.10.1
   hive_ce_flutter: ^2.2.0
-  device_info_plus: ^11.1.0
-  share_plus: ^11.0.0
+  device_info_plus: ^12.1.0
+  share_plus: ^12.0.0
   firebase_messaging: ^16.0.0
   font_awesome_flutter: ^10.1.0
   firebase_analytics: ^12.0.0
@@ -88,9 +89,9 @@ dependencies:
       url: https://github.com/mwdavis84/flutter-dualscreen
       ref: dd225c00293b5504a2d4b11787a00b2f1f81f6a1
   carousel_slider: ^5.0.0
-  upgrader: ^11.3.0
-  flutter_secure_storage: ^9.0.0
-  local_auth: ^2.1.7
+  upgrader: ^12.0.0
+  flutter_secure_storage: ^9.2.4
+  local_auth: ^3.0.0
   flex_color_picker: ^3.3.1
   google_fonts: ^6.2.1
   chinese_font_library: ^1.1.0
@@ -116,6 +117,7 @@ dependencies:
 
 
   firebase_core: any
+  foundation_models_framework: ^0.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

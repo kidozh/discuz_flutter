@@ -2,6 +2,8 @@
 
 part of 'MobileApiClient.dart';
 
+// dart format off
+
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
@@ -1553,3 +1555,5 @@ class _MobileApiClient implements MobileApiClient {
     return Uri.parse(dioBaseUrl).resolveUri(url).toString();
   }
 }
+
+// dart format on

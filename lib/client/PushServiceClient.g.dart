@@ -2,6 +2,8 @@
 
 part of 'PushServiceClient.dart';
 
+// dart format off
+
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
@@ -263,3 +265,5 @@ class _PushServiceClient implements PushServiceClient {
     return Uri.parse(dioBaseUrl).resolveUri(url).toString();
   }
 }
+
+// dart format on

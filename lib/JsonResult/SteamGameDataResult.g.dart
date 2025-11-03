@@ -50,9 +50,10 @@ SteamGameData _$SteamGameDataFromJson(Map<String, dynamic> json) =>
               ?.map((e) => GameCategory.fromJson(e as Map<String, dynamic>))
               .toList() ??
           []
-      ..screenshots = (json['screenshots'] as List<dynamic>)
-          .map((e) => GameScreenshot.fromJson(e as Map<String, dynamic>))
-          .toList()
+      ..screenshots = (json['screenshots'] as List<dynamic>?)
+              ?.map((e) => GameScreenshot.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          []
       ..movies = (json['movies'] as List<dynamic>?)
               ?.map((e) => GameMovie.fromJson(e as Map<String, dynamic>))
               .toList() ??

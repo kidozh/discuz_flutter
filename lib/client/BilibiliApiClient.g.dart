@@ -2,6 +2,8 @@
 
 part of 'BilibiliApiClient.dart';
 
+// dart format off
+
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
@@ -192,3 +194,5 @@ class _BilibiliApiClient implements BilibiliApiClient {
     return Uri.parse(dioBaseUrl).resolveUri(url).toString();
   }
 }
+
+// dart format on

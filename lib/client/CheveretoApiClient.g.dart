@@ -2,6 +2,8 @@
 
 part of 'CheveretoApiClient.dart';
 
+// dart format off
+
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
@@ -127,3 +129,5 @@ class _CheveretoApiClient implements CheveretoApiClient {
     return Uri.parse(dioBaseUrl).resolveUri(url).toString();
   }
 }
+
+// dart format on

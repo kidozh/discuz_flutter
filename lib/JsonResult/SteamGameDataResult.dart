@@ -35,6 +35,7 @@ class SteamGameData{
   AvailablePlatform platforms = AvailablePlatform();
   @JsonKey(defaultValue: [])
   List<GameCategory> categories = [];
+  @JsonKey(required:false, defaultValue: [])
   List<GameScreenshot> screenshots = [];
   @JsonKey(required: false, defaultValue: [])
   List<GameMovie> movies = [];
