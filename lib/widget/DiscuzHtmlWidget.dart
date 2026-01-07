@@ -143,10 +143,10 @@ class DiscuzHtmlWidget extends StatelessWidget {
               };
             } else if(element.className == "reply_wrap"){
               return {
-                "border": "0.05em dashed #${Theme.of(context).colorScheme.primary.value.toRadixString(16).substring(2)}",
+                "border": "0.05em dashed #${Theme.of(context).colorScheme.primary.toARGB32().toRadixString(16).substring(2)}",
                 "border-radius": "0.5em",
-                "background-color" : "#${Theme.of(context).colorScheme.primaryContainer.value.toRadixString(16).substring(2)}",
-                "color" : "#${Theme.of(context).colorScheme.onPrimaryContainer.value.toRadixString(16).substring(2)}",
+                "background-color" : "#${Theme.of(context).colorScheme.primaryContainer.toARGB32().toRadixString(16).substring(2)}",
+                "color" : "#${Theme.of(context).colorScheme.onPrimaryContainer.toARGB32().toRadixString(16).substring(2)}",
                 "padding" : "0.5em",
                 "margin-bottom": "0.1em"
               };

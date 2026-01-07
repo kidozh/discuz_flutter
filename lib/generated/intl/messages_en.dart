@@ -198,6 +198,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "appearanceOptimizedPlatformSubtitle":
             MessageLookupByLibrary.simpleMessage(
                 "Choose the app appearance on preferred platform."),
+        "appleIntelligence":
+            MessageLookupByLibrary.simpleMessage("Foundation Model"),
+        "appleIntelligenceEnabled":
+            MessageLookupByLibrary.simpleMessage("Enable foundation model"),
         "attachFile": m1,
         "attachmentUploadExceedingSizeDescription":
             MessageLookupByLibrary.simpleMessage(

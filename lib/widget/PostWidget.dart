@@ -18,6 +18,7 @@ import 'package:discuz_flutter/provider/DiscuzNotificationProvider.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
+import 'package:discuz_flutter/utility/FoundationModelFrameworkUtils.dart';
 import 'package:discuz_flutter/utility/PostTextUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -198,6 +199,8 @@ class PostState extends State<PostStatefulWidget> {
 
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     if (this.isUserBlocked) {
@@ -273,6 +276,13 @@ class PostState extends State<PostStatefulWidget> {
         child: getPostContent(context, typesetting.useCompactParagraph),
       );
     });
+  }
+
+  void translatePostMessage(BuildContext context) async{
+    String rawText = _post.message;
+    String translatedText = await FoundationModelFrameworkUtils.getTranslatedLanguages("I am a singer");
+    print("${translatedText}");
+
   }
 
   Widget getPostContent(BuildContext context, bool compactParagraph) {
@@ -497,6 +507,9 @@ class PostState extends State<PostStatefulWidget> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        IconButton(icon: Icon(Icons.translate, size: 16), onPressed: (){
+          translatePostMessage(context);
+        }, ),
 
 
         Consumer<DiscuzNotificationProvider>(

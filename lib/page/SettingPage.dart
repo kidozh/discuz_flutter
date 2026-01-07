@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/page/AppleIntelligenceConfPage.dart';
 import 'package:discuz_flutter/page/ChooseAdExemptPage.dart';
 import 'package:discuz_flutter/page/ChooseInterfaceBrightnessPage.dart';
 import 'package:discuz_flutter/page/ChoosePlatformPage.dart';
@@ -99,6 +100,19 @@ class _SettingPageState extends State<SettingPage> {
                       Navigator.of(context).push(platformPageRoute(
                         iosTitle: S.of(context).discuzAuthenticationTitle,
                         builder: (_) => DiscuzAuthenticationPage(),
+                        context: context,
+                      ));
+                    },
+                  ),
+                  SettingsTile.navigation(
+                    title: Text(S.of(context).appleIntelligence),
+                    leading: Icon(AppPlatformIcons(context).aiModel),
+
+                    onPressed: (context){
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      Navigator.of(context).push(platformPageRoute(
+                        iosTitle: S.of(context).appleIntelligence,
+                        builder: (_) => AppleIntelligenceConfPage(),
                         context: context,
                       ));
                     },

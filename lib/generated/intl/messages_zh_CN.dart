@@ -190,6 +190,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("运行平台样式偏好"),
         "appearanceOptimizedPlatformSubtitle":
             MessageLookupByLibrary.simpleMessage("你可以选择对应平台下应用的显示样式"),
+        "appleIntelligence": MessageLookupByLibrary.simpleMessage("智能化"),
+        "appleIntelligenceEnabled":
+            MessageLookupByLibrary.simpleMessage("启用智能化"),
         "attachFile": m1,
         "attachmentUploadExceedingSizeDescription":
             MessageLookupByLibrary.simpleMessage("附件需要被压缩以满足限额"),

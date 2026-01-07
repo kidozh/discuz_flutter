@@ -184,4 +184,6 @@ class AppPlatformIcons{
   IconData get arrowUpRounded => isMaterial(context)? Icons.arrow_upward_rounded : CupertinoIcons.up_arrow;
 
   IconData get arrowDownRounded => isMaterial(context)? Icons.arrow_downward_rounded : CupertinoIcons.down_arrow;
+
+  IconData get aiModel => isMaterial(context)? Icons.brush : CupertinoIcons.flowchart;
 }

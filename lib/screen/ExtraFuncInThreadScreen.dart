@@ -119,7 +119,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
 
         // then upload to the server
         if(image != null){
-          XFile file = XFile(image.path);
+          File file = File(image.path);
           // check with the size
           int file_size = await file.length();
           bool file_not_exceeding_size = file_size < _checkPostResult.variables.allowPerm.attachRemain.size;
@@ -178,7 +178,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
                         Directory directory = await getApplicationDocumentsDirectory();
                         final compressionPath = directory.path+"/"+file.path.split("/").last;
                         // with 90% compression
-                        XFile? compressedFile = await FlutterImageCompress.compressAndGetFile(file.path,
+                        File? compressedFile = await FlutterImageCompress.compressAndGetFile(file.path,
                           compressionPath,
                         );
                         if(compressedFile != null){
@@ -277,7 +277,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen>{
 
                         final compressionPath = directory.path+"/"+file.path.split("/").last;
                         // with 90% compression
-                        XFile? compressedFile = await FlutterImageCompress.compressAndGetFile(file.path,
+                        File? compressedFile = await FlutterImageCompress.compressAndGetFile(file.path,
                           compressionPath,
                         );
                         if(compressedFile != null){
