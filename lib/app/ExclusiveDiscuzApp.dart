@@ -12,6 +12,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
+
 class ExclusiveDiscuzApp extends StatelessWidget {
   String platformName = "";
   Discuz _discuz;

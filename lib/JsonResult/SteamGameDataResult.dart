@@ -107,8 +107,8 @@ class GameMovie{
   String name = "";
   String thumbnail = "";
 
-  GameMoviesFormat webm = GameMoviesFormat();
-  GameMoviesFormat mp4 = GameMoviesFormat();
+  GameMoviesFormat? webm = GameMoviesFormat();
+  GameMoviesFormat? mp4 = GameMoviesFormat();
   bool highlight = true;
 
   GameMovie();

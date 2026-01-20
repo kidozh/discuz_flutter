@@ -40,7 +40,7 @@ class ErrorCard extends StatelessWidget{
   Widget build(BuildContext context) {
     log("GET ERROR ${discuzError.dioError} ${discuzError.key} ${discuzError.content}");
 
-    if(errorType!= ErrorType.userExpired && (largeSize == null || largeSize == true ) && (discuzError.key!= "mobile_template_no_found")){
+    if((largeSize == null || largeSize == true ) && (discuzError.key!= "mobile_template_no_found")){
       return Padding(padding: EdgeInsets.symmetric(vertical: 32.0, horizontal: 8.0),
         child: Container(
           alignment: Alignment.center,
@@ -65,7 +65,31 @@ class ErrorCard extends StatelessWidget{
 
                 ],
               ),
-              SizedBox(height: 32.0,),
+              if(errorType == ErrorType.userExpired)
+                SizedBox(height: 64.0,),
+              if(errorType == ErrorType.userExpired)
+                SizedBox(
+                  width: double.infinity,
+                  child: PlatformElevatedButton(
+                    child: Text(S.of(context).loginTitle, style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),),
+                    color: Theme.of(context).colorScheme.primary,
+                    onPressed: () {
+                      VibrationUtils.vibrateWithClickIfPossible();
+
+                      Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context,listen: false).discuz;
+                      User? user = Provider.of<DiscuzAndUserNotifier>(context,listen: false).user;
+                      if(discuz != null){
+                        Navigator.push(
+                            context,
+                            platformPageRoute(
+                                iosTitle: S.of(context).loginTitle,
+                                context: context,
+                                builder: (context) => LoginPage(discuz, user?.username)));
+                      }
+                    },
+                  ),
+                ),
+              SizedBox(height: 16.0,),
               if(onRefreshCallback!=null)
                 SizedBox(
                   width: double.infinity,
@@ -78,6 +102,7 @@ class ErrorCard extends StatelessWidget{
                     },
                   ),
                 ),
+
             ],
           ),
         ),
@@ -85,13 +110,14 @@ class ErrorCard extends StatelessWidget{
     }
     else{
       return MaterialBanner(
-        leading: Icon(getErrorIcon(context), color: Theme.of(context).colorScheme.error,),
+        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+        leading: Icon(getErrorIcon(context), color: Theme.of(context).colorScheme.secondary,),
         content: Text("${discuzError.content}"),
         //content: Text("${discuzError.content}(${getErrorLocalizedKey(context)})"),
         actions: [
           if(errorType!= ErrorType.userExpired && onRefreshCallback!=null)
             TextButton(
-              child: Text(S.of(context).retry, style: TextStyle(color: Theme.of(context).colorScheme.error),),
+              child: Text(S.of(context).retry, style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
               onPressed: () {
                 VibrationUtils.vibrateWithClickIfPossible();
                 onRefreshCallback!();
@@ -110,7 +136,7 @@ class ErrorCard extends StatelessWidget{
           if(errorType == ErrorType.userExpired)
             // should directly re-login here
             TextButton(
-              child: Text(S.of(context).loginTitle, style: TextStyle(color: Theme.of(context).colorScheme.error),),
+              child: Text(S.of(context).loginTitle, style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
               onPressed: () async {
                 VibrationUtils.vibrateWithClickIfPossible();
                 Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context,listen: false).discuz;
@@ -192,7 +218,7 @@ class ErrorCard extends StatelessWidget{
 
   IconData getErrorIcon(BuildContext buildContext){
     if(errorType == ErrorType.userExpired){
-      return Icons.person_add_disabled;
+      return Icons.lock_clock;
     }
     else if(discuzError.dioError!=null){
       switch (discuzError.dioError!.type){

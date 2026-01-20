@@ -482,9 +482,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
               ]
           ),
         ],
-        title: _displayForumResult == null
-            ? Text(S.of(context).forumDisplayTitle,overflow: TextOverflow.ellipsis)
-            : Text(_displayForumResult.discuzIndexVariables.forum.name,overflow: TextOverflow.ellipsis),
+        title: Text(_displayForumResult.discuzIndexVariables.forum.name,overflow: TextOverflow.ellipsis),
         backgroundColor: Theme.of(context).navigationBarTheme.backgroundColor?.withOpacity(0.5),
         cupertino: (context, platform) => CupertinoNavigationBarData(
           previousPageTitle: (route != null && route is CupertinoPageRoute<dynamic> && route.previousTitle.value!=null)?

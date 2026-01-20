@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
-import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:http/http.dart' as http;
 

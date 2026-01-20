@@ -5,7 +5,6 @@ import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/BilibiliDynamicDetailResult.dart';
 import 'package:discuz_flutter/JsonResult/BilibiliVideoResult.dart';
 import 'package:discuz_flutter/client/BilibiliApiClient.dart';
-import 'package:discuz_flutter/utility/BilibiliWbiUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -13,7 +12,6 @@ import 'package:discuz_flutter/utility/WbiSign.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:http/http.dart' as http;
 
 enum BilibiliWidgetType { video, live, opus }
 

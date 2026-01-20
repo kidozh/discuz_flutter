@@ -8,7 +8,7 @@ part of 'MobileApiClient.dart';
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main
 
 class _MobileApiClient implements MobileApiClient {
   _MobileApiClient(this._dio, {this.baseUrl, this.errorLogger}) {
@@ -48,7 +48,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = CheckResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -81,7 +81,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = _result.data!;
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -125,7 +125,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = LoginResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -169,7 +169,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = _result.data!;
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -196,7 +196,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = DiscuzIndexResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -223,7 +223,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = _result.data!;
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -255,7 +255,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = DisplayForumResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -287,7 +287,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = _result.data!;
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -319,7 +319,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = ViewThreadResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -351,7 +351,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = _result.data!;
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -401,7 +401,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = _result.data!;
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -458,7 +458,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = ApiResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -485,7 +485,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = _result.data!;
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -512,7 +512,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = UserDiscuzNotificationResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -539,7 +539,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = _result.data!;
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -566,7 +566,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = HotThreadResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -593,7 +593,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = CaptchaResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -630,7 +630,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = ApiResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -667,7 +667,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = _result.data!;
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -694,7 +694,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = CheckLoginResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -721,7 +721,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = UserProfileResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -748,7 +748,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = _result.data!;
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -775,7 +775,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = SmileyResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -804,7 +804,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = PrivateMessagePortalResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -834,7 +834,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = PrivateMessageDetailResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -870,7 +870,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = ApiResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -897,7 +897,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = PublicMessagePortalResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -924,7 +924,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = FavoriteThreadResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -967,7 +967,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = _result.data!;
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -995,7 +995,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = CheckPostResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -1039,7 +1039,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = _result.data!;
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -1071,7 +1071,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = ApiResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -1106,7 +1106,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = ApiResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -1133,7 +1133,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = FavoriteForumResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -1165,7 +1165,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = ApiResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -1200,7 +1200,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = ApiResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -1227,7 +1227,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = NewThreadResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -1254,7 +1254,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = PushTokenListResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -1298,7 +1298,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = PostTokenResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -1352,7 +1352,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = ApiResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -1384,7 +1384,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = ApiResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -1430,7 +1430,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = ApiResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -1476,7 +1476,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = ApiResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -1522,7 +1522,7 @@ class _MobileApiClient implements MobileApiClient {
     try {
       _value = ApiResult.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;

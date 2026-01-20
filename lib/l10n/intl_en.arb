@@ -885,5 +885,18 @@
   "pictureBedImgBB": "ImgBB",
   "keylolPortal": "Keylol Portal",
   "appleIntelligence": "Foundation Model",
-  "appleIntelligenceEnabled": "Enable foundation model"
+  "appleIntelligenceEnabled": "Enable foundation model",
+  "appleIntelligenceUseNotice": "AI shall be used as a deliberate tool, always guided by human judgment and a mindful assessment of its risks and benefits.",
+  "appleIntelligenceLearnMore": "Learn more",
+  "appleIntelligenceTranslate": "Translate",
+  "appleIntelligencePromptHint": "Prompt hint",
+  "appleIntelligencePromptInstruction": "Instruction",
+  "appleIntelligenceGuardrailLevel": "Guardrail Level",
+  "appleIntelligenceGuardrailLevelStrict": "Strict",
+  "appleIntelligenceGuardrailLevelStandard": "Standard",
+  "appleIntelligenceGuardrailLevelPermissive": "Permissive",
+  "appleIntelligenceAddRule": "AI Rule",
+  "appleIntelligenceNotSupported": "Not supported",
+  "appleIntelligenceNotSupportedInThisPlatform": "The current device does not enable any LLM model services.",
+  "appleIntelligenceHelp": "Help"
 }

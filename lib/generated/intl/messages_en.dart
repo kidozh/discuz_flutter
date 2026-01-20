@@ -200,8 +200,34 @@ class MessageLookup extends MessageLookupByLibrary {
                 "Choose the app appearance on preferred platform."),
         "appleIntelligence":
             MessageLookupByLibrary.simpleMessage("Foundation Model"),
+        "appleIntelligenceAddRule":
+            MessageLookupByLibrary.simpleMessage("AI Rule"),
         "appleIntelligenceEnabled":
             MessageLookupByLibrary.simpleMessage("Enable foundation model"),
+        "appleIntelligenceGuardrailLevel":
+            MessageLookupByLibrary.simpleMessage("Guardrail Level"),
+        "appleIntelligenceGuardrailLevelPermissive":
+            MessageLookupByLibrary.simpleMessage("Permissive"),
+        "appleIntelligenceGuardrailLevelStandard":
+            MessageLookupByLibrary.simpleMessage("Standard"),
+        "appleIntelligenceGuardrailLevelStrict":
+            MessageLookupByLibrary.simpleMessage("Strict"),
+        "appleIntelligenceHelp": MessageLookupByLibrary.simpleMessage("Help"),
+        "appleIntelligenceLearnMore":
+            MessageLookupByLibrary.simpleMessage("Learn more"),
+        "appleIntelligenceNotSupported":
+            MessageLookupByLibrary.simpleMessage("Not supported"),
+        "appleIntelligenceNotSupportedInThisPlatform":
+            MessageLookupByLibrary.simpleMessage(
+                "The current device does not enable any LLM model services."),
+        "appleIntelligencePromptHint":
+            MessageLookupByLibrary.simpleMessage("Prompt hint"),
+        "appleIntelligencePromptInstruction":
+            MessageLookupByLibrary.simpleMessage("Instruction"),
+        "appleIntelligenceTranslate":
+            MessageLookupByLibrary.simpleMessage("Translate"),
+        "appleIntelligenceUseNotice": MessageLookupByLibrary.simpleMessage(
+            "AI shall be used as a deliberate tool, always guided by human judgment and a mindful assessment of its risks and benefits."),
         "attachFile": m1,
         "attachmentUploadExceedingSizeDescription":
             MessageLookupByLibrary.simpleMessage(

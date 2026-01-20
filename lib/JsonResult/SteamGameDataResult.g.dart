@@ -152,8 +152,12 @@ GameMovie _$GameMovieFromJson(Map<String, dynamic> json) => GameMovie()
   ..id = (json['id'] as num).toInt()
   ..name = json['name'] as String
   ..thumbnail = json['thumbnail'] as String
-  ..webm = GameMoviesFormat.fromJson(json['webm'] as Map<String, dynamic>)
-  ..mp4 = GameMoviesFormat.fromJson(json['mp4'] as Map<String, dynamic>)
+  ..webm = json['webm'] == null
+      ? null
+      : GameMoviesFormat.fromJson(json['webm'] as Map<String, dynamic>)
+  ..mp4 = json['mp4'] == null
+      ? null
+      : GameMoviesFormat.fromJson(json['mp4'] as Map<String, dynamic>)
   ..highlight = json['highlight'] as bool;
 
 Map<String, dynamic> _$GameMovieToJson(GameMovie instance) => <String, dynamic>{

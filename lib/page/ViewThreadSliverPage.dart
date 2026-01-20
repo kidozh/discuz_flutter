@@ -935,6 +935,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                             _controller.callRefresh();
                           },
                           errorType: _error!.errorType,
+                          largeSize: _postList.isEmpty,
                           webpageUrl: URLUtils.getViewThreadURL(discuz, tid),
                         );
                       },

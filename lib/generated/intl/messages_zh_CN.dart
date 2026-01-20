@@ -191,8 +191,34 @@ class MessageLookup extends MessageLookupByLibrary {
         "appearanceOptimizedPlatformSubtitle":
             MessageLookupByLibrary.simpleMessage("你可以选择对应平台下应用的显示样式"),
         "appleIntelligence": MessageLookupByLibrary.simpleMessage("智能化"),
+        "appleIntelligenceAddRule":
+            MessageLookupByLibrary.simpleMessage("添加场景"),
         "appleIntelligenceEnabled":
             MessageLookupByLibrary.simpleMessage("启用智能化"),
+        "appleIntelligenceGuardrailLevel":
+            MessageLookupByLibrary.simpleMessage("策略合规性"),
+        "appleIntelligenceGuardrailLevelPermissive":
+            MessageLookupByLibrary.simpleMessage("宽松"),
+        "appleIntelligenceGuardrailLevelStandard":
+            MessageLookupByLibrary.simpleMessage("标准"),
+        "appleIntelligenceGuardrailLevelStrict":
+            MessageLookupByLibrary.simpleMessage("严格"),
+        "appleIntelligenceHelp":
+            MessageLookupByLibrary.simpleMessage("智能化服务说明"),
+        "appleIntelligenceLearnMore":
+            MessageLookupByLibrary.simpleMessage("了解更多"),
+        "appleIntelligenceNotSupported":
+            MessageLookupByLibrary.simpleMessage("您的设备目前不支持智能化设置"),
+        "appleIntelligenceNotSupportedInThisPlatform":
+            MessageLookupByLibrary.simpleMessage("此设备上无法找到在设备端的人工智能服务。"),
+        "appleIntelligencePromptHint":
+            MessageLookupByLibrary.simpleMessage("提示词"),
+        "appleIntelligencePromptInstruction":
+            MessageLookupByLibrary.simpleMessage("系统说明"),
+        "appleIntelligenceTranslate":
+            MessageLookupByLibrary.simpleMessage("翻译"),
+        "appleIntelligenceUseNotice": MessageLookupByLibrary.simpleMessage(
+            "人工智能技术应当作为一种审慎的工具来使用，始终以人类判断为导向，并对其风险和益处进行审慎评估。"),
         "attachFile": m1,
         "attachmentUploadExceedingSizeDescription":
             MessageLookupByLibrary.simpleMessage("附件需要被压缩以满足限额"),

@@ -60,7 +60,7 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
 
     String? _deviceSignature = await PostTextFieldUtils.getDeviceName(context);
     setState((){
-      deviceSignature = _deviceSignature == null? "": _deviceSignature;
+      deviceSignature = _deviceSignature;
     });
     String? signatureInPreference = await UserPreferencesUtils.getSignaturePreference();
     setSignature(signatureInPreference);
