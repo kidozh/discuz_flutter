@@ -17,6 +17,7 @@ class ConstUtils{
   static const HIVE_TYPE_ID_DISCUZ_AUTHENTICATION = 10;
   static const HIVE_TYPE_VIEWTHREAD_CACHE = 11;
   static const HIVE_TYPE_VIEWTHREAD_SCROLL_DISTANCE = 12;
+  static const HIVE_TYPE_ID_AI_RULE = 13;
 
   static const FIREBASE_VAPIDKEY = "";
 }

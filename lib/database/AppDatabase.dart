@@ -5,6 +5,7 @@ import 'package:discuz_flutter/dao/DiscuzDao.dart';
 import 'package:discuz_flutter/dao/ImageAttachmentDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/dao/ViewThreadScrollDistanceDao.dart';
+import 'package:discuz_flutter/entity/AiRule.dart';
 import 'package:discuz_flutter/entity/BlockUser.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzAuthentication.dart';
@@ -18,6 +19,7 @@ import 'package:discuz_flutter/entity/ViewThreadCache.dart';
 import 'package:discuz_flutter/entity/ViewThreadScrollDistance.dart';
 import 'package:hive_ce/hive.dart';
 
+import '../dao/AiRuleDao.dart';
 import '../dao/BlockUserDao.dart';
 import '../dao/DraftDao.dart';
 import '../dao/FavoriteForumDao.dart';
@@ -44,6 +46,7 @@ class AppDatabase{
   static Box<String>? discuzConfigBox;
   static Box<ViewThreadScrollDistance>? viewThreadScrollDistanceBox;
   static Box<ViewThreadCache>? viewThreadCacheBox;
+  static Box<AiRule>? aiRuleBox;
 
   static Future<void> initBoxes() async {
     Hive
@@ -60,6 +63,7 @@ class AppDatabase{
       ..registerAdapter(DraftAdapter())
       ..registerAdapter(ViewThreadCacheAdapter())
       ..registerAdapter(ViewThreadScrollDistanceAdapter())
+      ..registerAdapter(AiRuleAdapter())
     ;
 
 
@@ -206,6 +210,20 @@ class AppDatabase{
     viewThreadScrollDistanceDao.deleteAllExpiredViewThreadCache();
     viewThreadCacheDao.deleteAllExpiredViewThreadCache();
 
+  }
+
+  static Future<Box<AiRule>> getAiRuleBox() async {
+    if(aiRuleBox == null){
+      aiRuleBox = await Hive.openBox<AiRule>('${hiveBoxPrefix}_ai_rule');
+    }
+
+    return aiRuleBox!;
+  }
+
+  static Future<AiRuleDao> getAiRuleDao() async {
+    Box<AiRule> aiRuleBox = await getAiRuleBox();
+
+    return AiRuleDao(aiRuleBox);
   }
 
 

@@ -3,6 +3,7 @@
 // Check in to version control
 
 import 'package:hive_ce/hive_ce.dart';
+import 'package:discuz_flutter/entity/AiRule.dart';
 import 'package:discuz_flutter/entity/BlockUser.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzAuthentication.dart';
@@ -19,6 +20,7 @@ import 'package:discuz_flutter/entity/ViewThreadScrollDistance.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
+    registerAdapter(AiRuleAdapter());
     registerAdapter(BlockUserAdapter());
     registerAdapter(DiscuzAdapter());
     registerAdapter(DiscuzAuthenticationAdapter());
@@ -37,6 +39,7 @@ extension HiveRegistrar on HiveInterface {
 
 extension IsolatedHiveRegistrar on IsolatedHiveInterface {
   void registerAdapters() {
+    registerAdapter(AiRuleAdapter());
     registerAdapter(BlockUserAdapter());
     registerAdapter(DiscuzAdapter());
     registerAdapter(DiscuzAuthenticationAdapter());

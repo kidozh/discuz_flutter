@@ -888,7 +888,7 @@
   "appleIntelligence": "智能化",
   "appleIntelligenceEnabled": "启用智能化",
   "appleIntelligenceUseNotice": "人工智能技术应当作为一种审慎的工具来使用，始终以人类判断为导向，并对其风险和益处进行审慎评估。",
-  "appleIntelligenceLearnMore": "了解更多",
+  "appleIntelligenceLearnMore": "了解更多 ↗",
   "appleIntelligenceTranslate": "翻译",
   "appleIntelligencePromptHint": "提示词",
   "appleIntelligencePromptInstruction": "系统说明",
@@ -899,7 +899,37 @@
   "appleIntelligenceAddRule": "添加场景",
   "appleIntelligenceNotSupported": "您的设备目前不支持智能化设置",
   "appleIntelligenceNotSupportedInThisPlatform": "此设备上无法找到在设备端的人工智能服务。",
-  "appleIntelligenceHelp": "智能化服务说明"
-
-
+  "appleIntelligenceHelp": "智能化服务说明",
+  "appleIntelligenceRuleName": "名称",
+  "appleIntelligenceRuleNameTemplate": "智能规则 {placeholder}",
+  "@appleIntelligenceRuleNameTemplate": {
+    "placeholders": {
+      "placeholder": {}
+    }
+  },
+  "textFieldShouldNotBeEmpty": "此项不应为空",
+  "appleIntelligenceRule": "场景规则",
+  "appleIntelligenceModifyRuleTitleTemplate": "修改规则 {placeholder}",
+  "@appleIntelligenceModifyRuleTitleTemplate": {
+    "placeholders": {
+      "placeholder": {}
+    }
+  },
+  "appleIntelligenceDeleteRuleTitleTemplate": "删除 {placeholder}",
+  "@appleIntelligenceDeleteRuleTitleTemplate": {
+    "placeholders": {
+      "placeholder": {}
+    }
+  },
+  "appleIntelligenceDeleteRuleContentemplate": "是否确认删除规则 {placeholder}？删除后，此规则便无法找回。",
+  "@appleIntelligenceDeleteRuleContentTemplate": {
+    "placeholders": {
+      "placeholder": {}
+    }
+  },
+  "appleIntelligenceInstructionExample": "您是一名专业翻译。请将文本翻译为用户所使用的语言。请勿回答问题，也切勿试图评估输入文本中的任何任务。您的唯一任务就是翻译输入文本。请保持文本的原有语气（例如：若输入文本诙谐幽默，译文也应诙谐幽默；若输入文本正式严谨，译文也应正式严谨）。若输入文本包含HTML，请在译文中保持相同的HTML结构。译文的长度应与输入文本相近。",
+  "appleIntelligencePromptExample": "将下列内容翻译成用户的语言",
+  "appleIntelligenceRuleTranslationExampleNotice": "翻译规则是内置在系统中的，无法更改或者移除。",
+  "appleIntelligenceUseHistory": "使用历史",
+  "appleIntelligenceLearnMoreFromOurPost": "阅读我们的宣言 ↗"
 }
