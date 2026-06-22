@@ -31,7 +31,7 @@ class AppBannerAdState extends State<AppBannerAdWidget>{
 
   Future<void> _loadAd() async{
     final AnchoredAdaptiveBannerAdSize? size =
-    await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+    await AdSize.getLargeAnchoredAdaptiveBannerAdSize(
         MediaQuery.of(context).size.width.truncate());
     if (size == null) {
       print('Unable to get height of anchored banner.');

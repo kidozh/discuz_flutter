@@ -141,7 +141,7 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage> {
         appBar: PlatformAppBar(
           title: Text(S.of(context).appleIntelligence),
           trailingActions: [
-            if (aiAvailable)
+            if (appleAiEnabled)
               PlatformIconButton(
                 icon: Icon(AppPlatformIcons(context).addAiModelRule),
                 onPressed: () async {
@@ -181,6 +181,14 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage> {
                           onPressed: (context) {
                             VibrationUtils.vibrateWithClickIfPossible();
                             _showGuardrailLevelDialog();
+                          },
+                        ),
+                      if (appleAiEnabled)
+                        SettingsTile.navigation(
+                          title: Text(
+                              S.of(context).appleIntelligenceUseHistory),
+                          onPressed: (context) {
+                            VibrationUtils.vibrateWithClickIfPossible();
                           },
                         ),
                     ],

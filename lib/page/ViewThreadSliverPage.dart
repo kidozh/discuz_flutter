@@ -102,12 +102,7 @@ class ViewThreadStatefulSliverWidget extends StatefulWidget {
   }
 }
 
-enum SendReplyStatus{
-  idle,
-  loading,
-  success,
-  fail
-}
+enum SendReplyStatus { idle, loading, success, fail }
 
 class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   ViewThreadResult _viewThreadResult = ViewThreadResult();
@@ -165,19 +160,15 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     // set reply post as null
     Provider.of<ReplyPostNotifierProvider>(context, listen: false)
         .setPost(null);
-
   }
 
   void _loadDao() async {
     FavoriteThreadDao dao = await AppDatabase.getFavoriteThreadDao();
 
-
     // should check with record first
     setState(() {
       favoriteThreadDao = dao;
     });
-
-
   }
 
   void bindFocusNode() {
@@ -187,9 +178,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         setState(() {
           dialogStatus = SHOW_NONE_DIALOG;
         });
-
-      }
-      else{
+      } else {
         lastFocusAt = DateTime.now();
       }
     });
@@ -199,11 +188,11 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
       if (_focusNode.hasFocus) {
         DateTime now = DateTime.now();
-        if(now.difference(lastFocusAt).inSeconds > 1){
-          print("Unfocus node due to scroll ${now.difference(lastFocusAt).inSeconds}");
+        if (now.difference(lastFocusAt).inSeconds > 1) {
+          print(
+              "Unfocus node due to scroll ${now.difference(lastFocusAt).inSeconds}");
           _focusNode.unfocus();
         }
-
       }
       if (dialogStatus != SHOW_NONE_DIALOG) {
         setState(() {
@@ -215,8 +204,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     _scrollController.addListener(() {
       // save with distance
       double offset = _scrollController.offset;
-      if(viewThreadScrollDistanceDao!=null){
-        ViewThreadScrollDistance element = ViewThreadScrollDistance(tid, offset, discuz, DateTime.now(), viewThreadQuery.timeAscend);
+      if (viewThreadScrollDistanceDao != null) {
+        ViewThreadScrollDistance element = ViewThreadScrollDistance(
+            tid, offset, discuz, DateTime.now(), viewThreadQuery.timeAscend);
         viewThreadScrollDistanceDao!.insertViewThreadScrollDistance(element);
       }
     });
@@ -246,8 +236,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     ignoreFontCustomization =
         await UserPreferencesUtils.getDisableFontCustomizationPreference();
   }
-
-
 
   void _saveViewHistory(DetailedThreadInfo threadInfo, String contents) async {
     // check if needed
@@ -280,15 +268,17 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   Future<IndicatorResult> _invalidateContent() async {
     _initialPage = 1;
 
-    if(viewThreadCacheDao == null || viewThreadScrollDistanceDao == null){
+    if (viewThreadCacheDao == null || viewThreadScrollDistanceDao == null) {
       // retrieve cache
       viewThreadCacheDao = await AppDatabase.getViewThreadCacheDao();
-      viewThreadScrollDistanceDao = await AppDatabase.getViewThreadScrollDistanceDao();
-      List<ViewThreadCache> viewThreadCacheList = viewThreadCacheDao!.findAllViewThreadCacheListByDiscuz(discuz, tid, viewThreadQuery.timeAscend);
-      if(viewThreadCacheList.isEmpty){
+      viewThreadScrollDistanceDao =
+          await AppDatabase.getViewThreadScrollDistanceDao();
+      List<ViewThreadCache> viewThreadCacheList = viewThreadCacheDao!
+          .findAllViewThreadCacheListByDiscuz(
+              discuz, tid, viewThreadQuery.timeAscend);
+      if (viewThreadCacheList.isEmpty) {
         cached = false;
-      }
-      else{
+      } else {
         // point to the last cached page
         cached = true;
         _initialPage = viewThreadCacheList.last.page;
@@ -297,24 +287,25 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         bool isCacheSuccessful = true;
         log("Change to initial page ${_initialPage}");
 
-        for(var threadCache in viewThreadCacheList){
-          try{
-            ViewThreadResult result = ViewThreadResult.fromJson(jsonDecode(threadCache.json));
+        for (var threadCache in viewThreadCacheList) {
+          try {
+            ViewThreadResult result =
+                ViewThreadResult.fromJson(jsonDecode(threadCache.json));
             cachedPost.addAll(result.threadVariables.postList);
-            if(threadCache != viewThreadCacheList.last){
+            if (threadCache != viewThreadCacheList.last) {
               preCachedItemNum += result.threadVariables.postList.length;
             }
-          }
-          catch(e){
+          } catch (e) {
             log("Not Successful decode!!! ${threadCache.json}");
             isCacheSuccessful = false;
             break;
           }
         }
 
-        if(isCacheSuccessful){
+        if (isCacheSuccessful) {
           // cache integrity successful
-          ViewThreadResult lastResult = ViewThreadResult.fromJson(jsonDecode(viewThreadCacheList.last.json));
+          ViewThreadResult lastResult = ViewThreadResult.fromJson(
+              jsonDecode(viewThreadCacheList.last.json));
           setState(() {
             _viewThreadResult = lastResult;
             _postList = cachedPost;
@@ -322,27 +313,28 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             _isFirstLoading = false;
           });
 
-          double? offset = viewThreadScrollDistanceDao!.findViewThreadCacheListByDiscuz(discuz, tid, viewThreadQuery.timeAscend)?.offset;
+          double? offset = viewThreadScrollDistanceDao!
+              .findViewThreadCacheListByDiscuz(
+                  discuz, tid, viewThreadQuery.timeAscend)
+              ?.offset;
           log("GET cache information ${cachedPost.length} OFFSET ${offset}");
-          if(offset!=null){
-            _scrollController.animateTo(offset, duration: Durations.medium4, curve: Curves.easeInOut);
+          if (offset != null) {
+            _scrollController.animateTo(offset,
+                duration: Durations.medium4, curve: Curves.easeInOut);
           }
           // Toast here
-          ToastUtils.showSuccessfulToast(S.of(context).animateToLastReadingPosition);
+          ToastUtils.showSuccessfulToast(
+              S.of(context).animateToLastReadingPosition);
         }
-
       }
-
-    }
-    else{
+    } else {
       // should delete all cache now!!!
       _initialPage = 1;
       // clear cache
       viewThreadCacheDao!.deleteAllViewThreadCacheByTid(discuz, tid);
-      viewThreadScrollDistanceDao!.deleteAllViewThreadScrollDistanceByTid(discuz, tid);
-
+      viewThreadScrollDistanceDao!
+          .deleteAllViewThreadScrollDistanceByTid(discuz, tid);
     }
-
 
     setState(() {
       _page = _initialPage;
@@ -359,10 +351,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     _loadForumContent();
   }
 
-  void _saveViewThreadCache(ViewThreadResult result, int tid, int page, bool isAscend) async {
+  void _saveViewThreadCache(
+      ViewThreadResult result, int tid, int page, bool isAscend) async {
     // check if needed
     String json = jsonEncode(result);
-    ViewThreadCache viewThreadCache = ViewThreadCache(tid, json, discuz, DateTime.now(), page, isAscend);
+    ViewThreadCache viewThreadCache =
+        ViewThreadCache(tid, json, discuz, DateTime.now(), page, isAscend);
     viewThreadCacheDao?.insertViewThreadCache(viewThreadCache);
   }
 
@@ -391,18 +385,16 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         if (deviceName.isNotEmpty) {
           message += "\n\n${S.of(context).fromDeviceSignature(deviceName)}";
         }
-      }
-      else if (signaturePreference == PostTextFieldUtils.USE_APP_SIGNATURE) {
+      } else if (signaturePreference == PostTextFieldUtils.USE_APP_SIGNATURE) {
         String deviceName = await PostTextFieldUtils.getDeviceName(context);
         PackageInfo packageInfo = await PackageInfo.fromPlatform();
         String packageVersion = packageInfo.version;
-        String signature = S.of(context).fromAppSignature(deviceName, packageVersion);
+        String signature =
+            S.of(context).fromAppSignature(deviceName, packageVersion);
         if (deviceName.isNotEmpty) {
           message += "\n\n${signature}";
         }
-      }
-
-      else {
+      } else {
         message += "\n\n${signaturePreference}";
       }
     }
@@ -530,7 +522,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         _viewThreadResult.threadVariables.threadInfo.replies,
         DateTime.now(),
         discuz));
-    if(Provider.of<DiscuzAndUserNotifier>(context, listen: false).user == null) {
+    if (Provider.of<DiscuzAndUserNotifier>(context, listen: false).user ==
+        null) {
       return;
     }
     client
@@ -554,7 +547,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         favoriteThreadDao.getFavoriteThreadByTid(tid, discuz);
     if (favoriteThreadInDatabase != null) {
       favoriteThreadDao.removeFavoriteThread(favoriteThreadInDatabase);
-      if(Provider.of<DiscuzAndUserNotifier>(context, listen: false).user == null) {
+      if (Provider.of<DiscuzAndUserNotifier>(context, listen: false).user ==
+          null) {
         return;
       }
       client
@@ -578,9 +572,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   ViewThreadCacheDao? viewThreadCacheDao;
   ViewThreadScrollDistanceDao? viewThreadScrollDistanceDao;
 
-  Future<void> checkWithCacheResponse() async{
-
-  }
+  Future<void> checkWithCacheResponse() async {}
 
   Future<IndicatorResult> _loadForumContent() async {
     // check the availability
@@ -590,8 +582,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
-    if (_page > _initialPage && _postList.length >=
-        _viewThreadResult.threadVariables.threadInfo.replies + 1) {
+    if (_page > _initialPage &&
+        _postList.length >=
+            _viewThreadResult.threadVariables.threadInfo.replies + 1) {
       _controller.finishLoad(IndicatorResult.noMore);
       _controller.finishRefresh(IndicatorResult.success);
       _page -= 1;
@@ -608,13 +601,11 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
             value.threadVariables.postList.first.message);
       }
 
-
       Provider.of<DiscuzNotificationProvider>(context, listen: false)
           .setNotificationCount(value.threadVariables.noticeCount);
 
       Provider.of<DiscuzNotificationProvider>(context, listen: false)
           .setBaseVariableResult(value.threadVariables);
-
 
       setState(() {
         _viewThreadResult = value;
@@ -622,26 +613,23 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         _error = null;
         if (_page == 1) {
           _postList = value.threadVariables.postList;
-        }
-        else if(_page == _initialPage){
+        } else if (_page == _initialPage) {
           // is a cached page?
           log("Precached item ${preCachedItemNum} ${_page} ${_initialPage}");
           List<Post> preCachedPostList = _postList.sublist(0, preCachedItemNum);
           preCachedPostList.addAll(value.threadVariables.postList);
           _postList = preCachedPostList;
-        }
-        else {
+        } else {
           _postList.addAll(value.threadVariables.postList);
           _postList = _postList;
         }
         postCommentList.addAll(value.threadVariables.commentList);
       });
       // cache the result before _page changes
-      if(value.getErrorString() == null && value.errorResult == null){
+      if (value.getErrorString() == null && value.errorResult == null) {
         // cache the response if this is correct
         _saveViewThreadCache(value, tid, _page, viewThreadQuery.timeAscend);
       }
-
 
       _page += 1;
       _controller.finishRefresh();
@@ -668,7 +656,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
           _error = null;
         });
       }
-
 
       if (user != null && value.threadVariables.member_uid != user.uid) {
         log("recv user uid different! ${user.uid} ${value.threadVariables.member_uid} ${value.threadVariables.member_username}");
@@ -754,10 +741,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         cupertino: (_, __) => CupertinoNavigationBarData(
             heroTag: this.onClosed == null ? null : "viewthread_${tid}",
             transitionBetweenRoutes: false,
-            previousPageTitle: (route != null && route is CupertinoPageRoute<dynamic> && route.previousTitle.value!=null)?
-            route.previousTitle.value
-                : Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz?.siteName
-        ),
+            previousPageTitle: (route != null &&
+                    route is CupertinoPageRoute<dynamic> &&
+                    route.previousTitle.value != null)
+                ? route.previousTitle.value
+                : Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                    .discuz
+                    ?.siteName),
         leading: this.onClosed == null
             ? null
             : PlatformIconButton(
@@ -773,7 +763,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         title: _viewThreadResult.threadVariables.threadInfo.subject.isEmpty
             ? Text(S.of(context).viewThreadTitle,
                 overflow: TextOverflow.ellipsis)
-            : Text(HtmlUnescape().convert(_viewThreadResult.threadVariables.threadInfo.subject),
+            : Text(
+                HtmlUnescape().convert(
+                    _viewThreadResult.threadVariables.threadInfo.subject),
                 overflow: TextOverflow.ellipsis),
         trailingActions: [
           DiscuzNotificationAppbarIconWidget(),
@@ -783,17 +775,17 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                   VibrationUtils.vibrateWithClickIfPossible();
                   FavoriteThreadInDatabase? favoriteThreadInDatabase =
                       favoriteThreadDao!.getFavoriteThreadByTid(tid, discuz);
-                  if(Provider.of<DiscuzAndUserNotifier>(context, listen: false).user != null){
+                  if (Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                          .user !=
+                      null) {
                     if (favoriteThreadInDatabase == null) {
                       favoriteThread();
                     } else {
                       unfavoriteThread();
                     }
-                  }
-                  else{
+                  } else {
                     // only save in the local storage
                   }
-
                 },
                 tooltip: S.of(context).favoriteThreadTooltip,
                 icon: ValueListenableBuilder(
@@ -867,8 +859,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                       await Navigator.push(
                           context,
                           platformPageRoute(
-                            iosTitle: S.of(context).settings,
-                              context: context, builder: (context) => SettingPage()));
+                              iosTitle: S.of(context).settings,
+                              context: context,
+                              builder: (context) => SettingPage()));
                     }),
               ]),
         ],
@@ -903,28 +896,28 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                     },
                     childCount: 1,
                   )),
-                  if(!_isFirstLoading && _viewThreadResult.errorResult == null)
-                  SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                    (context, _) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text(
-                          _viewThreadResult.threadVariables.threadInfo.subject
-                                      .isEmpty &&
-                                  passedSubject != null
-                              ? HtmlUnescape().convert(passedSubject!)
-                              : HtmlUnescape().convert(_viewThreadResult
-                                  .threadVariables.threadInfo.subject),
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
+                  if (!_isFirstLoading && _viewThreadResult.errorResult == null)
+                    SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                      (context, _) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            _viewThreadResult.threadVariables.threadInfo.subject
+                                        .isEmpty &&
+                                    passedSubject != null
+                                ? HtmlUnescape().convert(passedSubject!)
+                                : HtmlUnescape().convert(_viewThreadResult
+                                    .threadVariables.threadInfo.subject),
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    childCount: 1,
-                  )),
+                        );
+                      },
+                      childCount: 1,
+                    )),
                   if (_error != null)
                     SliverList(
                         delegate: SliverChildBuilderDelegate(
@@ -941,11 +934,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                       },
                       childCount: 1,
                     )),
-
                   if (_postList.isEmpty && _error == null)
                     SliverList(
                         delegate: SliverChildBuilderDelegate((context, index) {
-                      return _isFirstLoading? LoadingStateWidget(hintText: passedSubject,): EmptyListScreen(EmptyItemType.post);
+                      return _isFirstLoading
+                          ? LoadingStateWidget(
+                              hintText: passedSubject,
+                            )
+                          : EmptyListScreen(EmptyItemType.post);
                     }, childCount: 1)),
                   if (_viewThreadResult.threadVariables.poll != null)
                     SliverList(
@@ -1008,15 +1004,16 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                               ),
                             ),
                             if (index % 10 == 0 && index != 0)
-                              Consumer<UserPreferenceNotifierProvider>(builder: (context, value, child){
-                                if(value.signature == PostTextFieldUtils.USE_APP_SIGNATURE && index > 15){
+                              Consumer<UserPreferenceNotifierProvider>(
+                                  builder: (context, value, child) {
+                                if (value.signature ==
+                                        PostTextFieldUtils.USE_APP_SIGNATURE &&
+                                    index > 15) {
                                   return Container();
-                                }
-                                else{
+                                } else {
                                   return AppBannerAdWidget();
                                 }
                               })
-
                           ],
                         );
                       },
@@ -1090,50 +1087,47 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                     ),
                                     Expanded(
                                         child: Container(
-
-                                            padding: EdgeInsets.only(
-                                                left: 8.0, right: 8.0),
-                                            child: Column(
-
-                                              children: [
-                                                Text(
-                                                  replyPost.post!.author,
-                                                  style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                                    fontSize: 16
-                                                  ),
-                                                  maxLines: 1,
-                                                ),
-                                                Text(
-                                                  replyPost.post!.message
-                                                      .replaceAll(
-                                                          RegExp(r"<img*?>"),
-                                                          S
-                                                              .of(context)
-                                                              .pictureTagInMessage)
-                                                      .replaceAll(
-                                                          RegExp(
-                                                              r"<div.*?>.*?</div>"),
-                                                          "")
-                                                      .replaceAll(
-                                                          RegExp(r"<.*?>"), ""),
-                                                  style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .onPrimaryContainer.withOpacity(0.5)
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines: 1,
-                                                )
-                                              ],
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-
-                                            ),
-                                        )
-                                    )
+                                      padding: EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            replyPost.post!.author,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimaryContainer,
+                                                fontSize: 16),
+                                            maxLines: 1,
+                                          ),
+                                          Text(
+                                            replyPost.post!.message
+                                                .replaceAll(
+                                                    RegExp(r"<img*?>"),
+                                                    S
+                                                        .of(context)
+                                                        .pictureTagInMessage)
+                                                .replaceAll(
+                                                    RegExp(
+                                                        r"<div.*?>.*?</div>"),
+                                                    "")
+                                                .replaceAll(
+                                                    RegExp(r"<.*?>"), ""),
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimaryContainer
+                                                    .withOpacity(0.5)),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                          )
+                                        ],
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                      ),
+                                    ))
                                   ],
                                 ),
                               );
@@ -1201,36 +1195,59 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                       valueListenable: showExtraButton,
                                       builder: (context, value, _) {
                                         if (value == false) {
-                                          if(_sendReplyStatus == SendReplyStatus.idle){
+                                          if (_sendReplyStatus ==
+                                              SendReplyStatus.idle) {
                                             return IconButton(
-                                              icon: Icon(AppPlatformIcons(context).postThreadSolid),
+                                              icon: Icon(
+                                                  AppPlatformIcons(context)
+                                                      .postThreadSolid),
                                               onPressed: () {
                                                 VibrationUtils
                                                     .vibrateWithClickIfPossible();
                                                 _sendReply(context);
                                               },
                                             );
-                                          }
-                                          else if(_sendReplyStatus == SendReplyStatus.loading){
+                                          } else if (_sendReplyStatus ==
+                                              SendReplyStatus.loading) {
                                             return IconButton(
-                                              icon: PlatformCircularProgressIndicator(
-                                                cupertino: (context, platform) => CupertinoProgressIndicatorData(
-                                                    color: Theme.of(context).colorScheme.primary
-                                                ),
-                                                material: (context, platform) => MaterialProgressIndicatorData(
-                                                    color: Theme.of(context).colorScheme.primary
-                                                ),
+                                              icon:
+                                                  PlatformCircularProgressIndicator(
+                                                cupertino: (context,
+                                                        platform) =>
+                                                    CupertinoProgressIndicatorData(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .primary),
+                                                material: (context, platform) =>
+                                                    MaterialProgressIndicatorData(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .primary),
                                               ),
-                                              onPressed: (){
-
-                                              },
+                                              onPressed: () {},
                                             );
-                                          }
-                                          else if(_sendReplyStatus == SendReplyStatus.success){
-                                            return IconButton(icon: Icon(AppPlatformIcons(context).checkCircleSolid, color: Theme.of(context).colorScheme.primary), onPressed: (){},);
-                                          }
-                                          else if(_sendReplyStatus == SendReplyStatus.fail){
-                                            return IconButton(icon: Icon(AppPlatformIcons(context).errorOutline, color: Theme.of(context).colorScheme.error), onPressed: (){},);
+                                          } else if (_sendReplyStatus ==
+                                              SendReplyStatus.success) {
+                                            return IconButton(
+                                              icon: Icon(
+                                                  AppPlatformIcons(context)
+                                                      .checkCircleSolid,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary),
+                                              onPressed: () {},
+                                            );
+                                          } else if (_sendReplyStatus ==
+                                              SendReplyStatus.fail) {
+                                            return IconButton(
+                                              icon: Icon(
+                                                  AppPlatformIcons(context)
+                                                      .errorOutline,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .error),
+                                              onPressed: () {},
+                                            );
                                           }
                                           return Container();
                                         } else {
@@ -1333,6 +1350,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                             }
                                           }
                                         } else {}
+                                      },
+                                      onReplyWithHostedImage: (imageUrl, path) {
+                                        if (imageUrl.isNotEmpty) {
+                                          _replyController.text =
+                                              "${_replyController.text}[img]$imageUrl[/img]";
+                                        }
                                       },
                                     ),
                                   ],

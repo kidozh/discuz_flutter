@@ -72,6 +72,10 @@ class SecureStorageUtils{
       log("message ${e.code}");
       return false;
     }
+    on Exception catch(e){
+      log("Additional message ${e}");
+      return false;
+    }
   }
 
   static Box<DiscuzAuthentication>? discuzAuthentificationBox= null;

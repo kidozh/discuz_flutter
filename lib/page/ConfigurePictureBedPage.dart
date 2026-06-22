@@ -17,27 +17,48 @@ class ConfigurePictureBedPage extends StatefulWidget {
 }
 
 class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
-  
   String imglocToken = "";
   String smmsToken = "";
-  
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _refreshImglocState();
   }
-  
-  Future<void> _refreshImglocState() async{
-    String imglocTokenInSF = await PictureBedUtils.getChevertoApiToken(ChevertoPictureBed.imgloc);
-    String smmsTokenInSF = await PictureBedUtils.getChevertoApiToken(ChevertoPictureBed.imgbb);
+
+  Future<void> _refreshImglocState() async {
+    String imglocTokenInSF =
+        await PictureBedUtils.getChevertoApiToken(ChevertoPictureBed.imgloc);
+    String smmsTokenInSF =
+        await PictureBedUtils.getChevertoApiToken(ChevertoPictureBed.imgbb);
+    if (!mounted) {
+      return;
+    }
     setState(() {
-      imglocToken = imglocTokenInSF;
-      smmsToken = smmsTokenInSF;
+      imglocToken = imglocTokenInSF.trim();
+      smmsToken = smmsTokenInSF.trim();
     });
-    
   }
-  
+
+  Future<void> _openChevertoPage(ChevertoPictureBed pictureBed) async {
+    await Navigator.of(context).push(platformPageRoute(
+      iosTitle: _getPictureBedTitle(pictureBed),
+      builder: (_) => ConfigureChevertoPage(pictureBed),
+      context: context,
+    ));
+    await _refreshImglocState();
+  }
+
+  String _getPictureBedTitle(ChevertoPictureBed pictureBed) {
+    switch (pictureBed) {
+      case ChevertoPictureBed.imgbb:
+        return S.of(context).pictureBedImgBB;
+      case ChevertoPictureBed.imgloc:
+        return S.of(context).pictureBedImgloc;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
@@ -48,113 +69,99 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
         child: SettingsList(
           sections: [
             SettingsSection(
-              title: Text(S.of(context).cheveretoPictureBed),
+                title: Text(S.of(context).cheveretoPictureBed),
                 tiles: [
-              SettingsTile.navigation(
-                //leading: PlatformCircularProgressIndicator(),
-                title: Text(S.of(context).pictureBedImgBB),
-                value: smmsToken == ""? Text(S.of(context).pictureBedNotPrepared): null,
-                onPressed: (context) async {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  bool isUserAcceptTerms =
-                      await PictureBedUtils.isImgbbTermAccepted();
-                  if (!isUserAcceptTerms) {
-                    showPictureBedTermsModal(
-                        ChevertoPictureBed.imgbb,
-                        S.of(context).pictureBedImgBB,
-                        "https://imgbb.com/tos",
-                        "https://imgbb.com/privacy",
-                            () {
-                            VibrationUtils.vibrateWithClickIfPossible();
-                            PictureBedUtils.setImgbbTermAccepted(true);
-                            Navigator.of(context).push(platformPageRoute(
-                              iosTitle: S.of(context).pictureBedImgBB,
-                              builder: (_) => ConfigureChevertoPage(ChevertoPictureBed.imgbb),
-                              context: context,
-                            ));
-                        }
-                    );
-                  }
-                  else{
-                    Navigator.of(context).push(platformPageRoute(
-                      iosTitle: S.of(context).pictureBedImgBB,
-                      builder: (_) => ConfigureChevertoPage(ChevertoPictureBed.imgbb),
-                      context: context,
-                    ));
-                  }
-                },
-              ),
-              SettingsTile.navigation(
-                //leading: PlatformCircularProgressIndicator(),
-                title: Text(S.of(context).pictureBedImgloc),
-                value: imglocToken == ""? Text(S.of(context).pictureBedNotPrepared): null,
-                onPressed: (context) async {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  bool isUserAcceptTerms =
-                  await PictureBedUtils.isImglocTermAccepted();
-                  if (!isUserAcceptTerms) {
-                    showPictureBedTermsModal(
-                        ChevertoPictureBed.imgloc,
-                        S.of(context).pictureBedImgloc,
-                        "https://imgloc.com/page/tos",
-                        "https://imgloc.com/page/privacy",
-                            () {
+                  SettingsTile.navigation(
+                    //leading: PlatformCircularProgressIndicator(),
+                    title: Text(S.of(context).pictureBedImgBB),
+                    value: smmsToken == ""
+                        ? Text(S.of(context).pictureBedNotPrepared)
+                        : null,
+                    onPressed: (context) async {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      bool isUserAcceptTerms =
+                          await PictureBedUtils.isImgbbTermAccepted();
+                      if (!isUserAcceptTerms) {
+                        showPictureBedTermsModal(
+                            ChevertoPictureBed.imgbb,
+                            S.of(context).pictureBedImgBB,
+                            "https://imgbb.com/tos",
+                            "https://imgbb.com/privacy", () async {
                           VibrationUtils.vibrateWithClickIfPossible();
-                          PictureBedUtils.setImglocTermAccepted(true);
-                          Navigator.of(context).push(platformPageRoute(
-                            iosTitle: S.of(context).pictureBedImgloc,
-                            builder: (_) => ConfigureChevertoPage(ChevertoPictureBed.imgloc),
-                            context: context,
-                          ));
-                        }
-                    );
-                  }
-                  else{
-                    Navigator.of(context).push(platformPageRoute(
-                      iosTitle: S.of(context).pictureBedImgloc,
-                      builder: (_) => ConfigureChevertoPage(ChevertoPictureBed.imgloc),
-                      context: context,
-                    ));
-                  }
-                },
-              )
-            ]),
+                          await PictureBedUtils.setImgbbTermAccepted(true);
+                          Navigator.of(context).pop();
+                          await _openChevertoPage(ChevertoPictureBed.imgbb);
+                        });
+                      } else {
+                        _openChevertoPage(ChevertoPictureBed.imgbb);
+                      }
+                    },
+                  ),
+                  SettingsTile.navigation(
+                    //leading: PlatformCircularProgressIndicator(),
+                    title: Text(S.of(context).pictureBedImgloc),
+                    value: imglocToken == ""
+                        ? Text(S.of(context).pictureBedNotPrepared)
+                        : null,
+                    onPressed: (context) async {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      bool isUserAcceptTerms =
+                          await PictureBedUtils.isImglocTermAccepted();
+                      if (!isUserAcceptTerms) {
+                        showPictureBedTermsModal(
+                            ChevertoPictureBed.imgloc,
+                            S.of(context).pictureBedImgloc,
+                            "https://imgloc.com/page/tos",
+                            "https://imgloc.com/page/privacy", () async {
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          await PictureBedUtils.setImglocTermAccepted(true);
+                          Navigator.of(context).pop();
+                          await _openChevertoPage(ChevertoPictureBed.imgloc);
+                        });
+                      } else {
+                        _openChevertoPage(ChevertoPictureBed.imgloc);
+                      }
+                    },
+                  )
+                ]),
             CustomSettingsSection(
                 child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(8)
+              decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(8)),
+              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: RichText(
+                  text: TextSpan(children: [
+                WidgetSpan(
+                    child: Padding(
+                  padding: EdgeInsets.only(right: 8),
+                  child: Icon(
+                    AppPlatformIcons(context).errorOutline,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
-                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  child: RichText(
-                      text: TextSpan(children: [
-                        WidgetSpan(
-                            child: Padding(
-                              padding: EdgeInsets.only(right: 8),
-                              child: Icon(
-                                AppPlatformIcons(context).errorOutline,
-                                size: 16,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            )),
-                        TextSpan(
-                          text: S.of(context).pictureBedServiceNote,
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimaryContainer,
-                              fontSize: 14
-                          ),
-                        )
-                      ])),
+                )),
+                TextSpan(
+                  text: S.of(context).pictureBedServiceNote,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      fontSize: 14),
                 )
-            ),
+              ])),
+            )),
           ],
         ),
       ),
     );
   }
 
-  void showPictureBedTermsModal(ChevertoPictureBed chevertoPictureBed,String pictureBedName, String termsOfUseUrl, String privacyPolicyUrl, VoidCallback? onPressed) async {
+  void showPictureBedTermsModal(
+      ChevertoPictureBed chevertoPictureBed,
+      String pictureBedName,
+      String termsOfUseUrl,
+      String privacyPolicyUrl,
+      VoidCallback? onPressed) async {
     await showPlatformModalSheet(
         context: context,
         builder: (context) {
@@ -169,9 +176,8 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
                   Center(
                     child: Text(
                       S.of(context).pictureBedTermsTitle(pictureBedName),
-                      style: Theme.of(context).textTheme.headlineMedium?..copyWith(
-                        fontWeight: FontWeight.bold
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                        ?..copyWith(fontWeight: FontWeight.bold),
                     ),
                   ),
                   SizedBox(
@@ -207,14 +213,14 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
                   SizedBox(
                     width: double.infinity,
                     child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 0),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 16, horizontal: 0),
                       child: PlatformElevatedButton(
                         child: Text(S.of(context).pictureBedAgreeToService),
                         onPressed: onPressed,
                       ),
                     ),
                   )
-
                 ],
               ),
             ),

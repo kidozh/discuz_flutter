@@ -1,286 +1,154 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'ChevertoUploadResult.g.dart';
-
-@JsonSerializable(explicitToJson: true) // explicitToJson is good for nested objects
 class ChevertoUploadResult {
-  @JsonKey(name: 'status_code')
-  int statusCode;
-
-  ChevertoSuccessMessage success;
-
-  ChevertoUploadedImage image;
-
-  @JsonKey(name: 'status_txt')
-  String statusTxt;
-
   ChevertoUploadResult({
-    required this.statusCode,
-    required this.success,
-    required this.image,
-    required this.statusTxt,
+    required this.rawJson,
+    this.statusCode,
+    this.statusTxt,
+    this.success,
+    this.image,
   });
 
-  factory ChevertoUploadResult.fromJson(Map<String, dynamic> json) =>
-      _$ChevertoUploadResultFromJson(json);
-  Map<String, dynamic> toJson() => _$ChevertoUploadResultToJson(this);
+  final int? statusCode;
+  final ChevertoSuccessMessage? success;
+  final ChevertoUploadedImage? image;
+  final String? statusTxt;
+  final Map<String, dynamic> rawJson;
+
+  factory ChevertoUploadResult.fromJson(Map<String, dynamic> json) {
+    final successJson = _mapValue(json['success']);
+    final imageJson = _mapValue(json['image']) ?? _mapValue(json['data']);
+
+    return ChevertoUploadResult(
+      rawJson: json,
+      statusCode: _intValue(json['status_code']) ?? _intValue(json['status']),
+      statusTxt:
+          _stringValue(json['status_txt']) ?? _stringValue(json['message']),
+      success: successJson == null
+          ? null
+          : ChevertoSuccessMessage.fromJson(successJson),
+      image:
+          imageJson == null ? null : ChevertoUploadedImage.fromJson(imageJson),
+    );
+  }
+
+  Map<String, dynamic> toJson() => rawJson;
+
+  bool get isSuccess {
+    final successValue = rawJson['success'];
+    if (successValue is bool) {
+      return successValue;
+    }
+    return statusCode == 200 || success?.code == 200;
+  }
+
+  String? get imageUrl {
+    return image?.bestUrl ?? _firstUrlFromMap(rawJson);
+  }
+
+  String? get errorMessage {
+    final errorJson = _mapValue(rawJson['error']);
+    return _stringValue(errorJson?['message']) ??
+        _stringValue(errorJson?['error']) ??
+        statusTxt ??
+        _stringValue(rawJson['message']);
+  }
 }
 
-@JsonSerializable(explicitToJson: true)
 class ChevertoSuccessMessage {
-  String message;
-  int code;
-
   ChevertoSuccessMessage({
-    required this.message,
-    required this.code,
+    this.message,
+    this.code,
   });
 
-  factory ChevertoSuccessMessage.fromJson(Map<String, dynamic> json) =>
-      _$ChevertoSuccessMessageFromJson(json);
-  Map<String, dynamic> toJson() => _$ChevertoSuccessMessageToJson(this);
+  final String? message;
+  final int? code;
+
+  factory ChevertoSuccessMessage.fromJson(Map<String, dynamic> json) {
+    return ChevertoSuccessMessage(
+      message: _stringValue(json['message']),
+      code: _intValue(json['code']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'message': message,
+      'code': code,
+    };
+  }
 }
 
-@JsonSerializable(explicitToJson: true)
 class ChevertoUploadedImage {
-  String name;
-  String extension;
-  int size;
-  int? width; // Can be null if not an image/video with dimensions
-  int? height;
-  String date;
-
-  @JsonKey(name: 'date_gmt')
-  String dateGmt;
-
-  String title;
-  List<dynamic> tags; // Or List<String> if tags are always strings
-  String? description;
-
-  int nsfw;
-
-  @JsonKey(name: 'storage_mode')
-  String? storageMode;
-
-  String md5;
-
-  @JsonKey(name: 'source_md5')
-  String? sourceMd5;
-
-  @JsonKey(name: 'original_filename')
-  String? originalFilename;
-
-  @JsonKey(name: 'original_exifdata')
-  dynamic originalExifdata; // Type accordingly if structure is known
-
-  int views;
-
-  @JsonKey(name: 'category_id')
-  int? categoryId;
-
-  int? chain; // Assuming int, adjust if different
-
-  @JsonKey(name: 'thumb_size')
-  int? thumbSize;
-
-  @JsonKey(name: 'medium_size')
-  int? mediumSize;
-
-  @JsonKey(name: 'frame_size')
-  int? frameSize;
-
-  @JsonKey(name: 'expiration_date_gmt')
-  String? expirationDateGmt;
-
-  int likes;
-
-  @JsonKey(name: 'is_animated')
-  int isAnimated; // 0 or 1, can be bool with a converter
-
-  @JsonKey(name: 'is_approved')
-  int isApproved; // 0 or 1, can be bool with a converter
-
-  @JsonKey(name: 'is_360')
-  int is360; // 0 or 1, can be bool with a converter
-
-  double? duration; // Duration in seconds
-  String type;
-
-  @JsonKey(name: 'tags_string')
-  String? tagsString;
-
-  ChevertoFileObject file;
-
-  @JsonKey(name: 'id_encoded')
-  String idEncoded;
-
-  String filename;
-  String mime;
-  String url;
-  double? ratio;
-
-  @JsonKey(name: 'size_formatted')
-  String? sizeFormatted;
-
-  ChevertoFrame? frame; // Nested frame object
-
-  @JsonKey(name: 'image') // This is the nested "image" object
-  ChevertoImageDetails? imageDetails;
-
-  ChevertoCompressedImage thumb;
-
-  @JsonKey(name: 'url_frame')
-  String? urlFrame;
-
-  ChevertoCompressedImage? medium; // Medium can be null or have null fields
-
-  @JsonKey(name: 'duration_time')
-  String? durationTime; // e.g., "01:13"
-
-  @JsonKey(name: 'url_viewer')
-  String urlViewer;
-
-  @JsonKey(name: 'path_viewer')
-  String? pathViewer;
-
-  @JsonKey(name: 'url_short')
-  String? urlShort;
-
-  @JsonKey(name: 'display_url')
-  String? displayUrl;
-
-  @JsonKey(name: 'display_width')
-  int? displayWidth;
-
-  @JsonKey(name: 'display_height')
-  int? displayHeight;
-
-  @JsonKey(name: 'views_label')
-  String? viewsLabel;
-
-  @JsonKey(name: 'likes_label')
-  String? likesLabel;
-
-  @JsonKey(name: 'how_long_ago')
-  String? howLongAgo;
-
-  @JsonKey(name: 'date_fixed_peer')
-  String? dateFixedPeer;
-
-  @JsonKey(name: 'title_truncated')
-  String? titleTruncated;
-
-  @JsonKey(name: 'title_truncated_html')
-  String? titleTruncatedHtml;
-
-  @JsonKey(name: 'is_use_loader')
-  bool? isUseLoader;
-
-  @JsonKey(name: 'display_title')
-  String? displayTitle;
-
-  @JsonKey(name: 'delete_url')
-  String? deleteUrl;
-
-
   ChevertoUploadedImage({
-    required this.name,
-    required this.extension,
-    required this.size,
-    this.width,
-    this.height,
-    required this.date,
-    required this.dateGmt,
-    required this.title,
-    required this.tags,
-    this.description,
-    required this.nsfw,
-    this.storageMode,
-    required this.md5,
-    this.sourceMd5,
-    this.originalFilename,
-    this.originalExifdata,
-    required this.views,
-    this.categoryId,
-    this.chain,
-    this.thumbSize,
-    this.mediumSize,
-    this.frameSize,
-    this.expirationDateGmt,
-    required this.likes,
-    required this.isAnimated,
-    required this.isApproved,
-    required this.is360,
-    this.duration,
-    required this.type,
-    this.tagsString,
-    required this.file,
-    required this.idEncoded,
-    required this.filename,
-    required this.mime,
-    required this.url,
-    this.ratio,
-    this.sizeFormatted,
-    this.frame,
-    this.imageDetails,
-    required this.thumb,
-    this.urlFrame,
-    this.medium,
-    this.durationTime,
-    required this.urlViewer,
-    this.pathViewer,
-    this.urlShort,
+    required this.rawJson,
+    this.filename,
+    this.name,
+    this.mime,
+    this.extension,
+    this.url,
+    this.urlViewer,
     this.displayUrl,
-    this.displayWidth,
-    this.displayHeight,
-    this.viewsLabel,
-    this.likesLabel,
-    this.howLongAgo,
-    this.dateFixedPeer,
-    this.titleTruncated,
-    this.titleTruncatedHtml,
-    this.isUseLoader,
-    this.displayTitle,
     this.deleteUrl,
+    this.imageDetails,
+    this.thumb,
+    this.medium,
   });
 
-  factory ChevertoUploadedImage.fromJson(Map<String, dynamic> json) =>
-      _$ChevertoUploadedImageFromJson(json);
-  Map<String, dynamic> toJson() => _$ChevertoUploadedImageToJson(this);
+  final Map<String, dynamic> rawJson;
+  final String? filename;
+  final String? name;
+  final String? mime;
+  final String? extension;
+  final String? url;
+  final String? urlViewer;
+  final String? displayUrl;
+  final String? deleteUrl;
+  final ChevertoImageDetails? imageDetails;
+  final ChevertoCompressedImage? thumb;
+  final ChevertoCompressedImage? medium;
+
+  factory ChevertoUploadedImage.fromJson(Map<String, dynamic> json) {
+    final imageDetailsJson = _mapValue(json['image']);
+    final thumbJson = _mapValue(json['thumb']);
+    final mediumJson = _mapValue(json['medium']);
+
+    return ChevertoUploadedImage(
+      rawJson: json,
+      filename: _stringValue(json['filename']),
+      name: _stringValue(json['name']),
+      mime: _stringValue(json['mime']),
+      extension: _stringValue(json['extension']),
+      url: _stringValue(json['url']),
+      urlViewer: _stringValue(json['url_viewer']),
+      displayUrl: _stringValue(json['display_url']),
+      deleteUrl: _stringValue(json['delete_url']),
+      imageDetails: imageDetailsJson == null
+          ? null
+          : ChevertoImageDetails.fromJson(imageDetailsJson),
+      thumb: thumbJson == null
+          ? null
+          : ChevertoCompressedImage.fromJson(thumbJson),
+      medium: mediumJson == null
+          ? null
+          : ChevertoCompressedImage.fromJson(mediumJson),
+    );
+  }
+
+  Map<String, dynamic> toJson() => rawJson;
+
+  String? get bestUrl {
+    return url ??
+        displayUrl ??
+        imageDetails?.url ??
+        medium?.url ??
+        thumb?.url ??
+        urlViewer ??
+        _firstUrlFromMap(rawJson);
+  }
 }
 
-@JsonSerializable(explicitToJson: true)
-class ChevertoFileObject {
-  ChevertoFileResource resource;
-
-  ChevertoFileObject({required this.resource});
-
-  factory ChevertoFileObject.fromJson(Map<String, dynamic> json) =>
-      _$ChevertoFileObjectFromJson(json);
-  Map<String, dynamic> toJson() => _$ChevertoFileObjectToJson(this);
-}
-
-@JsonSerializable()
-class ChevertoFileResource {
-  String type; // "url"
-
-  ChevertoFileResource({required this.type});
-
-  factory ChevertoFileResource.fromJson(Map<String, dynamic> json) =>
-      _$ChevertoFileResourceFromJson(json);
-  Map<String, dynamic> toJson() => _$ChevertoFileResourceToJson(this);
-}
-
-@JsonSerializable()
-class ChevertoImageDetails { // For the nested "image" object
-  String? filename;
-  String? name;
-  String? mime;
-  String? extension;
-  String? url;
-  int? size;
-
+class ChevertoImageDetails {
   ChevertoImageDetails({
+    required this.rawJson,
     this.filename,
     this.name,
     this.mime,
@@ -289,67 +157,116 @@ class ChevertoImageDetails { // For the nested "image" object
     this.size,
   });
 
-  factory ChevertoImageDetails.fromJson(Map<String, dynamic> json) =>
-      _$ChevertoImageDetailsFromJson(json);
-  Map<String, dynamic> toJson() => _$ChevertoImageDetailsToJson(this);
+  final Map<String, dynamic> rawJson;
+  final String? filename;
+  final String? name;
+  final String? mime;
+  final String? extension;
+  final String? url;
+  final int? size;
+
+  factory ChevertoImageDetails.fromJson(Map<String, dynamic> json) {
+    return ChevertoImageDetails(
+      rawJson: json,
+      filename: _stringValue(json['filename']),
+      name: _stringValue(json['name']),
+      mime: _stringValue(json['mime']),
+      extension: _stringValue(json['extension']),
+      url: _stringValue(json['url']),
+      size: _intValue(json['size']),
+    );
+  }
+
+  Map<String, dynamic> toJson() => rawJson;
 }
 
-
-@JsonSerializable()
-class ChevertoFrame {
-  String? filename;
-  String? name;
-  String? mime;
-  String? extension;
-  String? url;
-  int? size;
-  // Add other fields if 'frame' can have more, similar to ChevertoCompressedImage
-
-  ChevertoFrame({
-    this.filename,
-    this.name,
-    this.mime,
-    this.extension,
-    this.url,
-    this.size,
-  });
-
-  factory ChevertoFrame.fromJson(Map<String, dynamic> json) =>
-      _$ChevertoFrameFromJson(json);
-  Map<String, dynamic> toJson() => _$ChevertoFrameToJson(this);
-}
-
-@JsonSerializable()
 class ChevertoCompressedImage {
-  String? filename; // Made nullable as per "medium" example
-  String? name;
-  int? width;
-  int? height;
-  double? ratio;
-  int? size;
-  @JsonKey(name: 'size_formatted')
-  String? sizeFormatted;
-  String? mime;
-  String? extension;
-  int? bits;
-  String? url;
-
   ChevertoCompressedImage({
+    required this.rawJson,
     this.filename,
     this.name,
     this.width,
     this.height,
-    this.ratio,
     this.size,
-    this.sizeFormatted,
     this.mime,
     this.extension,
-    this.bits,
     this.url,
   });
 
-  factory ChevertoCompressedImage.fromJson(Map<String, dynamic> json) =>
-      _$ChevertoCompressedImageFromJson(json);
-  Map<String, dynamic> toJson() => _$ChevertoCompressedImageToJson(this);
+  final Map<String, dynamic> rawJson;
+  final String? filename;
+  final String? name;
+  final int? width;
+  final int? height;
+  final int? size;
+  final String? mime;
+  final String? extension;
+  final String? url;
+
+  factory ChevertoCompressedImage.fromJson(Map<String, dynamic> json) {
+    return ChevertoCompressedImage(
+      rawJson: json,
+      filename: _stringValue(json['filename']),
+      name: _stringValue(json['name']),
+      width: _intValue(json['width']),
+      height: _intValue(json['height']),
+      size: _intValue(json['size']),
+      mime: _stringValue(json['mime']),
+      extension: _stringValue(json['extension']),
+      url: _stringValue(json['url']),
+    );
+  }
+
+  Map<String, dynamic> toJson() => rawJson;
 }
 
+Map<String, dynamic>? _mapValue(dynamic value) {
+  if (value is Map<String, dynamic>) {
+    return value;
+  }
+  if (value is Map) {
+    return value.map((key, value) => MapEntry(key.toString(), value));
+  }
+  return null;
+}
+
+int? _intValue(dynamic value) {
+  if (value is int) {
+    return value;
+  }
+  if (value is num) {
+    return value.toInt();
+  }
+  if (value is String) {
+    return int.tryParse(value);
+  }
+  return null;
+}
+
+String? _stringValue(dynamic value) {
+  if (value == null) {
+    return null;
+  }
+  if (value is String) {
+    return value;
+  }
+  return value.toString();
+}
+
+String? _firstUrlFromMap(Map<String, dynamic> json) {
+  for (final key in ['url', 'display_url', 'url_image', 'image_url']) {
+    final value = _stringValue(json[key]);
+    if (value != null && value.isNotEmpty) {
+      return value;
+    }
+  }
+
+  for (final key in ['image', 'data', 'medium', 'thumb']) {
+    final nestedJson = _mapValue(json[key]);
+    final nestedUrl = nestedJson == null ? null : _firstUrlFromMap(nestedJson);
+    if (nestedUrl != null && nestedUrl.isNotEmpty) {
+      return nestedUrl;
+    }
+  }
+  return null;
+}

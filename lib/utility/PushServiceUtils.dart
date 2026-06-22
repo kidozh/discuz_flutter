@@ -552,10 +552,10 @@ class PushServiceUtils{
       String packageId = packageInfo.packageName;
       final dio = await NetworkUtils.getDio();
       final client = PushServiceClient(dio, baseUrl: pushServerBaseUrl);
-      client.registerSubscribeChannelByHost(
-          discuzHostList, token, [], packageId, pushPlatform).then((value){
-            log("Register successful ${value.isSuccess()}");
-      });
+      // client.registerSubscribeChannelByHost(
+      //     discuzHostList, token, [], packageId, pushPlatform).then((value){
+      //       log("Register successful ${value.isSuccess()}");
+      // });
 
     }
     UserPreferencesUtils.putRegisterSubscriptionTime();

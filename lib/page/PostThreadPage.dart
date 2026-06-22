@@ -94,7 +94,9 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
               height: 32,
               child: PlatformCircularProgressIndicator(),
             ),
-            SizedBox(height: 32,),
+            SizedBox(
+              height: 32,
+            ),
             Text(S.of(context).loadingForumInformation)
           ],
         ),
@@ -108,7 +110,10 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
         title: Text(S.of(context).pushThreadTitle),
         trailingActions: [
           PlatformIconButton(
-            icon: Icon(AppPlatformIcons(context).postThreadSolid, size: 24,),
+            icon: Icon(
+              AppPlatformIcons(context).postThreadSolid,
+              size: 24,
+            ),
             onPressed: () async {
               VibrationUtils.vibrateWithClickIfPossible();
               await _launchCaptchaDialog(context);
@@ -237,6 +242,11 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                                     }
                                   }
                                 } else {}
+                              },
+                              onReplyWithHostedImage: (imageUrl, path) {
+                                if (imageUrl.isNotEmpty) {
+                                  insertString("[img]$imageUrl[/img]");
+                                }
                               },
                               showHistoricalAttachment: false,
                             ));
@@ -407,7 +417,8 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
         builder: (context) {
           return PlatformAlertDialog(
             title: Text(S.of(context).pushThreadTitle),
-            content: Padding(padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+            content: Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [

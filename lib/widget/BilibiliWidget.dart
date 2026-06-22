@@ -219,7 +219,7 @@ class BilibiliVideoState extends State<BilibiliWidget> {
           child: Container(
             padding: EdgeInsets.all(4.0),
             child: PlatformListTile(
-                leading: isLoadingApi? PlatformCircularProgressIndicator(): Icon(
+                leading: isLoadingApi? PlatformCircularProgressIndicator(): FaIcon(
                   FontAwesomeIcons.bilibili,
                   color: Color(bilibiliColorGray),
                 ),

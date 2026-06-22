@@ -118,7 +118,7 @@ class SteamGameState extends State<SteamGameWidget> {
               children: [
 
                 PlatformListTile(
-                    leading: Icon(
+                    leading: FaIcon(
                       FontAwesomeIcons.steam,
                       color: Theme.of(context).colorScheme.onSecondaryContainer,
                     ),
@@ -151,7 +151,7 @@ class SteamGameState extends State<SteamGameWidget> {
             child: Column(
               children: [
                 ListTile(
-                  leading: Icon(
+                  leading: FaIcon(
                     FontAwesomeIcons.steam,
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
@@ -465,7 +465,7 @@ class SteamGameState extends State<SteamGameWidget> {
                                 ),
                                 children: [
                               WidgetSpan(
-                                  child: Icon(
+                                  child: FaIcon(
                                 FontAwesomeIcons.steam,
                                 size: 18,
                                 color: Theme.of(context).colorScheme.surface,
@@ -520,17 +520,17 @@ class SteamGameState extends State<SteamGameWidget> {
           if (steamGameDataResult.data.platforms.windows)
             Container(
               margin: EdgeInsets.only(top: 8.0, left: 6.0),
-              child: Icon(FontAwesomeIcons.windows, size: 14),
+              child: FaIcon(FontAwesomeIcons.windows, size: 14),
             ),
           if (steamGameDataResult.data.platforms.mac)
             Container(
               margin: EdgeInsets.only(top: 8.0, left: 6.0),
-              child: Icon(FontAwesomeIcons.apple, size: 14),
+              child: FaIcon(FontAwesomeIcons.apple, size: 14),
             ),
           if (steamGameDataResult.data.platforms.linux)
             Container(
               margin: EdgeInsets.only(top: 8.0, left: 6.0),
-              child: Icon(
+              child: FaIcon(
                 FontAwesomeIcons.linux,
                 size: 14,
               ),

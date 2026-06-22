@@ -308,6 +308,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "cheveretoApiDescription": MessageLookupByLibrary.simpleMessage(
             "Chevereto密钥可以由已经注册的用户生成。使用此密钥可以允许应用向您的图床上传照片并嵌入到论坛中。"),
         "cheveretoApiKey": MessageLookupByLibrary.simpleMessage("密钥"),
+        "cheveretoApiSetupGuide": MessageLookupByLibrary.simpleMessage(
+            "1. 在浏览器中登录对应图床网站。\n2. 进入账号/API 设置，创建或复制 API 密钥。\n3. 将 API 密钥粘贴到此处。\n4. 点击“测试并保存”。应用会先上传一张极小的测试图片，测试通过后才会保存密钥。"),
+        "cheveretoApiSetupGuideTitle":
+            MessageLookupByLibrary.simpleMessage("如何操作"),
         "cheveretoPictureBed":
             MessageLookupByLibrary.simpleMessage("基于chevereto服务的"),
         "chooseDiscuz": MessageLookupByLibrary.simpleMessage("选择一个论坛"),
@@ -687,6 +691,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "password": MessageLookupByLibrary.simpleMessage("密码"),
         "passwordIsEmpty": MessageLookupByLibrary.simpleMessage("密码为空"),
         "pictureBedActive": MessageLookupByLibrary.simpleMessage("已启用"),
+        "pictureBedApiKeyEmpty":
+            MessageLookupByLibrary.simpleMessage("请先输入 API 密钥。"),
         "pictureBedAgreeToService": MessageLookupByLibrary.simpleMessage("我同意"),
         "pictureBedDisabled": MessageLookupByLibrary.simpleMessage("已禁用"),
         "pictureBedImgloc": MessageLookupByLibrary.simpleMessage("imgloc.com"),
@@ -694,6 +700,14 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("未就绪，轻触以继续"),
         "pictureBedServiceNote": MessageLookupByLibrary.simpleMessage(
             "上述所有服务并非由谈坛（我们，第一方）或者您浏览的论坛，而是由第三方提供。根据我们的使用协议，我们并不担保和授权任何第三方服务，使用我们的服务也并不会自动授权、默许和担保您使用这些第三方服务。因此，您需要在使用服务前，同意他们的使用协议、隐私政策以及其他协议。您同样应当定时查看这些协议以防止政策变更给您带来的不便。最后，有些服务并非在中国展开，您需要注意其在中国的可使用性、可靠性以及相关的法律适用性。"),
+        "pictureBedTestAndSave":
+            MessageLookupByLibrary.simpleMessage("测试并保存"),
+        "pictureBedTestFailed":
+            MessageLookupByLibrary.simpleMessage("图床 API 测试失败。"),
+        "pictureBedTestPassedAndSaved":
+            MessageLookupByLibrary.simpleMessage("图床 API 测试通过，已保存。"),
+        "pictureBedTestingApi":
+            MessageLookupByLibrary.simpleMessage("正在测试图床 API..."),
         "pictureBedTermsSubtitle": MessageLookupByLibrary.simpleMessage(
             "请注意，此服务并非由我们提供。根据我们的服务条款，使用我们的服务并不代表您获得了第三方服务的授权，并且我们并不对第三方服务做出任何承诺或者担保。在使用第三方服务前，您需要同意他们的服务条款以及隐私政策。"),
         "pictureBedTermsTitle": m36,

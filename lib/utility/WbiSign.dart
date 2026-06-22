@@ -3,24 +3,22 @@
 // import md5 from 'md5'
 // import axios from 'axios'
 import 'dart:convert';
-import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 
 class GStrorage {
-
   static late final Box<dynamic> localCache;
 
-
   static Future<void> init() async {
-    final Directory dir = await getApplicationSupportDirectory();
-    final String path = dir.path;
-    await Hive.initFlutter('$path/hive');
     regAdapter();
 
     // 本地缓存
+    if (Hive.isBoxOpen('localCache')) {
+      localCache = Hive.box('localCache');
+      return;
+    }
+
     localCache = await Hive.openBox(
       'localCache',
       compactionStrategy: (int entries, int deletedEntries) {
@@ -29,27 +27,25 @@ class GStrorage {
     );
   }
 
-  static void regAdapter() {
-  }
+  static void regAdapter() {}
 
   static Future<void> close() async {
     localCache.compact();
     localCache.close();
-
   }
 }
 
 class LocalCacheKey {
   // 历史记录暂停状态 默认false 记录
   static const String historyPause = 'historyPause',
-  // access_key
+      // access_key
       accessKey = 'accessKey',
 
-  //
+      //
       wbiKeys = 'wbiKeys',
       timeStamp = 'timeStamp',
 
-  // 弹幕相关设置 屏蔽类型 显示区域 透明度 字体大小 弹幕时间 描边粗细
+      // 弹幕相关设置 屏蔽类型 显示区域 透明度 字体大小 弹幕时间 描边粗细
       danmakuBlockType = 'danmakuBlockType',
       danmakuShowArea = 'danmakuShowArea',
       danmakuOpacity = 'danmakuOpacity',
@@ -57,7 +53,7 @@ class LocalCacheKey {
       danmakuDuration = 'danmakuDuration',
       strokeWidth = 'strokeWidth',
 
-  // 代理host port
+      // 代理host port
       systemProxyHost = 'systemProxyHost',
       systemProxyPort = 'systemProxyPort';
 
@@ -161,7 +157,7 @@ class WbiSign {
     }
     final String queryStr = query.join('&');
     final String wbiSign =
-    md5.convert(utf8.encode(queryStr + mixinKey)).toString(); // 计算 w_rid
+        md5.convert(utf8.encode(queryStr + mixinKey)).toString(); // 计算 w_rid
     return {'wts': currTime.toString(), 'w_rid': wbiSign};
   }
 
@@ -170,8 +166,8 @@ class WbiSign {
     final DateTime nowDate = DateTime.now();
     if (localCache.get(LocalCacheKey.wbiKeys) != null &&
         DateTime.fromMillisecondsSinceEpoch(
-            localCache.get(LocalCacheKey.timeStamp) as int)
-            .day ==
+                    localCache.get(LocalCacheKey.timeStamp) as int)
+                .day ==
             nowDate.day) {
       final Map cacheWbiKeys = localCache.get('wbiKeys');
       return Map<String, dynamic>.from(cacheWbiKeys);
@@ -181,7 +177,7 @@ class WbiSign {
     final headers = <String, String>{
       'Referer': 'https://www.bilibili.com/',
       'User-Agent':
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari',
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari',
     };
 
     final resp = await http.get(uri, headers: headers);
@@ -197,10 +193,7 @@ class WbiSign {
     final imgKey = _name((wbi['img_url'] ?? '') as String);
     final subKey = _name((wbi['sub_url'] ?? '') as String);
 
-    final Map<String, dynamic> wbiKeys = {
-      'imgKey': imgKey,
-      'subKey': subKey
-    };
+    final Map<String, dynamic> wbiKeys = {'imgKey': imgKey, 'subKey': subKey};
 
     localCache.put(LocalCacheKey.wbiKeys, wbiKeys);
     localCache.put(LocalCacheKey.timeStamp, nowDate.millisecondsSinceEpoch);
