@@ -252,28 +252,35 @@ class ConfigureChevertoState extends State<ConfigureChevertoPage> {
                                     ?.copyWith(
                                         color: Theme.of(context).disabledColor),
                               ),
-                              const SizedBox(height: 12),
-                              _buildApiKeyGuide(context),
-                              const SizedBox(height: 16),
-                              SizedBox(
-                                width: double.infinity,
-                                child: PlatformElevatedButton(
-                                  onPressed:
-                                      _isTesting ? null : _testAndSaveToken,
-                                  child: _isTesting
-                                      ? SizedBox(
-                                          width: 18,
-                                          height: 18,
-                                          child:
-                                              PlatformCircularProgressIndicator(),
-                                        )
-                                      : Text(
-                                          S.of(context).pictureBedTestAndSave),
-                                ),
-                              ),
                             ],
                           ),
                         )))),
+            CustomSettingsSection(
+                child: Padding(
+                    padding: EdgeInsetsGeometry.all(16.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 12),
+                        _buildApiKeyGuide(context),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          child: PlatformElevatedButton(
+                            onPressed: _isTesting ? null : _testAndSaveToken,
+                            child: _isTesting
+                                ? SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: PlatformCircularProgressIndicator(),
+                                  )
+                                : Text(S.of(context).pictureBedTestAndSave),
+                          ),
+                        ),
+                      ],
+                    ))),
             SettingsSection(
                 title: Text(S.of(context).legalInformation),
                 tiles: [

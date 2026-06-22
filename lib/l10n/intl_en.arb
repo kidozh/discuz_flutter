@@ -683,6 +683,13 @@
   "cheveretoPictureBed": "Chevereto",
   "cheveretoApiKey": "API Key",
   "cheveretoApiDescription": "The chevereto API key is created by user and usually started with chv_, where you can upload your picture to the hosting site.",
+  "cheveretoApiSetupGuideTitle": "How to use",
+  "cheveretoApiSetupGuide": "1. Sign in to the image hosting website in your browser.\n2. Open account/API settings and create or copy your API key.\n3. Paste the API key here.\n4. Tap Test and save. The app uploads a tiny test image first and saves the key only after the test succeeds.",
+  "pictureBedTestAndSave": "Test and save",
+  "pictureBedTestingApi": "Testing image hosting API...",
+  "pictureBedTestPassedAndSaved": "API test passed and saved.",
+  "pictureBedTestFailed": "Image hosting API test failed.",
+  "pictureBedApiKeyEmpty": "Enter an API key first.",
   "pushServiceSiteNotSupport": "{discuz} may not support push service",
   "@pushServiceSiteNotSupport": {
     "placeholders": {

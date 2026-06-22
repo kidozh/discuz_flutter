@@ -685,6 +685,13 @@
   "cheveretoPictureBed": "基于chevereto服务的",
   "cheveretoApiKey": "密钥",
   "cheveretoApiDescription": "Chevereto密钥可以由已经注册的用户生成。使用此密钥可以允许应用向您的图床上传照片并嵌入到论坛中。",
+  "cheveretoApiSetupGuideTitle": "如何操作",
+  "cheveretoApiSetupGuide": "1. 在浏览器中登录对应图床网站。\n2. 进入账号/API 设置，创建或复制 API 密钥。\n3. 将 API 密钥粘贴到此处。\n4. 点击“测试并保存”。应用会先上传一张极小的测试图片，测试通过后才会保存密钥。",
+  "pictureBedTestAndSave": "测试并保存",
+  "pictureBedTestingApi": "正在测试图床 API...",
+  "pictureBedTestPassedAndSaved": "图床 API 测试通过，已保存。",
+  "pictureBedTestFailed": "图床 API 测试失败。",
+  "pictureBedApiKeyEmpty": "请先输入 API 密钥。",
   "pushServiceSiteNotSupport": "{discuz}并未启用推送服务",
   "@pushServiceSiteNotSupport": {
     "placeholders": {

@@ -333,6 +333,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "cheveretoApiDescription": MessageLookupByLibrary.simpleMessage(
             "The chevereto API key is created by user and usually started with chv_, where you can upload your picture to the hosting site."),
         "cheveretoApiKey": MessageLookupByLibrary.simpleMessage("API Key"),
+        "cheveretoApiSetupGuide": MessageLookupByLibrary.simpleMessage(
+            "1. Sign in to the image hosting website in your browser.\n2. Open account/API settings and create or copy your API key.\n3. Paste the API key here.\n4. Tap Test and save. The app uploads a tiny test image first and saves the key only after the test succeeds."),
+        "cheveretoApiSetupGuideTitle":
+            MessageLookupByLibrary.simpleMessage("How to use"),
         "cheveretoPictureBed":
             MessageLookupByLibrary.simpleMessage("Chevereto"),
         "chooseDiscuz": MessageLookupByLibrary.simpleMessage("Choose a BBS"),
@@ -793,6 +797,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "passwordIsEmpty": MessageLookupByLibrary.simpleMessage(
             "Password is empty in the form"),
         "pictureBedActive": MessageLookupByLibrary.simpleMessage("Active"),
+        "pictureBedApiKeyEmpty":
+            MessageLookupByLibrary.simpleMessage("Enter an API key first."),
         "pictureBedAgreeToService":
             MessageLookupByLibrary.simpleMessage("Agree"),
         "pictureBedDisabled": MessageLookupByLibrary.simpleMessage("Disabled"),
@@ -802,6 +808,14 @@ class MessageLookup extends MessageLookupByLibrary {
             "Not ready, click to continue"),
         "pictureBedServiceNote": MessageLookupByLibrary.simpleMessage(
             "These service are not provided by us but the 3rd party service. We exclude any warranties or obligation to them. Some of them are not operated in China and you shall carefully watch their policy change to accommodate your use."),
+        "pictureBedTestAndSave":
+            MessageLookupByLibrary.simpleMessage("Test and save"),
+        "pictureBedTestFailed": MessageLookupByLibrary.simpleMessage(
+            "Image hosting API test failed."),
+        "pictureBedTestPassedAndSaved":
+            MessageLookupByLibrary.simpleMessage("API test passed and saved."),
+        "pictureBedTestingApi": MessageLookupByLibrary.simpleMessage(
+            "Testing image hosting API..."),
         "pictureBedTermsSubtitle": MessageLookupByLibrary.simpleMessage(
             "This service is not provided by us but the 3rd party services and we exclude all warranties for it. Using our service does not mean you are granted with 3rd party service as mentioned in our terms. You shall agree to their terms before using 3rd party service."),
         "pictureBedTermsTitle": m36,
