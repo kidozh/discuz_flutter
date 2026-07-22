@@ -173,6 +173,11 @@ class MessageLookup extends MessageLookupByLibrary {
                 "Unable to recognise the discuz!"),
         "addDiscuzApiParseUnsuccessfully": MessageLookupByLibrary.simpleMessage(
             "The mobile plugin is not recognisable."),
+        "addDiscuzApiSecurityChallengeBlocked":
+            MessageLookupByLibrary.simpleMessage(
+                "The site's security policy blocked the API request. Please try again from the site settings if the issue persists."),
+        "securityChallengeTitle": MessageLookupByLibrary.simpleMessage(
+            "Complete Security Challenge"),
         "addDiscuzSuccessfully": m0,
         "addDiscuzSuggestionAnnotation":
             MessageLookupByLibrary.simpleMessage("Feedback"),

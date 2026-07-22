@@ -167,6 +167,11 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("无法识别论坛掌上论坛插件，请联系管理员开启本插件。"),
         "addDiscuzApiParseUnsuccessfully": MessageLookupByLibrary.simpleMessage(
             "掌上论坛API插件未被正确配置，其返回了一个无法识别的错误，。"),
+        "addDiscuzApiSecurityChallengeBlocked":
+            MessageLookupByLibrary.simpleMessage(
+                "站点的安全策略拦截了API请求，无法正常添加论坛。请完成安全验证后重试，若问题持续存在请联系论坛管理员。"),
+        "securityChallengeTitle":
+            MessageLookupByLibrary.simpleMessage("完成安全验证"),
         "addDiscuzSuccessfully": m0,
         "addDiscuzSuggestionAnnotation":
             MessageLookupByLibrary.simpleMessage("反馈问题"),

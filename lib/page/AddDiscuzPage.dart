@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart' as DioCookieManager;
 import 'package:discuz_flutter/JsonResult/CheckResult.dart';
 import 'package:discuz_flutter/JsonResult/SupportDiscuzListResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
@@ -10,6 +13,7 @@ import 'package:discuz_flutter/client/UtilityServiceApiClient.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/page/SecurityChallengeWebviewPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -134,54 +138,236 @@ class _AddDiscuzFormFieldState
     Navigator.pop(context);
   }
 
-  void _checkApiAvailable() async{
-    String discuzUrl = _urlController.text;
-    log("Recv url " + discuzUrl);
-    // check the availability
-    final dio = await NetworkUtils.getDioWithTempCookieJar();
-    final client = MobileApiClient(dio, baseUrl: discuzUrl);
-    setState(() {
-      _isLoading = true;
-    });
-    client.getCheckResultInString().then((value) {
+  /// Returns true when [response] looks like a security challenge page
+  /// (e.g. a TencentEdgeOne / EdgeOne JavaScript challenge) rather than a
+  /// Discuz JSON response.
+  bool _isSecurityChallengeResponse(String response) {
+    final trimmed = response.trimLeft();
+    // Any HTML page that is not a JSON object is a challenge/error page.
+    if (trimmed.startsWith('<')) return true;
+    // Specific EdgeOne markers in non-HTML responses.
+    return response.contains('TencentEdgeOne') ||
+        response.contains('EO_Bot_Ssid') ||
+        response.contains('\u8bf7\u6c42\u5df2\u88ab\u7ad9\u70b9\u7684\u5b89\u5168\u7b56\u7565\u62e6\u622a'); // 请求已被站点的安全策略拦截
+  }
+
+  /// Builds the `module=check` URL from [discuzUrl].
+  String _buildCheckUrl(String discuzUrl) {
+    final base = discuzUrl.endsWith('/') ? discuzUrl : '$discuzUrl/';
+    return '${base}api/mobile/index.php?version=4&module=check';
+  }
+
+  /// Attempts to parse [rawValue] as a [CheckResult] and, on success, saves
+  /// the Discuz entry in the database.  Returns true on success.
+  bool _tryParseAndSave(String rawValue, String discuzUrl) {
+    try {
+      final Map<String, dynamic> checkResultJson = jsonDecode(rawValue);
+      log('Json OBJ ${checkResultJson.toString()}');
+      final CheckResult checkResult = CheckResult.fromJson(checkResultJson);
+      log('GET TRUE Discuz VERSION ${checkResult.trueDiscuzVersion}');
       setState(() {
-        _isLoading = false;
-      });
-      log(value.toString());
-      // convert string to json
-      Map<String, dynamic> checkResultJson = jsonDecode(value);
-      log("Json OBJ ${checkResultJson.toString()} ${checkResultJson[""]}");
-      CheckResult checkResult = CheckResult.fromJson(checkResultJson);
-      log("GET TRUE Discuz VERSION ${checkResult.trueDiscuzVersion}");
-      //log(checkResult.toString());
-      setState(() {
-        _checkResult = _checkResult;
+        _checkResult = checkResult;
         error = null;
       });
       _saveDiscuzInDb(checkResult.toDiscuz(discuzUrl));
-    }).catchError((onError) {
-      VibrationUtils.vibrateErrorIfPossible();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  void _checkApiAvailable() async {
+    final String discuzUrl = _urlController.text;
+    log('Recv url $discuzUrl');
+
+    final dio = await NetworkUtils.getDioWithTempCookieJar();
+    final client = MobileApiClient(dio, baseUrl: discuzUrl);
+
+    setState(() {
+      _isLoading = true;
+      error = null;
+    });
+
+    String rawValue;
+    try {
+      rawValue = await client.getCheckResultInString();
+    } on DioException catch (dioError) {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
-      log("GET ADD discuz error ${onError}");
-      if (onError is DioException) {
+      VibrationUtils.vibrateErrorIfPossible();
+      log('GET ADD discuz DioException $dioError');
 
-        DioException dioError = onError;
-        error = DiscuzError("AddDiscuzDioException",
-            S.of(context).addDiscuzApiBrowseUnsuccessfully,
-            errorURL: _urlController.text,
-            dioError: dioError);
+      // HTTP 567 is the EdgeOne "blocked by security policy" status code.
+      final statusCode = dioError.response?.statusCode;
+      final responseBody = dioError.response?.data?.toString() ?? '';
+      if (statusCode == 567 || _isSecurityChallengeResponse(responseBody)) {
+        await _launchSecurityChallenge(discuzUrl);
       } else {
-        //log("GET ADD discuz error NOT in DIO ${onError}");
+        if (!mounted) return;
         setState(() {
-          error = DiscuzError("AddDiscuzParseError",
-              errorURL: _urlController.text,
-              S.of(context).addDiscuzApiParseUnsuccessfully,
+          error = DiscuzError(
+            'AddDiscuzDioException',
+            S.of(context).addDiscuzApiBrowseUnsuccessfully,
+            errorURL: discuzUrl,
+            dioError: dioError,
           );
         });
       }
+      return;
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        error = DiscuzError(
+          'AddDiscuzParseError',
+          S.of(context).addDiscuzApiParseUnsuccessfully,
+          errorURL: discuzUrl,
+        );
+      });
+      VibrationUtils.vibrateErrorIfPossible();
+      return;
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _isLoading = false;
     });
+    log(rawValue.toString());
+
+    // Detect EdgeOne / security-challenge HTML responses before attempting JSON
+    // parsing so we show the right error instead of "plugin not configured".
+    if (_isSecurityChallengeResponse(rawValue)) {
+      await _launchSecurityChallenge(discuzUrl);
+      return;
+    }
+
+    if (!_tryParseAndSave(rawValue, discuzUrl)) {
+      VibrationUtils.vibrateErrorIfPossible();
+      setState(() {
+        error = DiscuzError(
+          'AddDiscuzParseError',
+          S.of(context).addDiscuzApiParseUnsuccessfully,
+          errorURL: discuzUrl,
+        );
+      });
+    }
+  }
+
+  /// Opens [SecurityChallengeWebviewPage] for [discuzUrl].  On success,
+  /// extracts cookies from the WebView and retries the `module=check` call
+  /// once using those cookies.  Avoids infinite loops by never re-entering the
+  /// challenge after a retry.
+  Future<void> _launchSecurityChallenge(String discuzUrl) async {
+    final SecurityChallengeResult? result =
+        await Navigator.push<SecurityChallengeResult>(
+      context,
+      platformPageRoute(
+        context: context,
+        builder: (_) =>
+            SecurityChallengeWebviewPage(checkUrl: _buildCheckUrl(discuzUrl)),
+      ),
+    );
+
+    if (!mounted) return;
+
+    if (result == null) {
+      // User dismissed the WebView without completing the challenge.
+      setState(() {
+        error = DiscuzError(
+          'AddDiscuzSecurityChallengeError',
+          S.of(context).addDiscuzApiSecurityChallengeBlocked,
+          errorURL: discuzUrl,
+        );
+      });
+      return;
+    }
+
+    // Retry the API call once with the cookies obtained from the WebView.
+    setState(() {
+      _isLoading = true;
+      error = null;
+    });
+
+    try {
+      final PersistCookieJar cookieJar =
+          await NetworkUtils.getTemporaryCookieJar();
+      await cookieJar.saveFromResponse(
+          Uri.parse(discuzUrl), result.cookies);
+
+      final Dio dio = Dio();
+      dio.interceptors
+          .add(DioCookieManager.CookieManager(cookieJar));
+
+      final client = MobileApiClient(dio, baseUrl: discuzUrl);
+      final rawValue = await client.getCheckResultInString();
+
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (_isSecurityChallengeResponse(rawValue)) {
+        // Still being blocked after the challenge – stop retrying.
+        setState(() {
+          error = DiscuzError(
+            'AddDiscuzSecurityChallengeError',
+            S.of(context).addDiscuzApiSecurityChallengeBlocked,
+            errorURL: discuzUrl,
+          );
+        });
+        return;
+      }
+
+      if (!_tryParseAndSave(rawValue, discuzUrl)) {
+        VibrationUtils.vibrateErrorIfPossible();
+        setState(() {
+          error = DiscuzError(
+            'AddDiscuzParseError',
+            S.of(context).addDiscuzApiParseUnsuccessfully,
+            errorURL: discuzUrl,
+          );
+        });
+      }
+    } on DioException catch (dioError) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+      final statusCode = dioError.response?.statusCode;
+      final responseBody = dioError.response?.data?.toString() ?? '';
+      if (statusCode == 567 || _isSecurityChallengeResponse(responseBody)) {
+        setState(() {
+          error = DiscuzError(
+            'AddDiscuzSecurityChallengeError',
+            S.of(context).addDiscuzApiSecurityChallengeBlocked,
+            errorURL: discuzUrl,
+          );
+        });
+      } else {
+        VibrationUtils.vibrateErrorIfPossible();
+        setState(() {
+          error = DiscuzError(
+            'AddDiscuzDioException',
+            S.of(context).addDiscuzApiBrowseUnsuccessfully,
+            errorURL: discuzUrl,
+            dioError: dioError,
+          );
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        error = DiscuzError(
+          'AddDiscuzParseError',
+          S.of(context).addDiscuzApiParseUnsuccessfully,
+          errorURL: discuzUrl,
+        );
+      });
+      VibrationUtils.vibrateErrorIfPossible();
+    }
   }
 
   @override

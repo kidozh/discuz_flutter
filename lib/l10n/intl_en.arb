@@ -859,6 +859,8 @@
   "attachmentUploadExceedingSizeDescription": "The attachment shall be compressed to be accepted by the forum.",
   "addDiscuzApiBrowseUnsuccessfully": "Unable to recognise the discuz!",
   "addDiscuzApiParseUnsuccessfully": "The mobile plugin is not recognisable.",
+  "addDiscuzApiSecurityChallengeBlocked": "The site's security policy blocked the API request. Please try again from the site settings if the issue persists.",
+  "securityChallengeTitle": "Complete Security Challenge",
   "discuzInAdExemptBuiltInList": "{sitename} is in AD exempt list",
   "@discuzInAdExemptBuiltInList": {
     "placeholders": {
