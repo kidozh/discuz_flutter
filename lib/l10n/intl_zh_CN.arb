@@ -861,6 +861,8 @@
   "attachmentUploadExceedingSizeDescription": "附件需要被压缩以满足限额",
   "addDiscuzApiBrowseUnsuccessfully": "无法识别论坛掌上论坛插件，请联系管理员开启本插件。",
   "addDiscuzApiParseUnsuccessfully": "掌上论坛API插件未被正确配置，其返回了一个无法识别的错误，。",
+  "addDiscuzApiSecurityChallengeBlocked": "站点的安全策略拦截了API请求，无法正常添加论坛。请完成安全验证后重试，若问题持续存在请联系论坛管理员。",
+  "securityChallengeTitle": "完成安全验证",
   "discuzInAdExemptBuiltInList": "我们默认移除{sitename}的应用广告",
   "@discuzInAdExemptBuiltInList": {
     "placeholders": {
