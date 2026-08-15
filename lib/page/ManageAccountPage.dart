@@ -12,7 +12,7 @@ import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 

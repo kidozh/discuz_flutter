@@ -46,7 +46,7 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
@@ -59,6 +59,7 @@ import '../provider/DiscuzNotificationProvider.dart';
 import '../provider/UserPreferenceNotifierProvider.dart';
 import '../utility/EasyRefreshUtils.dart';
 import '../widget/AppBannerAdWidget.dart';
+import '../widget/AppPlatformSliverAppbar.dart';
 import '../widget/DiscuzNotificationAppbarIconWidget.dart';
 import 'InternalWebviewBrowserPage.dart';
 import 'SettingPage.dart';
@@ -735,8 +736,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     CustomizeColor.updateAndroidNavigationbar(context);
     ModalRoute<Object?>? route = ModalRoute.of(context);
 
-    return PlatformScaffold(
-      appBar: PlatformAppBar(
+    final adaptiveAppBar = PlatformAppBar(
         automaticallyImplyLeading: this.onClosed == null ? true : false,
         cupertino: (_, __) => CupertinoNavigationBarData(
             heroTag: this.onClosed == null ? null : "viewthread_${tid}",
@@ -865,13 +865,19 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                     }),
               ]),
         ],
-      ),
+      );
+
+    return PlatformScaffold(
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(
             child: EasyRefresh(
-              header: EasyRefreshUtils.i18nClassicHeader(context),
+              header: EasyRefreshUtils.i18nClassicHeader(
+                context,
+                position: IndicatorPosition.locator,
+                safeArea: false,
+              ),
               footer: EasyRefreshUtils.i18nClassicFooter(context),
               refreshOnStart: true,
               controller: _controller,
@@ -886,16 +892,17 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
               child: CustomScrollView(
                 controller: _scrollController,
                 slivers: [
-                  SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                    (context, _) {
-                      return SafeArea(
-                        child: Container(),
-                        bottom: false,
-                      );
-                    },
-                    childCount: 1,
-                  )),
+                  AppPlatformSliverAppBar(
+                    title: adaptiveAppBar.title,
+                    leading: adaptiveAppBar.leading,
+                    pinned: true,
+                    actions: adaptiveAppBar.trailingActions,
+                    previousPageTitle: adaptiveAppBar.cupertino
+                        ?.call(context, platform(context))
+                        .previousPageTitle,
+                    cupertinoTransitionBetweenRoutes: false,
+                  ),
+                  const HeaderLocator.sliver(),
                   if (!_isFirstLoading && _viewThreadResult.errorResult == null)
                     SliverList(
                         delegate: SliverChildBuilderDelegate(

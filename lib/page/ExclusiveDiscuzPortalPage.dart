@@ -15,7 +15,7 @@ import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
@@ -46,8 +46,6 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
 
   Discuz _discuz;
   ExclusiveDiscuzPortalState(this._discuz);
-
-  late PlatformTabController tabController;
 
   late UserDao _userDao;
 
@@ -92,13 +90,6 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
 
 
 
-    tabController = PlatformTabController(
-      initialIndex: 0,
-    );
-
-
-
-
     _showNotificationIfFirstlyShown();
   }
 
@@ -109,49 +100,46 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
 
 
     return PlatformTabScaffold(
-      iosContentBottomPadding: true,
-      iosContentPadding: true,
-      tabController: tabController,
-      materialTabs: (_,__) => MaterialNavBarData(
-        selectedItemColor: Theme.of(context).primaryColor,
-        unselectedItemColor: Colors.grey,
-      ),
-      appBarBuilder: (_,index) => PlatformAppBar(
-        title: Text(_discuz.siteName),
-        automaticallyImplyLeading: false,
-      ),
-      items: [
-        BottomNavigationBarItem(
-            icon: new Icon(CupertinoIcons.today),
-            label: S.of(context).sitePage),
-        BottomNavigationBarItem(
-            icon: new Icon(Icons.home),
-            label: S.of(context).index),
-        BottomNavigationBarItem(
-            icon: new Icon(Icons.dashboard),
-            label: S.of(context).dashboard),
-        BottomNavigationBarItem(
-            icon: new Icon(Icons.notifications),
-            label: S.of(context).notification),
-        BottomNavigationBarItem(
-            icon: new Icon(PlatformIcons(context).settings),
-            label: S.of(context).settings),
+      tabDestinations: [
+        TabDestination(
+          inactiveIcon: const Icon(CupertinoIcons.today),
+          label: S.of(context).sitePage,
+          view: _buildTab(ExploreWebsitePage(key: ValueKey(0))),
+        ),
+        TabDestination(
+          inactiveIcon: const Icon(Icons.home),
+          label: S.of(context).index,
+          view: _buildTab(DiscuzPortalScreen(key: ValueKey(1))),
+        ),
+        TabDestination(
+          inactiveIcon: const Icon(Icons.dashboard),
+          label: S.of(context).dashboard,
+          view: _buildTab(HotThreadScreen()),
+        ),
+        TabDestination(
+          inactiveIcon: const Icon(Icons.notifications),
+          label: S.of(context).notification,
+          view: _buildTab(NotificationScreen()),
+        ),
+        TabDestination(
+          inactiveIcon: Icon(PlatformIcons(context).settings),
+          label: S.of(context).settings,
+          view: _buildTab(ConfigurationScreen()),
+        ),
       ],
-      bodyBuilder: (context, index) => IndexedStack(
-        index: index,
-        children: [
-          ExploreWebsitePage(key: ValueKey(0),),
-          DiscuzPortalScreen(key: ValueKey(1),),
-          HotThreadScreen(),
-          NotificationScreen(),
-          ConfigurationScreen(),
-        ],
-      ),
 
     );
 
 
   }
+
+  Widget _buildTab(Widget body) => PlatformScaffold(
+    appBar: PlatformAppBar(
+      title: Text(_discuz.siteName),
+      automaticallyImplyLeading: false,
+    ),
+    body: body,
+  );
 
   @override
   void setState(fn) {

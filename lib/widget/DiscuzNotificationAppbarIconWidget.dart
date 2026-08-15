@@ -5,7 +5,7 @@ import 'package:discuz_flutter/page/DiscuzUserNotificationPage.dart';
 import 'package:discuz_flutter/provider/DiscuzNotificationProvider.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:provider/provider.dart';
 
 import '../generated/l10n.dart';

@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 

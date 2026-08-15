@@ -10,7 +10,7 @@ import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/utility/WbiSign.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 enum BilibiliWidgetType { video, live, opus }

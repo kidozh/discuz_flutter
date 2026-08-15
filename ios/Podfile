@@ -40,5 +40,20 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '26.0'
+    end
+
+    # Xcode 26.6 can kill the nested shell CocoaPods generates for XCFramework
+    # copy phases. Source the generated script in the phase's existing shell so
+    # the same script runs without spawning the process that gets SIGKILLed.
+    target.shell_script_build_phases.each do |phase|
+      next unless phase.name == '[CP] Copy XCFrameworks'
+
+      script_path = phase.shell_script.strip
+      phase.shell_path = '/bin/bash'
+      phase.shell_script = "source #{script_path}\n"
+    end
   end
 end

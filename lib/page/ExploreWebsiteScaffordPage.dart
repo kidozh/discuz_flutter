@@ -1,7 +1,7 @@
 
 import 'package:discuz_flutter/page/ExploreWebsitePage.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 
 class ExploreWebsiteScaffordPage extends StatelessWidget{
   final String? initialURL;

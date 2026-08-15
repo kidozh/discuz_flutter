@@ -26,6 +26,7 @@ import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/AppBannerAdWidget.dart';
+import 'package:discuz_flutter/widget/AppPlatformSliverAppbar.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzNotificationAppbarIconWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
@@ -37,7 +38,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -378,8 +379,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
     ModalRoute<Object?>? route = ModalRoute.of(context);
 
-    return PlatformScaffold(
-      appBar: PlatformAppBar(
+    final adaptiveAppBar = PlatformAppBar(
         //middle: Text(S.of(context).forumDisplayTitle),
         trailingActions: [
           DiscuzNotificationAppbarIconWidget(),
@@ -489,11 +489,17 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
               route.previousTitle.value
               : Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz?.siteName
         ),
-      ),
+      );
+
+    return PlatformScaffold(
       body: EasyRefresh(
         controller: _controller,
 
-        header: EasyRefreshUtils.i18nClassicHeader(context),
+        header: EasyRefreshUtils.i18nClassicHeader(
+          context,
+          position: IndicatorPosition.locator,
+          safeArea: false,
+        ),
         footer: EasyRefreshUtils.i18nClassicFooter(context),
         refreshOnStart: true,
         onRefresh: () async {
@@ -507,13 +513,16 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
         child: CustomScrollView(
           slivers: <Widget>[
-            SliverList(
-                delegate: SliverChildBuilderDelegate(
-                      (context, _) {
-                    return SafeArea(child: Container(), bottom: false,);
-                  },
-                  childCount: 1,
-                )),
+            AppPlatformSliverAppBar(
+              title: adaptiveAppBar.title,
+              leading: adaptiveAppBar.leading,
+              pinned: true,
+              actions: adaptiveAppBar.trailingActions,
+              previousPageTitle: adaptiveAppBar.cupertino
+                  ?.call(context, platform(context))
+                  .previousPageTitle,
+            ),
+            const HeaderLocator.sliver(),
             if (_error != null)
               SliverList(
                   delegate: SliverChildBuilderDelegate(

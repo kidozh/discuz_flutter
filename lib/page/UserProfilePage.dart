@@ -18,7 +18,7 @@ import 'package:discuz_flutter/widget/LoadingStateWidget.dart';
 import 'package:discuz_flutter/widget/UserProfileListItem.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/DiscuzError.dart';

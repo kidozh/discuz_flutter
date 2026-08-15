@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -190,6 +190,8 @@ class ErrorCard extends StatelessWidget{
     }
     else if(discuzError.dioError!=null){
       switch (discuzError.dioError!.type){
+        case DioExceptionType.transformTimeout:
+          return S.of(context).dioErrorOther;
         case DioExceptionType.sendTimeout:
           return S.of(context).dioErrorSendTimeout;
         case DioExceptionType.receiveTimeout:
@@ -222,6 +224,8 @@ class ErrorCard extends StatelessWidget{
     }
     else if(discuzError.dioError!=null){
       switch (discuzError.dioError!.type){
+        case DioExceptionType.transformTimeout:
+          return Icons.error_outline;
         case DioExceptionType.sendTimeout:
           return Icons.access_time;
         case DioExceptionType.receiveTimeout:
@@ -248,4 +252,3 @@ class ErrorCard extends StatelessWidget{
     }
   }
 }
-

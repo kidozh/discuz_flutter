@@ -15,7 +15,7 @@ import 'package:discuz_flutter/widget/BilibiliWidget.dart';
 import 'package:discuz_flutter/widget/SteamGameWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:fwfh_cached_network_image/fwfh_cached_network_image.dart';
 import 'package:html/parser.dart';
@@ -276,5 +276,4 @@ class DiscuzHtmlWidgetFactory extends WidgetFactory with CachedNetworkImageFacto
 
   BaseCacheManager get cacheManager => dioCacheManager;
 }
-
 

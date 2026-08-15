@@ -34,7 +34,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
@@ -609,10 +609,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       });
     }
   }
-
-  var tabController = PlatformTabController(
-    initialIndex: 0,
-  );
 
   var _controller = PersistentTabController(initialIndex: 0);
 

@@ -7,7 +7,7 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/widget/ForumCardWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 
 // ignore: must_be_immutable
 class ForumPartitionWidget extends StatelessWidget{

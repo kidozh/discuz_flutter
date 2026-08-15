@@ -31,6 +31,10 @@
 .pub-cache/
 .pub/
 /build/
+/android/app/.cxx/
+/android/build/
+/ios/build/
+/third_party/extended_text_field/example/
 
 # Web related
 lib/generated_plugin_registrant.dart
@@ -44,4 +48,8 @@ app.*.map.json
 # key properties
 android/key.properties
 
-pubspec.lock
+# Filenames containing ':' cannot be checked out on Windows.
+*:*
+
+# Xcode project backups are local recovery files.
+*.backup

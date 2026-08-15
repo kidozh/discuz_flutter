@@ -4,7 +4,7 @@ import 'dart:ui';
 
 import 'package:dual_screen/dual_screen.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 
 import 'TwoPaneUtils.dart';
 

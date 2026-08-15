@@ -1,7 +1,7 @@
 
 
 import 'package:flutter/widgets.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 
 import '../generated/l10n.dart';
 import '../screen/NotificationScreen.dart';

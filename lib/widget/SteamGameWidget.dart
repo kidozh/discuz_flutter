@@ -7,7 +7,7 @@ import 'package:discuz_flutter/JsonResult/SteamGameDataResult.dart';
 import 'package:discuz_flutter/client/SteamApiClient.dart';
 import 'package:discuz_flutter/utility/TwoPaneUtils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:html_unescape/html_unescape.dart';
