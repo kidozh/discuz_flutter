@@ -45,6 +45,9 @@ class ChevertoUploadResult {
   }
 
   String? get errorMessage {
+    if (isSuccess) {
+      return null;
+    }
     final errorJson = _mapValue(rawJson['error']);
     return _stringValue(errorJson?['message']) ??
         _stringValue(errorJson?['error']) ??
