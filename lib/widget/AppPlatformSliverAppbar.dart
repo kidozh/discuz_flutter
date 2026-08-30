@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
@@ -44,19 +43,30 @@ class AppPlatformSliverAppBar extends StatelessWidget {
         actions: actions,
       ),
       cupertino: (context, platform) {
+        final canPop = Navigator.maybeOf(context)?.canPop() ?? false;
+        final effectiveLeading = leading ??
+            (usesLiquidGlass(context) && canPop
+                ? const PlatformBackButton()
+                : null);
         final actions = this.actions;
         final trailing = (actions == null || actions.isEmpty)
             ? null
             : (actions.length == 1)
-            ? actions.first
-            : Row(
-          mainAxisSize: MainAxisSize.min,
-          children: actions,
-        );
+                ? actions.first
+                : usesLiquidGlass(context)
+                    ? PlatformLiquidGlassToolbarGroup(children: actions)
+                    : Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: actions,
+                      );
         return CupertinoSliverNavigationBar(
           stretch: stretch,
           largeTitle: title,
-          leading: leading,
+          backgroundColor: Colors.transparent,
+          border: null,
+          enableBackgroundFilterBlur: true,
+          leading: effectiveLeading,
+          automaticallyImplyLeading: effectiveLeading == null,
           previousPageTitle: previousPageTitle,
           trailing: trailing,
           transitionBetweenRoutes: cupertinoTransitionBetweenRoutes,

@@ -110,13 +110,13 @@ class SteamGameState extends State<SteamGameWidget> {
           VibrationUtils.vibrateWithClickIfPossible();
           URLUtils.openURL(context, null, url, null, null);
         },
-        child: Card(
+        child: PlatformCard(
           color: Theme.of(context).colorScheme.secondaryContainer,
           child: Container(
-            padding: EdgeInsets.only(top: 4.0, left: 4.0, right: 4.0, bottom: isLoading? 0: 4.0),
+            padding: EdgeInsets.only(
+                top: 4.0, left: 4.0, right: 4.0, bottom: isLoading ? 0 : 4.0),
             child: Column(
               children: [
-
                 PlatformListTile(
                     leading: FaIcon(
                       FontAwesomeIcons.steam,
@@ -126,12 +126,16 @@ class SteamGameState extends State<SteamGameWidget> {
                       url,
                       maxLines: 1,
                       style: TextStyle(
-                          color:
-                          Theme.of(context).colorScheme.onSecondaryContainer),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSecondaryContainer),
                     )),
-                isLoading? LinearProgressIndicator(
-                  color: Theme.of(context).colorScheme.onSecondaryContainer,
-                ): Container(),
+                isLoading
+                    ? LinearProgressIndicator(
+                        color:
+                            Theme.of(context).colorScheme.onSecondaryContainer,
+                      )
+                    : Container(),
               ],
             ),
           ),
@@ -143,14 +147,14 @@ class SteamGameState extends State<SteamGameWidget> {
           // trigger something
           triggerDialog();
         },
-        child: Card(
+        child: PlatformCard(
           elevation: isCupertino(context) ? 2 : 4,
           color: Theme.of(context).colorScheme.primaryContainer,
           child: Padding(
             padding: EdgeInsets.all(0),
             child: Column(
               children: [
-                ListTile(
+                PlatformListTile(
                   leading: FaIcon(
                     FontAwesomeIcons.steam,
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -164,9 +168,7 @@ class SteamGameState extends State<SteamGameWidget> {
                   subtitle: Text(
                     steamGameDataResult.data.developers.join(", "),
                     style: TextStyle(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onPrimaryContainer,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
                         fontWeight: FontWeight.w300),
                   ),
                 ),
@@ -186,9 +188,7 @@ class SteamGameState extends State<SteamGameWidget> {
                     maxLines: 3,
                     style: TextStyle(
                         height: 1.2,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onPrimaryContainer,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
                         fontSize: 12),
                   ),
                 ),
@@ -206,8 +206,13 @@ class SteamGameState extends State<SteamGameWidget> {
         builder: (context) => SingleChildScrollView(
               child: Container(
                 //alignment: Alignment.centerRight,
-                color: Theme.of(context).colorScheme.surface,
-                width: MediaQuery.sizeOf(context).width * 0.6 > TwoPaneUtils.mobileScreenSize? MediaQuery.sizeOf(context).width * 0.6: double.infinity,
+                color: usesLiquidGlass(context)
+                    ? Colors.transparent
+                    : Theme.of(context).colorScheme.surface,
+                width: MediaQuery.sizeOf(context).width * 0.6 >
+                        TwoPaneUtils.mobileScreenSize
+                    ? MediaQuery.sizeOf(context).width * 0.6
+                    : double.infinity,
                 padding: EdgeInsets.only(bottom: 16.0, left: 16, right: 16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -388,60 +393,58 @@ class SteamGameState extends State<SteamGameWidget> {
                     SizedBox(
                       height: 8,
                     ),
-                    if(steamGameDataResult.data.supported_languages.isNotEmpty)
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.translate,
-                          size: 16,
-                        ),
-                        SizedBox(
-                          width: 16.0,
-                        ),
-
-                        Expanded(
-                            child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            HtmlWidget(
-                              steamGameDataResult.data.supported_languages,
-                              textStyle: TextStyle(
-                                  color: Theme.of(context).disabledColor,
-                                  fontSize: 12),
-                            ),
-                            if (!steamGameDataResult.data.supported_languages
-                                .contains(LanguageCode.code.nativeName
-                                    .replaceAll(RegExp(r"\(.*?\)"), "")
-                                    .replaceAll(RegExp(r"\s"), "")))
-                              Container(
-                                padding: EdgeInsets.all(4.0),
-                                //margin: EdgeInsets.only(bottom: 8),
-                                //width: double.infinity,
-                                // decoration: BoxDecoration(
-                                //     color: Theme.of(context)
-                                //         .colorScheme
-                                //         .errorContainer,
-                                //     border: Border.all(
-                                //       style: BorderStyle.none,
-                                //       color:
-                                //           Theme.of(context).colorScheme.error,
-                                //     )),
-                                child: Text(
-                                  S.of(context).gameLanguageNotSupported(
-                                      LanguageCode.code.nativeName),
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .error,
-                                      fontSize: 12),
-                                ),
+                    if (steamGameDataResult.data.supported_languages.isNotEmpty)
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.translate,
+                            size: 16,
+                          ),
+                          SizedBox(
+                            width: 16.0,
+                          ),
+                          Expanded(
+                              child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              HtmlWidget(
+                                steamGameDataResult.data.supported_languages,
+                                textStyle: TextStyle(
+                                    color: Theme.of(context).disabledColor,
+                                    fontSize: 12),
                               ),
-                          ],
-                        ))
-                      ],
-                    ),
+                              if (!steamGameDataResult.data.supported_languages
+                                  .contains(LanguageCode.code.nativeName
+                                      .replaceAll(RegExp(r"\(.*?\)"), "")
+                                      .replaceAll(RegExp(r"\s"), "")))
+                                Container(
+                                  padding: EdgeInsets.all(4.0),
+                                  //margin: EdgeInsets.only(bottom: 8),
+                                  //width: double.infinity,
+                                  // decoration: BoxDecoration(
+                                  //     color: Theme.of(context)
+                                  //         .colorScheme
+                                  //         .errorContainer,
+                                  //     border: Border.all(
+                                  //       style: BorderStyle.none,
+                                  //       color:
+                                  //           Theme.of(context).colorScheme.error,
+                                  //     )),
+                                  child: Text(
+                                    S.of(context).gameLanguageNotSupported(
+                                        LanguageCode.code.nativeName),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color:
+                                            Theme.of(context).colorScheme.error,
+                                        fontSize: 12),
+                                  ),
+                                ),
+                            ],
+                          ))
+                        ],
+                      ),
                     SizedBox(
                       height: 8,
                     ),

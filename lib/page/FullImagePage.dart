@@ -15,8 +15,6 @@ import 'package:saver_gallery/saver_gallery.dart';
 
 import '../utility/AppPlatformIcons.dart';
 
-
-
 class FullImagePage extends StatefulWidget {
   String imageUrl;
   List<String> imageUrlList = [];
@@ -28,29 +26,22 @@ class FullImagePage extends StatefulWidget {
     // TODO: implement createState
     return FullImagePageState(imageUrl, imageUrlList);
   }
-
-
-
 }
 
-
-class FullImagePageState extends State<FullImagePage>{
+class FullImagePageState extends State<FullImagePage> {
   String imageUrl;
   List<String> imageUrlList = [];
 
   late PageController pageController;
 
   int currentPage = 0;
-  FullImagePageState(this.imageUrl, this.imageUrlList){
+  FullImagePageState(this.imageUrl, this.imageUrlList) {
     currentPage = initialPage;
     pageController = PageController(initialPage: initialPage);
-
   }
 
   @override
   Widget build(BuildContext context) {
-
-
     return PlatformScaffold(
         appBar: PlatformAppBar(
           title: Text(
@@ -58,8 +49,12 @@ class FullImagePageState extends State<FullImagePage>{
             maxLines: 1,
           ),
           trailingActions: [
-            IconButton(
-              icon: Icon(AppPlatformIcons(context).saveOutline),
+            PlatformIconButton(
+              liquidGlassSymbol: 'square.and.arrow.down',
+              icon: Icon(
+                AppPlatformIcons(context).saveOutline,
+                semanticLabel: S.of(context).savePictureToDevice,
+              ),
               onPressed: () {
                 VibrationUtils.vibrateWithClickIfPossible();
                 _save(context);
@@ -69,56 +64,56 @@ class FullImagePageState extends State<FullImagePage>{
         ),
         body: Container(
             child: Column(
-              children: [
-                Expanded(
-                  child: photoViewGalleryListBuilder,
-                )
-              ],
-            )));
+          children: [
+            Expanded(
+              child: photoViewGalleryListBuilder,
+            )
+          ],
+        )));
   }
 
   int get initialPage => imageUrlList.indexOf(imageUrl);
 
   Widget get photoViewGalleryListBuilder => PhotoViewGallery.builder(
-    itemCount: imageUrlList.length,
-    scrollPhysics: const BouncingScrollPhysics(),
-    builder: (BuildContext context, int index) {
-      return PhotoViewGalleryPageOptions(
-        imageProvider: CachedNetworkImageProvider(imageUrlList[index]),
-        initialScale: PhotoViewComputedScale.contained * 0.8,
-        heroAttributes: PhotoViewHeroAttributes(tag: index),
-      );
-    },
-    pageController: pageController,
-    onPageChanged: (value){
-      setState(() {
-        currentPage = value;
-      });
-
-    },
-    loadingBuilder: (context, event) => Center(
-      child: Container(
-        width: 48,
-        height: 48,
-        child: PlatformCircularProgressIndicator(
-          material: (context, platform) => MaterialProgressIndicatorData(
-            value: (event == null || event.expectedTotalBytes == null)? 0: event.cumulativeBytesLoaded / event.expectedTotalBytes!
+        itemCount: imageUrlList.length,
+        scrollPhysics: const BouncingScrollPhysics(),
+        builder: (BuildContext context, int index) {
+          return PhotoViewGalleryPageOptions(
+            imageProvider: CachedNetworkImageProvider(imageUrlList[index]),
+            initialScale: PhotoViewComputedScale.contained * 0.8,
+            heroAttributes: PhotoViewHeroAttributes(tag: index),
+          );
+        },
+        pageController: pageController,
+        onPageChanged: (value) {
+          setState(() {
+            currentPage = value;
+          });
+        },
+        loadingBuilder: (context, event) => Center(
+          child: Container(
+            width: 48,
+            height: 48,
+            child: PlatformCircularProgressIndicator(
+              material: (context, platform) => MaterialProgressIndicatorData(
+                  value: (event == null || event.expectedTotalBytes == null)
+                      ? 0
+                      : event.cumulativeBytesLoaded /
+                          event.expectedTotalBytes!),
+            ),
           ),
         ),
-      ),
-    ),
-
-  );
+      );
 
   Future<void> _saveFigureInDevice() async {
-    if(currentPage < imageUrlList.length){
-      var response = await Dio()
-          .get(imageUrlList[currentPage], options: Options(responseType: ResponseType.bytes));
+    if (currentPage < imageUrlList.length) {
+      var response = await Dio().get(imageUrlList[currentPage],
+          options: Options(responseType: ResponseType.bytes));
       SaverGallery.saveImage(
         Uint8List.fromList(response.data),
-          quality: 100,
-          fileName: imageUrlList[currentPage].split("/").last,
-          skipIfExists: false,
+        quality: 100,
+        fileName: imageUrlList[currentPage].split("/").last,
+        skipIfExists: false,
       );
       EasyLoading.showSuccess(S.of(context).saveImageSuccessfully);
     }

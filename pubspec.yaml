@@ -58,6 +58,7 @@ dependencies:
       ref: 8572dd54c437c919aedc8dca6c5bffd25fe74b3
 
   intl: ^0.20.0
+  adaptive_platform_ui: ^0.1.111
   platform_adaptive_widgets: ^2.1.1
   flutter_launcher_icons: ^0.14.1
   extended_text_field: ^16.0.0

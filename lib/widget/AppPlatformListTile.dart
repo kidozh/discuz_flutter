@@ -1,9 +1,7 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 
-class AppPlatformListTile extends StatelessWidget{
+class AppPlatformListTile extends StatelessWidget {
   /// A widget to display before the title.
   ///
   /// Typically an [Icon] or a [CircleAvatar] widget.
@@ -69,39 +67,33 @@ class AppPlatformListTile extends StatelessWidget{
   final bool? dense;
 
   final GestureTapCallback? onTap;
+
   /// Called when the user long-presses on this list tile.
   ///
   /// Inoperative if [enabled] is false.
   final GestureLongPressCallback? onLongPress;
 
-  AppPlatformListTile({this.leading, required this.title, this.subtitle, this.trailing, this.dense, this.onTap, this.isThreeLine=false, this.onLongPress});
-
-
+  AppPlatformListTile(
+      {this.leading,
+      required this.title,
+      this.subtitle,
+      this.trailing,
+      this.dense,
+      this.onTap,
+      this.isThreeLine = false,
+      this.onLongPress});
 
   @override
   Widget build(BuildContext context) {
-    return PlatformWidget(
-      material: (_,__) => ListTile(
-          leading:this.leading,
-          title:this.title,
-          subtitle:this.subtitle,
-          trailing:this.trailing,
-          isThreeLine:this.isThreeLine,
-          dense:this.dense,
-          onTap: this.onTap,
-          onLongPress: this.onLongPress,
-      ),
-      cupertino: (_,__)=> CupertinoListTile(
-        leading:this.leading,
-        title:this.title,
-        subtitle:this.subtitle,
-        trailing:this.trailing,
-        onTap: this.onTap,
-
-        //onLongPress: this.onLongPress,
-      ),
+    return PlatformListTile(
+      leading: leading,
+      title: title,
+      subtitle: subtitle,
+      trailing: trailing,
+      isThreeLine: isThreeLine,
+      dense: dense,
+      onTap: onTap,
+      onLongPress: onLongPress,
     );
   }
-
-
 }

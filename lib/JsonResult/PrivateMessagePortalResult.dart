@@ -9,19 +9,19 @@ import 'ErrorResult.dart';
 part 'PrivateMessagePortalResult.g.dart';
 
 @JsonSerializable()
-class PrivateMessagePortalResult extends BaseResult{
-
+class PrivateMessagePortalResult extends BaseResult {
   @JsonKey(name: "Variables")
   PrivateMessagePortalVariables variables = PrivateMessagePortalVariables();
 
-  PrivateMessagePortalResult(){}
+  PrivateMessagePortalResult() {}
 
-  factory PrivateMessagePortalResult.fromJson(Map<String, dynamic> json) => _$PrivateMessagePortalResultFromJson(json);
+  factory PrivateMessagePortalResult.fromJson(Map<String, dynamic> json) =>
+      _$PrivateMessagePortalResultFromJson(json);
   Map<String, dynamic> toJson() => _$PrivateMessagePortalResultToJson(this);
 }
 
 @JsonSerializable()
-class PrivateMessagePortalVariables extends BaseVariableResult{
+class PrivateMessagePortalVariables extends BaseVariableResult {
   @JsonKey(name: "list")
   List<PrivateMessagePortal> pmList = [];
   @StringToIntConverter()
@@ -32,13 +32,14 @@ class PrivateMessagePortalVariables extends BaseVariableResult{
   @StringToIntConverter()
   int page = 1;
 
-  PrivateMessagePortalVariables(){}
-  factory PrivateMessagePortalVariables.fromJson(Map<String, dynamic> json) => _$PrivateMessagePortalVariablesFromJson(json);
+  PrivateMessagePortalVariables() {}
+  factory PrivateMessagePortalVariables.fromJson(Map<String, dynamic> json) =>
+      _$PrivateMessagePortalVariablesFromJson(json);
   Map<String, dynamic> toJson() => _$PrivateMessagePortalVariablesToJson(this);
 }
 
 @JsonSerializable()
-class PrivateMessagePortal{
+class PrivateMessagePortal {
   @StringToIntConverter()
   int plid = 0;
   @JsonKey(name: "isnew")
@@ -63,11 +64,11 @@ class PrivateMessagePortal{
   @JsonKey(name: "vdateline")
   String dateTimeString = "";
 
-  get readableString => dateTimeString.replaceAll("&nbsp;", "");
+  get readableString => dateTimeString.replaceAll("&nbsp;", " ");
 
   PrivateMessagePortal();
 
-  factory PrivateMessagePortal.fromJson(Map<String, dynamic> json) => _$PrivateMessagePortalFromJson(json);
+  factory PrivateMessagePortal.fromJson(Map<String, dynamic> json) =>
+      _$PrivateMessagePortalFromJson(json);
   Map<String, dynamic> toJson() => _$PrivateMessagePortalToJson(this);
 }
-

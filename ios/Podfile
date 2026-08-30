@@ -43,6 +43,13 @@ post_install do |installer|
 
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '26.0'
+
+      # google_mobile_ads 9.1.0 imports GoogleMobileAds_Beta.h from the SDK's
+      # private headers. Xcode 26 otherwise rejects that import while compiling
+      # the plugin as a framework module.
+      if target.name == 'google_mobile_ads'
+        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+      end
     end
 
     # Xcode 26.6 can kill the nested shell CocoaPods generates for XCFramework
@@ -54,6 +61,43 @@ post_install do |installer|
       script_path = phase.shell_script.strip
       phase.shell_path = '/bin/bash'
       phase.shell_script = "source #{script_path}\n"
+    end
+  end
+
+  # webview_flutter_wkwebview 3.26.x can decode a detached authentication
+  # challenge response as NSNull and then force-cast it, crashing the app.
+  # Keep this local workaround until flutter/flutter#191254 is fixed upstream.
+  webkit_generated_source = File.join(
+    __dir__,
+    '.symlinks',
+    'plugins',
+    'webview_flutter_wkwebview',
+    'darwin',
+    'webview_flutter_wkwebview',
+    'Sources',
+    'webview_flutter_wkwebview',
+    'WebKitLibrary.g.swift'
+  )
+  if File.exist?(webkit_generated_source)
+    source = File.read(webkit_generated_source)
+    unsafe_cast = <<~'SWIFT'.strip
+      let result = listResponse[0] as! AuthenticationChallengeResponse
+              completion(.success(result))
+    SWIFT
+    safe_cast = <<~'SWIFT'.strip
+      guard let result = listResponse[0] as? AuthenticationChallengeResponse else {
+                completion(
+                  .success(
+                    AuthenticationChallengeResponse(
+                      disposition: .performDefaultHandling,
+                      credential: nil)))
+                return
+              }
+              completion(.success(result))
+    SWIFT
+    if source.include?(unsafe_cast)
+      File.write(webkit_generated_source, source.sub(unsafe_cast, safe_cast))
+      Pod::UI.puts 'Patched WKWebView authentication challenge NSNull crash.'
     end
   end
 end

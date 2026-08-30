@@ -5,22 +5,21 @@ import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 import 'BaseResult.dart';
 import 'ErrorResult.dart';
 
-
 part 'PrivateMessageDetailResult.g.dart';
 
 @JsonSerializable()
-class PrivateMessageDetailResult extends BaseResult{
-
+class PrivateMessageDetailResult extends BaseResult {
   @JsonKey(name: "Variables")
   late PrivateMessageDetailVariables variables;
 
-  PrivateMessageDetailResult(){}
+  PrivateMessageDetailResult() {}
 
-  factory PrivateMessageDetailResult.fromJson(Map<String, dynamic> json) => _$PrivateMessageDetailResultFromJson(json);
+  factory PrivateMessageDetailResult.fromJson(Map<String, dynamic> json) =>
+      _$PrivateMessageDetailResultFromJson(json);
 }
 
 @JsonSerializable()
-class PrivateMessageDetailVariables extends BaseVariableResult{
+class PrivateMessageDetailVariables extends BaseVariableResult {
   @JsonKey(name: "list")
   List<PrivateMessageDetail> pmList = [];
   @StringToIntConverter()
@@ -34,13 +33,13 @@ class PrivateMessageDetailVariables extends BaseVariableResult{
   @StringToIntConverter()
   int pmId = 0;
 
-  PrivateMessageDetailVariables(){}
-  factory PrivateMessageDetailVariables.fromJson(Map<String, dynamic> json) => _$PrivateMessageDetailVariablesFromJson(json);
-
+  PrivateMessageDetailVariables() {}
+  factory PrivateMessageDetailVariables.fromJson(Map<String, dynamic> json) =>
+      _$PrivateMessageDetailVariablesFromJson(json);
 }
 
 @JsonSerializable()
-class PrivateMessageDetail{
+class PrivateMessageDetail {
   @StringToIntConverter()
   int plid = 0;
   String subject = "";
@@ -59,10 +58,10 @@ class PrivateMessageDetail{
   @JsonKey(name: "vdateline")
   String dateTimeString = "";
 
-  get readableString => dateTimeString.replaceAll("&nbsp;", "");
+  get readableString => dateTimeString.replaceAll("&nbsp;", " ");
 
   PrivateMessageDetail();
 
-  factory PrivateMessageDetail.fromJson(Map<String, dynamic> json) => _$PrivateMessageDetailFromJson(json);
+  factory PrivateMessageDetail.fromJson(Map<String, dynamic> json) =>
+      _$PrivateMessageDetailFromJson(json);
 }
-

@@ -12,69 +12,105 @@ class ForumCardWidget extends StatelessWidget {
   Forum _forum;
   Discuz _discuz;
   User? _user;
+  final bool embeddedInGlass;
 
-  ForumCardWidget(this._discuz, this._user, this._forum);
+  ForumCardWidget(
+    this._discuz,
+    this._user,
+    this._forum, {
+    this.embeddedInGlass = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return PlatformWidgetBuilder(
-        cupertino: (context, child, target) => Container(
-              decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  border: Border.all(
-                      color: Theme.of(context).disabledColor,
-                    width: 0.1
-                  )
-              ),
-              child: child,
-            ),
-        material: (context, child, target) => Card(
-              child: child,
-            ),
-        child: ListTile(
-          leading: Container(
-            width: 36,
-            height: 36,
-            child: Badge(
-              label: _forum.todayPosts !="0"? Text(_forum.todayPosts) : null,
-              isLabelVisible: _forum.todayPosts !="0" ?true: false,
-              child: CachedNetworkImage(
-                imageUrl: _forum.iconUrl,
-                progressIndicatorBuilder: (context, url, downloadProgress) =>
-                    CircularProgressIndicator(value: downloadProgress.progress),
-                errorWidget: (context, url, error) => CircleAvatar(
-                  backgroundColor:
-                  Theme.of(context).colorScheme.secondaryContainer,
-                  child: Icon(
-                    PlatformIcons(context).tagSolid,
-                    color: Theme.of(context).colorScheme.onSecondaryContainer,
-                    size: 20,
+    final leadingExtent = embeddedInGlass ? 36.0 : 40.0;
+    final avatarSize = embeddedInGlass ? 34.0 : 38.0;
+    final tile = PlatformListTile(
+      contentPadding: embeddedInGlass
+          ? const EdgeInsets.symmetric(horizontal: 10, vertical: 6)
+          : null,
+      leading: SizedBox.square(
+        dimension: leadingExtent,
+        child: Badge(
+          label: _forum.todayPosts != "0" ? Text(_forum.todayPosts) : null,
+          isLabelVisible: _forum.todayPosts != "0" ? true : false,
+          child: PlatformLiquidGlassAvatar(
+            size: avatarSize,
+            child: CachedNetworkImage(
+              imageUrl: _forum.iconUrl,
+              fit: BoxFit.cover,
+              progressIndicatorBuilder: (context, url, downloadProgress) =>
+                  Center(
+                child: SizedBox.square(
+                  dimension: 16,
+                  child: PlatformCircularProgressIndicator(
+                    material: (_, __) => MaterialProgressIndicatorData(
+                      value: downloadProgress.progress,
+                    ),
                   ),
+                ),
+              ),
+              errorWidget: (context, url, error) => ColoredBox(
+                color: Theme.of(context).colorScheme.secondaryContainer,
+                child: Icon(
+                  PlatformIcons(context).tagSolid,
+                  color: Theme.of(context).colorScheme.onSecondaryContainer,
+                  size: 18,
                 ),
               ),
             ),
           ),
-          title: Text(
+        ),
+      ),
+      title: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
             _forum.name,
-            maxLines: _forum.description.length != 0 ? 1 : 2,
-            softWrap: true,
-            style: TextStyle(fontWeight: FontWeight.bold),
+            maxLines: _forum.description.isNotEmpty ? 1 : 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              height: 1.18,
+            ),
           ),
-          subtitle: _forum.description.length != 0
-              ? Text(_forum.description, maxLines: 1, overflow: TextOverflow.ellipsis,)
-              : null,
-          onTap: () async {
-            VibrationUtils.vibrateWithClickIfPossible();
-            await Navigator.push(
-                context,
-                platformPageRoute(
-                    context: context,
-                    iosTitle: _forum.name,
-                    builder: (context) => DisplayForumTwoPanePage(
-                        _discuz, _user, _forum.getFid(),
-                        forumTitle: _forum.name,
+          if (_forum.description.isNotEmpty) ...[
+            const SizedBox(height: 3),
+            Text(
+              _forum.description,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 13,
+                height: 1.22,
+              ),
+            ),
+          ],
+        ],
+      ),
+      onTap: () async {
+        VibrationUtils.vibrateWithClickIfPossible();
+        await Navigator.push(
+            context,
+            platformPageRoute(
+                context: context,
+                iosTitle: _forum.name,
+                builder: (context) => DisplayForumTwoPanePage(
+                      _discuz,
+                      _user,
+                      _forum.getFid(),
+                      forumTitle: _forum.name,
                     )));
-          },
-        ));
+      },
+    );
+    if (embeddedInGlass) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+        child: tile,
+      );
+    }
+    return PlatformCard(margin: const EdgeInsets.all(4), child: tile);
   }
 }

@@ -1,4 +1,3 @@
-
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
@@ -16,29 +15,25 @@ class ChooseThemeColorPage extends StatefulWidget {
 }
 
 class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
-
   DynamicSchemeVariant dynamicSchemeVariant = DynamicSchemeVariant.fidelity;
   FlexScheme _selectedThemeColor = FlexScheme.blue;
   String _selectedBrightnessName = "";
 
-  Widget getLeadingCircleWidget(BuildContext context, Color color){
+  Widget getLeadingCircleWidget(BuildContext context, Color color) {
     return Container(
-
       width: 12,
       height: 12,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6),
-        color: color
-      ),
+      decoration:
+          BoxDecoration(borderRadius: BorderRadius.circular(6), color: color),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-
     //_selectedColorName = Provider.of<ThemeNotifierProvider>(context,listen: false).themeColorName;
 
-    _selectedThemeColor = Provider.of<ThemeNotifierProvider>(context,listen: false).themeColor;
+    _selectedThemeColor =
+        Provider.of<ThemeNotifierProvider>(context, listen: false).themeColor;
     final ThemeMode themeMode;
     final ValueChanged<ThemeMode> onThemeModeChanged;
     final bool useMaterial3;
@@ -46,17 +41,15 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
     //final FlexSchemeData flexSchemeData = FlexSchemeData();
 
     final ThemeData theme = Theme.of(context);
-    Brightness? _selectedBrightness = Provider.of<ThemeNotifierProvider>(context,listen: false).brightness;
-    if(_selectedBrightness == null){
+    Brightness? _selectedBrightness =
+        Provider.of<ThemeNotifierProvider>(context, listen: false).brightness;
+    if (_selectedBrightness == null) {
       _selectedBrightnessName = "";
-    }
-    else if(_selectedBrightness == Brightness.light){
+    } else if (_selectedBrightness == Brightness.light) {
       _selectedBrightnessName = "light";
-    }
-    else if(_selectedBrightness == Brightness.dark){
+    } else if (_selectedBrightness == Brightness.dark) {
       _selectedBrightnessName = "dark";
-    }
-    else{
+    } else {
       _selectedBrightnessName = "";
     }
 
@@ -65,69 +58,68 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
       appBar: PlatformAppBar(
         //title: Text(S.of(context).chooseThemeTitle),
         title: Text(_selectedThemeColor.name.toUpperCase()),
-
       ),
-      body: SettingsList(
+      body: PlatformAdaptiveSettingsList(
         sections: [
           CustomSettingsSection(
-              child: Container(
-                padding: EdgeInsets.all(4.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  //primary: true,
-                  children: <Widget>[
-                    // A 3-way theme mode toggle switch that shows the color scheme.
-                    FlexThemeModeSwitch(
-                      themeMode: ThemeMode.system,
-                      title: Text(S.of(context).interfaceBrightness, style: TextStyle(fontSize: 16),),
-                      labelLight: S.of(context).brightnessLight.toUpperCase(),
-                      labelDark: S.of(context).brightnessDark.toUpperCase(),
-                      labelSystem: S.of(context).followSystem.toUpperCase(),
-                      onThemeModeChanged: (themeMode){
-                        // not mention
-                        switch (themeMode){
-                          case ThemeMode.light:
-                            changePlatform("light");
-                            break;
-                          case ThemeMode.dark:
-                            changePlatform("dark");
-                            break;
-                          case ThemeMode.system:
-                            changePlatform("");
-                            break;
-                        }
-
-                      },
-                      flexSchemeData: _selectedThemeColor.data,
-                      buttonOrder: FlexThemeModeButtonOrder.lightSystemDark,
+            child: Container(
+              padding: EdgeInsets.all(4.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                //primary: true,
+                children: <Widget>[
+                  // A 3-way theme mode toggle switch that shows the color scheme.
+                  FlexThemeModeSwitch(
+                    themeMode: ThemeMode.system,
+                    title: Text(
+                      S.of(context).interfaceBrightness,
+                      style: TextStyle(fontSize: 16),
                     ),
-                    // Show theme name and description.
-                    // ListTile(
-                    //   contentPadding: EdgeInsets.zero,
-                    //   title: Text('${_selectedThemeColor.data.name} theme'),
-                    //   subtitle: Text(_selectedThemeColor.data.description),
-                    // ),
+                    labelLight: S.of(context).brightnessLight.toUpperCase(),
+                    labelDark: S.of(context).brightnessDark.toUpperCase(),
+                    labelSystem: S.of(context).followSystem.toUpperCase(),
+                    onThemeModeChanged: (themeMode) {
+                      // not mention
+                      switch (themeMode) {
+                        case ThemeMode.light:
+                          changePlatform("light");
+                          break;
+                        case ThemeMode.dark:
+                          changePlatform("dark");
+                          break;
+                        case ThemeMode.system:
+                          changePlatform("");
+                          break;
+                      }
+                    },
+                    flexSchemeData: _selectedThemeColor.data,
+                    buttonOrder: FlexThemeModeButtonOrder.lightSystemDark,
+                  ),
+                  // Show theme name and description.
+                  // PlatformListTile(
+                  //   contentPadding: EdgeInsets.zero,
+                  //   title: Text('${_selectedThemeColor.data.name} theme'),
+                  //   subtitle: Text(_selectedThemeColor.data.description),
+                  // ),
 
-                    GridView.builder(
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 80,
-                            childAspectRatio: 1
-                        ),
-                        itemCount: FlexScheme.values.length,
-                        itemBuilder: (context, index){
-                          FlexScheme flexScheme = FlexScheme.values[index];
-                          return FlexSchemeCard(flexScheme, (){
-                            changeColor(flexScheme);
-                            VibrationUtils.vibrateWithClickIfPossible();
-                          });
-                        },
-                    ),
-                  ],
-                ),
+                  GridView.builder(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 80, childAspectRatio: 1),
+                    itemCount: FlexScheme.values.length,
+                    itemBuilder: (context, index) {
+                      FlexScheme flexScheme = FlexScheme.values[index];
+                      return FlexSchemeCard(flexScheme, () {
+                        changeColor(flexScheme);
+                        VibrationUtils.vibrateWithClickIfPossible();
+                      });
+                    },
+                  ),
+                ],
               ),
+            ),
           ),
         ],
       ),
@@ -140,20 +132,18 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
     });
     print("change brightness to $brightnessName");
     Brightness? brightness;
-    if(brightnessName == ""){
+    if (brightnessName == "") {
       brightness = null;
-    }
-    else if(brightnessName == "light"){
+    } else if (brightnessName == "light") {
       brightness = Brightness.light;
-    }
-    else if(brightnessName == "dark"){
+    } else if (brightnessName == "dark") {
       brightness = Brightness.dark;
-    }
-    else{
+    } else {
       brightness = null;
     }
 
-    Provider.of<ThemeNotifierProvider>(context,listen: false).setBrightness(brightness);
+    Provider.of<ThemeNotifierProvider>(context, listen: false)
+        .setBrightness(brightness);
     UserPreferencesUtils.putInterfaceBrightnessPreference(brightnessName);
     VibrationUtils.vibrateSuccessfullyIfPossible();
   }
@@ -164,18 +154,17 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
     });
     print("change theme color to $colorValue");
 
-    Provider.of<ThemeNotifierProvider>(context,listen: false).setTheme(colorValue);
+    Provider.of<ThemeNotifierProvider>(context, listen: false)
+        .setTheme(colorValue);
     List<FlexScheme> flexSchemeList = FlexScheme.values;
     UserPreferencesUtils.putThemeColor(flexSchemeList.indexOf(colorValue));
     VibrationUtils.vibrateSuccessfullyIfPossible();
 
     CustomizeColor.updateAndroidNavigationbar(context);
-
   }
 }
 
-class FlexSchemeCard extends StatelessWidget{
-
+class FlexSchemeCard extends StatelessWidget {
   FlexScheme flexScheme;
   GestureTapCallback gestureTapCallback;
   FlexSchemeCard(this.flexScheme, this.gestureTapCallback);
@@ -183,64 +172,63 @@ class FlexSchemeCard extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     FlexSchemeColor flexSchemeColor = flexScheme.data.light;
-    if(Theme.of(context).brightness == Brightness.dark){
+    if (Theme.of(context).brightness == Brightness.dark) {
       flexSchemeColor = flexScheme.data.dark;
     }
-    
-    return Consumer<ThemeNotifierProvider>(builder: (context, theme, child){
-        bool isSelected = theme.themeColor == flexScheme;
-        return InkWell(
-          onTap: (){
-            gestureTapCallback();
-          },
+
+    return Consumer<ThemeNotifierProvider>(builder: (context, theme, child) {
+      bool isSelected = theme.themeColor == flexScheme;
+      return InkWell(
+        onTap: () {
+          gestureTapCallback();
+        },
+        child: Container(
+          margin: EdgeInsets.all(0.0),
+          padding: EdgeInsets.all(4.0),
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: isSelected
+                ? Border.all(color: flexSchemeColor.primary, width: 2)
+                : null,
+          ),
           child: Container(
-            margin: EdgeInsets.all(0.0),
-            padding: EdgeInsets.all(4.0),
             clipBehavior: Clip.antiAliasWithSaveLayer,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              border: isSelected? Border.all(color: flexSchemeColor.primary, width: 2):null,
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: Container(
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: GridView.count(
-                physics: NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.zero,
-                primary: false,
-                shrinkWrap: true,
-                crossAxisCount: 2,
-                children: [
-                  SizedBox(
-                    child: Container(
-                      color: flexSchemeColor.primary,
-                    ),
+            child: GridView.count(
+              physics: NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              primary: false,
+              shrinkWrap: true,
+              crossAxisCount: 2,
+              children: [
+                SizedBox(
+                  child: Container(
+                    color: flexSchemeColor.primary,
                   ),
-                  SizedBox(
-                    child: Container(
-                      color: flexSchemeColor.secondary,
-                    ),
+                ),
+                SizedBox(
+                  child: Container(
+                    color: flexSchemeColor.secondary,
                   ),
-                  SizedBox(
-
-                    child: Container(
-                      color: flexSchemeColor.appBarColor,
-                    ),
+                ),
+                SizedBox(
+                  child: Container(
+                    color: flexSchemeColor.appBarColor,
                   ),
-                  SizedBox(
-
-                    child: Container(
-                      color: flexSchemeColor.primaryContainer,
-                    ),
+                ),
+                SizedBox(
+                  child: Container(
+                    color: flexSchemeColor.primaryContainer,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-
           ),
-        );
+        ),
+      );
     });
   }
 }

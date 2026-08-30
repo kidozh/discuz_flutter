@@ -1,69 +1,99 @@
-
 import 'package:discuz_flutter/JsonResult/PrivateMessagePortalResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/page/PrivateMessageDetailPage.dart';
-import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
-import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
-class PrivateMessagePortalWidget extends StatelessWidget{
+class PrivateMessagePortalWidget extends StatelessWidget {
+  final PrivateMessagePortal _privateMessagePortal;
+  final Discuz _discuz;
 
-  PrivateMessagePortal _privateMessagePortal;
-  Discuz _discuz;
-  User? _user;
+  final VoidCallback? onConversationClosed;
 
-  PrivateMessagePortalWidget(this._discuz,this._user,this._privateMessagePortal);
-
+  const PrivateMessagePortalWidget(
+    this._discuz,
+    this._privateMessagePortal, {
+    this.onConversationClosed,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    int uid = 0;
-    if(user != null){
-      uid = user.uid;
-    }
-
-    return PlatformWidgetBuilder(
-      material: (context, child, platform) => Card(
-        elevation: 4.0,
-        color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white10,
-        surfaceTintColor: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white10,
-        child: Padding(padding: EdgeInsets.zero,
-          child: child,
-        ),
-      ),
-      cupertino: (context, child, platform) => Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if(child!=null)
-            child,
-          Divider()
-
-        ],
-      ),
+    return PlatformCard(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      color: _privateMessagePortal.isNew
+          ? Theme.of(context).colorScheme.primaryContainer
+          : null,
       child: PlatformListTile(
-        leading: UserAvatar(_discuz,  _privateMessagePortal.toUid, _privateMessagePortal.toUserName, size: 48,),
-
-        title: Text(_privateMessagePortal.subject,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontWeight: FontWeight.bold
+        leading: Semantics(
+          label: _privateMessagePortal.isNew ? '新消息' : null,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              UserAvatar(
+                _discuz,
+                _privateMessagePortal.toUid,
+                _privateMessagePortal.toUserName,
+                size: 48,
+              ),
+              if (_privateMessagePortal.isNew)
+                Positioned(
+                  left: -3,
+                  top: 18,
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context).colorScheme.primary,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.surface,
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
-          maxLines: 1,
+        ),
+        trailing: Icon(
+          PlatformIcons(context).forward,
+          size: 17,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                _privateMessagePortal.toUserName.isNotEmpty
+                    ? _privateMessagePortal.toUserName
+                    : _privateMessagePortal.subject,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+                maxLines: 1,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              _privateMessagePortal.readableString,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w400,
+                  ),
+            ),
+          ],
         ),
         subtitle: Text(
-            "${_privateMessagePortal.msgFromName}: ${_privateMessagePortal.message}",
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontWeight: FontWeight.w300
-            ),
-            maxLines: 1,
+          _privateMessagePortal.message,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w400,
+          ),
+          maxLines: 1,
         ),
 
         // subtitle: RichText(
@@ -79,21 +109,19 @@ class PrivateMessagePortalWidget extends StatelessWidget{
         //     ],
         //   ),
         // ),
-        trailing: _privateMessagePortal.isNew ? Icon(Icons.new_releases_outlined, color: Theme.of(context).colorScheme.primary,) :null,
         onTap: () async {
           VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(
               context,
-              platformPageRoute(context:context,
+              platformPageRoute(
+                  context: context,
                   iosTitle: _privateMessagePortal.toUserName,
-                  builder: (context) => PrivateMessageDetailScreen(_privateMessagePortal.toUid, _privateMessagePortal.toUserName))
-          );
+                  builder: (context) => PrivateMessageDetailScreen(
+                      _privateMessagePortal.toUid,
+                      _privateMessagePortal.toUserName)));
+          onConversationClosed?.call();
         },
-
-
       ),
     );
   }
-
-
 }

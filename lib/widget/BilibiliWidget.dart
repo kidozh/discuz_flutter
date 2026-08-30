@@ -214,7 +214,7 @@ class BilibiliVideoState extends State<BilibiliWidget> {
           VibrationUtils.vibrateWithClickIfPossible();
           URLUtils.openURL(context, null, url, null, null);
         },
-        child: Card(
+        child: PlatformCard(
           color: Color(bilibiliColorPink),
           child: Container(
             padding: EdgeInsets.all(4.0),
@@ -237,7 +237,7 @@ class BilibiliVideoState extends State<BilibiliWidget> {
           VibrationUtils.vibrateWithClickIfPossible();
           URLUtils.openURL(context, null, url, null, null);
         },
-        child: Card(
+        child: PlatformCard(
           elevation: isCupertino(context) ? 1 : 4,
           child: Container(
             clipBehavior: Clip.antiAlias,
@@ -349,7 +349,7 @@ class BilibiliVideoState extends State<BilibiliWidget> {
       VibrationUtils.vibrateWithClickIfPossible();
       URLUtils.openURL(context, null, url, null, null);
     },
-    child: Card(
+    child: PlatformCard(
       child: Container(
         child: Column(
           children: [

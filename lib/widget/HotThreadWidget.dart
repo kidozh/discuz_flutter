@@ -139,7 +139,7 @@ class HotThreadWidget extends StatelessWidget{
 //
 //     }
 //
-//     return ListTile(
+//     return PlatformListTile(
 //       leading: InkWell(
 //         child: ClipRRect(
 //
@@ -215,7 +215,7 @@ class HotThreadWidget extends StatelessWidget{
 //
 //   Widget getHotThreadCard(bool viewed){
 //     return PlatformWidget(
-//       material: (_, __)=> Card(
+//       material: (_, __)=> PlatformCard(
 //         elevation: 1,
 //         color: Theme.of(context).cardColor,
 //         child: getHotThreadListTile(viewed)
@@ -240,7 +240,7 @@ class HotThreadWidget extends StatelessWidget{
 //   Widget build(BuildContext context) {
 //     if (isUserBlocked){
 //       return Container(
-//         child: Card(
+//         child: PlatformCard(
 //           elevation: 4.0,
 //           child: Padding(
 //               padding: EdgeInsets.all(8.0),

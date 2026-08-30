@@ -13,28 +13,25 @@ class ChoosePlatformPage extends StatefulWidget {
 }
 
 class _ChoosePlatformState extends State<ChoosePlatformPage> {
-
   String _selectedPlatformName = "";
 
   @override
   Widget build(BuildContext context) {
-
-    _selectedPlatformName = Provider.of<ThemeNotifierProvider>(context,listen: false).platformName;
+    _selectedPlatformName =
+        Provider.of<ThemeNotifierProvider>(context, listen: false).platformName;
 
     return PlatformScaffold(
       iosContentPadding: true,
       appBar: PlatformAppBar(
         title: Text(S.of(context).appearanceOptimizedPlatform),
       ),
-      body: SettingsList(
+      body: PlatformAdaptiveSettingsList(
         sections: [
-
           SettingsSection(tiles: [
             SettingsTile(
               title: Text(S.of(context).followSystem),
               trailing: trailingWidget(""),
               onPressed: (BuildContext context) {
-
                 changePlatform("");
               },
             ),
@@ -59,7 +56,6 @@ class _ChoosePlatformState extends State<ChoosePlatformPage> {
             //     changePlatform("fuchsia");
             //   },
             // ),
-            
           ]),
         ],
       ),
@@ -67,8 +63,9 @@ class _ChoosePlatformState extends State<ChoosePlatformPage> {
   }
 
   Widget trailingWidget(String platformName) {
-    return ( _selectedPlatformName == platformName)
-        ? Icon(PlatformIcons(context).checkMark, color: Theme.of(context).colorScheme.primary)
+    return (_selectedPlatformName == platformName)
+        ? Icon(PlatformIcons(context).checkMark,
+            color: Theme.of(context).colorScheme.primary)
         : Icon(null);
   }
 
@@ -78,23 +75,27 @@ class _ChoosePlatformState extends State<ChoosePlatformPage> {
     });
     print("change theme color to $platformName");
 
-    Provider.of<ThemeNotifierProvider>(context,listen: false).setPlatformName(platformName);
+    Provider.of<ThemeNotifierProvider>(context, listen: false)
+        .setPlatformName(platformName);
     UserPreferencesUtils.putPlatformPreference(platformName);
 
-    if(PlatformProvider.of(context)!=null){
-      switch (platformName){
-        case "":{
-          PlatformProvider.of(context)!.changeToAutoDetectPlatform();
-          break;
-        }
-        case "ios":{
-          PlatformProvider.of(context)!.changeToCupertinoPlatform();
-          break;
-        }
-        case "android":{
-          PlatformProvider.of(context)!.changeToMaterialPlatform();
-          break;
-        }
+    if (PlatformProvider.of(context) != null) {
+      switch (platformName) {
+        case "":
+          {
+            PlatformProvider.of(context)!.changeToAutoDetectPlatform();
+            break;
+          }
+        case "ios":
+          {
+            PlatformProvider.of(context)!.changeToCupertinoPlatform();
+            break;
+          }
+        case "android":
+          {
+            PlatformProvider.of(context)!.changeToMaterialPlatform();
+            break;
+          }
       }
     }
     VibrationUtils.vibrateSuccessfullyIfPossible();

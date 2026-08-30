@@ -83,7 +83,7 @@ class ManageTrustHostState extends State<ManageTrustHostStateWidget>{
                     key: Key(trustHost.key.toString()),
                     child: Column(
                       children: [
-                        ListTile(
+                        PlatformListTile(
                           title: Text(trustHost.host),
                           subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(context, trustHost.trustAt)),
                         ),

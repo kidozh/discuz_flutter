@@ -30,15 +30,15 @@ String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
 class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
   double _scalingParamter = 1.0;
 
-
-  Post generateMockedPost(){
+  Post generateMockedPost() {
     Post mockedPost = Post();
     mockedPost.authorId = _rnd.nextInt(100);
     mockedPost.position = _rnd.nextInt(400);
     mockedPost.message = PostTextFieldUtils.EXAMPLE_HTML_LONG_DATA;
     mockedPost.author = getRandomString(10);
     DateTime today = DateTime.now();
-    DateTime randomTimeAgo = today.subtract(Duration(minutes: _rnd.nextInt(500)));
+    DateTime randomTimeAgo =
+        today.subtract(Duration(minutes: _rnd.nextInt(500)));
     mockedPost.publishAt = randomTimeAgo;
     return mockedPost;
   }
@@ -54,17 +54,17 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
   }
 
   void getPreference() async {
-    bool ignoreCustomFontStyleSetting = await UserPreferencesUtils.getDisableFontCustomizationPreference();
+    bool ignoreCustomFontStyleSetting =
+        await UserPreferencesUtils.getDisableFontCustomizationPreference();
     bool useThinFont = await UserPreferencesUtils.getUseThinFontPreference();
-    bool useCompactParagraph = await UserPreferencesUtils.getUseCompactParagraphPreference();
+    bool useCompactParagraph =
+        await UserPreferencesUtils.getUseCompactParagraphPreference();
     setState(() {
       ignoreCustomFontStyle = ignoreCustomFontStyleSetting;
       _useThinFont = useThinFont;
       _useCompactParagraph = useCompactParagraph;
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +86,6 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
         "uCenterURL",
         "1");
 
-
     return PlatformScaffold(
       iosContentPadding: true,
       appBar: PlatformAppBar(
@@ -94,7 +93,7 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
       ),
       body: Consumer<TypeSettingNotifierProvider>(
           builder: (context, typesetting, _) {
-        return SettingsList(
+        return PlatformAdaptiveSettingsList(
           sections: [
             SettingsSection(
               tiles: [
@@ -108,12 +107,16 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
                   onToggle: (bool value) {
                     VibrationUtils.vibrateWithSwitchIfPossible();
                     print("set disable font customisation ${value} ");
-                    UserPreferencesUtils.putDisableFontCustomizationPreference(value);
+                    UserPreferencesUtils.putDisableFontCustomizationPreference(
+                        value);
                     setState(() {
                       ignoreCustomFontStyle = value;
                     });
-                    Provider.of<TypeSettingNotifierProvider>(context, listen: false).ignoreCustomFontStyle = value;
-                  }, initialValue: ignoreCustomFontStyle,
+                    Provider.of<TypeSettingNotifierProvider>(context,
+                            listen: false)
+                        .ignoreCustomFontStyle = value;
+                  },
+                  initialValue: ignoreCustomFontStyle,
                 ),
                 SettingsTile.switchTile(
                   title: Text(S.of(context).useThinFont),
@@ -122,35 +125,42 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
                   onToggle: (bool value) {
                     VibrationUtils.vibrateWithSwitchIfPossible();
                     UserPreferencesUtils.putUseThinFontPreference(value);
-                    Provider.of<TypeSettingNotifierProvider>(context, listen: false).useThinFontWeight = value;
+                    Provider.of<TypeSettingNotifierProvider>(context,
+                            listen: false)
+                        .useThinFontWeight = value;
                     setState(() {
                       _useThinFont = value;
                     });
-                  }, initialValue: _useThinFont,
+                  },
+                  initialValue: _useThinFont,
                 ),
                 SettingsTile.switchTile(
                   title: Text(S.of(context).compactTypography),
                   activeSwitchColor: Theme.of(context).colorScheme.primary,
-                  leading: Icon(AppPlatformIcons(context).compactParagraphOutline),
+                  leading:
+                      Icon(AppPlatformIcons(context).compactParagraphOutline),
                   onToggle: (bool value) {
                     VibrationUtils.vibrateWithSwitchIfPossible();
-                    UserPreferencesUtils.putUseCompactParagraphPreference(value);
-                    Provider.of<TypeSettingNotifierProvider>(context, listen: false).useCompactParagraph = value;
+                    UserPreferencesUtils.putUseCompactParagraphPreference(
+                        value);
+                    Provider.of<TypeSettingNotifierProvider>(context,
+                            listen: false)
+                        .useCompactParagraph = value;
                     setState(() {
                       _useCompactParagraph = value;
                     });
-                  }, initialValue: _useCompactParagraph,
+                  },
+                  initialValue: _useCompactParagraph,
                 ),
                 SettingsTile.navigation(
-                  title: Text(S.of(context).chooseTypographyTheme),
-                  leading: Icon(AppPlatformIcons(context).typographyOutline),
-                  value: Text(typesetting.getTypographyThemeName(context)),
-                  onPressed: (context) {
-                    VibrationUtils.vibrateWithSwitchIfPossible();
-                    // trigger a
-                    triggerTypographySelection();
-                  }
-                ),
+                    title: Text(S.of(context).chooseTypographyTheme),
+                    leading: Icon(AppPlatformIcons(context).typographyOutline),
+                    value: Text(typesetting.getTypographyThemeName(context)),
+                    onPressed: (context) {
+                      VibrationUtils.vibrateWithSwitchIfPossible();
+                      // trigger a
+                      triggerTypographySelection();
+                    }),
               ],
             ),
             CustomSettingsSection(
@@ -214,8 +224,10 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000),""),
-                    PostWidget(mockedDiscuz, generateMockedPost(), _rnd.nextInt(1000),""),
+                    PostWidget(mockedDiscuz, generateMockedPost(),
+                        _rnd.nextInt(1000), ""),
+                    PostWidget(mockedDiscuz, generateMockedPost(),
+                        _rnd.nextInt(1000), ""),
                   ],
                 ),
               ),
@@ -235,40 +247,43 @@ class _ChooseTypeSettingScaleState extends State<ChooseTypeSettingScalePage> {
         .setScalingParameter(_scalingParamter);
   }
 
-  void triggerTypographySelection(){
-    List<String> typographyThemeList = TypeSettingNotifierProvider.getTypographyThemeNameList(context);
-    
-    showCupertinoModalPopup(
-        context: context, builder: (context) => Container(
-      height: 216,
-      padding: EdgeInsets.only(top: 6.0),
-      margin: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      color: Theme.of(context).colorScheme.surface,
-      child: SafeArea(
-        child: CupertinoPicker(
-            itemExtent: 32,
-            useMagnifier: true,
-            magnification: 1.22,
-            squeeze: 1.2,
-            onSelectedItemChanged: (position){
-              VibrationUtils.vibrateWithClickIfPossible();
-              List<String> typographyList = TypeSettingNotifierProvider.typographyList;
-              if(position < typographyList.length){
-                UserPreferencesUtils.putTypographyThemePreference(typographyList[position]);
-                Provider.of<TypeSettingNotifierProvider>(context, listen: false).typographyTheme = typographyList[position];
-              }
-              
-            },
-            children: List<Widget>.generate(
-              typographyThemeList.length, (index) => Center(
-                child: Text("${typographyThemeList[index]}")
-            ),
-            )
-        ),
-      ),
-    )
-    );
+  void triggerTypographySelection() {
+    List<String> typographyThemeList =
+        TypeSettingNotifierProvider.getTypographyThemeNameList(context);
+
+    showPlatformModalSheet(
+        context: context,
+        builder: (context) => Container(
+              height: 216,
+              padding: EdgeInsets.only(top: 6.0),
+              margin: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              color: Colors.transparent,
+              child: SafeArea(
+                child: CupertinoPicker(
+                    itemExtent: 32,
+                    useMagnifier: true,
+                    magnification: 1.22,
+                    squeeze: 1.2,
+                    onSelectedItemChanged: (position) {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      List<String> typographyList =
+                          TypeSettingNotifierProvider.typographyList;
+                      if (position < typographyList.length) {
+                        UserPreferencesUtils.putTypographyThemePreference(
+                            typographyList[position]);
+                        Provider.of<TypeSettingNotifierProvider>(context,
+                                listen: false)
+                            .typographyTheme = typographyList[position];
+                      }
+                    },
+                    children: List<Widget>.generate(
+                      typographyThemeList.length,
+                      (index) =>
+                          Center(child: Text("${typographyThemeList[index]}")),
+                    )),
+              ),
+            ));
   }
 }

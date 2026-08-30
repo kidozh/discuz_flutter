@@ -137,7 +137,7 @@ class PushServiceState extends State<PushServiceStateWidget> {
                   child: ListView.builder(
                     itemBuilder: (context, index) {
                       if (result.list[index].token != pushTokenChannel?.token) {
-                        return ListTile(
+                        return PlatformListTile(
                           title: Text(result.list[index].deviceName),
                           subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(
                               context, result.list[index].updateAt)),
@@ -147,9 +147,9 @@ class PushServiceState extends State<PushServiceStateWidget> {
                               : null,
                         );
                       } else {
-                        return Card(
+                        return PlatformCard(
                           color: Theme.of(context).primaryColor,
-                          child: ListTile(
+                          child: PlatformListTile(
                             textColor: Theme.of(context)
                                 .primaryTextTheme
                                 .bodyLarge

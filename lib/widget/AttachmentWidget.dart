@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -21,90 +19,76 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
-class AttachmentWidget extends StatelessWidget{
+class AttachmentWidget extends StatelessWidget {
   Discuz _discuz;
   Attachment _attachment;
 
-  AttachmentWidget(this._discuz,this._attachment);
+  AttachmentWidget(this._discuz, this._attachment);
 
   double downloadPercent = 0.0;
 
-  Future<void> _downloadFile(BuildContext context) async{
+  Future<void> _downloadFile(BuildContext context) async {
     // judge permission
-    if(Platform.isAndroid || Platform.isIOS){
+    if (Platform.isAndroid || Platform.isIOS) {
       var status = await Permission.storage.status;
       print(status);
-      if(status.isGranted){
-
-      }
-      if(status.isDenied){
+      if (status.isGranted) {}
+      if (status.isDenied) {
         EasyLoading.showError(S.of(context).writeStorageDenied);
         return;
       }
-
-
     }
     // get saved directory
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;
     String savePath = "${appDocPath}/${_attachment.filename}";
 
-    Discuz discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
-    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    Discuz discuz =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-    String urlPath = URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode);
+    String urlPath =
+        URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode);
     EasyLoading.showInfo(S.of(context).downloadingFiles(_attachment.filename));
     dio.download(urlPath, savePath, onReceiveProgress: (int loaded, int total) {
-      if(loaded >= total){
-
-        showDialog(context: context, builder: (context){
-          return AlertDialog(
-            title: Text(S.of(context).successfullyDownloadFiles(_attachment.filename)),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(S.of(context).openFileInExternalAppContent)
-              ],
+      if (loaded >= total) {
+        showPlatformAlert(
+          context: context,
+          title: S.of(context).successfullyDownloadFiles(_attachment.filename),
+          message: S.of(context).openFileInExternalAppContent,
+          actions: [
+            PlatformAlertAction(
+              label: S.of(context).cancel,
+              isCancelAction: true,
+              onPressed: VibrationUtils.vibrateWithClickIfPossible,
             ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  Navigator.pop(context);
-                },
-                child: Text(S.of(context).cancel),
-
-              ),
-              TextButton(
-                onPressed: () async{
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  final result = await OpenFilex.open(savePath);
-                  if(result.type != ResultType.done){
-                    EasyLoading.showError("${result.message}(${result.type})");
-                  }
-                  else{
-                    Navigator.pop(context);
-                  }
-                },
-                child: Text(S.of(context).openFileInExternalAppActionText),
-
-              ),
-            ],
-          );
-        });
+            PlatformAlertAction(
+              label: S.of(context).openFileInExternalAppActionText,
+              isDefaultAction: true,
+              onPressed: () async {
+                VibrationUtils.vibrateWithClickIfPossible();
+                final result = await OpenFilex.open(savePath);
+                if (result.type != ResultType.done) {
+                  EasyLoading.showError("${result.message}(${result.type})");
+                }
+              },
+            ),
+          ],
+        );
       }
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    Discuz discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
-    
-    if(["jpg","png","svg","bmp","gif","jpeg"].contains(_attachment.ext.toLowerCase())){
+    Discuz discuz =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
+
+    if (["jpg", "png", "svg", "bmp", "gif", "jpeg"]
+        .contains(_attachment.ext.toLowerCase())) {
       return InkWell(
-        child: Card(
+        child: PlatformCard(
           elevation: 8.0,
           child: CachedNetworkImage(
             imageUrl: _attachment.getAttachmentRealUrl(_discuz),
@@ -116,83 +100,102 @@ class AttachmentWidget extends StatelessWidget{
                 width: 24,
                 height: 24,
                 child: PlatformCircularProgressIndicator(
-                  material: (_, __) => MaterialProgressIndicatorData(
-                      value: progress.progress
-                  ),
+                  material: (_, __) =>
+                      MaterialProgressIndicatorData(value: progress.progress),
                 ),
               ),
             ),
           ),
         ),
-        onTap: (){
+        onTap: () {
           VibrationUtils.vibrateWithClickIfPossible();
 
           Navigator.push(
               context,
-              platformPageRoute(context:context,
+              platformPageRoute(
+                  context: context,
                   iosTitle: S.of(context).viewPicture,
                   builder: (context) => FullImagePage(
-                  URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode),
-                  [URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode)]
-              ))
-          );
+                          URLUtils.getAttachmentURLWithAidEncode(
+                              discuz, _attachment.aidEncode),
+                          [
+                            URLUtils.getAttachmentURLWithAidEncode(
+                                discuz, _attachment.aidEncode)
+                          ])));
         },
       );
     }
 
-
-    return Card(
+    return PlatformCard(
       child: Column(
         children: [
-          ListTile(
+          PlatformListTile(
             leading: Icon(Icons.attachment),
             title: Text(_attachment.filename),
             subtitle: Text(_attachment.attachmentSizeString),
             trailing: Badge(
-              label: Text(_attachment.downloads.toString(),style: TextStyle(color: Colors.white),),
+              label: Text(
+                _attachment.downloads.toString(),
+                style: TextStyle(color: Colors.white),
+              ),
               child: Icon(Icons.file_download),
             ),
           ),
           CachedNetworkImage(
             imageUrl: _attachment.getAttachmentRealUrl(_discuz),
             errorWidget: (context, url, error) => Icon(Icons.error),
-            progressIndicatorBuilder: (context, url, progress) => PlatformCircularProgressIndicator(
-              material: (_, __) => MaterialProgressIndicatorData(
-                  value: progress.progress
-              ),
+            progressIndicatorBuilder: (context, url, progress) =>
+                PlatformCircularProgressIndicator(
+              material: (_, __) =>
+                  MaterialProgressIndicatorData(value: progress.progress),
             ),
           ),
           Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              TextButton.icon(
-                  icon: Icon(Icons.file_download),
+              PlatformTextButton(
                   onPressed: () {
                     _downloadFile(context);
-
-              }, label: Text(S.of(context).downloadAttachment)),
-              if(["jpg","png","svg","bmp","gif"].contains(_attachment.ext.toLowerCase()))
-              TextButton.icon(
-                  icon: Icon(Icons.fullscreen),
-                  onPressed: (){
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.push(
-                        context,
-                        platformPageRoute(context:context,
-                            iosTitle: S.of(context).viewPicture,
-                            builder: (context) => FullImagePage(
-
-                            URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode),
-                            [URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode)]
-                        ))
-                    );
-              }, label: Text(S.of(context).watchPictureInFullScreen))
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.file_download, size: 20),
+                      const SizedBox(width: 6),
+                      Text(S.of(context).downloadAttachment),
+                    ],
+                  )),
+              if (["jpg", "png", "svg", "bmp", "gif"]
+                  .contains(_attachment.ext.toLowerCase()))
+                PlatformTextButton(
+                    onPressed: () {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      Navigator.push(
+                          context,
+                          platformPageRoute(
+                              context: context,
+                              iosTitle: S.of(context).viewPicture,
+                              builder: (context) => FullImagePage(
+                                      URLUtils.getAttachmentURLWithAidEncode(
+                                          discuz, _attachment.aidEncode),
+                                      [
+                                        URLUtils.getAttachmentURLWithAidEncode(
+                                            discuz, _attachment.aidEncode)
+                                      ])));
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.fullscreen, size: 20),
+                        const SizedBox(width: 6),
+                        Text(S.of(context).watchPictureInFullScreen),
+                      ],
+                    ))
             ],
           )
         ],
       ),
     );
   }
-
 }

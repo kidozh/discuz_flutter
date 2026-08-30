@@ -1,209 +1,180 @@
 import 'dart:developer';
 
 import 'package:discuz_flutter/client/MobileApiClient.dart';
-import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
+import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:provider/provider.dart';
 
-class ReportContentPage extends StatelessWidget{
-  String authorName;
-  int rid;
-  int fid;
-  String formhash;
+enum ReportReason {
+  trashAdvertisement,
+  illegalContent,
+  spam,
+  duplicatePost,
+  others,
+}
+
+class ReportContentPage extends StatefulWidget {
+  final String authorName;
+  final int rid;
+  final int fid;
+  final String formhash;
+
+  const ReportContentPage(
+    this.authorName,
+    this.rid,
+    this.fid,
+    this.formhash, {
+    super.key,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    return ReportContentStatefulWidget(this.authorName, this.rid, this.fid, this.formhash);
-  }
-
-  ReportContentPage(this.authorName, this.rid, this.fid, this.formhash);
+  State<ReportContentPage> createState() => _ReportContentPageState();
 }
 
-class ReportContentStatefulWidget extends StatefulWidget{
-  String authorName;
-  int rid;
-  int fid;
-  String formhash;
-
-  ReportContentStatefulWidget(this.authorName, this.rid, this.fid, this.formhash);
-
-  @override
-  ReportContentState createState() {
-    return ReportContentState(this.authorName, this.rid, this.fid, this.formhash);
-  }
-
-}
-
-enum ReportReason{
-  TrashAdvertisement,
-  IllegalContent,
-  Spam,
-  DuplicatePost,
-  Others
-}
-
-class ReportContentState extends State<ReportContentStatefulWidget>{
-  String authorName;
-  int rid;
-  int fid;
-  String formhash;
+class _ReportContentPageState extends State<ReportContentPage> {
   ReportReason? selectedReason;
-  TextEditingController reportDetailReasonTextController = TextEditingController();
+  final TextEditingController reportDetailReasonTextController =
+      TextEditingController();
+  bool _isSubmitting = false;
 
-  ReportContentState(this.authorName, this.rid, this.fid, this.formhash);
+  bool get _canSubmit {
+    if (_isSubmitting || selectedReason == null) return false;
+    return selectedReason != ReportReason.others ||
+        reportDetailReasonTextController.text.trim().isNotEmpty;
+  }
+
+  Map<ReportReason, String> _reasonLabels(BuildContext context) => {
+        ReportReason.trashAdvertisement: S.of(context).trashAd,
+        ReportReason.illegalContent: S.of(context).illegalContent,
+        ReportReason.spam: S.of(context).spam,
+        ReportReason.duplicatePost: S.of(context).duplicatedPost,
+        ReportReason.others: S.of(context).other,
+      };
+
+  @override
+  void dispose() {
+    reportDetailReasonTextController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    final title = S.of(context).reportContentTitle(widget.authorName);
+    final primary = Theme.of(context).colorScheme.primary;
+    final reasons = _reasonLabels(context);
+
     return PlatformScaffold(
       iosContentPadding: true,
       appBar: PlatformAppBar(
-        title: Text(S.of(context).reportContentTitle(authorName)),
+        liquidGlassTitle: title,
+        title: Text(title),
         automaticallyImplyLeading: true,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            ListTile(
-              title: Text(S.of(context).trashAd),
-              leading: Radio<ReportReason>(
-                value: ReportReason.TrashAdvertisement,
-                groupValue: selectedReason,
-                onChanged: (ReportReason? reportReason){
-                  setState(() {
-                    selectedReason = ReportReason.TrashAdvertisement;
-                  });
-                },
-              ),
-
-            ),
-            ListTile(
-              title: Text(S.of(context).illegalContent),
-              leading: Radio<ReportReason>(
-                value: ReportReason.IllegalContent,
-                groupValue: selectedReason,
-                onChanged: (ReportReason? reportReason){
-                  setState(() {
-                    selectedReason = ReportReason.IllegalContent;
-                  });
-                },
-              ),
-
-            ),
-            ListTile(
-              title: Text(S.of(context).spam),
-              leading: Radio<ReportReason>(
-                value: ReportReason.Spam,
-                groupValue: selectedReason,
-                onChanged: (ReportReason? reportReason){
-                  setState(() {
-                    selectedReason = ReportReason.Spam;
-                  });
-                },
-              ),
-
-            ),
-            ListTile(
-              title: Text(S.of(context).duplicatedPost),
-              leading: Radio<ReportReason>(
-                value: ReportReason.DuplicatePost,
-                groupValue: selectedReason,
-                onChanged: (ReportReason? reportReason){
-                  setState(() {
-                    selectedReason = ReportReason.DuplicatePost;
-                  });
-                },
-              ),
-
-            ),
-            ListTile(
-              title: Text(S.of(context).other),
-              leading: Radio<ReportReason>(
-                value: ReportReason.Others,
-                groupValue: selectedReason,
-                onChanged: (ReportReason? reportReason){
-                  setState(() {
-                    selectedReason = ReportReason.Others;
-                  });
-                },
-              ),
-
-            ),
-            if(selectedReason!= null && selectedReason == ReportReason.Others)
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 16),
-                child: PlatformTextField(
-                  hintText: S.of(context).reportOtherReasonHint,
-                  controller: reportDetailReasonTextController,
-                ),
-              ),
-            SizedBox(
-              height: 64,
-            ),
-            if(selectedReason!= null || (selectedReason == ReportReason.Others && reportDetailReasonTextController.text.isNotEmpty) )
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+      body: PlatformLiquidGlassPageBackdrop(
+        child: SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                PlatformElevatedButton(
-                  child: Text(S.of(context).reportContentTitle(authorName)),
-                  onPressed: (){
-                    _reportContentByJS();
-                  },
-                )
+                for (final entry in reasons.entries)
+                  PlatformCard(
+                    margin: const EdgeInsets.symmetric(vertical: 5),
+                    color: selectedReason == entry.key
+                        ? (isCupertino(context)
+                            ? primary
+                            : Theme.of(context).colorScheme.primaryContainer)
+                        : null,
+                    child: PlatformListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 5,
+                      ),
+                      title: Text(
+                        entry.value,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              fontWeight: selectedReason == entry.key
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
+                            ),
+                      ),
+                      trailing: selectedReason == entry.key
+                          ? Icon(
+                              PlatformIcons(context).checkMark,
+                              size: 18,
+                              color: primary,
+                            )
+                          : const SizedBox(width: 18),
+                      onTap: () {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        setState(() => selectedReason = entry.key);
+                      },
+                    ),
+                  ),
+                if (selectedReason == ReportReason.others) ...[
+                  const SizedBox(height: 7),
+                  PlatformTextField(
+                    hintText: S.of(context).reportOtherReasonHint,
+                    controller: reportDetailReasonTextController,
+                    minLines: 3,
+                    maxLines: 5,
+                    textCapitalization: TextCapitalization.sentences,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                ],
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: PlatformElevatedButton(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 13,
+                    ),
+                    onPressed: _canSubmit ? _reportContent : null,
+                    child: Text(title),
+                  ),
+                ),
               ],
-            )
-          ],
+            ),
+          ),
         ),
       ),
     );
   }
 
-  void _reportContentByJS() async{
-    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    Discuz discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
-    final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-    final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
-    String reportSelect = S.of(context).other;
-    if (this.selectedReason == null){
-      return;
-    }
-    switch (this.selectedReason!){
-      case (ReportReason.TrashAdvertisement):{
-        reportSelect = S.of(context).trashAd;
-        break;
-      }
-      case (ReportReason.DuplicatePost):{
-        reportSelect = S.of(context).duplicatedPost;
-        break;
-      }
-      case (ReportReason.Spam):{
-        reportSelect = S.of(context).spam;
-        break;
-      }
-      case (ReportReason.Others):{
-        reportSelect = S.of(context).other;
-        break;
-      }
-      case (ReportReason.IllegalContent):{
-        reportSelect = S.of(context).illegalContent;
-        break;
-      }
+  Future<void> _reportContent() async {
+    if (!_canSubmit) return;
+    setState(() => _isSubmitting = true);
 
+    try {
+      final notifier =
+          Provider.of<DiscuzAndUserNotifier>(context, listen: false);
+      final discuz = notifier.discuz!;
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(notifier.user);
+      final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
+      if (!mounted) return;
+      final reportSelect = _reasonLabels(context)[selectedReason]!;
 
+      await client.reportContent(
+        widget.formhash,
+        reportSelect,
+        reportDetailReasonTextController.text.trim(),
+        'post',
+        widget.rid,
+      );
+      if (!mounted) return;
+      EasyLoading.showSuccess(
+          S.of(context).reportSuccessfully(discuz.siteName));
+      Navigator.of(context).pop();
+    } catch (error, stackTrace) {
+      log('Failed to report content', error: error, stackTrace: stackTrace);
+      if (mounted) setState(() => _isSubmitting = false);
     }
-    client.reportContent(formhash, reportSelect, this.reportDetailReasonTextController.text, "post", this.rid)
-        .then((value) {
-          EasyLoading.showSuccess(S.of(context).reportSuccessfully(discuz.siteName));
-          Navigator.of(context).pop();
-        }
-    ).onError((error, stackTrace){
-      log(stackTrace.toString());
-    });
   }
 }

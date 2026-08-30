@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -25,8 +24,6 @@ import 'package:provider/provider.dart';
 import '../utility/EasyRefreshUtils.dart';
 
 class FavoriteThreadScreen extends StatelessWidget {
-
-
   FavoriteThreadScreen();
 
   @override
@@ -36,8 +33,6 @@ class FavoriteThreadScreen extends StatelessWidget {
 }
 
 class FavoriteThreadStatefulWidget extends StatefulWidget {
-
-
   FavoriteThreadStatefulWidget();
 
   _FavoriteThreadState createState() {
@@ -46,7 +41,6 @@ class FavoriteThreadStatefulWidget extends StatefulWidget {
 }
 
 class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
-
   late Dio _dio;
   late MobileApiClient _client;
   FavoriteThreadResult result = FavoriteThreadResult();
@@ -56,28 +50,26 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
 
   late EasyRefreshController _controller;
 
-
   // 控制结束
   bool _enableControlFinish = false;
 
   _FavoriteThreadState();
 
-
-
   @override
   void initState() {
     super.initState();
-    _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
-
+    _controller = EasyRefreshController(
+        controlFinishLoad: true, controlFinishRefresh: true);
   }
 
-  Future<IndicatorResult> _invalidateHotThreadContent(Discuz discuz) async{
+  Future<IndicatorResult> _invalidateHotThreadContent(Discuz discuz) async {
     _page = 1;
     return await _loadPortalPrivateMessage(discuz);
   }
 
   Future<IndicatorResult> _loadPortalPrivateMessage(Discuz discuz) async {
-    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
 
@@ -87,7 +79,7 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
     //
     // });
 
-    return await _client.favoriteThreadResult(_page).then((value){
+    return await _client.favoriteThreadResult(_page).then((value) {
       setState(() {
         result = value;
         _error = null;
@@ -104,12 +96,15 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
       // check for loaded all?
       log("Get HotThread ${_pmList.length} ${value.variables.count}");
       if (!_enableControlFinish) {
-        _controller.finishLoad(_pmList.length >= value.variables.count? IndicatorResult.noMore: IndicatorResult.success);
+        _controller.finishLoad(_pmList.length >= value.variables.count
+            ? IndicatorResult.noMore
+            : IndicatorResult.success);
       }
 
-      if(user != null && value.variables.member_uid != user.uid){
+      if (user != null && value.variables.member_uid != user.uid) {
         setState(() {
-          _error = DiscuzError(S.of(context).userExpiredTitle(user.username), S.of(context).userExpiredSubtitle);
+          _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
+              S.of(context).userExpiredSubtitle);
         });
       }
 
@@ -117,25 +112,22 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
         EasyLoading.showError(value.getErrorString()!);
       }
 
-      if(value.errorResult!= null){
+      if (value.errorResult != null) {
         setState(() {
-          _error = DiscuzError(value.errorResult!.key, value.errorResult!.content);
+          _error =
+              DiscuzError(value.errorResult!.key, value.errorResult!.content);
         });
-      }
-      else{
+      } else {
         setState(() {
           _error = null;
         });
       }
-      if(_pmList.length >= value.variables.count){
+      if (_pmList.length >= value.variables.count) {
         return IndicatorResult.noMore;
-      }
-      else{
+      } else {
         return IndicatorResult.success;
       }
-
-    })
-    .catchError((onError,stacktrace){
+    }).catchError((onError, stacktrace) {
       VibrationUtils.vibrateErrorIfPossible();
       EasyLoading.showError('${onError}');
       if (!_enableControlFinish) {
@@ -144,99 +136,112 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
         _controller.finishLoad(IndicatorResult.fail);
       }
       setState(() {
-        _error = DiscuzError(
-            onError.runtimeType.toString(), onError.toString());
+        _error =
+            DiscuzError(onError.runtimeType.toString(), onError.toString());
       });
       return IndicatorResult.fail;
-      throw(onError);
+      throw (onError);
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    return Consumer<DiscuzAndUserNotifier>(builder: (context,discuzAndUser, child){
-      if(discuzAndUser.discuz == null){
+    return Consumer<DiscuzAndUserNotifier>(
+        builder: (context, discuzAndUser, child) {
+      if (discuzAndUser.discuz == null) {
         return NullDiscuzScreen();
-      }
-      else if(discuzAndUser.user == null){
+      } else if (discuzAndUser.user == null) {
         return NullUserScreen();
       }
-      return Column(
-        children: [
-          if(_error!=null)
-            ErrorCard(_error!,(){
-              _controller.callRefresh();
-            }
+      return PlatformLiquidGlassPageBackdrop(
+        child: Column(
+          children: [
+            if (_error != null)
+              ErrorCard(_error!, () {
+                _controller.callRefresh();
+              }),
+            Expanded(
+              child: getEasyRefreshWidget(
+                discuzAndUser.discuz!,
+                discuzAndUser.user,
+              ),
             ),
-          Expanded(
-              child: getEasyRefreshWidget(discuzAndUser.discuz!,discuzAndUser.user)
-          )
-        ],
+          ],
+        ),
       );
     });
   }
 
-  Widget getEasyRefreshWidget(Discuz discuz, User? user){
+  Widget getEasyRefreshWidget(Discuz discuz, User? user) {
     return EasyRefresh(
-
       header: EasyRefreshUtils.i18nClassicHeader(context),
       footer: EasyRefreshUtils.i18nClassicFooter(context),
       refreshOnStart: true,
       controller: _controller,
       onRefresh: () async {
         return await _invalidateHotThreadContent(discuz);
-
-      } ,
-      onLoad:  () async {
+      },
+      onLoad: () async {
         return await _loadPortalPrivateMessage(discuz);
       },
       child: CustomScrollView(
         slivers: [
           SliverList(
-            delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                  FavoriteThread favoriteThread = _pmList[index];
-                  return Container(
-                    child: ListTile(
-
-                      title: Text(favoriteThread.title,style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: RichText(
-                        text: TextSpan(
-                          text: favoriteThread.author,
-                          style: DefaultTextStyle.of(context).style,
-                          children: <TextSpan>[
-                            //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
-                            TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
-                            TextSpan(text: favoriteThread.description),
-                            TextSpan(text: " · ",style: TextStyle(fontWeight: FontWeight.w300)),
-                            TextSpan(text: TimeDisplayUtils.getLocaledTimeDisplay(context,favoriteThread.publishAt)),
-                          ],
-                        ),
-                      ),
-
-                      onTap: () async {
-                        VibrationUtils.vibrateWithClickIfPossible();
-                        await Navigator.push(
-                            context,
-                            platformPageRoute(
-                                context:context,
-                                iosTitle: favoriteThread.title,
-                                builder: (context) => ViewThreadSliverPage( discuz,  user, favoriteThread.id,))
-                        );
-                      },
-
-
+            delegate: SliverChildBuilderDelegate((context, index) {
+              FavoriteThread favoriteThread = _pmList[index];
+              return PlatformCard(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 5,
+                ),
+                child: PlatformListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
+                  title: Text(
+                    favoriteThread.title,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: RichText(
+                    text: TextSpan(
+                      text: favoriteThread.author,
+                      style: DefaultTextStyle.of(context).style,
+                      children: <TextSpan>[
+                        //TextSpan(text: S.of(context).publishAt, style: TextStyle(fontWeight: FontWeight.w300)),
+                        TextSpan(
+                            text: " · ",
+                            style: TextStyle(fontWeight: FontWeight.w300)),
+                        TextSpan(text: favoriteThread.description),
+                        TextSpan(
+                            text: " · ",
+                            style: TextStyle(fontWeight: FontWeight.w300)),
+                        TextSpan(
+                            text: TimeDisplayUtils.getLocaledTimeDisplay(
+                                context, favoriteThread.publishAt)),
+                      ],
                     ),
-                  );
-                },
-                childCount: _pmList.length
-            ),
+                  ),
+                  trailing: Icon(PlatformIcons(context).forward),
+                  onTap: () async {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    await Navigator.push(
+                        context,
+                        platformPageRoute(
+                            context: context,
+                            iosTitle: favoriteThread.title,
+                            builder: (context) => ViewThreadSliverPage(
+                                  discuz,
+                                  user,
+                                  favoriteThread.id,
+                                )));
+                  },
+                ),
+              );
+            }, childCount: _pmList.length),
           ),
         ],
       ),
-
     );
   }
 }

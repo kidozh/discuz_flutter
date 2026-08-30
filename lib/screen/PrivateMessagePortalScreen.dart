@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/PrivateMessagePortalResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -9,9 +8,13 @@ import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/provider/DiscuzNotificationProvider.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
+import 'package:discuz_flutter/utility/EasyRefreshUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
+import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/PrivateMessagePortalWidget.dart';
 import 'package:easy_refresh/easy_refresh.dart';
@@ -19,206 +22,248 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
-import '../provider/DiscuzNotificationProvider.dart';
-import '../utility/EasyRefreshUtils.dart';
-import '../utility/UserPreferencesUtils.dart';
-
-class PrivateMessagePortalScreen extends StatelessWidget {
-  PrivateMessagePortalScreen();
+class PrivateMessagePortalScreen extends StatefulWidget {
+  const PrivateMessagePortalScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return PrivateMessagePortalStatefulWidget();
-  }
+  State<PrivateMessagePortalScreen> createState() =>
+      _PrivateMessagePortalState();
 }
 
-class PrivateMessagePortalStatefulWidget extends StatefulWidget {
-  PrivateMessagePortalStatefulWidget();
-
-  _PrivateMessagePortalState createState() {
-    return _PrivateMessagePortalState();
-  }
-}
-
-class _PrivateMessagePortalState
-    extends State<PrivateMessagePortalStatefulWidget> {
-  late Dio _dio;
-  late MobileApiClient _client;
+class _PrivateMessagePortalState extends State<PrivateMessagePortalScreen>
+    with AutomaticKeepAliveClientMixin {
   PrivateMessagePortalResult result = PrivateMessagePortalResult();
   DiscuzError? _error;
   int _page = 1;
   List<PrivateMessagePortal> _pmList = [];
+  late final EasyRefreshController _controller;
+  String? _accountIdentity;
+  int _generation = 0;
+  bool _requestInFlight = false;
 
-  late EasyRefreshController _controller;
-
-  _PrivateMessagePortalState();
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
-    _loadPrivateMessageCache();
-    _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
-  }
-  
-  Future<void> _loadPrivateMessageCache() async{
-    log("Load private message cache");
-    Discuz? discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    if(discuz!= null && user!= null){
-      String jsonString = await UserPreferencesUtils.getDiscuzPrivateMessageResultCacheJson(discuz, user);
-      try{
-        PrivateMessagePortalResult cacheResult = PrivateMessagePortalResult.fromJson(jsonDecode(jsonString));
-        log("Set state ->");
-        setState(() {
-          result = cacheResult;
-          _pmList = cacheResult.variables.pmList;
-        });
-      }
-      catch(e){
-
-        log(e.toString());
-      }
-      log("Load private message string -> ${jsonString}");
-
-    }
-    
+    _controller = EasyRefreshController(
+      controlFinishLoad: true,
+      controlFinishRefresh: true,
+    );
   }
 
-  Future<IndicatorResult> _invalidateHotThreadContent(Discuz discuz) async {
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
+  void _ensureInitialized(Discuz discuz, User user) {
+    final identity = '${discuz.baseURL}#${user.uid}';
+    if (_accountIdentity == identity) return;
+    _accountIdentity = identity;
+    final generation = ++_generation;
     _page = 1;
-    return await _loadPortalPrivateMessage(discuz);
+    _pmList = [];
+    _error = null;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted || generation != _generation) return;
+      await _loadCache(discuz, user, generation);
+      if (!mounted || generation != _generation) return;
+      await _refreshPrivateMessages(discuz, generation: generation);
+    });
   }
 
-  Future<IndicatorResult> _loadPortalPrivateMessage(Discuz discuz) async {
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-    this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
-
-    // _client.hotThreadRaw(_page).then((value){
-    //   log(value);
-    //   result = HotThreadResult.fromJson(jsonDecode(value));
-    //
-    // });
-    Provider.of<DiscuzNotificationProvider>(context, listen: false).setNotificationCount(result.variables.noticeCount);
-    // if(result.variables.count != 0 && _pmList.length >= result.variables.count){
-    //   _controller.finishLoad(IndicatorResult.noMore);
-    //   return IndicatorResult.noMore;
-    // }
-    
-    if(user == null){
-      return IndicatorResult.fail;
+  Future<void> _loadCache(Discuz discuz, User user, int generation) async {
+    final jsonString =
+        await UserPreferencesUtils.getDiscuzPrivateMessageResultCacheJson(
+            discuz, user);
+    try {
+      final cacheResult =
+          PrivateMessagePortalResult.fromJson(jsonDecode(jsonString));
+      if (!mounted || generation != _generation) return;
+      setState(() {
+        result = cacheResult;
+        _pmList = List<PrivateMessagePortal>.from(cacheResult.variables.pmList)
+          ..sort(_compareConversationsNewestFirst);
+      });
+    } catch (error) {
+      log('Unable to load private-message cache: $error');
     }
+  }
 
-    return await _client.privateMessagePortalResult(_page).then((value) async{
-      String cacheString = jsonEncode(value.toJson());
-      await UserPreferencesUtils.putDiscuzPrivateMessageResultCacheJson(discuz, user, cacheString);
+  Future<IndicatorResult> _refreshPrivateMessages(
+    Discuz discuz, {
+    int? generation,
+  }) {
+    _page = 1;
+    _controller.resetFooter();
+    return _loadPrivateMessages(
+      discuz,
+      generation: generation ?? _generation,
+    );
+  }
+
+  Future<IndicatorResult> _loadPrivateMessages(
+    Discuz discuz, {
+    required int generation,
+  }) async {
+    if (_requestInFlight) return IndicatorResult.fail;
+    final user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    if (user == null) return IndicatorResult.fail;
+
+    _requestInFlight = true;
+    final requestPage = _page;
+    try {
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
+      final value = await client.privateMessagePortalResult(requestPage);
+      if (!mounted || generation != _generation) return IndicatorResult.fail;
+
+      if (requestPage == 1) {
+        await UserPreferencesUtils.putDiscuzPrivateMessageResultCacheJson(
+          discuz,
+          user,
+          jsonEncode(value.toJson()),
+        );
+      }
+      if (!mounted || generation != _generation) return IndicatorResult.fail;
+
+      DiscuzError? nextError;
+      if (value.variables.member_uid != user.uid) {
+        nextError = DiscuzError(
+          S.of(context).userExpiredTitle(user.username),
+          S.of(context).userExpiredSubtitle,
+        );
+      } else if (value.errorResult != null) {
+        nextError =
+            DiscuzError(value.errorResult!.key, value.errorResult!.content);
+      }
       setState(() {
         result = value;
-        _error = null;
-        if (_page == 1) {
-          _pmList = value.variables.pmList;
-        } else {
-          _pmList.addAll(value.variables.pmList);
+        _error = nextError;
+        final merged = requestPage == 1
+            ? List<PrivateMessagePortal>.from(value.variables.pmList)
+            : <PrivateMessagePortal>[
+                ..._pmList,
+                ...value.variables.pmList,
+              ];
+        final unique = <String, PrivateMessagePortal>{};
+        for (final conversation in merged) {
+          unique[_conversationIdentity(conversation)] = conversation;
         }
+        _pmList = unique.values.toList()
+          ..sort(_compareConversationsNewestFirst);
+        _page = requestPage + 1;
       });
 
-      _page += 1;
-      _controller.finishRefresh();
-
-
-      // check for loaded all?
-      log("Get pm list ${_pmList.length} ${value.variables.count}");
-      _controller.finishLoad(_pmList.length >= value.variables.count
-          ? IndicatorResult.noMore
-          : IndicatorResult.success);
-
-
-      if (value.variables.member_uid != user.uid) {
-        setState(() {
-          _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
-              S.of(context).userExpiredSubtitle);
-        });
-      }
-
+      Provider.of<DiscuzNotificationProvider>(context, listen: false)
+          .setNotificationCount(value.variables.noticeCount);
       if (value.getErrorString() != null) {
         EasyLoading.showError(value.getErrorString()!);
       }
 
-      if (value.errorResult != null) {
+      final indicator = _pmList.length >= value.variables.count
+          ? IndicatorResult.noMore
+          : IndicatorResult.success;
+      _controller.finishRefresh(indicator);
+      _controller.finishLoad(indicator);
+      return indicator;
+    } catch (error) {
+      if (mounted && generation == _generation) {
         setState(() {
-          _error =
-              DiscuzError(value.errorResult!.key, value.errorResult!.content);
+          _error = DiscuzError(error.runtimeType.toString(), error.toString());
         });
-      } else {
-        setState(() {
-          _error = null;
-        });
+        _controller.finishRefresh(IndicatorResult.fail);
+        _controller.finishLoad(IndicatorResult.fail);
       }
-      if(_pmList.length >= value.variables.count){
-        return IndicatorResult.noMore;
-      }
-      else{
-        return IndicatorResult.success;
-      }
-    }).catchError((onError, stacktrace) {
-
-      try {
-        //_controller.resetLoadState();
-        _controller.finishRefresh();
-      } catch (e) {}
       return IndicatorResult.fail;
-      setState(() {
-        _error =
-            DiscuzError(onError.runtimeType.toString(), onError.toString());
-      });
-      throw (onError);
-    });
+    } finally {
+      _requestInFlight = false;
+    }
+  }
+
+  String _conversationIdentity(PrivateMessagePortal conversation) {
+    if (conversation.plid != 0) return 'plid:${conversation.plid}';
+    if (conversation.toUid != 0) return 'user:${conversation.toUid}';
+    return '${conversation.toUserName}|${conversation.subject}';
+  }
+
+  int _compareConversationsNewestFirst(
+    PrivateMessagePortal left,
+    PrivateMessagePortal right,
+  ) {
+    final leftTime = _conversationTime(left);
+    final rightTime = _conversationTime(right);
+    if (leftTime != null && rightTime != null && leftTime != rightTime) {
+      return rightTime.compareTo(leftTime);
+    }
+    if (left.pmId != 0 && right.pmId != 0 && left.pmId != right.pmId) {
+      return right.pmId.compareTo(left.pmId);
+    }
+    return right.plid.compareTo(left.plid);
+  }
+
+  DateTime? _conversationTime(PrivateMessagePortal conversation) {
+    final normalized = conversation.readableString.trim();
+    final match = RegExp(
+      r'^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})',
+    ).firstMatch(normalized);
+    if (match == null) return null;
+    return DateTime(
+      int.parse(match.group(1)!),
+      int.parse(match.group(2)!),
+      int.parse(match.group(3)!),
+      int.parse(match.group(4)!),
+      int.parse(match.group(5)!),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-
+    super.build(context);
     return Consumer<DiscuzAndUserNotifier>(
-        builder: (context, discuzAndUser, child) {
-      if (discuzAndUser.discuz == null) {
-        return NullDiscuzScreen();
-      } else if (discuzAndUser.user == null) {
-        return NullUserScreen();
-      }
-      return Column(
-        children: [
-          if (_error != null)
-            ErrorCard(_error!, () {
-              _controller.callRefresh();
-            }),
-          Expanded(
-              child: EasyRefresh(
-                header: EasyRefreshUtils.i18nClassicHeader(context),
-                footer: EasyRefreshUtils.i18nClassicFooter(context),
-                refreshOnStart: true,
-                controller: _controller,
-                onRefresh: () async {
-                  return await _invalidateHotThreadContent(discuzAndUser.discuz!);
-                },
-                onLoad: () async {
-                  return await _loadPortalPrivateMessage(discuzAndUser.discuz!);
-                },
-                child: ListView.builder(
-                  itemBuilder: (context, index) {
-                    return PrivateMessagePortalWidget(discuzAndUser.discuz!, discuzAndUser.user, _pmList[index]);
-                  },
-                  itemCount: _pmList.length,
+      builder: (context, discuzAndUser, child) {
+        final discuz = discuzAndUser.discuz;
+        final user = discuzAndUser.user;
+        if (discuz == null) return NullDiscuzScreen();
+        if (user == null) return NullUserScreen();
+        _ensureInitialized(discuz, user);
+
+        return PlatformLiquidGlassPageBackdrop(
+          child: Column(
+            children: [
+              if (_error != null)
+                ErrorCard(_error!, () => _controller.callRefresh()),
+              Expanded(
+                child: EasyRefresh(
+                  header: EasyRefreshUtils.i18nClassicHeader(context),
+                  footer: EasyRefreshUtils.i18nClassicFooter(context),
+                  refreshOnStart: false,
+                  controller: _controller,
+                  onRefresh: () => _refreshPrivateMessages(discuz),
+                  onLoad: () => _loadPrivateMessages(
+                    discuz,
+                    generation: _generation,
+                  ),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    itemCount: _pmList.length,
+                    itemBuilder: (context, index) => PrivateMessagePortalWidget(
+                      discuz,
+                      _pmList[index],
+                      onConversationClosed: () =>
+                          _refreshPrivateMessages(discuz),
+                    ),
+                  ),
                 ),
-              )
-          )
-        ],
-      );
-    });
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
-
-
 }

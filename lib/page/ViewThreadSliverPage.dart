@@ -47,7 +47,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
-import 'package:hive_ce_flutter/adapters.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -508,10 +507,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     });
   }
 
-  void favoriteThread() async {
+  Future<void> favoriteThread() async {
     FavoriteThreadDao favoriteThreadDao =
         await AppDatabase.getFavoriteThreadDao();
-    favoriteThreadDao.insertFavoriteThread(FavoriteThreadInDatabase(
+    await favoriteThreadDao.insertFavoriteThread(FavoriteThreadInDatabase(
         1,
         _viewThreadResult.threadVariables.member_uid,
         tid,
@@ -523,6 +522,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         _viewThreadResult.threadVariables.threadInfo.replies,
         DateTime.now(),
         discuz));
+    if (mounted) setState(() {});
     if (Provider.of<DiscuzAndUserNotifier>(context, listen: false).user ==
         null) {
       return;
@@ -541,13 +541,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     });
   }
 
-  void unfavoriteThread() async {
+  Future<void> unfavoriteThread() async {
     FavoriteThreadDao favoriteThreadDao =
         await AppDatabase.getFavoriteThreadDao();
     FavoriteThreadInDatabase? favoriteThreadInDatabase =
         favoriteThreadDao.getFavoriteThreadByTid(tid, discuz);
     if (favoriteThreadInDatabase != null) {
-      favoriteThreadDao.removeFavoriteThread(favoriteThreadInDatabase);
+      await favoriteThreadDao.removeFavoriteThread(favoriteThreadInDatabase);
+      if (mounted) setState(() {});
       if (Provider.of<DiscuzAndUserNotifier>(context, listen: false).user ==
           null) {
         return;
@@ -735,137 +736,126 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   Widget build(BuildContext context) {
     CustomizeColor.updateAndroidNavigationbar(context);
     ModalRoute<Object?>? route = ModalRoute.of(context);
+    final threadSubject =
+        _viewThreadResult.threadVariables.threadInfo.subject.isEmpty
+            ? S.of(context).viewThreadTitle
+            : HtmlUnescape()
+                .convert(_viewThreadResult.threadVariables.threadInfo.subject);
+    final favoriteThreadInDatabase =
+        favoriteThreadDao?.getFavoriteThreadByTid(tid, discuz);
 
     final adaptiveAppBar = PlatformAppBar(
-        automaticallyImplyLeading: this.onClosed == null ? true : false,
-        cupertino: (_, __) => CupertinoNavigationBarData(
-            heroTag: this.onClosed == null ? null : "viewthread_${tid}",
-            transitionBetweenRoutes: false,
-            previousPageTitle: (route != null &&
-                    route is CupertinoPageRoute<dynamic> &&
-                    route.previousTitle.value != null)
-                ? route.previousTitle.value
-                : Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-                    .discuz
-                    ?.siteName),
-        leading: this.onClosed == null
-            ? null
-            : PlatformIconButton(
-                icon: Icon(Icons.arrow_back),
-                cupertinoIcon: Icon(CupertinoIcons.back),
-                onPressed: onClosed,
-                cupertino: (_, __) => CupertinoIconButtonData(
-                    alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.all(0)),
-              ),
-        //middle: Text(S.of(context).forumDisplayTitle),
-        // title: Text(S.of(context).viewThreadTitle),
-        title: _viewThreadResult.threadVariables.threadInfo.subject.isEmpty
-            ? Text(S.of(context).viewThreadTitle,
-                overflow: TextOverflow.ellipsis)
-            : Text(
-                HtmlUnescape().convert(
-                    _viewThreadResult.threadVariables.threadInfo.subject),
-                overflow: TextOverflow.ellipsis),
-        trailingActions: [
-          DiscuzNotificationAppbarIconWidget(),
-          if (favoriteThreadDao != null)
-            IconButton(
-                onPressed: () async {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  FavoriteThreadInDatabase? favoriteThreadInDatabase =
-                      favoriteThreadDao!.getFavoriteThreadByTid(tid, discuz);
-                  if (Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-                          .user !=
-                      null) {
-                    if (favoriteThreadInDatabase == null) {
-                      favoriteThread();
-                    } else {
-                      unfavoriteThread();
-                    }
+      automaticallyImplyLeading: this.onClosed == null ? true : false,
+      cupertino: (_, __) => CupertinoNavigationBarData(
+          heroTag: this.onClosed == null ? null : "viewthread_${tid}",
+          transitionBetweenRoutes: false,
+          previousPageTitle: (route != null &&
+                  route is CupertinoPageRoute<dynamic> &&
+                  route.previousTitle.value != null)
+              ? route.previousTitle.value
+              : Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                  .discuz
+                  ?.siteName),
+      leading: this.onClosed == null
+          ? null
+          : PlatformBackButton(
+              onPressed: onClosed,
+            ),
+      //middle: Text(S.of(context).forumDisplayTitle),
+      // title: Text(S.of(context).viewThreadTitle),
+      liquidGlassTitle: threadSubject,
+      title: Text(threadSubject, overflow: TextOverflow.ellipsis),
+      trailingActions: [
+        if (hasDiscuzNotification(context))
+          buildDiscuzNotificationAppbarIcon(context),
+        if (favoriteThreadDao != null)
+          PlatformIconButton(
+              liquidGlassSymbol:
+                  favoriteThreadInDatabase == null ? 'heart' : 'heart.fill',
+              onPressed: () async {
+                VibrationUtils.vibrateWithClickIfPossible();
+                if (Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                        .user !=
+                    null) {
+                  if (favoriteThreadInDatabase == null) {
+                    await favoriteThread();
                   } else {
-                    // only save in the local storage
+                    await unfavoriteThread();
                   }
-                },
-                tooltip: S.of(context).favoriteThreadTooltip,
-                icon: ValueListenableBuilder(
-                  valueListenable:
-                      favoriteThreadDao!.favoriteThreadBox.listenable(),
-                  builder: (BuildContext context, value, Widget? child) {
-                    FavoriteThreadInDatabase? favList =
-                        favoriteThreadDao!.getFavoriteThreadByTid(tid, discuz);
-                    if (favList == null) {
-                      return Icon(
-                        PlatformIcons(context).favoriteOutline,
-                        size: 24,
-                      );
-                    } else {
-                      return Icon(
-                        PlatformIcons(context).favoriteSolid,
-                        size: 24,
-                        color: Theme.of(context).colorScheme.primary,
-                      );
-                    }
-                  },
-                )),
-          IconButton(
-            tooltip: viewThreadQuery.timeAscend
+                } else {
+                  // only save in the local storage
+                }
+              },
+              icon: Icon(
+                favoriteThreadInDatabase == null
+                    ? PlatformIcons(context).favoriteOutline
+                    : PlatformIcons(context).favoriteSolid,
+                size: 24,
+                color: favoriteThreadInDatabase == null
+                    ? null
+                    : Theme.of(context).colorScheme.primary,
+                semanticLabel: S.of(context).favoriteThreadTooltip,
+              )),
+        PlatformIconButton(
+          liquidGlassSymbol:
+              viewThreadQuery.timeAscend ? 'arrow.up' : 'arrow.down',
+          icon: Icon(
+            viewThreadQuery.timeAscend
+                ? PlatformIcons(context).upArrow
+                : PlatformIcons(context).downArrow,
+            size: 20,
+            semanticLabel: viewThreadQuery.timeAscend
                 ? S.of(context).sortThreadInAscendOrder
                 : S.of(context).sortThreadInDescendOrder,
+          ),
+          onPressed: () {
+            VibrationUtils.vibrateWithClickIfPossible();
+            viewThreadQuery.timeAscend = !viewThreadQuery.timeAscend;
+            setNewViewThreadQuery(viewThreadQuery);
+          },
+        ),
+        PlatformPopupMenu(
             icon: Icon(
-              viewThreadQuery.timeAscend
-                  ? PlatformIcons(context).upArrow
-                  : PlatformIcons(context).downArrow,
+              PlatformIcons(context).ellipsis,
               size: 24,
             ),
-            onPressed: () {
-              VibrationUtils.vibrateWithClickIfPossible();
-              viewThreadQuery.timeAscend = !viewThreadQuery.timeAscend;
-              setNewViewThreadQuery(viewThreadQuery);
-            },
-          ),
-          PlatformPopupMenu(
-              icon: Icon(
-                PlatformIcons(context).ellipsis,
-                size: 24,
-              ),
-              options: [
-                PopupMenuOption(
-                    label: S.of(context).openViaInternalBrowser,
-                    onTap: (option) {
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      Navigator.push(
-                          context,
-                          platformPageRoute(
-                              iosTitle: S.of(context).openViaInternalBrowser,
-                              context: context,
-                              builder: (context) => InternalWebviewBrowserPage(
-                                  discuz,
-                                  user,
-                                  URLUtils.getViewThreadURL(discuz, tid))));
-                    }),
-                PopupMenuOption(
-                    label: S.of(context).share,
-                    onTap: (option) {
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      Share.share(URLUtils.getViewThreadURL(discuz, tid),
-                          subject: _viewThreadResult
-                              .threadVariables.threadInfo.subject);
-                    }),
-                PopupMenuOption(
-                    label: S.of(context).settings,
-                    onTap: (option) async {
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      await Navigator.push(
-                          context,
-                          platformPageRoute(
-                              iosTitle: S.of(context).settings,
-                              context: context,
-                              builder: (context) => SettingPage()));
-                    }),
-              ]),
-        ],
-      );
+            options: [
+              PopupMenuOption(
+                  label: S.of(context).openViaInternalBrowser,
+                  onTap: (option) {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    Navigator.push(
+                        context,
+                        platformPageRoute(
+                            iosTitle: S.of(context).openViaInternalBrowser,
+                            context: context,
+                            builder: (context) => InternalWebviewBrowserPage(
+                                discuz,
+                                user,
+                                URLUtils.getViewThreadURL(discuz, tid))));
+                  }),
+              PopupMenuOption(
+                  label: S.of(context).share,
+                  onTap: (option) {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    Share.share(URLUtils.getViewThreadURL(discuz, tid),
+                        subject: _viewThreadResult
+                            .threadVariables.threadInfo.subject);
+                  }),
+              PopupMenuOption(
+                  label: S.of(context).settings,
+                  onTap: (option) async {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    await Navigator.push(
+                        context,
+                        platformPageRoute(
+                            iosTitle: S.of(context).settings,
+                            context: context,
+                            builder: (context) => SettingPage()));
+                  }),
+            ]),
+      ],
+    );
 
     return PlatformScaffold(
       body: Column(
@@ -908,7 +898,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                         delegate: SliverChildBuilderDelegate(
                       (context, _) {
                         return Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
                           child: Text(
                             _viewThreadResult.threadVariables.threadInfo.subject
                                         .isEmpty &&
@@ -1168,7 +1158,11 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                       ),
                                     ),
                                   )),
-                                  IconButton(
+                                  PlatformIconButton(
+                                    liquidGlassSymbol:
+                                        dialogStatus != SHOW_SMILEY_DIALOG
+                                            ? 'face.smiling'
+                                            : 'keyboard',
                                     icon: dialogStatus != SHOW_SMILEY_DIALOG
                                         ? Icon(
                                             Icons.emoji_emotions_outlined,
@@ -1204,7 +1198,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                         if (value == false) {
                                           if (_sendReplyStatus ==
                                               SendReplyStatus.idle) {
-                                            return IconButton(
+                                            return PlatformIconButton(
+                                              liquidGlassSymbol:
+                                                  'arrow.up.circle',
                                               icon: Icon(
                                                   AppPlatformIcons(context)
                                                       .postThreadSolid),
@@ -1216,7 +1212,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                             );
                                           } else if (_sendReplyStatus ==
                                               SendReplyStatus.loading) {
-                                            return IconButton(
+                                            return PlatformIconButton(
                                               icon:
                                                   PlatformCircularProgressIndicator(
                                                 cupertino: (context,
@@ -1235,7 +1231,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                             );
                                           } else if (_sendReplyStatus ==
                                               SendReplyStatus.success) {
-                                            return IconButton(
+                                            return PlatformIconButton(
+                                              liquidGlassSymbol:
+                                                  'checkmark.circle.fill',
                                               icon: Icon(
                                                   AppPlatformIcons(context)
                                                       .checkCircleSolid,
@@ -1246,7 +1244,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                             );
                                           } else if (_sendReplyStatus ==
                                               SendReplyStatus.fail) {
-                                            return IconButton(
+                                            return PlatformIconButton(
+                                              liquidGlassSymbol:
+                                                  'exclamationmark.triangle',
                                               icon: Icon(
                                                   AppPlatformIcons(context)
                                                       .errorOutline,
@@ -1259,7 +1259,11 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                           return Container();
                                         } else {
                                           //return Container();
-                                          return IconButton(
+                                          return PlatformIconButton(
+                                            liquidGlassSymbol: dialogStatus ==
+                                                    SHOW_EXTRA_DIALOG
+                                                ? 'xmark'
+                                                : 'plus.circle',
                                             icon: Icon(
                                               dialogStatus == SHOW_EXTRA_DIALOG
                                                   ? Icons.close

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 
 /// 列表项
-class UserProfileListItem extends StatefulWidget {
+class UserProfileListItem extends StatelessWidget {
   // 点击事件
   final VoidCallback? onPressed;
 
@@ -20,8 +21,8 @@ class UserProfileListItem extends StatefulWidget {
   final Widget? rightWidget;
 
   // 构造函数
-  UserProfileListItem({
-    Key? key,
+  const UserProfileListItem({
+    super.key,
     this.onPressed,
     this.icon,
     this.title,
@@ -29,67 +30,47 @@ class UserProfileListItem extends StatefulWidget {
     this.describe,
     this.describeColor = Colors.grey,
     this.rightWidget,
-  }) : super(key: key);
+  });
 
-  @override
-  _UserProfileListItemState createState() => _UserProfileListItemState();
-}
-
-class _UserProfileListItemState extends State<UserProfileListItem> {
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: widget.onPressed,
-      child: Container(
-          // height: 60.0,
-          width: double.infinity,
-          child: Row(
-            children: <Widget>[
-              widget.icon != null
-                  ? Container(
-                padding: EdgeInsets.all(14.0),
-                child: SizedBox(
-                  height: 32.0,
-                  width: 32.0,
-                  child: widget.icon,
-                ),
-              )
-                  : Container(
-                width: 14.0,
+    return SizedBox(
+      width: double.infinity,
+      child: PlatformListTile(
+        contentPadding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+        onTap: onPressed,
+        leading: icon == null
+            ? null
+            : SizedBox.square(
+                dimension: 32,
+                child: icon,
               ),
-              Expanded(
-                flex: 1,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    widget.title != null
-                        ? Text(
-                      widget.title!,
-                      style: TextStyle(
-                        color: widget.titleColor,
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )
-                        : Container(),
-                    widget.describe != null
-                        ? Text(
-                      widget.describe!,
-                      maxLines: 2,
-                      style: TextStyle(
-                          color: widget.describeColor, fontSize: 14.0),
-                    )
-                        : Container(),
-                  ],
+        title: title == null
+            ? const SizedBox.shrink()
+            : Text(
+                title!,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: titleColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              widget.rightWidget ?? Container(),
-              Container(
-                width: 14.0,
+        subtitle: describe == null
+            ? null
+            : Text(
+                describe!,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: describeColor,
+                  fontSize: 14,
+                  height: 1.25,
+                ),
               ),
-            ],
-          )),
+        trailing: rightWidget,
+      ),
     );
   }
 }

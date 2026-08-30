@@ -110,9 +110,11 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
         title: Text(S.of(context).pushThreadTitle),
         trailingActions: [
           PlatformIconButton(
+            liquidGlassSymbol: 'paperplane',
             icon: Icon(
               AppPlatformIcons(context).postThreadSolid,
-              size: 24,
+              size: 20,
+              semanticLabel: S.of(context).pushThreadTitle,
             ),
             onPressed: () async {
               VibrationUtils.vibrateWithClickIfPossible();
@@ -121,143 +123,191 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
           )
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(vertical: 0, horizontal: 4),
-        child: Column(
-          children: [
-            // for the button groups
-            Row(
-              children: [
-                if (getOptionalDropdownMenuItem().isNotEmpty)
-                  DropdownButton<String>(
-                    items: getOptionalDropdownMenuItem(),
-                    onChanged: (item) {
-                      if (item != null) {
-                        setState(() {
-                          selectedTypeId = item;
-                        });
-                      }
-                    },
-                    value: selectedTypeId,
-                  ),
-                Expanded(
-                    child: TextFormField(
-                  controller: _titleEditingController,
-                  expands: false,
-                  decoration:
-                      InputDecoration(hintText: S.of(context).pushThreadTitle),
-                ))
-              ],
-            ),
-            Expanded(
-                child: Padding(
-              padding: EdgeInsets.all(4.0),
-              child: PostTextField(
-                discuz,
-                _controller,
-                focusNode: focusNode,
-                expanded: true,
+      body: PlatformLiquidGlassPageBackdrop(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 6, bottom: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (_threadTypeEntries.isNotEmpty) ...[
+                      Builder(
+                        builder: (buttonContext) {
+                          final button = PlatformTextButton(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
+                            onPressed: _showThreadTypePicker,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  PlatformIcons(context).tagSolid,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _selectedThreadTypeLabel,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.start,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Icon(
+                                  PlatformIcons(context).downArrow,
+                                  size: 14,
+                                ),
+                              ],
+                            ),
+                          );
+                          if (usesAppleTranslucentSurface(buttonContext) &&
+                              !usesLiquidGlass(buttonContext)) {
+                            return PlatformLiquidGlassCard(
+                              borderRadius: BorderRadius.circular(22),
+                              child: button,
+                            );
+                          }
+                          return button;
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    PlatformTextField(
+                      controller: _titleEditingController,
+                      textInputAction: TextInputAction.next,
+                      hintText: S.of(context).pushThreadTitle,
+                    ),
+                  ],
+                ),
               ),
-            )),
-            Row(
-              children: [
-                PlatformIconButton(
-                  icon: Icon(Icons.format_bold_outlined),
-                  onPressed: () {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    String insertedText = "[b][/b]";
-                    insertString(insertedText);
-                  },
+              Expanded(
+                  child: Padding(
+                padding: EdgeInsets.all(4.0),
+                child: PostTextField(
+                  discuz,
+                  _controller,
+                  focusNode: focusNode,
+                  expanded: true,
                 ),
-                PlatformIconButton(
-                  icon: Icon(Icons.format_italic_outlined),
-                  onPressed: () {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    String insertedText = "[i][/i]";
-                    insertString(insertedText);
-                  },
+              )),
+              SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: PlatformLiquidGlassToolbarGroup(
+                      children: [
+                        PlatformIconButton(
+                          icon: Icon(Icons.format_bold_outlined),
+                          onPressed: () {
+                            VibrationUtils.vibrateWithClickIfPossible();
+                            String insertedText = "[b][/b]";
+                            insertString(insertedText);
+                          },
+                        ),
+                        PlatformIconButton(
+                          icon: Icon(Icons.format_italic_outlined),
+                          onPressed: () {
+                            VibrationUtils.vibrateWithClickIfPossible();
+                            String insertedText = "[i][/i]";
+                            insertString(insertedText);
+                          },
+                        ),
+                        PlatformIconButton(
+                          icon: Icon(Icons.format_quote_outlined),
+                          onPressed: () {
+                            VibrationUtils.vibrateWithClickIfPossible();
+                            String insertedText = "[quote][/quote]";
+                            insertString(insertedText);
+                          },
+                        ),
+                        PlatformIconButton(
+                          icon: Icon(Icons.emoji_emotions_outlined),
+                          onPressed: () {
+                            VibrationUtils.vibrateWithClickIfPossible();
+                            // popup a smiley dialog
+                            showPlatformModalSheet(
+                                context: context,
+                                builder: (context) => SmileyListScreen((p0) {
+                                      insertSmiley(p0);
+                                    }));
+                          },
+                        ),
+                        PlatformIconButton(
+                          icon: Icon(Icons.image_outlined),
+                          onPressed: () {
+                            VibrationUtils.vibrateWithClickIfPossible();
+                            showPlatformModalSheet(
+                                context: context,
+                                builder: (context) => ExtraFuncInThreadScreen(
+                                      discuz,
+                                      tid,
+                                      fid,
+                                      onReplyWithImage: (aid, path) async {
+                                        // fill with text first
+                                        // refresh the layout
+                                        // insertedAidList.clear();
+                                        if (aid.isNotEmpty) {
+                                          String insertedAidString =
+                                              "[attachimg]${aid}[/attachimg]";
+                                          insertString(insertedAidString);
+                                          // add aid to list
+                                          insertedAidList.add(aid);
+                                          // add to historical attachment
+                                          bool savedInDatabase =
+                                              await UserPreferencesUtils
+                                                  .getRecordHistoryEnabled();
+                                          if (savedInDatabase) {
+                                            // save it to database
+                                            ImageAttachmentDao
+                                                imageAttachmentDao =
+                                                await AppDatabase
+                                                    .getImageAttachmentDao();
+                                            ImageAttachment? imageAttachment =
+                                                imageAttachmentDao
+                                                    .findImageAttachmentByDiscuzAndAid(
+                                                        discuz, aid);
+                                            if (imageAttachment != null) {
+                                              imageAttachment.updateAt =
+                                                  DateTime.now();
+                                              imageAttachmentDao
+                                                  .insertImageAttachmentWithKey(
+                                                      imageAttachment.key,
+                                                      imageAttachment);
+                                            } else {
+                                              imageAttachmentDao
+                                                  .insertImageAttachment(
+                                                      ImageAttachment(
+                                                          aid, discuz, path));
+                                            }
+                                          }
+                                        } else {}
+                                      },
+                                      onReplyWithHostedImage: (imageUrl, path) {
+                                        if (imageUrl.isNotEmpty) {
+                                          insertString("[img]$imageUrl[/img]");
+                                        }
+                                      },
+                                      showHistoricalAttachment: false,
+                                    ));
+                          },
+                        ),
+                        // PlatformIconButton(
+                        //   icon: Icon(Icons.settings_backup_restore),
+                        // ),
+                      ],
+                    ),
+                  ),
                 ),
-                PlatformIconButton(
-                  icon: Icon(Icons.format_quote_outlined),
-                  onPressed: () {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    String insertedText = "[quote][/quote]";
-                    insertString(insertedText);
-                  },
-                ),
-                PlatformIconButton(
-                  icon: Icon(Icons.emoji_emotions_outlined),
-                  onPressed: () {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    // popup a smiley dialog
-                    showPlatformModalSheet(
-                        context: context,
-                        builder: (context) => SmileyListScreen((p0) {
-                              insertSmiley(p0);
-                            }));
-                  },
-                ),
-                PlatformIconButton(
-                  icon: Icon(Icons.image_outlined),
-                  onPressed: () {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    showPlatformModalSheet(
-                        context: context,
-                        builder: (context) => ExtraFuncInThreadScreen(
-                              discuz,
-                              tid,
-                              fid,
-                              onReplyWithImage: (aid, path) async {
-                                // fill with text first
-                                // refresh the layout
-                                // insertedAidList.clear();
-                                if (aid.isNotEmpty) {
-                                  String insertedAidString =
-                                      "[attachimg]${aid}[/attachimg]";
-                                  insertString(insertedAidString);
-                                  // add aid to list
-                                  insertedAidList.add(aid);
-                                  // add to historical attachment
-                                  bool savedInDatabase =
-                                      await UserPreferencesUtils
-                                          .getRecordHistoryEnabled();
-                                  if (savedInDatabase) {
-                                    // save it to database
-                                    ImageAttachmentDao imageAttachmentDao =
-                                        await AppDatabase
-                                            .getImageAttachmentDao();
-                                    ImageAttachment? imageAttachment =
-                                        imageAttachmentDao
-                                            .findImageAttachmentByDiscuzAndAid(
-                                                discuz, aid);
-                                    if (imageAttachment != null) {
-                                      imageAttachment.updateAt = DateTime.now();
-                                      imageAttachmentDao
-                                          .insertImageAttachmentWithKey(
-                                              imageAttachment.key,
-                                              imageAttachment);
-                                    } else {
-                                      imageAttachmentDao.insertImageAttachment(
-                                          ImageAttachment(aid, discuz, path));
-                                    }
-                                  }
-                                } else {}
-                              },
-                              onReplyWithHostedImage: (imageUrl, path) {
-                                if (imageUrl.isNotEmpty) {
-                                  insertString("[img]$imageUrl[/img]");
-                                }
-                              },
-                              showHistoricalAttachment: false,
-                            ));
-                  },
-                ),
-                // PlatformIconButton(
-                //   icon: Icon(Icons.settings_backup_restore),
-                // ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -276,6 +326,79 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
         _displayForumResult = value;
       });
     });
+  }
+
+  List<MapEntry<String, String>> get _threadTypeEntries =>
+      _displayForumResult?.discuzIndexVariables.threadType?.idNameMap.entries
+          .map((entry) => MapEntry(entry.key, entry.value.toString()))
+          .toList() ??
+      const <MapEntry<String, String>>[];
+
+  String get _selectedThreadTypeLabel {
+    for (final entry in _threadTypeEntries) {
+      if (entry.key == selectedTypeId) return entry.value;
+    }
+    return S.of(context).forumFilterTypeIdTitle;
+  }
+
+  Future<void> _showThreadTypePicker() async {
+    final entries = _threadTypeEntries;
+    if (entries.isEmpty) return;
+    VibrationUtils.vibrateWithClickIfPossible();
+    final selected = await showPlatformModalSheet<String>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        top: false,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.62,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 16, 18, 8),
+                child: Text(
+                  S.of(context).forumFilterTypeIdTitle,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ),
+              Flexible(
+                child: ListView(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.only(bottom: 8),
+                  children: [
+                    for (final entry in entries)
+                      PlatformListTile(
+                        contentPadding: const EdgeInsets.fromLTRB(18, 8, 14, 8),
+                        title: Text(
+                          entry.value,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: selectedTypeId == entry.key
+                            ? Icon(
+                                PlatformIcons(sheetContext).checkMark,
+                                color:
+                                    Theme.of(sheetContext).colorScheme.primary,
+                                size: 18,
+                              )
+                            : null,
+                        onTap: () => Navigator.pop(sheetContext, entry.key),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (selected != null && mounted) {
+      setState(() => selectedTypeId = selected);
+    }
   }
 
   // utilities
@@ -353,24 +476,6 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
           selection:
               TextSelection.fromPosition(TextPosition(offset: newText.length)));
     }
-  }
-
-  List<DropdownMenuItem<String>> getOptionalDropdownMenuItem() {
-    List<DropdownMenuItem<String>> dropdownMenuItemList = [];
-    if (_displayForumResult?.discuzIndexVariables.threadType == null) {
-      return dropdownMenuItemList;
-    } else {
-      // traverse it
-      for (var entry in _displayForumResult!
-          .discuzIndexVariables.threadType!.idNameMap.entries) {
-        dropdownMenuItemList.add(DropdownMenuItem<String>(
-          child: Text(entry.value.toString()),
-          value: entry.key,
-        ));
-      }
-    }
-
-    return dropdownMenuItemList;
   }
 
   void backupDraftIfPossible() {

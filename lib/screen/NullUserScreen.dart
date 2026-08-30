@@ -1,5 +1,6 @@
 
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -14,7 +15,7 @@ class NullUserScreen extends StatelessWidget{
           child: SizedBox(
             height: 200.0,
             width: 300.0,
-            child: Card(
+            child: PlatformCard(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,

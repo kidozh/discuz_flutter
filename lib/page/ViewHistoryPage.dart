@@ -1,11 +1,7 @@
-
-
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
@@ -24,131 +20,97 @@ import 'package:provider/provider.dart';
 import 'DisplayForumSliverPage.dart';
 import 'ViewThreadSliverPage.dart';
 
-class ViewHistoryPage extends StatelessWidget{
-  Discuz discuz;
+class ViewHistoryPage extends StatefulWidget {
+  final Discuz discuz;
 
-  ViewHistoryPage(this.discuz);
-
-  @override
-  Widget build(BuildContext context) {
-
-    return ViewHistoryStateWidget(discuz);
-  }
-}
-
-class ViewHistoryStateWidget extends StatefulWidget{
-  Discuz discuz;
-
-  ViewHistoryStateWidget(this.discuz);
+  const ViewHistoryPage(this.discuz, {super.key});
 
   @override
-  ViewHistoryState createState() {
-    return ViewHistoryState(discuz);
-  }
-
+  State<ViewHistoryPage> createState() => ViewHistoryState();
 }
 
-class ViewHistoryState extends State<ViewHistoryStateWidget>{
-  Discuz discuz;
+class ViewHistoryState extends State<ViewHistoryPage> {
   ViewHistoryDao? _viewHistoryDao;
 
-
-
-  ViewHistoryState(this.discuz){
-    _initDb();
-  }
-
+  Discuz get discuz => widget.discuz;
 
   @override
   void initState() {
     super.initState();
     _initDb();
-
   }
 
   void _initDb() async {
     ViewHistoryDao viewHistoryDao = await AppDatabase.getViewHistoryDao();
+    if (!mounted) return;
     setState(() {
       _viewHistoryDao = viewHistoryDao;
     });
-
   }
 
-  void _showDeleteAllDialog(BuildContext context){
-    showPlatformDialog(context: context, builder: (context) {
-      return PlatformAlertDialog(
-        title: Text(S.of(context).clearAllViewHistories),
-        content: Text(S.of(context).deleteViewHistoryWarnContent),
-        actions: [
-          PlatformTextButton(onPressed: () async{
+  void _showDeleteAllDialog(BuildContext context) {
+    showPlatformAlert(
+      context: context,
+      title: S.of(context).clearAllViewHistories,
+      message: S.of(context).deleteViewHistoryWarnContent,
+      actions: [
+        PlatformAlertAction(
+          label: S.of(context).ok,
+          isDestructiveAction: true,
+          onPressed: () async {
             VibrationUtils.vibrateWithHeavyFeedbackIfPossible();
             await _clearAllViewHistory();
-            Navigator.pop(context);
-
-          }, child: Text(
-              S.of(context).ok,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
-          ),
-
-          ),
-          PlatformTextButton(onPressed: () async{
+          },
+        ),
+        PlatformAlertAction(
+          label: S.of(context).cancel,
+          isCancelAction: true,
+          onPressed: () {
             VibrationUtils.vibrateWithClickIfPossible();
-            Navigator.pop(context);
-
-          }, child: Text(S.of(context).cancel),
-
-          )
-        ],
-      );
-    }
+          },
+        ),
+      ],
     );
   }
 
-  Future<void> _clearAllViewHistory() async{
-
+  Future<void> _clearAllViewHistory() async {
     ViewHistoryDao viewHistoryDao = await AppDatabase.getViewHistoryDao();
     await viewHistoryDao.deleteViewHistoryByDiscuz(discuz);
     //Navigator.pop(context);
-
   }
 
-  Future<void> _deleteViewHistory(ViewHistory viewHistory) async{
-
+  Future<void> _deleteViewHistory(ViewHistory viewHistory) async {
     var viewHistoryDao = await AppDatabase.getViewHistoryDao();
     viewHistoryDao.deleteViewHistories([viewHistory]);
+    if (!mounted) return;
 
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
-        SnackBar(
-          content: Text(S.of(context).successfullyDeleteViewHistoryContent("${viewHistory.subject}")),
-          action: SnackBarAction(
-            label: S.of(context).undo,
-            onPressed: (){
-              viewHistoryDao.insertViewHistory(viewHistory);
-            },
-          )
-      )
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(S
+            .of(context)
+            .successfullyDeleteViewHistoryContent(viewHistory.subject)),
+        action: SnackBarAction(
+          label: S.of(context).undo,
+          onPressed: () {
+            viewHistoryDao.insertViewHistory(viewHistory);
+          },
+        )));
   }
 
-  Widget getUserAvatar(int uid, String username){
+  Widget getUserAvatar(int uid, String username) {
     return CachedNetworkImage(
       imageUrl: URLUtils.getAvatarURL(discuz, uid.toString()),
-      progressIndicatorBuilder: (context, url, downloadProgress) => PlatformCircularProgressIndicator(
-          material: (context, platform) => MaterialProgressIndicatorData(value: downloadProgress.progress),
-
+      progressIndicatorBuilder: (context, url, downloadProgress) =>
+          PlatformCircularProgressIndicator(
+        material: (context, platform) =>
+            MaterialProgressIndicatorData(value: downloadProgress.progress),
       ),
-      errorWidget: (context, url, error) => Container(
-        // width: 16.0,
-        // height: 16.0,
-        child: CircleAvatar(
-          backgroundColor: CustomizeColor.getColorBackgroundById(uid),
-          child: Text(
-            username.length != 0
-                ? username[0].toUpperCase()
-                : S.of(context).anonymous,
-            style: TextStyle(color: Colors.white,fontSize: 18),
-          ),
+      errorWidget: (context, url, error) => CircleAvatar(
+        backgroundColor: CustomizeColor.getColorBackgroundById(uid),
+        child: Text(
+          username.isNotEmpty
+              ? username[0].toUpperCase()
+              : S.of(context).anonymous,
+          style: TextStyle(color: Colors.white, fontSize: 18),
         ),
       ),
       imageBuilder: (context, imageProvider) => Container(
@@ -156,8 +118,7 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
         // height: 16.0,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          image: DecorationImage(
-              image: imageProvider, fit: BoxFit.cover),
+          image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
         ),
       ),
     );
@@ -165,137 +126,180 @@ class ViewHistoryState extends State<ViewHistoryStateWidget>{
 
   @override
   Widget build(BuildContext context) {
-    if(_viewHistoryDao != null){
+    if (_viewHistoryDao != null) {
       return PlatformScaffold(
-        appBar: PlatformAppBar(
-          title: Text(S.of(context).viewHistory),
-          automaticallyImplyLeading: true,
-          trailingActions: [
-            IconButton(
-              onPressed: () {
-                VibrationUtils.vibrateWithClickIfPossible();
-                _showDeleteAllDialog(context);
-              },
-              //label: S.of(context).clearAllViewHistories,
-              icon: Icon(AppPlatformIcons(context).deleteSolid, size: isCupertino(context)? 24: null,),
-            )
-          ],
-        ),
-        body: ValueListenableBuilder(
-          valueListenable: _viewHistoryDao!.viewHistoryBox.listenable(),
-          builder: (context, Box<ViewHistory> box, widget){
-            List<ViewHistory> viewHistoryList = _viewHistoryDao!.findAllViewHistoriesByDiscuz(discuz);
-            if(viewHistoryList.isEmpty){
-              return EmptyListScreen(EmptyItemType.history);
-            }
-            else {
-              return ListView.builder(
-                itemBuilder: (context, index){
-                  ViewHistory viewHistory = viewHistoryList[index];
-                  return Dismissible(
-                    background: Container(color: Colors.pinkAccent),
-                    key: Key(viewHistory.key.toString()),
-
-                    child: InkWell(
-                      child: PlatformWidgetBuilder(
-                        material: (context, child, platform){
-                          return Card(
-                              elevation: isCupertino(context)? 0: 4.0,
-                              child: child
-                          );
-                        },
-                        cupertino: (context, child, platform){
-                          return Column(
-                              children: [
-                                if(child!=null)
-                                  child,
-                                Divider()
-                          ]);
-                        },
-                        child: ListTile(
-                          leading: Container(
-                            width: 48,
-                            child: viewHistory.type == "thread" ?
-                            getUserAvatar(viewHistory.authorId, viewHistory.author) :
-                            CircleAvatar(
-                              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                              child: Icon(
-                                AppPlatformIcons(context).forumOutlined,
-                                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                size: 24,
-                              ),
-                            )
-                            ,
+          appBar: PlatformAppBar(
+            title: Text(S.of(context).viewHistory),
+            automaticallyImplyLeading: true,
+            trailingActions: [
+              PlatformIconButton(
+                liquidGlassSymbol: 'trash',
+                onPressed: () {
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  _showDeleteAllDialog(context);
+                },
+                //label: S.of(context).clearAllViewHistories,
+                icon: Icon(
+                  AppPlatformIcons(context).deleteSolid,
+                  size: 20,
+                  semanticLabel: S.of(context).clearAllViewHistories,
+                ),
+              )
+            ],
+          ),
+          body: PlatformLiquidGlassPageBackdrop(
+            child: ValueListenableBuilder(
+              valueListenable: _viewHistoryDao!.viewHistoryBox.listenable(),
+              builder: (context, Box<ViewHistory> box, widget) {
+                final viewHistoryList =
+                    _viewHistoryDao!.findAllViewHistoriesByDiscuz(discuz);
+                if (viewHistoryList.isEmpty) {
+                  return EmptyListScreen(EmptyItemType.history);
+                }
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  itemBuilder: (context, index) {
+                    final viewHistory = viewHistoryList[index];
+                    return Dismissible(
+                      key: Key(viewHistory.key.toString()),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 5,
+                        ),
+                        padding: const EdgeInsets.only(right: 20),
+                        alignment: Alignment.centerRight,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .error
+                              .withValues(alpha: 0.84),
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        child: Icon(
+                          AppPlatformIcons(context).deleteSolid,
+                          color: Theme.of(context).colorScheme.onError,
+                          size: 20,
+                        ),
+                      ),
+                      child: PlatformCard(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 5,
+                        ),
+                        child: PlatformListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 6,
                           ),
-                          title: Text(viewHistory.title),
+                          leading: PlatformLiquidGlassAvatar(
+                            size: 44,
+                            child: viewHistory.type == 'thread'
+                                ? getUserAvatar(
+                                    viewHistory.authorId,
+                                    viewHistory.author,
+                                  )
+                                : ColoredBox(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .primaryContainer,
+                                    child: Icon(
+                                      AppPlatformIcons(context).forumOutlined,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimaryContainer,
+                                      size: 18,
+                                    ),
+                                  ),
+                          ),
+                          title: Text(
+                            viewHistory.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(fontWeight: FontWeight.w600),
+                          ),
                           subtitle: RichText(
                             overflow: TextOverflow.ellipsis,
                             text: TextSpan(
-                              text: "",
+                              text: '',
                               style: DefaultTextStyle.of(context).style,
                               children: [
-                                if(viewHistory.author.isNotEmpty)
+                                if (viewHistory.author.isNotEmpty)
                                   TextSpan(
-                                      text: viewHistory.author,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold)
+                                    text: viewHistory.author,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                if(viewHistory.author.isNotEmpty)
-                                  TextSpan(
-                                      text: ' · ',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold)
-                                  ),
-
+                                if (viewHistory.author.isNotEmpty)
+                                  const TextSpan(text: ' · '),
                                 TextSpan(
-                                    text:  TimeDisplayUtils.getLocaledTimeDisplay(context,viewHistory.updateTime),
-                                    style: TextStyle(
-                                      color: Theme.of(context).colorScheme.primary,)
+                                  text: TimeDisplayUtils.getLocaledTimeDisplay(
+                                    context,
+                                    viewHistory.updateTime,
+                                  ),
+                                  style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
+                          trailing: Icon(
+                            PlatformIcons(context).forward,
+                            size: 18,
+                          ),
+                          onTap: () => _openViewHistory(viewHistory),
                         ),
                       ),
-                      onTap: () async{
-                        VibrationUtils.vibrateWithClickIfPossible();
-                        User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-                        if(viewHistory.type == "thread"){
-                          await Navigator.push(
-                              context,
-                              platformPageRoute(
-                                  context:context,
-                                  iosTitle: viewHistory.title,
-                                  builder: (context) => ViewThreadSliverPage(discuz,user, viewHistory.identification))
-                          );
-                        }
-                        else if(viewHistory.type == "forum"){
-                          await Navigator.push(
-                              context,
-                              platformPageRoute(
-                                  context:context,
-                                  iosTitle: viewHistory.title,
-                                  builder: (context) => DisplayForumTwoPanePage(discuz, user, viewHistory.identification))
-                          );
-                        }
-                      },
-                    ),
-                    onDismissed: (direction) async{
-                      await _deleteViewHistory(viewHistory);
-                    },
-                  );
-                },
-                itemCount: viewHistoryList.length,
-              );
-            }
-          }
-        )
-      );
-    }
-    else{
+                      onDismissed: (_) => _deleteViewHistory(viewHistory),
+                    );
+                  },
+                  itemCount: viewHistoryList.length,
+                );
+              },
+            ),
+          ));
+    } else {
       return BlankScreen();
     }
-
   }
 
+  Future<void> _openViewHistory(ViewHistory viewHistory) async {
+    VibrationUtils.vibrateWithClickIfPossible();
+    final user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    if (viewHistory.type == 'thread') {
+      await Navigator.push(
+        context,
+        platformPageRoute(
+          context: context,
+          iosTitle: viewHistory.title,
+          builder: (context) => ViewThreadSliverPage(
+            discuz,
+            user,
+            viewHistory.identification,
+          ),
+        ),
+      );
+    } else if (viewHistory.type == 'forum') {
+      await Navigator.push(
+        context,
+        platformPageRoute(
+          context: context,
+          iosTitle: viewHistory.title,
+          builder: (context) => DisplayForumTwoPanePage(
+            discuz,
+            user,
+            viewHistory.identification,
+          ),
+        ),
+      );
+    }
+  }
 }

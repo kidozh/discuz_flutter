@@ -66,7 +66,7 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
         title: Text(S.of(context).pictureBedTitle),
       ),
       body: SafeArea(
-        child: SettingsList(
+        child: PlatformAdaptiveSettingsList(
           sections: [
             SettingsSection(
                 title: Text(S.of(context).cheveretoPictureBed),
@@ -166,7 +166,9 @@ class ConfigurePictureBedState extends State<ConfigurePictureBedPage> {
         context: context,
         builder: (context) {
           return Container(
-            color: Theme.of(context).dialogBackgroundColor,
+            color: usesLiquidGlass(context)
+                ? Colors.transparent
+                : Theme.of(context).dialogBackgroundColor,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(

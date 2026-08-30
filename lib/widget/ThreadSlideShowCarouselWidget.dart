@@ -1,5 +1,7 @@
 
 
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
@@ -10,7 +12,6 @@ import 'package:html/parser.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/Discuz.dart';
-import '../entity/User.dart';
 import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../utility/NetworkUtils.dart';
@@ -192,136 +193,170 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
 
   double slideHeight = 180;
 
-  get subscriptionSlide => InkWell(
-    child: Container(
-      margin: EdgeInsets.all(8.0),
-
-      height: slideHeight,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16.0),
-        color: Theme.of(context).colorScheme.primary,
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            PlatformCircularProgressIndicator(
-              material: (context, platform) => MaterialProgressIndicatorData(
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
-              cupertino: (context, platform) => CupertinoProgressIndicatorData(
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
-            ),
-            SizedBox(height: 16,),
-            Text(S.of(context).loading,
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  fontSize: 16
-              ),
-            )
-          ],
-        ),
-      ),
-    ),
-    onTap: () async{
-      VibrationUtils.vibrateWithClickIfPossible();
-      // await Navigator.push(context,platformPageRoute(context:context,builder: (context) => SubscribeChannelPage()));
-
-    },
-  );
-
-  Widget getSlideShowItemWidget(int itemIndex){
-    KeylolCarouselItem slideShow = keylolCarouselItemList[itemIndex];
-
-    return InkWell(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
+  Widget get subscriptionSlide => Semantics(
+        label: S.of(context).loading,
+        child: PlatformLiquidGlassCard(
+          margin: const EdgeInsets.all(8),
+          tintColor: Theme.of(context).colorScheme.primary,
+          borderRadius: BorderRadius.circular(22),
+          child: SizedBox(
             height: slideHeight,
             width: double.infinity,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15.0),
-
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  colorFilter: Theme.of(context).brightness == Brightness.light?
-                  ColorFilter.mode(Color(0xD1FFFFFF), BlendMode.lighten):
-                  ColorFilter.mode(Color(0xD13D3D3D), BlendMode.darken),
-
-                  image: CachedNetworkImageProvider(
-                      slideShow.image_src
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                PlatformCircularProgressIndicator(
+                  material: (context, platform) =>
+                      MaterialProgressIndicatorData(
+                    color: Theme.of(context).colorScheme.primary,
                   ),
-
-                )
-            ),
-            child: ClipRect(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-                child: Column(
-                  //direction: Axis.vertical,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(slideShow.forum+" ",
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold
-                      ),
-                      maxLines: 1,
-
-                    ),
-                    Text(" "+slideShow.category,
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                          fontSize: 18),
-                      maxLines: 1,
-
-                    ),
-                    SizedBox(height: 44,),
-                    Text(slideShow.title,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          color: Theme.of(context).textTheme.displayLarge?.color,
-                          fontSize: 18
-                      ),
-                      maxLines: 1,
-                    )
-                  ],
-
+                  cupertino: (context, platform) =>
+                      CupertinoProgressIndicatorData(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 16),
+                Text(
+                  S.of(context).loading,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
+        ),
+      );
 
-        ],
+  Widget getSlideShowItemWidget(int itemIndex) {
+    KeylolCarouselItem slideShow = keylolCarouselItemList[itemIndex];
+
+    final light = Theme.of(context).brightness == Brightness.light;
+    final colors = Theme.of(context).colorScheme;
+
+    return Semantics(
+      button: true,
+      label: '${slideShow.forum} ${slideShow.category} ${slideShow.title}',
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () async {
+          VibrationUtils.vibrateWithClickIfPossible();
+          Discuz? discuz =
+              Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+          if (slideShow.tid != 0 && onSelectTid != null) {
+            return onSelectTid!(slideShow.tid);
+          }
+
+          if (discuz != null) {
+            await URLUtils.openURL(
+                context, onSelectTid, slideShow.link, (pid) {}, null);
+
+            // await Navigator.push(
+            //     context,
+            //     platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz,  user, slideShow.tid,
+            //       passedSubject: slideShow.title,
+            //     ))
+            // );
+          }
+        },
+        child: PlatformLiquidGlassCard(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          borderRadius: BorderRadius.circular(22),
+          child: SizedBox(
+            height: slideHeight,
+            width: double.infinity,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image(
+                  image: CachedNetworkImageProvider(slideShow.image_src),
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => ColoredBox(
+                    color: colors.surfaceContainerHighest,
+                  ),
+                ),
+                BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: light
+                            ? [
+                                Colors.white.withValues(alpha: 0.70),
+                                Colors.white.withValues(alpha: 0.34),
+                              ]
+                            : [
+                                Colors.black.withValues(alpha: 0.48),
+                                colors.surface.withValues(alpha: 0.30),
+                              ],
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        slideShow.forum,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: colors.primary,
+                          fontSize: 30,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        slideShow.category,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: colors.onSurface.withValues(alpha: 0.68),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        slideShow.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: colors.onSurface,
+                          fontSize: 18,
+                          height: 1.16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(
+                        color: Colors.white.withValues(
+                          alpha: light ? 0.52 : 0.18,
+                        ),
+                        width: 0.8,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
-      onTap: () async{
-        VibrationUtils.vibrateWithClickIfPossible();
-        Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
-        User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-        if(slideShow.tid!= 0 && onSelectTid != null){
-          return onSelectTid!(slideShow.tid);
-        }
-
-        if(discuz != null){
-          await URLUtils.openURL(context, onSelectTid, slideShow.link, (pid) { }, null);
-
-          // await Navigator.push(
-          //     context,
-          //     platformPageRoute(context:context,builder: (context) => ViewThreadSliverPage(discuz,  user, slideShow.tid,
-          //       passedSubject: slideShow.title,
-          //     ))
-          // );
-        }
-
-      },
     );
   }
 

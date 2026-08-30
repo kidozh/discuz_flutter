@@ -43,10 +43,11 @@ class AddDiscuzPage extends StatelessWidget {
         appBar: PlatformAppBar(
           title: Text(S.of(context).addDiscuzTitle),
           cupertino: (context, platform) => CupertinoNavigationBarData(
-              previousPageTitle: (route != null && route is CupertinoPageRoute<dynamic> && route.previousTitle.value!=null)?
-              route.previousTitle.value
-                  : S.of(context).appName
-          ),
+              previousPageTitle: (route != null &&
+                      route is CupertinoPageRoute<dynamic> &&
+                      route.previousTitle.value != null)
+                  ? route.previousTitle.value
+                  : S.of(context).appName),
         ),
         body: AddDiscuzForumFieldStatefulWidget());
   }
@@ -148,7 +149,8 @@ class _AddDiscuzFormFieldState
     // Specific EdgeOne markers in non-HTML responses.
     return response.contains('TencentEdgeOne') ||
         response.contains('EO_Bot_Ssid') ||
-        response.contains('\u8bf7\u6c42\u5df2\u88ab\u7ad9\u70b9\u7684\u5b89\u5168\u7b56\u7565\u62e6\u622a'); // 请求已被站点的安全策略拦截
+        response.contains(
+            '\u8bf7\u6c42\u5df2\u88ab\u7ad9\u70b9\u7684\u5b89\u5168\u7b56\u7565\u62e6\u622a'); // 请求已被站点的安全策略拦截
   }
 
   /// Builds the `module=check` URL from [discuzUrl].
@@ -293,12 +295,10 @@ class _AddDiscuzFormFieldState
     try {
       final PersistCookieJar cookieJar =
           await NetworkUtils.getTemporaryCookieJar();
-      await cookieJar.saveFromResponse(
-          Uri.parse(discuzUrl), result.cookies);
+      await cookieJar.saveFromResponse(Uri.parse(discuzUrl), result.cookies);
 
       final Dio dio = Dio();
-      dio.interceptors
-          .add(DioCookieManager.CookieManager(cookieJar));
+      dio.interceptors.add(DioCookieManager.CookieManager(cookieJar));
 
       final client = MobileApiClient(dio, baseUrl: discuzUrl);
       final rawValue = await client.getCheckResultInString();
@@ -479,7 +479,9 @@ class _AddDiscuzFormFieldState
                 color: Theme.of(context).colorScheme.primary,
                 child: _isLoading
                     ? PlatformCircularProgressIndicator()
-                    : Text(S.of(context).continueAdding, style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+                    : Text(S.of(context).continueAdding,
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary)),
                 onPressed: _isLoading
                     ? null
                     : () {
@@ -500,152 +502,193 @@ class _AddDiscuzFormFieldState
             ),
 
             // the following things
-            if(supportDiscuzListResult.list.isNotEmpty)
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 0, vertical: 16.0),
-              padding: EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color: Theme.of(context).disabledColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16.0),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 8.0, bottom: 16.0),
-                    child: RichText(
-                      text: TextSpan(
-                          style: Theme.of(context).textTheme.titleMedium,
-                          text: S.of(context).addDiscuzSuggestionTitle,
-                          children: [
-                            TextSpan(
-                                text: " " +
-                                    S.of(context).addDiscuzSuggestionAnnotation,
-                                style: TextStyle(
-                                    color: Theme.of(context).colorScheme.primary,
-                                ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    VibrationUtils.vibrateWithClickIfPossible();
-                                    _showSuggestionAnnotationDialog();
-                                  }),
-                            TextSpan(text:"\n"),
-                            WidgetSpan(
-                                child: Padding(
-                                  padding: EdgeInsets.only(right: 4),
-                                  child: Icon(
-                                    Icons.verified,
-                                    color: Colors.green,
-                                    size: 16,
-                                  ),
-                                )),
-                            TextSpan(
-                                text:S.of(context).addDiscuzSuggestionVerifiedDiscuz,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 16,
-                                )
-                            ),
-                          ]),
-                    ),
-                  ),
-                  ListView.builder(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: supportDiscuzListResult.list.length,
-                      itemBuilder: (context, index) => Column(
-                            children: [
-                              PlatformListTile(
-                                title: RichText(
-                                    text: TextSpan(
-                                        text: supportDiscuzListResult
-                                            .list[index].name,
-                                        style:
-                                            DefaultTextStyle.of(context).style..copyWith(
-                                              fontWeight: FontWeight.bold
-                                            ),
-                                        children: [
-                                      if (supportDiscuzListResult
-                                          .list[index].beian.isNotEmpty)
-                                        WidgetSpan(
-                                            child: Padding(
-                                          padding: EdgeInsets.only(left: 4),
-                                          child: Icon(
-                                            Icons.verified,
-                                            color: Colors.green,
-                                            size: 16,
-                                          ),
-                                        ))
-                                    ])),
-                                subtitle: Text(
-                                    supportDiscuzListResult.list[index].desc,
-                                    maxLines: 3,
-                                ),
-                                leading: SizedBox(
-                                  width: 64,
-                                  height: 48,
-                                  child: CachedNetworkImage(
-                                      imageUrl: supportDiscuzListResult
-                                              .list[index].icon.isEmpty
-                                          ? supportDiscuzListResult
-                                                  .list[index].url +
-                                              "/static/image/common/logo.png"
-                                          : supportDiscuzListResult
-                                              .list[index].icon,
-                                      fit: BoxFit.fitWidth,
-                                      progressIndicatorBuilder: (context, url,
-                                              downloadProgress) =>
-                                          CircularProgressIndicator(
-                                              value: downloadProgress.progress),
-                                      errorWidget: (context, url, error) =>
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primaryContainer,
-                                              borderRadius:
-                                                  BorderRadius.circular(40),
-                                            ),
-                                            child: Icon(
-                                              PlatformIcons(context).addCircled,
-                                              size: 16,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onPrimaryContainer,
-                                            ),
-                                          )),
-                                ),
-                                onTap: () {
-                                  VibrationUtils.vibrateWithClickIfPossible();
-                                  _urlController.text =
-                                      supportDiscuzListResult.list[index].url;
-                                  _checkApiAvailable();
-                                },
-                              ),
-                              if (
-                                  index !=
-                                      supportDiscuzListResult.list.length - 1)
-                                Divider()
-                            ],
-                          )),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                    child: Text(S.of(context).addDiscuzSuggestionStatement,
-                        style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.fontSize)),
-                  )
-                ],
-              ),
-            ),
+            if (supportDiscuzListResult.list.isNotEmpty)
+              _buildSuggestionSection(context),
           ],
         ),
       )),
+    );
+  }
+
+  Widget _buildSuggestionSection(BuildContext context) {
+    final liquidGlass = usesLiquidGlass(context);
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 2, 8, 12),
+          child: RichText(
+            text: TextSpan(
+              style: Theme.of(context).textTheme.titleMedium,
+              text: S.of(context).addDiscuzSuggestionTitle,
+              children: [
+                TextSpan(
+                  text: " ${S.of(context).addDiscuzSuggestionAnnotation}",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      _showSuggestionAnnotationDialog();
+                    },
+                ),
+                const TextSpan(text: "\n"),
+                const WidgetSpan(
+                  alignment: PlaceholderAlignment.middle,
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 4),
+                    child: Icon(
+                      Icons.verified,
+                      color: Colors.green,
+                      size: 16,
+                    ),
+                  ),
+                ),
+                TextSpan(
+                  text: S.of(context).addDiscuzSuggestionVerifiedDiscuz,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        ListView.builder(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: supportDiscuzListResult.list.length,
+          itemBuilder: (context, index) =>
+              _buildSuggestionForumItem(context, index, liquidGlass),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+          child: Text(
+            S.of(context).addDiscuzSuggestionStatement,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
+            ),
+          ),
+        ),
+      ],
+    );
+
+    if (liquidGlass) {
+      return PlatformLiquidGlassCard(
+        margin: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.fromLTRB(10, 14, 10, 8),
+        borderRadius: BorderRadius.circular(26),
+        child: content,
+      );
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).disabledColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: content,
+    );
+  }
+
+  Widget _buildSuggestionForumItem(
+    BuildContext context,
+    int index,
+    bool liquidGlass,
+  ) {
+    final suggestion = supportDiscuzListResult.list[index];
+    final tile = PlatformListTile(
+      contentPadding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+      title: RichText(
+        text: TextSpan(
+          text: suggestion.name,
+          style: DefaultTextStyle.of(context).style.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+          children: [
+            if (suggestion.beian.isNotEmpty)
+              const WidgetSpan(
+                alignment: PlaceholderAlignment.middle,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 4),
+                  child: Icon(
+                    Icons.verified,
+                    color: Colors.green,
+                    size: 16,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+      subtitle: Text(
+        suggestion.desc,
+        maxLines: 3,
+        overflow: TextOverflow.ellipsis,
+      ),
+      leading: SizedBox(
+        width: 64,
+        height: 52,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: CachedNetworkImage(
+            imageUrl: suggestion.icon.isEmpty
+                ? "${suggestion.url}/static/image/common/logo.png"
+                : suggestion.icon,
+            fit: BoxFit.contain,
+            progressIndicatorBuilder: (context, url, downloadProgress) =>
+                Center(
+              child: SizedBox.square(
+                dimension: 18,
+                child: PlatformCircularProgressIndicator(
+                  material: (_, __) => MaterialProgressIndicatorData(
+                    value: downloadProgress.progress,
+                  ),
+                ),
+              ),
+            ),
+            errorWidget: (context, url, error) => ColoredBox(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              child: Icon(
+                PlatformIcons(context).addCircled,
+                size: 18,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
+            ),
+          ),
+        ),
+      ),
+      onTap: () {
+        VibrationUtils.vibrateWithClickIfPossible();
+        _urlController.text = suggestion.url;
+        _checkApiAvailable();
+      },
+    );
+
+    if (liquidGlass) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5),
+        child: PlatformLiquidGlassCard(
+          borderRadius: BorderRadius.circular(18),
+          child: tile,
+        ),
+      );
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        tile,
+        if (index != supportDiscuzListResult.list.length - 1)
+          const Divider(height: 1),
+      ],
     );
   }
 
@@ -653,7 +696,9 @@ class _AddDiscuzFormFieldState
     showPlatformModalSheet(
         context: context,
         builder: (context) => Container(
-              color: Theme.of(context).colorScheme.surface,
+              color: usesLiquidGlass(context)
+                  ? Colors.transparent
+                  : Theme.of(context).colorScheme.surface,
               padding: EdgeInsets.symmetric(vertical: 32, horizontal: 16),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -711,7 +756,9 @@ class _AddDiscuzFormFieldState
     showPlatformModalSheet(
         context: context,
         builder: (context) => Container(
-              color: Theme.of(context).colorScheme.surface,
+              color: usesLiquidGlass(context)
+                  ? Colors.transparent
+                  : Theme.of(context).colorScheme.surface,
               padding: EdgeInsets.symmetric(vertical: 32, horizontal: 16),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -745,14 +792,17 @@ class _AddDiscuzFormFieldState
                       borderRadius: BorderRadius.circular(8),
                     ),
                     margin: EdgeInsets.symmetric(vertical: 16),
-                    child: ListTile(
+                    child: PlatformListTile(
                       title: Text(S.of(context).addDiscuzSuggestionStatement,
                           style: TextStyle(
                             color: Theme.of(context)
                                 .colorScheme
                                 .onPrimaryContainer,
                             fontWeight: FontWeight.normal,
-                            fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                            fontSize: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.fontSize,
                           )),
                       leading: Icon(PlatformIcons(context).info,
                           color:

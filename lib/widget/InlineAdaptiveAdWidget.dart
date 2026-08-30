@@ -1,4 +1,5 @@
 import 'package:discuz_flutter/utility/AdHelper.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -85,12 +86,12 @@ class _InlineAdaptiveExampleState extends State<InlineAdaptiveAdWidget> {
             _adSize != null) {
           return Align(
               child: Container(
-                width: _adWidth,
-                height: _adSize!.height.toDouble(),
-                child: AdWidget(
-                  ad: _inlineAdaptiveAd!,
-                ),
-              ));
+            width: _adWidth,
+            height: _adSize!.height.toDouble(),
+            child: AdWidget(
+              ad: _inlineAdaptiveAd!,
+            ),
+          ));
         }
         // Reload the ad if the orientation changes.
         if (_currentOrientation != orientation) {
@@ -103,9 +104,10 @@ class _InlineAdaptiveExampleState extends State<InlineAdaptiveAdWidget> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(
+  Widget build(BuildContext context) => PlatformScaffold(
+      appBar: PlatformAppBar(
         title: Text('Inline adaptive banner example'),
+        liquidGlassTitle: 'Inline adaptive banner example',
       ),
       body: Center(
         child: Padding(

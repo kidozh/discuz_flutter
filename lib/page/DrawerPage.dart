@@ -58,7 +58,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        ListTile(
+        PlatformListTile(
           title: Text(S.of(context).loginTitle),
           subtitle: Text(S.of(context).loginSubtitle),
           leading: Icon(PlatformIcons(context).personAddSolid),
@@ -77,7 +77,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
             }
           },
         ),
-        ListTile(
+        PlatformListTile(
           title: Text(S.of(context).manageAccount),
           leading: Icon(PlatformIcons(context).groupSolid),
           onTap: () async {
@@ -97,7 +97,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
             }
           },
         ),
-        ListTile(
+        PlatformListTile(
           title: Text(S.of(context).manageDiscuz),
           leading: Icon(PlatformIcons(context).folderSolid),
           onTap: () async {
@@ -110,7 +110,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
                     builder: (context) => ManageDiscuzPage()));
           },
         ),
-        ListTile(
+        PlatformListTile(
           title: Text(S.of(context).viewHistory),
           leading: Icon(PlatformIcons(context).timeSolid),
           onTap: () async {
@@ -128,7 +128,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
             }
           },
         ),
-        ListTile(
+        PlatformListTile(
           title: Text(S.of(context).favoriteThread),
           leading: Icon(PlatformIcons(context).favoriteSolid),
           onTap: () async {
@@ -146,7 +146,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
             }
           },
         ),
-        ListTile(
+        PlatformListTile(
           title: Text(S.of(context).favoriteForum),
           leading: Icon(PlatformIcons(context).bookmarkSolid),
           onTap: () async {
@@ -164,7 +164,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
             }
           },
         ),
-        ListTile(
+        PlatformListTile(
           title: Text(S.of(context).shortcut),
           leading: Icon(AppPlatformIcons(context).shortcutSolid),
           onTap: () async {
@@ -181,7 +181,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
             }
           },
         ),
-        ListTile(
+        PlatformListTile(
           title: Text(S.of(context).blockedUserList),
           leading: Icon(PlatformIcons(context).removeCircledSolid),
           onTap: () async {
@@ -200,7 +200,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
             }
           },
         ),
-        ListTile(
+        PlatformListTile(
           title: Text(S.of(context).trustHostTitle),
           leading: Icon(PlatformIcons(context).checkMarkCircledSolid),
           onTap: () async {
@@ -216,7 +216,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
         // Consumer<UserPreferenceNotifierProvider>(
         //   builder: (context, userPreference, child) {
         //     if (userPreference.allowPush) {
-        //       return ListTile(
+        //       return PlatformListTile(
         //         title: Text(S.of(context).pushNotification),
         //         leading: Icon(AppPlatformIcons(context).pushServiceSolid),
         //
@@ -235,7 +235,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
         //     }
         //   },
         // ),
-        ListTile(
+        PlatformListTile(
           title: Text(S.of(context).subscribeChannel),
           leading: Icon(AppPlatformIcons(context).subscribeChannelSolid),
           onTap: () async {
@@ -248,7 +248,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
                       builder: (context) => SubscribeChannelPage()));
           },
         ),
-        ListTile(
+        PlatformListTile(
           title: Text(S.of(context).settingTitle),
           leading: Icon(PlatformIcons(context).settingsSolid),
           onTap: () async {
@@ -282,7 +282,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
           if (userList.isEmpty) {
             return ListView(
               children: [
-                ListTile(
+                PlatformListTile(
                     onTap: () {
                       VibrationUtils.vibrateWithClickIfPossible();
                       Provider.of<DiscuzAndUserNotifier>(context, listen: false)
@@ -301,7 +301,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
                 itemBuilder: (context, position) {
                   if (position != userList.length) {
                     User user = userList[position];
-                    return ListTile(
+                    return PlatformListTile(
                         onTap: () {
                           VibrationUtils.vibrateWithClickIfPossible();
                           Provider.of<DiscuzAndUserNotifier>(context,
@@ -327,7 +327,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
                           ),
                         ));
                   } else {
-                    return ListTile(
+                    return PlatformListTile(
                         onTap: () {
                           VibrationUtils.vibrateWithClickIfPossible();
                           Provider.of<DiscuzAndUserNotifier>(context,
@@ -374,11 +374,11 @@ class DrawerState extends State<DrawerStatefulWidget> {
                 if (value.discuz == null || value.user == null) {
                   return Container(
                     padding: EdgeInsets.symmetric(vertical: 0, horizontal: 4),
-                    child: Card(
+                    child: PlatformCard(
                       color: Theme.of(context).colorScheme.primary,
                       elevation: _showUserDetail? 6 : 0,
                       //padding: EdgeInsets.symmetric(vertical: 4, horizontal: 0),
-                      child: ListTile(
+                      child: PlatformListTile(
                         leading: ClipRRect(
                           borderRadius: BorderRadius.circular(10000.0),
                           clipBehavior: Clip.antiAlias,
@@ -403,10 +403,10 @@ class DrawerState extends State<DrawerStatefulWidget> {
                 else{
                   return Container(
                       padding: EdgeInsets.symmetric(vertical: 0, horizontal: 4),
-                      child: Card(
+                      child: PlatformCard(
                         color: Theme.of(context).colorScheme.primaryContainer,
                         elevation: _showUserDetail? 6 : 0,
-                        child: ListTile(
+                        child: PlatformListTile(
                             leading: UserAvatar(
                               value.discuz!,
                               value.user!.uid,

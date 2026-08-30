@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 import 'dart:io';
 
@@ -19,206 +18,221 @@ import '../page/UserProfilePage.dart';
 import '../page/ViewThreadSliverPage.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../widget/DiscuzHtmlWidget.dart';
-import 'AppPlatformIcons.dart';
 import 'RewriteRuleUtils.dart';
 import 'VibrationUtils.dart';
 
-class URLUtils{
-  static String getAvatarURL(Discuz discuz, String uid){
+class URLUtils {
+  static String getAvatarURL(Discuz discuz, String uid) {
     return "${discuz.uCenterURL}/avatar.php?uid=${uid}&size=big";
   }
 
-  static String getLargeAvatarURL(Discuz discuz, String uid){
+  static String getLargeAvatarURL(Discuz discuz, String uid) {
     return "${discuz.uCenterURL}/avatar.php?uid=${uid}&size=middle";
   }
 
-  static String getSmallAvatarURL(Discuz discuz, String uid){
+  static String getSmallAvatarURL(Discuz discuz, String uid) {
     return "${discuz.uCenterURL}/avatar.php?uid=${uid}&size=small";
   }
 
-  static String getAttachmentURLWithAidEncode(Discuz discuz, String aid){
+  static String getAttachmentURLWithAidEncode(Discuz discuz, String aid) {
     return "${discuz.baseURL}/forum.php?mod=attachment&aid=${aid}";
   }
 
-  static String getViewThreadURL(Discuz discuz, int tid){
+  static String getViewThreadURL(Discuz discuz, int tid) {
     return "${discuz.baseURL}/forum.php?mod=viewthread&tid=${tid}";
   }
 
-  static String getForumDisplayURL(Discuz discuz, int fid){
+  static String getForumDisplayURL(Discuz discuz, int fid) {
     return "${discuz.baseURL}/forum.php?mod=forumdisplay&fid=${fid}";
   }
 
-  static Future<void> launchURL(String url) async => await canLaunchUrl(Uri.parse(url))
-      ? await launchUrl(Uri.parse(url), mode: Platform.isIOS? LaunchMode.inAppWebView: LaunchMode.externalApplication)
-      : throw 'Could not launch $url';
+  static Future<void> launchURL(String url) async =>
+      await canLaunchUrl(Uri.parse(url))
+          ? await launchUrl(Uri.parse(url),
+              mode: Platform.isIOS
+                  ? LaunchMode.inAppWebView
+                  : LaunchMode.externalApplication)
+          : throw 'Could not launch $url';
 
-  static String getPublicMessageURL(Discuz discuz, int pmid){
+  static String getPublicMessageURL(Discuz discuz, int pmid) {
     return "${discuz.baseURL}/home.php?mod=space&do=pm&subop=viewg&pmid=${pmid}";
   }
 
-  static Future<void> openURL(BuildContext context, ValueChanged<int>? onSelectTid, String? urlString, JumpToPidCallback? callback, int? originalTid) async {
+  static Future<void> openURL(
+      BuildContext context,
+      ValueChanged<int>? onSelectTid,
+      String? urlString,
+      JumpToPidCallback? callback,
+      int? originalTid) async {
     VibrationUtils.vibrateWithClickIfPossible();
-    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
-    if(discuz == null){
+    Discuz? discuz =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    if (discuz == null) {
       return;
     }
-    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    if(urlString != null){
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    if (urlString != null) {
       urlString = urlString.replaceAll("&amp;", "&");
       bool urlLauchable = await canLaunchUrl(Uri.parse(urlString));
 
       // judge if it is a path
       Uri? tryUri = Uri.tryParse(urlString);
       log("${Uri.parse(urlString).isAbsolute} can launch $urlLauchable $urlString");
-      if(!Uri.parse(urlString).isAbsolute){
+      if (!Uri.parse(urlString).isAbsolute) {
         // add a prefix to test if it's a url
-        urlString = discuz.baseURL+ "/" + urlString;
+        urlString = discuz.baseURL + "/" + urlString;
         log("Press after link ${urlString} ");
         urlLauchable = await canLaunchUrl(Uri.parse(urlString));
         //return;
       }
 
-
-      if(urlLauchable){
+      if (urlLauchable) {
         // parse url
         Uri uri = Uri.parse(urlString);
         // check host
-        if(uri.host != Uri.parse(discuz.baseURL).host){
+        if (uri.host != Uri.parse(discuz.baseURL).host) {
           VibrationUtils.vibrateWithClickIfPossible();
-          checkWithDbAndOpenURL(context, urlString);
+          await checkWithDbAndOpenURL(context, urlString);
           return;
         }
 
         // check query parameters for full url
-        if(uri.queryParameters.containsKey("mod")){
+        if (uri.queryParameters.containsKey("mod")) {
           String modParamter = uri.queryParameters["mod"]!;
-          log("recv modParamter ${modParamter} and tid ${originalTid}" );
+          log("recv modParamter ${modParamter} and tid ${originalTid}");
           // check forum display
-          switch (modParamter){
-            case "redirect":{
-              if(uri.queryParameters.containsKey("ptid")){
-                String tidString = uri.queryParameters["ptid"]!;
-                if(originalTid!= null && callback!= null && originalTid.toString() == tidString){
-                  // may need to scroll
-                  log("Need to rescroll by the parameter");
-                  if(uri.queryParameters.containsKey("pid")){
-                    String pidString = uri.queryParameters["pid"]!;
-                    if(int.tryParse(pidString) != null){
-                      int pid = int.parse(pidString);
-                      // navigate
-                      callback(pid);
-                      return;
+          switch (modParamter) {
+            case "redirect":
+              {
+                if (uri.queryParameters.containsKey("ptid")) {
+                  String tidString = uri.queryParameters["ptid"]!;
+                  if (originalTid != null &&
+                      callback != null &&
+                      originalTid.toString() == tidString) {
+                    // may need to scroll
+                    log("Need to rescroll by the parameter");
+                    if (uri.queryParameters.containsKey("pid")) {
+                      String pidString = uri.queryParameters["pid"]!;
+                      if (int.tryParse(pidString) != null) {
+                        int pid = int.parse(pidString);
+                        // navigate
+                        callback(pid);
+                        return;
+                      }
                     }
                   }
-                }
-                // trigger tid
-                if(int.tryParse(tidString) != null){
-                  int tid = int.tryParse(tidString)!;
-                  if(onSelectTid == null){
-                    await Navigator.push(
-                        context,
-                        platformPageRoute(
-                            context:context,
-                            iosTitle: S.of(context).viewThreadTitle,
-                            builder: (context) => ViewThreadSliverPage( discuz,user, tid))
-                    );
-                  }
-                  else{
-                    onSelectTid(tid);
-                  }
+                  // trigger tid
+                  if (int.tryParse(tidString) != null) {
+                    int tid = int.tryParse(tidString)!;
+                    if (onSelectTid == null) {
+                      await Navigator.push(
+                          context,
+                          platformPageRoute(
+                              context: context,
+                              iosTitle: S.of(context).viewThreadTitle,
+                              builder: (context) =>
+                                  ViewThreadSliverPage(discuz, user, tid)));
+                    } else {
+                      onSelectTid(tid);
+                    }
 
-                  return;
+                    return;
+                  }
                 }
+                break;
               }
-              break;
-            }
-            case "viewthread":{
-              // check for forum, query fid
-              if(uri.queryParameters.containsKey("tid")){
-                String tidString = uri.queryParameters["tid"]!;
-                // trigger tid
-                if(int.tryParse(tidString) != null){
-                  int tid = int.tryParse(tidString)!;
-                  if(onSelectTid == null){
+            case "viewthread":
+              {
+                // check for forum, query fid
+                if (uri.queryParameters.containsKey("tid")) {
+                  String tidString = uri.queryParameters["tid"]!;
+                  // trigger tid
+                  if (int.tryParse(tidString) != null) {
+                    int tid = int.tryParse(tidString)!;
+                    if (onSelectTid == null) {
+                      await Navigator.push(
+                          context,
+                          platformPageRoute(
+                              context: context,
+                              iosTitle: S.of(context).viewThreadTitle,
+                              builder: (context) =>
+                                  ViewThreadSliverPage(discuz, user, tid)));
+                    } else {
+                      onSelectTid(tid);
+                    }
+                    return;
+                  }
+                }
+                break;
+              }
+            case "forumdisplay":
+              {
+                // check for forum, query fid
+                if (uri.queryParameters.containsKey("fid")) {
+                  String fidString = uri.queryParameters["fid"]!;
+                  // trigger fid
+                  if (int.tryParse(fidString) != null) {
+                    int fid = int.tryParse(fidString)!;
                     await Navigator.push(
                         context,
                         platformPageRoute(
-                            context:context,
-                            iosTitle: S.of(context).viewThreadTitle,
-                            builder: (context) => ViewThreadSliverPage( discuz,user, tid))
-                    );
+                            context: context,
+                            iosTitle: S.of(context).forumDisplayTitle,
+                            builder: (context) =>
+                                DisplayForumTwoPanePage(discuz, user, fid)));
+                    return;
                   }
-                  else{
-                    onSelectTid(tid);
+                }
+                break;
+              }
+            case "space":
+              {
+                // check for forum, query fid
+                if (uri.queryParameters.containsKey("uid")) {
+                  String uidString = uri.queryParameters["uid"]!;
+                  // trigger tid
+                  if (int.tryParse(uidString) != null) {
+                    int uid = int.tryParse(uidString)!;
+                    await Navigator.push(
+                        context,
+                        platformPageRoute(
+                            context: context,
+                            iosTitle: S.of(context).userProfile,
+                            builder: (context) =>
+                                UserProfilePage(discuz, user, uid)));
+                    return;
                   }
-                  return;
                 }
+                break;
               }
-              break;
-            }
-            case "forumdisplay":{
-              // check for forum, query fid
-              if(uri.queryParameters.containsKey("fid")){
-                String fidString = uri.queryParameters["fid"]!;
-                // trigger fid
-                if(int.tryParse(fidString) != null){
-                  int fid = int.tryParse(fidString)!;
-                  await Navigator.push(
-                      context,
-                      platformPageRoute(context:context,
-                          iosTitle: S.of(context).forumDisplayTitle,
-                          builder: (context) => DisplayForumTwoPanePage(discuz,user, fid))
-                  );
-                  return;
-                }
-              }
-              break;
-            }
-            case "space":{
-              // check for forum, query fid
-              if(uri.queryParameters.containsKey("uid")){
-                String uidString = uri.queryParameters["uid"]!;
-                // trigger tid
-                if(int.tryParse(uidString) != null){
-                  int uid = int.tryParse(uidString)!;
-                  await Navigator.push(
-                      context,
-                      platformPageRoute(context:context,
-                          iosTitle: S.of(context).userProfile,
-                          builder: (context) => UserProfilePage(discuz,user,uid))
-                  );
-                  return;
-                }
-              }
-              break;
-            }
           }
-
         }
         // check short
         String? fid = await RewriteRuleUtils.findFidInURL(discuz, urlString);
-        if(fid!=null && int.tryParse(fid) != null){
+        if (fid != null && int.tryParse(fid) != null) {
           await Navigator.push(
               context,
-              platformPageRoute(context:context,
+              platformPageRoute(
+                  context: context,
                   iosTitle: S.of(context).forumDisplayTitle,
-                  builder: (context) => DisplayForumTwoPanePage(discuz, user, int.tryParse(fid)!))
-          );
+                  builder: (context) => DisplayForumTwoPanePage(
+                      discuz, user, int.tryParse(fid)!)));
           return;
         }
 
         // check short
         String? tid = await RewriteRuleUtils.findTidInURL(discuz, urlString);
-        if(tid!=null && int.tryParse(tid) != null){
-          if(onSelectTid == null){
+        if (tid != null && int.tryParse(tid) != null) {
+          if (onSelectTid == null) {
             await Navigator.push(
                 context,
-                platformPageRoute(context:context,
+                platformPageRoute(
+                    context: context,
                     iosTitle: S.of(context).viewThreadTitle,
-                    builder: (context) => ViewThreadSliverPage(discuz, user, int.tryParse(tid)!))
-            );
-          }
-          else{
+                    builder: (context) => ViewThreadSliverPage(
+                        discuz, user, int.tryParse(tid)!)));
+          } else {
             onSelectTid(int.tryParse(tid)!);
           }
 
@@ -226,105 +240,73 @@ class URLUtils{
         }
 
         String? uid = await RewriteRuleUtils.findUidInURL(discuz, urlString);
-        if(uid!=null && int.tryParse(uid) != null){
+        if (uid != null && int.tryParse(uid) != null) {
           await Navigator.push(
               context,
-              platformPageRoute(context:context,
+              platformPageRoute(
+                  context: context,
                   iosTitle: S.of(context).userProfile,
-                  builder: (context) => UserProfilePage(discuz, user, int.tryParse(uid)!))
-          );
+                  builder: (context) =>
+                      UserProfilePage(discuz, user, int.tryParse(uid)!)));
           return;
         }
 
-
         await URLUtils.launchURL(urlString);
-      }
-      else{
+      } else {
         // show the link
         EasyLoading.showError(S.of(context).linkUnableToOpen(urlString));
       }
     }
   }
 
-  static void checkWithDbAndOpenURL(BuildContext context, String urlString) async{
+  static Future<void> checkWithDbAndOpenURL(
+      BuildContext context, String urlString) async {
     Uri uri = Uri.parse(urlString);
-    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
-    if(discuz == null){
+    Discuz? discuz =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    if (discuz == null) {
       return;
     }
     // check host
-    if(uri.host != Uri.parse(discuz.baseURL).host){
+    if (uri.host != Uri.parse(discuz.baseURL).host) {
       // check if database exists
 
       TrustHostDao trustHostDao = await AppDatabase.getTrustHostDao();
-      TrustHost? trustHostInDb = await trustHostDao.findTrustHostByName(uri.host);
-      if(trustHostInDb == null){
-        showPlatformDialog(context: context, builder: (context){
-          return PlatformAlertDialog(
-            title: Text(S.of(context).outerlinkOpenTitle,),
-            content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children:[
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.red.shade50,
-                      borderRadius: BorderRadius.circular(8.0)
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 4.0,horizontal: 4.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(AppPlatformIcons(context).linkSolid,color: Colors.red, size: 12,),
-                        SizedBox(width: 8.0),
-                        Expanded(
-                            child: Text(urlString,softWrap: true,style: TextStyle(color: Colors.red,),)
-
-                        )
-
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 16.0,),
-                  Text(S.of(context).outerlinkOpenMessage,style: Theme.of(context).textTheme.bodyLarge,),
-
-
-                ]
+      TrustHost? trustHostInDb =
+          await trustHostDao.findTrustHostByName(uri.host);
+      if (trustHostInDb == null) {
+        await showPlatformAlert(
+          context: context,
+          title: S.of(context).outerlinkOpenTitle,
+          message: '$urlString\n\n${S.of(context).outerlinkOpenMessage}',
+          actions: [
+            PlatformAlertAction(
+              label: S.of(context).trustHostActionText,
+              isDefaultAction: true,
+              onPressed: () async {
+                await _trustHost(uri.host);
+                await URLUtils.launchURL(urlString);
+              },
             ),
-            actions: [
-              TextButton(
-                  onPressed: () async{
-                    String host = uri.host;
-                    await _trustHost(host);
-
-                    URLUtils.launchURL(urlString);
-                    Navigator.pop(context);
-                  },
-                  child: Text(S.of(context).trustHostActionText)
-              ),
-              TextButton(
-                  onPressed: (){
-                    URLUtils.launchURL(urlString);
-                    Navigator.pop(context);
-                  },
-                  child: Text(S.of(context).openInBrowser)
-              ),
-              TextButton(onPressed: (){
-                Navigator.pop(context);
-              }, child: Text(S.of(context).cancel))
-            ],
-          );
-        });
-      }
-      else{
+            PlatformAlertAction(
+              label: S.of(context).openInBrowser,
+              onPressed: () => URLUtils.launchURL(urlString),
+            ),
+            PlatformAlertAction(
+              label: S.of(context).cancel,
+              isCancelAction: true,
+            ),
+          ],
+        );
+      } else {
         // direct open it
         URLUtils.launchURL(urlString);
       }
-      return ;
+      return;
     }
   }
 
-  static Future<void> _trustHost(String host) async{
+  static Future<void> _trustHost(String host) async {
     TrustHostDao trustHostDao = await AppDatabase.getTrustHostDao();
     await trustHostDao.insertTrustHost(TrustHost(host));
   }

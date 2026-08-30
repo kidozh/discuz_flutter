@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/AppleIntelligenceConfPage.dart';
 import 'package:discuz_flutter/page/ChooseAdExemptPage.dart';
@@ -11,413 +9,437 @@ import 'package:discuz_flutter/page/SelectSignatureStylePage.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
+import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
+import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
+import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
-import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:settings_ui/settings_ui.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-import '../utility/AppPlatformIcons.dart';
-import '../utility/PostTextFieldUtils.dart';
 import 'ChooseThemeColorPage.dart';
 import 'ConfigurePictureBedPage.dart';
 import 'SetPushNotificationPage.dart';
 
 class SettingPage extends StatefulWidget {
+  const SettingPage({super.key});
+
   @override
-  _SettingPageState createState() => _SettingPageState();
+  State<SettingPage> createState() => _SettingPageState();
 }
 
 class _SettingPageState extends State<SettingPage> {
-  bool lockInBackground = true;
-  bool notificationsEnabled = true;
-
   bool recordHistory = false;
-
-  bool useMaterial3 = true;
   bool hapticFeedback = true;
-
-  String packageVersion = "";
-  String packageBuildNumber = "";
-
-  _loadPackageInfo() async{
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    setState((){
-      packageVersion = packageInfo.version;
-      packageBuildNumber = packageInfo.buildNumber;
-    });
-
-  }
+  String packageVersion = '';
+  String packageBuildNumber = '';
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    getPreference();
+    _loadPreferences();
     _loadPackageInfo();
   }
 
-  void getPreference() async {
-    recordHistory = await UserPreferencesUtils.getRecordHistoryEnabled();
-    hapticFeedback = await UserPreferencesUtils.getHapticFeedbackPreference();
+  Future<void> _loadPackageInfo() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    if (!mounted) return;
     setState(() {
-      recordHistory = recordHistory;
-      hapticFeedback = hapticFeedback;
+      packageVersion = packageInfo.version;
+      packageBuildNumber = packageInfo.buildNumber;
     });
+  }
 
-
+  Future<void> _loadPreferences() async {
+    final history = await UserPreferencesUtils.getRecordHistoryEnabled();
+    final haptics = await UserPreferencesUtils.getHapticFeedbackPreference();
+    if (!mounted) return;
+    setState(() {
+      recordHistory = history;
+      hapticFeedback = haptics;
+    });
   }
 
   @override
-  Widget build(BuildContext context) {
-    useMaterial3 = Provider.of<ThemeNotifierProvider>(context,listen: false).useMaterial3;
-    return PlatformScaffold(
-      appBar: PlatformAppBar(title: Text(S.of(context).settingTitle)),
-      iosContentPadding: true,
-      body: buildSettingsList(),
+  Widget build(BuildContext context) => PlatformScaffold(
+        appBar: PlatformAppBar(
+          liquidGlassTitle: S.of(context).settingTitle,
+          title: Text(S.of(context).settingTitle),
+        ),
+        iosContentPadding: true,
+        body: _buildSettingsList(context),
+      );
+
+  Widget _buildSettingsList(BuildContext context) {
+    final theme = context.watch<ThemeNotifierProvider>();
+    final typeSetting = context.watch<TypeSettingNotifierProvider>();
+    final preference = context.watch<UserPreferenceNotifierProvider>();
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 32),
+      children: [
+        _GlassSettingsSection(
+          title: S.of(context).securityTitle,
+          children: [
+            _GlassNavigationTile(
+              title: S.of(context).discuzAuthenticationTitle,
+              leading: Icon(
+                AppPlatformIcons(context).authenticationSecureOutline,
+              ),
+              onTap: () => _open(
+                context,
+                S.of(context).discuzAuthenticationTitle,
+                DiscuzAuthenticationPage(),
+              ),
+            ),
+            _GlassNavigationTile(
+              title: S.of(context).appleIntelligence,
+              leading: Icon(AppPlatformIcons(context).aiModel),
+              onTap: () => _open(
+                context,
+                S.of(context).appleIntelligence,
+                AppleIntelligenceConfPage(),
+              ),
+            ),
+          ],
+        ),
+        _GlassSettingsSection(
+          title: S.of(context).common,
+          children: [
+            _GlassSwitchTile(
+              title: S.of(context).recordHistoryTitle,
+              leading: Icon(AppPlatformIcons(context).historyOutlined),
+              value: recordHistory,
+              onChanged: (value) {
+                VibrationUtils.vibrateWithSwitchIfPossible();
+                UserPreferencesUtils.putRecordHistoryEnabled(value);
+                setState(() => recordHistory = value);
+              },
+            ),
+            _GlassNavigationTile(
+              title: S.of(context).pushNotification,
+              leading: Icon(AppPlatformIcons(context).pushServiceOutlined),
+              value: Text(
+                preference.allowPush
+                    ? S.of(context).pushNotificationOn
+                    : S.of(context).pushNotificationOff,
+              ),
+              onTap: () => _open(
+                context,
+                S.of(context).pushNotification,
+                SetPushNotificationPage(),
+              ),
+            ),
+          ],
+        ),
+        _GlassSettingsSection(
+          title: S.of(context).displaySettingTitle,
+          children: [
+            _GlassNavigationTile(
+              title: S.of(context).chooseThemeTitle,
+              value: Text(theme.themeColor.name),
+              leading: Icon(AppPlatformIcons(context).appThemeOutlined),
+              onTap: () => _open(
+                context,
+                S.of(context).chooseThemeTitle,
+                ChooseThemeColorPage(),
+              ),
+            ),
+            _GlassNavigationTile(
+              title: S.of(context).appearanceOptimizedPlatform,
+              value: Text(theme.getPlatformLocaleName(context)),
+              leading: Icon(AppPlatformIcons(context).appAppearanceOutlined),
+              onTap: () => _open(
+                context,
+                S.of(context).appearanceOptimizedPlatform,
+                ChoosePlatformPage(),
+              ),
+            ),
+            _GlassNavigationTile(
+              title: S.of(context).interfaceBrightness,
+              value: Text(theme.getBrightnessName(context)),
+              leading: Icon(PlatformIcons(context).brightness),
+              onTap: () => _open(
+                context,
+                S.of(context).interfaceBrightness,
+                ChooseInterfaceBrightnessPage(),
+              ),
+            ),
+            _GlassNavigationTile(
+              title: S.of(context).typeSetting,
+              value: Text(
+                S.of(context).fontSizeScaleParameterUnit(
+                      typeSetting.scalingParameter.toStringAsFixed(3),
+                    ),
+              ),
+              leading: Icon(AppPlatformIcons(context).typeSettingOutlined),
+              onTap: () => _open(
+                context,
+                S.of(context).typeSetting,
+                ChooseTypeSettingScalePage(),
+              ),
+            ),
+          ],
+        ),
+        _GlassSettingsSection(
+          title: S.of(context).post,
+          children: [
+            _GlassNavigationTile(
+              title: S.of(context).signatureStyle,
+              leading: Icon(AppPlatformIcons(context).signatureOutlined),
+              value: Text(_signatureLabel(context, preference.signature)),
+              onTap: () => _open(
+                context,
+                S.of(context).customSignature,
+                SelectSignatureStylePage(),
+              ),
+            ),
+            if (preference.signature == PostTextFieldUtils.USE_APP_SIGNATURE)
+              _GlassNavigationTile(
+                title: S.of(context).adExemptTitle,
+                leading: Icon(
+                  AppPlatformIcons(context).advertisementExemptSolid,
+                ),
+                value: Text(preference.adExemptHost),
+                onTap: () => _open(
+                  context,
+                  S.of(context).adExemptTitle,
+                  ChooseAdExemptPage(),
+                ),
+              ),
+            _GlassNavigationTile(
+              title: S.of(context).pictureBedTitle,
+              leading: Icon(AppPlatformIcons(context).pictureBedOutlined),
+              onTap: () => _open(
+                context,
+                S.of(context).pictureBedTitle,
+                ConfigurePictureBedPage(),
+              ),
+            ),
+          ],
+        ),
+        _GlassSettingsSection(
+          title: S.of(context).feedbackTitle,
+          children: [
+            _GlassSwitchTile(
+              title: S.of(context).hapticFeedbackTitle,
+              leading: Icon(AppPlatformIcons(context).hapticFeedbackOutlined),
+              value: hapticFeedback,
+              onChanged: (value) {
+                if (value) VibrationUtils.vibrateWithClickIfPossible();
+                UserPreferencesUtils.putHapticFeedbackPreference(value);
+                setState(() => hapticFeedback = value);
+              },
+            ),
+          ],
+        ),
+        _GlassSettingsSection(
+          title: S.of(context).legalInformation,
+          children: [
+            _GlassNavigationTile(
+              title: S.of(context).termsOfService,
+              leading: Icon(AppPlatformIcons(context).privacyPolicyOutlined),
+              onTap: () {
+                VibrationUtils.vibrateWithClickIfPossible();
+                URLUtils.launchURL(
+                  'https://discuzhub.kidozh.com/term_of_use/',
+                );
+              },
+            ),
+            _GlassNavigationTile(
+              title: S.of(context).privacyPolicy,
+              leading: Icon(AppPlatformIcons(context).termsOfServiceOutlined),
+              onTap: () {
+                VibrationUtils.vibrateWithClickIfPossible();
+                URLUtils.launchURL(
+                  'https://discuzhub.kidozh.com/privacy_policy/',
+                );
+              },
+            ),
+            _GlassNavigationTile(
+              title: S.of(context).openSoftwareTitle,
+              leading: Icon(PlatformIcons(context).bookmark),
+              onTap: () {
+                VibrationUtils.vibrateWithClickIfPossible();
+                showLicensePage(
+                  useRootNavigator: true,
+                  context: context,
+                  applicationName: S.of(context).appName,
+                  applicationIcon: const Image(
+                    image: AssetImage('assets/images/icon-large.png'),
+                    width: 64,
+                  ),
+                  applicationVersion: packageVersion,
+                );
+              },
+            ),
+          ],
+        ),
+        PlatformCard(
+          margin: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+          padding: const EdgeInsets.symmetric(vertical: 18),
+          child: Column(
+            children: [
+              const Image(
+                image: AssetImage('assets/images/icon-large.png'),
+                width: 64,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                S.of(context).buildVersionDescription(
+                      packageVersion,
+                      packageBuildNumber,
+                    ),
+                style: TextStyle(color: Theme.of(context).disabledColor),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
-  Widget buildSettingsList() {
+  String _signatureLabel(BuildContext context, String signature) {
+    if (signature == PostTextFieldUtils.NO_SIGNATURE) {
+      return S.of(context).noSignature;
+    }
+    if (signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE) {
+      return S.of(context).deviceNameSignature;
+    }
+    if (signature == PostTextFieldUtils.USE_APP_SIGNATURE) {
+      return S.of(context).signatureWithDisFly;
+    }
+    return S.of(context).customSignature;
+  }
 
-    return Consumer<ThemeNotifierProvider>(builder: (context, themeEntity, _) {
+  void _open(BuildContext context, String title, Widget page) {
+    VibrationUtils.vibrateWithClickIfPossible();
+    Navigator.of(context).push(
+      platformPageRoute(
+        iosTitle: title,
+        builder: (_) => page,
+        context: context,
+      ),
+    );
+  }
+}
 
-      return Consumer<TypeSettingNotifierProvider>(builder: (context, typeSetting, _) {
-        return SettingsList(
-          sections: [
-            SettingsSection(
-                title: Text(S.of(context).securityTitle),
-                tiles: [
-                  SettingsTile.navigation(
-                    title: Text(S.of(context).discuzAuthenticationTitle),
-                    leading: Icon(AppPlatformIcons(context).authenticationSecureOutline),
+class _GlassSettingsSection extends StatelessWidget {
+  final String title;
+  final List<Widget> children;
 
-                    onPressed: (context){
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      Navigator.of(context).push(platformPageRoute(
-                        iosTitle: S.of(context).discuzAuthenticationTitle,
-                        builder: (_) => DiscuzAuthenticationPage(),
-                        context: context,
-                      ));
-                    },
-                  ),
-                  SettingsTile.navigation(
-                    title: Text(S.of(context).appleIntelligence),
-                    leading: Icon(AppPlatformIcons(context).aiModel),
+  const _GlassSettingsSection({required this.title, required this.children});
 
-                    onPressed: (context){
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      Navigator.of(context).push(platformPageRoute(
-                        iosTitle: S.of(context).appleIntelligence,
-                        builder: (_) => AppleIntelligenceConfPage(),
-                        context: context,
-                      ));
-                    },
-                  )
-                ],
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
+              child: Text(
+                title,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
             ),
-
-            SettingsSection(
-              title: Text(S.of(context).common),
-              tiles: [
-                SettingsTile.switchTile(
-                  title: Text(S.of(context).recordHistoryTitle),
-                  leading: Icon(AppPlatformIcons(context).historyOutlined),
-                  activeSwitchColor: Theme.of(context).colorScheme.primary,
-                  onToggle: (bool value) {
-                    VibrationUtils.vibrateWithSwitchIfPossible();
-                    print("set record history ${value} ");
-                    UserPreferencesUtils.putRecordHistoryEnabled(value);
-                    setState(() {
-                      recordHistory = value;
-                    });
-                  }, initialValue: recordHistory,
-                ),
-
-                SettingsTile.navigation(
-                  title: Text(S.of(context).pushNotification),
-                  leading: Icon(AppPlatformIcons(context).pushServiceOutlined),
-                  value: Consumer<UserPreferenceNotifierProvider>(
-                    builder: (context, userPreference, child){
-                      if(userPreference.allowPush){
-                        return Text(S.of(context).pushNotificationOn);
-                      }
-                      else{
-                        return Text(S.of(context).pushNotificationOff);
-                      }
-                    },
-                  ),
-                  onPressed: (context){
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.of(context).push(platformPageRoute(
-                      builder: (_) => SetPushNotificationPage(),
-                      context: context,
-                    ));
-                  },
-                )
-              ],
-            ),
-            SettingsSection(
-              title: Text(S.of(context).displaySettingTitle),
-              tiles: [
-                SettingsTile.navigation(
-                  title: Text(S.of(context).chooseThemeTitle),
-                  value: Text(themeEntity.themeColor.name),
-                  leading: Icon(AppPlatformIcons(context).appThemeOutlined),
-                  onPressed: (context) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.of(context).push(platformPageRoute(
-                      iosTitle: S.of(context).chooseThemeTitle,
-                      builder: (_) => ChooseThemeColorPage(),
-                      context: context,
-                    ));
-                  },
-                ),
-                // SettingsTile.navigation(
-                //   title: Text(S.of(context).dynamicSchemeVariant),
-                //   value: Text(themeEntity.getDynamicSchemeVariantName(context)),
-                //   leading: Icon(AppPlatformIcons(context).dynamicSchemeVariantOutlined),
-                //   onPressed: (context) {
-                //     VibrationUtils.vibrateWithClickIfPossible();
-                //     Navigator.of(context).push(platformPageRoute(
-                //       iosTitle: S.of(context).dynamicSchemeVariant,
-                //       builder: (_) => ChooseDynamicSchemeVariantPage(),
-                //       context: context,
-                //     ));
-                //   },
-                // ),
-                SettingsTile.navigation(
-                  title: Text(S.of(context).appearanceOptimizedPlatform),
-                  value: Text(themeEntity.getPlatformLocaleName(context)),
-                  leading: Icon(AppPlatformIcons(context).appAppearanceOutlined),
-                  onPressed: (context) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.of(context).push(platformPageRoute(
-                      iosTitle: S.of(context).appearanceOptimizedPlatform,
-                      builder: (_) => ChoosePlatformPage(),
-                      context: context,
-                    ));
-                  },
-                ),
-                SettingsTile.navigation(
-                  title: Text(S.of(context).interfaceBrightness),
-                  //description: Text(S.of(context).brightnessManualChangeDisabled),
-                  value: Text(themeEntity.getBrightnessName(context)),
-                  leading: Icon(PlatformIcons(context).brightness),
-                  onPressed: (context) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.of(context).push(platformPageRoute(
-                      iosTitle: S.of(context).interfaceBrightness,
-                      builder: (_) => ChooseInterfaceBrightnessPage(),
-                      context: context,
-                    ));
-                  },
-                ),
-                // SettingsTile.switchTile(
-                //   title: Text(S.of(context).useMaterial3Title),
-                //   leading: Icon(AppPlatformIcons(context).material3Outlined),
-                //   activeSwitchColor: Theme.of(context).colorScheme.primary,
-                //   onToggle: (bool value) {
-                //     VibrationUtils.vibrateWithSwitchIfPossible();
-                //     UserPreferencesUtils.putMaterial3PropertyPreference(value);
-                //     Provider.of<ThemeNotifierProvider>(context,listen: false).setMaterial3(value);
-                //     setState((){
-                //       useMaterial3 = value;
-                //     });
-                //   }, initialValue: useMaterial3,
-                // ),
-                SettingsTile.navigation(
-                  title: Text(S.of(context).typeSetting),
-                  value: Text(S.of(context).fontSizeScaleParameterUnit(typeSetting.scalingParameter.toStringAsFixed(3))),
-                  leading: Icon(AppPlatformIcons(context).typeSettingOutlined),
-                  onPressed: (context) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.of(context).push(platformPageRoute(
-                      iosTitle: S.of(context).typeSetting,
-                      builder: (_) => ChooseTypeSettingScalePage(),
-                      context: context,
-                    ));
-                  },
-                )
-
-
-              ],
-            ),
-
-            SettingsSection(
-              title: Text(S.of(context).post),
-              tiles: [
-                SettingsTile.navigation(
-                  title: Text(S.of(context).signatureStyle),
-                  leading: Icon(AppPlatformIcons(context).signatureOutlined),
-                  value: Consumer<UserPreferenceNotifierProvider>(
-                    builder: (context, userPreference, child){
-                      if(userPreference.signature == PostTextFieldUtils.NO_SIGNATURE){
-                        return Text(S.of(context).noSignature);
-                      }
-                      else if(userPreference.signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE){
-                        return Text(S.of(context).deviceNameSignature);
-                      }
-                      else if(userPreference.signature == PostTextFieldUtils.USE_APP_SIGNATURE){
-                        return Text(S.of(context).signatureWithDisFly);
-                      }
-                      else {
-                        return Text(S.of(context).customSignature);
-                      }
-                    },
-                  ),
-                  onPressed: (context) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.of(context).push(platformPageRoute(
-                      iosTitle: S.of(context).customSignature,
-                      builder: (_) => SelectSignatureStylePage(),
-                      context: context,
-                    ));
-                  },
-                ),
-                CustomSettingsTile(
-                    child: Consumer<UserPreferenceNotifierProvider>(
-                      builder: (context, userPreference, child){
-                        if(userPreference.signature == PostTextFieldUtils.USE_APP_SIGNATURE){
-                          return SettingsTile.navigation(
-                            leading: Icon(AppPlatformIcons(context).advertisementExemptSolid),
-                            title: Text(S.of(context).adExemptTitle),
-                            // description: Text(S.of(context).adExemptDescription),
-                            value: Text(userPreference.adExemptHost),
-                            onPressed: (context) {
-                              VibrationUtils.vibrateWithClickIfPossible();
-                              Navigator.of(context).push(platformPageRoute(
-                                iosTitle: S.of(context).adExemptTitle,
-                                builder: (_) => ChooseAdExemptPage(),
-                                context: context,
-                              ));
-                            },
-                          );
-                        }
-                        else {
-                          return Container();
-                        }
-                      },
-                    )
-                ),
-                SettingsTile.navigation(
-                  title: Text(S.of(context).pictureBedTitle),
-                  leading: Icon(AppPlatformIcons(context).pictureBedOutlined),
-                  onPressed: (_) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.of(context).push(platformPageRoute(
-                      builder: (_) => ConfigurePictureBedPage(),
-                      iosTitle: S.of(context).pictureBedTitle,
-                      context: context,
-                    ));
-                  },
-                ),
-
-
-              ],
-            ),
-            SettingsSection(
-                title: Text(S.of(context).feedbackTitle),
-                tiles: [
-                  SettingsTile.switchTile(
-                    title: Text(S.of(context).hapticFeedbackTitle),
-                    leading: Icon(AppPlatformIcons(context).hapticFeedbackOutlined),
-                    activeSwitchColor: Theme.of(context).colorScheme.primary,
-                    initialValue: hapticFeedback,
-                    onToggle: (bool value) async{
-                      if(value){
-                        VibrationUtils.vibrateWithClickIfPossible();
-                      }
-                      UserPreferencesUtils.putHapticFeedbackPreference(value);
-                      setState(() {
-                        hapticFeedback = value;
-                      });
-
-                    },
-
-                  )
-                ]
-            ),
-            SettingsSection(
-              title: Text(S.of(context).legalInformation),
-              tiles: [
-                SettingsTile.navigation(
-                  title: Text(S.of(context).termsOfService),
-                  leading: Icon(AppPlatformIcons(context).privacyPolicyOutlined),
-
-                  onPressed: (_) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    _launchURL("https://discuzhub.kidozh.com/term_of_use/");
-                  },
-                ),
-                SettingsTile.navigation(
-                  title: Text(S.of(context).privacyPolicy),
-                  leading: Icon(AppPlatformIcons(context).termsOfServiceOutlined),
-
-                  onPressed: (_) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    _launchURL("https://discuzhub.kidozh.com/privacy_policy/");
-                  },
-                ),
-                // SettingsTile.navigation(
-                //   title: Text(S.of(context).dhPushServiceTitle),
-                //   leading: Icon(AppPlatformIcons(context).pushServiceOutlined),
-                //
-                //   onPressed: (_) {
-                //     VibrationUtils.vibrateWithClickIfPossible();
-                //     _launchURL("https:/dhp.kidozh.com");
-                //   },
-                // ),
-                SettingsTile.navigation(
-                  title: Text(S.of(context).openSoftwareTitle),
-                  leading: Icon(PlatformIcons(context).bookmark),
-
-                  onPressed: (_) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    showLicensePage(
-                        useRootNavigator: true,
-                        context: context,
-                        applicationName: S.of(context).appName,
-                        applicationIcon: Image(
-                          image: AssetImage("assets/images/icon-large.png",),
-                          width: 64,
-                        ),
-                        applicationVersion: packageVersion
-                    );
-                  },
-                ),
-              ],
-            ),
-            CustomSettingsSection(
+            PlatformCard(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 22, bottom: 8),
-                    child: Image(
-                        image: AssetImage("assets/images/icon-large.png",),
-                        width: 64,
-                    ),
-                  ),
-                  Text(
-                    S.of(context).buildVersionDescription(packageVersion, packageBuildNumber),
-                    style: TextStyle(color: Theme.of(context).disabledColor),
-                  ),
-                  SizedBox(height: 32,)
+                  for (var index = 0; index < children.length; index++) ...[
+                    children[index],
+                    if (index < children.length - 1)
+                      Divider(
+                        height: 1,
+                        indent: 54,
+                        color: Theme.of(context)
+                            .dividerColor
+                            .withValues(alpha: 0.35),
+                      ),
+                  ],
                 ],
               ),
             ),
           ],
-        );
-      });
+        ),
+      );
+}
 
-    });
-  }
+class _GlassNavigationTile extends StatelessWidget {
+  final String title;
+  final Widget leading;
+  final Widget? value;
+  final VoidCallback onTap;
 
-  double paragraphFontSize = 12.0;
+  const _GlassNavigationTile({
+    required this.title,
+    required this.leading,
+    required this.onTap,
+    this.value,
+  });
 
-  void _launchURL(String url) async =>
-      await canLaunchUrl(Uri.parse(url)) ? await launchUrl(Uri.parse(url), mode: Platform.isIOS? LaunchMode.inAppWebView: LaunchMode.externalApplication) : throw 'Could not launch $url';
+  @override
+  Widget build(BuildContext context) => PlatformListTile(
+        leading: IconTheme.merge(
+          data: IconThemeData(color: Theme.of(context).colorScheme.primary),
+          child: leading,
+        ),
+        title: Text(title),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (value != null)
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 170),
+                child: DefaultTextStyle.merge(
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontSize: 14,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  child: value!,
+                ),
+              ),
+            const SizedBox(width: 6),
+            Icon(PlatformIcons(context).forward, size: 18),
+          ],
+        ),
+        onTap: onTap,
+      );
+}
+
+class _GlassSwitchTile extends StatelessWidget {
+  final String title;
+  final Widget leading;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const _GlassSwitchTile({
+    required this.title,
+    required this.leading,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) => PlatformListTile(
+        leading: IconTheme.merge(
+          data: IconThemeData(color: Theme.of(context).colorScheme.primary),
+          child: leading,
+        ),
+        title: Text(title),
+        trailing: PlatformSwitch(
+          value: value,
+          activeColor: Theme.of(context).colorScheme.primary,
+          onChanged: onChanged,
+        ),
+        onTap: () => onChanged(!value),
+      );
 }

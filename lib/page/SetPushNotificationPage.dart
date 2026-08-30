@@ -62,7 +62,7 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
       appBar: PlatformAppBar(
         title: Text(S.of(context).pushNotification),
       ),
-      body: SettingsList(
+      body: PlatformAdaptiveSettingsList(
         sections: [
           if (pushTokenChannel == null)
             SettingsSection(
@@ -122,38 +122,37 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
               //   value: Text(pushTokenChannel!.token, maxLines: 1,),
               // ),
             ]),
-          if(Platform.isAndroid)
-          CustomSettingsSection(
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              padding: EdgeInsets.symmetric(vertical: 4.0),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(12.0),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              child: PlatformListTile(
-                title: Text(
-                  S.of(context).pushServiceLimitedInChinaMainlandTitle,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                    fontWeight: FontWeight.bold
+          if (Platform.isAndroid)
+            CustomSettingsSection(
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                padding: EdgeInsets.symmetric(vertical: 4.0),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(12.0),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
-                subtitle: Text(
-                    S.of(context).pushServiceLimitedInChinaMainlandSubtitle,
-                    maxLines: 4,
+                child: PlatformListTile(
+                  title: Text(
+                    S.of(context).pushServiceLimitedInChinaMainlandTitle,
                     style: TextStyle(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onPrimaryContainer
-                          .withValues(alpha: 0.6),
-                    )),
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(
+                      S.of(context).pushServiceLimitedInChinaMainlandSubtitle,
+                      maxLines: 4,
+                      style: TextStyle(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onPrimaryContainer
+                            .withValues(alpha: 0.6),
+                      )),
+                ),
               ),
             ),
-          ),
           SettingsSection(title: Text(S.of(context).legalInformation), tiles: [
             SettingsTile.navigation(
               title: Text(S.of(context).pushTermsOfService),
@@ -199,59 +198,56 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
   }
 
   void _triggerDialog(BuildContext context) {
-    showPlatformDialog(
-        context: context,
-        builder: (context) => PlatformAlertDialog(
-              title: Text(S.of(context).pushNotificationEnable),
-              content: Text(S.of(context).pushNotificationSubmittedContent),
-              actions: [
-                PlatformDialogAction(
-                  child: Text(S.of(context).ok),
-                  onPressed: () async {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    FirebaseMessaging messaging = FirebaseMessaging.instance;
-                    NotificationSettings settings =
-                        await messaging.requestPermission(
-                      alert: true,
-                      announcement: false,
-                      badge: true,
-                      carPlay: false,
-                      criticalAlert: false,
-                      provisional: false,
-                      sound: true,
-                    );
+    showPlatformAlert(
+      context: context,
+      title: S.of(context).pushNotificationEnable,
+      message: S.of(context).pushNotificationSubmittedContent,
+      actions: [
+        PlatformAlertAction(
+          label: S.of(context).ok,
+          isDefaultAction: true,
+          onPressed: () async {
+            VibrationUtils.vibrateWithClickIfPossible();
+            FirebaseMessaging messaging = FirebaseMessaging.instance;
+            NotificationSettings settings = await messaging.requestPermission(
+              alert: true,
+              announcement: false,
+              badge: true,
+              carPlay: false,
+              criticalAlert: false,
+              provisional: false,
+              sound: true,
+            );
 
-                    if (settings.authorizationStatus ==
-                            AuthorizationStatus.authorized ||
-                        settings.authorizationStatus ==
-                            AuthorizationStatus.provisional) {
-                      setState(() {
-                        allowPush = true;
-                      });
-                      Provider.of<UserPreferenceNotifierProvider>(context,
-                              listen: false)
-                          .allowPush = true;
-                      await UserPreferencesUtils.putPushPreference(true);
-                    } else {
-                      EasyLoading.showInfo(S
-                          .of(context)
-                          .pushNotificationPermissionNotAuthorized);
-                      Provider.of<UserPreferenceNotifierProvider>(context,
-                              listen: false)
-                          .allowPush = false;
-                      await UserPreferencesUtils.putPushPreference(false);
-                    }
-                    Navigator.of(context).pop();
-                  },
-                ),
-                PlatformDialogAction(
-                  child: Text(S.of(context).cancel),
-                  onPressed: () {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.of(context).pop();
-                  },
-                )
-              ],
-            ));
+            if (settings.authorizationStatus ==
+                    AuthorizationStatus.authorized ||
+                settings.authorizationStatus ==
+                    AuthorizationStatus.provisional) {
+              setState(() {
+                allowPush = true;
+              });
+              Provider.of<UserPreferenceNotifierProvider>(context,
+                      listen: false)
+                  .allowPush = true;
+              await UserPreferencesUtils.putPushPreference(true);
+            } else {
+              EasyLoading.showInfo(
+                  S.of(context).pushNotificationPermissionNotAuthorized);
+              Provider.of<UserPreferenceNotifierProvider>(context,
+                      listen: false)
+                  .allowPush = false;
+              await UserPreferencesUtils.putPushPreference(false);
+            }
+          },
+        ),
+        PlatformAlertAction(
+          label: S.of(context).cancel,
+          isCancelAction: true,
+          onPressed: () {
+            VibrationUtils.vibrateWithClickIfPossible();
+          },
+        )
+      ],
+    );
   }
 }

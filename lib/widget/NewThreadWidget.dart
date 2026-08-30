@@ -133,7 +133,7 @@ class NewThreadWidget extends StatelessWidget{
 //
 //     }
 //
-//     return ListTile(
+//     return PlatformListTile(
 //         leading: InkWell(
 //           child: ClipRRect(
 //
@@ -203,7 +203,7 @@ class NewThreadWidget extends StatelessWidget{
 //
 //   Widget getNewThreadCard(bool viewed){
 //     return PlatformWidget(
-//       material: (_, __)=> Card(
+//       material: (_, __)=> PlatformCard(
 //           elevation: 1,
 //           color: Theme.of(context).cardColor,
 //           child: getNewThreadListTile(viewed)
@@ -226,7 +226,7 @@ class NewThreadWidget extends StatelessWidget{
 //   Widget build(BuildContext context) {
 //     if (isUserBlocked){
 //       return Container(
-//         child: Card(
+//         child: PlatformCard(
 //           elevation: 4.0,
 //           child: Padding(
 //               padding: EdgeInsets.all(8.0),

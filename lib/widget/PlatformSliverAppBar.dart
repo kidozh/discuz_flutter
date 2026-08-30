@@ -1,12 +1,10 @@
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 
-class PlatformSliverAppBar extends PlatformWidgetBase<CupertinoSliverNavigationBar, SliverAppBar>{
+class PlatformSliverAppBar
+    extends PlatformWidgetBase<CupertinoSliverNavigationBar, SliverAppBar> {
   final Widget? largeTitle;
-
 
   /// A widget to place in the middle of the static navigation bar instead of
   /// the [largeTitle].
@@ -21,7 +19,6 @@ class PlatformSliverAppBar extends PlatformWidgetBase<CupertinoSliverNavigationB
   /// This widget is visible in both collapsed and expanded states.
   final List<Widget>? trailingList;
 
-
   // final PlatformBuilder<MaterialAppBarData>? material;
   // final PlatformBuilder<CupertinoNavigationBarData>? cupertino;
 
@@ -30,34 +27,31 @@ class PlatformSliverAppBar extends PlatformWidgetBase<CupertinoSliverNavigationB
     this.largeTitle,
     this.middle,
     this.trailingList,
-  }) :super(key: key);
+  }) : super(key: key);
 
   @override
   CupertinoSliverNavigationBar createCupertinoWidget(BuildContext context) {
-
+    final canPop = Navigator.maybeOf(context)?.canPop() ?? false;
+    final actions = trailingList;
     return CupertinoSliverNavigationBar(
-        // leading: Material(
-        //     child: IconButton(
-        //       icon: Icon(PlatformIcons(context).back),
-        //       onPressed: () {
-        //         Navigator.pop(context);
-        //       },
-        //     )),
-        automaticallyImplyLeading: true,
-        automaticallyImplyTitle: true,
-        transitionBetweenRoutes: true,
-
-        //middle: this.middle,
-        trailing: this.trailingList == null ? null :Material(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: trailingList!
-          ),
-        ),
-        largeTitle: this.largeTitle,
+      backgroundColor: Colors.transparent,
+      border: null,
+      enableBackgroundFilterBlur: true,
+      leading: usesLiquidGlass(context) && canPop
+          ? const PlatformBackButton()
+          : null,
+      automaticallyImplyLeading: !(usesLiquidGlass(context) && canPop),
+      automaticallyImplyTitle: true,
+      transitionBetweenRoutes: true,
+      trailing: actions == null || actions.isEmpty
+          ? null
+          : actions.length == 1
+              ? actions.first
+              : usesLiquidGlass(context)
+                  ? PlatformLiquidGlassToolbarGroup(children: actions)
+                  : Row(mainAxisSize: MainAxisSize.min, children: actions),
+      largeTitle: this.largeTitle,
     );
-
-
   }
 
   @override
@@ -74,9 +68,6 @@ class PlatformSliverAppBar extends PlatformWidgetBase<CupertinoSliverNavigationB
         collapseMode: CollapseMode.pin,
       ),
       actions: this.trailingList,
-
     );
   }
-  
-  
 }

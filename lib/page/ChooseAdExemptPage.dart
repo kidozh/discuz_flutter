@@ -68,7 +68,7 @@ class _ChooseAdExemptState extends State<ChooseAdExemptPage> {
       appBar: PlatformAppBar(
         title: Text(S.of(context).adExemptTitle),
       ),
-      body: SettingsList(
+      body: PlatformAdaptiveSettingsList(
         sections: [
           if (_unWaivedDiscuzList.isEmpty)
             CustomSettingsSection(
@@ -134,46 +134,67 @@ class _ChooseAdExemptState extends State<ChooseAdExemptPage> {
     );
   }
 
-  void launchAdExemptDialog(Discuz discuz){
-    showPlatformModalSheet(context: context, builder: (context) => Container(
-        color: Theme.of(context).dialogBackgroundColor,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(AppPlatformIcons(context).checkCircleOutlined, size: 32, color: Theme.of(context).colorScheme.primary,),
-              SizedBox(height: 16, width: double.infinity,),
-              Text(S.of(context).discuzInAdExemptBuiltInList(discuz.siteName), style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18
-              )
+  void launchAdExemptDialog(Discuz discuz) {
+    showPlatformModalSheet(
+        context: context,
+        builder: (context) => Container(
+            color: usesLiquidGlass(context)
+                ? Colors.transparent
+                : Theme.of(context).dialogBackgroundColor,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    AppPlatformIcons(context).checkCircleOutlined,
+                    size: 32,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  SizedBox(
+                    height: 16,
+                    width: double.infinity,
+                  ),
+                  Text(
+                      S
+                          .of(context)
+                          .discuzInAdExemptBuiltInList(discuz.siteName),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                  SizedBox(
+                    height: 8,
+                    width: double.infinity,
+                  ),
+                  Text(
+                      S.of(context).discuzInAdExemptBuiltInListDescription(
+                          discuz.siteName),
+                      style: TextStyle(
+                          fontWeight: FontWeight.normal, fontSize: 14)),
+                  SizedBox(
+                    height: 16,
+                    width: double.infinity,
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: PlatformElevatedButton(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      child: Text(
+                        discuz.siteName,
+                        style: TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer),
+                      ),
+                      onPressed: () {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        URLUtils.launchURL(discuz.baseURL);
+                      },
+                    ),
+                  )
+                ],
               ),
-              SizedBox(height: 8, width: double.infinity,),
-              Text(S.of(context).discuzInAdExemptBuiltInListDescription(discuz.siteName), style: TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14
-              )),
-              SizedBox(height: 16, width: double.infinity,),
-              SizedBox(
-                width: double.infinity,
-                child: PlatformElevatedButton(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-
-                  child: Text(discuz.siteName, style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer
-                  ),),
-                  onPressed: (){
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    URLUtils.launchURL(discuz.baseURL);
-                  },
-                ),
-              )
-            ],
-          ),
-        )
-    ));
+            )));
   }
 
   Widget trailingWidget(String platformName) {

@@ -12,6 +12,7 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzNotificationWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
@@ -26,22 +27,24 @@ import '../utility/MobileSignUtils.dart';
 import 'EmptyListScreen.dart';
 
 class NotificationScreen extends StatelessWidget {
-  NotificationScreen({this.onSelectTid});
+  const NotificationScreen({this.onSelectTid, super.key});
 
   final ValueChanged<int>? onSelectTid;
 
   @override
   Widget build(BuildContext context) {
-
-    return NotificationStatefulWidget(onSelectTid: onSelectTid,);
+    return NotificationStatefulWidget(
+      onSelectTid: onSelectTid,
+    );
   }
 }
 
 class NotificationStatefulWidget extends StatefulWidget {
   final ValueChanged<int>? onSelectTid;
 
-  NotificationStatefulWidget({this.onSelectTid});
+  const NotificationStatefulWidget({this.onSelectTid, super.key});
 
+  @override
   _NotificationState createState() {
     return _NotificationState(onSelectTid: this.onSelectTid);
   }
@@ -65,8 +68,14 @@ class _NotificationState extends State<NotificationStatefulWidget> {
   @override
   void initState() {
     super.initState();
-    _controller = EasyRefreshController(controlFinishLoad: true, controlFinishRefresh: true);
+    _controller = EasyRefreshController(
+        controlFinishLoad: true, controlFinishRefresh: true);
+  }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   Future<IndicatorResult> _invalidateNotificationContent(Discuz discuz) async {
@@ -106,7 +115,6 @@ class _NotificationState extends State<NotificationStatefulWidget> {
       // check for loaded all?
       log("Get Notification ${_noteList.length} ${value.variables.count}");
 
-
       if (user != null && value.variables.member_uid != user.uid) {
         setState(() {
           _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
@@ -129,19 +137,19 @@ class _NotificationState extends State<NotificationStatefulWidget> {
         });
       }
       // mobile sign?
-      if(user!= null && value.variables.member_uid == user.uid){
+      if (user != null && value.variables.member_uid == user.uid) {
         // conduct mobile sign
-        await MobileSignUtils.conductMobileSign(context, discuz, user, value.variables.formHash);
+        await MobileSignUtils.conductMobileSign(
+            context, discuz, user, value.variables.formHash);
       }
 
-      if(_noteList.length >= value.variables.count){
+      if (_noteList.length >= value.variables.count) {
         return IndicatorResult.noMore;
-      }
-      else{
+      } else {
         return IndicatorResult.success;
       }
     }).catchError((onError) {
-      if(mounted){
+      if (mounted) {
         setState(() {
           _isFirstLoading = false;
         });
@@ -152,9 +160,13 @@ class _NotificationState extends State<NotificationStatefulWidget> {
             DioException dioError = onError;
             log("${dioError.message} >-> ${dioError.type}");
             EasyLoading.showError("${dioError.message} (${dioError})");
-            setState((){
-              _error =
-                  DiscuzError(dioError.message==null?S.of(context).error: dioError.message!,dioError.type.name, dioError: dioError);
+            setState(() {
+              _error = DiscuzError(
+                  dioError.message == null
+                      ? S.of(context).error
+                      : dioError.message!,
+                  dioError.type.name,
+                  dioError: dioError);
             });
 
             break;
@@ -180,18 +192,24 @@ class _NotificationState extends State<NotificationStatefulWidget> {
       } else if (discuzAndUser.user == null) {
         return NullUserScreen();
       } else {
-        return Column(
-          children: [
-            if (_error != null)
-              ErrorCard(_error!, () {
-                _controller.callRefresh();
-              }),
-
-            Expanded(
+        return PlatformLiquidGlassPageBackdrop(
+          child: Column(
+            children: [
+              if (_error != null)
+                PlatformCard(
+                  margin: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+                  child: ErrorCard(_error!, () {
+                    _controller.callRefresh();
+                  }),
+                ),
+              Expanded(
                 child: getEasyRefreshWidget(
-                    discuzAndUser.discuz!, discuzAndUser.user)),
-
-          ],
+                  discuzAndUser.discuz!,
+                  discuzAndUser.user,
+                ),
+              ),
+            ],
+          ),
         );
       }
     });
@@ -204,26 +222,37 @@ class _NotificationState extends State<NotificationStatefulWidget> {
       refreshOnStart: true,
       controller: _controller,
       onRefresh: () async {
-              return await _invalidateNotificationContent(discuz);
-            },
+        return await _invalidateNotificationContent(discuz);
+      },
       onLoad: () async {
-              return await _loadNotificationContent(discuz);
-            },
+        return await _loadNotificationContent(discuz);
+      },
       child: CustomScrollView(
         slivers: [
-          SliverList(delegate: SliverChildBuilderDelegate(
-                  (context, index)=> SafeArea(child: Container(), bottom: false,),
-              childCount: 1
-          )),
-          if(_noteList.isEmpty)
-            SliverList(delegate: SliverChildBuilderDelegate(
-                    (context, index)=> _isFirstLoading? LoadingStateWidget(hintText: S.of(context).notification,): EmptyListScreen(EmptyItemType.notification),
-                childCount: 1
-            )),
-          SliverList(delegate: SliverChildBuilderDelegate(
-                  (context, index)=> DiscuzNotificationWidget(discuz, _noteList[index], onSelectTid: this.onSelectTid,),
-            childCount: _noteList.length
-          )),
+          SliverList(
+              delegate: SliverChildBuilderDelegate(
+                  (context, index) => SafeArea(
+                        child: Container(),
+                        bottom: false,
+                      ),
+                  childCount: 1)),
+          if (_noteList.isEmpty)
+            SliverList(
+                delegate: SliverChildBuilderDelegate(
+                    (context, index) => _isFirstLoading
+                        ? LoadingStateWidget(
+                            hintText: S.of(context).notification,
+                          )
+                        : EmptyListScreen(EmptyItemType.notification),
+                    childCount: 1)),
+          SliverList(
+              delegate: SliverChildBuilderDelegate(
+                  (context, index) => DiscuzNotificationWidget(
+                        discuz,
+                        _noteList[index],
+                        onSelectTid: this.onSelectTid,
+                      ),
+                  childCount: _noteList.length)),
         ],
       ),
     );

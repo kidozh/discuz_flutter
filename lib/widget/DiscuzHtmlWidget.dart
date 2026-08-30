@@ -35,16 +35,16 @@ class DiscuzHtmlWidget extends StatelessWidget {
   JumpToPidCallback? callback;
   int? tid;
   final ValueChanged<int>? onSelectTid;
+  final Color? textColor;
 
   DiscuzHtmlWidget(this.discuz, this.html,
-      {this.callback, this.tid, this.onSelectTid});
+      {this.callback, this.tid, this.onSelectTid, this.textColor});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(4.0),
-
       child: Consumer<TypeSettingNotifierProvider>(
           builder: (context, typesetting, _) {
         double scalingParameter = typesetting.scalingParameter;
@@ -99,8 +99,12 @@ class DiscuzHtmlWidget extends StatelessWidget {
             typography.tall.useSystemChineseFont(Theme.of(context).brightness);
         TextStyle? defaultTextStyle = textTheme.bodyLarge;
         double themeFontSize = defaultTextStyle == null
-            ? 14: defaultTextStyle.fontSize == null? 14 : defaultTextStyle.fontSize!;
-        User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+            ? 14
+            : defaultTextStyle.fontSize == null
+                ? 14
+                : defaultTextStyle.fontSize!;
+        User? user =
+            Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
         Future<Dio> futureDio = NetworkUtils.getDioWithPersistCookieJar(user);
         //DiscuzImageDioCacheManager dioCacheManager = DiscuzImageDioCacheManager(futureDio);
 
@@ -112,8 +116,8 @@ class DiscuzHtmlWidget extends StatelessWidget {
             return true;
           },
           //factoryBuilder: () => DiscuzHtmlWidgetFactory(dioCacheManager),
-          onTapImage: (imageMetaData){
-            for(var source in imageMetaData.sources){
+          onTapImage: (imageMetaData) {
+            for (var source in imageMetaData.sources) {
               String src = source.url;
               VibrationUtils.vibrateWithClickIfPossible();
               Navigator.push(
@@ -121,13 +125,14 @@ class DiscuzHtmlWidget extends StatelessWidget {
                   platformPageRoute(
                       iosTitle: S.of(context).viewPicture,
                       context: context,
-                      builder: (context) => FullImagePage(src, getAllImageSrcList())));
+                      builder: (context) =>
+                          FullImagePage(src, getAllImageSrcList())));
             }
-
           },
           textStyle: TextStyle(
+            color: textColor,
             fontSize: themeFontSize * scalingParameter,
-            fontWeight: useThinFont? FontWeight.w300: FontWeight.normal,
+            fontWeight: useThinFont ? FontWeight.w300 : FontWeight.normal,
             wordSpacing: defaultTextStyle?.wordSpacing,
             height: defaultTextStyle?.height,
             textBaseline: defaultTextStyle?.textBaseline,
@@ -135,28 +140,30 @@ class DiscuzHtmlWidget extends StatelessWidget {
           // textStyle: Theme.of(context).useSystemChineseFont(Theme.of(context).brightness).textTheme.bodyLarge?..copyWith(
           //   fontSize: 12 * scalingParameter
           // ),
-          customStylesBuilder: (element){
-            if (element.localName == "br"){
+          customStylesBuilder: (element) {
+            if (element.localName == "br") {
+              return {"margin": '0.1em 0', "display": "block"};
+            } else if (element.className == "reply_wrap") {
               return {
-                "margin": '0.1em 0',
-                "display" : "block"
-              };
-            } else if(element.className == "reply_wrap"){
-              return {
-                "border": "0.05em dashed #${Theme.of(context).colorScheme.primary.toARGB32().toRadixString(16).substring(2)}",
+                "border":
+                    "0.05em dashed #${Theme.of(context).colorScheme.primary.toARGB32().toRadixString(16).substring(2)}",
                 "border-radius": "0.5em",
-                "background-color" : "#${Theme.of(context).colorScheme.primaryContainer.toARGB32().toRadixString(16).substring(2)}",
-                "color" : "#${Theme.of(context).colorScheme.onPrimaryContainer.toARGB32().toRadixString(16).substring(2)}",
-                "padding" : "0.5em",
+                "background-color":
+                    "#${Theme.of(context).colorScheme.primaryContainer.toARGB32().toRadixString(16).substring(2)}",
+                "color":
+                    "#${Theme.of(context).colorScheme.onPrimaryContainer.toARGB32().toRadixString(16).substring(2)}",
+                "padding": "0.5em",
                 "margin-bottom": "0.1em"
               };
-            }
-            else if(element.className == "blockcode"){
+            } else if (element.className == "blockcode") {
               return {
-                "border": "0.05em dashed #${Theme.of(context).colorScheme.secondary.value.toRadixString(16).substring(2)}",
-                "background-color" : "#${Theme.of(context).colorScheme.secondaryContainer.value.toRadixString(16).substring(2)}",
-                "color" : "#${Theme.of(context).colorScheme.onSecondaryContainer.value.toRadixString(16).substring(2)}",
-                "padding" : "0.5em",
+                "border":
+                    "0.05em dashed #${Theme.of(context).colorScheme.secondary.value.toRadixString(16).substring(2)}",
+                "background-color":
+                    "#${Theme.of(context).colorScheme.secondaryContainer.value.toRadixString(16).substring(2)}",
+                "color":
+                    "#${Theme.of(context).colorScheme.onSecondaryContainer.value.toRadixString(16).substring(2)}",
+                "padding": "0.5em",
                 "margin-bottom": "0.1em",
                 "font-family": "monospace",
               };
@@ -198,7 +205,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
                   log("get time string ${timeString} ${datetime}");
                   return Padding(
                     padding: EdgeInsets.symmetric(vertical: 32),
-                    child: ListTile(
+                    child: PlatformListTile(
                       leading: Icon(Icons.timer),
                       title: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -210,7 +217,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
                                 fontWeight: FontWeight.bold),
                             decoration: BoxDecoration(
                               borderRadius:
-                              BorderRadius.all(Radius.circular(20)),
+                                  BorderRadius.all(Radius.circular(20)),
                               color: Theme.of(context).colorScheme.primary,
                             ),
                             separatorType: SeparatorType.title,
@@ -224,9 +231,9 @@ class DiscuzHtmlWidget extends StatelessWidget {
                         ],
                       ),
                       subtitle:
-                      DateTime.now().timeZoneOffset != Duration(hours: 8)
-                          ? Text(S.of(context).countDownTimeZoneNotify)
-                          : null,
+                          DateTime.now().timeZoneOffset != Duration(hours: 8)
+                              ? Text(S.of(context).countDownTimeZoneNotify)
+                              : null,
                     ),
                   );
                 } else {
@@ -235,28 +242,28 @@ class DiscuzHtmlWidget extends StatelessWidget {
               } else {
                 return Text(S.of(context).brokenCountDown);
               }
-
-            } else if (element.attributes["href"]!= null && element.attributes["href"]!.startsWith("https://www.bilibili.com")){
+            } else if (element.attributes["href"] != null &&
+                element.attributes["href"]!
+                    .startsWith("https://www.bilibili.com")) {
               return BilibiliWidget(element.attributes["href"]!);
-            }
-            else if (element.attributes["src"]!= null && element.attributes["src"]!.startsWith("https://store.steampowered.com/widget")){
+            } else if (element.attributes["src"] != null &&
+                element.attributes["src"]!
+                    .startsWith("https://store.steampowered.com/widget")) {
               return SteamGameWidget(element.attributes["src"]!);
             }
             return null;
           },
         );
-
-
       }),
     );
   }
 
-  List<String> getAllImageSrcList(){
+  List<String> getAllImageSrcList() {
     var htmlDocument = parse(html);
     var imageElementList = htmlDocument.getElementsByTagName("img");
     List<String> imageSrcList = [];
-    for(var imageElement in imageElementList){
-      if(imageElement.attributes["src"] != null){
+    for (var imageElement in imageElementList) {
+      if (imageElement.attributes["src"] != null) {
         imageSrcList.add(imageElement.attributes["src"]!);
       }
     }
@@ -265,15 +272,11 @@ class DiscuzHtmlWidget extends StatelessWidget {
   }
 }
 
-class DiscuzHtmlWidgetFactory extends WidgetFactory with CachedNetworkImageFactory{
-
+class DiscuzHtmlWidgetFactory extends WidgetFactory
+    with CachedNetworkImageFactory {
   DiscuzImageDioCacheManager dioCacheManager;
 
-  DiscuzHtmlWidgetFactory(this.dioCacheManager) {
-
-
-  }
+  DiscuzHtmlWidgetFactory(this.dioCacheManager) {}
 
   BaseCacheManager get cacheManager => dioCacheManager;
 }
-

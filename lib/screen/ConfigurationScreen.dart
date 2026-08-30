@@ -15,130 +15,133 @@ import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:provider/provider.dart';
 
-class ConfigurationScreen extends StatelessWidget{
+class ConfigurationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
       children: [
         // user interface
         ConfigurationUserStatefulWidget(),
-        Card(
-          child: ListTile(
+        PlatformCard(
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          child: PlatformListTile(
             title: Text(S.of(context).viewHistory),
             leading: Icon(Icons.history),
-            onTap: (){
+            onTap: () {
               Discuz? discuz =
-                  Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
-              if(discuz != null){
+                  Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                      .discuz;
+              if (discuz != null) {
                 VibrationUtils.vibrateWithClickIfPossible();
                 Navigator.push(
                     context,
                     platformPageRoute(
-                      iosTitle: S.of(context).viewHistory,
+                        iosTitle: S.of(context).viewHistory,
                         context: context,
                         builder: (context) => ViewHistoryPage(discuz)));
               }
             },
           ),
-
         ),
-        Card(
-          child: ListTile(
+        PlatformCard(
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          child: PlatformListTile(
             title: Text(S.of(context).trustHostTitle),
             leading: Icon(Icons.check_circle_outline),
-            onTap: (){
+            onTap: () {
               VibrationUtils.vibrateWithClickIfPossible();
-              Navigator.push(context,platformPageRoute(context:context,builder: (context) => ManageTrustHostPage()));
+              Navigator.push(
+                  context,
+                  platformPageRoute(
+                      context: context,
+                      builder: (context) => ManageTrustHostPage()));
             },
           ),
-
         ),
-        Card(
-          child: ListTile(
+        PlatformCard(
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          child: PlatformListTile(
             title: Text(S.of(context).settingTitle),
             leading: Icon(PlatformIcons(context).settings),
-            onTap: (){
+            onTap: () {
               VibrationUtils.vibrateWithClickIfPossible();
-              Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+              Discuz? discuz =
+                  Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                      .discuz;
               if (discuz != null) {
-                Navigator.push(context,
-                    platformPageRoute(context:context,builder: (context) => SettingPage()));
+                Navigator.push(
+                    context,
+                    platformPageRoute(
+                        context: context, builder: (context) => SettingPage()));
               }
             },
           ),
-
         ),
-
       ],
     );
   }
-
 }
 
-class ConfigurationUserStatefulWidget extends StatefulWidget{
+class ConfigurationUserStatefulWidget extends StatefulWidget {
   @override
   ConfigurationUserState createState() {
     return ConfigurationUserState();
   }
-
-
 }
 
-class ConfigurationUserState extends State<ConfigurationUserStatefulWidget>{
+class ConfigurationUserState extends State<ConfigurationUserStatefulWidget> {
   @override
   Widget build(BuildContext context) {
-
-
     return Consumer<DiscuzAndUserNotifier>(
-      builder: (context, discuzAndUser, _){
-        if(discuzAndUser.discuz == null){
+      builder: (context, discuzAndUser, _) {
+        if (discuzAndUser.discuz == null) {
           return NullDiscuzScreen();
-        }
-        else if(discuzAndUser.user == null){
-          return Card(
-            child: ListTile(
+        } else if (discuzAndUser.user == null) {
+          return PlatformCard(
+            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+            child: PlatformListTile(
               title: Text(S.of(context).loginTitle),
               leading: Icon(Icons.login),
-              onTap: (){
+              onTap: () {
                 VibrationUtils.vibrateWithClickIfPossible();
                 Discuz? discuz =
                     Provider.of<DiscuzAndUserNotifier>(context, listen: false)
                         .discuz;
                 if (discuz != null) {
-                  Navigator.push(context, platformPageRoute(context:context,builder: (context) => LoginPage(discuz, null)));
+                  Navigator.push(
+                      context,
+                      platformPageRoute(
+                          context: context,
+                          builder: (context) => LoginPage(discuz, null)));
                 }
               },
             ),
           );
-        }
-        else{
-          return Card(
-            child: ListTile(
+        } else {
+          return PlatformCard(
+            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+            child: PlatformListTile(
               title: Text(discuzAndUser.user!.username),
               subtitle: Text(S.of(context).tapToWipeAndRelogin),
-              leading: CircleAvatar(
+              leading: PlatformLiquidGlassAvatar(
+                size: 48,
                 child: CachedNetworkImage(
-                  imageUrl:
-                  URLUtils.getLargeAvatarURL(discuzAndUser.discuz!, discuzAndUser.user!.uid.toString()),
-                  progressIndicatorBuilder:
-                      (context, url, downloadProgress) =>
+                  imageUrl: URLUtils.getLargeAvatarURL(discuzAndUser.discuz!,
+                      discuzAndUser.user!.uid.toString()),
+                  progressIndicatorBuilder: (context, url, downloadProgress) =>
                       CircularProgressIndicator(
                           value: downloadProgress.progress),
                   errorWidget: (context, url, error) => Container(
                     width: 100.0,
                     height: 100.0,
                     child: CircleAvatar(
-                      backgroundColor:
-                      CustomizeColor.getColorBackgroundById(discuzAndUser.user!.uid),
+                      backgroundColor: CustomizeColor.getColorBackgroundById(
+                          discuzAndUser.user!.uid),
                       child: Text(
-                        discuzAndUser.user!.username
-                            .length !=
-                            0
-                            ? discuzAndUser.user!.username[0]
-                            .toUpperCase()
+                        discuzAndUser.user!.username.length != 0
+                            ? discuzAndUser.user!.username[0].toUpperCase()
                             : S.of(context).anonymous,
-                        style: TextStyle(
-                            color: Colors.white, fontSize: 45),
+                        style: TextStyle(color: Colors.white, fontSize: 45),
                       ),
                     ),
                   ),
@@ -151,20 +154,24 @@ class ConfigurationUserState extends State<ConfigurationUserStatefulWidget>{
                   ),
                 ),
               ),
-              onTap: () async{
+              onTap: () async {
                 VibrationUtils.vibrateWithClickIfPossible();
                 // wipe out first
-                if(discuzAndUser.user != null){
+                if (discuzAndUser.user != null) {
                   var _userDao = await AppDatabase.getUserDao();
                   await _userDao.deleteUser(discuzAndUser.user!);
-                  Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(null);
+                  Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+                      .setUser(null);
                 }
-                await Navigator.push(context, platformPageRoute(context:context,builder: (context) => LoginPage(discuzAndUser.discuz!, null)));
+                await Navigator.push(
+                    context,
+                    platformPageRoute(
+                        context: context,
+                        builder: (context) =>
+                            LoginPage(discuzAndUser.discuz!, null)));
               },
             ),
-
           );
-
         }
       },
     );
@@ -172,9 +179,8 @@ class ConfigurationUserState extends State<ConfigurationUserStatefulWidget>{
 
   @override
   void setState(fn) {
-    if(this.mounted) {
+    if (this.mounted) {
       super.setState(fn);
     }
   }
-
 }

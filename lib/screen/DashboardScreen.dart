@@ -44,7 +44,6 @@ class DashboardScreen extends StatelessWidget{
   }
 
 }
-
 class MaterialDashboardScreen extends StatelessWidget{
   final ValueChanged<int>? onSelectTid;
   bool isKeylol = false;
@@ -164,30 +163,18 @@ class CupertinoDashboardState extends State<CupertinoDashboardStatefulWidget>{
         Container(
           width: double.infinity,
           child: Padding(padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-            child: CupertinoSlidingSegmentedControl<int>(
-                children: isKeylol? <int, Widget>{
-                  0: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).newThread),),
-                  1: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).hotThread),),
-                  2: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).keylolPortal),)
-                }:
-                <int, Widget>{
-                  0: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).newThread),),
-                  1: Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(S.of(context).hotThread),),
-                },
-                groupValue: _selectedScreenIndex,
-                onValueChanged: (int? value){
-                  List<int> slidingSegmentList = isKeylol? [0, 1, 2] : [0, 1];
-                  if(value == null || !slidingSegmentList.contains(value)){
-                    setState((){
-                      _selectedScreenIndex = 0;
-                    });
-                  }
-                  else{
-                    setState((){
-                      _selectedScreenIndex = value;
-                    });
-                  }
-                }
+            child: PlatformSegmentedControl(
+              labels: [
+                S.of(context).newThread,
+                S.of(context).hotThread,
+                if (isKeylol) S.of(context).keylolPortal,
+              ],
+              selectedIndex: _selectedScreenIndex,
+              onValueChanged: (value) {
+                setState(() {
+                  _selectedScreenIndex = value;
+                });
+              },
             ),
           ),
         ),

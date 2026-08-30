@@ -1,5 +1,4 @@
-
-class ConstUtils{
+class ConstUtils {
   //static final HERO_TAG_FORUM_TITLE = "HERO_TAG_FORUM_TITLE";
   //static final HERO_TAG_THREAD_SUBJECT = "HERO_TAG_THREAD_SUBJECT";
 
@@ -18,6 +17,7 @@ class ConstUtils{
   static const HIVE_TYPE_VIEWTHREAD_CACHE = 11;
   static const HIVE_TYPE_VIEWTHREAD_SCROLL_DISTANCE = 12;
   static const HIVE_TYPE_ID_AI_RULE = 13;
+  static const HIVE_TYPE_ID_PRIVATE_MESSAGE_CACHE = 14;
 
   static const FIREBASE_VAPIDKEY = "";
 }

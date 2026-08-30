@@ -49,8 +49,6 @@ import '../utility/TwoPaneScaffold.dart';
 import '../utility/TwoPaneUtils.dart';
 import '../widget/DiscuzNotificationAppbarIconWidget.dart';
 
-
-
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   String platformName = "";
@@ -58,7 +56,7 @@ class MyApp extends StatelessWidget {
 
   MyApp(this.platformName, this.navigatorKey);
 
-  _init_push(BuildContext context) async{
+  _init_push(BuildContext context) async {
     await PushServiceUtils.initPushInformation(navigatorKey, context);
   }
 
@@ -76,7 +74,6 @@ class MyApp extends StatelessWidget {
     //   platformName = await UserPreferencesUtils.getPlatformPreference();
     // }
 
-
     double scale = await UserPreferencesUtils.getTypesettingScalePreference();
     Brightness? brightness =
         await UserPreferencesUtils.getInterfaceBrightnessPreference();
@@ -91,8 +88,10 @@ class MyApp extends StatelessWidget {
         await UserPreferencesUtils.getUseCompactParagraphPreference();
     DynamicSchemeVariant dynamicSchemeVariant =
         await UserPreferencesUtils.getInterfaceDynamicSchemeVariantPreference();
-    String adExemptHost = await UserPreferencesUtils.getAdExemptDiscuzHostPreference();
-    bool ignoreCustomFontStyle = await UserPreferencesUtils.getDisableFontCustomizationPreference();
+    String adExemptHost =
+        await UserPreferencesUtils.getAdExemptDiscuzHostPreference();
+    bool ignoreCustomFontStyle =
+        await UserPreferencesUtils.getDisableFontCustomizationPreference();
 
     Provider.of<ThemeNotifierProvider>(context, listen: false)
         .setTheme(colorName);
@@ -115,7 +114,8 @@ class MyApp extends StatelessWidget {
     Provider.of<DiscuzNotificationProvider>(context, listen: false)
         .setNotificationCount(NoticeCount());
 
-    Provider.of<UserPreferenceNotifierProvider>(context, listen: false).adExemptHost = adExemptHost;
+    Provider.of<UserPreferenceNotifierProvider>(context, listen: false)
+        .adExemptHost = adExemptHost;
 
     if (typography != null) {
       Provider.of<TypeSettingNotifierProvider>(context, listen: false)
@@ -166,7 +166,6 @@ class MyApp extends StatelessWidget {
                 .platformName;
         // if in tablet mode should choose material only
 
-
         TargetPlatform targetPlatform = TargetPlatform.android;
 
         TypeSettingNotifierProvider typeSetting =
@@ -195,9 +194,6 @@ class MyApp extends StatelessWidget {
         //   targetPlatform = TargetPlatform.android;
         //   //Provider.of<ThemeNotifierProvider>(context, listen: false).setPlatformName("android");
         // }
-
-
-
 
         switch (typeSetting.typographyTheme) {
           case "material2014":
@@ -230,25 +226,25 @@ class MyApp extends StatelessWidget {
         //     //surface: Colors.white,
         // );
         final materialThemeDataLight = FlexThemeData.light(
-            scheme: themeColorEntity.themeColor,
-            pageTransitionsTheme: Platform.isIOS?PageTransitionsTheme(
-                builders: {
+          scheme: themeColorEntity.themeColor,
+          pageTransitionsTheme: Platform.isIOS
+              ? PageTransitionsTheme(builders: {
                   TargetPlatform.android: CupertinoPageTransitionsBuilder(),
                   TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-                }
-            ): null,
-            useMaterial3: themeColorEntity.useMaterial3,
-            textTheme: typography.black.useSystemChineseFont(Brightness.light),
+                })
+              : null,
+          useMaterial3: themeColorEntity.useMaterial3,
+          textTheme: typography.black.useSystemChineseFont(Brightness.light),
         );
 
         final materialThemeDataDark = FlexThemeData.dark(
           scheme: themeColorEntity.themeColor,
-          pageTransitionsTheme: Platform.isIOS?PageTransitionsTheme(
-              builders: {
-                TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-                TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-              }
-          ): null,
+          pageTransitionsTheme: Platform.isIOS
+              ? PageTransitionsTheme(builders: {
+                  TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+                  TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+                })
+              : null,
           useMaterial3: themeColorEntity.useMaterial3,
           textTheme: typography.black.useSystemChineseFont(Brightness.light),
         );
@@ -437,10 +433,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     _checkAcceptVersionFlag(context);
     setupInteractedMessage();
     reportDiscuzListToAnalytics();
-
   }
-
-
 
   Future<void> _checkAcceptVersionFlag(BuildContext context) async {
     String flag = await UserPreferencesUtils.getAcceptVersionCodeFlag();
@@ -537,23 +530,28 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     }
 
     widgetList.add(Padding(
-      padding: EdgeInsets.fromLTRB(24.0, 12.0, 24.0, 16.0),
-      child: PlatformElevatedButton(
-        color: Theme.of(context).colorScheme.primaryContainer,
-        child: Text(
-          S.of(context).addNewDiscuz,
-          style: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimaryContainer),
+      padding: const EdgeInsets.fromLTRB(8, 12, 8, 8),
+      child: SizedBox(
+        width: double.infinity,
+        child: PlatformElevatedButton(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+          child: Text(
+            S.of(context).addNewDiscuz,
+            maxLines: 1,
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimaryContainer),
+          ),
+          //color: Theme.of(context).colorScheme.onPrimaryContainer,
+          onPressed: () {
+            VibrationUtils.vibrateWithClickIfPossible();
+            Navigator.of(context).pop();
+            Navigator.push(
+                context,
+                platformPageRoute(
+                    context: context, builder: (context) => AddDiscuzPage()));
+          },
         ),
-        //color: Theme.of(context).colorScheme.onPrimaryContainer,
-        onPressed: () {
-          VibrationUtils.vibrateWithClickIfPossible();
-          Navigator.of(context).pop();
-          Navigator.push(
-              context,
-              platformPageRoute(
-                  context: context, builder: (context) => AddDiscuzPage()));
-        },
       ),
     ));
 
@@ -561,8 +559,41 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       await showPlatformModalSheet(
           context: context, //BuildContext对象
           builder: (BuildContext context) {
-            return SimpleDialog(
-                title: Text(S.of(context).chooseDiscuz), children: widgetList);
+            final sheetContent = Padding(
+              padding: const EdgeInsets.fromLTRB(8, 18, 8, 8),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.sizeOf(context).height * 0.72,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      S.of(context).chooseDiscuz,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 10),
+                    Flexible(
+                      child: SingleChildScrollView(
+                        child: Column(children: widgetList),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+            if (usesLiquidGlass(context)) return sheetContent;
+            return SafeArea(
+              top: false,
+              child: PlatformLiquidGlassCard(
+                margin: const EdgeInsets.all(8),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
+                  bottom: Radius.circular(20),
+                ),
+                child: sheetContent,
+              ),
+            );
           });
     } else {
       await showPlatformDialog(
@@ -617,49 +648,132 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // need to check whether discuz exists in dataset
 
     CustomizeColor.updateAndroidNavigationbarColorWithDashboard(context);
-    return Consumer<DiscuzAndUserNotifier>(builder: (context, discuzAndUser, child){
-      User? user =
-          Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    return Consumer<DiscuzAndUserNotifier>(
+        builder: (context, discuzAndUser, child) {
+      final user = discuzAndUser.user;
+      final selectedDiscuz = discuzAndUser.discuz;
+      final appBarTitle = selectedDiscuz?.siteName ?? S.of(context).appName;
+      final appBarSubtitle = selectedDiscuz == null
+          ? null
+          : user == null
+              ? S.of(context).incognitoTitle
+              : "${user.username} (${user.uid})";
       if (user == null && _bottomNavigationbarIndex >= 2) {
         _bottomNavigationbarIndex = 0;
       }
-      return PlatformScaffold(
-        appBar: PlatformAppBar(
-          title: Consumer<DiscuzAndUserNotifier>(
-            builder: (context, value, child) {
-              if (value.discuz == null) {
-                return Text(S.of(context).appName);
-              } else {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      value.discuz!.siteName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                    ),
-                    if (value.user == null)
-                      Text(S.of(context).incognitoTitle,
-                        style: TextStyle(fontSize: 12),
-                        textAlign: TextAlign.center,
-                      ),
-                    if (value.user != null)
-                      Text(
-                        "${value.user!.username} (${value.user!.uid})",
-                        style: TextStyle(fontSize: 12),
-                        textAlign: TextAlign.center,
-                      )
-                  ],
+      final bottomNavigationItems = <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+            icon: Icon(AppPlatformIcons(context).discuzSiteOutlined),
+            activeIcon: Icon(AppPlatformIcons(context).discuzSiteSolid),
+            label: S.of(context).dashboard),
+        BottomNavigationBarItem(
+            icon: Icon(AppPlatformIcons(context).discuzPortalOutlined),
+            activeIcon: Icon(AppPlatformIcons(context).discuzPortalSolid),
+            label: S.of(context).index),
+        if (user != null)
+          BottomNavigationBarItem(
+              icon: Icon(AppPlatformIcons(context).discuzNotificationOutlined),
+              activeIcon:
+                  Icon(AppPlatformIcons(context).discuzNotificationSolid),
+              label: S.of(context).notification),
+        if (user != null)
+          BottomNavigationBarItem(
+              icon: Icon(AppPlatformIcons(context).discuzMessageOutlined),
+              activeIcon: Icon(AppPlatformIcons(context).discuzMessageSolid),
+              label: S.of(context).chatMessage),
+      ];
+
+      void selectBottomDestination(int index) {
+        if (index == _bottomNavigationbarIndex) return;
+        VibrationUtils.vibrateWithClickIfPossible();
+        setState(() {
+          _bottomNavigationbarIndex = index;
+        });
+      }
+
+      final liquidGlass = usesLiquidGlass(context);
+      final mainMenuButton = selectedDiscuz == null
+          ? null
+          : PlatformIconButton(
+              widgetKey: const ValueKey('main_menu_button'),
+              padding: EdgeInsets.zero,
+              liquidGlassSymbol: 'line.3.horizontal',
+              liquidGlassFlexibleSpaceAfter: true,
+              onPressed: () async {
+                VibrationUtils.vibrateWithClickIfPossible();
+                await Navigator.push(
+                  context,
+                  platformPageRoute(
+                    iosTitle: S.of(context).menuDrawerTitle,
+                    context: context,
+                    builder: (context) => DrawerPage(),
+                  ),
                 );
-              }
-            },
+              },
+              icon: Icon(
+                AppPlatformIcons(context).menuSolid,
+                semanticLabel: S.of(context).menuIconTooltip,
+                color: Theme.of(context).textTheme.titleSmall?.color,
+                size: 24,
+              ),
+            );
+
+      return PlatformScaffold(
+        bottomNavigationBar: PlatformBottomNavigationBar(
+          items: bottomNavigationItems,
+          liquidGlassSymbols: [
+            'house',
+            'bubble.left.and.bubble.right',
+            if (user != null) 'bell',
+            if (user != null) 'message',
+          ],
+          liquidGlassSelectedSymbols: [
+            'house.fill',
+            'bubble.left.and.bubble.right.fill',
+            if (user != null) 'bell.fill',
+            if (user != null) 'message.fill',
+          ],
+          selectedIndex: _bottomNavigationbarIndex,
+          selectedItemColor: Theme.of(context).colorScheme.primary,
+          unselectedItemColor: Theme.of(context).disabledColor,
+          liquidGlassSelectedItemColor: Theme.of(context).colorScheme.primary,
+          liquidGlassUnselectedItemColor: CupertinoColors.label
+              .resolveFrom(context)
+              .withValues(alpha: 0.62),
+          liquidGlassMinimizeOnScroll: false,
+          onTap: selectBottomDestination,
+        ),
+        appBar: PlatformAppBar(
+          liquidGlassTitle: appBarTitle,
+          liquidGlassSubtitle: appBarSubtitle,
+          liquidGlassTintColor: Theme.of(context).textTheme.titleSmall?.color ??
+              CupertinoColors.label.resolveFrom(context),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                appBarTitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+              if (appBarSubtitle != null)
+                Text(
+                  appBarSubtitle,
+                  style: TextStyle(fontSize: 12),
+                  textAlign: TextAlign.center,
+                ),
+            ],
           ),
           trailingActions: [
-            DiscuzNotificationAppbarIconWidget(),
+            if (liquidGlass && mainMenuButton != null) mainMenuButton,
+            if (hasDiscuzNotification(context))
+              buildDiscuzNotificationAppbarIcon(context),
             PlatformIconButton(
-              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+              widgetKey: const ValueKey('main_switch_discuz_button'),
+              padding: EdgeInsets.zero,
+              liquidGlassSymbol: 'arrow.left.arrow.right',
               onPressed: _triggerSwitchDiscuzDialog,
               icon: Icon(
                 AppPlatformIcons(context).manageDiscuzSolid,
@@ -669,126 +783,70 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               ),
             )
           ],
-          automaticallyImplyLeading: true,
-          leading: Consumer<DiscuzAndUserNotifier>(
-            builder: (context, value, child) {
-              if (value.discuz == null) {
-                return Container();
-              } else {
-                return PlatformIconButton(
-                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-
-                  onPressed: () async {
-                    // open drawer
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    await Navigator.push(
-                        context,
-                        platformPageRoute(
-                            iosTitle: S.of(context).menuDrawerTitle,
-                            context: context,
-                            builder: (context) => DrawerPage()));
-                  },
-                  icon: Icon(AppPlatformIcons(context).menuSolid,
-                    semanticLabel: S.of(context).menuIconTooltip,
-                    color: Theme.of(context).textTheme.titleSmall?.color,
-                    size: 24,
-                  ),
-
-                );
-              }
-            },
-          ),
+          // This is the root tab shell. During a child route's pop animation
+          // Navigator.canPop can still be true for one frame, so never let the
+          // native toolbar synthesize a back button beside the menu action.
+          automaticallyImplyLeading: false,
+          leading: liquidGlass ? null : mainMenuButton,
         ),
         body: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            Expanded(
-                child: Consumer<DiscuzAndUserNotifier>(
-                  builder: (context, value, child) {
+            Expanded(child: Consumer<DiscuzAndUserNotifier>(
+              builder: (context, value, child) {
+                final bodyWidgetList = <Widget>[
+                  DashboardScreen(
+                    onSelectTid: onSelectTid,
+                  ),
 
-                    List<Widget> bodyWidgetList = [
-                      DashboardScreen(
-                        onSelectTid: onSelectTid,
-                      ),
-
-                      // should not exist any
-                      DiscuzPortalScreen(
-                        key: ValueKey(1),
-                      ),
-                      NotificationScreen(
-                        //key: ValueKey(3),
-                        onSelectTid: this.onSelectTid,
-                      ),
-                      // FavoriteThreadScreen(),
-                      DiscuzMessageScreen(
-                        key: ValueKey(4),
-                      )
-                    ];
-                    if (value.user == null) {
-                      print("Get btm index ${_bottomNavigationbarIndex}");
-                      if (_bottomNavigationbarIndex < 2) {
-                        return bodyWidgetList[_bottomNavigationbarIndex];
-                      } else {
-                        setState(() {
-                          _bottomNavigationbarIndex = 0;
-                        });
-                        return bodyWidgetList[_bottomNavigationbarIndex];
-                      }
-                    } else {
-                      return bodyWidgetList[_bottomNavigationbarIndex];
-                    }
-                  },
-                )
-            ),
-            BottomNavigationBar(
-              elevation: 0,
-              selectedItemColor: Theme.of(context).colorScheme.primary,
-              unselectedItemColor: Theme.of(context).disabledColor,
-              //backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-              currentIndex: _bottomNavigationbarIndex,
-              items: [
-                BottomNavigationBarItem(
-                    icon: new Icon(AppPlatformIcons(context).discuzSiteOutlined),
-                    activeIcon: Icon(AppPlatformIcons(context).discuzSiteSolid),
-                    label: S.of(context).dashboard),
-                // if (!Platform.isIOS)
-                //   BottomNavigationBarItem(
-                //       icon: new Icon(AppPlatformIcons(context).discuzExploreOutlined),
-                //       activeIcon: Icon(AppPlatformIcons(context).discuzExploreSolid),
-                //       label: S.of(context).sitePage),
-
-                BottomNavigationBarItem(
-                    icon: new Icon(AppPlatformIcons(context).discuzPortalOutlined),
-                    activeIcon: Icon(AppPlatformIcons(context).discuzPortalSolid),
-                    label: S.of(context).index),
-                if (user != null)
-                  BottomNavigationBarItem(
-                      icon: new Icon(
-                          AppPlatformIcons(context).discuzNotificationOutlined),
-                      activeIcon:
-                      Icon(AppPlatformIcons(context).discuzNotificationSolid),
-                      label: S.of(context).notification),
-                if (user != null)
-                  BottomNavigationBarItem(
-                      icon: new Icon(AppPlatformIcons(context).discuzMessageOutlined),
-                      activeIcon: Icon(AppPlatformIcons(context).discuzMessageSolid),
-                      label: S.of(context).chatMessage),
-              ],
-              onTap: (index){
-                VibrationUtils.vibrateWithClickIfPossible();
-                setState(() {
-                  _bottomNavigationbarIndex = index;
-                });
+                  // should not exist any
+                  DiscuzPortalScreen(
+                    key: ValueKey(
+                      'portal_${value.discuz?.baseURL}_${value.user?.uid ?? 0}',
+                    ),
+                  ),
+                  if (value.user != null)
+                    NotificationScreen(
+                      //key: ValueKey(3),
+                      onSelectTid: this.onSelectTid,
+                    ),
+                  // FavoriteThreadScreen(),
+                  if (value.user != null)
+                    DiscuzMessageScreen(
+                      key: ValueKey(4),
+                    )
+                ];
+                final safeIndex = _bottomNavigationbarIndex.clamp(
+                    0, bodyWidgetList.length - 1);
+                return IndexedStack(
+                  index: safeIndex,
+                  children: bodyWidgetList,
+                );
               },
-            )
+            )),
+            if (!usesLiquidGlass(context))
+              PlatformWidget(
+                material: (_, __) => BottomNavigationBar(
+                  elevation: 0,
+                  selectedItemColor: Theme.of(context).colorScheme.primary,
+                  unselectedItemColor: Theme.of(context).disabledColor,
+                  currentIndex: _bottomNavigationbarIndex,
+                  items: bottomNavigationItems,
+                  onTap: selectBottomDestination,
+                ),
+                cupertino: (_, __) => CupertinoTabBar(
+                  currentIndex: _bottomNavigationbarIndex,
+                  activeColor: Theme.of(context).colorScheme.primary,
+                  inactiveColor: CupertinoColors.inactiveGray,
+                  items: bottomNavigationItems,
+                  onTap: selectBottomDestination,
+                ),
+              )
           ],
         ),
-
       );
     });
-
   }
-
 }
 
 class MainTwoPanePage extends StatelessWidget {
@@ -843,9 +901,7 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
 
   @override
   void initState() {
-
     super.initState();
-
   }
 
   @override
@@ -859,7 +915,6 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
         navigatorKey: this.navigatorKey,
       );
     }
-
 
     double paneProportion = 0.35;
     // directly give

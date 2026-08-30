@@ -1,8 +1,6 @@
-
-
-
 import 'package:discuz_flutter/dao/DiscuzDao.dart';
 import 'package:discuz_flutter/dao/ImageAttachmentDao.dart';
+import 'package:discuz_flutter/dao/PrivateMessageCacheDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/dao/ViewThreadScrollDistanceDao.dart';
 import 'package:discuz_flutter/entity/AiRule.dart';
@@ -13,11 +11,14 @@ import 'package:discuz_flutter/entity/Draft.dart';
 import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
 import 'package:discuz_flutter/entity/ImageAttachment.dart';
+import 'package:discuz_flutter/entity/PrivateMessageCache.dart';
 import 'package:discuz_flutter/entity/TrustHost.dart';
 import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/entity/ViewThreadCache.dart';
 import 'package:discuz_flutter/entity/ViewThreadScrollDistance.dart';
 import 'package:hive_ce/hive.dart';
+
+import '../utility/SecureStorageUtils.dart';
 
 import '../dao/AiRuleDao.dart';
 import '../dao/BlockUserDao.dart';
@@ -31,7 +32,7 @@ import '../dao/ViewThreadCacheDao.dart';
 import '../entity/Smiley.dart';
 import '../entity/User.dart';
 
-class AppDatabase{
+class AppDatabase {
   static const hiveBoxPrefix = "discuz_flutter";
   static Box<Discuz>? discuzBox;
   static Box<BlockUser>? blockUserBox;
@@ -47,6 +48,7 @@ class AppDatabase{
   static Box<ViewThreadScrollDistance>? viewThreadScrollDistanceBox;
   static Box<ViewThreadCache>? viewThreadCacheBox;
   static Box<AiRule>? aiRuleBox;
+  static Box<PrivateMessageCache>? privateMessageCacheBox;
 
   static Future<void> initBoxes() async {
     Hive
@@ -64,11 +66,9 @@ class AppDatabase{
       ..registerAdapter(ViewThreadCacheAdapter())
       ..registerAdapter(ViewThreadScrollDistanceAdapter())
       ..registerAdapter(AiRuleAdapter())
-    ;
-
+      ..registerAdapter(PrivateMessageCacheAdapter());
 
     //blockUserBox = await Hive.openBox<BlockUser>('${hiveBoxPrefix}_block_user');
-
 
     await getBlockUserDao();
     await getDiscuzDao();
@@ -82,20 +82,20 @@ class AppDatabase{
     await getDiscuzConfigBox();
     await getViewThreadCacheBox();
     await getViewThreadScrollDistanceBox();
+    await getPrivateMessageCacheDao();
   }
 
-
-
   static Future<BlockUserDao> getBlockUserDao() async {
-    if(blockUserBox == null){
-      blockUserBox = await Hive.openBox<BlockUser>('${hiveBoxPrefix}_block_user');
+    if (blockUserBox == null) {
+      blockUserBox =
+          await Hive.openBox<BlockUser>('${hiveBoxPrefix}_block_user');
     }
 
     return BlockUserDao(blockUserBox!);
   }
 
   static Future<DiscuzDao> getDiscuzDao() async {
-    if(discuzBox == null){
+    if (discuzBox == null) {
       discuzBox = await Hive.openBox<Discuz>('${hiveBoxPrefix}_discuz');
     }
 
@@ -103,31 +103,34 @@ class AppDatabase{
   }
 
   static Future<FavoriteForumDao> getFavoriteForumDao() async {
-    if(favoriteForumBox == null){
-      favoriteForumBox = await Hive.openBox<FavoriteForumInDatabase>('${hiveBoxPrefix}_favorite_forum');
+    if (favoriteForumBox == null) {
+      favoriteForumBox = await Hive.openBox<FavoriteForumInDatabase>(
+          '${hiveBoxPrefix}_favorite_forum');
     }
 
     return FavoriteForumDao(favoriteForumBox!);
   }
 
   static Future<FavoriteThreadDao> getFavoriteThreadDao() async {
-    if(favoriteThreadBox == null){
-      favoriteThreadBox = await Hive.openBox<FavoriteThreadInDatabase>('${hiveBoxPrefix}_favorite_thread');
+    if (favoriteThreadBox == null) {
+      favoriteThreadBox = await Hive.openBox<FavoriteThreadInDatabase>(
+          '${hiveBoxPrefix}_favorite_thread');
     }
 
     return FavoriteThreadDao(favoriteThreadBox!);
   }
 
   static Future<TrustHostDao> getTrustHostDao() async {
-    if(trustHostBox == null){
-      trustHostBox = await Hive.openBox<TrustHost>('${hiveBoxPrefix}_trust_host');
+    if (trustHostBox == null) {
+      trustHostBox =
+          await Hive.openBox<TrustHost>('${hiveBoxPrefix}_trust_host');
     }
 
     return TrustHostDao(trustHostBox!);
   }
 
   static Future<UserDao> getUserDao() async {
-    if(userBox == null){
+    if (userBox == null) {
       userBox = await Hive.openBox<User>('${hiveBoxPrefix}_user');
     }
 
@@ -135,48 +138,52 @@ class AppDatabase{
   }
 
   static Future<ViewHistoryDao> getViewHistoryDao() async {
-    if(viewHistoryBox == null){
-      viewHistoryBox =  await Hive.openBox<ViewHistory>('${hiveBoxPrefix}_view_history');
+    if (viewHistoryBox == null) {
+      viewHistoryBox =
+          await Hive.openBox<ViewHistory>('${hiveBoxPrefix}_view_history');
     }
 
     return ViewHistoryDao(viewHistoryBox!);
   }
 
   static Future<SmileyDao> getSmileyDao() async {
-    if(smileyBox == null){
-      smileyBox =  await Hive.openBox<Smiley>('${hiveBoxPrefix}_smiley');
+    if (smileyBox == null) {
+      smileyBox = await Hive.openBox<Smiley>('${hiveBoxPrefix}_smiley');
     }
 
     return SmileyDao(smileyBox!);
   }
 
   static Future<ImageAttachmentDao> getImageAttachmentDao() async {
-    if(imageAttachmentBox == null){
-      imageAttachmentBox =  await Hive.openBox<ImageAttachment>('${hiveBoxPrefix}_image_attachment_1');
+    if (imageAttachmentBox == null) {
+      imageAttachmentBox = await Hive.openBox<ImageAttachment>(
+          '${hiveBoxPrefix}_image_attachment_1');
     }
 
     return ImageAttachmentDao(imageAttachmentBox!);
   }
 
   static Future<DraftDao> getDraftDao() async {
-    if(draftBox == null){
-      draftBox =  await Hive.openBox<Draft>('${hiveBoxPrefix}_draft_v1');
+    if (draftBox == null) {
+      draftBox = await Hive.openBox<Draft>('${hiveBoxPrefix}_draft_v1');
     }
 
     return DraftDao(draftBox!);
   }
 
   static Future<Box<String>> getDiscuzConfigBox() async {
-    if(discuzConfigBox == null){
-      discuzConfigBox = await Hive.openBox<String>('${hiveBoxPrefix}_discuz_configuration');
+    if (discuzConfigBox == null) {
+      discuzConfigBox =
+          await Hive.openBox<String>('${hiveBoxPrefix}_discuz_configuration');
     }
 
     return discuzConfigBox!;
   }
 
   static Future<Box<ViewThreadCache>> getViewThreadCacheBox() async {
-    if(viewThreadCacheBox == null){
-      viewThreadCacheBox = await Hive.openBox<ViewThreadCache>('${hiveBoxPrefix}_viewthread_cache');
+    if (viewThreadCacheBox == null) {
+      viewThreadCacheBox = await Hive.openBox<ViewThreadCache>(
+          '${hiveBoxPrefix}_viewthread_cache');
     }
 
     return viewThreadCacheBox!;
@@ -188,32 +195,38 @@ class AppDatabase{
     return ViewThreadCacheDao(viewThreadCacheBox);
   }
 
-
-
-  static Future<Box<ViewThreadScrollDistance>> getViewThreadScrollDistanceBox() async {
-    if(viewThreadScrollDistanceBox == null){
-      viewThreadScrollDistanceBox = await Hive.openBox<ViewThreadScrollDistance>('${hiveBoxPrefix}_viewthread_scroll_distance');
+  static Future<Box<ViewThreadScrollDistance>>
+      getViewThreadScrollDistanceBox() async {
+    if (viewThreadScrollDistanceBox == null) {
+      viewThreadScrollDistanceBox =
+          await Hive.openBox<ViewThreadScrollDistance>(
+              '${hiveBoxPrefix}_viewthread_scroll_distance');
     }
 
     return viewThreadScrollDistanceBox!;
   }
 
-  static Future<ViewThreadScrollDistanceDao> getViewThreadScrollDistanceDao() async {
-    Box<ViewThreadScrollDistance> viewThreadScrollDistanceBox = await getViewThreadScrollDistanceBox();
+  static Future<ViewThreadScrollDistanceDao>
+      getViewThreadScrollDistanceDao() async {
+    Box<ViewThreadScrollDistance> viewThreadScrollDistanceBox =
+        await getViewThreadScrollDistanceBox();
 
     return ViewThreadScrollDistanceDao(viewThreadScrollDistanceBox);
   }
 
-  static Future<void> removeAllExpiredRecord() async{
-    ViewThreadScrollDistanceDao viewThreadScrollDistanceDao = await getViewThreadScrollDistanceDao();
+  static Future<void> removeAllExpiredRecord() async {
+    ViewThreadScrollDistanceDao viewThreadScrollDistanceDao =
+        await getViewThreadScrollDistanceDao();
     ViewThreadCacheDao viewThreadCacheDao = await getViewThreadCacheDao();
+    PrivateMessageCacheDao privateMessageCacheDao =
+        await getPrivateMessageCacheDao();
     viewThreadScrollDistanceDao.deleteAllExpiredViewThreadCache();
     viewThreadCacheDao.deleteAllExpiredViewThreadCache();
-
+    privateMessageCacheDao.deleteExpired();
   }
 
   static Future<Box<AiRule>> getAiRuleBox() async {
-    if(aiRuleBox == null){
+    if (aiRuleBox == null) {
       aiRuleBox = await Hive.openBox<AiRule>('${hiveBoxPrefix}_ai_rule');
     }
 
@@ -226,5 +239,14 @@ class AppDatabase{
     return AiRuleDao(aiRuleBox);
   }
 
-
+  static Future<PrivateMessageCacheDao> getPrivateMessageCacheDao() async {
+    if (privateMessageCacheBox == null) {
+      final cipher = await SecureStorageUtils.getPrivateMessageCacheCipher();
+      privateMessageCacheBox = await Hive.openBox<PrivateMessageCache>(
+        '${hiveBoxPrefix}_private_message_cache_v2',
+        encryptionCipher: cipher,
+      );
+    }
+    return PrivateMessageCacheDao(privateMessageCacheBox!);
+  }
 }

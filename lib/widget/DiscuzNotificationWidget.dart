@@ -3,118 +3,113 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzNotification.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 
-// ignore: must_be_immutable
 class DiscuzNotificationWidget extends StatelessWidget {
-  DiscuzNotification _notification;
-  Discuz _discuz;
+  final DiscuzNotification notification;
+  final Discuz discuz;
   final ValueChanged<int>? onSelectTid;
 
-  DiscuzNotificationWidget(this._discuz, this._notification, {this.onSelectTid});
+  const DiscuzNotificationWidget(
+    this.discuz,
+    this.notification, {
+    this.onSelectTid,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    Brightness brightness = MediaQuery.of(context).platformBrightness;
-    return PlatformWidgetBuilder(
-      cupertino: (context, child, platform){
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if(child!=null)
-            child,
-            Divider(),
-          ],
-        );
-      },
-      material: (context, child, platform){
-        return Card(
-          elevation: 8.0,
-
-          color: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white10,
-          surfaceTintColor: Theme.of(context).brightness == Brightness.light? Colors.white: Colors.white10,
-          child: Padding(
-            padding: EdgeInsets.all(4.0),
-            child: child,
-          ),
-        );
-      },
-      child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
+    final isNew = notification.isNew == '1';
+    return PlatformCard(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+      color: isNew ? Theme.of(context).colorScheme.primaryContainer : null,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  if(_notification.author.isNotEmpty)
-                  Padding(
-                    padding: EdgeInsets.only(right: 8.0),
-                    child: CachedNetworkImage(
-                      imageUrl: URLUtils.getAvatarURL(_discuz, _notification.authorId.toString()),
-                      progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-                      errorWidget: (context, url, error) => Container(
-                        width: 16.0,
-                        height: 16.0,
-                        child: CircleAvatar(
-                          backgroundColor: CustomizeColor.getColorBackgroundById(_notification.uid),
-                          child: Text(
-                            _notification.author.length != 0
-                                ? _notification.author[0].toUpperCase()
-                                : S.of(context).notification[0].toUpperCase(),
-                            style: TextStyle(color: Colors.white,fontSize: 12),
-                          ),
-                        ),
+              if (notification.author.isNotEmpty) ...[
+                _buildAvatar(context),
+                const SizedBox(width: 9),
+              ],
+              Expanded(
+                child: Text(
+                  notification.author.isNotEmpty
+                      ? notification.author
+                      : notification.type.toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: notification.author.isEmpty
+                            ? Theme.of(context).colorScheme.primary
+                            : null,
                       ),
-                      imageBuilder: (context, imageProvider) => Container(
-                        width: 24.0,
-                        height: 24.0,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                              image: imageProvider, fit: BoxFit.cover),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                      child: Row(
-                        children: [
-                          //SizedBox(width: 8.0,),
-                          RichText(
-                            text: TextSpan(
-                              text: "",
-                              style: Theme.of(context).textTheme.labelLarge,
-                              children: <TextSpan>[
-                                if(_notification.author.isNotEmpty)
-                                  TextSpan(text: _notification.author, style: TextStyle(fontWeight: FontWeight.bold)),
-                                if(_notification.author.isEmpty)
-                                  TextSpan(text: _notification.type.toUpperCase(), style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
-
-                              ],
-                            ),
-                          ),
-                          Spacer(),
-                          Padding(
-                              padding: EdgeInsets.only(right: 8.0),
-                              child: Text(TimeDisplayUtils.getLocaledTimeDisplay(context,_notification.dateline),
-                                style: Theme.of(context).textTheme.labelLarge,
-                              ),
-                            ),
-                        ],
-                      )
-                  )
-                ],
+                ),
               ),
-              SizedBox(height: 8.0,),
-              // rich text rendering
-              DiscuzHtmlWidget(_discuz,_notification.note, onSelectTid: this.onSelectTid,)
+              const SizedBox(width: 8),
+              Text(
+                TimeDisplayUtils.getLocaledTimeDisplay(
+                  context,
+                  notification.dateline,
+                ),
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
             ],
-          )
+          ),
+          const SizedBox(height: 8),
+          DiscuzHtmlWidget(
+            discuz,
+            notification.note,
+            onSelectTid: onSelectTid,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAvatar(BuildContext context) {
+    final fallback = ColoredBox(
+      color: CustomizeColor.getColorBackgroundById(notification.authorId),
+      child: Center(
+        child: Text(
+          notification.author.isNotEmpty
+              ? notification.author[0].toUpperCase()
+              : S.of(context).notification[0].toUpperCase(),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+    return PlatformLiquidGlassAvatar(
+      size: 32,
+      child: CachedNetworkImage(
+        imageUrl: URLUtils.getAvatarURL(
+          discuz,
+          notification.authorId.toString(),
+        ),
+        fit: BoxFit.cover,
+        progressIndicatorBuilder: (context, url, progress) => Center(
+          child: SizedBox.square(
+            dimension: 15,
+            child: PlatformCircularProgressIndicator(
+              material: (_, __) =>
+                  MaterialProgressIndicatorData(value: progress.progress),
+            ),
+          ),
+        ),
+        errorWidget: (context, url, error) => fallback,
       ),
     );
   }

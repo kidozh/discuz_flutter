@@ -1,5 +1,3 @@
-
-
 import 'dart:developer';
 
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
@@ -14,16 +12,14 @@ import '../generated/l10n.dart';
 import '../provider/UserPreferenceNotifierProvider.dart';
 import '../utility/UserPreferencesUtils.dart';
 
-class SelectSignatureStylePage extends StatefulWidget{
+class SelectSignatureStylePage extends StatefulWidget {
   @override
   SelectSignatureStyleState createState() {
     return SelectSignatureStyleState();
   }
-
 }
 
-class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
-
+class SelectSignatureStyleState extends State<SelectSignatureStylePage> {
   String deviceSignature = "";
   String signature = "";
   TextEditingController controller = TextEditingController();
@@ -31,63 +27,65 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
   String packageVersion = "";
   String packageBuildNumber = "";
 
-  _loadPackageInfo() async{
+  _loadPackageInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    setState((){
+    setState(() {
       packageVersion = packageInfo.version;
       packageBuildNumber = packageInfo.buildNumber;
     });
-
   }
 
-  void setSignature(String string){
-    setState((){
+  void setSignature(String string) {
+    setState(() {
       signature = string;
     });
     UserPreferencesUtils.putSignaturePreference(string);
     // update provider
-    Provider.of<UserPreferenceNotifierProvider>(context,listen: false).signature = signature;
+    Provider.of<UserPreferenceNotifierProvider>(context, listen: false)
+        .signature = signature;
     log("New signature ${signature}");
   }
 
-  void initState(){
+  void initState() {
     _loadDeviceName();
     _loadPackageInfo();
     super.initState();
   }
 
-  void _loadDeviceName() async{
-
+  void _loadDeviceName() async {
     String? _deviceSignature = await PostTextFieldUtils.getDeviceName(context);
-    setState((){
+    setState(() {
       deviceSignature = _deviceSignature;
     });
-    String? signatureInPreference = await UserPreferencesUtils.getSignaturePreference();
+    String? signatureInPreference =
+        await UserPreferencesUtils.getSignaturePreference();
     setSignature(signatureInPreference);
     log("Get signature $signatureInPreference");
-    if(signatureInPreference != PostTextFieldUtils.USE_DEVICE_SIGNATURE){
-      controller.text= signatureInPreference;
+    if (signatureInPreference != PostTextFieldUtils.USE_DEVICE_SIGNATURE) {
+      controller.text = signatureInPreference;
     }
-  
   }
 
   @override
   Widget build(BuildContext context) {
-
     return PlatformScaffold(
       iosContentPadding: true,
       appBar: PlatformAppBar(
         title: Text(S.of(context).signatureStyle),
       ),
-      body: SettingsList(
+      body: PlatformAdaptiveSettingsList(
         sections: [
           SettingsSection(
             tiles: [
-
               SettingsTile.navigation(
                 title: Text(S.of(context).noSignature),
-                trailing: signature == PostTextFieldUtils.NO_SIGNATURE ?Icon(PlatformIcons(context).checkMark, color: Theme.of(context).colorScheme.primary,): Icon(null),
-                onPressed: (BuildContext context){
+                trailing: signature == PostTextFieldUtils.NO_SIGNATURE
+                    ? Icon(
+                        PlatformIcons(context).checkMark,
+                        color: Theme.of(context).colorScheme.primary,
+                      )
+                    : Icon(null),
+                onPressed: (BuildContext context) {
                   VibrationUtils.vibrateWithClickIfPossible();
                   setSignature(PostTextFieldUtils.NO_SIGNATURE);
                 },
@@ -95,8 +93,11 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
               SettingsTile.navigation(
                 title: Text(S.of(context).deviceNameSignature),
                 //value: Text(deviceSignature),
-                trailing: signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE?Icon(PlatformIcons(context).checkMark, color: Theme.of(context).colorScheme.primary):Icon(null),
-                onPressed: (BuildContext context){
+                trailing: signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE
+                    ? Icon(PlatformIcons(context).checkMark,
+                        color: Theme.of(context).colorScheme.primary)
+                    : Icon(null),
+                onPressed: (BuildContext context) {
                   VibrationUtils.vibrateWithClickIfPossible();
                   setSignature(PostTextFieldUtils.USE_DEVICE_SIGNATURE);
                 },
@@ -104,100 +105,103 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage>{
               SettingsTile.navigation(
                 title: Text(S.of(context).signatureWithDisFly),
                 //value: Text(deviceSignature),
-                trailing: signature == PostTextFieldUtils.USE_APP_SIGNATURE?Icon(PlatformIcons(context).checkMark, color: Theme.of(context).colorScheme.primary):Icon(null),
-                onPressed: (BuildContext context){
+                trailing: signature == PostTextFieldUtils.USE_APP_SIGNATURE
+                    ? Icon(PlatformIcons(context).checkMark,
+                        color: Theme.of(context).colorScheme.primary)
+                    : Icon(null),
+                onPressed: (BuildContext context) {
                   VibrationUtils.vibrateWithClickIfPossible();
                   setSignature(PostTextFieldUtils.USE_APP_SIGNATURE);
                 },
               ),
               SettingsTile.navigation(
                 title: Text(S.of(context).customSignature),
-                trailing: (signature!= PostTextFieldUtils.NO_SIGNATURE && signature!= PostTextFieldUtils.USE_APP_SIGNATURE && signature!= PostTextFieldUtils.USE_DEVICE_SIGNATURE)?
-                Icon(PlatformIcons(context).checkMark, color: Theme.of(context).colorScheme.primary):
-                Icon(null),
-                onPressed: (BuildContext context){
+                trailing: (signature != PostTextFieldUtils.NO_SIGNATURE &&
+                        signature != PostTextFieldUtils.USE_APP_SIGNATURE &&
+                        signature != PostTextFieldUtils.USE_DEVICE_SIGNATURE)
+                    ? Icon(PlatformIcons(context).checkMark,
+                        color: Theme.of(context).colorScheme.primary)
+                    : Icon(null),
+                onPressed: (BuildContext context) {
                   VibrationUtils.vibrateWithClickIfPossible();
                   setSignature(" ");
                 },
               ),
-
-
             ],
-
           ),
-          if(signature!= PostTextFieldUtils.NO_SIGNATURE && signature!= PostTextFieldUtils.USE_APP_SIGNATURE && signature!= PostTextFieldUtils.USE_DEVICE_SIGNATURE)
+          if (signature != PostTextFieldUtils.NO_SIGNATURE &&
+              signature != PostTextFieldUtils.USE_APP_SIGNATURE &&
+              signature != PostTextFieldUtils.USE_DEVICE_SIGNATURE)
             CustomSettingsSection(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
-                  child: PlatformTextField(
-                    enabled: (signature!= PostTextFieldUtils.NO_SIGNATURE && signature!= PostTextFieldUtils.USE_DEVICE_SIGNATURE && signature!= PostTextFieldUtils.USE_APP_SIGNATURE),
-                    hintText: S.of(context).signatureHint,
-                    onChanged: (String string){
-                      if(string != signature){
-                        setSignature(string);
-                      }
-
-                    },
-                    controller: controller,
-
-                  ),
-                )
-
-            ),
-          if(signature == PostTextFieldUtils.USE_APP_SIGNATURE || signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE)
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
+              child: PlatformTextField(
+                enabled: (signature != PostTextFieldUtils.NO_SIGNATURE &&
+                    signature != PostTextFieldUtils.USE_DEVICE_SIGNATURE &&
+                    signature != PostTextFieldUtils.USE_APP_SIGNATURE),
+                hintText: S.of(context).signatureHint,
+                onChanged: (String string) {
+                  if (string != signature) {
+                    setSignature(string);
+                  }
+                },
+                controller: controller,
+              ),
+            )),
+          if (signature == PostTextFieldUtils.USE_APP_SIGNATURE ||
+              signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE)
             CustomSettingsSection(
-
                 child: Container(
-                  padding: EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(S.of(context).signaturePreview, style: TextStyle(
+              padding: EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(S.of(context).signaturePreview,
+                      style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: Theme.of(context).textTheme.headlineMedium?.fontSize
-                      )),
-                      SizedBox(height: 8,),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).canvasColor,
-                          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                        ),
-                        width: double.infinity,
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                            signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE?
-                            S.of(context).fromDeviceSignature(deviceSignature): S.of(context).fromAppSignature(deviceSignature, packageVersion),
-                            style: TextStyle(
-                                color: Theme.of(context).disabledColor
-                            )
-                        ),
-                      )
-
-                    ],
+                          fontSize: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.fontSize)),
+                  SizedBox(
+                    height: 8,
                   ),
-                )
-
-            ),
-          if(signature == PostTextFieldUtils.USE_APP_SIGNATURE)
-          CustomSettingsSection(
-              child: Container(
-                margin: EdgeInsets.all(16),
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(S.of(context).acknowledgeAppSignatureAndAdDiminish, style: TextStyle(
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).canvasColor,
+                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                    ),
+                    width: double.infinity,
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                        signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE
+                            ? S.of(context).fromDeviceSignature(deviceSignature)
+                            : S.of(context).fromAppSignature(
+                                deviceSignature, packageVersion),
+                        style:
+                            TextStyle(color: Theme.of(context).disabledColor)),
+                  )
+                ],
+              ),
+            )),
+          if (signature == PostTextFieldUtils.USE_APP_SIGNATURE)
+            CustomSettingsSection(
+                child: Container(
+              margin: EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                S.of(context).acknowledgeAppSignatureAndAdDiminish,
+                style: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
-                ),),
-            )
-          )
+                ),
+              ),
+            ))
         ],
       ),
     );
-
-
   }
-
-
 }

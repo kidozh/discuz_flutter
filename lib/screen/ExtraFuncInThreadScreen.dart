@@ -107,7 +107,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
     if (_discuzError != null) {
       return Container(
         height: MediaQuery.of(context).size.height * 0.25,
-        child: ListTile(
+        child: PlatformListTile(
           leading: Icon(
             Icons.error_outline,
             color: Colors.red,
@@ -118,7 +118,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
     } else if (_checkPostResult.variables.allowPerm.uploadHash.isEmpty) {
       return Container(
           height: MediaQuery.of(context).size.height * 0.25,
-          child: ListTile(
+          child: PlatformListTile(
             leading: PlatformCircularProgressIndicator(),
             title: Text(S.of(context).preparingPage),
           ));
@@ -164,7 +164,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (isUploadingPicture)
-                        ListTile(
+                        PlatformListTile(
                           leading: PlatformCircularProgressIndicator(),
                           title: Text(S.of(context).uploadingImageToServer),
                         ),
@@ -296,7 +296,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
                   content: Column(
                     children: [
                       if (isUploadingPicture)
-                        ListTile(
+                        PlatformListTile(
                           leading: PlatformCircularProgressIndicator(),
                           title: Text(S.of(context).uploadingImageToServer),
                         ),
@@ -690,7 +690,7 @@ class ExtraFuncBlockButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      child: Card(
+      child: PlatformCard(
         // comes with wechat style
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

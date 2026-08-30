@@ -1,5 +1,3 @@
-
-
 import 'package:discuz_flutter/dao/UserDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -16,25 +14,29 @@ import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
-class ManageAccountPage extends StatelessWidget{
+class ManageAccountPage extends StatelessWidget {
   Discuz discuz;
 
   ManageAccountPage(this.discuz);
 
   @override
   Widget build(BuildContext context) {
-
     return PlatformScaffold(
       appBar: PlatformAppBar(
         title: Text(S.of(context).manageAccount),
         trailingActions: [
           PlatformIconButton(
-            icon: Icon(Icons.add),
-            onPressed: () async{
+            liquidGlassSymbol: 'plus',
+            icon: Icon(
+              Icons.add,
+              semanticLabel: S.of(context).loginTitle,
+            ),
+            onPressed: () async {
               VibrationUtils.vibrateWithClickIfPossible();
-              await Navigator.push(context,
+              await Navigator.push(
+                  context,
                   platformPageRoute(
-                      context:context,
+                      context: context,
                       iosTitle: S.of(context).loginTitle,
                       builder: (context) => LoginPage(discuz, null)));
             },
@@ -44,10 +46,9 @@ class ManageAccountPage extends StatelessWidget{
       body: ManageAccountStateWidget(discuz),
     );
   }
-
 }
 
-class ManageAccountStateWidget extends StatefulWidget{
+class ManageAccountStateWidget extends StatefulWidget {
   Discuz discuz;
 
   ManageAccountStateWidget(this.discuz);
@@ -57,54 +58,49 @@ class ManageAccountStateWidget extends StatefulWidget{
     // TODO: implement createState
     return ManageAccountState(discuz);
   }
-
 }
 
-class ManageAccountState extends State<ManageAccountStateWidget>{
+class ManageAccountState extends State<ManageAccountStateWidget> {
   Discuz discuz;
   UserDao? _userDao;
 
-
-
-  ManageAccountState(this.discuz){
+  ManageAccountState(this.discuz) {
     _initDb();
   }
-
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _initDb();
-
   }
 
   void _initDb() async {
     UserDao userDao = await AppDatabase.getUserDao();
-    setState((){
+    setState(() {
       _userDao = userDao;
     });
-
   }
 
-  Widget _buildUserListWidget(List<User> userList){
+  Widget _buildUserListWidget(List<User> userList) {
     return ListView.builder(
-      itemBuilder: (context, index){
+      itemBuilder: (context, index) {
         User user = userList[index];
         return Slidable(
-          child: ListTile(
+          child: PlatformListTile(
             title: Text(user.username),
             subtitle: Text(S.of(context).userIdTitle(user.uid)),
-            leading:  Container(
+            leading: Container(
               // width: 16.0,
               // height: 16.0,
               child: CircleAvatar(
-                backgroundColor: CustomizeColor.getColorBackgroundById(user.uid),
+                backgroundColor:
+                    CustomizeColor.getColorBackgroundById(user.uid),
                 child: Text(
                   user.username.length != 0
                       ? user.username[0].toUpperCase()
                       : S.of(context).anonymous,
-                  style: TextStyle(color: Colors.white,fontSize: 18),
+                  style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
             ),
@@ -120,20 +116,22 @@ class ManageAccountState extends State<ManageAccountStateWidget>{
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     _deleteAccount(user);
-                  }
-              ),
+                  }),
               SlidableAction(
-                  label: S.of(context).relogin,
-                  backgroundColor: Colors.teal,
-                  icon: Icons.refresh,
-                  onPressed: (context) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.push(context,
-                        platformPageRoute(
-                            context: context,
-                            iosTitle: S.of(context).loginTitle,
-                            builder: (context) => LoginPage(discuz, user.username)));
-                  },)
+                label: S.of(context).relogin,
+                backgroundColor: Colors.teal,
+                icon: Icons.refresh,
+                onPressed: (context) {
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  Navigator.push(
+                      context,
+                      platformPageRoute(
+                          context: context,
+                          iosTitle: S.of(context).loginTitle,
+                          builder: (context) =>
+                              LoginPage(discuz, user.username)));
+                },
+              )
             ],
           ),
         );
@@ -145,33 +143,28 @@ class ManageAccountState extends State<ManageAccountStateWidget>{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    if(_userDao != null){
+    if (_userDao != null) {
       return ValueListenableBuilder(
         valueListenable: _userDao!.userBox.listenable(),
         builder: (BuildContext context, Box<User> value, Widget? child) {
           List<User> userList = _userDao!.findAllUsersByDiscuz(discuz);
-          if(userList.isEmpty){
+          if (userList.isEmpty) {
             return NullUserScreen();
-          }
-          else {
+          } else {
             return _buildUserListWidget(userList);
           }
         },
       );
-    }
-    else{
+    } else {
       return BlankScreen();
     }
-
   }
 
-  _deleteAccount(User user) async{
-    if(_userDao!= null){
+  _deleteAccount(User user) async {
+    if (_userDao != null) {
       await _userDao!.deleteUser(user);
-      EasyLoading.showSuccess(S.of(context).deleteAccountSuccessfully(user.username));
+      EasyLoading.showSuccess(
+          S.of(context).deleteAccountSuccessfully(user.username));
     }
-
-
   }
-
 }

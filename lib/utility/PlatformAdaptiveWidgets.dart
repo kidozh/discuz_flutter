@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'dart:math' as math;
+import 'dart:ui' show ImageFilter;
 
+import 'package:adaptive_platform_ui/adaptive_platform_ui.dart' as liquid;
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart'
     as adaptive;
+import 'package:settings_ui/settings_ui.dart' as settings;
 
 export 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart'
     hide
@@ -33,6 +36,163 @@ bool isCupertino(BuildContext context) =>
     platform(context) == TargetPlatform.iOS;
 
 bool isMaterial(BuildContext context) => !isCupertino(context);
+
+/// Whether the selected UI mode can use native iOS 26 Liquid Glass widgets.
+///
+/// This deliberately checks both the user-selected style and the physical
+/// platform. A forced Material UI on iOS must remain Material, while a forced
+/// Cupertino UI on Android cannot host native UIKit views.
+bool usesLiquidGlass(BuildContext context) =>
+    isCupertino(context) && liquid.PlatformInfo.isIOS26OrHigher();
+
+/// Flutter-rendered frosted surfaces are safe on every physical iOS version.
+/// Native iOS 26 controls still use [usesLiquidGlass] so unavailable UIKit
+/// APIs are never invoked on older systems or Android's forced Cupertino mode.
+bool usesAppleTranslucentSurface(BuildContext context) =>
+    isCupertino(context) && liquid.PlatformInfo.isIOS;
+
+String? _liquidGlassSymbolForWidget(Widget? widget) {
+  if (widget is Icon) return _liquidGlassSymbolForIcon(widget.icon);
+  if (widget is Badge) return _liquidGlassSymbolForWidget(widget.child);
+  return null;
+}
+
+Icon? _iconForWidget(Widget? widget) {
+  if (widget is Icon) return widget;
+  if (widget is Badge) return _iconForWidget(widget.child);
+  return null;
+}
+
+String? _liquidGlassSymbolForIcon(IconData? icon) {
+  if (icon == null) return null;
+
+  if (icon == CupertinoIcons.add || icon == Icons.add) return 'plus';
+  if (icon == CupertinoIcons.add_circled || icon == Icons.add_circle) {
+    return 'plus.circle';
+  }
+  if (icon == Icons.add_circle_outline) return 'plus.circle';
+  if (icon == CupertinoIcons.back || icon == Icons.arrow_back) {
+    return 'chevron.left';
+  }
+  if (icon == CupertinoIcons.check_mark || icon == Icons.check) {
+    return 'checkmark';
+  }
+  if (icon == CupertinoIcons.check_mark_circled_solid ||
+      icon == Icons.check_circle) {
+    return 'checkmark.circle.fill';
+  }
+  if (icon == CupertinoIcons.check_mark_circled ||
+      icon == Icons.check_circle_outline) {
+    return 'checkmark.circle';
+  }
+  if (icon == CupertinoIcons.clear ||
+      icon == CupertinoIcons.clear_circled ||
+      icon == Icons.close ||
+      icon == Icons.clear) {
+    return 'xmark';
+  }
+  if (icon == CupertinoIcons.chat_bubble_fill || icon == Icons.message) {
+    return 'message.fill';
+  }
+  if (icon == CupertinoIcons.chat_bubble || icon == Icons.message_outlined) {
+    return 'message';
+  }
+  if (icon == CupertinoIcons.delete_left_fill ||
+      icon == Icons.delete ||
+      icon == Icons.delete_forever) {
+    return 'trash';
+  }
+  if (icon == CupertinoIcons.download_circle ||
+      icon == Icons.save ||
+      icon == Icons.save_outlined) {
+    return 'square.and.arrow.down';
+  }
+  if (icon == CupertinoIcons.ellipsis || icon == Icons.more_vert) {
+    return 'ellipsis';
+  }
+  if (icon == Icons.more_horiz) return 'ellipsis';
+  if (icon == CupertinoIcons.heart || icon == Icons.favorite_border) {
+    return 'heart';
+  }
+  if (icon == CupertinoIcons.heart_fill || icon == Icons.favorite) {
+    return 'heart.fill';
+  }
+  if (icon == CupertinoIcons.line_horizontal_3 || icon == Icons.menu) {
+    return 'line.3.horizontal';
+  }
+  if (icon == CupertinoIcons.bell_fill ||
+      icon == CupertinoIcons.bell_circle_fill ||
+      icon == Icons.notifications) {
+    return 'bell.fill';
+  }
+  if (icon == CupertinoIcons.bell_circle ||
+      icon == Icons.notifications_outlined) {
+    return 'bell';
+  }
+  if (icon == CupertinoIcons.person_crop_circle ||
+      icon == Icons.person ||
+      icon == Icons.person_outline) {
+    return 'person.crop.circle';
+  }
+  if (icon == CupertinoIcons.arrow_up_circle || icon == Icons.send) {
+    return 'arrow.up.circle';
+  }
+  if (icon == Icons.emoji_emotions_outlined) return 'face.smiling';
+  if (icon == Icons.keyboard_outlined) return 'keyboard';
+  if (icon == Icons.format_bold_outlined) return 'bold';
+  if (icon == Icons.format_italic_outlined) return 'italic';
+  if (icon == Icons.format_quote_outlined) return 'quote.bubble';
+  if (icon == Icons.image_outlined || icon == Icons.image) return 'photo';
+  if (icon == CupertinoIcons.exclamationmark_circle ||
+      icon == Icons.error_outline) {
+    return 'exclamationmark.triangle';
+  }
+  if (icon == CupertinoIcons.share || icon == Icons.share) {
+    return 'square.and.arrow.up';
+  }
+  if (icon == CupertinoIcons.arrow_swap || icon == Icons.account_tree) {
+    return 'arrow.left.arrow.right';
+  }
+  if (icon == CupertinoIcons.up_arrow || icon == Icons.arrow_upward) {
+    return 'arrow.up';
+  }
+  if (icon == CupertinoIcons.down_arrow || icon == Icons.arrow_downward) {
+    return 'arrow.down';
+  }
+  if (icon == CupertinoIcons.today ||
+      icon == CupertinoIcons.today_fill ||
+      icon == Icons.home ||
+      icon == Icons.home_outlined) {
+    return icon == CupertinoIcons.today || icon == Icons.home
+        ? 'house.fill'
+        : 'house';
+  }
+  if (icon == CupertinoIcons.bubble_left_bubble_right_fill ||
+      icon == Icons.forum) {
+    return 'bubble.left.and.bubble.right.fill';
+  }
+  if (icon == CupertinoIcons.bubble_left_bubble_right ||
+      icon == Icons.forum_outlined) {
+    return 'bubble.left.and.bubble.right';
+  }
+  if (icon == Icons.dashboard) return 'rectangle.grid.2x2';
+  if (icon == CupertinoIcons.square_stack_3d_up_fill ||
+      icon == Icons.filter_alt) {
+    return 'line.3.horizontal.decrease.circle.fill';
+  }
+  if (icon == CupertinoIcons.square_stack_3d_up ||
+      icon == Icons.filter_alt_outlined) {
+    return 'line.3.horizontal.decrease.circle';
+  }
+  if (icon == CupertinoIcons.settings ||
+      icon == CupertinoIcons.settings_solid ||
+      icon == Icons.settings ||
+      icon == Icons.settings_outlined) {
+    return 'gearshape';
+  }
+
+  return null;
+}
 
 class PlatformSettingsData {
   const PlatformSettingsData();
@@ -317,7 +477,10 @@ class PlatformWidgetBuilder extends StatelessWidget {
 class PlatformAppBar {
   final Key? widgetKey;
   final Widget? title;
+  final String? liquidGlassTitle;
+  final String? liquidGlassSubtitle;
   final Color? backgroundColor;
+  final Color? liquidGlassTintColor;
   final Widget? leading;
   final List<Widget>? trailingActions;
   final bool? automaticallyImplyLeading;
@@ -328,7 +491,10 @@ class PlatformAppBar {
   const PlatformAppBar({
     this.widgetKey,
     this.title,
+    this.liquidGlassTitle,
+    this.liquidGlassSubtitle,
     this.backgroundColor,
+    this.liquidGlassTintColor,
     this.leading,
     this.trailingActions,
     this.automaticallyImplyLeading,
@@ -336,6 +502,104 @@ class PlatformAppBar {
     this.material,
     this.cupertino,
   });
+
+  liquid.AdaptiveAppBar? createLiquidGlassAppBar(
+    BuildContext context, {
+    bool suppressAutomaticLeading = false,
+  }) {
+    if (bottom != null) return null;
+
+    final actions = _createLiquidGlassActions(context);
+    if (actions == null) return null;
+
+    final canPop = Navigator.maybeOf(context)?.canPop() ?? false;
+    final effectiveLeading = leading ??
+        (!suppressAutomaticLeading &&
+                automaticallyImplyLeading != false &&
+                canPop
+            ? const PlatformBackButton()
+            : (suppressAutomaticLeading || automaticallyImplyLeading == false
+                ? const SizedBox.shrink()
+                : null));
+
+    return liquid.AdaptiveAppBar(
+      title: liquidGlassTitle,
+      subtitle: liquidGlassSubtitle,
+      titleWidget: liquidGlassTitle == null ? title : null,
+      leading: effectiveLeading,
+      actions: actions,
+      tintColor: liquidGlassTintColor ??
+          Theme.of(context).iconTheme.color ??
+          CupertinoColors.label.resolveFrom(context),
+      useNativeToolbar: true,
+    );
+  }
+
+  List<liquid.AdaptiveAppBarAction>? _createLiquidGlassActions(
+      BuildContext context) {
+    final widgets = trailingActions;
+    if (widgets == null || widgets.isEmpty) return const [];
+
+    final actions = <liquid.AdaptiveAppBarAction>[];
+    for (final widget in widgets) {
+      final action = _liquidGlassActionForWidget(context, widget);
+      if (action == null) return null;
+      actions.add(action);
+    }
+    return actions;
+  }
+
+  liquid.AdaptiveAppBarAction? _liquidGlassActionForWidget(
+      BuildContext context, Widget widget) {
+    if (widget is PlatformIconButton && widget.onPressed != null) {
+      final iconWidget = widget.cupertinoIcon ?? widget.icon;
+      final symbol =
+          widget.liquidGlassSymbol ?? _liquidGlassSymbolForWidget(iconWidget);
+      if (symbol == null) return null;
+      return liquid.AdaptiveAppBarAction(
+        iosSymbol: symbol,
+        iconWidget: iconWidget,
+        tintColor: _iconForWidget(iconWidget)?.color,
+        onPressed: widget.onPressed!,
+        spacerAfter: widget.liquidGlassFlexibleSpaceAfter
+            ? liquid.ToolbarSpacerType.flexible
+            : liquid.ToolbarSpacerType.none,
+      );
+    }
+
+    if (widget is IconButton && widget.onPressed != null) {
+      final symbol = _liquidGlassSymbolForWidget(widget.icon);
+      if (symbol == null) return null;
+      return liquid.AdaptiveAppBarAction(
+        iosSymbol: symbol,
+        iconWidget: widget.icon,
+        tintColor: _iconForWidget(widget.icon)?.color,
+        onPressed: widget.onPressed!,
+      );
+    }
+
+    if (widget is PlatformTextButton &&
+        widget.onPressed != null &&
+        widget.child is Text) {
+      final label = (widget.child! as Text).data;
+      if (label == null) return null;
+      return liquid.AdaptiveAppBarAction(
+        title: label,
+        onPressed: widget.onPressed!,
+      );
+    }
+
+    if (widget is PlatformPopupMenu) {
+      return liquid.AdaptiveAppBarAction(
+        iosSymbol: widget.liquidGlassSymbol,
+        iconWidget: widget.icon,
+        tintColor: _iconForWidget(widget.icon)?.color,
+        onPressed: () => widget.show(context),
+      );
+    }
+
+    return null;
+  }
 
   PreferredSizeWidget createMaterialWidget(BuildContext context) {
     final target = platform(context);
@@ -362,16 +626,27 @@ class PlatformAppBar {
 
   ObstructingPreferredSizeWidget createCupertinoWidget(BuildContext context) {
     final data = cupertino?.call(context, platform(context));
-    final trailing = trailingActions == null || trailingActions!.isEmpty
+    final canPop = Navigator.maybeOf(context)?.canPop() ?? false;
+    final useGlassBackButton = usesLiquidGlass(context) &&
+        leading == null &&
+        automaticallyImplyLeading != false &&
+        canPop;
+    final actions = trailingActions;
+    final trailing = actions == null || actions.isEmpty
         ? null
-        : Row(mainAxisSize: MainAxisSize.min, children: trailingActions!);
+        : actions.length == 1
+            ? actions.first
+            : usesLiquidGlass(context)
+                ? PlatformLiquidGlassToolbarGroup(children: actions)
+                : Row(mainAxisSize: MainAxisSize.min, children: actions);
     return CupertinoNavigationBar(
       key: widgetKey,
       middle: title,
       backgroundColor: backgroundColor,
-      leading: leading,
+      leading: useGlassBackButton ? const PlatformBackButton() : leading,
       bottom: bottom,
-      automaticallyImplyLeading: automaticallyImplyLeading ?? true,
+      automaticallyImplyLeading:
+          useGlassBackButton ? false : automaticallyImplyLeading ?? true,
       previousPageTitle: data?.previousPageTitle,
       trailing: data?.trailing ?? trailing,
       transitionBetweenRoutes: data?.transitionBetweenRoutes ?? true,
@@ -384,6 +659,7 @@ class PlatformScaffold extends StatelessWidget {
   final Widget? body;
   final Color? backgroundColor;
   final PlatformAppBar? appBar;
+  final PlatformBottomNavigationBar? bottomNavigationBar;
   final bool iosContentPadding;
   final bool iosContentBottomPadding;
 
@@ -392,6 +668,7 @@ class PlatformScaffold extends StatelessWidget {
     this.body,
     this.backgroundColor,
     this.appBar,
+    this.bottomNavigationBar,
     this.iosContentPadding = false,
     this.iosContentBottomPadding = false,
     super.key,
@@ -408,6 +685,54 @@ class PlatformScaffold extends StatelessWidget {
         child: content,
       );
     }
+    if (usesLiquidGlass(context)) {
+      var liquidAppBar = appBar?.createLiquidGlassAppBar(
+        context,
+        suppressAutomaticLeading: bottomNavigationBar != null,
+      );
+      if (liquidAppBar == null &&
+          appBar != null &&
+          bottomNavigationBar != null) {
+        liquidAppBar = liquid.AdaptiveAppBar(
+          useNativeToolbar: false,
+          cupertinoNavigationBar: appBar!.createCupertinoWidget(context),
+        );
+      }
+      if (appBar == null || liquidAppBar != null) {
+        if (backgroundColor != null) {
+          content = ColoredBox(color: backgroundColor!, child: content);
+        }
+        // adaptive_platform_ui otherwise creates one copy of [body] for each
+        // native tab destination. This body already owns its IndexedStack, so
+        // mark it as a navigation shell and keep a single stateful instance.
+        if (bottomNavigationBar != null) {
+          content = _PlatformStatefulNavigationShell(child: content);
+        }
+        final scaffold = liquid.AdaptiveScaffold(
+          key: widgetKey,
+          appBar: liquidAppBar,
+          bottomNavigationBar:
+              bottomNavigationBar?.createLiquidGlassBottomNavigationBar(),
+          minimizeBehavior:
+              bottomNavigationBar?.liquidGlassMinimizeOnScroll == false
+                  ? liquid.TabBarMinimizeBehavior.never
+                  : liquid.TabBarMinimizeBehavior.automatic,
+          body: content,
+          useHeroBackButton: bottomNavigationBar == null &&
+              appBar?.automaticallyImplyLeading != false,
+        );
+        final tabTint = bottomNavigationBar?.liquidGlassSelectedItemColor ??
+            bottomNavigationBar?.selectedItemColor;
+        return tabTint == null
+            ? scaffold
+            : CupertinoTheme(
+                data: CupertinoTheme.of(context).copyWith(
+                  primaryColor: tabTint,
+                ),
+                child: scaffold,
+              );
+      }
+    }
     if (isCupertino(context)) {
       return CupertinoPageScaffold(
         key: widgetKey,
@@ -421,6 +746,68 @@ class PlatformScaffold extends StatelessWidget {
       appBar: appBar?.createMaterialWidget(context),
       backgroundColor: backgroundColor,
       body: content,
+    );
+  }
+}
+
+/// Name intentionally contains `StatefulNavigationShell`: it is the marker
+/// adaptive_platform_ui uses to recognize a body that manages tab state itself.
+class _PlatformStatefulNavigationShell extends StatelessWidget {
+  final Widget child;
+
+  const _PlatformStatefulNavigationShell({required this.child});
+
+  @override
+  Widget build(BuildContext context) => child;
+}
+
+class PlatformBottomNavigationBar {
+  final List<BottomNavigationBarItem> items;
+  final List<String>? liquidGlassSymbols;
+  final List<String>? liquidGlassSelectedSymbols;
+  final int selectedIndex;
+  final ValueChanged<int> onTap;
+  final Color? selectedItemColor;
+  final Color? unselectedItemColor;
+  final Color? liquidGlassSelectedItemColor;
+  final Color? liquidGlassUnselectedItemColor;
+  final bool liquidGlassMinimizeOnScroll;
+
+  const PlatformBottomNavigationBar({
+    required this.items,
+    this.liquidGlassSymbols,
+    this.liquidGlassSelectedSymbols,
+    required this.selectedIndex,
+    required this.onTap,
+    this.selectedItemColor,
+    this.unselectedItemColor,
+    this.liquidGlassSelectedItemColor,
+    this.liquidGlassUnselectedItemColor,
+    this.liquidGlassMinimizeOnScroll = true,
+  })  : assert(liquidGlassSymbols == null ||
+            liquidGlassSymbols.length == items.length),
+        assert(liquidGlassSelectedSymbols == null ||
+            liquidGlassSelectedSymbols.length == items.length);
+
+  liquid.AdaptiveBottomNavigationBar createLiquidGlassBottomNavigationBar() {
+    return liquid.AdaptiveBottomNavigationBar(
+      selectedIndex: selectedIndex,
+      onTap: onTap,
+      useNativeBottomBar: true,
+      selectedItemColor: liquidGlassSelectedItemColor,
+      unselectedItemColor: liquidGlassUnselectedItemColor,
+      items: [
+        for (var index = 0; index < items.length; index++)
+          liquid.AdaptiveNavigationDestination(
+            icon: liquidGlassSymbols?[index] ??
+                _liquidGlassSymbolForWidget(items[index].icon) ??
+                items[index].icon,
+            selectedIcon: liquidGlassSelectedSymbols?[index] ??
+                _liquidGlassSymbolForWidget(items[index].activeIcon) ??
+                items[index].activeIcon,
+            label: items[index].label ?? '',
+          ),
+      ],
     );
   }
 }
@@ -446,27 +833,51 @@ class PlatformElevatedButton extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => isCupertino(context)
-      ? CupertinoButton.filled(
-          key: widgetKey,
-          onPressed: onPressed,
-          onLongPress: onLongPress,
-          color: color,
-          padding: padding,
-          alignment: alignment ?? Alignment.center,
-          child: child ?? const SizedBox.shrink(),
-        )
-      : ElevatedButton(
-          key: widgetKey,
-          onPressed: onPressed,
-          onLongPress: onLongPress,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: color,
-            padding: padding,
-            alignment: alignment,
-          ),
-          child: child ?? const SizedBox.shrink(),
-        );
+  Widget build(BuildContext context) {
+    Widget button;
+    if (usesLiquidGlass(context) &&
+        onLongPress == null &&
+        (alignment == null || alignment == Alignment.center)) {
+      button = liquid.AdaptiveButton.child(
+        key: widgetKey,
+        onPressed: onPressed,
+        color: color,
+        padding:
+            padding ?? const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+        minSize: const Size(44, 44),
+        enabled: onPressed != null,
+        style: liquid.AdaptiveButtonStyle.prominentGlass,
+        child: child ?? const SizedBox.shrink(),
+      );
+    } else {
+      button = isCupertino(context)
+          ? CupertinoButton.filled(
+              key: widgetKey,
+              onPressed: onPressed,
+              onLongPress: onLongPress,
+              color: color,
+              padding: padding,
+              alignment: alignment ?? Alignment.center,
+              child: child ?? const SizedBox.shrink(),
+            )
+          : ElevatedButton(
+              key: widgetKey,
+              onPressed: onPressed,
+              onLongPress: onLongPress,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: color,
+                padding: padding,
+                alignment: alignment,
+                minimumSize: const Size(44, 44),
+              ),
+              child: child ?? const SizedBox.shrink(),
+            );
+    }
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+      child: button,
+    );
+  }
 }
 
 class PlatformTextButton extends StatelessWidget {
@@ -488,25 +899,126 @@ class PlatformTextButton extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => isCupertino(context)
-      ? CupertinoButton(
-          key: widgetKey,
-          onPressed: onPressed,
-          color: color,
-          padding: padding,
-          alignment: alignment ?? Alignment.center,
-          child: child ?? const SizedBox.shrink(),
-        )
-      : TextButton(
-          key: widgetKey,
-          onPressed: onPressed,
-          style: TextButton.styleFrom(
-            backgroundColor: color,
-            padding: padding,
-            alignment: alignment,
+  Widget build(BuildContext context) {
+    Widget button;
+    if (usesLiquidGlass(context) &&
+        (alignment == null || alignment == Alignment.center)) {
+      button = liquid.AdaptiveButton.child(
+        key: widgetKey,
+        onPressed: onPressed,
+        color: color,
+        padding:
+            padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        minSize: const Size(44, 44),
+        enabled: onPressed != null,
+        style: color == null
+            ? liquid.AdaptiveButtonStyle.glass
+            : liquid.AdaptiveButtonStyle.prominentGlass,
+        child: child ?? const SizedBox.shrink(),
+      );
+    } else {
+      button = isCupertino(context)
+          ? CupertinoButton(
+              key: widgetKey,
+              onPressed: onPressed,
+              color: color,
+              padding: padding,
+              alignment: alignment ?? Alignment.center,
+              child: child ?? const SizedBox.shrink(),
+            )
+          : TextButton(
+              key: widgetKey,
+              onPressed: onPressed,
+              style: TextButton.styleFrom(
+                backgroundColor: color,
+                padding: padding,
+                alignment: alignment,
+                minimumSize: const Size(44, 44),
+              ),
+              child: child ?? const SizedBox.shrink(),
+            );
+    }
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+      child: button,
+    );
+  }
+}
+
+/// Adaptive alternative to Material [ChoiceChip]. Selected filters use a
+/// prominent glass treatment on iOS 26 while every option keeps a 44pt target.
+class PlatformChoiceChip extends StatelessWidget {
+  final Widget label;
+  final Widget? avatar;
+  final bool selected;
+  final ValueChanged<bool>? onSelected;
+
+  const PlatformChoiceChip({
+    required this.label,
+    required this.selected,
+    this.avatar,
+    this.onSelected,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (usesLiquidGlass(context)) {
+      return liquid.AdaptiveButton.child(
+        onPressed: onSelected == null ? null : () => onSelected!(!selected),
+        minSize: const Size(44, 44),
+        enabled: onSelected != null,
+        color: selected ? Theme.of(context).colorScheme.primary : null,
+        style: selected
+            ? liquid.AdaptiveButtonStyle.prominentGlass
+            : liquid.AdaptiveButtonStyle.glass,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (avatar != null) ...[
+              IconTheme.merge(
+                data: const IconThemeData(size: 18),
+                child: avatar!,
+              ),
+              const SizedBox(width: 6),
+            ],
+            label,
+          ],
+        ),
+      );
+    }
+    if (isCupertino(context)) {
+      return ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 44),
+        child: CupertinoButton(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          color: selected
+              ? CupertinoTheme.of(context).primaryColor
+              : CupertinoColors.tertiarySystemFill.resolveFrom(context),
+          onPressed: onSelected == null ? null : () => onSelected!(!selected),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (avatar != null) ...[
+                IconTheme.merge(
+                  data: const IconThemeData(size: 18),
+                  child: avatar!,
+                ),
+                const SizedBox(width: 6),
+              ],
+              label,
+            ],
           ),
-          child: child ?? const SizedBox.shrink(),
-        );
+        ),
+      );
+    }
+    return ChoiceChip(
+      label: label,
+      avatar: avatar,
+      selected: selected,
+      onSelected: onSelected,
+    );
+  }
 }
 
 class CupertinoIconButtonData {
@@ -514,6 +1026,93 @@ class CupertinoIconButtonData {
   final EdgeInsetsGeometry? padding;
 
   const CupertinoIconButtonData({this.alignment, this.padding});
+}
+
+class _PlatformLiquidGlassToolbarGroupScope extends InheritedWidget {
+  const _PlatformLiquidGlassToolbarGroupScope({required super.child});
+
+  static bool contains(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<
+          _PlatformLiquidGlassToolbarGroupScope>() !=
+      null;
+
+  @override
+  bool updateShouldNotify(_PlatformLiquidGlassToolbarGroupScope oldWidget) =>
+      false;
+}
+
+/// Combines adjacent toolbar actions into one Apple-style Liquid Glass capsule.
+class PlatformLiquidGlassToolbarGroup extends StatelessWidget {
+  final List<Widget> children;
+
+  const PlatformLiquidGlassToolbarGroup({
+    required this.children,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (!usesAppleTranslucentSurface(context) || children.length < 2) {
+      return Row(mainAxisSize: MainAxisSize.min, children: children);
+    }
+    final light = Theme.of(context).brightness == Brightness.light;
+    const radius = BorderRadius.all(Radius.circular(22));
+    return Container(
+      height: 44,
+      padding: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        borderRadius: radius,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: light ? 0.12 : 0.32),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: radius,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: radius,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white.withValues(alpha: light ? 0.76 : 0.20),
+                  Colors.white.withValues(alpha: light ? 0.42 : 0.09),
+                ],
+              ),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: light ? 0.72 : 0.24),
+                width: 0.7,
+              ),
+            ),
+            child: _PlatformLiquidGlassToolbarGroupScope(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (var index = 0; index < children.length; index++) ...[
+                    if (index > 0)
+                      Container(
+                        width: 0.5,
+                        height: 18,
+                        color: CupertinoColors.separator
+                            .resolveFrom(context)
+                            .withValues(alpha: 0.34),
+                      ),
+                    children[index],
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class PlatformIconButton extends StatelessWidget {
@@ -526,6 +1125,10 @@ class PlatformIconButton extends StatelessWidget {
   final Color? color;
   final Color? disabledColor;
   final EdgeInsetsGeometry? padding;
+  final String? liquidGlassSymbol;
+  final double liquidGlassButtonSize;
+  final double liquidGlassIconSize;
+  final bool liquidGlassFlexibleSpaceAfter;
   final PlatformBuilder<CupertinoIconButtonData>? cupertino;
 
   const PlatformIconButton({
@@ -538,6 +1141,10 @@ class PlatformIconButton extends StatelessWidget {
     this.color,
     this.disabledColor,
     this.padding,
+    this.liquidGlassSymbol,
+    this.liquidGlassButtonSize = 44,
+    this.liquidGlassIconSize = 18,
+    this.liquidGlassFlexibleSpaceAfter = false,
     this.cupertino,
     super.key,
   });
@@ -546,7 +1153,71 @@ class PlatformIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isCupertino(context)) {
       final data = cupertino?.call(context, platform(context));
-      return CupertinoButton(
+      if (usesLiquidGlass(context) && onLongPress == null) {
+        final grouped = _PlatformLiquidGlassToolbarGroupScope.contains(context);
+        final iconWidget = cupertinoIcon ?? icon;
+        final symbol =
+            liquidGlassSymbol ?? _liquidGlassSymbolForWidget(iconWidget);
+        final iconData = _iconForWidget(iconWidget);
+        Widget button;
+        if (symbol != null && iconWidget is! Badge) {
+          button = liquid.AdaptiveButton.sfSymbol(
+            key: widgetKey,
+            onPressed: onPressed,
+            sfSymbol: liquid.SFSymbol(
+              symbol,
+              size: liquidGlassIconSize,
+              color:
+                  iconData?.color ?? CupertinoColors.label.resolveFrom(context),
+            ),
+            color: color,
+            padding: data?.padding ?? padding,
+            minSize: Size.square(liquidGlassButtonSize),
+            enabled: onPressed != null,
+            style: grouped
+                ? liquid.AdaptiveButtonStyle.plain
+                : liquid.AdaptiveButtonStyle.glass,
+            useSmoothRectangleBorder: false,
+          );
+        } else {
+          button = liquid.AdaptiveButton.child(
+            key: widgetKey,
+            onPressed: onPressed,
+            color: color,
+            padding: data?.padding ?? padding,
+            minSize: Size.square(liquidGlassButtonSize),
+            enabled: onPressed != null,
+            style: grouped
+                ? liquid.AdaptiveButtonStyle.plain
+                : liquid.AdaptiveButtonStyle.glass,
+            useSmoothRectangleBorder: false,
+            child: IconTheme.merge(
+              data: IconThemeData(size: liquidGlassIconSize),
+              child: iconWidget ?? const SizedBox.shrink(),
+            ),
+          );
+        }
+        final semanticLabel = iconData?.semanticLabel;
+        if (semanticLabel != null) {
+          button = Semantics(
+            label: semanticLabel,
+            button: true,
+            excludeSemantics: true,
+            child: button,
+          );
+        }
+        final alignment = data?.alignment;
+        if (alignment != null && alignment != Alignment.center) {
+          return Align(
+            alignment: alignment,
+            widthFactor: 1,
+            heightFactor: 1,
+            child: button,
+          );
+        }
+        return button;
+      }
+      Widget button = CupertinoButton(
         key: widgetKey,
         padding: data?.padding ?? padding,
         alignment: data?.alignment ?? Alignment.center,
@@ -556,6 +1227,17 @@ class PlatformIconButton extends StatelessWidget {
         onLongPress: onLongPress,
         child: cupertinoIcon ?? icon ?? const SizedBox.shrink(),
       );
+      final semanticLabel =
+          _iconForWidget(cupertinoIcon ?? icon)?.semanticLabel;
+      if (semanticLabel != null) {
+        button = Semantics(
+          label: semanticLabel,
+          button: true,
+          excludeSemantics: true,
+          child: button,
+        );
+      }
+      return button;
     }
     return IconButton(
       key: widgetKey,
@@ -564,9 +1246,29 @@ class PlatformIconButton extends StatelessWidget {
       disabledColor: disabledColor,
       onPressed: onPressed,
       onLongPress: onLongPress,
+      tooltip: _iconForWidget(materialIcon ?? icon)?.semanticLabel,
       icon: materialIcon ?? icon ?? const SizedBox.shrink(),
     );
   }
+}
+
+class PlatformBackButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+
+  const PlatformBackButton({this.onPressed, super.key});
+
+  @override
+  Widget build(BuildContext context) => PlatformIconButton(
+        liquidGlassSymbol: 'chevron.left',
+        liquidGlassButtonSize: 44,
+        liquidGlassIconSize: 18,
+        onPressed: onPressed ?? () => Navigator.maybePop(context),
+        materialIcon: const Icon(Icons.arrow_back),
+        cupertinoIcon: Icon(
+          CupertinoIcons.back,
+          semanticLabel: CupertinoLocalizations.of(context).backButtonLabel,
+        ),
+      );
 }
 
 class PlatformCircularProgressIndicator extends StatelessWidget {
@@ -662,59 +1364,663 @@ class PlatformTextField extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => isCupertino(context)
-      ? CupertinoTextField(
-          key: widgetKey,
-          controller: controller,
-          focusNode: focusNode,
-          keyboardType: keyboardType,
-          textInputAction: textInputAction,
-          textCapitalization: textCapitalization,
-          style: style,
-          textAlign: textAlign,
-          autofocus: autofocus,
-          obscureText: obscureText,
-          autocorrect: autocorrect,
-          maxLines: maxLines,
-          minLines: minLines,
-          maxLength: maxLength,
-          onChanged: onChanged,
-          onSubmitted: onSubmitted,
-          onEditingComplete: onEditingComplete,
-          onTap: onTap,
-          inputFormatters: inputFormatters,
-          enabled: enabled,
-          readOnly: readOnly,
-          showCursor: showCursor,
-          expands: expands,
-          placeholder: hintText,
-        )
-      : TextField(
-          key: widgetKey,
-          controller: controller,
-          focusNode: focusNode,
-          keyboardType: keyboardType,
-          textInputAction: textInputAction,
-          textCapitalization: textCapitalization,
-          style: style,
-          textAlign: textAlign,
-          autofocus: autofocus,
-          obscureText: obscureText,
-          autocorrect: autocorrect,
-          maxLines: maxLines,
-          minLines: minLines,
-          maxLength: maxLength,
-          onChanged: onChanged,
-          onSubmitted: onSubmitted,
-          onEditingComplete: onEditingComplete,
-          onTap: onTap,
-          inputFormatters: inputFormatters,
-          enabled: enabled,
-          readOnly: readOnly,
-          showCursor: showCursor,
-          expands: expands,
-          decoration: InputDecoration(hintText: hintText),
+  Widget build(BuildContext context) {
+    if (isCupertino(context)) {
+      final textField = CupertinoTextField(
+        key: widgetKey,
+        controller: controller,
+        focusNode: focusNode,
+        keyboardType: keyboardType,
+        textInputAction: textInputAction,
+        textCapitalization: textCapitalization,
+        style: style,
+        textAlign: textAlign,
+        autofocus: autofocus,
+        obscureText: obscureText,
+        autocorrect: autocorrect,
+        maxLines: maxLines,
+        minLines: minLines,
+        maxLength: maxLength,
+        onChanged: onChanged,
+        onSubmitted: onSubmitted,
+        onEditingComplete: onEditingComplete,
+        onTap: onTap,
+        inputFormatters: inputFormatters,
+        enabled: enabled,
+        readOnly: readOnly,
+        showCursor: showCursor,
+        expands: expands,
+        placeholder: hintText,
+        decoration: usesAppleTranslucentSurface(context)
+            ? null
+            : BoxDecoration(
+                color: const CupertinoDynamicColor.withBrightness(
+                  color: CupertinoColors.white,
+                  darkColor: CupertinoColors.black,
+                ),
+                border: Border.all(
+                  color: const CupertinoDynamicColor.withBrightness(
+                    color: Color(0x33000000),
+                    darkColor: Color(0x33FFFFFF),
+                  ),
+                  width: 0,
+                ),
+                borderRadius: const BorderRadius.all(Radius.circular(5)),
+              ),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      );
+      if (usesLiquidGlass(context)) {
+        return PlatformLiquidGlassSurface(
+          borderRadius: BorderRadius.circular(18),
+          child: textField,
         );
+      }
+      return usesAppleTranslucentSurface(context)
+          ? PlatformLiquidGlassCard(
+              borderRadius: BorderRadius.circular(18),
+              child: textField,
+            )
+          : textField;
+    }
+    return TextField(
+      key: widgetKey,
+      controller: controller,
+      focusNode: focusNode,
+      keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      textCapitalization: textCapitalization,
+      style: style,
+      textAlign: textAlign,
+      autofocus: autofocus,
+      obscureText: obscureText,
+      autocorrect: autocorrect,
+      maxLines: maxLines,
+      minLines: minLines,
+      maxLength: maxLength,
+      onChanged: onChanged,
+      onSubmitted: onSubmitted,
+      onEditingComplete: onEditingComplete,
+      onTap: onTap,
+      inputFormatters: inputFormatters,
+      enabled: enabled,
+      readOnly: readOnly,
+      showCursor: showCursor,
+      expands: expands,
+      decoration: InputDecoration(hintText: hintText),
+    );
+  }
+}
+
+/// A native frosted surface on iOS 26, with no visual change on other modes.
+class PlatformLiquidGlassSurface extends StatelessWidget {
+  final Widget child;
+  final BorderRadius? borderRadius;
+
+  const PlatformLiquidGlassSurface({
+    required this.child,
+    this.borderRadius,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) => usesLiquidGlass(context)
+      ? liquid.AdaptiveBlurView(
+          borderRadius: borderRadius,
+          blurStyle: liquid.BlurStyle.systemThinMaterial,
+          child: child,
+        )
+      : child;
+}
+
+/// Gives translucent surfaces real content to refract while keeping the
+/// page itself quiet enough for long reading sessions.
+class PlatformLiquidGlassPageBackdrop extends StatelessWidget {
+  final Widget child;
+
+  const PlatformLiquidGlassPageBackdrop({required this.child, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    if (!usesAppleTranslucentSurface(context)) return child;
+
+    final colors = Theme.of(context).colorScheme;
+    final background = CupertinoColors.systemGroupedBackground.resolveFrom(
+      context,
+    );
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color.alphaBlend(
+                  colors.primary.withValues(alpha: 0.13),
+                  background,
+                ),
+                background,
+                Color.alphaBlend(
+                  colors.secondary.withValues(alpha: 0.11),
+                  background,
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          top: -92,
+          right: -72,
+          child: IgnorePointer(
+            child: Container(
+              width: 230,
+              height: 230,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    colors.primary.withValues(alpha: 0.26),
+                    colors.primary.withValues(alpha: 0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: -96,
+          bottom: 72,
+          child: IgnorePointer(
+            child: Container(
+              width: 260,
+              height: 260,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    colors.secondary.withValues(alpha: 0.22),
+                    colors.secondary.withValues(alpha: 0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        child,
+      ],
+    );
+  }
+}
+
+/// A lightweight scrolling card that visually matches Liquid Glass without
+/// embedding a native UIKit view for every list item.
+class PlatformLiquidGlassCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsetsGeometry? margin;
+  final EdgeInsetsGeometry? padding;
+  final BorderRadius borderRadius;
+  final bool selected;
+  final Color? tintColor;
+
+  const PlatformLiquidGlassCard({
+    required this.child,
+    this.margin,
+    this.padding,
+    this.borderRadius = const BorderRadius.all(Radius.circular(18)),
+    this.selected = false,
+    this.tintColor,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+    final primary = Theme.of(context).colorScheme.primary;
+    final light = brightness == Brightness.light;
+    final tint = tintColor ?? (selected ? primary : null);
+    final baseColor = tint != null
+        ? tint.withValues(alpha: light ? 0.24 : 0.30)
+        : Colors.white.withValues(alpha: light ? 0.44 : 0.10);
+    final highlight = tint != null
+        ? Color.alphaBlend(
+            Colors.white.withValues(alpha: light ? 0.34 : 0.12),
+            tint.withValues(alpha: light ? 0.34 : 0.40),
+          )
+        : Colors.white.withValues(alpha: light ? 0.70 : 0.18);
+    final borderColor = selected
+        ? primary.withValues(alpha: light ? 0.46 : 0.58)
+        : light
+            ? Color.alphaBlend(
+                primary.withValues(alpha: 0.10),
+                Colors.black.withValues(alpha: 0.08),
+              )
+            : Colors.white.withValues(alpha: 0.20);
+
+    Widget content = _PlatformGlassContainerScope(
+      child: Padding(
+        padding: padding ?? EdgeInsets.zero,
+        child: child,
+      ),
+    );
+    if (!usesAppleTranslucentSurface(context)) {
+      return Container(
+        margin: margin,
+        decoration: BoxDecoration(
+          color: selected
+              ? Theme.of(context).colorScheme.primaryContainer
+              : CupertinoColors.secondarySystemGroupedBackground
+                  .resolveFrom(context),
+          borderRadius: borderRadius,
+        ),
+        child: content,
+      );
+    }
+
+    return Container(
+      margin: margin,
+      decoration: BoxDecoration(
+        borderRadius: borderRadius,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: light ? 0.13 : 0.28),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: borderRadius,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [highlight, baseColor],
+              ),
+              borderRadius: borderRadius,
+              border: Border.all(color: borderColor, width: 0.8),
+            ),
+            child: content,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PlatformGlassContainerScope extends InheritedWidget {
+  const _PlatformGlassContainerScope({required super.child});
+
+  static bool contains(BuildContext context) =>
+      context
+          .dependOnInheritedWidgetOfExactType<_PlatformGlassContainerScope>() !=
+      null;
+
+  @override
+  bool updateShouldNotify(_PlatformGlassContainerScope oldWidget) => false;
+}
+
+/// Keeps legacy `settings_ui` pages visually consistent with the adaptive
+/// navigation layer while they are migrated to [PlatformListTile]. On iOS 26
+/// the list background stays transparent and grouped sections use a restrained
+/// translucent material, preserving contrast without turning every row into a
+/// separate glass surface.
+class PlatformAdaptiveSettingsList extends StatelessWidget {
+  final List<settings.AbstractSettingsSection> sections;
+  final bool shrinkWrap;
+  final ScrollPhysics? physics;
+  final EdgeInsetsGeometry? contentPadding;
+
+  const PlatformAdaptiveSettingsList({
+    required this.sections,
+    this.shrinkWrap = false,
+    this.physics,
+    this.contentPadding,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (!usesAppleTranslucentSurface(context)) {
+      return settings.SettingsList(
+        sections: sections,
+        shrinkWrap: shrinkWrap,
+        physics: physics,
+        contentPadding: contentPadding,
+        applicationType: settings.ApplicationType.both,
+        platform: isCupertino(context)
+            ? settings.DevicePlatform.iOS
+            : settings.DevicePlatform.android,
+      );
+    }
+
+    return ListView.builder(
+      shrinkWrap: shrinkWrap,
+      physics: physics,
+      padding: contentPadding ??
+          const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+      itemCount: sections.length,
+      itemBuilder: (context, index) =>
+          _PlatformAdaptiveSettingsSection(section: sections[index]),
+    );
+  }
+}
+
+class _PlatformAdaptiveSettingsSection extends StatelessWidget {
+  final settings.AbstractSettingsSection section;
+
+  const _PlatformAdaptiveSettingsSection({required this.section});
+
+  @override
+  Widget build(BuildContext context) {
+    if (section is! settings.SettingsSection) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: section,
+      );
+    }
+
+    final settingsSection = section as settings.SettingsSection;
+    return Padding(
+      padding: settingsSection.margin ?? const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (settingsSection.title != null)
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(12, 6, 12, 6),
+              child: DefaultTextStyle.merge(
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                child: settingsSection.title!,
+              ),
+            ),
+          PlatformLiquidGlassCard(
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            borderRadius: BorderRadius.circular(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (var index = 0;
+                    index < settingsSection.tiles.length;
+                    index++) ...[
+                  _PlatformAdaptiveSettingsTile(
+                    tile: settingsSection.tiles[index],
+                  ),
+                  if (index < settingsSection.tiles.length - 1)
+                    Divider(
+                      height: 1,
+                      indent: _settingsTileHasLeading(
+                              settingsSection.tiles[index + 1])
+                          ? 54
+                          : 14,
+                      endIndent: 12,
+                      color: CupertinoColors.separator
+                          .resolveFrom(context)
+                          .withValues(alpha: 0.34),
+                    ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+bool _settingsTileHasLeading(settings.AbstractSettingsTile tile) =>
+    tile is settings.SettingsTile && tile.leading != null;
+
+class _PlatformAdaptiveSettingsTile extends StatelessWidget {
+  final settings.AbstractSettingsTile tile;
+
+  const _PlatformAdaptiveSettingsTile({required this.tile});
+
+  @override
+  Widget build(BuildContext context) {
+    if (tile is settings.CustomSettingsTile) {
+      return (tile as settings.CustomSettingsTile).child;
+    }
+    if (tile is! settings.SettingsTile) return tile;
+
+    final settingsTile = tile as settings.SettingsTile;
+    final enabled = settingsTile.enabled;
+    final colors = Theme.of(context).colorScheme;
+    final secondaryColor = enabled
+        ? colors.onSurfaceVariant
+        : colors.onSurfaceVariant.withValues(alpha: 0.42);
+
+    Widget? trailing;
+    if (settingsTile.trailing != null) {
+      trailing = settingsTile.trailing;
+    } else if (settingsTile.tileType == settings.SettingsTileType.switchTile) {
+      trailing = PlatformSwitch(
+        value: settingsTile.initialValue ?? false,
+        activeColor: settingsTile.activeSwitchColor ?? colors.primary,
+        onChanged: enabled && settingsTile.onToggle != null
+            ? (value) => settingsTile.onToggle!(value)
+            : null,
+      );
+    } else if (settingsTile.tileType ==
+        settings.SettingsTileType.navigationTile) {
+      trailing = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (settingsTile.value != null)
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 170),
+              child: DefaultTextStyle.merge(
+                style: TextStyle(color: secondaryColor, fontSize: 14),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                child: settingsTile.value!,
+              ),
+            ),
+          if (settingsTile.value != null) const SizedBox(width: 6),
+          Icon(
+            CupertinoIcons.chevron_forward,
+            size: 16,
+            color: secondaryColor,
+          ),
+        ],
+      );
+    } else if (settingsTile.value != null) {
+      trailing = ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 180),
+        child: DefaultTextStyle.merge(
+          style: TextStyle(color: secondaryColor, fontSize: 14),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          child: settingsTile.value!,
+        ),
+      );
+    }
+
+    VoidCallback? onTap;
+    if (enabled) {
+      if (settingsTile.tileType == settings.SettingsTileType.switchTile &&
+          settingsTile.onToggle != null) {
+        onTap =
+            () => settingsTile.onToggle!(!(settingsTile.initialValue ?? false));
+      } else if (settingsTile.onPressed != null) {
+        onTap = () => settingsTile.onPressed!(context);
+      }
+    }
+
+    return Opacity(
+      opacity: enabled ? 1 : 0.48,
+      child: PlatformListTile(
+        contentPadding: const EdgeInsetsDirectional.fromSTEB(14, 7, 12, 7),
+        leading: settingsTile.leading == null
+            ? null
+            : IconTheme.merge(
+                data: IconThemeData(
+                  color: enabled ? colors.primary : secondaryColor,
+                  size: 20,
+                ),
+                child: settingsTile.leading!,
+              ),
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DefaultTextStyle.merge(
+              style: TextStyle(
+                color: colors.onSurface,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                height: 1.12,
+              ),
+              child: settingsTile.title,
+            ),
+            if (settingsTile.description != null) ...[
+              const SizedBox(height: 3),
+              DefaultTextStyle.merge(
+                style: TextStyle(
+                  color: secondaryColor,
+                  fontSize: 13,
+                  height: 1.18,
+                ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                child: settingsTile.description!,
+              ),
+            ],
+          ],
+        ),
+        trailing: trailing,
+        enabled: enabled,
+        onTap: onTap,
+      ),
+    );
+  }
+}
+
+/// A Card-compatible facade that keeps Material behavior and turns iOS cards
+/// into lightweight Liquid Glass surfaces.
+class PlatformCard extends StatelessWidget {
+  final Color? color;
+  final Color? surfaceTintColor;
+  final double? elevation;
+  final ShapeBorder? shape;
+  final bool borderOnForeground;
+  final EdgeInsetsGeometry? margin;
+  final Clip? clipBehavior;
+  final bool semanticContainer;
+  final Widget? child;
+  final EdgeInsetsGeometry? padding;
+
+  const PlatformCard({
+    required this.child,
+    this.color,
+    this.surfaceTintColor,
+    this.elevation,
+    this.shape,
+    this.borderOnForeground = true,
+    this.margin,
+    this.clipBehavior,
+    this.semanticContainer = true,
+    this.padding,
+    super.key,
+  });
+
+  BorderRadius _borderRadius() {
+    final cardShape = shape;
+    if (cardShape is RoundedRectangleBorder) {
+      final radius = cardShape.borderRadius;
+      if (radius is BorderRadius) return radius;
+    }
+    return BorderRadius.circular(18);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (isMaterial(context)) {
+      return Card(
+        color: color,
+        surfaceTintColor: surfaceTintColor,
+        elevation: elevation,
+        shape: shape,
+        borderOnForeground: borderOnForeground,
+        margin: margin,
+        clipBehavior: clipBehavior,
+        semanticContainer: semanticContainer,
+        child: padding == null
+            ? child
+            : Padding(
+                padding: padding!,
+                child: child ?? const SizedBox.shrink(),
+              ),
+      );
+    }
+
+    return PlatformLiquidGlassCard(
+      margin: margin,
+      padding: padding,
+      borderRadius: _borderRadius(),
+      tintColor: color,
+      child: clipBehavior == null || clipBehavior == Clip.none
+          ? child ?? const SizedBox.shrink()
+          : ClipRRect(
+              borderRadius: _borderRadius(),
+              clipBehavior: clipBehavior!,
+              child: child ?? const SizedBox.shrink(),
+            ),
+    );
+  }
+}
+
+class PlatformLiquidGlassAvatar extends StatelessWidget {
+  final double size;
+  final Widget child;
+
+  const PlatformLiquidGlassAvatar({
+    required this.size,
+    required this.child,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (!usesAppleTranslucentSurface(context)) {
+      return ClipOval(child: SizedBox.square(dimension: size, child: child));
+    }
+    final light = Theme.of(context).brightness == Brightness.light;
+    return Container(
+      width: size,
+      height: size,
+      padding: const EdgeInsets.all(1.5),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.white.withValues(alpha: light ? 0.92 : 0.42),
+            Colors.white.withValues(alpha: light ? 0.28 : 0.10),
+          ],
+        ),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: light ? 0.80 : 0.30),
+          width: 0.8,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: light ? 0.16 : 0.38),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: ClipOval(child: child),
+    );
+  }
 }
 
 class MaterialTextFormFieldData {
@@ -888,6 +2194,18 @@ class PlatformListTile extends StatelessWidget {
   final Widget? subtitle;
   final Widget? trailing;
   final FutureOr<void> Function()? onTap;
+  final GestureLongPressCallback? onLongPress;
+  final bool isThreeLine;
+  final bool? dense;
+  final bool enabled;
+  final bool selected;
+  final EdgeInsetsGeometry? contentPadding;
+  final Color? selectedColor;
+  final Color? iconColor;
+  final Color? textColor;
+  final Color? tileColor;
+  final Color? selectedTileColor;
+  final ShapeBorder? shape;
 
   const PlatformListTile({
     required this.title,
@@ -895,25 +2213,77 @@ class PlatformListTile extends StatelessWidget {
     this.subtitle,
     this.trailing,
     this.onTap,
+    this.onLongPress,
+    this.isThreeLine = false,
+    this.dense,
+    this.enabled = true,
+    this.selected = false,
+    this.contentPadding,
+    this.selectedColor,
+    this.iconColor,
+    this.textColor,
+    this.tileColor,
+    this.selectedTileColor,
+    this.shape,
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) => isCupertino(context)
-      ? CupertinoListTile(
-          leading: leading,
-          title: title,
-          subtitle: subtitle,
-          trailing: trailing,
-          onTap: onTap,
-        )
-      : ListTile(
-          leading: leading,
-          title: title,
-          subtitle: subtitle,
-          trailing: trailing,
-          onTap: onTap,
-        );
+  Widget build(BuildContext context) {
+    if (isMaterial(context)) {
+      return ListTile(
+        leading: leading,
+        title: title,
+        subtitle: subtitle,
+        trailing: trailing,
+        onTap: enabled ? onTap : null,
+        onLongPress: enabled ? onLongPress : null,
+        isThreeLine: isThreeLine,
+        dense: dense,
+        enabled: enabled,
+        selected: selected,
+        contentPadding: contentPadding,
+        selectedColor: selectedColor,
+        iconColor: iconColor,
+        textColor: textColor,
+        tileColor: tileColor,
+        selectedTileColor: selectedTileColor,
+        shape: shape,
+      );
+    }
+
+    final foreground = selected ? selectedColor : textColor;
+    Widget tile = CupertinoListTile(
+      padding: contentPadding,
+      leading: leading,
+      title: DefaultTextStyle.merge(
+        style: foreground == null ? null : TextStyle(color: foreground),
+        child: title,
+      ),
+      subtitle: subtitle,
+      trailing: trailing,
+      backgroundColor: Colors.transparent,
+      backgroundColorActivated: Colors.transparent,
+      onTap: enabled && onTap != null ? () => onTap!() : null,
+    );
+    if (iconColor != null) {
+      tile =
+          IconTheme.merge(data: IconThemeData(color: iconColor), child: tile);
+    }
+    if (enabled && onLongPress != null) {
+      tile = GestureDetector(onLongPress: onLongPress, child: tile);
+    }
+    if (!usesAppleTranslucentSurface(context) ||
+        _PlatformGlassContainerScope.contains(context)) {
+      return tile;
+    }
+    return PlatformLiquidGlassCard(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      selected: selected,
+      tintColor: selected ? selectedTileColor : tileColor,
+      child: tile,
+    );
+  }
 }
 
 class PlatformSwitch extends StatelessWidget {
@@ -931,19 +2301,29 @@ class PlatformSwitch extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => isCupertino(context)
-      ? CupertinoSwitch(
-          key: widgetKey,
-          value: value,
-          onChanged: onChanged,
-          activeTrackColor: activeColor,
-        )
-      : Switch(
-          key: widgetKey,
-          value: value,
-          onChanged: onChanged,
-          activeColor: activeColor,
-        );
+  Widget build(BuildContext context) {
+    if (usesLiquidGlass(context)) {
+      return liquid.AdaptiveSwitch(
+        key: widgetKey,
+        value: value,
+        onChanged: onChanged,
+        activeColor: activeColor,
+      );
+    }
+    return isCupertino(context)
+        ? CupertinoSwitch(
+            key: widgetKey,
+            value: value,
+            onChanged: onChanged,
+            activeTrackColor: activeColor,
+          )
+        : Switch(
+            key: widgetKey,
+            value: value,
+            onChanged: onChanged,
+            activeThumbColor: activeColor,
+          );
+  }
 }
 
 class PlatformSlider extends StatelessWidget {
@@ -973,31 +2353,93 @@ class PlatformSlider extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => isCupertino(context)
-      ? CupertinoSlider(
-          key: widgetKey,
-          value: value,
-          onChanged: onChanged,
-          onChangeStart: onChangeStart,
-          onChangeEnd: onChangeEnd,
-          activeColor: activeColor,
-          divisions: divisions,
-          min: min,
-          max: max,
-          thumbColor: thumbColor ?? CupertinoColors.white,
-        )
-      : Slider(
-          key: widgetKey,
-          value: value,
-          onChanged: onChanged,
-          onChangeStart: onChangeStart,
-          onChangeEnd: onChangeEnd,
-          activeColor: activeColor,
-          divisions: divisions,
-          min: min,
-          max: max,
-          thumbColor: thumbColor,
-        );
+  Widget build(BuildContext context) {
+    if (usesLiquidGlass(context)) {
+      return liquid.AdaptiveSlider(
+        key: widgetKey,
+        value: value,
+        onChanged: onChanged,
+        onChangeStart: onChangeStart,
+        onChangeEnd: onChangeEnd,
+        activeColor: activeColor,
+        divisions: divisions,
+        min: min,
+        max: max,
+        thumbColor: thumbColor,
+      );
+    }
+    return isCupertino(context)
+        ? CupertinoSlider(
+            key: widgetKey,
+            value: value,
+            onChanged: onChanged,
+            onChangeStart: onChangeStart,
+            onChangeEnd: onChangeEnd,
+            activeColor: activeColor,
+            divisions: divisions,
+            min: min,
+            max: max,
+            thumbColor: thumbColor ?? CupertinoColors.white,
+          )
+        : Slider(
+            key: widgetKey,
+            value: value,
+            onChanged: onChanged,
+            onChangeStart: onChangeStart,
+            onChangeEnd: onChangeEnd,
+            activeColor: activeColor,
+            divisions: divisions,
+            min: min,
+            max: max,
+            thumbColor: thumbColor,
+          );
+  }
+}
+
+class PlatformSegmentedControl extends StatelessWidget {
+  final List<String> labels;
+  final int selectedIndex;
+  final ValueChanged<int> onValueChanged;
+  final Color? color;
+
+  const PlatformSegmentedControl({
+    required this.labels,
+    required this.selectedIndex,
+    required this.onValueChanged,
+    this.color,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (usesLiquidGlass(context)) {
+      return liquid.AdaptiveSegmentedControl(
+        labels: labels,
+        selectedIndex: selectedIndex,
+        onValueChanged: onValueChanged,
+        color: color,
+        height: 44,
+      );
+    }
+
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 44),
+      child: CupertinoSlidingSegmentedControl<int>(
+        groupValue: selectedIndex,
+        thumbColor: color ?? CupertinoColors.systemGrey5,
+        onValueChanged: (value) {
+          if (value != null) onValueChanged(value);
+        },
+        children: {
+          for (var index = 0; index < labels.length; index++)
+            index: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Text(labels[index]),
+            ),
+        },
+      ),
+    );
+  }
 }
 
 class PlatformTabScaffold extends StatefulWidget {
@@ -1035,6 +2477,39 @@ class _PlatformTabScaffoldState extends State<PlatformTabScaffold> {
 
   @override
   Widget build(BuildContext context) {
+    if (usesLiquidGlass(context)) {
+      Widget body = IndexedStack(
+        index: selectedIndex,
+        children: [
+          for (var index = 0; index < widget.tabDestinations.length; index++)
+            bodyAt(context, index),
+        ],
+      );
+      if (widget.backgroundColor != null) {
+        body = ColoredBox(color: widget.backgroundColor!, child: body);
+      }
+
+      return liquid.AdaptiveScaffold(
+        body: _PlatformStatefulNavigationShell(child: body),
+        bottomNavigationBar: liquid.AdaptiveBottomNavigationBar(
+          selectedIndex: selectedIndex,
+          onTap: select,
+          useNativeBottomBar: true,
+          items: [
+            for (final destination in widget.tabDestinations)
+              liquid.AdaptiveNavigationDestination(
+                icon: _liquidGlassSymbolForWidget(destination.inactiveIcon) ??
+                    destination.inactiveIcon,
+                selectedIcon: _liquidGlassSymbolForWidget(
+                        destination.activeIcon ?? destination.inactiveIcon) ??
+                    destination.activeIcon ??
+                    destination.inactiveIcon,
+                label: destination.label,
+              ),
+          ],
+        ),
+      );
+    }
     if (isCupertino(context)) {
       return CupertinoTabScaffold(
         backgroundColor: widget.backgroundColor,
@@ -1089,13 +2564,76 @@ class PlatformAlertDialog extends StatelessWidget {
       {this.title, this.content, this.actions, super.key});
 
   @override
-  Widget build(BuildContext context) => isCupertino(context)
-      ? CupertinoAlertDialog(
-          title: title,
-          content: content,
-          actions: actions ?? const [],
-        )
-      : AlertDialog(title: title, content: content, actions: actions);
+  Widget build(BuildContext context) {
+    if (usesLiquidGlass(context)) {
+      final dialogActions = actions ?? const <Widget>[];
+      final actionContent = dialogActions.length <= 2
+          ? Row(
+              children: [
+                for (final action in dialogActions) Expanded(child: action),
+              ],
+            )
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final action in dialogActions)
+                  SizedBox(width: double.infinity, child: action),
+              ],
+            );
+      return Center(
+        child: Material(
+          type: MaterialType.transparency,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minWidth: 280,
+              maxWidth: math.min(MediaQuery.sizeOf(context).width - 32, 390.0),
+              maxHeight: MediaQuery.sizeOf(context).height * 0.82,
+            ),
+            child: PlatformLiquidGlassCard(
+              borderRadius: BorderRadius.circular(30),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (title != null)
+                      DefaultTextStyle.merge(
+                        textAlign: TextAlign.center,
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                        child: title!,
+                      ),
+                    if (title != null && content != null)
+                      const SizedBox(height: 12),
+                    if (content != null) content!,
+                    if (dialogActions.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      Divider(
+                        height: 1,
+                        color: CupertinoColors.separator.resolveFrom(context),
+                      ),
+                      const SizedBox(height: 4),
+                      actionContent,
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    return isCupertino(context)
+        ? CupertinoAlertDialog(
+            title: title,
+            content: content,
+            actions: actions ?? const [],
+          )
+        : AlertDialog(title: title, content: content, actions: actions);
+  }
 }
 
 class PlatformDialogAction extends StatelessWidget {
@@ -1113,14 +2651,118 @@ class PlatformDialogAction extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => isCupertino(context)
-      ? CupertinoDialogAction(
-          onPressed: onPressed,
-          isDefaultAction: isDefaultAction,
-          isDestructiveAction: isDestructiveAction,
-          child: child,
-        )
-      : TextButton(onPressed: onPressed, child: child);
+  Widget build(BuildContext context) {
+    if (usesLiquidGlass(context)) {
+      final foreground = isDestructiveAction
+          ? CupertinoColors.systemRed.resolveFrom(context)
+          : Theme.of(context).colorScheme.primary;
+      return ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 48),
+        child: SizedBox(
+          width: double.infinity,
+          child: CupertinoButton(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            onPressed: onPressed,
+            child: DefaultTextStyle.merge(
+              style: TextStyle(
+                color: foreground,
+                fontWeight: isDefaultAction ? FontWeight.w600 : FontWeight.w400,
+              ),
+              child: child,
+            ),
+          ),
+        ),
+      );
+    }
+    return isCupertino(context)
+        ? CupertinoDialogAction(
+            onPressed: onPressed,
+            isDefaultAction: isDefaultAction,
+            isDestructiveAction: isDestructiveAction,
+            child: child,
+          )
+        : TextButton(onPressed: onPressed, child: child);
+  }
+}
+
+class PlatformAlertAction {
+  final String label;
+  final FutureOr<void> Function()? onPressed;
+  final bool isDefaultAction;
+  final bool isDestructiveAction;
+  final bool isCancelAction;
+
+  const PlatformAlertAction({
+    required this.label,
+    this.onPressed,
+    this.isDefaultAction = false,
+    this.isDestructiveAction = false,
+    this.isCancelAction = false,
+  });
+}
+
+/// Shows the native iOS 26 Liquid Glass alert when the dialog can be expressed
+/// as a title, message and actions. Rich widget dialogs continue to use
+/// [showPlatformDialog].
+Future<void> showPlatformAlert({
+  required BuildContext context,
+  required String title,
+  String? message,
+  required List<PlatformAlertAction> actions,
+}) async {
+  if (usesLiquidGlass(context)) {
+    await liquid.AdaptiveAlertDialog.show(
+      context: context,
+      title: title,
+      message: message,
+      actions: [
+        for (final action in actions)
+          liquid.AlertAction(
+            title: action.label,
+            style: action.isDestructiveAction
+                ? liquid.AlertActionStyle.destructive
+                : action.isCancelAction
+                    ? liquid.AlertActionStyle.cancel
+                    : action.isDefaultAction
+                        ? liquid.AlertActionStyle.primary
+                        : liquid.AlertActionStyle.defaultAction,
+            onPressed: () {
+              if (action.onPressed != null) {
+                unawaited(Future.sync(action.onPressed!));
+              }
+            },
+          ),
+      ],
+    );
+    return;
+  }
+
+  await showPlatformDialog<void>(
+    context: context,
+    builder: (dialogContext) => PlatformAlertDialog(
+      title: Text(title),
+      content: message == null ? null : Text(message),
+      actions: [
+        for (final action in actions)
+          PlatformDialogAction(
+            isDefaultAction: action.isDefaultAction,
+            isDestructiveAction: action.isDestructiveAction,
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              if (action.onPressed != null) {
+                unawaited(Future.sync(action.onPressed!));
+              }
+            },
+            child: Text(
+              action.label,
+              style: action.isDestructiveAction
+                  ? TextStyle(color: Theme.of(dialogContext).colorScheme.error)
+                  : null,
+            ),
+          ),
+      ],
+    ),
+  );
 }
 
 Future<T?> showPlatformDialog<T>({
@@ -1152,7 +2794,51 @@ Future<T?> showPlatformModalSheet<T>({
   MaterialModalSheetData? material,
 }) =>
     isCupertino(context)
-        ? showCupertinoModalPopup<T>(context: context, builder: builder)
+        ? showCupertinoModalPopup<T>(
+            context: context,
+            builder: (sheetContext) {
+              if (!usesLiquidGlass(sheetContext)) {
+                return builder(sheetContext);
+              }
+              return SafeArea(
+                top: false,
+                minimum: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight:
+                            MediaQuery.sizeOf(sheetContext).height * 0.90,
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(28),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.18),
+                              blurRadius: 24,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          type: MaterialType.transparency,
+                          child: _PlatformGlassContainerScope(
+                            child: PlatformLiquidGlassSurface(
+                              borderRadius: BorderRadius.circular(28),
+                              child: builder(sheetContext),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          )
         : showModalBottomSheet<T>(
             context: context,
             builder: builder,
@@ -1211,41 +2897,101 @@ class PopupMenuOption {
 class PlatformPopupMenu extends StatelessWidget {
   final Widget icon;
   final List<PopupMenuOption> options;
+  final String liquidGlassSymbol;
+  final double liquidGlassButtonSize;
 
   const PlatformPopupMenu({
     required this.icon,
     required this.options,
+    this.liquidGlassSymbol = 'ellipsis',
+    this.liquidGlassButtonSize = 44,
     super.key,
   });
 
+  Future<void> show(BuildContext context) async {
+    final selected = await showPlatformModalSheet<PopupMenuOption>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        top: false,
+        child: _PlatformGlassContainerScope(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.64,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 10),
+                Flexible(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      for (final option in options)
+                        PlatformListTile(
+                          title: Text(
+                            option.label,
+                            style: option.cupertino
+                                        ?.call(context, platform(context))
+                                        .isDestructiveAction ??
+                                    false
+                                ? TextStyle(
+                                    color: CupertinoColors.systemRed
+                                        .resolveFrom(sheetContext),
+                                  )
+                                : null,
+                          ),
+                          onTap: () => Navigator.pop(sheetContext, option),
+                        ),
+                    ],
+                  ),
+                ),
+                PlatformTextButton(
+                  onPressed: () => Navigator.pop(sheetContext),
+                  child: Text(
+                    CupertinoLocalizations.of(sheetContext).cancelButtonLabel,
+                  ),
+                ),
+                const SizedBox(height: 4),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    if (selected != null) selected.onTap(selected);
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (usesLiquidGlass(context)) {
+      final grouped = _PlatformLiquidGlassToolbarGroupScope.contains(context);
+      final items = <liquid.AdaptivePopupMenuEntry>[
+        for (final option in options)
+          liquid.AdaptivePopupMenuItem<PopupMenuOption>(
+            label: option.label,
+            value: option,
+            isDestructive: option.cupertino
+                    ?.call(context, platform(context))
+                    .isDestructiveAction ??
+                false,
+          ),
+      ];
+      return liquid.AdaptivePopupMenuButton.icon<PopupMenuOption>(
+        icon: liquidGlassSymbol,
+        items: items,
+        size: liquidGlassButtonSize,
+        tint: _iconForWidget(icon)?.color ??
+            CupertinoColors.label.resolveFrom(context),
+        buttonStyle: grouped
+            ? liquid.PopupButtonStyle.plain
+            : liquid.PopupButtonStyle.glass,
+        onSelected: (_, entry) => entry.value?.onTap(entry.value!),
+      );
+    }
     if (isCupertino(context)) {
       return CupertinoButton(
         padding: EdgeInsets.zero,
-        onPressed: () async {
-          final selected = await showCupertinoModalPopup<PopupMenuOption>(
-            context: context,
-            builder: (context) => CupertinoActionSheet(
-              actions: [
-                for (final option in options)
-                  CupertinoActionSheetAction(
-                    isDestructiveAction: option.cupertino
-                            ?.call(context, platform(context))
-                            .isDestructiveAction ??
-                        false,
-                    onPressed: () => Navigator.pop(context, option),
-                    child: Text(option.label),
-                  ),
-              ],
-              cancelButton: CupertinoActionSheetAction(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
-              ),
-            ),
-          );
-          if (selected != null) selected.onTap(selected);
-        },
+        onPressed: () => show(context),
         child: icon,
       );
     }

@@ -47,7 +47,8 @@ class SecurityChallengeWebviewPage extends StatelessWidget {
 class _SecurityChallengeWebviewStatefulPage extends StatefulWidget {
   final String checkUrl;
 
-  const _SecurityChallengeWebviewStatefulPage({Key? key, required this.checkUrl})
+  const _SecurityChallengeWebviewStatefulPage(
+      {Key? key, required this.checkUrl})
       : super(key: key);
 
   @override
@@ -154,22 +155,36 @@ class _SecurityChallengeWebviewState
       appBar: PlatformAppBar(
         title: Text(S.of(context).securityChallengeTitle),
         trailingActions: [
-          if (_isLoading)
-            Container(
-              width: 24,
-              height: 24,
-              margin: const EdgeInsets.symmetric(horizontal: 12),
-              child: PlatformCircularProgressIndicator(),
-            )
-          else
-            IconButton(
-              icon: Icon(PlatformIcons(context).checkMark, size: 24),
+          if (!_isLoading)
+            PlatformIconButton(
+              liquidGlassSymbol: 'checkmark',
+              icon: Icon(
+                PlatformIcons(context).checkMark,
+                size: 20,
+                semanticLabel: S.of(context).ok,
+              ),
               onPressed: _verifyChallengePassed,
             ),
         ],
       ),
-      body: Builder(
-        builder: (_) => WebViewWidget(controller: _controller),
+      body: Stack(
+        children: [
+          WebViewWidget(controller: _controller),
+          if (_isLoading)
+            const PositionedDirectional(
+              top: 12,
+              end: 12,
+              child: IgnorePointer(
+                child: PlatformLiquidGlassSurface(
+                  borderRadius: BorderRadius.all(Radius.circular(22)),
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: PlatformCircularProgressIndicator(),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

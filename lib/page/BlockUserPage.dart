@@ -85,12 +85,12 @@ class _BlockUserState extends State<BlockUserStatefulWidget> {
                     background: Container(color: Colors.pinkAccent),
                     key: Key(index.toString()),
                     child: InkWell(
-                      child: Card(
+                      child: PlatformCard(
                         child: Container(
                           width: double.infinity,
                           child: Padding(
                               padding: EdgeInsets.all(8),
-                              child: ListTile(
+                              child: PlatformListTile(
                                 leading: UserAvatar(
                                     _discuz,
                                     blockUserList[index].uid,

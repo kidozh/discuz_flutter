@@ -195,7 +195,7 @@ class ConfigureChevertoState extends State<ConfigureChevertoPage> {
         title: Text(getChevertoTitle()),
       ),
       body: SafeArea(
-        child: SettingsList(
+        child: PlatformAdaptiveSettingsList(
           sections: [
             CustomSettingsSection(
                 child: Padding(

@@ -23,21 +23,21 @@ import 'UserProfilePage.dart';
 import 'ViewThreadSliverPage.dart';
 
 class ExploreWebsitePage extends StatefulWidget {
-
   final String? initialURL;
 
   final ValueChanged<int>? onSelectTid;
 
-  ExploreWebsitePage({this.initialURL, required Key key, this.onSelectTid}): super(key: key);
+  ExploreWebsitePage({this.initialURL, required Key key, this.onSelectTid})
+      : super(key: key);
 
   @override
   ExploreWebsiteState createState() {
-    return ExploreWebsiteState(initialURL: this.initialURL, onSelectTid: this.onSelectTid);
+    return ExploreWebsiteState(
+        initialURL: this.initialURL, onSelectTid: this.onSelectTid);
   }
 }
 
 class ExploreWebsiteState extends State<ExploreWebsitePage> {
-
   String? initialURL;
 
   final ValueChanged<int>? onSelectTid;
@@ -45,23 +45,21 @@ class ExploreWebsiteState extends State<ExploreWebsitePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<DiscuzAndUserNotifier>(builder: (context,discuzAndUser, child){
-      if(discuzAndUser.discuz == null){
+    return Consumer<DiscuzAndUserNotifier>(
+        builder: (context, discuzAndUser, child) {
+      if (discuzAndUser.discuz == null) {
         return NullDiscuzScreen();
-      }
-      else{
-
+      } else {
         return SafeArea(
-            child: InnerWebviewScreen(ValueKey(discuzAndUser.discuz),discuzAndUser.discuz!,
-                discuzAndUser.user,
-                initialURL: initialURL,
-                onSelectTid: this.onSelectTid,
-              )
-        );
+            child: InnerWebviewScreen(
+          ValueKey(discuzAndUser.discuz),
+          discuzAndUser.discuz!,
+          discuzAndUser.user,
+          initialURL: initialURL,
+          onSelectTid: this.onSelectTid,
+        ));
       }
     });
-
-
   }
 }
 
@@ -78,7 +76,7 @@ class NavigationControls extends StatelessWidget {
           (BuildContext context, AsyncSnapshot<WebViewController> snapshot) {
         final bool webViewReady =
             snapshot.connectionState == ConnectionState.done;
-        if(snapshot.data == null){
+        if (snapshot.data == null) {
           return Row(
             children: [],
           );
@@ -122,14 +120,19 @@ class NavigationControls extends StatelessWidget {
             //     }
             //   },
             // ),
-            IconButton(
-              icon: Icon(PlatformIcons(context).refresh, size: 24,),
+            PlatformIconButton(
+              liquidGlassSymbol: 'arrow.clockwise',
+              icon: Icon(
+                PlatformIcons(context).refresh,
+                size: 20,
+                semanticLabel: S.of(context).refresh,
+              ),
               onPressed: !webViewReady
                   ? null
                   : () {
-                VibrationUtils.vibrateWithClickIfPossible();
-                controller.reload();
-              },
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      controller.reload();
+                    },
             ),
           ],
         );
@@ -138,22 +141,24 @@ class NavigationControls extends StatelessWidget {
   }
 }
 
-class InnerWebviewScreen extends StatefulWidget{
+class InnerWebviewScreen extends StatefulWidget {
   Discuz _discuz;
   User? _user;
   String? initialURL;
   final ValueChanged<int>? onSelectTid;
 
-  InnerWebviewScreen(Key key,this._discuz,this._user, {this.initialURL, this.onSelectTid}):super(key: key);
+  InnerWebviewScreen(Key key, this._discuz, this._user,
+      {this.initialURL, this.onSelectTid})
+      : super(key: key);
 
   @override
   InnerWebviewState createState() {
-    return InnerWebviewState(this._discuz,this._user,initialURL: this.initialURL, onSelectTid: this.onSelectTid);
+    return InnerWebviewState(this._discuz, this._user,
+        initialURL: this.initialURL, onSelectTid: this.onSelectTid);
   }
-
 }
 
-class InnerWebviewState extends State<InnerWebviewScreen>{
+class InnerWebviewState extends State<InnerWebviewScreen> {
   Discuz _discuz;
   User? _user;
   final ValueChanged<int>? onSelectTid;
@@ -169,66 +174,57 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
 
   bool cookieLoaded = false;
 
-  InnerWebviewState(this._discuz,this._user,{this.initialURL, this.onSelectTid});
+  InnerWebviewState(this._discuz, this._user,
+      {this.initialURL, this.onSelectTid});
 
-  void loadCookieByUser(Discuz _discuz,User? _user, String initialURL) async {
-    if(_user!=null){
-      PersistCookieJar savedCookieJar = await NetworkUtils.getPersistentCookieJarByUser(_user);
+  void loadCookieByUser(Discuz _discuz, User? _user, String initialURL) async {
+    if (_user != null) {
+      PersistCookieJar savedCookieJar =
+          await NetworkUtils.getPersistentCookieJarByUser(_user);
       List<Cookie> cookies =
-      await savedCookieJar.loadForRequest(Uri.parse(_discuz.baseURL));
+          await savedCookieJar.loadForRequest(Uri.parse(_discuz.baseURL));
       webviewCookieManager.setCookies(cookies, origin: _discuz.baseURL);
-
-    }
-    else{
+    } else {
       webviewCookieManager.clearCookies();
     }
 
-
     _controller = WebViewController()
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        
-        ..setNavigationDelegate(
-          NavigationDelegate(
-            onProgress: (int progress) {
-              setState(() {
-                this.progress = progress;
-              });
-              print("WebView is loading (progress : $progress%)");
-            },
-            onNavigationRequest: (NavigationRequest request){
-              return NavigationDecision.navigate;
-            },
-            onPageStarted: (String url) {
-              VibrationUtils.vibrateWithClickIfPossible();
-              print('Page started loading: $url');
-            },
-            onPageFinished: (String url) async {
-              setState(() {
-                progress = 0;
-              });
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(NavigationDelegate(
+        onProgress: (int progress) {
+          setState(() {
+            this.progress = progress;
+          });
+          print("WebView is loading (progress : $progress%)");
+        },
+        onNavigationRequest: (NavigationRequest request) {
+          return NavigationDecision.navigate;
+        },
+        onPageStarted: (String url) {
+          VibrationUtils.vibrateWithClickIfPossible();
+          print('Page started loading: $url');
+        },
+        onPageFinished: (String url) async {
+          setState(() {
+            progress = 0;
+          });
 
-
-              String? title = await _controller.getTitle();
-              setState(() {
-                webTitle = title;
-              });
-              print('Page finished loading: $url');
-              // check for if link is parsable
-              VibrationUtils.vibrateWithClickIfPossible();
-              checkIfLinkIsParsable(context, url);
-
-            },
-
-
-          )
-        );
+          String? title = await _controller.getTitle();
+          setState(() {
+            webTitle = title;
+          });
+          print('Page finished loading: $url');
+          // check for if link is parsable
+          VibrationUtils.vibrateWithClickIfPossible();
+          checkIfLinkIsParsable(context, url);
+        },
+      ));
 
     setState(() {
       cookieLoaded = true;
     });
 
     _controller.loadRequest(Uri.parse(initialURL));
-
   }
 
   @override
@@ -236,184 +232,183 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
     //log("ExploreWebsite Inner onSelectTid: ${onSelectTid}");
     super.initState();
 
-
-    if(initialURL == null){
+    if (initialURL == null) {
       initialURL = _discuz.baseURL;
-
     }
     loadCookieByUser(_discuz, _user, initialURL!);
-
   }
 
   @override
   Widget build(BuildContext context) {
-    if(!cookieLoaded){
+    if (!cookieLoaded) {
       return BlankScreen();
-    }
-    else{
+    } else {
       return Column(
         children: [
-          if(progress!=0 && progress!= 100)
+          if (progress != 0 && progress != 100)
             LinearProgressIndicator(
-              value: progress/100,
+              value: progress / 100,
             ),
           Expanded(
               child: WebViewWidget(
-                controller: _controller,
-              ))
+            controller: _controller,
+          ))
         ],
       );
     }
-
   }
 
-  void checkIfLinkIsParsable(BuildContext context,String urlString) async{
+  void checkIfLinkIsParsable(BuildContext context, String urlString) async {
     urlString = urlString.replaceAll("&amp;", "&");
     bool urlLauchable = await canLaunchUrl(Uri.parse(urlString));
-    User? user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    Discuz discuz = Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
+    User? user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    Discuz discuz =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
     // judge if it is a path
     Uri? tryUri = Uri.tryParse(urlString);
     log("${Uri.parse(urlString).isAbsolute}");
-    if(!Uri.parse(urlString).isAbsolute){
+    if (!Uri.parse(urlString).isAbsolute) {
       // add a prefix to test if it's a url
-      urlString = discuz.baseURL+ "/" + urlString;
+      urlString = discuz.baseURL + "/" + urlString;
       log("Press after link ${urlString} ");
       urlLauchable = await canLaunchUrl(Uri.parse(urlString));
     }
 
-
-    if(urlLauchable){
+    if (urlLauchable) {
       // parse url
       Uri uri = Uri.parse(urlString);
       // check host
       log("Pressed url ${urlString} host ${uri.host}");
-      if(uri.host != Uri.parse(discuz.baseURL).host){
+      if (uri.host != Uri.parse(discuz.baseURL).host) {
         // not website
-        return ;
+        return;
       }
 
       // check query parameters for full url
-      if(uri.queryParameters.containsKey("mod")){
+      if (uri.queryParameters.containsKey("mod")) {
         String modParamter = uri.queryParameters["mod"]!;
         log("recv modParamter ${modParamter}");
         // check forum display
-        switch (modParamter){
-          case "redirect":{
-            if(uri.queryParameters.containsKey("ptid")){
-              String tidString = uri.queryParameters["ptid"]!;
-              // trigger tid
-              if(int.tryParse(tidString) != null){
-                int tid = int.tryParse(tidString)!;
-                if(onSelectTid == null){
-                  await Navigator.push(
-                      context,
-                      platformPageRoute(context:context,
-                          iosTitle: S.of(context).viewThreadTitle,
-                          builder: (context) => ViewThreadSliverPage( discuz,user, tid))
-                  );
-                }
-                else{
-                  onSelectTid!(tid);
-                }
+        switch (modParamter) {
+          case "redirect":
+            {
+              if (uri.queryParameters.containsKey("ptid")) {
+                String tidString = uri.queryParameters["ptid"]!;
+                // trigger tid
+                if (int.tryParse(tidString) != null) {
+                  int tid = int.tryParse(tidString)!;
+                  if (onSelectTid == null) {
+                    await Navigator.push(
+                        context,
+                        platformPageRoute(
+                            context: context,
+                            iosTitle: S.of(context).viewThreadTitle,
+                            builder: (context) =>
+                                ViewThreadSliverPage(discuz, user, tid)));
+                  } else {
+                    onSelectTid!(tid);
+                  }
 
-                return;
+                  return;
+                }
               }
+              break;
             }
-            break;
-          }
-          case "viewthread":{
-            // check for forum, query fid
-            if(uri.queryParameters.containsKey("tid")){
-              String tidString = uri.queryParameters["tid"]!;
-              // trigger tid
-              if(int.tryParse(tidString) != null){
-                int tid = int.tryParse(tidString)!;
-                if(onSelectTid == null){
+          case "viewthread":
+            {
+              // check for forum, query fid
+              if (uri.queryParameters.containsKey("tid")) {
+                String tidString = uri.queryParameters["tid"]!;
+                // trigger tid
+                if (int.tryParse(tidString) != null) {
+                  int tid = int.tryParse(tidString)!;
+                  if (onSelectTid == null) {
+                    await Navigator.push(
+                        context,
+                        platformPageRoute(
+                            context: context,
+                            iosTitle: S.of(context).viewThreadTitle,
+                            builder: (context) =>
+                                ViewThreadSliverPage(discuz, user, tid)));
+                  } else {
+                    onSelectTid!(tid);
+                  }
+                  return;
+                }
+              }
+              break;
+            }
+          case "forumdisplay":
+            {
+              // check for forum, query fid
+              if (uri.queryParameters.containsKey("fid")) {
+                String fidString = uri.queryParameters["fid"]!;
+                // trigger fid
+                if (int.tryParse(fidString) != null) {
+                  int fid = int.tryParse(fidString)!;
                   await Navigator.push(
                       context,
                       platformPageRoute(
-                          context:context,
-                          iosTitle: S.of(context).viewThreadTitle,
-                          builder: (context) => ViewThreadSliverPage( discuz,user, tid))
-                  );
+                          context: context,
+                          iosTitle: S.of(context).forumDisplayTitle,
+                          builder: (context) =>
+                              DisplayForumTwoPanePage(discuz, user, fid)));
+                  return;
                 }
-                else{
-                  onSelectTid!(tid);
+              }
+              break;
+            }
+          case "space":
+            {
+              // check for forum, query fid
+              if (uri.queryParameters.containsKey("uid") &&
+                  !uri.queryParameters.containsKey("do")) {
+                String uidString = uri.queryParameters["uid"]!;
+                // trigger tid
+                if (int.tryParse(uidString) != null) {
+                  int uid = int.tryParse(uidString)!;
+                  await Navigator.push(
+                      context,
+                      platformPageRoute(
+                          context: context,
+                          iosTitle: S.of(context).userProfileTitle,
+                          builder: (context) =>
+                              UserProfilePage(discuz, user, uid)));
+                  return;
                 }
-                return;
               }
+              break;
             }
-            break;
-          }
-          case "forumdisplay":{
-            // check for forum, query fid
-            if(uri.queryParameters.containsKey("fid")){
-              String fidString = uri.queryParameters["fid"]!;
-              // trigger fid
-              if(int.tryParse(fidString) != null){
-                int fid = int.tryParse(fidString)!;
-                await Navigator.push(
-                    context,
-                    platformPageRoute(context:context,
-                        iosTitle: S.of(context).forumDisplayTitle,
-                        builder: (context) => DisplayForumTwoPanePage(discuz,user, fid))
-                );
-                return;
-              }
-            }
-            break;
-          }
-          case "space":{
-            // check for forum, query fid
-            if(uri.queryParameters.containsKey("uid") && !uri.queryParameters.containsKey("do")){
-              String uidString = uri.queryParameters["uid"]!;
-              // trigger tid
-              if(int.tryParse(uidString) != null){
-                int uid = int.tryParse(uidString)!;
-                await Navigator.push(
-                    context,
-                    platformPageRoute(
-                        context:context,
-                        iosTitle: S.of(context).userProfileTitle,
-                        builder: (context) => UserProfilePage(discuz,user,uid))
-                );
-                return;
-              }
-            }
-            break;
-          }
         }
-
       }
       // check short
       String? fid = await RewriteRuleUtils.findFidInURL(discuz, urlString);
       log("read fid: ${fid} from url");
-      if(fid!=null && int.tryParse(fid) != null){
+      if (fid != null && int.tryParse(fid) != null) {
         await Navigator.push(
             context,
             platformPageRoute(
-                context:context,
+                context: context,
                 iosTitle: S.of(context).forumDisplayTitle,
-                builder: (context) => DisplayForumTwoPanePage(discuz, user, int.tryParse(fid)!))
-        );
+                builder: (context) =>
+                    DisplayForumTwoPanePage(discuz, user, int.tryParse(fid)!)));
         return;
       }
 
       // check short
       String? tid = await RewriteRuleUtils.findTidInURL(discuz, urlString);
       log("read tid: ${fid} from url");
-      if(tid!=null && int.tryParse(tid) != null){
-        if(onSelectTid == null){
+      if (tid != null && int.tryParse(tid) != null) {
+        if (onSelectTid == null) {
           await Navigator.push(
               context,
               platformPageRoute(
-                  context:context,
+                  context: context,
                   iosTitle: S.of(context).viewThreadTitle,
-                  builder: (context) => ViewThreadSliverPage(discuz, user, int.tryParse(tid)!))
-          );
-        }
-        else{
+                  builder: (context) =>
+                      ViewThreadSliverPage(discuz, user, int.tryParse(tid)!)));
+        } else {
           onSelectTid!(int.tryParse(tid)!);
         }
 
@@ -421,18 +416,17 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
       }
 
       String? uid = await RewriteRuleUtils.findUidInURL(discuz, urlString);
-      if(uid!=null && int.tryParse(uid) != null){
+      if (uid != null && int.tryParse(uid) != null) {
         await Navigator.push(
             context,
             platformPageRoute(
-                context:context,
+                context: context,
                 iosTitle: S.of(context).userProfileTitle,
-                builder: (context) => UserProfilePage(discuz, user, int.tryParse(uid)!))
-        );
+                builder: (context) =>
+                    UserProfilePage(discuz, user, int.tryParse(uid)!)));
         return;
       }
-    }
-    else{
+    } else {
       // show the link
       // EasyLoading.showError(S.of(context).linkUnableToOpen(urlString));
     }
@@ -440,7 +434,7 @@ class InnerWebviewState extends State<InnerWebviewScreen>{
 
   @override
   void setState(fn) {
-    if(this.mounted) {
+    if (this.mounted) {
       super.setState(fn);
     }
   }

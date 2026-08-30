@@ -9,11 +9,12 @@ import 'package:settings_ui/settings_ui.dart';
 
 class ChooseInterfaceBrightnessPage extends StatefulWidget {
   @override
-  _ChooseInterfaceBrightnessState createState() => _ChooseInterfaceBrightnessState();
+  _ChooseInterfaceBrightnessState createState() =>
+      _ChooseInterfaceBrightnessState();
 }
 
-class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPage> {
-
+class _ChooseInterfaceBrightnessState
+    extends State<ChooseInterfaceBrightnessPage> {
   String _selectedBrightnessName = "";
 
   @override
@@ -21,22 +22,17 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
     super.initState();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-
-    Brightness? _selectedBrightness = Provider.of<ThemeNotifierProvider>(context,listen: false).brightness;
-    if(_selectedBrightness == null){
+    Brightness? _selectedBrightness =
+        Provider.of<ThemeNotifierProvider>(context, listen: false).brightness;
+    if (_selectedBrightness == null) {
       _selectedBrightnessName = "";
-    }
-    else if(_selectedBrightness == Brightness.light){
+    } else if (_selectedBrightness == Brightness.light) {
       _selectedBrightnessName = "light";
-    }
-    else if(_selectedBrightness == Brightness.dark){
+    } else if (_selectedBrightness == Brightness.dark) {
       _selectedBrightnessName = "dark";
-    }
-    else{
+    } else {
       _selectedBrightnessName = "";
     }
 
@@ -45,9 +41,8 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
       appBar: PlatformAppBar(
         title: Text(S.of(context).interfaceBrightness),
       ),
-      body: SettingsList(
+      body: PlatformAdaptiveSettingsList(
         sections: [
-
           SettingsSection(tiles: [
             SettingsTile(
               title: Text(S.of(context).followSystem),
@@ -73,7 +68,6 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
                 changePlatform("dark");
               },
             ),
-            
           ]),
         ],
       ),
@@ -81,8 +75,9 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
   }
 
   Widget trailingWidget(String brightnessName) {
-    return ( _selectedBrightnessName == brightnessName)
-        ? Icon(PlatformIcons(context).checkMark, color: Theme.of(context).colorScheme.primary)
+    return (_selectedBrightnessName == brightnessName)
+        ? Icon(PlatformIcons(context).checkMark,
+            color: Theme.of(context).colorScheme.primary)
         : Icon(null);
   }
 
@@ -92,20 +87,18 @@ class _ChooseInterfaceBrightnessState extends State<ChooseInterfaceBrightnessPag
     });
     print("change brightness to $brightnessName");
     Brightness? brightness;
-    if(brightnessName == ""){
+    if (brightnessName == "") {
       brightness = null;
-    }
-    else if(brightnessName == "light"){
+    } else if (brightnessName == "light") {
       brightness = Brightness.light;
-    }
-    else if(brightnessName == "dark"){
+    } else if (brightnessName == "dark") {
       brightness = Brightness.dark;
-    }
-    else{
+    } else {
       brightness = null;
     }
 
-    Provider.of<ThemeNotifierProvider>(context,listen: false).setBrightness(brightness);
+    Provider.of<ThemeNotifierProvider>(context, listen: false)
+        .setBrightness(brightness);
     UserPreferencesUtils.putInterfaceBrightnessPreference(brightnessName);
     VibrationUtils.vibrateSuccessfullyIfPossible();
   }

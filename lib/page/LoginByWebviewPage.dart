@@ -19,9 +19,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import '../provider/DiscuzAndUserNotifier.dart';
 
-
-class LoginByWebviewPage extends StatelessWidget{
-
+class LoginByWebviewPage extends StatelessWidget {
   final Discuz discuz;
 
   LoginByWebviewPage(this.discuz);
@@ -32,7 +30,6 @@ class LoginByWebviewPage extends StatelessWidget{
     return LoginByWebviewStatefulWidget(discuz);
   }
 }
-
 
 class LoginByWebviewStatefulWidget extends StatefulWidget {
   final Discuz discuz;
@@ -45,8 +42,7 @@ class LoginByWebviewStatefulWidget extends StatefulWidget {
 
 class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
   final webviewCookieManager = WebviewCookieManager();
-  WebViewController _controller = WebViewController();
-
+  late final WebViewController _controller;
 
   final Discuz discuz;
 
@@ -55,38 +51,45 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
   @override
   void initState() {
     super.initState();
-    webviewCookieManager.clearCookies();
-    _triggerNotificationDialog();
     _loadWidgetControllerSetting();
-
+    unawaited(_prepareWebLogin());
+    unawaited(_triggerNotificationDialog());
   }
 
-  void _loadWidgetControllerSetting(){
+  Future<void> _prepareWebLogin() async {
+    // Clearing and loading used to run concurrently. On a fast connection the
+    // cookie clear could finish after the login page had started and erase the
+    // new session, making a successful browser login appear to have failed.
+    try {
+      await webviewCookieManager.clearCookies();
+    } catch (error) {
+      debugPrint('Unable to clear WebView cookies before login: $error');
+    }
+    if (!mounted) return;
+    await _controller.loadRequest(
+      Uri.parse('${discuz.baseURL}/member.php?mod=logging&action=login'),
+    );
+  }
+
+  void _loadWidgetControllerSetting() {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (String url) {
-            print('Page started loading: $url');
-            setState(() {
-              websiteLoaded = false;
-            });
-          },
-          onPageFinished: (String url) async{
-            print('Page finished loading: $url');
-            setState(() {
-              websiteLoaded = true;
-            });
-            final gotCookies = await webviewCookieManager.getCookies(url);
-
-            // for (var item in gotCookies) {
-            //   print(item);
-            // }
-          },
-        )
-      );
-
-    _controller.loadRequest(Uri.parse(discuz.baseURL+"/member.php?mod=logging&action=login"));
+      ..setNavigationDelegate(NavigationDelegate(
+        onPageStarted: (String url) {
+          print('Page started loading: $url');
+          if (!mounted) return;
+          setState(() {
+            websiteLoaded = false;
+          });
+        },
+        onPageFinished: (String url) async {
+          print('Page finished loading: $url');
+          if (!mounted) return;
+          setState(() {
+            websiteLoaded = true;
+          });
+        },
+      ));
   }
 
   bool websiteLoaded = false;
@@ -101,79 +104,76 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         trailingActions: <Widget>[
           //NavigationControls(_controller.future),
-          if(websiteLoaded)
-            IconButton(
-              icon: Icon(PlatformIcons(context).checkMark, size: 24,),
+          if (websiteLoaded)
+            PlatformIconButton(
+              liquidGlassSymbol: 'checkmark',
+              icon: Icon(
+                PlatformIcons(context).checkMark,
+                size: 20,
+                semanticLabel: S.of(context).ok,
+              ),
               onPressed: () {
                 VibrationUtils.vibrateWithClickIfPossible();
                 _checkUserLogined();
               },
             ),
-          if(!websiteLoaded)
-            Container(
-              width: 24,
-              height: 24,
-              child: PlatformCircularProgressIndicator(),
-            ),
         ],
       ),
       body: Builder(builder: (BuildContext context) {
-        return WebViewWidget(
-          controller: _controller,
+        return Stack(
+          children: [
+            WebViewWidget(controller: _controller),
+            if (!websiteLoaded)
+              const PositionedDirectional(
+                top: 12,
+                end: 12,
+                child: IgnorePointer(
+                  child: PlatformLiquidGlassSurface(
+                    borderRadius: BorderRadius.all(Radius.circular(22)),
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: PlatformCircularProgressIndicator(),
+                    ),
+                  ),
+                ),
+              ),
+          ],
         );
       }),
       //floatingActionButton: checkButton(),
     );
   }
 
-  Widget checkButton() {
-    return FloatingActionButton(
-      onPressed: () async {
-        // final String url = (await controller.data!.currentUrl())!;
-        // ignore: deprecated_member_use
-        _checkUserLogined();
-      },
-      child: const Icon(Icons.login),
+  Future<void> _triggerNotificationDialog() async {
+    print("show dialog");
+    await Future.delayed(Duration(seconds: 1));
+    if (!mounted) return;
+    await showPlatformAlert(
+      context: context,
+      title: S.of(context).loginByWebTitle,
+      message: S.of(context).loginByWebMessage,
+      actions: [
+        PlatformAlertAction(
+          label: S.of(context).ok,
+          isDefaultAction: true,
+        ),
+      ],
     );
   }
 
-  void _triggerNotificationDialog() async{
-
-    print("show dialog");
-    await Future.delayed(Duration(seconds: 1));
-    await showPlatformDialog(context: context, builder: (context){
-      return PlatformAlertDialog(
-        title: Text(S.of(context).loginByWebTitle),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(S.of(context).loginByWebMessage),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: (){
-            Navigator.of(context).pop(false);
-          }, child: Text(S.of(context).ok))
-        ],
-      );
-    });
-  }
-
-  void _checkUserLogined() async{
+  void _checkUserLogined() async {
     Dio _dio = Dio();
     // trigger an alert
     EasyLoading.showInfo(S.of(context).checkUserLoginStatus);
     // transfer from webview to cookiejar
     // split by ;
     List<Cookie> webviewCookie = [];
-    try{
-       webviewCookie = await webviewCookieManager.getCookies(discuz.baseURL);
-    }
-    catch (e){
+    try {
+      webviewCookie = await webviewCookieManager.getCookies(discuz.baseURL);
+    } catch (e) {
       EasyLoading.showError(S.of(context).invalidCookie);
       return;
     }
-
 
     PersistCookieJar cookieJar = await NetworkUtils.getTemporaryCookieJar();
     // transfer from cookie string
@@ -183,20 +183,20 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
     _dio.interceptors.add(DioCookieManager.CookieManager(cookieJar));
 
     final client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
-    
-    client.userProfileResult(0).then((value) async{
-      if(value.variables.member_uid!=0){
+
+    client.userProfileResult(0).then((value) async {
+      if (value.variables.member_uid != 0) {
         // it's a success
-        try{
+        try {
           final dao = await AppDatabase.getUserDao();
           User user = value.variables.getUser(discuz);
           user.discuz = discuz;
           // search in database first
-          User? userInDataBase = dao.findUsersByDiscuzAndUid(discuz, value.variables.member_uid);
-          if(userInDataBase != null){
+          User? userInDataBase =
+              dao.findUsersByDiscuzAndUid(discuz, value.variables.member_uid);
+          if (userInDataBase != null) {
             user = userInDataBase;
-          }
-          else{
+          } else {
             int id = await dao.insert(user);
             // User? userInDataBase = dao.findUsersByDiscuzAndUid(discuz, value.variables.member_uid);
             // if(userInDataBase != null){
@@ -204,37 +204,35 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
             // }
           }
 
-
-
-
           // save it in cookiejar
-          List<Cookie> cookies = await cookieJar.loadForRequest(Uri.parse(discuz.baseURL));
-          PersistCookieJar savedCookieJar = await NetworkUtils.getPersistentCookieJarByUser(user);
+          List<Cookie> cookies =
+              await cookieJar.loadForRequest(Uri.parse(discuz.baseURL));
+          PersistCookieJar savedCookieJar =
+              await NetworkUtils.getPersistentCookieJarByUser(user);
           print("cookies ${cookies}");
           savedCookieJar.saveFromResponse(Uri.parse(discuz.baseURL), cookies);
           // pop the activity
-          EasyLoading.showSuccess(S.of(context).signInSuccessTitle(user.username, discuz.siteName));
-          Provider.of<DiscuzAndUserNotifier>(context, listen: false).user = user;
+          EasyLoading.showSuccess(
+              S.of(context).signInSuccessTitle(user.username, discuz.siteName));
+          Provider.of<DiscuzAndUserNotifier>(context, listen: false).user =
+              user;
 
           Navigator.pop(context);
-        }
-        catch(e){
+        } catch (e) {
           VibrationUtils.vibrateErrorIfPossible();
           EasyLoading.showError(e.toString());
         }
-      }
-      else{
-        print("Get auth ${value.variables.auth} ${value.variables.formHash} ${value}");
+      } else {
+        print(
+            "Get auth ${value.variables.auth} ${value.variables.formHash} ${value}");
         // trigger a alert
         EasyLoading.showToast(S.of(context).websiteNotLogined);
       }
-    }).catchError((e,s){
+    }).catchError((e, s) {
       print("${e}");
       VibrationUtils.vibrateErrorIfPossible();
       EasyLoading.showError(S.of(context).networkFailed);
-
-    })
-    ;
+    });
 
     // client.checkLoginResult().then((value) async {
     //   if(value.variables.member_uid!=0){
@@ -281,10 +279,8 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
     //   EasyLoading.showError(S.of(context).networkFailed);
     //
     // });
-
   }
 }
-
 
 class NavigationControls extends StatelessWidget {
   const NavigationControls(this._webViewControllerFuture);
@@ -302,40 +298,43 @@ class NavigationControls extends StatelessWidget {
         final WebViewController controller = snapshot.data!;
         return Row(
           children: <Widget>[
-            IconButton(
+            PlatformIconButton(
+              liquidGlassSymbol: 'chevron.backward',
               icon: const Icon(Icons.arrow_back_ios),
               onPressed: !webViewReady
                   ? null
                   : () async {
-                if (await controller.canGoBack()) {
-                  await controller.goBack();
-                } else {
-                  // ignore: deprecated_member_use
+                      if (await controller.canGoBack()) {
+                        await controller.goBack();
+                      } else {
+                        // ignore: deprecated_member_use
 
-                  return;
-                }
-              },
+                        return;
+                      }
+                    },
             ),
-            IconButton(
+            PlatformIconButton(
+              liquidGlassSymbol: 'chevron.forward',
               icon: const Icon(Icons.arrow_forward_ios),
               onPressed: !webViewReady
                   ? null
                   : () async {
-                if (await controller.canGoForward()) {
-                  await controller.goForward();
-                } else {
-                  // ignore: deprecated_member_use
-                  return;
-                }
-              },
+                      if (await controller.canGoForward()) {
+                        await controller.goForward();
+                      } else {
+                        // ignore: deprecated_member_use
+                        return;
+                      }
+                    },
             ),
-            IconButton(
+            PlatformIconButton(
+              liquidGlassSymbol: 'arrow.clockwise',
               icon: const Icon(Icons.replay),
               onPressed: !webViewReady
                   ? null
                   : () {
-                controller.reload();
-              },
+                      controller.reload();
+                    },
             ),
           ],
         );

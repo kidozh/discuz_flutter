@@ -1,4 +1,3 @@
-
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
@@ -43,44 +42,39 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
 
   void loadCookieByUser() async {
     _controller = WebViewController()
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..setNavigationDelegate(
-          NavigationDelegate(
-            onProgress: (int progress1){
-              setState(() {
-                this.progress = progress1;
-              });
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(NavigationDelegate(
+        onProgress: (int progress1) {
+          setState(() {
+            this.progress = progress1;
+          });
+        },
+        onNavigationRequest: (NavigationRequest request) {
+          return NavigationDecision.navigate;
+        },
+        onPageStarted: (String url) {
+          VibrationUtils.vibrateWithClickIfPossible();
+          print('Page started loading: $url');
+        },
+        onPageFinished: (String url) async {
+          setState(() {
+            progress = 0;
+          });
+          String? title = await this._controller.getTitle();
+          setState(() {
+            webTitle = title;
+          });
+          print('Page finished loading: $url');
+        },
+      ));
 
-            },
-            onNavigationRequest: (NavigationRequest request){
-              return NavigationDecision.navigate;
-            },
-            onPageStarted: (String url) {
-              VibrationUtils.vibrateWithClickIfPossible();
-              print('Page started loading: $url');
-            },
-            onPageFinished: (String url) async {
-              setState(() {
-                progress = 0;
-              });
-              String? title = await this._controller.getTitle();
-              setState(() {
-                webTitle = title;
-              });
-              print('Page finished loading: $url');
-            },
-          )
-        );
-
-
-    if(_user!=null){
-      PersistCookieJar savedCookieJar = await NetworkUtils.getPersistentCookieJarByUser(_user!);
+    if (_user != null) {
+      PersistCookieJar savedCookieJar =
+          await NetworkUtils.getPersistentCookieJarByUser(_user!);
       List<Cookie> cookies =
-      await savedCookieJar.loadForRequest(Uri.parse(_discuz.baseURL));
+          await savedCookieJar.loadForRequest(Uri.parse(_discuz.baseURL));
       webviewCookieManager.setCookies(cookies, origin: _discuz.baseURL);
-
-    }
-    else{
+    } else {
       webviewCookieManager.clearCookies();
     }
 
@@ -89,7 +83,6 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
     setState(() {
       cookieLoaded = true;
     });
-
   }
 
   @override
@@ -113,22 +106,28 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
         iosContentBottomPadding: true,
         iosContentPadding: true,
         appBar: PlatformAppBar(
-          title: webTitle == null ?Text(S.of(context).openViaInternalBrowser,overflow: TextOverflow.ellipsis): Text(webTitle!,overflow: TextOverflow.ellipsis),
+          title: webTitle == null
+              ? Text(S.of(context).openViaInternalBrowser,
+                  overflow: TextOverflow.ellipsis)
+              : Text(webTitle!, overflow: TextOverflow.ellipsis),
           // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
           trailingActions: <Widget>[
             //NavigationControls(this._controller),
-            IconButton(
-              icon: Icon(PlatformIcons(context).share, size: 24,),
-              onPressed: () async{
-
+            PlatformIconButton(
+              liquidGlassSymbol: 'square.and.arrow.up',
+              icon: Icon(
+                PlatformIcons(context).share,
+                size: 20,
+                semanticLabel: S.of(context).share,
+              ),
+              onPressed: () async {
                 String? url = await this._controller.currentUrl();
-                if(url!= null){
+                if (url != null) {
                   bool canOpen = await canLaunchUrl(Uri.parse(url));
-                  if(canOpen){
+                  if (canOpen) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     await launchUrl(Uri.parse(url));
-                  }
-                  else{
+                  } else {
                     VibrationUtils.vibrateErrorIfPossible();
                     EasyLoading.showToast(S.of(context).linkUnableToOpen(url));
                   }
@@ -143,13 +142,13 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
         body: Builder(builder: (BuildContext context) {
           return Column(
             children: [
-              if(progress!=0 && progress!= 100)
+              if (progress != 0 && progress != 100)
                 LinearProgressIndicator(
-                  value: progress/100,
+                  value: progress / 100,
                 ),
               Expanded(
-                  child: WebViewWidget(
-                    controller: this._controller,
+                child: WebViewWidget(
+                  controller: this._controller,
                 ),
               )
             ],
@@ -159,8 +158,6 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
       );
     }
   }
-
-
 }
 
 // class NavigationControls extends StatelessWidget {

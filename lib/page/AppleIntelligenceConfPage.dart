@@ -5,6 +5,7 @@ import 'package:discuz_flutter/dao/AiRuleDao.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:foundation_models_framework/foundation_models_framework.dart';
@@ -53,80 +54,51 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage> {
   }
 
   void _showGuardrailLevelDialog() {
-    showPlatformDialog(
+    showPlatformModalSheet(
       context: context,
-      builder: (dialogContext) => PlatformAlertDialog(
-        title: Text(S.of(context).appleIntelligenceGuardrailLevel),
-        content: SingleChildScrollView(
+      builder: (sheetContext) => SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8, 18, 8, 8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              PlatformListTile(
-                title: Text(
-                    S.of(context).appleIntelligenceGuardrailLevelPermissive),
-                leading: Radio<GuardrailLevel>.adaptive(
-                  value: GuardrailLevel.permissive,
-                  groupValue: _selectedGuardrailLevel,
-                  onChanged: (GuardrailLevel? value) {
-                    if (value != null) {
-                      setState(() {
-                        _selectedGuardrailLevel = value;
-                      });
-                    }
-                    Navigator.pop(dialogContext);
-                  },
-                ),
-                onTap: () {
-                  setState(() {
-                    _selectedGuardrailLevel = GuardrailLevel.permissive;
-                  });
-                  Navigator.pop(dialogContext);
-                },
+            children: [
+              Text(
+                S.of(context).appleIntelligenceGuardrailLevel,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
-              PlatformListTile(
-                title:
-                    Text(S.of(context).appleIntelligenceGuardrailLevelStandard),
-                leading: Radio<GuardrailLevel>.adaptive(
-                  value: GuardrailLevel.standard,
-                  groupValue: _selectedGuardrailLevel,
-                  onChanged: (GuardrailLevel? value) {
-                    if (value != null) {
-                      setState(() {
-                        _selectedGuardrailLevel = value;
-                      });
-                    }
-                    Navigator.pop(dialogContext);
+              const SizedBox(height: 10),
+              for (final option in [
+                (
+                  GuardrailLevel.permissive,
+                  S.of(context).appleIntelligenceGuardrailLevelPermissive,
+                ),
+                (
+                  GuardrailLevel.standard,
+                  S.of(context).appleIntelligenceGuardrailLevelStandard,
+                ),
+                (
+                  GuardrailLevel.strict,
+                  S.of(context).appleIntelligenceGuardrailLevelStrict,
+                ),
+              ])
+                PlatformListTile(
+                  title: Text(option.$2),
+                  trailing: option.$1 == _selectedGuardrailLevel
+                      ? Icon(
+                          CupertinoIcons.check_mark,
+                          color: Theme.of(context).colorScheme.primary,
+                        )
+                      : null,
+                  onTap: () {
+                    setState(() => _selectedGuardrailLevel = option.$1);
+                    Navigator.pop(sheetContext);
                   },
                 ),
-                onTap: () {
-                  setState(() {
-                    _selectedGuardrailLevel = GuardrailLevel.standard;
-                  });
-                  Navigator.pop(dialogContext);
-                },
+              PlatformTextButton(
+                onPressed: () => Navigator.pop(sheetContext),
+                child: Text(S.of(context).cancel),
               ),
-              PlatformListTile(
-                title:
-                    Text(S.of(context).appleIntelligenceGuardrailLevelStrict),
-                leading: Radio<GuardrailLevel>.adaptive(
-                  value: GuardrailLevel.strict,
-                  groupValue: _selectedGuardrailLevel,
-                  onChanged: (GuardrailLevel? value) {
-                    if (value != null) {
-                      setState(() {
-                        _selectedGuardrailLevel = value;
-                      });
-                    }
-                    Navigator.pop(dialogContext);
-                  },
-                ),
-                onTap: () {
-                  setState(() {
-                    _selectedGuardrailLevel = GuardrailLevel.strict;
-                  });
-                  Navigator.pop(dialogContext);
-                },
-              )
             ],
           ),
         ),
@@ -143,7 +115,11 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage> {
           trailingActions: [
             if (appleAiEnabled)
               PlatformIconButton(
-                icon: Icon(AppPlatformIcons(context).addAiModelRule),
+                liquidGlassSymbol: 'plus',
+                icon: Icon(
+                  AppPlatformIcons(context).addAiModelRule,
+                  semanticLabel: S.of(context).appleIntelligenceAddRule,
+                ),
                 onPressed: () async {
                   VibrationUtils.vibrateWithClickIfPossible();
                   await Navigator.push<String>(
@@ -156,7 +132,7 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage> {
           ],
         ),
         body: aiAvailable
-            ? SettingsList(
+            ? PlatformAdaptiveSettingsList(
                 sections: [
                   SettingsSection(
                     tiles: [
@@ -185,8 +161,8 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage> {
                         ),
                       if (appleAiEnabled)
                         SettingsTile.navigation(
-                          title: Text(
-                              S.of(context).appleIntelligenceUseHistory),
+                          title:
+                              Text(S.of(context).appleIntelligenceUseHistory),
                           onPressed: (context) {
                             VibrationUtils.vibrateWithClickIfPossible();
                           },

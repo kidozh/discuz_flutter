@@ -1,5 +1,3 @@
-
-
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -17,31 +15,30 @@ import '../page/InternalWebviewBrowserPage.dart';
 import '../page/LoginPage.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 
-class ErrorCard extends StatelessWidget{
-
+class ErrorCard extends StatelessWidget {
   DiscuzError discuzError;
   ErrorType? errorType;
-
 
   final VoidCallback? onRefreshCallback;
   bool? largeSize = true;
   String? webpageUrl = null;
 
-  String getTranslatedMessage(BuildContext context, String string){
-    switch(string){
+  String getTranslatedMessage(BuildContext context, String string) {
+    switch (string) {
       case "Not Found":
         return S.of(context).responseStatusError404;
     }
     return string;
   }
 
-
   @override
   Widget build(BuildContext context) {
     log("GET ERROR ${discuzError.dioError} ${discuzError.key} ${discuzError.content}");
 
-    if((largeSize == null || largeSize == true ) && (discuzError.key!= "mobile_template_no_found")){
-      return Padding(padding: EdgeInsets.symmetric(vertical: 32.0, horizontal: 8.0),
+    if ((largeSize == null || largeSize == true) &&
+        (discuzError.key != "mobile_template_no_found")) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 32.0, horizontal: 8.0),
         child: Container(
           alignment: Alignment.center,
           child: Column(
@@ -49,52 +46,75 @@ class ErrorCard extends StatelessWidget{
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(getErrorIcon(context),color: Theme.of(context).colorScheme.error,size: 48,),
-              SizedBox(height: 24.0,),
+              Icon(
+                getErrorIcon(context),
+                color: Theme.of(context).colorScheme.error,
+                size: 48,
+              ),
+              SizedBox(
+                height: 24.0,
+              ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                      getTranslatedMessage(context, discuzError.content),
-                      style: Theme.of(context).textTheme.headlineSmall,
-
+                    getTranslatedMessage(context, discuzError.content),
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   //Text(getErrorLocalizedKey(context), style: Theme.of(context).textTheme.bodyMedium,),
-
                 ],
               ),
-              if(errorType == ErrorType.userExpired)
-                SizedBox(height: 64.0,),
-              if(errorType == ErrorType.userExpired)
+              if (errorType == ErrorType.userExpired)
+                SizedBox(
+                  height: 64.0,
+                ),
+              if (errorType == ErrorType.userExpired)
                 SizedBox(
                   width: double.infinity,
                   child: PlatformElevatedButton(
-                    child: Text(S.of(context).loginTitle, style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),),
+                    child: Text(
+                      S.of(context).loginTitle,
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary),
+                    ),
                     color: Theme.of(context).colorScheme.primary,
                     onPressed: () {
                       VibrationUtils.vibrateWithClickIfPossible();
 
-                      Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context,listen: false).discuz;
-                      User? user = Provider.of<DiscuzAndUserNotifier>(context,listen: false).user;
-                      if(discuz != null){
+                      Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
+                              context,
+                              listen: false)
+                          .discuz;
+                      User? user = Provider.of<DiscuzAndUserNotifier>(context,
+                              listen: false)
+                          .user;
+                      if (discuz != null) {
                         Navigator.push(
                             context,
                             platformPageRoute(
                                 iosTitle: S.of(context).loginTitle,
                                 context: context,
-                                builder: (context) => LoginPage(discuz, user?.username)));
+                                builder: (context) =>
+                                    LoginPage(discuz, user?.username)));
                       }
                     },
                   ),
                 ),
-              SizedBox(height: 16.0,),
-              if(onRefreshCallback!=null)
+              SizedBox(
+                height: 16.0,
+              ),
+              if (onRefreshCallback != null)
                 SizedBox(
                   width: double.infinity,
                   child: PlatformElevatedButton(
-                    child: Text(S.of(context).retry, style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),),
+                    child: Text(
+                      S.of(context).retry,
+                      style: TextStyle(
+                          color:
+                              Theme.of(context).colorScheme.onPrimaryContainer),
+                    ),
                     color: Theme.of(context).colorScheme.primaryContainer,
                     onPressed: () {
                       VibrationUtils.vibrateWithClickIfPossible();
@@ -102,94 +122,137 @@ class ErrorCard extends StatelessWidget{
                     },
                   ),
                 ),
-
             ],
           ),
         ),
       );
-    }
-    else{
-      return MaterialBanner(
-        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-        leading: Icon(getErrorIcon(context), color: Theme.of(context).colorScheme.secondary,),
-        content: Text("${discuzError.content}"),
-        //content: Text("${discuzError.content}(${getErrorLocalizedKey(context)})"),
-        actions: [
-          if(errorType!= ErrorType.userExpired && onRefreshCallback!=null)
-            TextButton(
-              child: Text(S.of(context).retry, style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
-              onPressed: () {
-                VibrationUtils.vibrateWithClickIfPossible();
-                onRefreshCallback!();
-              },
+    } else {
+      return PlatformCard(
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        color: Theme.of(context).colorScheme.secondaryContainer,
+        padding: const EdgeInsets.fromLTRB(16, 14, 12, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  getErrorIcon(context),
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+                const SizedBox(width: 12),
+                Expanded(child: Text(discuzError.content)),
+              ],
             ),
-          if(discuzError.key == "AddDiscuzParseError" || discuzError.key == "AddDiscuzDioException")
-            TextButton(
-              child: Text(S.of(context).contactUsViaEmail),
-              onPressed: () async{
-                VibrationUtils.vibrateWithClickIfPossible();
-                await launchUrl(Uri.parse("mailto:kidozh@gmail.com?subject=${discuzError.errorURL == null?"":discuzError.errorURL}"));
-                //Navigator.of(context).pop();
-              },
-
+            const SizedBox(height: 8),
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: Wrap(
+                spacing: 6,
+                runSpacing: 4,
+                children: [
+                  if (errorType != ErrorType.userExpired &&
+                      onRefreshCallback != null)
+                    PlatformTextButton(
+                      child: Text(
+                        S.of(context).retry,
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                      onPressed: () {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        onRefreshCallback!();
+                      },
+                    ),
+                  if (discuzError.key == "AddDiscuzParseError" ||
+                      discuzError.key == "AddDiscuzDioException")
+                    PlatformTextButton(
+                      child: Text(S.of(context).contactUsViaEmail),
+                      onPressed: () async {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        await launchUrl(Uri.parse(
+                            "mailto:kidozh@gmail.com?subject=${discuzError.errorURL == null ? "" : discuzError.errorURL}"));
+                        //Navigator.of(context).pop();
+                      },
+                    ),
+                  if (errorType == ErrorType.userExpired)
+                    // should directly re-login here
+                    PlatformTextButton(
+                      child: Text(
+                        S.of(context).loginTitle,
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                      onPressed: () async {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
+                                context,
+                                listen: false)
+                            .discuz;
+                        User? user = Provider.of<DiscuzAndUserNotifier>(context,
+                                listen: false)
+                            .user;
+                        if (discuz != null) {
+                          await Navigator.push(
+                              context,
+                              platformPageRoute(
+                                  iosTitle: S.of(context).loginTitle,
+                                  context: context,
+                                  builder: (context) =>
+                                      LoginPage(discuz, user?.username)));
+                        }
+                      },
+                    ),
+                  if (discuzError.key == "mobile_template_no_found" &&
+                      this.webpageUrl != null)
+                    PlatformTextButton(
+                      child: Text(
+                        S.of(context).navigateToWebPage,
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary),
+                      ),
+                      onPressed: () {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        // need go to webpage
+                        Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
+                                context,
+                                listen: false)
+                            .discuz;
+                        User? user = Provider.of<DiscuzAndUserNotifier>(context,
+                                listen: false)
+                            .user;
+                        if (discuz != null) {
+                          Navigator.push(
+                              context,
+                              platformPageRoute(
+                                  context: context,
+                                  iosTitle: S.of(context).navigateToWebPage,
+                                  builder: (context) =>
+                                      InternalWebviewBrowserPage(
+                                          discuz, user, webpageUrl!)));
+                        }
+                      },
+                    ),
+                ],
+              ),
             ),
-          if(errorType == ErrorType.userExpired)
-            // should directly re-login here
-            TextButton(
-              child: Text(S.of(context).loginTitle, style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
-              onPressed: () async {
-                VibrationUtils.vibrateWithClickIfPossible();
-                Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(context,listen: false).discuz;
-                User? user = Provider.of<DiscuzAndUserNotifier>(context,listen: false).user;
-                if(discuz != null){
-                  await Navigator.push(
-                      context,
-                      platformPageRoute(
-                          iosTitle: S.of(context).loginTitle,
-                          context: context,
-                          builder: (context) => LoginPage(discuz, user?.username)));
-                }
-
-              },
-            ),
-          if(discuzError.key == "mobile_template_no_found" && this.webpageUrl!=null)
-            TextButton(
-              child: Text(S.of(context).navigateToWebPage, style: TextStyle(color: Theme.of(context).colorScheme.primary),),
-              onPressed: () {
-                VibrationUtils.vibrateWithClickIfPossible();
-                // need go to webpage
-                Discuz? discuz =
-                    Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
-                User? user =
-                    Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-                if(discuz!=null){
-                  Navigator.push(
-                      context,
-                      platformPageRoute(
-                          context: context,
-                          iosTitle: S.of(context).navigateToWebPage,
-                          builder: (context) => InternalWebviewBrowserPage(
-                              discuz,
-                              user,
-                              webpageUrl!)));
-                }
-              },
-            ),
-        ],
+          ],
+        ),
       );
     }
-
   }
 
-  ErrorCard(this.discuzError,this.onRefreshCallback, {this.largeSize, this.errorType, this.webpageUrl});
+  ErrorCard(this.discuzError, this.onRefreshCallback,
+      {this.largeSize, this.errorType, this.webpageUrl});
 
-  String getErrorLocalizedKey(BuildContext context){
+  String getErrorLocalizedKey(BuildContext context) {
     log("GET Dio ERROR ${discuzError.dioError} ${discuzError.key}");
-    if(errorType == ErrorType.userExpired){
+    if (errorType == ErrorType.userExpired) {
       return S.of(context).errorUserExpired;
-    }
-    else if(discuzError.dioError!=null){
-      switch (discuzError.dioError!.type){
+    } else if (discuzError.dioError != null) {
+      switch (discuzError.dioError!.type) {
         case DioExceptionType.transformTimeout:
           return S.of(context).dioErrorOther;
         case DioExceptionType.sendTimeout:
@@ -209,21 +272,18 @@ class ErrorCard extends StatelessWidget{
         case DioExceptionType.unknown:
           return S.of(context).dioErrorOther;
       }
-    }
-    else if(discuzError.key == "mobile_template_no_found"){
+    } else if (discuzError.key == "mobile_template_no_found") {
       return S.of(context).mobileTemplateNotFound;
-    }
-    else{
+    } else {
       return discuzError.key;
     }
   }
 
-  IconData getErrorIcon(BuildContext buildContext){
-    if(errorType == ErrorType.userExpired){
+  IconData getErrorIcon(BuildContext buildContext) {
+    if (errorType == ErrorType.userExpired) {
       return Icons.lock_clock;
-    }
-    else if(discuzError.dioError!=null){
-      switch (discuzError.dioError!.type){
+    } else if (discuzError.dioError != null) {
+      switch (discuzError.dioError!.type) {
         case DioExceptionType.transformTimeout:
           return Icons.error_outline;
         case DioExceptionType.sendTimeout:
@@ -243,11 +303,9 @@ class ErrorCard extends StatelessWidget{
         case DioExceptionType.unknown:
           return Icons.error_outline;
       }
-    }
-    else if(discuzError.key == "mobile_template_no_found"){
+    } else if (discuzError.key == "mobile_template_no_found") {
       return Icons.explore_outlined;
-    }
-    else{
+    } else {
       return Icons.error_outline;
     }
   }
