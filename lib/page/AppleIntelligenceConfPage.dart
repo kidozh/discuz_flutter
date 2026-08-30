@@ -2,7 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:discuz_flutter/dao/AiRuleDao.dart';
+import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
+import 'package:discuz_flutter/utility/FoundationModelFrameworkUtils.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
+import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:foundation_models_framework/foundation_models_framework.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:provider/provider.dart';
 
 import '../database/AppDatabase.dart';
 import '../entity/AiRule.dart';
@@ -26,6 +30,7 @@ class AppleIntelligenceConfPage extends StatefulWidget {
 class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage> {
   bool appleAiEnabled = false;
   bool aiAvailable = false;
+  bool _checkingAvailability = true;
   String systemInfo = "";
   String errorCode = "";
   String errorMessage = "";
@@ -91,7 +96,14 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage> {
                         )
                       : null,
                   onTap: () {
+                    final name = option.$1.name;
                     setState(() => _selectedGuardrailLevel = option.$1);
+                    context
+                        .read<UserPreferenceNotifierProvider>()
+                        .setAppleIntelligenceGuardrail(name);
+                    unawaited(
+                      UserPreferencesUtils.putAppleIntelligenceGuardrail(name),
+                    );
                     Navigator.pop(sheetContext);
                   },
                 ),
@@ -131,152 +143,184 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage> {
               )
           ],
         ),
-        body: aiAvailable
-            ? PlatformAdaptiveSettingsList(
-                sections: [
-                  SettingsSection(
-                    tiles: [
-                      SettingsTile.switchTile(
-                        initialValue: aiAvailable ? appleAiEnabled : false,
-                        activeSwitchColor:
-                            Theme.of(context).colorScheme.primary,
-                        onToggle: (value) {
-                          setState(() {
-                            appleAiEnabled = value;
-                          });
-                        },
-                        title: Text(S.of(context).appleIntelligenceEnabled),
-                        description:
-                            errorMessage.isEmpty ? null : Text(errorMessage),
-                      ),
-                      if (appleAiEnabled)
-                        SettingsTile.navigation(
-                          title: Text(
-                              S.of(context).appleIntelligenceGuardrailLevel),
-                          value: Text(_getSelectedGuardrailLevelText()),
-                          onPressed: (context) {
-                            VibrationUtils.vibrateWithClickIfPossible();
-                            _showGuardrailLevelDialog();
-                          },
-                        ),
-                      if (appleAiEnabled)
-                        SettingsTile.navigation(
-                          title:
-                              Text(S.of(context).appleIntelligenceUseHistory),
-                          onPressed: (context) {
-                            VibrationUtils.vibrateWithClickIfPossible();
-                          },
-                        ),
-                    ],
-                  ),
-                  if (appleAiEnabled && _aiRuleDao != null)
-                    SettingsSection(
-                      title: Text(S.of(context).appleIntelligenceRule),
-                      tiles: [
-                        SettingsTile.navigation(
-                          title: Text(S.of(context).appleIntelligenceTranslate),
-                          onPressed: (context) {
-                            AiRule exampleRule = AiRule(
-                                S.of(context).appleIntelligenceTranslate,
-                                S
-                                    .of(context)
-                                    .appleIntelligenceInstructionExample,
-                                S.of(context).appleIntelligencePromptExample,
-                                DateTime.now());
-                            exampleRule.isExample = true;
-                            Navigator.push<String>(
-                                context,
-                                platformPageRoute(
-                                    context: context,
-                                    builder: (context) =>
-                                        AddAiModelRulePage(exampleRule)));
-                          },
-                        ),
-                        ..._rules
-                            .map((rule) => SettingsTile.navigation(
-                                  title: Text(rule.name),
-                                  onPressed: (context) {
-                                    Navigator.push<String>(
-                                        context,
-                                        platformPageRoute(
-                                            context: context,
-                                            builder: (context) =>
-                                                AddAiModelRulePage(rule)));
-                                  },
-                                ))
-                            .toList(),
-                      ],
-                    ),
-                  CustomSettingsSection(
-                      child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    child: Column(
-                      children: [
-                        RichText(
-                          text: TextSpan(children: [
-                            WidgetSpan(
-                              child: Icon(
-                                Icons.info_outline,
-                                color: Theme.of(context).disabledColor,
-                                size: 18,
-                              ),
-                            ),
-                            WidgetSpan(child: SizedBox(width: 2)),
-                            TextSpan(
-                              text: S.of(context).appleIntelligenceUseNotice,
-                              style: TextStyle(
-                                  color: Theme.of(context).disabledColor),
-                            ),
-                            WidgetSpan(
-                                child: InkWell(
-                              child: Text(
-                                " ${S.of(context).appleIntelligenceLearnMoreFromOurPost}",
-                                style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.primary),
-                              ),
-                              onTap: () {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                URLUtils.launchURL(
-                                    "https://discuzhub.kidozh.com/zh/doc/intelligence-service/");
-                              },
-                            )),
-                            WidgetSpan(child: SizedBox(width: 4)),
-                            WidgetSpan(
-                                child: InkWell(
-                              child: Text(
-                                " ${S.of(context).appleIntelligenceLearnMore}",
-                                style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.primary),
-                              ),
-                              onTap: () {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                URLUtils.launchURL(
-                                    "https://www.apple.com/apple-intelligence/");
-                              },
-                            )),
-                          ]),
-                        ),
-                      ],
-                    ),
-                  ))
-                ],
+        body: _checkingAvailability
+            ? Center(
+                child: PlatformLiquidGlassCard(
+                  padding: const EdgeInsets.all(22),
+                  borderRadius: BorderRadius.circular(24),
+                  child: const PlatformCircularProgressIndicator(),
+                ),
               )
-            : appleIntelligenceNotSupportedWidget);
+            : aiAvailable
+                ? PlatformAdaptiveSettingsList(
+                    sections: [
+                      SettingsSection(
+                        tiles: [
+                          SettingsTile.switchTile(
+                            initialValue: aiAvailable ? appleAiEnabled : false,
+                            activeSwitchColor:
+                                Theme.of(context).colorScheme.primary,
+                            onToggle: (value) {
+                              setState(() => appleAiEnabled = value);
+                              context
+                                  .read<UserPreferenceNotifierProvider>()
+                                  .setAppleIntelligenceEnabled(value);
+                              unawaited(
+                                UserPreferencesUtils
+                                    .putAppleIntelligenceEnabled(value),
+                              );
+                            },
+                            title: Text(S.of(context).appleIntelligenceEnabled),
+                            description: errorMessage.isEmpty
+                                ? null
+                                : Text(errorMessage),
+                          ),
+                          if (appleAiEnabled)
+                            SettingsTile.navigation(
+                              title: Text(S
+                                  .of(context)
+                                  .appleIntelligenceGuardrailLevel),
+                              value: Text(_getSelectedGuardrailLevelText()),
+                              onPressed: (context) {
+                                VibrationUtils.vibrateWithClickIfPossible();
+                                _showGuardrailLevelDialog();
+                              },
+                            ),
+                        ],
+                      ),
+                      if (appleAiEnabled && _aiRuleDao != null)
+                        SettingsSection(
+                          title: Text(S.of(context).appleIntelligenceRule),
+                          tiles: [
+                            SettingsTile.navigation(
+                              title: Text(
+                                  S.of(context).appleIntelligenceTranslate),
+                              onPressed: (context) {
+                                AiRule exampleRule = AiRule(
+                                    S.of(context).appleIntelligenceTranslate,
+                                    S
+                                        .of(context)
+                                        .appleIntelligenceInstructionExample,
+                                    S
+                                        .of(context)
+                                        .appleIntelligencePromptExample,
+                                    DateTime.now());
+                                exampleRule.isExample = true;
+                                Navigator.push<String>(
+                                    context,
+                                    platformPageRoute(
+                                        context: context,
+                                        builder: (context) =>
+                                            AddAiModelRulePage(exampleRule)));
+                              },
+                            ),
+                            ..._rules
+                                .map((rule) => SettingsTile.navigation(
+                                      title: Text(rule.name),
+                                      onPressed: (context) {
+                                        Navigator.push<String>(
+                                            context,
+                                            platformPageRoute(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AddAiModelRulePage(rule)));
+                                      },
+                                    ))
+                                .toList(),
+                          ],
+                        ),
+                      CustomSettingsSection(
+                          child: PlatformLiquidGlassCard(
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 4),
+                        padding: const EdgeInsets.all(14),
+                        borderRadius: BorderRadius.circular(22),
+                        child: Column(
+                          children: [
+                            RichText(
+                              text: TextSpan(children: [
+                                WidgetSpan(
+                                  child: Icon(
+                                    PlatformIcons(context).info,
+                                    color: Theme.of(context).disabledColor,
+                                    size: 18,
+                                  ),
+                                ),
+                                WidgetSpan(child: SizedBox(width: 2)),
+                                TextSpan(
+                                  text:
+                                      S.of(context).appleIntelligenceUseNotice,
+                                  style: TextStyle(
+                                      color: Theme.of(context).disabledColor),
+                                ),
+                                WidgetSpan(
+                                    child: InkWell(
+                                  child: Text(
+                                    " ${S.of(context).appleIntelligenceLearnMoreFromOurPost}",
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary),
+                                  ),
+                                  onTap: () {
+                                    VibrationUtils.vibrateWithClickIfPossible();
+                                    URLUtils.launchURL(
+                                        "https://discuzhub.kidozh.com/zh/doc/intelligence-service/");
+                                  },
+                                )),
+                                WidgetSpan(child: SizedBox(width: 4)),
+                                WidgetSpan(
+                                    child: InkWell(
+                                  child: Text(
+                                    " ${S.of(context).appleIntelligenceLearnMore}",
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary),
+                                  ),
+                                  onTap: () {
+                                    VibrationUtils.vibrateWithClickIfPossible();
+                                    URLUtils.launchURL(
+                                        "https://www.apple.com/apple-intelligence/");
+                                  },
+                                )),
+                              ]),
+                            ),
+                          ],
+                        ),
+                      ))
+                    ],
+                  )
+                : appleIntelligenceNotSupportedWidget);
   }
 
   void _checkAiAvailability() async {
+    final storedEnabled =
+        await UserPreferencesUtils.getAppleIntelligenceEnabled();
+    final storedGuardrail =
+        await UserPreferencesUtils.getAppleIntelligenceGuardrail();
+    final guardrail =
+        FoundationModelFrameworkUtils.guardrailLevelFromName(storedGuardrail);
     if (Platform.isIOS || Platform.isMacOS) {
-      final foundationModels = FoundationModelsFramework.instance;
-
       try {
         AvailabilityResponse availabilityResponse =
-            await foundationModels.checkAvailability();
+            await FoundationModelFrameworkUtils.checkAvailability();
         print(
             "Ai response ${availabilityResponse.reasonCode} -> ${availabilityResponse.errorMessage}");
+        if (!mounted) return;
+        final effectiveEnabled =
+            storedEnabled && availabilityResponse.isAvailable;
+        final preferences = context.read<UserPreferenceNotifierProvider>();
+        preferences.setAppleIntelligenceGuardrail(storedGuardrail);
+        preferences.setAppleIntelligenceAvailability(
+          availabilityResponse.isAvailable,
+        );
+        preferences.setAppleIntelligenceEnabled(effectiveEnabled);
         setState(() {
           aiAvailable = availabilityResponse.isAvailable;
+          appleAiEnabled = effectiveEnabled;
+          _selectedGuardrailLevel = guardrail;
+          _checkingAvailability = false;
           systemInfo = availabilityResponse.osVersion;
           errorCode = availabilityResponse.reasonCode == null
               ? ""
@@ -286,7 +330,15 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage> {
               : availabilityResponse.errorMessage!;
         });
       } catch (e) {
+        if (!mounted) return;
+        context
+            .read<UserPreferenceNotifierProvider>()
+            .setAppleIntelligenceAvailability(false);
         setState(() {
+          aiAvailable = false;
+          appleAiEnabled = false;
+          _selectedGuardrailLevel = guardrail;
+          _checkingAvailability = false;
           errorCode = "-1";
           errorMessage = "${e}";
         });
@@ -294,8 +346,15 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage> {
       }
     } else {
       await Future.delayed(const Duration(microseconds: 400));
+      if (!mounted) return;
+      context
+          .read<UserPreferenceNotifierProvider>()
+          .setAppleIntelligenceAvailability(false);
       setState(() {
         aiAvailable = false;
+        appleAiEnabled = false;
+        _selectedGuardrailLevel = guardrail;
+        _checkingAvailability = false;
         errorCode = "-1";
         errorMessage =
             S.of(context).appleIntelligenceNotSupportedInThisPlatform;
@@ -317,20 +376,20 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage> {
     });
   }
 
-  Widget get appleIntelligenceNotSupportedWidget => Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer),
-        child: Padding(
-          padding: EdgeInsetsGeometry.symmetric(vertical: 32, horizontal: 32),
+  Widget get appleIntelligenceNotSupportedWidget => Center(
+        child: PlatformLiquidGlassCard(
+          margin: const EdgeInsets.all(12),
+          padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 32),
+          borderRadius: BorderRadius.circular(28),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
                 height: 16,
               ),
               Icon(
-                Icons.security_update_warning,
+                PlatformIcons(context).warning,
                 size: 32,
                 color: Theme.of(context).colorScheme.primary,
               ),

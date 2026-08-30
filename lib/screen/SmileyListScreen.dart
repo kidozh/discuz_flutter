@@ -24,25 +24,53 @@ import 'BlankScreen.dart';
 
 typedef SmileyPressedFunc = void Function(Smiley);
 
-class SmileyListScreen extends StatelessWidget {
-  SmileyPressedFunc onSmileyPressed;
+class SmileyPanelAction {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
 
-  SmileyListScreen(this.onSmileyPressed);
+  const SmileyPanelAction({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+}
+
+class SmileyListScreen extends StatelessWidget {
+  final SmileyPressedFunc onSmileyPressed;
+  final List<SmileyPanelAction> recentActions;
+
+  const SmileyListScreen(
+    this.onSmileyPressed, {
+    this.recentActions = const [],
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SmileyListStatefulWidget(onSmileyPressed);
+    return SmileyListStatefulWidget(
+      onSmileyPressed,
+      recentActions: recentActions,
+    );
   }
 }
 
 class SmileyListStatefulWidget extends StatefulWidget {
-  SmileyPressedFunc smileyValueGetter;
+  final SmileyPressedFunc smileyValueGetter;
+  final List<SmileyPanelAction> recentActions;
 
-  SmileyListStatefulWidget(this.smileyValueGetter);
+  const SmileyListStatefulWidget(
+    this.smileyValueGetter, {
+    this.recentActions = const [],
+    super.key,
+  });
 
   @override
   State<SmileyListStatefulWidget> createState() {
-    return SmileyListState(this.smileyValueGetter);
+    return SmileyListState(
+      smileyValueGetter,
+      recentActions: recentActions,
+    );
   }
 }
 
@@ -50,9 +78,13 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
   static const double _tabItemExtent = 84;
   static const double _tabGap = 4;
 
-  SmileyPressedFunc smileyValueGetter;
+  final SmileyPressedFunc smileyValueGetter;
+  final List<SmileyPanelAction> recentActions;
 
-  SmileyListState(this.smileyValueGetter);
+  SmileyListState(
+    this.smileyValueGetter, {
+    this.recentActions = const [],
+  });
 
   SmileyResult? result;
   late SmileyDao _smileyDao;
@@ -109,6 +141,7 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
     final shouldSelectFirstRemote = cachedResult != null &&
         _selectedTabIndex == 0 &&
         smileyList.isEmpty &&
+        recentActions.isEmpty &&
         cachedResult.variables.smilies.isNotEmpty;
     setState(() {
       _savedSmileyList = smileyList;
@@ -136,6 +169,7 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
 
       final shouldSelectFirstRemote = _selectedTabIndex == 0 &&
           _savedSmileyList.isEmpty &&
+          recentActions.isEmpty &&
           value.variables.smilies.isNotEmpty;
       setState(() {
         result = value;
@@ -280,7 +314,10 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
       // add saved smiley first
       smileyTabLabels.add(S.of(context).savedSmileyTabTitle);
 
-      tabBarViewList.add(SavedSmileyTabView(smileyValueGetter));
+      tabBarViewList.add(SavedSmileyTabView(
+        smileyValueGetter,
+        actions: recentActions,
+      ));
       if (result != null) {
         smileyList.addAll(result!.variables.smilies);
         for (int i = 0; i < smileyList.length; i++) {
@@ -329,7 +366,7 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
                               color: Theme.of(context).colorScheme.primary),
                     ),
                     errorWidget: (context, url, error) =>
-                        Icon(Icons.image_not_supported),
+                        Icon(PlatformIcons(context).unavailableImage),
                   )),
             );
           }
@@ -358,7 +395,8 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
                   ],
                   isScrollable: true,
                   labelColor: Theme.of(context).colorScheme.primary,
-                  unselectedLabelColor: Colors.grey,
+                  unselectedLabelColor:
+                      Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 Expanded(child: TabBarView(children: tabBarViewList)),
               ],
@@ -399,28 +437,50 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
 }
 
 class SavedSmileyTabView extends StatelessWidget {
-  SmileyPressedFunc smileyValueGetter;
-  SavedSmileyTabView(this.smileyValueGetter);
+  final SmileyPressedFunc smileyValueGetter;
+  final List<SmileyPanelAction> actions;
+
+  const SavedSmileyTabView(
+    this.smileyValueGetter, {
+    this.actions = const [],
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SavedSmileyTabViewStatefulWidget(smileyValueGetter);
+    return SavedSmileyTabViewStatefulWidget(
+      smileyValueGetter,
+      actions: actions,
+    );
   }
 }
 
 class SavedSmileyTabViewStatefulWidget extends StatefulWidget {
-  SmileyPressedFunc smileyValueGetter;
-  SavedSmileyTabViewStatefulWidget(this.smileyValueGetter);
+  final SmileyPressedFunc smileyValueGetter;
+  final List<SmileyPanelAction> actions;
+
+  const SavedSmileyTabViewStatefulWidget(
+    this.smileyValueGetter, {
+    this.actions = const [],
+    super.key,
+  });
   @override
   SavedSmileyTabViewState createState() {
-    return SavedSmileyTabViewState(this.smileyValueGetter);
+    return SavedSmileyTabViewState(
+      smileyValueGetter,
+      actions: actions,
+    );
   }
 }
 
 class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
-  SmileyPressedFunc smileyValueGetter;
+  final SmileyPressedFunc smileyValueGetter;
+  final List<SmileyPanelAction> actions;
   SmileyDao? _smileyDao;
-  SavedSmileyTabViewState(this.smileyValueGetter);
+  SavedSmileyTabViewState(
+    this.smileyValueGetter, {
+    this.actions = const [],
+  });
 
   @override
   void initState() {
@@ -455,17 +515,20 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
         valueListenable: _smileyDao!.smileyBox.listenable(),
         builder: (BuildContext context, Box<Smiley> value, Widget? child) {
           List<Smiley> smileyData = _smileyDao!.findAllSmileyByDiscuz(discuz);
-          if (smileyData.isEmpty) {
+          if (smileyData.isEmpty && actions.isEmpty) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.arrow_forward),
+                Icon(PlatformIcons(context).forward),
                 Text(S.of(context).noSmileyFoundInDB)
               ],
             );
           } else {
-            List<Widget> smileyImageList = [];
+            List<Widget> smileyImageList = [
+              for (final action in actions)
+                _SmileyPanelActionTile(action: action),
+            ];
             for (int j = 0; j < smileyData.length; j++) {
               Smiley smiley = smileyData[j];
               // log("on Database smiley $smiley");
@@ -491,7 +554,7 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
                               CircularProgressIndicator(
                                   value: downloadProgress.progress),
                       errorWidget: (context, url, error) =>
-                          Icon(Icons.image_not_supported),
+                          Icon(PlatformIcons(context).unavailableImage),
                     )),
               );
             }
@@ -505,5 +568,47 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
         },
       );
     }
+  }
+}
+
+class _SmileyPanelActionTile extends StatelessWidget {
+  final SmileyPanelAction action;
+
+  const _SmileyPanelActionTile({required this.action});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Semantics(
+      button: true,
+      label: action.label,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          VibrationUtils.vibrateWithClickIfPossible();
+          action.onPressed();
+        },
+        child: PlatformCard(
+          margin: const EdgeInsets.all(5),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(action.icon, size: 23, color: colors.primary),
+              const SizedBox(height: 5),
+              Text(
+                action.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                    ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

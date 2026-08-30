@@ -535,12 +535,12 @@ class _AddDiscuzFormFieldState
                     },
                 ),
                 const TextSpan(text: "\n"),
-                const WidgetSpan(
+                WidgetSpan(
                   alignment: PlaceholderAlignment.middle,
                   child: Padding(
                     padding: EdgeInsets.only(right: 4),
                     child: Icon(
-                      Icons.verified,
+                      PlatformIcons(context).verified,
                       color: Colors.green,
                       size: 16,
                     ),
@@ -614,12 +614,12 @@ class _AddDiscuzFormFieldState
               ),
           children: [
             if (suggestion.beian.isNotEmpty)
-              const WidgetSpan(
+              WidgetSpan(
                 alignment: PlaceholderAlignment.middle,
                 child: Padding(
                   padding: EdgeInsets.only(left: 4),
                   child: Icon(
-                    Icons.verified,
+                    PlatformIcons(context).verified,
                     color: Colors.green,
                     size: 16,
                   ),

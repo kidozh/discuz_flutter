@@ -1,14 +1,11 @@
 import 'dart:developer';
 
 import 'package:chinese_font_library/chinese_font_library.dart';
-import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/FullImagePage.dart';
-import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
-import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/PostTextUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/BilibiliWidget.dart';
@@ -22,7 +19,6 @@ import 'package:html/parser.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_countdown/slide_countdown.dart';
 
-import '../entity/User.dart';
 import '../utility/DiscuzImageDioCacheManager.dart';
 import '../utility/URLUtils.dart';
 
@@ -47,6 +43,11 @@ class DiscuzHtmlWidget extends StatelessWidget {
       padding: EdgeInsets.all(4.0),
       child: Consumer<TypeSettingNotifierProvider>(
           builder: (context, typesetting, _) {
+        final colorScheme = Theme.of(context).colorScheme;
+        final darkMode = Theme.of(context).brightness == Brightness.dark;
+        final effectiveTextColor = textColor ?? colorScheme.onSurface;
+        String cssColor(Color color) =>
+            color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2);
         double scalingParameter = typesetting.scalingParameter;
         bool useThinFont = typesetting.useThinFontWeight;
         Typography typography = Typography.material2021();
@@ -103,9 +104,23 @@ class DiscuzHtmlWidget extends StatelessWidget {
             : defaultTextStyle.fontSize == null
                 ? 14
                 : defaultTextStyle.fontSize!;
-        User? user =
-            Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-        Future<Dio> futureDio = NetworkUtils.getDioWithPersistCookieJar(user);
+        final paragraphLineHeight = useCompactParagraph ? 1.34 : 1.52;
+        final paragraphSpacing = useCompactParagraph ? 0.46 : 0.82;
+        final subtleSurface = Color.alphaBlend(
+          colorScheme.primary.withValues(alpha: darkMode ? 0.12 : 0.07),
+          colorScheme.surface,
+        );
+        final codeSurface = Color.alphaBlend(
+          colorScheme.secondary.withValues(alpha: darkMode ? 0.16 : 0.08),
+          colorScheme.surface,
+        );
+        final subtleBorder = Color.alphaBlend(
+          colorScheme.onSurface.withValues(alpha: darkMode ? 0.26 : 0.14),
+          colorScheme.surface,
+        );
+        final mutedText = textColor == null
+            ? colorScheme.onSurfaceVariant
+            : effectiveTextColor;
         //DiscuzImageDioCacheManager dioCacheManager = DiscuzImageDioCacheManager(futureDio);
 
         return HtmlWidget(
@@ -130,45 +145,210 @@ class DiscuzHtmlWidget extends StatelessWidget {
             }
           },
           textStyle: TextStyle(
-            color: textColor,
+            color: effectiveTextColor,
             fontSize: themeFontSize * scalingParameter,
             fontWeight: useThinFont ? FontWeight.w300 : FontWeight.normal,
             wordSpacing: defaultTextStyle?.wordSpacing,
-            height: defaultTextStyle?.height,
+            letterSpacing: defaultTextStyle?.letterSpacing,
+            height: paragraphLineHeight,
             textBaseline: defaultTextStyle?.textBaseline,
           ).useSystemChineseFont(),
           // textStyle: Theme.of(context).useSystemChineseFont(Theme.of(context).brightness).textTheme.bodyLarge?..copyWith(
           //   fontSize: 12 * scalingParameter
           // ),
           customStylesBuilder: (element) {
-            if (element.localName == "br") {
-              return {"margin": '0.1em 0', "display": "block"};
-            } else if (element.className == "reply_wrap") {
-              return {
-                "border":
-                    "0.05em dashed #${Theme.of(context).colorScheme.primary.toARGB32().toRadixString(16).substring(2)}",
-                "border-radius": "0.5em",
-                "background-color":
-                    "#${Theme.of(context).colorScheme.primaryContainer.toARGB32().toRadixString(16).substring(2)}",
-                "color":
-                    "#${Theme.of(context).colorScheme.onPrimaryContainer.toARGB32().toRadixString(16).substring(2)}",
-                "padding": "0.5em",
-                "margin-bottom": "0.1em"
-              };
-            } else if (element.className == "blockcode") {
-              return {
-                "border":
-                    "0.05em dashed #${Theme.of(context).colorScheme.secondary.value.toRadixString(16).substring(2)}",
-                "background-color":
-                    "#${Theme.of(context).colorScheme.secondaryContainer.value.toRadixString(16).substring(2)}",
-                "color":
-                    "#${Theme.of(context).colorScheme.onSecondaryContainer.value.toRadixString(16).substring(2)}",
-                "padding": "0.5em",
-                "margin-bottom": "0.1em",
-                "font-family": "monospace",
-              };
+            final styles = <String, String>{};
+            final tag = element.localName;
+
+            if (darkMode &&
+                const {
+                  'body',
+                  'div',
+                  'p',
+                  'span',
+                  'font',
+                  'table',
+                  'tbody',
+                  'tr',
+                  'td',
+                  'th',
+                  'ul',
+                  'ol',
+                  'li',
+                  'blockquote',
+                }.contains(tag)) {
+              styles['color'] = '#${cssColor(effectiveTextColor)}';
+              styles['background-color'] = 'transparent';
             }
-            return null;
+
+            switch (tag) {
+              case 'body':
+              case 'div':
+                styles['line-height'] = paragraphLineHeight.toString();
+              case 'p':
+                styles.addAll({
+                  'line-height': paragraphLineHeight.toString(),
+                  'margin': '0 0 ${paragraphSpacing}em 0',
+                });
+              case 'h1':
+                styles.addAll({
+                  'font-size': '1.55em',
+                  'line-height': '1.22',
+                  'font-weight': '700',
+                  'letter-spacing': '-0.015em',
+                  'margin': '1.15em 0 0.55em 0',
+                  'color': '#${cssColor(effectiveTextColor)}',
+                });
+              case 'h2':
+                styles.addAll({
+                  'font-size': '1.34em',
+                  'line-height': '1.25',
+                  'font-weight': '700',
+                  'letter-spacing': '-0.01em',
+                  'margin': '1.05em 0 0.5em 0',
+                  'color': '#${cssColor(effectiveTextColor)}',
+                });
+              case 'h3':
+                styles.addAll({
+                  'font-size': '1.18em',
+                  'line-height': '1.3',
+                  'font-weight': '600',
+                  'margin': '0.95em 0 0.42em 0',
+                  'color': '#${cssColor(effectiveTextColor)}',
+                });
+              case 'h4':
+              case 'h5':
+              case 'h6':
+                styles.addAll({
+                  'font-size': '1.05em',
+                  'line-height': '1.35',
+                  'font-weight': '600',
+                  'margin': '0.85em 0 0.38em 0',
+                  'color': '#${cssColor(effectiveTextColor)}',
+                });
+              case 'strong':
+              case 'b':
+                styles['font-weight'] = '600';
+              case 'a':
+                styles.addAll({
+                  'color': '#${cssColor(colorScheme.primary)}',
+                  'font-weight': '500',
+                  'text-decoration': 'underline',
+                });
+              case 'blockquote':
+                styles.addAll({
+                  'border-left':
+                      '0.22em solid #${cssColor(colorScheme.primary)}',
+                  'border-radius': '0.45em',
+                  'background-color': '#${cssColor(subtleSurface)}',
+                  'color': '#${cssColor(mutedText)}',
+                  'padding': '0.55em 0.8em',
+                  'margin': '0.8em 0',
+                  'line-height': '1.48',
+                });
+              case 'pre':
+                styles.addAll({
+                  'background-color': '#${cssColor(codeSurface)}',
+                  'border': '0.05em solid #${cssColor(subtleBorder)}',
+                  'border-radius': '0.65em',
+                  'padding': '0.8em',
+                  'margin': '0.8em 0',
+                  'font-family': 'monospace',
+                  'font-size': '0.9em',
+                  'line-height': '1.45',
+                  'white-space': 'pre-wrap',
+                });
+              case 'code':
+                styles.addAll({
+                  'background-color': '#${cssColor(codeSurface)}',
+                  'border-radius': '0.32em',
+                  'padding': '0.1em 0.28em',
+                  'font-family': 'monospace',
+                  'font-size': '0.9em',
+                });
+              case 'ul':
+              case 'ol':
+                styles.addAll({
+                  'padding-left': '1.45em',
+                  'margin': '0.45em 0 ${paragraphSpacing}em 0',
+                });
+              case 'li':
+                styles.addAll({
+                  'margin': '0.2em 0',
+                  'line-height': paragraphLineHeight.toString(),
+                });
+              case 'hr':
+                styles.addAll({
+                  'border': 'none',
+                  'border-top': '0.05em solid #${cssColor(subtleBorder)}',
+                  'margin': '1.1em 0',
+                });
+              case 'table':
+                styles.addAll({
+                  'border': '0.05em solid #${cssColor(subtleBorder)}',
+                  'border-radius': '0.55em',
+                  'margin': '0.8em 0',
+                  'background-color': '#${cssColor(subtleSurface)}',
+                });
+              case 'th':
+                styles.addAll({
+                  'font-weight': '600',
+                  'background-color': '#${cssColor(codeSurface)}',
+                  'padding': '0.5em 0.65em',
+                  'border': '0.05em solid #${cssColor(subtleBorder)}',
+                });
+              case 'td':
+                styles.addAll({
+                  'padding': '0.5em 0.65em',
+                  'border': '0.05em solid #${cssColor(subtleBorder)}',
+                });
+              case 'img':
+                styles.addAll({
+                  'max-width': '100%',
+                  'height': 'auto',
+                  'border-radius': '0.7em',
+                  'margin': '0.35em 0',
+                });
+              case 'figcaption':
+                styles.addAll({
+                  'color': '#${cssColor(mutedText)}',
+                  'font-size': '0.86em',
+                  'line-height': '1.35',
+                  'margin': '0.35em 0 0.75em 0',
+                });
+              case 'small':
+                styles.addAll({
+                  'color': '#${cssColor(mutedText)}',
+                  'font-size': '0.86em',
+                });
+              case 'br':
+                styles.addAll({'margin': '0.08em 0', 'display': 'block'});
+            }
+
+            if (element.className == "reply_wrap") {
+              styles.addAll({
+                "border": "0.05em solid #${cssColor(subtleBorder)}",
+                "border-left": "0.22em solid #${cssColor(colorScheme.primary)}",
+                "border-radius": "0.65em",
+                "background-color": "#${cssColor(subtleSurface)}",
+                "color": "#${cssColor(effectiveTextColor)}",
+                "padding": "0.65em 0.8em",
+                "margin": "0.7em 0"
+              });
+            } else if (element.className == "blockcode") {
+              styles.addAll({
+                "border": "0.05em solid #${cssColor(subtleBorder)}",
+                "border-radius": "0.65em",
+                "background-color": "#${cssColor(codeSurface)}",
+                "color": "#${cssColor(effectiveTextColor)}",
+                "padding": "0.8em",
+                "margin": "0.8em 0",
+                "font-family": "monospace",
+                "font-size": "0.9em",
+                "line-height": "1.45",
+              });
+            }
+            return styles.isEmpty ? null : styles;
           },
           customWidgetBuilder: (element) {
             // "collapse", "spoil"
@@ -206,7 +386,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
                   return Padding(
                     padding: EdgeInsets.symmetric(vertical: 32),
                     child: PlatformListTile(
-                      leading: Icon(Icons.timer),
+                      leading: Icon(PlatformIcons(context).timeout),
                       title: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [

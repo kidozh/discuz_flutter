@@ -25,6 +25,8 @@ import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
 import 'package:discuz_flutter/screen/DiscuzPortalScreen.dart';
 import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
+import 'package:discuz_flutter/utility/FoundationModelFrameworkUtils.dart';
+import 'package:discuz_flutter/utility/ToastUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:dual_screen/dual_screen.dart';
@@ -32,7 +34,6 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -49,19 +50,29 @@ import '../utility/TwoPaneScaffold.dart';
 import '../utility/TwoPaneUtils.dart';
 import '../widget/DiscuzNotificationAppbarIconWidget.dart';
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  String platformName = "";
-  GlobalKey<NavigatorState> navigatorKey;
+class MyApp extends StatefulWidget {
+  final String platformName;
+  final GlobalKey<NavigatorState> navigatorKey;
 
-  MyApp(this.platformName, this.navigatorKey);
+  const MyApp(this.platformName, this.navigatorKey, {super.key});
 
-  _init_push(BuildContext context) async {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _didStartInitialization = false;
+
+  String get platformName => widget.platformName;
+  GlobalKey<NavigatorState> get navigatorKey => widget.navigatorKey;
+
+  Future<void> _initPush(BuildContext context) async {
     await PushServiceUtils.initPushInformation(navigatorKey, context);
   }
 
-  _loadPreference(BuildContext context) async {
+  Future<void> _loadPreference(BuildContext context) async {
     FlexScheme colorName = await UserPreferencesUtils.getThemeColor();
+    Color? customThemeColor = await UserPreferencesUtils.getCustomThemeColor();
     // check the size
     // check the screen size
     double width = MediaQuery.sizeOf(context).width;
@@ -92,9 +103,33 @@ class MyApp extends StatelessWidget {
         await UserPreferencesUtils.getAdExemptDiscuzHostPreference();
     bool ignoreCustomFontStyle =
         await UserPreferencesUtils.getDisableFontCustomizationPreference();
+    final appleIntelligenceEnabled =
+        await UserPreferencesUtils.getAppleIntelligenceEnabled();
+    final appleIntelligenceGuardrail =
+        await UserPreferencesUtils.getAppleIntelligenceGuardrail();
+    bool appleIntelligenceAvailable = false;
+    if (Platform.isIOS || Platform.isMacOS) {
+      try {
+        appleIntelligenceAvailable =
+            (await FoundationModelFrameworkUtils.checkAvailability())
+                .isAvailable;
+      } catch (error, stackTrace) {
+        log(
+          "Apple Intelligence availability check failed",
+          error: error,
+          stackTrace: stackTrace,
+        );
+      }
+    }
+
+    if (!context.mounted) return;
 
     Provider.of<ThemeNotifierProvider>(context, listen: false)
         .setTheme(colorName);
+    if (customThemeColor != null) {
+      Provider.of<ThemeNotifierProvider>(context, listen: false)
+          .setCustomThemeColor(customThemeColor);
+    }
     Provider.of<ThemeNotifierProvider>(context, listen: false)
         .setPlatformName(platformName);
     Provider.of<ThemeNotifierProvider>(context, listen: false)
@@ -116,6 +151,14 @@ class MyApp extends StatelessWidget {
 
     Provider.of<UserPreferenceNotifierProvider>(context, listen: false)
         .adExemptHost = adExemptHost;
+    final userPreferences =
+        Provider.of<UserPreferenceNotifierProvider>(context, listen: false);
+    userPreferences.setAppleIntelligenceGuardrail(appleIntelligenceGuardrail);
+    userPreferences
+        .setAppleIntelligenceAvailability(appleIntelligenceAvailable);
+    userPreferences.setAppleIntelligenceEnabled(
+      appleIntelligenceEnabled && appleIntelligenceAvailable,
+    );
 
     if (typography != null) {
       Provider.of<TypeSettingNotifierProvider>(context, listen: false)
@@ -152,8 +195,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _loadPreference(context);
-    _init_push(context);
+    if (!_didStartInitialization) {
+      _didStartInitialization = true;
+      unawaited(_loadPreference(context));
+      unawaited(_initPush(context));
+    }
     //_listenToChanges(context);
     CustomizeColor.updateAndroidNavigationbar(context);
     return Consumer<ThemeNotifierProvider>(
@@ -225,8 +271,24 @@ class MyApp extends StatelessWidget {
         //   )
         //     //surface: Colors.white,
         // );
+        final customThemeColor = themeColorEntity.customThemeColor;
+        final lightColorScheme = customThemeColor == null
+            ? null
+            : ColorScheme.fromSeed(
+                seedColor: customThemeColor,
+                brightness: Brightness.light,
+                dynamicSchemeVariant: themeColorEntity.dynamicSchemeVariant,
+              );
+        final darkColorScheme = customThemeColor == null
+            ? null
+            : ColorScheme.fromSeed(
+                seedColor: customThemeColor,
+                brightness: Brightness.dark,
+                dynamicSchemeVariant: themeColorEntity.dynamicSchemeVariant,
+              );
         final materialThemeDataLight = FlexThemeData.light(
-          scheme: themeColorEntity.themeColor,
+          scheme: customThemeColor == null ? themeColorEntity.themeColor : null,
+          colorScheme: lightColorScheme,
           pageTransitionsTheme: Platform.isIOS
               ? PageTransitionsTheme(builders: {
                   TargetPlatform.android: CupertinoPageTransitionsBuilder(),
@@ -238,7 +300,8 @@ class MyApp extends StatelessWidget {
         );
 
         final materialThemeDataDark = FlexThemeData.dark(
-          scheme: themeColorEntity.themeColor,
+          scheme: customThemeColor == null ? themeColorEntity.themeColor : null,
+          colorScheme: darkColorScheme,
           pageTransitionsTheme: Platform.isIOS
               ? PageTransitionsTheme(builders: {
                   TargetPlatform.android: CupertinoPageTransitionsBuilder(),
@@ -246,7 +309,7 @@ class MyApp extends StatelessWidget {
                 })
               : null,
           useMaterial3: themeColorEntity.useMaterial3,
-          textTheme: typography.black.useSystemChineseFont(Brightness.light),
+          textTheme: typography.white.useSystemChineseFont(Brightness.dark),
         );
 
         // final materialThemeDataDark = ThemeData(
@@ -272,16 +335,28 @@ class MyApp extends StatelessWidget {
             cupertinoOverrideTheme: CupertinoThemeData(
               brightness: Brightness.dark,
               barBackgroundColor: darkDefaultCupertinoTheme.barBackgroundColor,
-              textTheme: CupertinoTextThemeData(
-                primaryColor: Colors.white,
+              textTheme: darkDefaultCupertinoTheme.textTheme.copyWith(
+                primaryColor: materialThemeDataDark.colorScheme.primary,
+                textStyle: darkDefaultCupertinoTheme.textTheme.textStyle
+                    .copyWith(
+                        color: materialThemeDataDark.colorScheme.onSurface),
+                tabLabelTextStyle: darkDefaultCupertinoTheme
+                    .textTheme.tabLabelTextStyle
+                    .copyWith(
+                        color: materialThemeDataDark.colorScheme.onSurface),
+                navTitleTextStyle: darkDefaultCupertinoTheme
+                    .textTheme.navTitleTextStyle
+                    .copyWith(
+                        color: materialThemeDataDark.colorScheme.onSurface),
                 navActionTextStyle: darkDefaultCupertinoTheme
                     .textTheme.navActionTextStyle
                     .copyWith(
-                  color: const Color(0xF0F9F9F9),
+                  color: materialThemeDataDark.colorScheme.primary,
                 ),
                 navLargeTitleTextStyle: darkDefaultCupertinoTheme
                     .textTheme.navLargeTitleTextStyle
-                    .copyWith(color: const Color(0xF0F9F9F9)),
+                    .copyWith(
+                        color: materialThemeDataDark.colorScheme.onSurface),
               ),
             ),
           ),
@@ -328,7 +403,7 @@ class MyApp extends StatelessWidget {
                   GlobalWidgetsLocalizations.delegate
                 ],
                 supportedLocales: S.delegate.supportedLocales,
-                builder: EasyLoading.init(),
+                builder: ToastUtils.easyLoadingBuilder(),
                 home: MainTwoPanePage(
                   navigatorKey: this.navigatorKey,
                 ),
@@ -744,8 +819,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           onTap: selectBottomDestination,
         ),
         appBar: PlatformAppBar(
-          liquidGlassTitle: appBarTitle,
-          liquidGlassSubtitle: appBarSubtitle,
           liquidGlassTintColor: Theme.of(context).textTheme.titleSmall?.color ??
               CupertinoColors.label.resolveFrom(context),
           title: Column(
@@ -795,8 +868,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             Expanded(child: Consumer<DiscuzAndUserNotifier>(
               builder: (context, value, child) {
                 final bodyWidgetList = <Widget>[
-                  DashboardScreen(
-                    onSelectTid: onSelectTid,
+                  KeyedSubtree(
+                    key: ValueKey(
+                      'dashboard_${value.discuz?.baseURL}',
+                    ),
+                    child: DashboardScreen(
+                      onSelectTid: onSelectTid,
+                    ),
                   ),
 
                   // should not exist any

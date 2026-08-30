@@ -4620,6 +4620,26 @@ class S {
     );
   }
 
+  /// `Custom color`
+  String get customColor {
+    return Intl.message(
+      'Custom color',
+      name: 'customColor',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Custom · {name}`
+  String customColorNamed(Object name) {
+    return Intl.message(
+      'Custom · $name',
+      name: 'customColorNamed',
+      desc: '',
+      args: [name],
+    );
+  }
+
   /// `Select color shade`
   String get selectColorShadeTitle {
     return Intl.message(

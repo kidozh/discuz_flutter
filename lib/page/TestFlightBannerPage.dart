@@ -130,7 +130,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent> {
                   child: CircleAvatar(
                     backgroundColor: Colors.blue,
                     child: Icon(
-                      Icons.view_in_ar,
+                      PlatformIcons(context).cube,
                       color: Colors.white,
                       size: 80,
                     ),
@@ -210,7 +210,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent> {
                   leading: CircleAvatar(
                     backgroundColor: Colors.green,
                     child: Icon(
-                      Icons.lock_outline,
+                      PlatformIcons(context).secure,
                       color: Colors.white,
                     ),
                   ),
@@ -226,7 +226,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent> {
                   leading: CircleAvatar(
                     backgroundColor: Colors.amber,
                     child: Icon(
-                      Icons.query_stats,
+                      PlatformIcons(context).chart,
                       color: Colors.black,
                     ),
                   ),
@@ -241,7 +241,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent> {
                   leading: CircleAvatar(
                     backgroundColor: Colors.indigo,
                     child: Icon(
-                      Icons.check_outlined,
+                      PlatformIcons(context).checkMark,
                       color: Colors.white,
                     ),
                   ),

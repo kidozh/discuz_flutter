@@ -1,4 +1,5 @@
 import 'package:easy_refresh/easy_refresh.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../generated/l10n.dart';
@@ -9,6 +10,17 @@ class EasyRefreshUtils {
     IndicatorPosition position = IndicatorPosition.above,
     bool safeArea = true,
   }) {
+    if (isCupertino(context)) {
+      return CupertinoHeader(
+        position: position == IndicatorPosition.above
+            ? IndicatorPosition.behind
+            : position,
+        safeArea: safeArea,
+        foregroundColor: CupertinoColors.secondaryLabel.resolveFrom(context),
+        userWaterDrop: false,
+        hapticFeedback: true,
+      );
+    }
     return ClassicHeader(
         position: position,
         safeArea: safeArea,
@@ -23,6 +35,13 @@ class EasyRefreshUtils {
   }
 
   static Footer i18nClassicFooter(BuildContext context) {
+    if (isCupertino(context)) {
+      return CupertinoFooter(
+        foregroundColor: CupertinoColors.secondaryLabel.resolveFrom(context),
+        userWaterDrop: false,
+        emptyWidget: const SizedBox.shrink(),
+      );
+    }
     return ClassicFooter(
         dragText: S.of(context).easyRefreshClassicFooterDragText,
         armedText: S.of(context).easyRefreshClassicFooterArmedText,

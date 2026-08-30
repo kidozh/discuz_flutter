@@ -33,7 +33,7 @@ class ManageDiscuzPage extends StatelessWidget {
                       builder: (context) => AddDiscuzPage()));
             },
             icon: Icon(
-              Icons.add,
+              PlatformIcons(context).add,
               semanticLabel: S.of(context).addNewDiscuz,
             ),
           )
@@ -143,7 +143,7 @@ class ManageDiscuzState extends State<ManageDiscuzStateWidget> {
                       SlidableAction(
                         label: S.of(context).deleteAccount,
                         backgroundColor: Colors.redAccent,
-                        icon: Icons.delete,
+                        icon: PlatformIcons(context).delete,
                         onPressed: (context) {
                           _deleteDiscuz(discuz);
                         },

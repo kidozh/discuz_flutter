@@ -706,8 +706,10 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
                             Theme.of(context).textTheme.bodyLarge?.fontSize,
                         color: Theme.of(context).textTheme.titleMedium?.color,
                       )),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 8,
+                    runSpacing: 8,
                     children: [
                       PlatformTextButton(
                         child: Text(S.of(context).unblockContent),

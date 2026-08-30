@@ -28,10 +28,10 @@ class DiscuzDialogItem extends StatelessWidget {
         child: PlatformListTile(
       leading: _selecteddiscuz == discuz
           ? Icon(
-              Icons.check,
+              PlatformIcons(context).checkMark,
               color: Colors.green,
             )
-          : Icon(Icons.forum),
+          : Icon(PlatformIcons(context).forumOutline),
       onTap: onPressed,
       title: Text(discuz.siteName.toString()),
       subtitle: Text(discuz.baseURL.toString()),

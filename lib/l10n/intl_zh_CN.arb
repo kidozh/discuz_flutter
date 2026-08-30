@@ -781,6 +781,13 @@
     }
   },
   "selectColorTitle": "选择颜色",
+  "customColor": "自定义颜色",
+  "customColorNamed": "自定义 · {name}",
+  "@customColorNamed": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "selectColorShadeTitle": "选择色彩光影",
   "selectColorAndShadeTitle": "选择色彩以及光影",
   "primaryColorPickerType": "主要色",

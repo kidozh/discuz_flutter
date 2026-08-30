@@ -523,8 +523,8 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
                             duration: const Duration(milliseconds: 160),
                             child: Icon(
                               _showSmiley
-                                  ? Icons.keyboard_rounded
-                                  : Icons.emoji_emotions_outlined,
+                                  ? PlatformIcons(context).keyboard
+                                  : PlatformIcons(context).smiley,
                               key: ValueKey(_showSmiley),
                               size: 20,
                               semanticLabel: S.of(context).emoijButtonTooltip,
@@ -567,7 +567,7 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
                             onPressed:
                                 _canSend ? () => _sendMessage(discuz) : null,
                             icon: Icon(
-                              Icons.arrow_upward_rounded,
+                              PlatformIcons(context).upArrow,
                               size: 20,
                               color: _canSend
                                   ? Theme.of(context).colorScheme.onPrimary

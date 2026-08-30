@@ -280,33 +280,34 @@ class ErrorCard extends StatelessWidget {
   }
 
   IconData getErrorIcon(BuildContext buildContext) {
+    final icons = PlatformIcons(buildContext);
     if (errorType == ErrorType.userExpired) {
-      return Icons.lock_clock;
+      return icons.expiredSession;
     } else if (discuzError.dioError != null) {
       switch (discuzError.dioError!.type) {
         case DioExceptionType.transformTimeout:
-          return Icons.error_outline;
+          return icons.errorOutline;
         case DioExceptionType.sendTimeout:
-          return Icons.access_time;
+          return icons.timeout;
         case DioExceptionType.receiveTimeout:
-          return Icons.history_toggle_off_outlined;
+          return icons.historyTimeout;
         case DioExceptionType.cancel:
-          return Icons.cancel_outlined;
+          return icons.closeCircled;
         case DioExceptionType.connectionTimeout:
-          return Icons.explore_off_outlined;
+          return icons.wifiWarning;
         case DioExceptionType.badCertificate:
-          return Icons.key_off_outlined;
+          return icons.shieldWarning;
         case DioExceptionType.badResponse:
-          return Icons.sms_failed_outlined;
+          return icons.failedMessage;
         case DioExceptionType.connectionError:
-          return Icons.sync_problem_outlined;
+          return icons.failedSync;
         case DioExceptionType.unknown:
-          return Icons.error_outline;
+          return icons.errorOutline;
       }
     } else if (discuzError.key == "mobile_template_no_found") {
-      return Icons.explore_outlined;
+      return icons.globe;
     } else {
-      return Icons.error_outline;
+      return icons.errorOutline;
     }
   }
 }

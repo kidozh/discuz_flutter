@@ -93,7 +93,8 @@ class AttachmentWidget extends StatelessWidget {
           child: CachedNetworkImage(
             imageUrl: _attachment.getAttachmentRealUrl(_discuz),
             fit: BoxFit.fill,
-            errorWidget: (context, url, error) => Icon(Icons.error),
+            errorWidget: (context, url, error) =>
+                Icon(PlatformIcons(context).error),
             progressIndicatorBuilder: (context, url, progress) => Container(
               padding: EdgeInsets.all(16.0),
               child: SizedBox(
@@ -130,7 +131,7 @@ class AttachmentWidget extends StatelessWidget {
       child: Column(
         children: [
           PlatformListTile(
-            leading: Icon(Icons.attachment),
+            leading: Icon(PlatformIcons(context).attachment),
             title: Text(_attachment.filename),
             subtitle: Text(_attachment.attachmentSizeString),
             trailing: Badge(
@@ -138,21 +139,23 @@ class AttachmentWidget extends StatelessWidget {
                 _attachment.downloads.toString(),
                 style: TextStyle(color: Colors.white),
               ),
-              child: Icon(Icons.file_download),
+              child: Icon(PlatformIcons(context).download),
             ),
           ),
           CachedNetworkImage(
             imageUrl: _attachment.getAttachmentRealUrl(_discuz),
-            errorWidget: (context, url, error) => Icon(Icons.error),
+            errorWidget: (context, url, error) =>
+                Icon(PlatformIcons(context).error),
             progressIndicatorBuilder: (context, url, progress) =>
                 PlatformCircularProgressIndicator(
               material: (_, __) =>
                   MaterialProgressIndicatorData(value: progress.progress),
             ),
           ),
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
+          Wrap(
+            alignment: WrapAlignment.start,
+            spacing: 8,
+            runSpacing: 8,
             children: [
               PlatformTextButton(
                   onPressed: () {
@@ -161,7 +164,7 @@ class AttachmentWidget extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.file_download, size: 20),
+                      Icon(PlatformIcons(context).download, size: 20),
                       const SizedBox(width: 6),
                       Text(S.of(context).downloadAttachment),
                     ],
@@ -187,7 +190,7 @@ class AttachmentWidget extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.fullscreen, size: 20),
+                        Icon(PlatformIcons(context).fullscreen, size: 20),
                         const SizedBox(width: 6),
                         Text(S.of(context).watchPictureInFullScreen),
                       ],

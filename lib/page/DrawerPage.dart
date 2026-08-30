@@ -105,7 +105,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
             await Navigator.push(
                 context,
                 platformPageRoute(
-                  iosTitle: S.of(context).manageDiscuz,
+                    iosTitle: S.of(context).manageDiscuz,
                     context: context,
                     builder: (context) => ManageDiscuzPage()));
           },
@@ -177,7 +177,8 @@ class DrawerState extends State<DrawerStatefulWidget> {
                   context,
                   platformPageRoute(
                       iosTitle: S.of(context).shortcut,
-                      context: context, builder: (context) => ShortcutPage()));
+                      context: context,
+                      builder: (context) => ShortcutPage()));
             }
           },
         ),
@@ -243,9 +244,9 @@ class DrawerState extends State<DrawerStatefulWidget> {
             await Navigator.push(
                 context,
                 platformPageRoute(
-                     iosTitle: S.of(context).subscribeChannel,
-                      context: context,
-                      builder: (context) => SubscribeChannelPage()));
+                    iosTitle: S.of(context).subscribeChannel,
+                    context: context,
+                    builder: (context) => SubscribeChannelPage()));
           },
         ),
         PlatformListTile(
@@ -257,7 +258,8 @@ class DrawerState extends State<DrawerStatefulWidget> {
                 context,
                 platformPageRoute(
                     iosTitle: S.of(context).settingTitle,
-                    context: context, builder: (context) => SettingPage()));
+                    context: context,
+                    builder: (context) => SettingPage()));
           },
         )
       ],
@@ -291,7 +293,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
                     },
                     title: Text(S.of(context).incognitoTitle),
                     subtitle: Text(S.of(context).incognitoTitle),
-                    leading: Icon(Icons.person_pin)),
+                    leading: const _IncognitoAvatar()),
               ],
             );
           } else {
@@ -337,15 +339,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
                         },
                         title: Text(S.of(context).incognitoTitle),
                         subtitle: Text(S.of(context).incognitoTitle),
-                        leading: CircleAvatar(
-                          backgroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
-                          child: Icon(
-                            AppPlatformIcons(context).userIncognitoSolid,
-                            color: Theme.of(context).colorScheme.secondaryContainer,
-                            size: 24,
-                          ),
-                        )
-                    );
+                        leading: const _IncognitoAvatar());
                   }
                 });
           }
@@ -367,72 +361,109 @@ class DrawerState extends State<DrawerStatefulWidget> {
       ),
       body: SafeArea(
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Consumer<DiscuzAndUserNotifier>(builder: (context, value, child) {
-                if (value.discuz == null || value.user == null) {
-                  return Container(
-                    padding: EdgeInsets.symmetric(vertical: 0, horizontal: 4),
-                    child: PlatformCard(
-                      color: Theme.of(context).colorScheme.primary,
-                      elevation: _showUserDetail? 6 : 0,
-                      //padding: EdgeInsets.symmetric(vertical: 4, horizontal: 0),
-                      child: PlatformListTile(
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(10000.0),
-                          clipBehavior: Clip.antiAlias,
-                          child: Container(
-                            padding: EdgeInsets.all(8),
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            child: Icon(AppPlatformIcons(context).userIncognitoSolid, color: Theme.of(context).colorScheme.primary),
-                          ),
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Consumer<DiscuzAndUserNotifier>(builder: (context, value, child) {
+            if (value.discuz == null || value.user == null) {
+              return Container(
+                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 4),
+                child: PlatformCard(
+                  color: Theme.of(context).colorScheme.primary,
+                  elevation: _showUserDetail ? 6 : 0,
+                  //padding: EdgeInsets.symmetric(vertical: 4, horizontal: 0),
+                  child: PlatformListTile(
+                    leading: _IncognitoAvatar(
+                      backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                      foregroundColor: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: Text(S.of(context).incognitoTitle,
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary)),
+                    subtitle: Text(S.of(context).incognitoSubtitle,
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary)),
+                    trailing: Icon(
+                        _showUserDetail
+                            ? AppPlatformIcons(context).arrowUpRounded
+                            : AppPlatformIcons(context).arrowDownRounded,
+                        color: Theme.of(context).colorScheme.onPrimary),
+                    onTap: () {
+                      setState(() {
+                        _showUserDetail = !_showUserDetail;
+                      });
+                    },
+                  ),
+                ),
+              );
+            } else {
+              return Container(
+                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 4),
+                  child: PlatformCard(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    elevation: _showUserDetail ? 6 : 0,
+                    child: PlatformListTile(
+                        leading: UserAvatar(
+                          value.discuz!,
+                          value.user!.uid,
+                          value.user!.username,
+                          size: 32,
                         ),
-                        title: Text(S.of(context).incognitoTitle, style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
-                        subtitle: Text(S.of(context).incognitoSubtitle, style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
-                        trailing: Icon(_showUserDetail? AppPlatformIcons(context).arrowUpRounded: AppPlatformIcons(context).arrowDownRounded, color: Theme.of(context).colorScheme.onPrimary),
+                        title: Text(value.user!.username,
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer)),
+                        subtitle: Text(
+                            "${value.user!.uid} (${value.discuz!.siteName})"),
+                        trailing: Icon(
+                            _showUserDetail
+                                ? AppPlatformIcons(context).arrowUpRounded
+                                : AppPlatformIcons(context).arrowDownRounded,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer),
                         onTap: () {
                           setState(() {
                             _showUserDetail = !_showUserDetail;
                           });
-                        },
-                      ),
-                    ),
-                  );
-                }
-                else{
-                  return Container(
-                      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 4),
-                      child: PlatformCard(
-                        color: Theme.of(context).colorScheme.primaryContainer,
-                        elevation: _showUserDetail? 6 : 0,
-                        child: PlatformListTile(
-                            leading: UserAvatar(
-                              value.discuz!,
-                              value.user!.uid,
-                              value.user!.username,
-                              size: 32,
-                            ),
-                            title: Text(value.user!.username, style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer)),
-                            subtitle: Text("${value.user!.uid} (${value.discuz!.siteName})"),
-                            trailing: Icon(_showUserDetail? AppPlatformIcons(context).arrowUpRounded: AppPlatformIcons(context).arrowDownRounded, color: Theme.of(context).colorScheme.onPrimaryContainer),
-                            onTap: () {
-                              setState(() {
-                                _showUserDetail = !_showUserDetail;
-                              });
-                            }
-                        ),
+                        }),
+                  ));
+            }
+          }),
+          Expanded(
+              child: _showUserDetail
+                  ? _buildUserNavigationWidgetList()
+                  : _buildFunctionNavWidgetList())
+        ],
+      )),
+    );
+  }
+}
 
-                      )
-                  );
-                }
-              }),
-              Expanded(
-                  child: _showUserDetail
-                      ? _buildUserNavigationWidgetList()
-                      : _buildFunctionNavWidgetList())
-            ],
-          )
+class _IncognitoAvatar extends StatelessWidget {
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+
+  const _IncognitoAvatar({this.backgroundColor, this.foregroundColor});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return SizedBox.square(
+      dimension: 40,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: backgroundColor ?? colors.secondaryContainer,
+        ),
+        child: Center(
+          child: Icon(
+            AppPlatformIcons(context).userIncognitoSolid,
+            color: foregroundColor ?? colors.onSecondaryContainer,
+            size: 21,
+          ),
+        ),
       ),
     );
   }

@@ -18,31 +18,17 @@ enum BilibiliWidgetType { video, live, opus }
 enum BilibiliVideoRequestType { aid, bvid }
 
 class BilibiliWidget extends StatefulWidget {
-  String url = "";
-  BilibiliWidget(this.url);
+  final String url;
+
+  const BilibiliWidget(this.url, {super.key});
 
   @override
-  State<StatefulWidget> createState() {
-    // check the url
-    Uri? bilibiliUri = Uri.tryParse(url);
-    if (bilibiliUri != null) {
-      if (bilibiliUri.path.startsWith("/video")) {
-        return BilibiliVideoState(url);
-      }
-      else if (bilibiliUri.path.startsWith("opus")){
-
-      }
-    }
-
-    return BilibiliVideoState(url);
-
-  }
+  State<BilibiliWidget> createState() => BilibiliVideoState(url);
 }
 
 class BilibiliVideoState extends State<BilibiliWidget> {
+  final String url;
 
-
-  String url = "";
   BilibiliVideoState(this.url);
 
   BilibiliWidgetType type = BilibiliWidgetType.video;
@@ -53,7 +39,7 @@ class BilibiliVideoState extends State<BilibiliWidget> {
 
   bool isLoadingApi = false;
 
-  Uri? uri = null;
+  Uri? uri;
 
   @override
   void initState() {
@@ -72,8 +58,7 @@ class BilibiliVideoState extends State<BilibiliWidget> {
       // not the live
       if (bilibiliUri.host == "live.bilibili.com") {
         type = BilibiliWidgetType.live;
-      }
-      else if(bilibiliUri.path.startsWith("/opus")){
+      } else if (bilibiliUri.path.startsWith("/opus")) {
         type = BilibiliWidgetType.opus;
         List<String> urlPathList = bilibiliUri.path.split("/");
         List<String> urlPathFilteredList = urlPathList
@@ -85,8 +70,7 @@ class BilibiliVideoState extends State<BilibiliWidget> {
         }
         log("load bilibili OPUS information ${url} with ${videoRequestParameter} from list : ${urlPathFilteredList}");
         loadBilibiliVideoApi();
-      }
-      else if (bilibiliUri.path.startsWith("/video")) {
+      } else if (bilibiliUri.path.startsWith("/video")) {
         type = BilibiliWidgetType.video;
         // judge whether it's bvid or avid
         List<String> urlPathList = bilibiliUri.path.split("/");
@@ -113,9 +97,9 @@ class BilibiliVideoState extends State<BilibiliWidget> {
     });
     Dio dio = await NetworkUtils.getDioWithPersistCookieJar(null);
 
-    BilibiliApiClient client = BilibiliApiClient(dio,
-        baseUrl: "https://api.bilibili.com");
-    switch (type){
+    BilibiliApiClient client =
+        BilibiliApiClient(dio, baseUrl: "https://api.bilibili.com");
+    switch (type) {
       case BilibiliWidgetType.video:
         {
           // if it is a video
@@ -125,8 +109,7 @@ class BilibiliVideoState extends State<BilibiliWidget> {
                 client
                     .getVideoResultByAid(videoRequestParameter)
                     .then((result) => renderVideoResult(result))
-                    .catchError((onError) => callbackResultError(onError))
-                ;
+                    .catchError((onError) => callbackResultError(onError));
                 break;
               }
             case BilibiliVideoRequestType.bvid:
@@ -134,8 +117,7 @@ class BilibiliVideoState extends State<BilibiliWidget> {
                 client
                     .getVideoResultByBvid(videoRequestParameter)
                     .then((result) => renderVideoResult(result))
-                    .catchError((onError) => callbackResultError(onError))
-                ;
+                    .catchError((onError) => callbackResultError(onError));
                 break;
               }
           }
@@ -149,10 +131,7 @@ class BilibiliVideoState extends State<BilibiliWidget> {
           // if it is a opus
           log("Render opus information");
           // generate w_rid and wts
-          Map<String, dynamic> tmp = {
-            "id": int.parse(videoRequestParameter)
-          };
-
+          Map<String, dynamic> tmp = {"id": int.parse(videoRequestParameter)};
 
           WbiSign webSign = WbiSign();
           final webSignedQueries = await webSign.makSign(tmp);
@@ -161,15 +140,13 @@ class BilibiliVideoState extends State<BilibiliWidget> {
           client
               .getOpusDynamicResultByIdInMaps(webSignedQueries)
               .then((result) => renderOpusResult(result))
-              .catchError((onError) => callbackResultError(onError))
-          ;
+              .catchError((onError) => callbackResultError(onError));
           break;
         }
     }
-
   }
 
-  Future<void> renderOpusResult(BilibiliDynamicDetailResult result) async{
+  Future<void> renderOpusResult(BilibiliDynamicDetailResult result) async {
     setState(() {
       isLoadingApi = false;
       opusResult = result;
@@ -193,14 +170,14 @@ class BilibiliVideoState extends State<BilibiliWidget> {
   Widget build(BuildContext context) {
     if (uri == null) {
       return Text("Not a valid Bilibili link ${url}");
-    }
-    else {
-      if (videoResult.data.viewData.pic.isNotEmpty) {
-        return bilibiliVideoPreviewWidget;
-      }
-      else if(opusResult.code == 0){
-       return  bilibiliOpusPreviewWidget;
-      }
+    } else if (type == BilibiliWidgetType.video &&
+        videoResult.data.viewData.pic.isNotEmpty) {
+      return bilibiliVideoPreviewWidget;
+    } else if (type == BilibiliWidgetType.opus &&
+        opusResult.code == 0 &&
+        (opusResult.data.item.modules.moduleAuthor.name.isNotEmpty ||
+            opusResult.data.item.modules.moduleDynamic.desc.text.isNotEmpty)) {
+      return bilibiliOpusPreviewWidget;
     }
 
     return bilibiliDefaultWidget;
@@ -209,175 +186,419 @@ class BilibiliVideoState extends State<BilibiliWidget> {
   static const int bilibiliColorPink = 0xFFFB7299;
   static const int bilibiliColorGray = 0xFFF4F4F4;
 
-  Widget get bilibiliDefaultWidget => InkWell(
-        onTap: () {
-          VibrationUtils.vibrateWithClickIfPossible();
-          URLUtils.openURL(context, null, url, null, null);
-        },
-        child: PlatformCard(
-          color: Color(bilibiliColorPink),
-          child: Container(
-            padding: EdgeInsets.all(4.0),
-            child: PlatformListTile(
-                leading: isLoadingApi? PlatformCircularProgressIndicator(): FaIcon(
-                  FontAwesomeIcons.bilibili,
-                  color: Color(bilibiliColorGray),
-                ),
-                title: Text(
-                  url,
-                  maxLines: 1,
-                  style: TextStyle(color: Color(bilibiliColorGray)),
-                )),
-          ),
-        ),
-      );
+  Color get _bilibiliPink => const Color(bilibiliColorPink);
 
-  Widget get bilibiliVideoPreviewWidget => InkWell(
-        onTap: () {
-          VibrationUtils.vibrateWithClickIfPossible();
-          URLUtils.openURL(context, null, url, null, null);
-        },
-        child: PlatformCard(
-          elevation: isCupertino(context) ? 1 : 4,
-          child: Container(
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              color: Color(bilibiliColorPink),
-              borderRadius: BorderRadius.all(Radius.circular(12)),
+  void _openBilibili() {
+    VibrationUtils.vibrateWithClickIfPossible();
+    URLUtils.openURL(context, null, url, null, null);
+  }
+
+  Widget _interactiveSurface({
+    required Widget child,
+    EdgeInsetsGeometry padding = const EdgeInsets.all(12),
+  }) {
+    final content = Semantics(
+      button: true,
+      label: '在哔哩哔哩中打开',
+      child: InkWell(
+        borderRadius: BorderRadius.circular(22),
+        onTap: _openBilibili,
+        child: Padding(padding: padding, child: child),
+      ),
+    );
+
+    return PlatformWidgetBuilder(
+      child: content,
+      material: (_, child, __) => PlatformCard(
+        elevation: 4,
+        child: child,
+      ),
+      cupertino: (_, child, __) => PlatformLiquidGlassCard(
+        borderRadius: BorderRadius.circular(22),
+        child: child ?? const SizedBox.shrink(),
+      ),
+    );
+  }
+
+  Widget _glassPill({
+    required Widget child,
+    bool onMedia = false,
+  }) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final background = onMedia
+        ? Colors.black.withValues(alpha: 0.48)
+        : _bilibiliPink.withValues(alpha: dark ? 0.26 : 0.14);
+    final border = onMedia
+        ? Colors.white.withValues(alpha: 0.30)
+        : _bilibiliPink.withValues(alpha: dark ? 0.48 : 0.28);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: border, width: 0.7),
+        boxShadow: usesAppleTranslucentSurface(context)
+            ? [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: onMedia ? 0.20 : 0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ]
+            : null,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: child,
+      ),
+    );
+  }
+
+  Widget _avatar(String imageUrl, {double size = 26}) {
+    final fallback = ColoredBox(
+      color: _bilibiliPink.withValues(alpha: 0.18),
+      child: Center(
+        child: Icon(
+          PlatformIcons(context).person,
+          size: size * 0.56,
+          color: _bilibiliPink,
+        ),
+      ),
+    );
+
+    return PlatformLiquidGlassAvatar(
+      size: size,
+      child: imageUrl.isEmpty
+          ? fallback
+          : CachedNetworkImage(
+              imageUrl: imageUrl,
+              fit: BoxFit.cover,
+              errorWidget: (_, __, ___) => fallback,
             ),
-            foregroundDecoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(12)),
+    );
+  }
+
+  Widget _videoCover() {
+    final viewData = videoResult.data.viewData;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: AspectRatio(
+        aspectRatio: 16 / 10,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            CachedNetworkImage(
+              imageUrl: viewData.pic,
+              fit: BoxFit.cover,
+              placeholder: (_, __) => ColoredBox(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                child: Center(child: PlatformCircularProgressIndicator()),
+              ),
+              errorWidget: (_, __, ___) => ColoredBox(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                child: Icon(
+                  PlatformIcons(context).unavailableImage,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 8,
-                  child: CachedNetworkImage(
-                      imageUrl: videoResult.data.viewData.pic,
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.transparent, Color(0x66000000)],
+                  stops: [0.55, 1],
+                ),
+              ),
+            ),
+            Positioned(
+              left: 8,
+              top: 8,
+              child: _glassPill(
+                onMedia: true,
+                child: const FaIcon(
+                  FontAwesomeIcons.bilibili,
+                  size: 13,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            if (viewData.duration > 0)
+              Positioned(
+                right: 8,
+                bottom: 8,
+                child: _glassPill(
+                  onMedia: true,
+                  child: Text(
+                    _formatDuration(viewData.duration),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      fontFeatures: [FontFeature.tabularFigures()],
+                    ),
                   ),
                 ),
-                Expanded(
-                    flex: 9,
-                    child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          RichText(
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                            text: TextSpan(children: [
-                              WidgetSpan(
-                                child: Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(4),
-                                        color: Color(bilibiliColorGray)),
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 8.0, vertical: 2.0),
-                                    margin: EdgeInsets.only(right: 8.0),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(PlatformIcons(context).playCircleSolid,
-                                            size: 10,
-                                            color: Color(bilibiliColorPink)),
-                                        SizedBox(
-                                          width: 4,
-                                        ),
-                                        Text(
-                                          videoResult.data.viewData.tname,
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: Color(bilibiliColorPink)),
-                                        ),
-                                      ],
-                                    )),
-                              ),
-                              TextSpan(
-                                  text: videoResult.data.viewData.title,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(bilibiliColorGray),
-                                      fontSize: 16)),
-                            ]),
-                          ),
-                          SizedBox(
-                            width: 16,
-                          ),
-                          RichText(
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            text: TextSpan(children: [
-                              WidgetSpan(
-                                child: Container(
-                                  padding: EdgeInsets.zero,
-                                  margin: EdgeInsets.only(top: 8,right: 8),
-                                  child: SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircleAvatar(
-                                        backgroundImage:
-                                            CachedNetworkImageProvider(
-                                      videoResult.data.viewData.owner.face,
-                                      maxWidth: 36,
-                                      maxHeight: 36,
-                                    )),
-                                  ),
-                                ),
-                              ),
-                              TextSpan(
-                                  text: videoResult.data.viewData.owner.name,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Color(bilibiliColorGray),
-                                  )),
-                            ]),
-                          ),
-                        ],
-                      ),
-                    ))
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _videoDetails() {
+    final viewData = videoResult.data.viewData;
+    final colors = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (viewData.tname.isNotEmpty)
+          _glassPill(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  PlatformIcons(context).playCircleSolid,
+                  size: 12,
+                  color: _bilibiliPink,
+                ),
+                const SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    viewData.tname,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: _bilibiliPink,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
+        if (viewData.tname.isNotEmpty) const SizedBox(height: 8),
+        Text(
+          viewData.title,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: colors.onSurface,
+            fontSize: 15,
+            height: 1.22,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 9),
+        Row(
+          children: [
+            _avatar(viewData.owner.face),
+            const SizedBox(width: 7),
+            Expanded(
+              child: Text(
+                viewData.owner.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: colors.onSurfaceVariant,
+                  fontSize: 12.5,
+                ),
+              ),
+            ),
+            Icon(
+              PlatformIcons(context).forward,
+              size: 15,
+              color: colors.onSurfaceVariant.withValues(alpha: 0.72),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  String _formatDuration(int seconds) {
+    final duration = Duration(seconds: seconds);
+    final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final secs = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+    if (duration.inHours > 0) {
+      return '${duration.inHours}:$minutes:$secs';
+    }
+    return '$minutes:$secs';
+  }
+
+  Widget get bilibiliDefaultWidget => _interactiveSurface(
+        child: Row(
+          children: [
+            SizedBox.square(
+              dimension: 42,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: _bilibiliPink.withValues(alpha: 0.16),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: _bilibiliPink.withValues(alpha: 0.32),
+                  ),
+                ),
+                child: Center(
+                  child: isLoadingApi
+                      ? SizedBox.square(
+                          dimension: 19,
+                          child: PlatformCircularProgressIndicator(),
+                        )
+                      : FaIcon(
+                          FontAwesomeIcons.bilibili,
+                          size: 20,
+                          color: _bilibiliPink,
+                        ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isLoadingApi ? '正在载入哔哩哔哩内容' : '哔哩哔哩链接',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    url,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Icon(
+              PlatformIcons(context).forward,
+              size: 16,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ],
         ),
       );
 
-  Widget get bilibiliOpusPreviewWidget => InkWell(
-    onTap: () {
-      VibrationUtils.vibrateWithClickIfPossible();
-      URLUtils.openURL(context, null, url, null, null);
-    },
-    child: PlatformCard(
-      child: Container(
-        child: Column(
-          children: [
-            // author information first
-            PlatformListTile(
-              leading: CircleAvatar(
-                  backgroundImage:
-                  CachedNetworkImageProvider(
-                    opusResult.data.item.modules.moduleAuthor.face,
-                    maxWidth: 36,
-                    maxHeight: 36,
-                  )),
-                title: Text(opusResult.data.item.modules.moduleAuthor.name),
-                subtitle: Text(opusResult.data.item.modules.moduleAuthor.pubTime),
-            ),
-            Text(opusResult.data.item.modules.moduleDynamic.desc.text),
-          ]
+  Widget get bilibiliVideoPreviewWidget => _interactiveSurface(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth < 330) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _videoCover(),
+                  const SizedBox(height: 12),
+                  _videoDetails(),
+                ],
+              );
+            }
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(flex: 9, child: _videoCover()),
+                const SizedBox(width: 12),
+                Expanded(flex: 10, child: _videoDetails()),
+              ],
+            );
+          },
         ),
+      );
+
+  Widget get bilibiliOpusPreviewWidget {
+    final author = opusResult.data.item.modules.moduleAuthor;
+    final description = opusResult.data.item.modules.moduleDynamic.desc.text;
+    final colors = Theme.of(context).colorScheme;
+    return _interactiveSurface(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _avatar(author.face, size: 38),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      author.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: colors.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    if (author.pubTime.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        author.pubTime,
+                        style: TextStyle(
+                          color: colors.onSurfaceVariant,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              _glassPill(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FaIcon(
+                      FontAwesomeIcons.bilibili,
+                      size: 12,
+                      color: _bilibiliPink,
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      '动态',
+                      style: TextStyle(
+                        color: _bilibiliPink,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (description.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(
+              description,
+              maxLines: 8,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: colors.onSurface,
+                fontSize: 14,
+                height: 1.42,
+              ),
+            ),
+          ],
+        ],
       ),
-    ),
-  );
+    );
+  }
 }
 
-
-class BilibiliArticlePreviewState extends State<BilibiliWidget>{
+class BilibiliArticlePreviewState extends State<BilibiliWidget> {
   @override
   Widget build(BuildContext context) {
     return Container();
   }
-
 }

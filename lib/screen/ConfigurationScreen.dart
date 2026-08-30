@@ -26,7 +26,7 @@ class ConfigurationScreen extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
           child: PlatformListTile(
             title: Text(S.of(context).viewHistory),
-            leading: Icon(Icons.history),
+            leading: Icon(PlatformIcons(context).history),
             onTap: () {
               Discuz? discuz =
                   Provider.of<DiscuzAndUserNotifier>(context, listen: false)
@@ -47,7 +47,7 @@ class ConfigurationScreen extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
           child: PlatformListTile(
             title: Text(S.of(context).trustHostTitle),
-            leading: Icon(Icons.check_circle_outline),
+            leading: Icon(PlatformIcons(context).verified),
             onTap: () {
               VibrationUtils.vibrateWithClickIfPossible();
               Navigator.push(
@@ -101,7 +101,7 @@ class ConfigurationUserState extends State<ConfigurationUserStatefulWidget> {
             margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
             child: PlatformListTile(
               title: Text(S.of(context).loginTitle),
-              leading: Icon(Icons.login),
+              leading: Icon(PlatformIcons(context).login),
               onTap: () {
                 VibrationUtils.vibrateWithClickIfPossible();
                 Discuz? discuz =

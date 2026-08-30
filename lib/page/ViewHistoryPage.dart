@@ -10,6 +10,7 @@ import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
+import 'package:discuz_flutter/utility/ToastUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
@@ -84,16 +85,14 @@ class ViewHistoryState extends State<ViewHistoryPage> {
     viewHistoryDao.deleteViewHistories([viewHistory]);
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(S
-            .of(context)
-            .successfullyDeleteViewHistoryContent(viewHistory.subject)),
-        action: SnackBarAction(
-          label: S.of(context).undo,
-          onPressed: () {
-            viewHistoryDao.insertViewHistory(viewHistory);
-          },
-        )));
+    ToastUtils.showActionToast(
+      context,
+      message: S
+          .of(context)
+          .successfullyDeleteViewHistoryContent(viewHistory.subject),
+      actionLabel: S.of(context).undo,
+      onAction: () => viewHistoryDao.insertViewHistory(viewHistory),
+    );
   }
 
   Widget getUserAvatar(int uid, String username) {
@@ -128,6 +127,8 @@ class ViewHistoryState extends State<ViewHistoryPage> {
   Widget build(BuildContext context) {
     if (_viewHistoryDao != null) {
       return PlatformScaffold(
+          iosContentPadding: true,
+          iosContentBottomPadding: true,
           appBar: PlatformAppBar(
             title: Text(S.of(context).viewHistory),
             automaticallyImplyLeading: true,

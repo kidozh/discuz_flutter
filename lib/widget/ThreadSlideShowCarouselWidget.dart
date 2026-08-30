@@ -84,73 +84,61 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
 
 
   Future<void> _loadThreadSlideShow() async {
-    final dio = await NetworkUtils.getDioWithPersistCookieJar(null);
+    try {
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(null);
+      final html = await dio.get(keylolBaseUrl);
+      final document = parse(html.data);
+      final carouselItems = <KeylolCarouselItem>[];
+      final slideshowElements = document.getElementsByClassName("slideshow");
 
+      if (slideshowElements.isNotEmpty) {
+        final slides = slideshowElements.first.getElementsByTagName("li");
+        for (final slideListItem in slides) {
+          final anchors = slideListItem.getElementsByTagName("a");
+          if (anchors.isEmpty) continue;
 
-    dio.get(keylolBaseUrl).then((html){
-        var document = parse(html.data);
-        //print("document ->  ${document}");
-        List<KeylolCarouselItem> carouselItemList = [];
+          final slide = anchors.first;
+          final link = slide.attributes["href"];
+          final images = slide.getElementsByTagName("img");
+          if (images.isEmpty || link == null) continue;
 
-        var slideshowElementList= document.getElementsByClassName("slideshow");
-        //print("Get slide show length ${slideshowElementList.length}");
-        if(slideshowElementList.length >= 1){
-
-          var slideshowELement = slideshowElementList.first;
-          var slideshow = slideshowELement.getElementsByTagName("li");
-          for(var slide_li in slideshow){
-            var slide_a_list = slide_li.getElementsByTagName("a");
-            if(slide_a_list.isEmpty){
-              continue;
-            }
-            var slide = slide_a_list.first;
-            String? link = slide.attributes["href"];
-            var img_element_list = slide.getElementsByTagName("img");
-            //print("Get img element link ${link}");
-            if(img_element_list.isEmpty || link == null){
-              continue;
-            }
-            else{
-              var img_element = img_element_list.first;
-              String? img_src = img_element.attributes["src"];
-              String? img_title = img_element.attributes["title"];
-              var span_title = slide_li.getElementsByClassName("title");
-              //print("Get img element detail ${img_src} ${img_title} ${span_title}");
-              if(span_title.isEmpty ||
-                  span_title.first.innerHtml.isEmpty ||
-                  img_src == null ||
-                  img_title == null){
-                continue;
-              }
-              else{
-                // parse the title by regex
-                List<String> title_split_list = img_title.split("\n");
-                if(title_split_list.length < 3){
-                  continue;
-                }
-                String forum = title_split_list[0].split(":").last;
-                String category = title_split_list[1].split(":").last;
-                String author = title_split_list[2].split(":").last;
-                // get tid
-
-
-                String title = span_title.first.innerHtml;
-                carouselItemList.add(
-                    KeylolCarouselItem(
-                  img_src, title, forum, category, author, 0, link
-                ));
-
-              }
-            }
-
+          final imageSource = images.first.attributes["src"];
+          final imageTitle = images.first.attributes["title"];
+          final titleElements = slideListItem.getElementsByClassName("title");
+          if (titleElements.isEmpty ||
+              titleElements.first.innerHtml.isEmpty ||
+              imageSource == null ||
+              imageTitle == null) {
+            continue;
           }
-          //print("Set carousel item length-> ${carouselItemList.length}");
 
-          setState(() {
-            keylolCarouselItemList = carouselItemList;
-          });
+          final titleParts = imageTitle.split("\n");
+          if (titleParts.length < 3) continue;
+
+          carouselItems.add(KeylolCarouselItem(
+            imageSource,
+            titleElements.first.innerHtml,
+            titleParts[0].split(":").last,
+            titleParts[1].split(":").last,
+            titleParts[2].split(":").last,
+            0,
+            link,
+          ));
         }
-    });
+      }
+
+      if (!mounted) return;
+      setState(() {
+        keylolCarouselItemList = carouselItems;
+        isLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        keylolCarouselItemList = [];
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -169,7 +157,9 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
             }
             else{
               if(keylolCarouselItemList.isEmpty){
-                return subscriptionSlide;
+                return isLoading
+                    ? subscriptionSlide
+                    : const SizedBox.shrink();
               }
               else{
                 return Padding(
@@ -278,7 +268,7 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
                   ),
                 ),
                 BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -286,12 +276,12 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
                         end: Alignment.bottomRight,
                         colors: light
                             ? [
-                                Colors.white.withValues(alpha: 0.70),
-                                Colors.white.withValues(alpha: 0.34),
+                                Colors.white.withValues(alpha: 0.42),
+                                Colors.white.withValues(alpha: 0.16),
                               ]
                             : [
-                                Colors.black.withValues(alpha: 0.48),
-                                colors.surface.withValues(alpha: 0.30),
+                                Colors.black.withValues(alpha: 0.30),
+                                colors.surface.withValues(alpha: 0.16),
                               ],
                       ),
                     ),

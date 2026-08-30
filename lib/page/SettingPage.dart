@@ -1,7 +1,6 @@
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/AppleIntelligenceConfPage.dart';
 import 'package:discuz_flutter/page/ChooseAdExemptPage.dart';
-import 'package:discuz_flutter/page/ChooseInterfaceBrightnessPage.dart';
 import 'package:discuz_flutter/page/ChoosePlatformPage.dart';
 import 'package:discuz_flutter/page/ChooseTypography.dart';
 import 'package:discuz_flutter/page/DiscuzAuthenticationPage.dart';
@@ -97,6 +96,14 @@ class _SettingPageState extends State<SettingPage> {
             _GlassNavigationTile(
               title: S.of(context).appleIntelligence,
               leading: Icon(AppPlatformIcons(context).aiModel),
+              value: Text(
+                preference.appleIntelligenceAvailabilityChecked &&
+                        !preference.appleIntelligenceAvailable
+                    ? S.of(context).appleIntelligenceNotSupported
+                    : preference.appleIntelligenceEnabled
+                        ? S.of(context).pushNotificationOn
+                        : S.of(context).pushNotificationOff,
+              ),
               onTap: () => _open(
                 context,
                 S.of(context).appleIntelligence,
@@ -139,7 +146,7 @@ class _SettingPageState extends State<SettingPage> {
           children: [
             _GlassNavigationTile(
               title: S.of(context).chooseThemeTitle,
-              value: Text(theme.themeColor.name),
+              value: Text(_themeColorLabel(context, theme)),
               leading: Icon(AppPlatformIcons(context).appThemeOutlined),
               onTap: () => _open(
                 context,
@@ -155,16 +162,6 @@ class _SettingPageState extends State<SettingPage> {
                 context,
                 S.of(context).appearanceOptimizedPlatform,
                 ChoosePlatformPage(),
-              ),
-            ),
-            _GlassNavigationTile(
-              title: S.of(context).interfaceBrightness,
-              value: Text(theme.getBrightnessName(context)),
-              leading: Icon(PlatformIcons(context).brightness),
-              onTap: () => _open(
-                context,
-                S.of(context).interfaceBrightness,
-                ChooseInterfaceBrightnessPage(),
               ),
             ),
             _GlassNavigationTile(
@@ -312,6 +309,19 @@ class _SettingPageState extends State<SettingPage> {
       return S.of(context).signatureWithDisFly;
     }
     return S.of(context).customSignature;
+  }
+
+  String _themeColorLabel(
+    BuildContext context,
+    ThemeNotifierProvider theme,
+  ) {
+    final customColor = theme.customThemeColor;
+    if (customColor != null) {
+      return S.of(context).customColorNamed(
+            localizedCustomColorName(context, customColor),
+          );
+    }
+    return localizedFlexSchemeName(context, theme.themeColor);
   }
 
   void _open(BuildContext context, String title, Widget page) {

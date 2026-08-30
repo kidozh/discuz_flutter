@@ -11,34 +11,43 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class PostTextField extends StatefulWidget {
-  Discuz _discuz;
-  TextEditingController _controller;
-  FocusNode focusNode;
-  bool? expanded;
+  final Discuz _discuz;
+  final TextEditingController _controller;
+  final FocusNode focusNode;
+  final bool? expanded;
+  final bool embeddedInComposer;
 
   PostTextField(this._discuz, this._controller,
-      {required this.focusNode, this.expanded});
+      {required this.focusNode,
+      this.expanded,
+      this.embeddedInComposer = false});
 
   @override
   PostTextFieldState createState() {
     return PostTextFieldState(this._discuz, this._controller,
-        focusNode: focusNode, expanded: this.expanded);
+        focusNode: focusNode,
+        expanded: this.expanded,
+        embeddedInComposer: embeddedInComposer);
   }
 }
 
 class PostTextFieldState extends State<PostTextField> {
-  TextEditingController _controller;
+  final TextEditingController _controller;
 
-  Discuz _discuz;
-  FocusNode focusNode;
-  bool? expanded;
+  final Discuz _discuz;
+  final FocusNode focusNode;
+  final bool? expanded;
+  final bool embeddedInComposer;
 
   PostTextFieldState(this._discuz, this._controller,
-      {required this.focusNode, this.expanded});
+      {required this.focusNode,
+      this.expanded,
+      this.embeddedInComposer = false});
 
   @override
   Widget build(BuildContext context) {
     final glassSurface = usesAppleTranslucentSurface(context);
+    final seamless = glassSurface || embeddedInComposer;
     final textField = ExtendedTextField(
       controller: _controller,
       specialTextSpanBuilder: PostSpecialTextSpanBuilder(_discuz),
@@ -51,16 +60,16 @@ class PostTextFieldState extends State<PostTextField> {
       expands: expanded == null ? false : true,
       decoration: InputDecoration(
         hintText: S.of(context).sendReplyHint,
-        border: glassSurface ? InputBorder.none : null,
-        enabledBorder: glassSurface ? InputBorder.none : null,
-        focusedBorder: glassSurface ? InputBorder.none : null,
-        contentPadding: glassSurface
+        border: seamless ? InputBorder.none : null,
+        enabledBorder: seamless ? InputBorder.none : null,
+        focusedBorder: seamless ? InputBorder.none : null,
+        contentPadding: seamless
             ? const EdgeInsets.symmetric(horizontal: 14, vertical: 10)
             : null,
       ),
     );
 
-    if (!glassSurface) return textField;
+    if (!glassSurface || embeddedInComposer) return textField;
     final radius = BorderRadius.circular(expanded == null ? 18 : 22);
     return usesLiquidGlass(context)
         ? PlatformLiquidGlassSurface(borderRadius: radius, child: textField)

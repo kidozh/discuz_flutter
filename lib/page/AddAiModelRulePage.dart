@@ -2,7 +2,6 @@ import 'package:discuz_flutter/entity/AiRule.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
-import 'package:form_validator/form_validator.dart';
 
 import '../dao/AiRuleDao.dart';
 import '../database/AppDatabase.dart';
@@ -63,23 +62,20 @@ class _AddAiModelRulePageState extends State<AddAiModelRulePage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             if (aiRule?.isExample == true)
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                  child: Text(
-                    S.of(context).appleIntelligenceRuleTranslationExampleNotice,
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary),
-                  ),
+              PlatformLiquidGlassCard(
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                tintColor: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(22),
+                child: Text(
+                  S.of(context).appleIntelligenceRuleTranslationExampleNotice,
                 ),
               ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            PlatformLiquidGlassCard(
+              margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+              padding: const EdgeInsets.all(14),
+              borderRadius: BorderRadius.circular(22),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -90,17 +86,25 @@ class _AddAiModelRulePageState extends State<AddAiModelRulePage> {
                   SizedBox(
                     height: 4,
                   ),
-                  TextField(
+                  PlatformTextField(
                     enabled: !(aiRule?.isExample == true),
                     controller: _nameTextEditingController,
-                    decoration:
-                        InputDecoration(errorText: nameTextEditingErrorString),
-                  )
+                  ),
+                  if (nameTextEditingErrorString != null)
+                    Text(
+                      nameTextEditingErrorString!,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                        fontSize: 12,
+                      ),
+                    ),
                 ],
               ),
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            PlatformLiquidGlassCard(
+              margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+              padding: const EdgeInsets.all(14),
+              borderRadius: BorderRadius.circular(22),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -111,24 +115,28 @@ class _AddAiModelRulePageState extends State<AddAiModelRulePage> {
                   SizedBox(
                     height: 4,
                   ),
-                  TextField(
+                  PlatformTextField(
                     enabled: !(aiRule?.isExample == true),
                     controller: _instructionTextEditingController,
                     maxLines: null,
-                    decoration: InputDecoration(
-                        hintText:
-                            S.of(context).appleIntelligencePromptInstruction,
-                        fillColor:
-                            Theme.of(context).colorScheme.primaryContainer,
-                        filled: true,
-                        border: OutlineInputBorder(),
-                        errorText: instructionTextEditingErrorString),
-                  )
+                    minLines: 4,
+                    hintText: S.of(context).appleIntelligencePromptInstruction,
+                  ),
+                  if (instructionTextEditingErrorString != null)
+                    Text(
+                      instructionTextEditingErrorString!,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                        fontSize: 12,
+                      ),
+                    ),
                 ],
               ),
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            PlatformLiquidGlassCard(
+              margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+              padding: const EdgeInsets.all(14),
+              borderRadius: BorderRadius.circular(22),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -143,6 +151,8 @@ class _AddAiModelRulePageState extends State<AddAiModelRulePage> {
                     enabled: !(aiRule?.isExample == true),
                     controller: _promptTextEditingController,
                     maxLines: null,
+                    minLines: 3,
+                    hintText: S.of(context).appleIntelligencePromptHint,
                   )
                 ],
               ),

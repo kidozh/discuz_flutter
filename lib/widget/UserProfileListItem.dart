@@ -11,11 +11,11 @@ class UserProfileListItem extends StatelessWidget {
 
   // 标题
   final String? title;
-  final Color titleColor;
+  final Color? titleColor;
 
   // 描述
   final String? describe;
-  final Color describeColor;
+  final Color? describeColor;
 
   // 右侧控件
   final Widget? rightWidget;
@@ -26,24 +26,47 @@ class UserProfileListItem extends StatelessWidget {
     this.onPressed,
     this.icon,
     this.title,
-    this.titleColor = Colors.black,
+    this.titleColor,
     this.describe,
-    this.describeColor = Colors.grey,
+    this.describeColor,
     this.rightWidget,
   });
 
   @override
   Widget build(BuildContext context) {
+    final useAdaptiveForeground =
+        usesAppleTranslucentSurface(context) && titleColor == Colors.white;
+    final colors = Theme.of(context).colorScheme;
+    final effectiveTitleColor = titleColor == null || useAdaptiveForeground
+        ? colors.onSurface
+        : titleColor;
+    final effectiveDescribeColor = describeColor == null ||
+            (usesAppleTranslucentSurface(context) &&
+                describeColor == Colors.white)
+        ? colors.onSurfaceVariant
+        : describeColor;
+    final effectiveIcon = icon == null
+        ? null
+        : useAdaptiveForeground
+            ? ColorFiltered(
+                colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.onSurfaceVariant,
+                  BlendMode.srcIn,
+                ),
+                child: icon!,
+              )
+            : icon;
+
     return SizedBox(
       width: double.infinity,
       child: PlatformListTile(
         contentPadding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
         onTap: onPressed,
-        leading: icon == null
+        leading: effectiveIcon == null
             ? null
             : SizedBox.square(
                 dimension: 32,
-                child: icon,
+                child: effectiveIcon,
               ),
         title: title == null
             ? const SizedBox.shrink()
@@ -52,7 +75,7 @@ class UserProfileListItem extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: titleColor,
+                  color: effectiveTitleColor,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -64,7 +87,7 @@ class UserProfileListItem extends StatelessWidget {
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: describeColor,
+                  color: effectiveDescribeColor,
                   fontSize: 14,
                   height: 1.25,
                 ),

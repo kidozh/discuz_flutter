@@ -1,5 +1,3 @@
-
-
 import 'package:discuz_flutter/dao/UserDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -19,7 +17,7 @@ import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
-class ExclusiveDiscuzPortalPage extends StatelessWidget{
+class ExclusiveDiscuzPortalPage extends StatelessWidget {
   Discuz _discuz;
 
   ExclusiveDiscuzPortalPage(this._discuz);
@@ -30,7 +28,7 @@ class ExclusiveDiscuzPortalPage extends StatelessWidget{
   }
 }
 
-class ExclusiveDiscuzPortalStatefulWidget extends StatefulWidget{
+class ExclusiveDiscuzPortalStatefulWidget extends StatefulWidget {
   Discuz _discuz;
 
   ExclusiveDiscuzPortalStatefulWidget(this._discuz);
@@ -39,37 +37,37 @@ class ExclusiveDiscuzPortalStatefulWidget extends StatefulWidget{
   ExclusiveDiscuzPortalState createState() {
     return ExclusiveDiscuzPortalState(this._discuz);
   }
-
 }
 
-class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidget>{
-
+class ExclusiveDiscuzPortalState
+    extends State<ExclusiveDiscuzPortalStatefulWidget> {
   Discuz _discuz;
   ExclusiveDiscuzPortalState(this._discuz);
 
   late UserDao _userDao;
 
   void _initDb() async {
-    Provider.of<DiscuzAndUserNotifier>(context, listen: false).setDiscuz(_discuz);
+    Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+        .setDiscuz(_discuz);
     _userDao = await AppDatabase.getUserDao();
     await _setFirstUserInDiscuz(_discuz);
   }
 
-  Future<void> _setFirstUserInDiscuz(Discuz discuz) async{
+  Future<void> _setFirstUserInDiscuz(Discuz discuz) async {
     List<User> userList = await _userDao.findAllUsersByDiscuz(discuz);
-    if(userList.isNotEmpty && userList.length > 0){
+    if (userList.isNotEmpty && userList.length > 0) {
       print("find a user in the database ${userList.length}");
-      Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(userList.last);
+      Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+          .setUser(userList.last);
       // might need to refresh the layout
     }
-
   }
 
-  _showNotificationIfFirstlyShown() async{
+  _showNotificationIfFirstlyShown() async {
     String flag = await UserPreferencesUtils.getAcceptVersionCodeFlag();
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     String version = packageInfo.version;
-    if(flag != version){
+    if (flag != version) {
       // shown
       Navigator.push(
           context,
@@ -80,44 +78,36 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
     }
   }
 
-
-
   @override
   void initState() {
     super.initState();
 
     _initDb();
 
-
-
     _showNotificationIfFirstlyShown();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-
-
     return PlatformTabScaffold(
       tabDestinations: [
         TabDestination(
-          inactiveIcon: const Icon(CupertinoIcons.today),
+          inactiveIcon: Icon(PlatformIcons(context).globe),
           label: S.of(context).sitePage,
           view: _buildTab(ExploreWebsitePage(key: ValueKey(0))),
         ),
         TabDestination(
-          inactiveIcon: const Icon(Icons.home),
+          inactiveIcon: Icon(PlatformIcons(context).home),
           label: S.of(context).index,
           view: _buildTab(DiscuzPortalScreen(key: ValueKey(1))),
         ),
         TabDestination(
-          inactiveIcon: const Icon(Icons.dashboard),
+          inactiveIcon: Icon(PlatformIcons(context).dashboard),
           label: S.of(context).dashboard,
           view: _buildTab(HotThreadScreen()),
         ),
         TabDestination(
-          inactiveIcon: const Icon(Icons.notifications),
+          inactiveIcon: Icon(PlatformIcons(context).notificationOutline),
           label: S.of(context).notification,
           view: _buildTab(NotificationScreen()),
         ),
@@ -127,25 +117,21 @@ class ExclusiveDiscuzPortalState extends State<ExclusiveDiscuzPortalStatefulWidg
           view: _buildTab(ConfigurationScreen()),
         ),
       ],
-
     );
-
-
   }
 
   Widget _buildTab(Widget body) => PlatformScaffold(
-    appBar: PlatformAppBar(
-      title: Text(_discuz.siteName),
-      automaticallyImplyLeading: false,
-    ),
-    body: body,
-  );
+        appBar: PlatformAppBar(
+          title: Text(_discuz.siteName),
+          automaticallyImplyLeading: false,
+        ),
+        body: body,
+      );
 
   @override
   void setState(fn) {
-    if(this.mounted) {
+    if (this.mounted) {
       super.setState(fn);
     }
   }
-
 }

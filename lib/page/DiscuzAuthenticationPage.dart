@@ -385,7 +385,8 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
                                                     downloadProgress.progress),
                                       ),
                                       errorWidget: (context, url, error) =>
-                                          Icon(Icons.forum),
+                                          Icon(PlatformIcons(context)
+                                              .forumOutline),
                                     )),
                                 Divider(),
                                 Row(
@@ -508,7 +509,8 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
                                           .onPrimaryContainer),
                                 ),
                                 leading: Icon(PlatformIcons(context).checkMark),
-                                trailing: Icon(Icons.arrow_drop_down),
+                                trailing:
+                                    Icon(PlatformIcons(context).downArrow),
                                 onTap: () {
                                   VibrationUtils.vibrateWithClickIfPossible();
                                   showPlatformModalSheet(

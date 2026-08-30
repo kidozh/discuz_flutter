@@ -6,7 +6,6 @@ import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/dao/FavoriteThreadDao.dart';
-import 'package:discuz_flutter/dao/ImageAttachmentDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
 import 'package:discuz_flutter/dao/ViewThreadCacheDao.dart';
 import 'package:discuz_flutter/dao/ViewThreadScrollDistanceDao.dart';
@@ -140,8 +139,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   ValueNotifier<bool> showExtraButton = ValueNotifier(true);
 
   final int SHOW_SMILEY_DIALOG = 1;
-  final int SHOW_EXTRA_DIALOG = 2;
   final int SHOW_NONE_DIALOG = 0;
+  final GlobalKey<ExtraFuncInThreadState> _extraFunctionsKey =
+      GlobalKey<ExtraFuncInThreadState>();
   // cache status
   bool cached = false;
   int _initialPage = 1;
@@ -906,10 +906,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                 ? HtmlUnescape().convert(passedSubject!)
                                 : HtmlUnescape().convert(_viewThreadResult
                                     .threadVariables.threadInfo.subject),
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall
+                                ?.copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                         );
                       },
@@ -1138,163 +1142,155 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                         if (_viewThreadResult.threadVariables.member_uid != 0)
                           Column(
                             children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                      child: Padding(
-                                    padding: EdgeInsets.all(12.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        //color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.all(Radius.circular(
-                                          4.0,
-                                        )),
-                                      ),
-                                      child: PostTextField(
-                                        discuz,
-                                        _replyController,
-                                        focusNode: _focusNode,
-                                      ),
-                                    ),
-                                  )),
-                                  PlatformIconButton(
-                                    liquidGlassSymbol:
-                                        dialogStatus != SHOW_SMILEY_DIALOG
-                                            ? 'face.smiling'
-                                            : 'keyboard',
-                                    icon: dialogStatus != SHOW_SMILEY_DIALOG
-                                        ? Icon(
-                                            Icons.emoji_emotions_outlined,
-                                            semanticLabel: S
-                                                .of(context)
-                                                .emoijButtonTooltip,
-                                          )
-                                        : Icon(
-                                            Icons.keyboard_outlined,
-                                            semanticLabel: S
-                                                .of(context)
-                                                .closeKeyboardTooltip,
+                              SafeArea(
+                                top: false,
+                                child: PlatformLiquidGlassCard(
+                                  margin: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+                                  padding: const EdgeInsets.all(6),
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      PlatformIconButton(
+                                        liquidGlassSymbol:
+                                            dialogStatus == SHOW_SMILEY_DIALOG
+                                                ? 'keyboard'
+                                                : 'plus',
+                                        liquidGlassButtonSize: 44,
+                                        liquidGlassIconSize: 17,
+                                        icon: AnimatedSwitcher(
+                                          duration:
+                                              const Duration(milliseconds: 160),
+                                          child: Icon(
+                                            dialogStatus == SHOW_SMILEY_DIALOG
+                                                ? PlatformIcons(context)
+                                                    .keyboard
+                                                : PlatformIcons(context).add,
+                                            key: ValueKey(dialogStatus ==
+                                                SHOW_SMILEY_DIALOG),
+                                            size: 20,
+                                            semanticLabel: dialogStatus ==
+                                                    SHOW_SMILEY_DIALOG
+                                                ? S
+                                                    .of(context)
+                                                    .closeKeyboardTooltip
+                                                : S
+                                                    .of(context)
+                                                    .extraFuncButtonTooltip,
                                           ),
-                                    onPressed: () {
-                                      if (dialogStatus != SHOW_SMILEY_DIALOG) {
-                                        FocusScope.of(context)
-                                            .requestFocus(new FocusNode());
-                                        setState(() {
-                                          dialogStatus = SHOW_SMILEY_DIALOG;
-                                        });
-                                      } else {
-                                        FocusScope.of(context)
-                                            .requestFocus(_focusNode);
-                                        setState(() {
-                                          dialogStatus = SHOW_NONE_DIALOG;
-                                        });
-                                      }
-                                    },
-                                  ),
-                                  ValueListenableBuilder(
-                                      valueListenable: showExtraButton,
-                                      builder: (context, value, _) {
-                                        if (value == false) {
+                                        ),
+                                        onPressed: () {
+                                          VibrationUtils
+                                              .vibrateWithClickIfPossible();
+                                          if (dialogStatus ==
+                                              SHOW_SMILEY_DIALOG) {
+                                            FocusScope.of(context)
+                                                .requestFocus(_focusNode);
+                                            setState(() => dialogStatus =
+                                                SHOW_NONE_DIALOG);
+                                          } else {
+                                            FocusScope.of(context).unfocus();
+                                            setState(() => dialogStatus =
+                                                SHOW_SMILEY_DIALOG);
+                                          }
+                                        },
+                                      ),
+                                      const SizedBox(width: 3),
+                                      Expanded(
+                                        child: PostTextField(
+                                          discuz,
+                                          _replyController,
+                                          focusNode: _focusNode,
+                                          embeddedInComposer: true,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 5),
+                                      ValueListenableBuilder<bool>(
+                                        valueListenable: showExtraButton,
+                                        builder: (context, showExtra, _) {
+                                          final canSend = !showExtra;
                                           if (_sendReplyStatus ==
-                                              SendReplyStatus.idle) {
-                                            return PlatformIconButton(
-                                              liquidGlassSymbol:
-                                                  'arrow.up.circle',
-                                              icon: Icon(
-                                                  AppPlatformIcons(context)
-                                                      .postThreadSolid),
-                                              onPressed: () {
-                                                VibrationUtils
-                                                    .vibrateWithClickIfPossible();
-                                                _sendReply(context);
-                                              },
-                                            );
-                                          } else if (_sendReplyStatus ==
                                               SendReplyStatus.loading) {
-                                            return PlatformIconButton(
-                                              icon:
-                                                  PlatformCircularProgressIndicator(
-                                                cupertino: (context,
-                                                        platform) =>
-                                                    CupertinoProgressIndicatorData(
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .primary),
-                                                material: (context, platform) =>
-                                                    MaterialProgressIndicatorData(
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .primary),
+                                            return const SizedBox.square(
+                                              dimension: 44,
+                                              child: Center(
+                                                child: SizedBox.square(
+                                                  dimension: 18,
+                                                  child:
+                                                      PlatformCircularProgressIndicator(),
+                                                ),
                                               ),
-                                              onPressed: () {},
                                             );
-                                          } else if (_sendReplyStatus ==
+                                          }
+                                          if (_sendReplyStatus ==
                                               SendReplyStatus.success) {
                                             return PlatformIconButton(
                                               liquidGlassSymbol:
                                                   'checkmark.circle.fill',
+                                              liquidGlassButtonSize: 44,
+                                              liquidGlassIconSize: 17,
                                               icon: Icon(
-                                                  AppPlatformIcons(context)
-                                                      .checkCircleSolid,
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .primary),
-                                              onPressed: () {},
+                                                AppPlatformIcons(context)
+                                                    .checkCircleSolid,
+                                                size: 20,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                              ),
+                                              onPressed: null,
                                             );
-                                          } else if (_sendReplyStatus ==
+                                          }
+                                          if (_sendReplyStatus ==
                                               SendReplyStatus.fail) {
                                             return PlatformIconButton(
                                               liquidGlassSymbol:
                                                   'exclamationmark.triangle',
+                                              liquidGlassButtonSize: 44,
+                                              liquidGlassIconSize: 17,
                                               icon: Icon(
-                                                  AppPlatformIcons(context)
-                                                      .errorOutline,
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .error),
-                                              onPressed: () {},
+                                                AppPlatformIcons(context)
+                                                    .errorOutline,
+                                                size: 20,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .error,
+                                              ),
+                                              onPressed: null,
                                             );
                                           }
-                                          return Container();
-                                        } else {
-                                          //return Container();
                                           return PlatformIconButton(
-                                            liquidGlassSymbol: dialogStatus ==
-                                                    SHOW_EXTRA_DIALOG
-                                                ? 'xmark'
-                                                : 'plus.circle',
+                                            liquidGlassSymbol: 'arrow.up',
+                                            liquidGlassButtonSize: 44,
+                                            liquidGlassIconSize: 17,
+                                            color: canSend
+                                                ? Theme.of(context)
+                                                    .colorScheme
+                                                    .primary
+                                                : null,
                                             icon: Icon(
-                                              dialogStatus == SHOW_EXTRA_DIALOG
-                                                  ? Icons.close
-                                                  : Icons.add_circle_outline,
-                                              semanticLabel: S
-                                                  .of(context)
-                                                  .extraFuncButtonTooltip,
+                                              PlatformIcons(context).upArrow,
+                                              size: 20,
+                                              color: canSend
+                                                  ? Theme.of(context)
+                                                      .colorScheme
+                                                      .onPrimary
+                                                  : Theme.of(context)
+                                                      .disabledColor,
+                                              semanticLabel: S.of(context).send,
                                             ),
-                                            onPressed: () {
-                                              if (dialogStatus !=
-                                                  SHOW_EXTRA_DIALOG) {
-                                                FocusScope.of(context)
-                                                    .requestFocus(
-                                                        new FocusNode());
-                                                setState(() {
-                                                  dialogStatus =
-                                                      SHOW_EXTRA_DIALOG;
-                                                });
-                                              } else {
-                                                FocusScope.of(context)
-                                                    .requestFocus(_focusNode);
-                                                setState(() {
-                                                  dialogStatus =
-                                                      SHOW_NONE_DIALOG;
-                                                });
-                                              }
-                                            },
+                                            onPressed: canSend
+                                                ? () {
+                                                    VibrationUtils
+                                                        .vibrateWithClickIfPossible();
+                                                    _sendReply(context);
+                                                  }
+                                                : null,
                                           );
-                                        }
-                                      })
-                                ],
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                               if (dioLoaded)
                                 CaptchaWidget(
@@ -1304,73 +1300,53 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                   "post",
                                   captchaController: _captchaController,
                                 ),
-                              if (dialogStatus == SHOW_SMILEY_DIALOG)
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    SmileyListScreen((smiley) {
-                                      insertSmiley(smiley);
-                                    })
-                                  ],
+                              AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 220),
+                                reverseDuration:
+                                    const Duration(milliseconds: 160),
+                                switchInCurve: Curves.easeOutCubic,
+                                switchOutCurve: Curves.easeInCubic,
+                                child: dialogStatus == SHOW_SMILEY_DIALOG
+                                    ? SmileyListScreen(
+                                        (smiley) => insertSmiley(smiley),
+                                        recentActions: [
+                                          SmileyPanelAction(
+                                            icon: PlatformIcons(context)
+                                                .collectionsSolid,
+                                            label: S.of(context).addAPhoto,
+                                            onPressed: () => _extraFunctionsKey
+                                                .currentState
+                                                ?.pickImageFromGallery(),
+                                          ),
+                                          SmileyPanelAction(
+                                            icon: PlatformIcons(context)
+                                                .photoCameraSolid,
+                                            label: S.of(context).takeAPicture,
+                                            onPressed: () => _extraFunctionsKey
+                                                .currentState
+                                                ?.takePicture(),
+                                          ),
+                                        ],
+                                      )
+                                    : const SizedBox.shrink(
+                                        key: ValueKey(
+                                            'thread_composer_panel_hidden'),
+                                      ),
+                              ),
+                              Offstage(
+                                offstage: true,
+                                child: ExtraFuncInThreadScreen(
+                                  discuz,
+                                  tid,
+                                  _viewThreadResult.threadVariables.fid,
+                                  key: _extraFunctionsKey,
+                                  showHistoricalAttachment: false,
+                                  onReplyWithImage: (aid, path) =>
+                                      _handleReplyWithImage(discuz, aid, path),
+                                  onReplyWithHostedImage: (imageUrl, path) =>
+                                      _handleReplyWithHostedImage(imageUrl),
                                 ),
-                              if (dialogStatus == SHOW_EXTRA_DIALOG)
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    ExtraFuncInThreadScreen(
-                                      discuz,
-                                      tid,
-                                      _viewThreadResult.threadVariables.fid,
-                                      onReplyWithImage: (aid, path) async {
-                                        // fill with text first
-                                        // refresh the layout
-                                        // insertedAidList.clear();
-                                        if (aid.isNotEmpty) {
-                                          _replyController
-                                              .text = _replyController
-                                                  .text +
-                                              "[attachimg]${aid}[/attachimg]";
-                                          // add aid to list
-                                          insertedAidList.add(aid);
-                                          // add to historical attachment
-                                          bool savedInDatabase =
-                                              await UserPreferencesUtils
-                                                  .getRecordHistoryEnabled();
-                                          if (savedInDatabase) {
-                                            // save it to database
-                                            ImageAttachmentDao
-                                                imageAttachmentDao =
-                                                await AppDatabase
-                                                    .getImageAttachmentDao();
-                                            ImageAttachment? imageAttachment =
-                                                imageAttachmentDao
-                                                    .findImageAttachmentByDiscuzAndAid(
-                                                        discuz, aid);
-                                            if (imageAttachment != null) {
-                                              imageAttachment.updateAt =
-                                                  DateTime.now();
-                                              imageAttachmentDao
-                                                  .insertImageAttachmentWithKey(
-                                                      imageAttachment.key,
-                                                      imageAttachment);
-                                            } else {
-                                              imageAttachmentDao
-                                                  .insertImageAttachment(
-                                                      ImageAttachment(
-                                                          aid, discuz, path));
-                                            }
-                                          }
-                                        } else {}
-                                      },
-                                      onReplyWithHostedImage: (imageUrl, path) {
-                                        if (imageUrl.isNotEmpty) {
-                                          _replyController.text =
-                                              "${_replyController.text}[img]$imageUrl[/img]";
-                                        }
-                                      },
-                                    ),
-                                  ],
-                                )
+                              ),
                             ],
                           )
                       ],
@@ -1387,6 +1363,40 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         ],
       ),
     );
+  }
+
+  Future<void> _handleReplyWithImage(
+    Discuz discuz,
+    String aid,
+    String path,
+  ) async {
+    if (aid.isEmpty) return;
+    _replyController.text += "[attachimg]$aid[/attachimg]";
+    insertedAidList.add(aid);
+
+    final savedInDatabase =
+        await UserPreferencesUtils.getRecordHistoryEnabled();
+    if (!savedInDatabase) return;
+
+    final imageAttachmentDao = await AppDatabase.getImageAttachmentDao();
+    final imageAttachment =
+        imageAttachmentDao.findImageAttachmentByDiscuzAndAid(discuz, aid);
+    if (imageAttachment != null) {
+      imageAttachment.updateAt = DateTime.now();
+      imageAttachmentDao.insertImageAttachmentWithKey(
+        imageAttachment.key,
+        imageAttachment,
+      );
+    } else {
+      imageAttachmentDao.insertImageAttachment(
+        ImageAttachment(aid, discuz, path),
+      );
+    }
+  }
+
+  void _handleReplyWithHostedImage(String imageUrl) {
+    if (imageUrl.isEmpty) return;
+    _replyController.text += "[img]$imageUrl[/img]";
   }
 
   void insertSmiley(Smiley smiley) {

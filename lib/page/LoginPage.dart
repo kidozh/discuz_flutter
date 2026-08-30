@@ -645,7 +645,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                         EdgeInsets.symmetric(vertical: 32.0, horizontal: 8.0),
                     child: InkWell(
                       child: Icon(
-                        Icons.key_rounded,
+                        AppPlatformIcons(context).authenticationSecureSolid,
                         size: 36,
                       ),
                       onTap: () async {

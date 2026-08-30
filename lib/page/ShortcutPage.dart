@@ -106,7 +106,7 @@ class ShortcutState extends State<ShortcutStatefulWidget> {
                         signed: false, decimal: false),
                   )),
                   SizedBox(
-                    height: 16.0,
+                    width: 16.0,
                   ),
                   ValueListenableBuilder(
                       valueListenable: _tidTextController,
@@ -148,7 +148,7 @@ class ShortcutState extends State<ShortcutStatefulWidget> {
                         signed: false, decimal: false),
                   )),
                   SizedBox(
-                    height: 16.0,
+                    width: 16.0,
                   ),
                   ValueListenableBuilder(
                       valueListenable: _uidTextController,

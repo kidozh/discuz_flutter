@@ -397,7 +397,7 @@ class SteamGameState extends State<SteamGameWidget> {
                       Row(
                         children: [
                           Icon(
-                            Icons.translate,
+                            PlatformIcons(context).translate,
                             size: 16,
                           ),
                           SizedBox(

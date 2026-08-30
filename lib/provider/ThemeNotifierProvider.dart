@@ -18,14 +18,13 @@ Map<String, MaterialColor> themeColorMap = {
   'brown': Colors.brown,
   "amber": Colors.amber,
   "lightBlue": Colors.lightBlue,
-  "blueGrey":Colors.blueGrey,
+  "blueGrey": Colors.blueGrey,
   "lightGreen": Colors.lightGreen,
-  "lime":Colors.lime,
-  "yellow":Colors.yellow,
+  "lime": Colors.lime,
+  "yellow": Colors.yellow,
 };
 
 extension ColorsExt on Color {
-
   MaterialColor toMaterialColor() {
     final int red = this.red;
     final int green = this.green;
@@ -48,54 +47,69 @@ extension ColorsExt on Color {
   }
 }
 
-
-
-class ThemeNotifierProvider with ChangeNotifier{
-
-
+class ThemeNotifierProvider with ChangeNotifier {
   FlexScheme _themeColor = FlexScheme.blueWhale;
+  Color? _customThemeColor;
 
   DynamicSchemeVariant _dynamicSchemeVariant = DynamicSchemeVariant.fidelity;
 
-  String getDynamicSchemeVariantName(BuildContext context){
-    switch (_dynamicSchemeVariant){
-      case DynamicSchemeVariant.tonalSpot: return S.of(context).dynamicSchemeVariantTonalSpotKey;
-      case DynamicSchemeVariant.fidelity: return S.of(context).dynamicSchemeVariantFidelityKey;
-      case DynamicSchemeVariant.monochrome : return S.of(context).dynamicSchemeVariantMonochromeKey;
-      case DynamicSchemeVariant.neutral : return S.of(context).dynamicSchemeVariantNeutralKey;
-      case DynamicSchemeVariant.vibrant : return S.of(context).dynamicSchemeVariantVibrantKey;
-      case DynamicSchemeVariant.expressive : return S.of(context).dynamicSchemeVariantExpressiveKey;
-      case DynamicSchemeVariant.content : return S.of(context).dynamicSchemeVariantContentKey;
-      case DynamicSchemeVariant.rainbow : return S.of(context).dynamicSchemeVariantRainbowKey;
-      case DynamicSchemeVariant.fruitSalad : return S.of(context).dynamicSchemeVariantFruitSaladKey;
+  String getDynamicSchemeVariantName(BuildContext context) {
+    switch (_dynamicSchemeVariant) {
+      case DynamicSchemeVariant.tonalSpot:
+        return S.of(context).dynamicSchemeVariantTonalSpotKey;
+      case DynamicSchemeVariant.fidelity:
+        return S.of(context).dynamicSchemeVariantFidelityKey;
+      case DynamicSchemeVariant.monochrome:
+        return S.of(context).dynamicSchemeVariantMonochromeKey;
+      case DynamicSchemeVariant.neutral:
+        return S.of(context).dynamicSchemeVariantNeutralKey;
+      case DynamicSchemeVariant.vibrant:
+        return S.of(context).dynamicSchemeVariantVibrantKey;
+      case DynamicSchemeVariant.expressive:
+        return S.of(context).dynamicSchemeVariantExpressiveKey;
+      case DynamicSchemeVariant.content:
+        return S.of(context).dynamicSchemeVariantContentKey;
+      case DynamicSchemeVariant.rainbow:
+        return S.of(context).dynamicSchemeVariantRainbowKey;
+      case DynamicSchemeVariant.fruitSalad:
+        return S.of(context).dynamicSchemeVariantFruitSaladKey;
       default:
         return S.of(context).dynamicSchemeVariantFidelityKey;
     }
-
   }
 
-  String getDynamicSchemeVariantDescription(BuildContext context){
-    switch (_dynamicSchemeVariant){
-      case DynamicSchemeVariant.tonalSpot: return S.of(context).dynamicSchemeVariantTonalSpotDescription;
-      case DynamicSchemeVariant.fidelity: return S.of(context).dynamicSchemeVariantFidelityDescription;
-      case DynamicSchemeVariant.monochrome : return S.of(context).dynamicSchemeVariantMonochromeDescription;
-      case DynamicSchemeVariant.neutral : return S.of(context).dynamicSchemeVariantNeutralDescription;
-      case DynamicSchemeVariant.vibrant : return S.of(context).dynamicSchemeVariantVibrantDescription;
-      case DynamicSchemeVariant.expressive : return S.of(context).dynamicSchemeVariantExpressiveDescription;
-      case DynamicSchemeVariant.content : return S.of(context).dynamicSchemeVariantContentDescription;
-      case DynamicSchemeVariant.rainbow : return S.of(context).dynamicSchemeVariantRainbowDescription;
-      case DynamicSchemeVariant.fruitSalad : return S.of(context).dynamicSchemeVariantFruitSaladDescription;
+  String getDynamicSchemeVariantDescription(BuildContext context) {
+    switch (_dynamicSchemeVariant) {
+      case DynamicSchemeVariant.tonalSpot:
+        return S.of(context).dynamicSchemeVariantTonalSpotDescription;
+      case DynamicSchemeVariant.fidelity:
+        return S.of(context).dynamicSchemeVariantFidelityDescription;
+      case DynamicSchemeVariant.monochrome:
+        return S.of(context).dynamicSchemeVariantMonochromeDescription;
+      case DynamicSchemeVariant.neutral:
+        return S.of(context).dynamicSchemeVariantNeutralDescription;
+      case DynamicSchemeVariant.vibrant:
+        return S.of(context).dynamicSchemeVariantVibrantDescription;
+      case DynamicSchemeVariant.expressive:
+        return S.of(context).dynamicSchemeVariantExpressiveDescription;
+      case DynamicSchemeVariant.content:
+        return S.of(context).dynamicSchemeVariantContentDescription;
+      case DynamicSchemeVariant.rainbow:
+        return S.of(context).dynamicSchemeVariantRainbowDescription;
+      case DynamicSchemeVariant.fruitSalad:
+        return S.of(context).dynamicSchemeVariantFruitSaladDescription;
       default:
         return S.of(context).dynamicSchemeVariantFidelityDescription;
     }
-
   }
 
-  String _platformName ="";
+  String _platformName = "";
 
   //String get themeColorName => ColorTools.nameThatColor(Color(_themeColor));
 
   FlexScheme get themeColor => _themeColor;
+  Color? get customThemeColor => _customThemeColor;
+  bool get usesCustomThemeColor => _customThemeColor != null;
 
   Brightness? _brightnessPreference;
 
@@ -103,15 +117,12 @@ class ThemeNotifierProvider with ChangeNotifier{
 
   get useMaterial3 => _useMaterial3;
 
-  set userMaterial3(bool value){
+  set userMaterial3(bool value) {
     this._useMaterial3 = value;
     notifyListeners();
   }
 
-
-
-
-  setBrightness(Brightness? brightness){
+  setBrightness(Brightness? brightness) {
     _brightnessPreference = brightness;
     notifyListeners();
   }
@@ -120,63 +131,59 @@ class ThemeNotifierProvider with ChangeNotifier{
 
   //Brightness? get brightness => null;
 
-
-  setTheme(FlexScheme themeColorValue){
+  setTheme(FlexScheme themeColorValue) {
     _themeColor = themeColorValue;
+    _customThemeColor = null;
+    notifyListeners();
+  }
+
+  setCustomThemeColor(Color color) {
+    _customThemeColor = color;
     notifyListeners();
   }
 
   String get platformName => _platformName;
 
-  setPlatformName(String platformName){
+  setPlatformName(String platformName) {
     _platformName = platformName;
     notifyListeners();
   }
 
-  setDynamicSchemeVariant(DynamicSchemeVariant dynamicSchemeVariant){
+  setDynamicSchemeVariant(DynamicSchemeVariant dynamicSchemeVariant) {
     _dynamicSchemeVariant = dynamicSchemeVariant;
     notifyListeners();
   }
 
   DynamicSchemeVariant get dynamicSchemeVariant => _dynamicSchemeVariant;
 
-  String getPlatformLocaleName(BuildContext context){
+  String getPlatformLocaleName(BuildContext context) {
     Map<String, String> platformMap = {
-      "":S.of(context).followSystem,
-      "ios":S.of(context).ios,
-      "android":S.of(context).materialDesign,
-      "fuchsia":S.of(context).fuchsia
+      "": S.of(context).followSystem,
+      "ios": S.of(context).ios,
+      "android": S.of(context).materialDesign,
+      "fuchsia": S.of(context).fuchsia
     };
-    if (platformMap.containsKey(_platformName)){
+    if (platformMap.containsKey(_platformName)) {
       return platformMap[_platformName]!;
-    }
-    else{
+    } else {
       return S.of(context).followSystem;
     }
   }
 
-  String getBrightnessName(BuildContext context){
-    if(brightness == null){
+  String getBrightnessName(BuildContext context) {
+    if (brightness == null) {
       return S.of(context).followSystem;
-    }
-    else if(brightness == Brightness.light){
+    } else if (brightness == Brightness.light) {
       return S.of(context).brightnessLight;
-    }
-    else if(brightness == Brightness.dark){
+    } else if (brightness == Brightness.dark) {
       return S.of(context).brightnessDark;
-    }
-    else{
+    } else {
       return S.of(context).followSystem;
     }
   }
 
-  setMaterial3(bool material3Property){
+  setMaterial3(bool material3Property) {
     this._useMaterial3 = material3Property;
     notifyListeners();
   }
-
-
-
-
-
 }

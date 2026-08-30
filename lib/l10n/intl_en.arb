@@ -779,6 +779,13 @@
     }
   },
   "selectColorTitle": "Select color",
+  "customColor": "Custom color",
+  "customColorNamed": "Custom · {name}",
+  "@customColorNamed": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "selectColorShadeTitle": "Select color shade",
   "selectColorAndShadeTitle": "Select color and shade",
   "primaryColorPickerType": "Primary",

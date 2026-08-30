@@ -28,7 +28,7 @@ class ManageAccountPage extends StatelessWidget {
           PlatformIconButton(
             liquidGlassSymbol: 'plus',
             icon: Icon(
-              Icons.add,
+              PlatformIcons(context).add,
               semanticLabel: S.of(context).loginTitle,
             ),
             onPressed: () async {
@@ -112,7 +112,7 @@ class ManageAccountState extends State<ManageAccountStateWidget> {
               SlidableAction(
                   label: S.of(context).deleteAccount,
                   backgroundColor: Colors.redAccent,
-                  icon: Icons.delete,
+                  icon: PlatformIcons(context).delete,
                   onPressed: (context) {
                     VibrationUtils.vibrateWithClickIfPossible();
                     _deleteAccount(user);
@@ -120,7 +120,7 @@ class ManageAccountState extends State<ManageAccountStateWidget> {
               SlidableAction(
                 label: S.of(context).relogin,
                 backgroundColor: Colors.teal,
-                icon: Icons.refresh,
+                icon: PlatformIcons(context).refresh,
                 onPressed: (context) {
                   VibrationUtils.vibrateWithClickIfPossible();
                   Navigator.push(

@@ -204,7 +204,8 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                     child: PlatformLiquidGlassToolbarGroup(
                       children: [
                         PlatformIconButton(
-                          icon: Icon(Icons.format_bold_outlined),
+                          liquidGlassSymbol: 'bold',
+                          icon: Icon(PlatformIcons(context).bold),
                           onPressed: () {
                             VibrationUtils.vibrateWithClickIfPossible();
                             String insertedText = "[b][/b]";
@@ -212,7 +213,8 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                           },
                         ),
                         PlatformIconButton(
-                          icon: Icon(Icons.format_italic_outlined),
+                          liquidGlassSymbol: 'italic',
+                          icon: Icon(PlatformIcons(context).italic),
                           onPressed: () {
                             VibrationUtils.vibrateWithClickIfPossible();
                             String insertedText = "[i][/i]";
@@ -220,7 +222,8 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                           },
                         ),
                         PlatformIconButton(
-                          icon: Icon(Icons.format_quote_outlined),
+                          liquidGlassSymbol: 'quote.bubble',
+                          icon: Icon(PlatformIcons(context).formatQuote),
                           onPressed: () {
                             VibrationUtils.vibrateWithClickIfPossible();
                             String insertedText = "[quote][/quote]";
@@ -228,7 +231,8 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                           },
                         ),
                         PlatformIconButton(
-                          icon: Icon(Icons.emoji_emotions_outlined),
+                          liquidGlassSymbol: 'face.smiling',
+                          icon: Icon(PlatformIcons(context).smiley),
                           onPressed: () {
                             VibrationUtils.vibrateWithClickIfPossible();
                             // popup a smiley dialog
@@ -240,7 +244,8 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                           },
                         ),
                         PlatformIconButton(
-                          icon: Icon(Icons.image_outlined),
+                          liquidGlassSymbol: 'photo',
+                          icon: Icon(PlatformIcons(context).photo),
                           onPressed: () {
                             VibrationUtils.vibrateWithClickIfPossible();
                             showPlatformModalSheet(

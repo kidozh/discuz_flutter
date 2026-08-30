@@ -343,7 +343,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                             .isNotEmpty)
                           UserProfileListItem(
                             icon: Icon(
-                              Icons.category,
+                              PlatformIcons(context).category,
                               color: Colors.white,
                             ),
                             title: S.of(context).customStatusTitle,
@@ -359,7 +359,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                             .isNotEmpty)
                           UserProfileListItem(
                             icon: Icon(
-                              Icons.edit,
+                              PlatformIcons(context).edit,
                               color: Colors.white,
                             ),
                             title: S.of(context).bio,
@@ -374,7 +374,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                             .isNotEmpty)
                           UserProfileListItem(
                             icon: Icon(
-                              Icons.message_outlined,
+                              PlatformIcons(context).profileMessage,
                               color: Colors.white,
                             ),
                             title: S.of(context).recentNote,
@@ -407,7 +407,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                             .isNotEmpty)
                           UserProfileListItem(
                             icon: Icon(
-                              Icons.verified_user_rounded,
+                              PlatformIcons(context).verifiedUser,
                               color: Colors.white,
                             ),
                             title: _userProfileResult!.variables
@@ -429,7 +429,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                           ),
                         UserProfileListItem(
                           icon: Icon(
-                            Icons.group,
+                            PlatformIcons(context).groupSolid,
                             color: Colors.white,
                           ),
                           title: _userProfileResult!.variables
@@ -466,7 +466,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                       children: [
                         UserProfileListItem(
                           icon: Icon(
-                            Icons.add_circle_outline_outlined,
+                            PlatformIcons(context).addCircled,
                             color: Colors.white,
                           ),
                           title: S.of(context).registerAccountTime,
@@ -478,7 +478,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                         ),
                         UserProfileListItem(
                           icon: Icon(
-                            Icons.history,
+                            PlatformIcons(context).history,
                             color: Colors.white,
                           ),
                           title: S.of(context).lastVisitTime,
@@ -490,7 +490,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                         ),
                         UserProfileListItem(
                           icon: Icon(
-                            Icons.access_time,
+                            PlatformIcons(context).timeout,
                             color: Colors.white,
                           ),
                           title: S.of(context).onlineHoursTitle,
@@ -501,7 +501,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                         ),
                         UserProfileListItem(
                           icon: Icon(
-                            Icons.timelapse,
+                            PlatformIcons(context).timeout,
                             color: Colors.white,
                           ),
                           title: S.of(context).lastActivityTime,
@@ -513,7 +513,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                         ),
                         UserProfileListItem(
                           icon: Icon(
-                            Icons.av_timer,
+                            PlatformIcons(context).timeout,
                             color: Colors.white,
                           ),
                           title: S.of(context).lastPostTime,
@@ -528,7 +528,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                             0)
                           UserProfileListItem(
                             icon: Icon(
-                              Icons.cake_outlined,
+                              PlatformIcons(context).birthday,
                               color: Colors.white,
                             ),
                             title:
@@ -560,7 +560,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                             .isNotEmpty)
                           UserProfileListItem(
                             icon: Icon(
-                              Icons.work_outline,
+                              PlatformIcons(context).work,
                               color: Colors.white,
                             ),
                             title: S.of(context).homepage,
@@ -575,7 +575,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                             .isNotEmpty)
                           UserProfileListItem(
                             icon: Icon(
-                              Icons.whatshot_rounded,
+                              PlatformIcons(context).flame,
                               color: Colors.white,
                             ),
                             title: S.of(context).habit,
@@ -606,7 +606,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                             .isNotEmpty)
                           UserProfileListItem(
                             icon: Icon(
-                              Icons.child_care,
+                              PlatformIcons(context).family,
                               color: Colors.white,
                             ),
                             title: S.of(context).birthPlace,
@@ -622,7 +622,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                             .isNotEmpty)
                           UserProfileListItem(
                             icon: Icon(
-                              Icons.location_city_outlined,
+                              PlatformIcons(context).location,
                               color: Colors.white,
                             ),
                             title: S.of(context).residentPlace,
@@ -642,7 +642,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                                 .isNotEmpty)
                           UserProfileListItem(
                             icon: Icon(
-                              Icons.history_edu,
+                              PlatformIcons(context).study,
                               color: Colors.white,
                             ),
                             title: _userProfileResult!.variables
@@ -664,7 +664,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                                 .isNotEmpty)
                           UserProfileListItem(
                             icon: Icon(
-                              Icons.work_outline,
+                              PlatformIcons(context).work,
                               color: Colors.white,
                             ),
                             title: _userProfileResult!.variables
@@ -762,7 +762,10 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                   label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodySmall,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
                 const SizedBox(height: 2),
                 FittedBox(
@@ -793,7 +796,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
     }
     extendCreditList.add(UserProfileListItem(
       icon: Icon(
-        Icons.account_balance,
+        PlatformIcons(context).credits,
         color: Colors.white,
       ),
       title: S.of(context).credit,
@@ -808,7 +811,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
     if (extendCreditMap.containsKey("1")) {
       extendCreditList.add(UserProfileListItem(
         icon: Icon(
-          Icons.work_outline,
+          PlatformIcons(context).work,
           color: Colors.white,
         ),
         title: extendCreditMap["1"]!.title,
@@ -821,7 +824,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
     if (extendCreditMap.containsKey("2")) {
       extendCreditList.add(UserProfileListItem(
         icon: Icon(
-          Icons.work_outline,
+          PlatformIcons(context).work,
           color: Colors.white,
         ),
         title: extendCreditMap["2"]!.title,
@@ -834,7 +837,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
     if (extendCreditMap.containsKey("3")) {
       extendCreditList.add(UserProfileListItem(
         icon: Icon(
-          Icons.work_outline,
+          PlatformIcons(context).work,
           color: Colors.white,
         ),
         title: extendCreditMap["3"]!.title,
@@ -847,7 +850,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
     if (extendCreditMap.containsKey("4")) {
       extendCreditList.add(UserProfileListItem(
         icon: Icon(
-          Icons.work_outline,
+          PlatformIcons(context).work,
           color: Colors.white,
         ),
         title: extendCreditMap["4"]!.title,
@@ -860,7 +863,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
     if (extendCreditMap.containsKey("5")) {
       extendCreditList.add(UserProfileListItem(
         icon: Icon(
-          Icons.work_outline,
+          PlatformIcons(context).work,
           color: Colors.white,
         ),
         title: extendCreditMap["5"]!.title,
@@ -873,7 +876,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
     if (extendCreditMap.containsKey("6")) {
       extendCreditList.add(UserProfileListItem(
         icon: Icon(
-          Icons.work_outline,
+          PlatformIcons(context).work,
           color: Colors.white,
         ),
         title: extendCreditMap["6"]!.title,
@@ -886,7 +889,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
     if (extendCreditMap.containsKey("7")) {
       extendCreditList.add(UserProfileListItem(
         icon: Icon(
-          Icons.work_outline,
+          PlatformIcons(context).work,
           color: Colors.white,
         ),
         title: extendCreditMap["7"]!.title,
@@ -899,7 +902,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
     if (extendCreditMap.containsKey("8")) {
       extendCreditList.add(UserProfileListItem(
         icon: Icon(
-          Icons.work_outline,
+          PlatformIcons(context).work,
           color: Colors.white,
         ),
         title: extendCreditMap["8"]!.title,

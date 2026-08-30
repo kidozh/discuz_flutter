@@ -366,9 +366,11 @@ class PlatformApp extends StatelessWidget {
     final themes = _PlatformThemeScope.maybeOf(context);
     if (isCupertino(context)) {
       final brightness = MediaQuery.platformBrightnessOf(context);
-      final useDark = themes?.themeMode == ThemeMode.dark ||
-          (themes?.themeMode == ThemeMode.system &&
-              brightness == Brightness.dark);
+      final useDark = switch (themes?.themeMode) {
+        ThemeMode.dark => true,
+        ThemeMode.light => false,
+        _ => brightness == Brightness.dark,
+      };
       return CupertinoApp(
         key: widgetKey,
         navigatorKey: navigatorKey,
@@ -378,7 +380,16 @@ class PlatformApp extends StatelessWidget {
         onGenerateRoute: onGenerateRoute,
         onUnknownRoute: onUnknownRoute,
         navigatorObservers: navigatorObservers,
-        builder: builder,
+        builder: (context, child) {
+          final builtChild =
+              builder?.call(context, child) ?? child ?? const SizedBox.shrink();
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              platformBrightness: useDark ? Brightness.dark : Brightness.light,
+            ),
+            child: builtChild,
+          );
+        },
         title: title,
         onGenerateTitle: onGenerateTitle,
         color: color,
@@ -838,16 +849,26 @@ class PlatformElevatedButton extends StatelessWidget {
     if (usesLiquidGlass(context) &&
         onLongPress == null &&
         (alignment == null || alignment == Alignment.center)) {
+      final effectivePadding =
+          padding ?? const EdgeInsets.symmetric(horizontal: 18, vertical: 10);
+      final foregroundColor = Theme.of(context).colorScheme.onPrimary;
       button = liquid.AdaptiveButton.child(
         key: widgetKey,
         onPressed: onPressed,
         color: color,
-        padding:
-            padding ?? const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-        minSize: const Size(44, 44),
+        padding: EdgeInsets.zero,
         enabled: onPressed != null,
         style: liquid.AdaptiveButtonStyle.prominentGlass,
-        child: child ?? const SizedBox.shrink(),
+        child: Padding(
+          padding: effectivePadding,
+          child: DefaultTextStyle.merge(
+            style: TextStyle(color: foregroundColor),
+            child: IconTheme.merge(
+              data: IconThemeData(color: foregroundColor),
+              child: child ?? const SizedBox.shrink(),
+            ),
+          ),
+        ),
       );
     } else {
       button = isCupertino(context)
@@ -903,18 +924,29 @@ class PlatformTextButton extends StatelessWidget {
     Widget button;
     if (usesLiquidGlass(context) &&
         (alignment == null || alignment == Alignment.center)) {
+      final effectivePadding =
+          padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 10);
+      final colors = Theme.of(context).colorScheme;
+      final foregroundColor = color == null ? colors.primary : colors.onPrimary;
       button = liquid.AdaptiveButton.child(
         key: widgetKey,
         onPressed: onPressed,
         color: color,
-        padding:
-            padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        minSize: const Size(44, 44),
+        padding: EdgeInsets.zero,
         enabled: onPressed != null,
         style: color == null
             ? liquid.AdaptiveButtonStyle.glass
             : liquid.AdaptiveButtonStyle.prominentGlass,
-        child: child ?? const SizedBox.shrink(),
+        child: Padding(
+          padding: effectivePadding,
+          child: DefaultTextStyle.merge(
+            style: TextStyle(color: foregroundColor),
+            child: IconTheme.merge(
+              data: IconThemeData(color: foregroundColor),
+              child: child ?? const SizedBox.shrink(),
+            ),
+          ),
+        ),
       );
     } else {
       button = isCupertino(context)
@@ -964,26 +996,37 @@ class PlatformChoiceChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (usesLiquidGlass(context)) {
-      return liquid.AdaptiveButton.child(
-        onPressed: onSelected == null ? null : () => onSelected!(!selected),
-        minSize: const Size(44, 44),
-        enabled: onSelected != null,
-        color: selected ? Theme.of(context).colorScheme.primary : null,
-        style: selected
-            ? liquid.AdaptiveButtonStyle.prominentGlass
-            : liquid.AdaptiveButtonStyle.glass,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (avatar != null) ...[
-              IconTheme.merge(
-                data: const IconThemeData(size: 18),
-                child: avatar!,
+      final colors = Theme.of(context).colorScheme;
+      final foregroundColor = selected ? colors.onPrimary : colors.onSurface;
+      return ConstrainedBox(
+        constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+        child: liquid.AdaptiveButton.child(
+          onPressed: onSelected == null ? null : () => onSelected!(!selected),
+          padding: EdgeInsets.zero,
+          enabled: onSelected != null,
+          color: selected ? Theme.of(context).colorScheme.primary : null,
+          style: selected
+              ? liquid.AdaptiveButtonStyle.prominentGlass
+              : liquid.AdaptiveButtonStyle.glass,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            child: DefaultTextStyle.merge(
+              style: TextStyle(color: foregroundColor),
+              child: IconTheme.merge(
+                data: IconThemeData(color: foregroundColor, size: 18),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (avatar != null) ...[
+                      avatar!,
+                      const SizedBox(width: 6),
+                    ],
+                    label,
+                  ],
+                ),
               ),
-              const SizedBox(width: 6),
-            ],
-            label,
-          ],
+            ),
+          ),
         ),
       );
     }
@@ -2401,23 +2444,33 @@ class PlatformSegmentedControl extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onValueChanged;
   final Color? color;
+  final Color? textColor;
+  final Color? selectedTextColor;
 
   const PlatformSegmentedControl({
     required this.labels,
     required this.selectedIndex,
     required this.onValueChanged,
     this.color,
+    this.textColor,
+    this.selectedTextColor,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final effectiveTextColor = textColor ?? colors.onSurfaceVariant;
+    final effectiveSelectedTextColor = selectedTextColor ??
+        (color == null ? colors.onSurface : _contrastColor(context, color!));
     if (usesLiquidGlass(context)) {
       return liquid.AdaptiveSegmentedControl(
         labels: labels,
         selectedIndex: selectedIndex,
         onValueChanged: onValueChanged,
         color: color,
+        textColor: effectiveTextColor,
+        selectedTextColor: effectiveSelectedTextColor,
         height: 44,
       );
     }
@@ -2434,11 +2487,32 @@ class PlatformSegmentedControl extends StatelessWidget {
           for (var index = 0; index < labels.length; index++)
             index: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              child: Text(labels[index]),
+              child: Text(
+                labels[index],
+                style: TextStyle(
+                  color: index == selectedIndex
+                      ? effectiveSelectedTextColor
+                      : effectiveTextColor,
+                  fontWeight: index == selectedIndex
+                      ? FontWeight.w600
+                      : FontWeight.w500,
+                ),
+              ),
             ),
         },
       ),
     );
+  }
+
+  Color _contrastColor(BuildContext context, Color background) {
+    final opaqueBackground = Color.alphaBlend(
+      background,
+      Theme.of(context).colorScheme.surface,
+    );
+    return ThemeData.estimateBrightnessForColor(opaqueBackground) ==
+            Brightness.dark
+        ? Colors.white
+        : Colors.black.withValues(alpha: 0.87);
   }
 }
 
@@ -2797,8 +2871,37 @@ Future<T?> showPlatformModalSheet<T>({
         ? showCupertinoModalPopup<T>(
             context: context,
             builder: (sheetContext) {
+              final colors = Theme.of(sheetContext).colorScheme;
+              final sheetContent = CupertinoUserInterfaceLevel(
+                data: CupertinoUserInterfaceLevelData.elevated,
+                child: DefaultTextStyle.merge(
+                  style: TextStyle(color: colors.onSurface),
+                  child: IconTheme.merge(
+                    data: IconThemeData(color: colors.onSurfaceVariant),
+                    child: builder(sheetContext),
+                  ),
+                ),
+              );
               if (!usesLiquidGlass(sheetContext)) {
-                return builder(sheetContext);
+                return Align(
+                  alignment: Alignment.bottomCenter,
+                  child: CupertinoPopupSurface(
+                    isSurfacePainted: true,
+                    child: SafeArea(
+                      top: false,
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxHeight:
+                                MediaQuery.sizeOf(sheetContext).height * 0.90,
+                          ),
+                          child: sheetContent,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
               }
               return SafeArea(
                 top: false,
@@ -2828,7 +2931,7 @@ Future<T?> showPlatformModalSheet<T>({
                           child: _PlatformGlassContainerScope(
                             child: PlatformLiquidGlassSurface(
                               borderRadius: BorderRadius.circular(28),
-                              child: builder(sheetContext),
+                              child: sheetContent,
                             ),
                           ),
                         ),
@@ -3021,12 +3124,20 @@ class PlatformIcons {
 
   IconData get add => pick(Icons.add, CupertinoIcons.add);
   IconData get addCircled => pick(Icons.add_circle, CupertinoIcons.add_circled);
+  IconData get attachment => pick(Icons.attachment, CupertinoIcons.paperclip);
   IconData get back => pick(Icons.arrow_back, CupertinoIcons.back);
+  IconData get birthday => pick(Icons.cake_outlined, CupertinoIcons.gift);
+  IconData get blocked => pick(Icons.block, CupertinoIcons.hand_raised_slash);
+  IconData get bold => pick(Icons.format_bold_outlined, CupertinoIcons.bold);
   IconData get bookmark => pick(Icons.bookmark_border, CupertinoIcons.bookmark);
   IconData get bookmarkSolid =>
       pick(Icons.bookmark, CupertinoIcons.bookmark_solid);
   IconData get brightness =>
       pick(Icons.brightness_low, CupertinoIcons.brightness);
+  IconData get category =>
+      pick(Icons.category_outlined, CupertinoIcons.rectangle_grid_2x2);
+  IconData get family => pick(Icons.child_care, CupertinoIcons.person_2);
+  IconData get chart => pick(Icons.query_stats, CupertinoIcons.chart_bar);
   IconData get checkMark => pick(Icons.check, CupertinoIcons.check_mark);
   IconData get checkMarkCircled =>
       pick(Icons.check_circle, CupertinoIcons.check_mark_circled);
@@ -3036,28 +3147,70 @@ class PlatformIcons {
       pick(Icons.check_circle, CupertinoIcons.check_mark_circled_solid);
   IconData get clearThickCircled =>
       pick(Icons.cancel, CupertinoIcons.clear_thick_circled);
+  IconData get closeCircled =>
+      pick(Icons.cancel_outlined, CupertinoIcons.xmark_circle);
   IconData get clockSolid =>
       pick(Icons.watch_later, CupertinoIcons.clock_solid);
   IconData get collectionsSolid =>
       pick(Icons.collections, CupertinoIcons.collections_solid);
   IconData get downArrow =>
       pick(Icons.arrow_downward, CupertinoIcons.down_arrow);
+  IconData get dashboard =>
+      pick(Icons.dashboard, CupertinoIcons.square_grid_2x2);
+  IconData get delete => pick(Icons.delete, CupertinoIcons.delete);
+  IconData get document =>
+      pick(Icons.description_outlined, CupertinoIcons.doc_text);
   IconData get edit => pick(Icons.edit, CupertinoIcons.pencil);
   IconData get ellipsis => pick(Icons.more_vert, CupertinoIcons.ellipsis);
   IconData get error =>
       pick(Icons.error, CupertinoIcons.exclamationmark_circle_fill);
+  IconData get errorOutline =>
+      pick(Icons.error_outline, CupertinoIcons.exclamationmark_circle);
+  IconData get expiredSession =>
+      pick(Icons.lock_clock, CupertinoIcons.lock_rotation);
+  IconData get failedMessage =>
+      pick(Icons.sms_failed_outlined, CupertinoIcons.exclamationmark_bubble);
+  IconData get failedSync => pick(
+      Icons.sync_problem_outlined, CupertinoIcons.arrow_2_circlepath_circle);
+  IconData get flame => pick(Icons.whatshot_rounded, CupertinoIcons.flame_fill);
+  IconData get flag => pick(Icons.flag, CupertinoIcons.flag);
   IconData get favoriteOutline =>
       pick(Icons.favorite_border, CupertinoIcons.heart);
   IconData get favoriteSolid => pick(Icons.favorite, CupertinoIcons.heart_fill);
   IconData get folderSolid => pick(Icons.folder, CupertinoIcons.folder_fill);
+  IconData get forumOutline =>
+      pick(Icons.forum_outlined, CupertinoIcons.chat_bubble_2);
+  IconData get formatQuote =>
+      pick(Icons.format_quote_outlined, CupertinoIcons.text_quote);
   IconData get forward => pick(Icons.arrow_forward, CupertinoIcons.forward);
+  IconData get fullscreen => pick(Icons.fullscreen, CupertinoIcons.fullscreen);
+  IconData get globe => pick(Icons.explore_outlined, CupertinoIcons.globe);
   IconData get groupSolid => pick(Icons.group, CupertinoIcons.group_solid);
+  IconData get history => pick(Icons.history, CupertinoIcons.clock);
+  IconData get historyTimeout =>
+      pick(Icons.history_toggle_off_outlined, CupertinoIcons.gobackward);
   IconData get helpOutline =>
       pick(Icons.help_outline, CupertinoIcons.question_circle);
   IconData get info => pick(Icons.info_outline, CupertinoIcons.info);
+  IconData get italic =>
+      pick(Icons.format_italic_outlined, CupertinoIcons.italic);
+  IconData get keyboard =>
+      pick(Icons.keyboard_rounded, CupertinoIcons.keyboard);
+  IconData get login =>
+      pick(Icons.login, CupertinoIcons.person_crop_circle_badge_checkmark);
+  IconData get location =>
+      pick(Icons.location_city_outlined, CupertinoIcons.building_2_fill);
   IconData get micSolid => pick(Icons.mic, CupertinoIcons.mic_fill);
+  IconData get notificationOutline =>
+      pick(Icons.notifications_outlined, CupertinoIcons.bell);
+  IconData get profileMessage =>
+      pick(Icons.message_outlined, CupertinoIcons.chat_bubble);
   IconData get personAddSolid =>
       pick(Icons.person_add, CupertinoIcons.person_add_solid);
+  IconData get person =>
+      pick(Icons.person_pin, CupertinoIcons.person_crop_circle);
+  IconData get photo =>
+      pick(Icons.image_outlined, CupertinoIcons.photo_on_rectangle);
   IconData get photoCameraSolid =>
       pick(Icons.photo_camera, CupertinoIcons.camera_fill);
   IconData get playCircleSolid =>
@@ -3070,7 +3223,35 @@ class PlatformIcons {
   IconData get settingsSolid =>
       pick(Icons.settings, CupertinoIcons.settings_solid);
   IconData get share => pick(Icons.share, CupertinoIcons.share);
+  IconData get secure => pick(Icons.lock_outline, CupertinoIcons.lock_shield);
+  IconData get shieldWarning =>
+      pick(Icons.key_off_outlined, CupertinoIcons.exclamationmark_shield);
+  IconData get smiley =>
+      pick(Icons.emoji_emotions_outlined, CupertinoIcons.smiley);
+  IconData get sort => pick(Icons.sort, CupertinoIcons.sort_down);
+  IconData get study => pick(Icons.history_edu, CupertinoIcons.book);
   IconData get tagSolid => pick(Icons.sell, CupertinoIcons.tag_fill);
+  IconData get home => pick(Icons.home, CupertinoIcons.house_fill);
+  IconData get timeout => pick(Icons.access_time, CupertinoIcons.clock);
+  IconData get translate =>
+      pick(Icons.translate, CupertinoIcons.textformat_abc);
+  IconData get unavailableImage =>
+      pick(Icons.image_not_supported, CupertinoIcons.photo_on_rectangle);
+  IconData get verified =>
+      pick(Icons.check_circle_outline, CupertinoIcons.checkmark_seal);
+  IconData get verifiedUser =>
+      pick(Icons.verified_user_rounded, CupertinoIcons.checkmark_shield_fill);
+  IconData get warning => pick(
+      Icons.warning_amber_outlined, CupertinoIcons.exclamationmark_triangle);
+  IconData get wifiWarning =>
+      pick(Icons.explore_off_outlined, CupertinoIcons.wifi_exclamationmark);
+  IconData get work => pick(Icons.work_outline, CupertinoIcons.briefcase);
+  IconData get credits =>
+      pick(Icons.account_balance, CupertinoIcons.creditcard);
+  IconData get cube => pick(Icons.view_in_ar, CupertinoIcons.cube_box);
+  IconData get rule => pick(Icons.rule, CupertinoIcons.list_bullet);
+  IconData get download =>
+      pick(Icons.file_download, CupertinoIcons.arrow_down_to_line);
   IconData get timeSolid =>
       pick(Icons.access_time_filled, CupertinoIcons.time_solid);
   IconData get upArrow => pick(Icons.arrow_upward, CupertinoIcons.up_arrow);

@@ -15,6 +15,10 @@ permissions:
 
 env:
   FLUTTER_VERSION: 3.47.0
+  # pubspec.lock is generated against the Flutter China mirrors. Keep the
+  # hosted source stable so --enforce-lockfile does not re-resolve packages.
+  PUB_HOSTED_URL: https://pub.flutter-io.cn
+  FLUTTER_STORAGE_BASE_URL: https://storage.flutter-io.cn
 
 jobs:
   android:

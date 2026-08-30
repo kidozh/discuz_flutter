@@ -674,7 +674,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Icon(
-                          Icons.description_outlined,
+                          PlatformIcons(context).document,
                           color: Colors.blue,
                         ),
                       ),
@@ -694,7 +694,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                         padding:
                             EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                         child: Icon(
-                          Icons.rule,
+                          PlatformIcons(context).rule,
                           color: Colors.redAccent,
                         ),
                       ),
@@ -717,320 +717,243 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     if (_displayForumResult.discuzIndexVariables.threadType != null) {
       ThreadType threadType =
           _displayForumResult.discuzIndexVariables.threadType!;
-      //Map<String, String> idNameMap = threadType.idNameMap;
       threadTypeList = threadType.getThreadTypeList();
     }
     showPlatformModalSheet(
         context: context,
         material: const MaterialModalSheetData(isScrollControlled: false),
-        builder: (context) {
+        builder: (sheetContext) {
           return StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-            return Scrollable(
-              viewportBuilder: (BuildContext context, ViewportOffset position) {
-                return ListView(
+              builder: (BuildContext context, StateSetter setModalState) {
+            final colors = Theme.of(context).colorScheme;
+
+            Widget filterSection(
+              IconData icon,
+              String title,
+              List<Widget> options,
+            ) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 9),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (threadTypeList.isNotEmpty)
-                      Column(
-                        children: [
-                          Row(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Icon(
-                                  Icons.category,
-                                  color: Colors.blue,
-                                ),
-                              ),
-                              Expanded(
-                                  child: Text(
-                                      S.of(context).forumFilterTypeIdTitle))
-                            ],
+                    Row(
+                      children: [
+                        Container(
+                          width: 32,
+                          height: 32,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: colors.primaryContainer,
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          Wrap(
-                            children: List<Widget>.generate(
-                                threadTypeList.length, (int index) {
-                              ThreadTypeInfo threadTypeInfo =
-                                  threadTypeList[index];
-                              return PlatformChoiceChip(
-                                label: Text(threadTypeInfo.typeName),
-                                selected: _displayForumQuery.typeId ==
-                                    threadTypeInfo.typeId,
-                                onSelected: (bool selected) {
-                                  VibrationUtils.vibrateWithClickIfPossible();
-                                  setState(() {
-                                    _displayForumQuery.setTypeId(
-                                        threadTypeInfo.typeId, selected);
-                                  });
-                                },
-                              );
-                            }),
-                          )
-                        ],
-                      ),
-                    if (threadTypeList.isNotEmpty) Divider(),
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Icon(
-                                Icons.sort,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            Expanded(
-                                child:
-                                    Text(S.of(context).forumFilterSortByTitle))
-                          ],
+                          child: Icon(
+                            icon,
+                            size: 18,
+                            color: colors.onPrimaryContainer,
+                          ),
                         ),
-                        Wrap(
-                          children: [
-                            PlatformChoiceChip(
-                              label:
-                                  Text(S.of(context).forumFilterSortByLastPost),
-                              selected:
-                                  _displayForumQuery.orderBy == "lastpost",
-                              onSelected: (bool selected) {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                setState(() {
-                                  _displayForumQuery.setOrderBy(
-                                      "lastpost", true);
-                                });
-                              },
-                            ),
-                            PlatformChoiceChip(
-                              label:
-                                  Text(S.of(context).forumFilterSortByNewPost),
-                              selected:
-                                  _displayForumQuery.orderBy == "dateline",
-                              onSelected: (bool selected) {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                setState(() {
-                                  _displayForumQuery.setOrderBy(
-                                      "dateline", selected);
-                                });
-                              },
-                            ),
-                            PlatformChoiceChip(
-                              label: Text(S.of(context).forumFilterSortByView),
-                              selected: _displayForumQuery.orderBy == "views",
-                              onSelected: (bool selected) {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                setState(() {
-                                  _displayForumQuery.setOrderBy(
-                                      "views", selected);
-                                });
-                              },
-                            ),
-                            PlatformChoiceChip(
-                              label: Text(S.of(context).forumFilterSortByHeat),
-                              selected: _displayForumQuery.orderBy == "heats",
-                              onSelected: (bool selected) {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                setState(() {
-                                  _displayForumQuery.setOrderBy(
-                                      "heats", selected);
-                                });
-                              },
-                            ),
-                          ],
-                        )
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            title,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  color: colors.onSurface,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
+                        ),
                       ],
                     ),
-                    Divider(),
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Icon(
-                                Icons.apps_outlined,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            Expanded(
-                                child: Text(
-                                    S.of(context).forumFilterSpecialTypeTitle))
-                          ],
-                        ),
-                        Wrap(
-                          children: [
-                            PlatformChoiceChip(
-                              label: Text(
-                                  S.of(context).forumFilterSpecialTypePoll),
-                              selected:
-                                  _displayForumQuery.specialType == "poll",
-                              onSelected: (bool selected) {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                setState(() {
-                                  _displayForumQuery.setSpecialType(
-                                      "poll", selected);
-                                });
-                              },
-                            ),
-                            PlatformChoiceChip(
-                              label: Text(
-                                  S.of(context).forumFilterSpecialTypeDebate),
-                              selected:
-                                  _displayForumQuery.specialType == "debate",
-                              onSelected: (bool selected) {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                setState(() {
-                                  _displayForumQuery.setSpecialType(
-                                      "debate", selected);
-                                });
-                              },
-                            ),
-                            PlatformChoiceChip(
-                              label: Text(
-                                  S.of(context).forumFilterSpecialTypeActivity),
-                              selected:
-                                  _displayForumQuery.specialType == "activity",
-                              onSelected: (bool selected) {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                setState(() {
-                                  _displayForumQuery.setSpecialType(
-                                      "activity", selected);
-                                });
-                              },
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                    Divider(),
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Icon(
-                                Icons.access_time,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            Expanded(
-                                child: Text(S.of(context).forumFilterTimeTitle))
-                          ],
-                        ),
-                        Wrap(
-                          children: [
-                            PlatformChoiceChip(
-                              label: Text(S.of(context).forumFilterTimeToday),
-                              selected: _displayForumQuery.dateline == 86400,
-                              onSelected: (bool selected) {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                setState(() {
-                                  _displayForumQuery.setDateline(
-                                      86400, selected);
-                                });
-                              },
-                            ),
-                            PlatformChoiceChip(
-                              label:
-                                  Text(S.of(context).forumFilterTimeThisWeek),
-                              selected: _displayForumQuery.dateline == 604800,
-                              onSelected: (bool selected) {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                setState(() {
-                                  _displayForumQuery.setDateline(
-                                      604800, selected);
-                                });
-                              },
-                            ),
-                            PlatformChoiceChip(
-                              label:
-                                  Text(S.of(context).forumFilterTimeThisMonth),
-                              selected: _displayForumQuery.dateline == 2592000,
-                              onSelected: (bool selected) {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                setState(() {
-                                  _displayForumQuery.setDateline(
-                                      2592000, selected);
-                                });
-                              },
-                            ),
-                            PlatformChoiceChip(
-                              label: Text(
-                                  S.of(context).forumFilterTimeThisQuarter),
-                              selected: _displayForumQuery.dateline == 7948800,
-                              onSelected: (bool selected) {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                setState(() {
-                                  _displayForumQuery.setDateline(
-                                      7948800, selected);
-                                });
-                              },
-                            ),
-                            PlatformChoiceChip(
-                              label:
-                                  Text(S.of(context).forumFilterTimeThisYear),
-                              selected: _displayForumQuery.dateline == 31536000,
-                              onSelected: (bool selected) {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                setState(() {
-                                  _displayForumQuery.setDateline(
-                                      31536000, selected);
-                                });
-                              },
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                    Divider(),
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Icon(
-                                Icons.whatshot_outlined,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            Expanded(
-                                child:
-                                    Text(S.of(context).forumFilterStatusTitle))
-                          ],
-                        ),
-                        Wrap(
-                          children: [
-                            PlatformChoiceChip(
-                              avatar: Icon(Icons.verified_outlined),
-                              label:
-                                  Text(S.of(context).forumFilterStatusDigest),
-                              selected: _displayForumQuery.filter == "digest",
-                              onSelected: (bool selected) {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                setState(() {
-                                  _displayForumQuery.setDigest(selected);
-                                });
-                              },
-                            ),
-                            PlatformChoiceChip(
-                              avatar: Icon(Icons.whatshot_rounded),
-                              label: Text(S.of(context).forumFilterStatusHot),
-                              selected: _displayForumQuery.filter == "hot",
-                              onSelected: (bool selected) {
-                                VibrationUtils.vibrateWithClickIfPossible();
-                                setState(() {
-                                  _displayForumQuery.setHot(selected);
-                                });
-                              },
-                            ),
-                          ],
-                        )
-                      ],
+                    const SizedBox(height: 10),
+                    Wrap(
+                      alignment: WrapAlignment.start,
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: options,
                     ),
                   ],
-                );
-              },
+                ),
+              );
+            }
+
+            return ListView(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+              children: [
+                if (threadTypeList.isNotEmpty)
+                  filterSection(
+                    PlatformIcons(context).category,
+                    S.of(context).forumFilterTypeIdTitle,
+                    [
+                      for (final threadTypeInfo in threadTypeList)
+                        PlatformChoiceChip(
+                          label: Text(threadTypeInfo.typeName),
+                          selected: _displayForumQuery.typeId ==
+                              threadTypeInfo.typeId,
+                          onSelected: (selected) {
+                            VibrationUtils.vibrateWithClickIfPossible();
+                            setModalState(() => _displayForumQuery.setTypeId(
+                                threadTypeInfo.typeId, selected));
+                          },
+                        ),
+                    ],
+                  ),
+                filterSection(
+                  PlatformIcons(context).sort,
+                  S.of(context).forumFilterSortByTitle,
+                  [
+                    PlatformChoiceChip(
+                      label: Text(S.of(context).forumFilterSortByLastPost),
+                      selected: _displayForumQuery.orderBy == "lastpost",
+                      onSelected: (_) {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        setModalState(() =>
+                            _displayForumQuery.setOrderBy("lastpost", true));
+                      },
+                    ),
+                    PlatformChoiceChip(
+                      label: Text(S.of(context).forumFilterSortByNewPost),
+                      selected: _displayForumQuery.orderBy == "dateline",
+                      onSelected: (selected) {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        setModalState(() => _displayForumQuery.setOrderBy(
+                            "dateline", selected));
+                      },
+                    ),
+                    PlatformChoiceChip(
+                      label: Text(S.of(context).forumFilterSortByView),
+                      selected: _displayForumQuery.orderBy == "views",
+                      onSelected: (selected) {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        setModalState(() =>
+                            _displayForumQuery.setOrderBy("views", selected));
+                      },
+                    ),
+                    PlatformChoiceChip(
+                      label: Text(S.of(context).forumFilterSortByHeat),
+                      selected: _displayForumQuery.orderBy == "heats",
+                      onSelected: (selected) {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        setModalState(() =>
+                            _displayForumQuery.setOrderBy("heats", selected));
+                      },
+                    ),
+                  ],
+                ),
+                filterSection(
+                  PlatformIcons(context).category,
+                  S.of(context).forumFilterSpecialTypeTitle,
+                  [
+                    PlatformChoiceChip(
+                      label: Text(S.of(context).forumFilterSpecialTypePoll),
+                      selected: _displayForumQuery.specialType == "poll",
+                      onSelected: (selected) {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        setModalState(() => _displayForumQuery.setSpecialType(
+                            "poll", selected));
+                      },
+                    ),
+                    PlatformChoiceChip(
+                      label: Text(S.of(context).forumFilterSpecialTypeDebate),
+                      selected: _displayForumQuery.specialType == "debate",
+                      onSelected: (selected) {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        setModalState(() => _displayForumQuery.setSpecialType(
+                            "debate", selected));
+                      },
+                    ),
+                    PlatformChoiceChip(
+                      label: Text(S.of(context).forumFilterSpecialTypeActivity),
+                      selected: _displayForumQuery.specialType == "activity",
+                      onSelected: (selected) {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        setModalState(() => _displayForumQuery.setSpecialType(
+                            "activity", selected));
+                      },
+                    ),
+                  ],
+                ),
+                filterSection(
+                  PlatformIcons(context).timeout,
+                  S.of(context).forumFilterTimeTitle,
+                  [
+                    PlatformChoiceChip(
+                      label: Text(S.of(context).forumFilterTimeToday),
+                      selected: _displayForumQuery.dateline == 86400,
+                      onSelected: (selected) {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        setModalState(() =>
+                            _displayForumQuery.setDateline(86400, selected));
+                      },
+                    ),
+                    PlatformChoiceChip(
+                      label: Text(S.of(context).forumFilterTimeThisWeek),
+                      selected: _displayForumQuery.dateline == 604800,
+                      onSelected: (selected) {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        setModalState(() =>
+                            _displayForumQuery.setDateline(604800, selected));
+                      },
+                    ),
+                    PlatformChoiceChip(
+                      label: Text(S.of(context).forumFilterTimeThisMonth),
+                      selected: _displayForumQuery.dateline == 2592000,
+                      onSelected: (selected) {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        setModalState(() =>
+                            _displayForumQuery.setDateline(2592000, selected));
+                      },
+                    ),
+                    PlatformChoiceChip(
+                      label: Text(S.of(context).forumFilterTimeThisQuarter),
+                      selected: _displayForumQuery.dateline == 7948800,
+                      onSelected: (selected) {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        setModalState(() =>
+                            _displayForumQuery.setDateline(7948800, selected));
+                      },
+                    ),
+                    PlatformChoiceChip(
+                      label: Text(S.of(context).forumFilterTimeThisYear),
+                      selected: _displayForumQuery.dateline == 31536000,
+                      onSelected: (selected) {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        setModalState(() =>
+                            _displayForumQuery.setDateline(31536000, selected));
+                      },
+                    ),
+                  ],
+                ),
+                filterSection(
+                  PlatformIcons(context).flame,
+                  S.of(context).forumFilterStatusTitle,
+                  [
+                    PlatformChoiceChip(
+                      avatar: Icon(PlatformIcons(context).verified),
+                      label: Text(S.of(context).forumFilterStatusDigest),
+                      selected: _displayForumQuery.filter == "digest",
+                      onSelected: (selected) {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        setModalState(
+                            () => _displayForumQuery.setDigest(selected));
+                      },
+                    ),
+                    PlatformChoiceChip(
+                      avatar: Icon(PlatformIcons(context).flame),
+                      label: Text(S.of(context).forumFilterStatusHot),
+                      selected: _displayForumQuery.filter == "hot",
+                      onSelected: (selected) {
+                        VibrationUtils.vibrateWithClickIfPossible();
+                        setModalState(
+                            () => _displayForumQuery.setHot(selected));
+                      },
+                    ),
+                  ],
+                ),
+              ],
             );
           });
         }).whenComplete(() {
@@ -1050,14 +973,14 @@ class DisplayForumActionControls extends StatelessWidget {
       children: [
         PlatformIconButton(
           liquidGlassSymbol: 'heart',
-          icon: const Icon(Icons.favorite_border),
+          icon: Icon(PlatformIcons(context).favoriteOutline),
           onPressed: () {
             // add to favorite
           },
         ),
         PlatformIconButton(
           liquidGlassSymbol: 'info.circle',
-          icon: const Icon(Icons.info_outlined),
+          icon: Icon(PlatformIcons(context).info),
           onPressed: () {},
         )
       ],

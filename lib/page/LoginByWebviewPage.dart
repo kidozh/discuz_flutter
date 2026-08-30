@@ -300,7 +300,7 @@ class NavigationControls extends StatelessWidget {
           children: <Widget>[
             PlatformIconButton(
               liquidGlassSymbol: 'chevron.backward',
-              icon: const Icon(Icons.arrow_back_ios),
+              icon: Icon(PlatformIcons(context).back),
               onPressed: !webViewReady
                   ? null
                   : () async {
@@ -315,7 +315,7 @@ class NavigationControls extends StatelessWidget {
             ),
             PlatformIconButton(
               liquidGlassSymbol: 'chevron.forward',
-              icon: const Icon(Icons.arrow_forward_ios),
+              icon: Icon(PlatformIcons(context).forward),
               onPressed: !webViewReady
                   ? null
                   : () async {
@@ -329,7 +329,7 @@ class NavigationControls extends StatelessWidget {
             ),
             PlatformIconButton(
               liquidGlassSymbol: 'arrow.clockwise',
-              icon: const Icon(Icons.replay),
+              icon: Icon(PlatformIcons(context).refresh),
               onPressed: !webViewReady
                   ? null
                   : () {

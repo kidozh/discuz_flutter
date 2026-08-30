@@ -24,6 +24,8 @@ class FavoriteThreadPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
+      iosContentPadding: true,
+      iosContentBottomPadding: true,
       appBar: PlatformAppBar(
         liquidGlassTitle: S.of(context).favoriteThread,
         title: Text(S.of(context).favoriteThread),

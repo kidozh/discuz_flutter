@@ -16,6 +16,7 @@ import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/DiscuzNotificationProvider.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
+import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/FoundationModelFrameworkUtils.dart';
 import 'package:discuz_flutter/utility/PostTextUtils.dart';
@@ -217,8 +218,10 @@ class PostState extends State<PostStatefulWidget> {
               children: [
                 Text(S.of(context).contentPostByBlockUserTitle(_post.author),
                     style: Theme.of(context).textTheme.headlineSmall),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
                     PlatformTextButton(
                       child: Text(S.of(context).unblockContent),
@@ -277,11 +280,52 @@ class PostState extends State<PostStatefulWidget> {
   }
 
   void translatePostMessage(BuildContext context) async {
-    String rawText = _post.message;
-    String translatedText =
-        await FoundationModelFrameworkUtils.getTranslatedLanguages(
-            "I am a singer");
-    print("${translatedText}");
+    final preferences = context.read<UserPreferenceNotifierProvider>();
+    if (!preferences.appleIntelligenceEnabled ||
+        !preferences.appleIntelligenceAvailable) {
+      return;
+    }
+    EasyLoading.show(status: S.of(context).loading);
+    try {
+      final translatedText =
+          await FoundationModelFrameworkUtils.getTranslatedLanguages(
+        _post.message,
+        guardrailLevel: FoundationModelFrameworkUtils.guardrailLevelFromName(
+          preferences.appleIntelligenceGuardrail,
+        ),
+      );
+      await EasyLoading.dismiss();
+      if (!mounted || translatedText.isEmpty) return;
+      await showPlatformModalSheet<void>(
+        context: context,
+        material: const MaterialModalSheetData(isScrollControlled: true),
+        builder: (sheetContext) => SafeArea(
+          top: false,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.82,
+            ),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    S.of(sheetContext).appleIntelligenceTranslate,
+                    style: Theme.of(sheetContext).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 12),
+                  DiscuzHtmlWidget(_discuz, translatedText),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    } catch (error) {
+      await EasyLoading.dismiss();
+      if (mounted) EasyLoading.showError(error.toString());
+    }
   }
 
   Widget getPostContent(BuildContext context, bool compactParagraph) {
@@ -490,20 +534,23 @@ class PostState extends State<PostStatefulWidget> {
 
   Widget getPostFunctionWidget(BuildContext context) {
     final notification = Provider.of<DiscuzNotificationProvider>(context);
+    final intelligence = Provider.of<UserPreferenceNotifierProvider>(context);
     final actionColor = Theme.of(context).colorScheme.onSurfaceVariant;
-    final actions = <Widget>[
-      PlatformIconButton(
+    final actions = <Widget>[];
+    if (intelligence.appleIntelligenceEnabled &&
+        intelligence.appleIntelligenceAvailable) {
+      actions.add(PlatformIconButton(
         liquidGlassSymbol: 'character.bubble',
         liquidGlassIconSize: 18,
         icon: Icon(
-          Icons.translate,
+          PlatformIcons(context).translate,
           size: 18,
           color: actionColor,
           semanticLabel: S.of(context).appleIntelligenceTranslate,
         ),
         onPressed: () => translatePostMessage(context),
-      ),
-    ];
+      ));
+    }
 
     if (notification.baseVariableResult.isModerator == 0) {
       if (_user != null) {
@@ -512,7 +559,7 @@ class PostState extends State<PostStatefulWidget> {
             liquidGlassSymbol: 'flag',
             liquidGlassIconSize: 18,
             icon: Icon(
-              Icons.flag,
+              PlatformIcons(context).flag,
               size: 18,
               color: actionColor,
               semanticLabel: S.of(context).reportContentTitle(_post.author),
@@ -752,7 +799,7 @@ class PostState extends State<PostStatefulWidget> {
         child: Row(
           children: [
             Icon(
-              Icons.block,
+              PlatformIcons(context).blocked,
               color: Colors.red,
             ),
             Expanded(
@@ -779,7 +826,7 @@ class PostState extends State<PostStatefulWidget> {
         child: Row(
           children: [
             Icon(
-              Icons.warning_amber_outlined,
+              PlatformIcons(context).warning,
               color: Colors.deepOrange,
             ),
             Expanded(
@@ -806,7 +853,7 @@ class PostState extends State<PostStatefulWidget> {
         child: Row(
           children: [
             Icon(
-              Icons.edit_outlined,
+              PlatformIcons(context).edit,
               color: Colors.blue,
             ),
             Expanded(

@@ -134,7 +134,7 @@ class PrivateMessageDetailWidget extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
-                                  Icons.error_rounded,
+                                  PlatformIcons(context).error,
                                   size: 15,
                                   color: Theme.of(context).colorScheme.error,
                                 ),

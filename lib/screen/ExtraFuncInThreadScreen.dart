@@ -38,7 +38,8 @@ class ExtraFuncInThreadScreen extends StatefulWidget {
   ExtraFuncInThreadScreen(this.discuz, this.tid, this.fid,
       {required this.onReplyWithImage,
       this.onReplyWithHostedImage,
-      this.showHistoricalAttachment});
+      this.showHistoricalAttachment,
+      super.key});
 
   @override
   ExtraFuncInThreadState createState() {
@@ -69,6 +70,25 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
 
   ExtraFuncInThreadState(this.discuz, this.tid, this.fid, this.onReplyWithImage,
       this.onReplyWithHostedImage, this.showHistoricalAttachment);
+
+  void pickImageFromGallery() => _triggerMediaAction(0);
+
+  void takePicture() => _triggerMediaAction(1);
+
+  void _triggerMediaAction(int index) {
+    if (_discuzError != null) {
+      EasyLoading.showError(_discuzError!.content);
+      return;
+    }
+    if (_checkPostResult.variables.allowPerm.uploadHash.isEmpty) {
+      EasyLoading.showInfo(S.of(context).preparingPage);
+      return;
+    }
+    final actions = extraFuncListWidget();
+    if (index >= actions.length) return;
+    final action = actions[index];
+    if (action is ExtraFuncBlockButton) action.onPressed();
+  }
 
   @override
   void initState() {
@@ -109,7 +129,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
         height: MediaQuery.of(context).size.height * 0.25,
         child: PlatformListTile(
           leading: Icon(
-            Icons.error_outline,
+            PlatformIcons(context).errorOutline,
             color: Colors.red,
           ),
           title: Text(_discuzError!.content),
