@@ -24,6 +24,8 @@ class FavoriteForumPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
+      iosContentPadding: true,
+      iosContentBottomPadding: true,
       appBar: PlatformAppBar(
         title: Text(S.of(context).favoriteForum),
       ),
@@ -61,19 +63,18 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget> {
     _loadDb();
   }
 
-  void _loadDb() async {
+  Future<void> _loadDb() async {
     final dao = await AppDatabase.getFavoriteForumDao();
     if (!mounted) return;
     setState(() => _favoriteForumDao = dao);
 
+    if (_user == null) return;
     var dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
     client = MobileApiClient(dio, baseUrl: _discuz.baseURL);
-    if (_user != null) {
-      _loadDataFromServer();
-    }
+    await _loadDataFromServer();
   }
 
-  void _loadDataFromServer() async {
+  Future<void> _loadDataFromServer() async {
     // initial trial
     int page = 1;
     await fetchDataByPage(page, []);

@@ -7,6 +7,7 @@ import 'package:discuz_flutter/page/LoginPage.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
+import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -162,6 +163,7 @@ class ManageAccountState extends State<ManageAccountStateWidget> {
 
   _deleteAccount(User user) async {
     if (_userDao != null) {
+      await NetworkUtils.clearPersistentCookiesForUser(user);
       await _userDao!.deleteUser(user);
       EasyLoading.showSuccess(
           S.of(context).deleteAccountSuccessfully(user.username));

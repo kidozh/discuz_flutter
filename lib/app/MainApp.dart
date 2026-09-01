@@ -25,7 +25,7 @@ import 'package:discuz_flutter/screen/DiscuzMessageScreen.dart';
 import 'package:discuz_flutter/screen/DiscuzPortalScreen.dart';
 import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
-import 'package:discuz_flutter/utility/FoundationModelFrameworkUtils.dart';
+import 'package:discuz_flutter/utility/OnDeviceAiService.dart';
 import 'package:discuz_flutter/utility/ToastUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -107,20 +107,22 @@ class _MyAppState extends State<MyApp> {
         await UserPreferencesUtils.getAppleIntelligenceEnabled();
     final appleIntelligenceGuardrail =
         await UserPreferencesUtils.getAppleIntelligenceGuardrail();
-    bool appleIntelligenceAvailable = false;
-    if (Platform.isIOS || Platform.isMacOS) {
+    OnDeviceAiAvailability? onDeviceAiAvailability;
+    if (OnDeviceAiService.isSupportedPlatform) {
       try {
-        appleIntelligenceAvailable =
-            (await FoundationModelFrameworkUtils.checkAvailability())
-                .isAvailable;
+        onDeviceAiAvailability = await OnDeviceAiService.checkAvailability();
       } catch (error, stackTrace) {
         log(
-          "Apple Intelligence availability check failed",
+          "On-device intelligence availability check failed",
           error: error,
           stackTrace: stackTrace,
         );
       }
     }
+    onDeviceAiAvailability ??= const OnDeviceAiAvailability(
+      status: OnDeviceAiAvailabilityStatus.unsupportedPlatform,
+      reasonCode: 'unsupported_platform',
+    );
 
     if (!context.mounted) return;
 
@@ -154,10 +156,9 @@ class _MyAppState extends State<MyApp> {
     final userPreferences =
         Provider.of<UserPreferenceNotifierProvider>(context, listen: false);
     userPreferences.setAppleIntelligenceGuardrail(appleIntelligenceGuardrail);
-    userPreferences
-        .setAppleIntelligenceAvailability(appleIntelligenceAvailable);
+    userPreferences.setOnDeviceAiAvailability(onDeviceAiAvailability);
     userPreferences.setAppleIntelligenceEnabled(
-      appleIntelligenceEnabled && appleIntelligenceAvailable,
+      appleIntelligenceEnabled && onDeviceAiAvailability.isAvailable,
     );
 
     if (typography != null) {
@@ -520,7 +521,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       Navigator.push(
           context,
           platformPageRoute(
-              context: context, builder: (context) => TestFlightBannerPage()));
+              context: context,
+              builder: (context) => TestFlightBannerPage(version: version)));
     }
   }
 
@@ -915,7 +917,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 cupertino: (_, __) => CupertinoTabBar(
                   currentIndex: _bottomNavigationbarIndex,
                   activeColor: Theme.of(context).colorScheme.primary,
-                  inactiveColor: CupertinoColors.inactiveGray,
+                  inactiveColor:
+                      CupertinoColors.secondaryLabel.resolveFrom(context),
+                  backgroundColor:
+                      CupertinoColors.systemBackground.resolveFrom(context),
                   items: bottomNavigationItems,
                   onTap: selectBottomDestination,
                 ),

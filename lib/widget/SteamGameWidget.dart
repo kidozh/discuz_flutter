@@ -5,7 +5,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:discuz_flutter/JsonResult/SteamGameDataResult.dart';
 import 'package:discuz_flutter/client/SteamApiClient.dart';
-import 'package:discuz_flutter/utility/TwoPaneUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
@@ -199,20 +198,28 @@ class SteamGameState extends State<SteamGameWidget> {
         ),
       );
 
+  double _steamSheetHorizontalPadding(BuildContext context) {
+    final viewportWidth = MediaQuery.sizeOf(context).width;
+    if (viewportWidth < 650) return 0;
+    final preferredWidth = viewportWidth * 0.72;
+    final dialogWidth = preferredWidth > 760 ? 760.0 : preferredWidth;
+    return (viewportWidth - dialogWidth) / 2;
+  }
+
   void triggerDialog() {
     VibrationUtils.vibrateWithClickIfPossible();
     showPlatformModalSheet(
         context: context,
         builder: (context) => SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                horizontal: _steamSheetHorizontalPadding(context),
+              ),
               child: Container(
                 //alignment: Alignment.centerRight,
                 color: usesLiquidGlass(context)
                     ? Colors.transparent
                     : Theme.of(context).colorScheme.surface,
-                width: MediaQuery.sizeOf(context).width * 0.6 >
-                        TwoPaneUtils.mobileScreenSize
-                    ? MediaQuery.sizeOf(context).width * 0.6
-                    : double.infinity,
+                width: double.infinity,
                 padding: EdgeInsets.only(bottom: 16.0, left: 16, right: 16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

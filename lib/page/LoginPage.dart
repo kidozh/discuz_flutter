@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -228,13 +227,12 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
   }
 
   Dio _dio = Dio();
-  late PersistCookieJar cookieJar;
+  late CookieJar cookieJar;
 
   Future<void> _initDio() async {
     cookieJar = await NetworkUtils.getTemporaryCookieJar();
-    setState(() {
-      _dio.interceptors.add(CookieManager(cookieJar));
-    });
+    _dio = NetworkUtils.getDio();
+    NetworkUtils.addCookieManager(_dio, cookieJar);
   }
 
   void _verifyAccountAndPassword() async {
@@ -272,7 +270,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
         error = null;
       });
       // check if the
-      log("Recv a result ${value} ${value.toJson().toString()}");
+      log('Login response received from ${discuz.host}');
       // if user is validated
       User user = value.loginVariables.getUser(discuz);
       user.discuz = discuz;
@@ -287,7 +285,6 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
           // search in database first
           User? userInDataBase = dao.findUsersByDiscuzAndUid(discuz, user.uid);
           if (userInDataBase != null) {
-            user = userInDataBase;
             await dao.insertWithKey(userInDataBase.key, user);
           } else {
             await dao.insert(user);
@@ -295,10 +292,13 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
           // save it in cookiejar
           List<Cookie> cookies =
               await cookieJar.loadForRequest(Uri.parse(discuz.baseURL));
-          PersistCookieJar savedCookieJar =
-              await NetworkUtils.getPersistentCookieJarByUser(user);
-          log("cookies ${cookies}");
-          savedCookieJar.saveFromResponse(Uri.parse(discuz.baseURL), cookies);
+          log('Persisting ${cookies.length} login cookies for uid ${user.uid}');
+          await NetworkUtils.replacePersistentCookiesForUser(
+            user,
+            Uri.parse(discuz.baseURL),
+            cookies,
+          );
+          if (!mounted) return;
           // pop the activity
           // set it
           EasyLoading.showSuccess(
@@ -308,8 +308,8 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
             log("Save authentification to secure storage");
             await _saveAuthentificationToSecureDatabase();
           }
-          Provider.of<DiscuzAndUserNotifier>(context, listen: false).user =
-              user;
+          Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+              .setUser(user);
 
           Navigator.pop(context);
         } catch (e, s) {

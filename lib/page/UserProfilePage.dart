@@ -205,60 +205,68 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                         ),
                       ),
                     ),
-                    // username
-                    Container(
-                      margin: new EdgeInsets.only(top: 40.0),
-                      child: new Center(
-                        child: Text(
-                          _userProfileResult!.variables.getSpace().username,
-                          style: TextStyle(
-                              fontSize: 30.0,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 100.0),
-                      child: Center(
-                        child: PlatformLiquidGlassAvatar(
-                          size: 100,
-                          child: CachedNetworkImage(
-                            imageUrl: URLUtils.getLargeAvatarURL(
-                                discuz, uid.toString()),
-                            fit: BoxFit.cover,
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) =>
-                                    CircularProgressIndicator(
-                                        value: downloadProgress.progress),
-                            errorWidget: (context, url, error) => ColoredBox(
-                              color: CustomizeColor.getColorBackgroundById(uid),
-                              child: Center(
-                                child: Text(
-                                  _userProfileResult!.variables
+                    Positioned.fill(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 30),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              _userProfileResult!.variables.getSpace().username,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 30,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer,
+                              ),
+                            ),
+                            const SizedBox(height: 18),
+                            PlatformLiquidGlassAvatar(
+                              size: 100,
+                              child: CachedNetworkImage(
+                                imageUrl: URLUtils.getLargeAvatarURL(
+                                    discuz, uid.toString()),
+                                fit: BoxFit.cover,
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                errorWidget: (context, url, error) =>
+                                    ColoredBox(
+                                  color: CustomizeColor.getColorBackgroundById(
+                                      uid),
+                                  child: Center(
+                                    child: Text(
+                                      _userProfileResult!.variables
                                               .getSpace()
                                               .username
-                                              .length !=
-                                          0
-                                      ? _userProfileResult!.variables
-                                          .getSpace()
-                                          .username[0]
-                                          .toUpperCase()
-                                      : S.of(context).anonymous,
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 45),
+                                              .isNotEmpty
+                                          ? _userProfileResult!.variables
+                                              .getSpace()
+                                              .username[0]
+                                              .toUpperCase()
+                                          : S.of(context).anonymous,
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 45),
+                                    ),
+                                  ),
+                                ),
+                                imageBuilder: (context, imageProvider) =>
+                                    Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                            imageBuilder: (context, imageProvider) => Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                    image: imageProvider, fit: BoxFit.cover),
-                              ),
-                            ),
-                          ),
+                          ],
                         ),
                       ),
                     ),

@@ -13,6 +13,8 @@ import androidx.activity.OnBackPressedCallback;
 //
 // class MainActivity: FlutterActivity() {
 class MainActivity: FlutterFragmentActivity() {
+    private var onDeviceAiChannel: AndroidOnDeviceAiChannel? = null
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
 
         super.configureFlutterEngine(flutterEngine)
@@ -24,11 +26,18 @@ class MainActivity: FlutterFragmentActivity() {
             "NativeAd",
             AppNativeAdFactory(this)
         )
+        onDeviceAiChannel = AndroidOnDeviceAiChannel(
+            this,
+            flutterEngine.dartExecutor.binaryMessenger,
+        )
 
     }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        onDeviceAiChannel?.dispose()
+        onDeviceAiChannel = null
         GoogleMobileAdsPlugin.unregisterNativeAdFactory(flutterEngine, "NativeAd")
+        super.cleanUpFlutterEngine(flutterEngine)
     }
 
 }

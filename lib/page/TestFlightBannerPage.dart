@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -11,36 +13,85 @@ import 'package:provider/provider.dart';
 
 import '../provider/UserPreferenceNotifierProvider.dart';
 
-class TestFlightBannerPage extends StatelessWidget {
+class TestFlightBannerPage extends StatefulWidget {
+  final String? version;
+
+  const TestFlightBannerPage({this.version, super.key});
+
+  @override
+  State<TestFlightBannerPage> createState() => _TestFlightBannerPageState();
+}
+
+class _TestFlightBannerPageState extends State<TestFlightBannerPage> {
+  String? _version;
+
+  @override
+  void initState() {
+    super.initState();
+    _version = widget.version;
+    if (_version == null) unawaited(_loadVersion());
+  }
+
+  Future<void> _loadVersion() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    if (mounted) setState(() => _version = packageInfo.version);
+  }
+
+  String _pageTitle(BuildContext context) => _version == null
+      ? S.of(context).welcomeTitle
+      : S.of(context).welcomeVersionTitle(_version!);
+
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
         iosContentBottomPadding: true,
         iosContentPadding: true,
         appBar: PlatformAppBar(
-          title: Text(S.of(context).testVersion),
+          title: Text(_pageTitle(context)),
         ),
-        body: TestFlightBannerContent());
+        body: TestFlightBannerContent(version: _version));
   }
 }
 
 class TestFlightBannerContent extends StatefulWidget {
+  final String? version;
+
+  const TestFlightBannerContent({required this.version, super.key});
+
   @override
-  State<StatefulWidget> createState() {
-    return TestFlightBannerContentState();
-  }
+  State<TestFlightBannerContent> createState() =>
+      TestFlightBannerContentState();
 }
 
 class TestFlightBannerContentState extends State<TestFlightBannerContent> {
+  static const _featureContentPadding =
+      EdgeInsets.symmetric(horizontal: 16, vertical: 12);
+
+  String _pageTitle(BuildContext context) => widget.version == null
+      ? S.of(context).welcomeTitle
+      : S.of(context).welcomeVersionTitle(widget.version!);
+
+  Widget _featureLeading({
+    required Color backgroundColor,
+    required IconData icon,
+    required Color foregroundColor,
+  }) {
+    return CircleAvatar(
+      radius: 16,
+      backgroundColor: backgroundColor,
+      child: Icon(icon, color: foregroundColor, size: 17),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _checkPushService(context);
+      if (mounted) _checkPushService();
     });
   }
 
-  Future<void> _checkPushService(BuildContext context) async {
+  Future<void> _checkPushService() async {
     // if(signaturePreference != PostTextFieldUtils.USE_APP_SIGNATURE){
     //   // prompt push notification
     //   await showPlatformDialog(
@@ -73,10 +124,10 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent> {
     // }
 
     // check with push service
-    if (mounted) await triggerNotification(context);
+    if (mounted) await triggerNotification();
   }
 
-  Future<void> triggerNotification(BuildContext context) async {
+  Future<void> triggerNotification() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     NotificationSettings settings = await messaging.requestPermission(
         alert: true,
@@ -101,7 +152,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent> {
       if (!mounted) return;
       await showPlatformAlert(
         context: context,
-        title: S.of(context).testVersion,
+        title: _pageTitle(context),
         message: S.of(context).pushNotificationPermissionNotAuthorized,
         actions: [
           PlatformAlertAction(
@@ -132,7 +183,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent> {
                     child: Icon(
                       PlatformIcons(context).cube,
                       color: Colors.white,
-                      size: 80,
+                      size: 72,
                     ),
                   ),
                 ),
@@ -140,7 +191,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent> {
                   height: 16,
                 ),
                 Text(
-                  S.of(context).welcomeTitle,
+                  _pageTitle(context),
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge!
@@ -198,24 +249,32 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent> {
                 //   ),
                 // ),
                 PlatformListTile(
-                  leading: CircleAvatar(
+                  leading: _featureLeading(
                     backgroundColor: Colors.redAccent,
-                    child: Icon(CupertinoIcons.hand_raised_fill,
-                        color: Colors.white),
+                    icon: CupertinoIcons.hand_raised_fill,
+                    foregroundColor: Colors.white,
                   ),
                   title: Text(S.of(context).preventAbuseUser),
-                  subtitle: Text(S.of(context).preventAbuseUserDescription),
+                  subtitle: Text(
+                    S.of(context).preventAbuseUserDescription,
+                    softWrap: true,
+                  ),
+                  isThreeLine: true,
+                  contentPadding: _featureContentPadding,
                 ),
                 PlatformListTile(
-                  leading: CircleAvatar(
+                  leading: _featureLeading(
                     backgroundColor: Colors.green,
-                    child: Icon(
-                      PlatformIcons(context).secure,
-                      color: Colors.white,
-                    ),
+                    icon: PlatformIcons(context).secure,
+                    foregroundColor: Colors.white,
                   ),
                   title: Text(S.of(context).privacyProtectTitle),
-                  subtitle: Text(S.of(context).privacyProtectSubtitle),
+                  subtitle: Text(
+                    S.of(context).privacyProtectSubtitle,
+                    softWrap: true,
+                  ),
+                  isThreeLine: true,
+                  contentPadding: _featureContentPadding,
                   onTap: () {
                     VibrationUtils.vibrateWithClickIfPossible();
                     URLUtils.launchURL(
@@ -223,30 +282,36 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent> {
                   },
                 ),
                 PlatformListTile(
-                  leading: CircleAvatar(
+                  leading: _featureLeading(
                     backgroundColor: Colors.amber,
-                    child: Icon(
-                      PlatformIcons(context).chart,
-                      color: Colors.black,
-                    ),
+                    icon: PlatformIcons(context).chart,
+                    foregroundColor: Colors.black,
                   ),
                   title: Text(S.of(context).useGoogleAnalyticsTitle),
-                  subtitle: Text(S.of(context).useGoogleAnalyticsContent),
+                  subtitle: Text(
+                    S.of(context).useGoogleAnalyticsContent,
+                    softWrap: true,
+                  ),
+                  isThreeLine: true,
+                  contentPadding: _featureContentPadding,
                   onTap: () {
                     VibrationUtils.vibrateWithClickIfPossible();
                     URLUtils.launchURL("https://policies.google.com/privacy");
                   },
                 ),
                 PlatformListTile(
-                  leading: CircleAvatar(
+                  leading: _featureLeading(
                     backgroundColor: Colors.indigo,
-                    child: Icon(
-                      PlatformIcons(context).checkMark,
-                      color: Colors.white,
-                    ),
+                    icon: PlatformIcons(context).checkMark,
+                    foregroundColor: Colors.white,
                   ),
                   title: Text(S.of(context).termsOfService),
-                  subtitle: Text(S.of(context).termsOfUseDescription),
+                  subtitle: Text(
+                    S.of(context).termsOfUseDescription,
+                    softWrap: true,
+                  ),
+                  isThreeLine: true,
+                  contentPadding: _featureContentPadding,
                   onTap: () {
                     VibrationUtils.vibrateWithClickIfPossible();
                     URLUtils.launchURL(
@@ -274,6 +339,14 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent> {
                   children: [
                     Expanded(
                         child: PlatformElevatedButton(
+                      onPressed: () async {
+                        final version = widget.version ??
+                            (await PackageInfo.fromPlatform()).version;
+                        await UserPreferencesUtils.putAcceptVersionCodeFlag(
+                            version);
+                        if (context.mounted) Navigator.pop(context);
+                      },
+                      color: Theme.of(context).colorScheme.primaryContainer,
                       child: Text(
                         S.of(context).continueToDo,
                         style: TextStyle(
@@ -281,15 +354,6 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent> {
                                 .colorScheme
                                 .onPrimaryContainer),
                       ),
-                      onPressed: () async {
-                        PackageInfo packageInfo =
-                            await PackageInfo.fromPlatform();
-                        String version = packageInfo.version;
-                        await UserPreferencesUtils.putAcceptVersionCodeFlag(
-                            version);
-                        Navigator.pop(context);
-                      },
-                      color: Theme.of(context).colorScheme.primaryContainer,
                     ))
                   ],
                 ),

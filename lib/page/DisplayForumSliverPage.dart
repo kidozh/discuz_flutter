@@ -158,10 +158,12 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   }
 
   Future<void> favoriteForum() async {
+    final user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     FavoriteForumDao favoriteForumDao = await AppDatabase.getFavoriteForumDao();
     await favoriteForumDao.insertFavoriteForum(FavoriteForumInDatabase(
         0,
-        _displayForumResult.discuzIndexVariables.member_uid,
+        user?.uid ?? _displayForumResult.discuzIndexVariables.member_uid,
         fid,
         "fid",
         _displayForumResult.discuzIndexVariables.forum.name,
@@ -169,8 +171,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         DateTime.now(),
         discuz));
     if (mounted) setState(() {});
-    if (Provider.of<DiscuzAndUserNotifier>(context, listen: false).user ==
-        null) {
+    if (user == null) {
       return;
     }
     client
@@ -188,6 +189,8 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   }
 
   Future<void> unfavoriteForum() async {
+    final user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     FavoriteForumDao favoriteForumDao = await AppDatabase.getFavoriteForumDao();
 
     FavoriteForumInDatabase? favoriteForumInDatabase =
@@ -195,12 +198,11 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     if (favoriteForumInDatabase != null) {
       await favoriteForumDao.removeFavoriteForum(favoriteForumInDatabase);
       if (mounted) setState(() {});
-      if (Provider.of<DiscuzAndUserNotifier>(context, listen: false).user ==
-          null) {
+      if (user == null) {
         return;
       }
       client
-          .unfavoriteThreadActionResult(
+          .unfavoriteForumActionResult(
               _displayForumResult.discuzIndexVariables.formHash,
               favoriteForumInDatabase.favid)
           .then((value) {
@@ -639,7 +641,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                               index > 10) {
                             return Container();
                           } else {
-                            return AppBannerAdWidget();
+                            return const AppBannerAdWidget();
                           }
                         })
                     ],

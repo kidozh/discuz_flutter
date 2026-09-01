@@ -2185,6 +2185,16 @@ class S {
     return Intl.message('Welcome', name: 'welcomeTitle', desc: '', args: []);
   }
 
+  /// `Welcome to version {version}`
+  String welcomeVersionTitle(Object version) {
+    return Intl.message(
+      'Welcome to version $version',
+      name: 'welcomeVersionTitle',
+      desc: '',
+      args: [version],
+    );
+  }
+
   /// `Welcome to use our Services.`
   String get welcomeSubtitle {
     return Intl.message(
@@ -2205,10 +2215,10 @@ class S {
     return Intl.message('Finish', name: 'finishLoginInWeb', desc: '', args: []);
   }
 
-  /// `Invalid cookie from response.`
+  /// `Unable to read the web sign-in status. Refresh the sign-in page and try again.`
   String get invalidCookie {
     return Intl.message(
-      'Invalid cookie from response.',
+      'Unable to read the web sign-in status. Refresh the sign-in page and try again.',
       name: 'invalidCookie',
       desc: '',
       args: [],
@@ -5645,6 +5655,66 @@ class S {
     );
   }
 
+  /// `This device does not support the required on-device foundation model.`
+  String get appleIntelligenceUnavailableDeviceNotEligible {
+    return Intl.message(
+      'This device does not support the required on-device foundation model.',
+      name: 'appleIntelligenceUnavailableDeviceNotEligible',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Apple Intelligence is not enabled. Enable it in system Settings, then try again.`
+  String get appleIntelligenceUnavailableNotEnabled {
+    return Intl.message(
+      'Apple Intelligence is not enabled. Enable it in system Settings, then try again.',
+      name: 'appleIntelligenceUnavailableNotEnabled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The on-device model is still downloading or preparing. Try again shortly.`
+  String get appleIntelligenceUnavailableModelNotReady {
+    return Intl.message(
+      'The on-device model is still downloading or preparing. Try again shortly.',
+      name: 'appleIntelligenceUnavailableModelNotReady',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The current system version ({osVersion}) is too old. Update the system and try again.`
+  String appleIntelligenceUnavailablePlatformTooOld(Object osVersion) {
+    return Intl.message(
+      'The current system version ($osVersion) is too old. Update the system and try again.',
+      name: 'appleIntelligenceUnavailablePlatformTooOld',
+      desc: '',
+      args: [osVersion],
+    );
+  }
+
+  /// `The on-device intelligence service is temporarily unavailable. Try again later.`
+  String get appleIntelligenceUnavailableUnknown {
+    return Intl.message(
+      'The on-device intelligence service is temporarily unavailable. Try again later.',
+      name: 'appleIntelligenceUnavailableUnknown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `An error occurred while checking the on-device intelligence service. Try again later.`
+  String get appleIntelligenceAvailabilityCheckFailed {
+    return Intl.message(
+      'An error occurred while checking the on-device intelligence service. Try again later.',
+      name: 'appleIntelligenceAvailabilityCheckFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Help`
   String get appleIntelligenceHelp {
     return Intl.message(
@@ -5770,6 +5840,236 @@ class S {
     return Intl.message(
       'Read our post ↗',
       name: 'appleIntelligenceLearnMoreFromOurPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The on-device model is ready. Content is processed locally on this device.`
+  String get onDeviceAiReadyDescription {
+    return Intl.message(
+      'The on-device model is ready. Content is processed locally on this device.',
+      name: 'onDeviceAiReadyDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Download the on-device model`
+  String get onDeviceAiModelDownloadTitle {
+    return Intl.message(
+      'Download the on-device model',
+      name: 'onDeviceAiModelDownloadTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Gemini Nano is supported but its model files are not ready. Connect to Wi-Fi and keep the device charged while Android AICore downloads them.`
+  String get onDeviceAiModelDownloadDescription {
+    return Intl.message(
+      'Gemini Nano is supported but its model files are not ready. Connect to Wi-Fi and keep the device charged while Android AICore downloads them.',
+      name: 'onDeviceAiModelDownloadDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Download model`
+  String get onDeviceAiDownloadModel {
+    return Intl.message(
+      'Download model',
+      name: 'onDeviceAiDownloadModel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Downloading model…`
+  String get onDeviceAiDownloadingModel {
+    return Intl.message(
+      'Downloading model…',
+      name: 'onDeviceAiDownloadingModel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Downloaded {downloaded} MB`
+  String onDeviceAiDownloadProgress(Object downloaded) {
+    return Intl.message(
+      'Downloaded $downloaded MB',
+      name: 'onDeviceAiDownloadProgress',
+      desc: '',
+      args: [downloaded],
+    );
+  }
+
+  /// `The model download failed. Check the network and available storage, then try again.`
+  String get onDeviceAiDownloadFailed {
+    return Intl.message(
+      'The model download failed. Check the network and available storage, then try again.',
+      name: 'onDeviceAiDownloadFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Android AICore is required`
+  String get onDeviceAiAICoreTitle {
+    return Intl.message(
+      'Android AICore is required',
+      name: 'onDeviceAiAICoreTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Android AICore is missing or outdated. Install or update the Google system service, then return here to check again.`
+  String get onDeviceAiAICoreDescription {
+    return Intl.message(
+      'Android AICore is missing or outdated. Install or update the Google system service, then return here to check again.',
+      name: 'onDeviceAiAICoreDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open Google Play`
+  String get onDeviceAiOpenGooglePlay {
+    return Intl.message(
+      'Open Google Play',
+      name: 'onDeviceAiOpenGooglePlay',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `System update required`
+  String get onDeviceAiSystemUpdateTitle {
+    return Intl.message(
+      'System update required',
+      name: 'onDeviceAiSystemUpdateTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This Android or Apple system version is too old for the on-device model. Update the system and try again.`
+  String get onDeviceAiSystemUpdateDescription {
+    return Intl.message(
+      'This Android or Apple system version is too old for the on-device model. Update the system and try again.',
+      name: 'onDeviceAiSystemUpdateDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not enough storage`
+  String get onDeviceAiStorageTitle {
+    return Intl.message(
+      'Not enough storage',
+      name: 'onDeviceAiStorageTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Free some device storage before downloading or using the on-device model.`
+  String get onDeviceAiStorageDescription {
+    return Intl.message(
+      'Free some device storage before downloading or using the on-device model.',
+      name: 'onDeviceAiStorageDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Temporarily unavailable`
+  String get onDeviceAiTemporarilyUnavailableTitle {
+    return Intl.message(
+      'Temporarily unavailable',
+      name: 'onDeviceAiTemporarilyUnavailableTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The system intelligence service is preparing or temporarily busy. Keep the device online and try again shortly.`
+  String get onDeviceAiTemporarilyUnavailableDescription {
+    return Intl.message(
+      'The system intelligence service is preparing or temporarily busy. Keep the device online and try again shortly.',
+      name: 'onDeviceAiTemporarilyUnavailableDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check again`
+  String get onDeviceAiRetry {
+    return Intl.message(
+      'Check again',
+      name: 'onDeviceAiRetry',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Setup required`
+  String get onDeviceAiSetupRequired {
+    return Intl.message(
+      'Setup required',
+      name: 'onDeviceAiSetupRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Downloading`
+  String get onDeviceAiStatusDownloading {
+    return Intl.message(
+      'Downloading',
+      name: 'onDeviceAiStatusDownloading',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Provided by Apple Foundation Models`
+  String get onDeviceAiProviderApple {
+    return Intl.message(
+      'Provided by Apple Foundation Models',
+      name: 'onDeviceAiProviderApple',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Provided by Gemini Nano and Android AICore`
+  String get onDeviceAiProviderAndroid {
+    return Intl.message(
+      'Provided by Gemini Nano and Android AICore',
+      name: 'onDeviceAiProviderAndroid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This post is too long for the on-device model.`
+  String get onDeviceAiRequestTooLarge {
+    return Intl.message(
+      'This post is too long for the on-device model.',
+      name: 'onDeviceAiRequestTooLarge',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The on-device model could not complete this request. Try again shortly.`
+  String get onDeviceAiRequestFailed {
+    return Intl.message(
+      'The on-device model could not complete this request. Try again shortly.',
+      name: 'onDeviceAiRequestFailed',
       desc: '',
       args: [],
     );

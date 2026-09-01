@@ -248,7 +248,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
                                 return Container();
                               }
                               else{
-                                return AppBannerAdWidget();
+                                return const AppBannerAdWidget();
                               }
                             })
                         ],

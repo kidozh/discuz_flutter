@@ -9,6 +9,7 @@ import 'package:discuz_flutter/page/ViewHistoryPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
+import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
@@ -158,8 +159,10 @@ class ConfigurationUserState extends State<ConfigurationUserStatefulWidget> {
                 VibrationUtils.vibrateWithClickIfPossible();
                 // wipe out first
                 if (discuzAndUser.user != null) {
+                  final user = discuzAndUser.user!;
                   var _userDao = await AppDatabase.getUserDao();
-                  await _userDao.deleteUser(discuzAndUser.user!);
+                  await NetworkUtils.clearPersistentCookiesForUser(user);
+                  await _userDao.deleteUser(user);
                   Provider.of<DiscuzAndUserNotifier>(context, listen: false)
                       .setUser(null);
                 }

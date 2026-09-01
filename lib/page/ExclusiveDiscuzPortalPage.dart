@@ -74,7 +74,7 @@ class ExclusiveDiscuzPortalState
           platformPageRoute(
               //iosTitle: S.of(context).testVersion,
               context: context,
-              builder: (context) => TestFlightBannerPage()));
+              builder: (context) => TestFlightBannerPage(version: version)));
     }
   }
 
