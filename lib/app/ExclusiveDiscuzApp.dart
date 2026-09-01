@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
@@ -7,7 +6,7 @@ import 'package:discuz_flutter/page/ExclusiveDiscuzPortalPage.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
-import 'package:discuz_flutter/utility/FoundationModelFrameworkUtils.dart';
+import 'package:discuz_flutter/utility/OnDeviceAiService.dart';
 import 'package:discuz_flutter/utility/ToastUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
@@ -44,13 +43,13 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
         await UserPreferencesUtils.getAppleIntelligenceEnabled();
     final intelligenceGuardrail =
         await UserPreferencesUtils.getAppleIntelligenceGuardrail();
-    bool intelligenceAvailable = false;
-    if (Platform.isIOS || Platform.isMacOS) {
-      try {
-        intelligenceAvailable =
-            (await FoundationModelFrameworkUtils.checkAvailability())
-                .isAvailable;
-      } catch (_) {}
+    OnDeviceAiAvailability intelligenceAvailability =
+        const OnDeviceAiAvailability(
+      status: OnDeviceAiAvailabilityStatus.unsupportedPlatform,
+      reasonCode: 'unsupported_platform',
+    );
+    if (OnDeviceAiService.isSupportedPlatform) {
+      intelligenceAvailability = await OnDeviceAiService.checkAvailability();
     }
     if (!context.mounted) return;
 
@@ -69,9 +68,9 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
     final preferences =
         Provider.of<UserPreferenceNotifierProvider>(context, listen: false);
     preferences.setAppleIntelligenceGuardrail(intelligenceGuardrail);
-    preferences.setAppleIntelligenceAvailability(intelligenceAvailable);
+    preferences.setOnDeviceAiAvailability(intelligenceAvailability);
     preferences.setAppleIntelligenceEnabled(
-      intelligenceEnabled && intelligenceAvailable,
+      intelligenceEnabled && intelligenceAvailability.isAvailable,
     );
   }
 

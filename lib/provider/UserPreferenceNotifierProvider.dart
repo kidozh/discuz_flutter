@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
+import '../utility/OnDeviceAiService.dart';
+
 class UserPreferenceNotifierProvider with ChangeNotifier {
   bool _allowPush = false;
 
@@ -30,12 +32,15 @@ class UserPreferenceNotifierProvider with ChangeNotifier {
   bool _appleIntelligenceAvailable = false;
   bool _appleIntelligenceAvailabilityChecked = false;
   String _appleIntelligenceGuardrail = "standard";
+  OnDeviceAiAvailabilityStatus _onDeviceAiStatus =
+      OnDeviceAiAvailabilityStatus.unsupportedPlatform;
 
   bool get appleIntelligenceEnabled => _appleIntelligenceEnabled;
   bool get appleIntelligenceAvailable => _appleIntelligenceAvailable;
   bool get appleIntelligenceAvailabilityChecked =>
       _appleIntelligenceAvailabilityChecked;
   String get appleIntelligenceGuardrail => _appleIntelligenceGuardrail;
+  OnDeviceAiAvailabilityStatus get onDeviceAiStatus => _onDeviceAiStatus;
 
   void setAppleIntelligenceEnabled(bool value) {
     if (_appleIntelligenceEnabled == value) return;
@@ -46,7 +51,18 @@ class UserPreferenceNotifierProvider with ChangeNotifier {
   void setAppleIntelligenceAvailability(bool value) {
     _appleIntelligenceAvailable = value;
     _appleIntelligenceAvailabilityChecked = true;
+    _onDeviceAiStatus = value
+        ? OnDeviceAiAvailabilityStatus.available
+        : OnDeviceAiAvailabilityStatus.unavailable;
     if (!value) _appleIntelligenceEnabled = false;
+    notifyListeners();
+  }
+
+  void setOnDeviceAiAvailability(OnDeviceAiAvailability availability) {
+    _onDeviceAiStatus = availability.status;
+    _appleIntelligenceAvailable = availability.isAvailable;
+    _appleIntelligenceAvailabilityChecked = true;
+    if (!availability.isAvailable) _appleIntelligenceEnabled = false;
     notifyListeners();
   }
 

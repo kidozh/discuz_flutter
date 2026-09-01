@@ -75,16 +75,14 @@ class FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
   }
 
   Future<void> _loadDb() async {
-    _favoriteThreadDao = await AppDatabase.getFavoriteThreadDao();
-    setState(() {
-      _favoriteThreadDao = _favoriteThreadDao;
-    });
+    final dao = await AppDatabase.getFavoriteThreadDao();
+    if (!mounted) return;
+    setState(() => _favoriteThreadDao = dao);
 
+    if (_user == null) return;
     var dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
     client = MobileApiClient(dio, baseUrl: _discuz.baseURL);
-    if (_user != null) {
-      _loadDataFromServer();
-    }
+    await _loadDataFromServer();
   }
 
   Future<void> _loadDataFromServer() async {

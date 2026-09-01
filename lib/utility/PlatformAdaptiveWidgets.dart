@@ -51,6 +51,12 @@ bool usesLiquidGlass(BuildContext context) =>
 bool usesAppleTranslucentSurface(BuildContext context) =>
     isCupertino(context) && liquid.PlatformInfo.isIOS;
 
+/// Whether the current subtree is already hosted by a Flutter-rendered glass
+/// surface. Descendants can use lightweight tints instead of stacking another
+/// backdrop blur, which avoids muddy contrast and unnecessary GPU work.
+bool isInsidePlatformLiquidGlassContainer(BuildContext context) =>
+    _PlatformGlassContainerScope.contains(context);
+
 String? _liquidGlassSymbolForWidget(Widget? widget) {
   if (widget is Icon) return _liquidGlassSymbolForIcon(widget.icon);
   if (widget is Badge) return _liquidGlassSymbolForWidget(widget.child);
@@ -383,11 +389,20 @@ class PlatformApp extends StatelessWidget {
         builder: (context, child) {
           final builtChild =
               builder?.call(context, child) ?? child ?? const SizedBox.shrink();
+          final materialTheme =
+              useDark ? themes?.materialDarkTheme : themes?.materialLightTheme;
+          Widget themedChild = builtChild;
+          if (materialTheme != null) {
+            // CupertinoApp does not insert a Material Theme. Shared widgets
+            // use Theme.of for their colors, so bridge the active Material
+            // theme here instead of letting them fall back to light colors.
+            themedChild = Theme(data: materialTheme, child: themedChild);
+          }
           return MediaQuery(
             data: MediaQuery.of(context).copyWith(
               platformBrightness: useDark ? Brightness.dark : Brightness.light,
             ),
-            child: builtChild,
+            child: themedChild,
           );
         },
         title: title,
@@ -498,6 +513,7 @@ class PlatformAppBar {
   final PreferredSizeWidget? bottom;
   final PlatformBuilder<adaptive.MaterialAppBarData>? material;
   final PlatformBuilder<adaptive.CupertinoNavigationBarData>? cupertino;
+  final bool liquidGlassUseNativeToolbar;
 
   const PlatformAppBar({
     this.widgetKey,
@@ -512,6 +528,7 @@ class PlatformAppBar {
     this.bottom,
     this.material,
     this.cupertino,
+    this.liquidGlassUseNativeToolbar = true,
   });
 
   liquid.AdaptiveAppBar? createLiquidGlassAppBar(
@@ -542,7 +559,7 @@ class PlatformAppBar {
       tintColor: liquidGlassTintColor ??
           Theme.of(context).iconTheme.color ??
           CupertinoColors.label.resolveFrom(context),
-      useNativeToolbar: true,
+      useNativeToolbar: liquidGlassUseNativeToolbar,
     );
   }
 
@@ -998,31 +1015,35 @@ class PlatformChoiceChip extends StatelessWidget {
     if (usesLiquidGlass(context)) {
       final colors = Theme.of(context).colorScheme;
       final foregroundColor = selected ? colors.onPrimary : colors.onSurface;
-      return ConstrainedBox(
-        constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
-        child: liquid.AdaptiveButton.child(
-          onPressed: onSelected == null ? null : () => onSelected!(!selected),
-          padding: EdgeInsets.zero,
-          enabled: onSelected != null,
-          color: selected ? Theme.of(context).colorScheme.primary : null,
-          style: selected
-              ? liquid.AdaptiveButtonStyle.prominentGlass
-              : liquid.AdaptiveButtonStyle.glass,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            child: DefaultTextStyle.merge(
-              style: TextStyle(color: foregroundColor),
-              child: IconTheme.merge(
-                data: IconThemeData(color: foregroundColor, size: 18),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (avatar != null) ...[
-                      avatar!,
-                      const SizedBox(width: 6),
+      // Native glass buttons advertise the full incoming width. IntrinsicWidth
+      // keeps each option compact so a Wrap can arrange them like chips.
+      return IntrinsicWidth(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+          child: liquid.AdaptiveButton.child(
+            onPressed: onSelected == null ? null : () => onSelected!(!selected),
+            padding: EdgeInsets.zero,
+            enabled: onSelected != null,
+            color: selected ? Theme.of(context).colorScheme.primary : null,
+            style: selected
+                ? liquid.AdaptiveButtonStyle.prominentGlass
+                : liquid.AdaptiveButtonStyle.glass,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              child: DefaultTextStyle.merge(
+                style: TextStyle(color: foregroundColor),
+                child: IconTheme.merge(
+                  data: IconThemeData(color: foregroundColor, size: 18),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (avatar != null) ...[
+                        avatar!,
+                        const SizedBox(width: 6),
+                      ],
+                      label,
                     ],
-                    label,
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -1795,7 +1816,8 @@ class _PlatformAdaptiveSettingsSection extends StatelessWidget {
                   _PlatformAdaptiveSettingsTile(
                     tile: settingsSection.tiles[index],
                   ),
-                  if (index < settingsSection.tiles.length - 1)
+                  if (index < settingsSection.tiles.length - 1 &&
+                      !usesLiquidGlass(context))
                     Divider(
                       height: 1,
                       indent: _settingsTileHasLeading(
@@ -2296,6 +2318,23 @@ class PlatformListTile extends StatelessWidget {
     }
 
     final foreground = selected ? selectedColor : textColor;
+    final cupertinoSubtitle = subtitle == null || !isThreeLine
+        ? subtitle
+        : Builder(
+            builder: (subtitleContext) {
+              final inherited = DefaultTextStyle.of(subtitleContext);
+              return DefaultTextStyle(
+                style: inherited.style,
+                textAlign: inherited.textAlign,
+                softWrap: true,
+                overflow: TextOverflow.visible,
+                maxLines: null,
+                textWidthBasis: inherited.textWidthBasis,
+                textHeightBehavior: inherited.textHeightBehavior,
+                child: subtitle!,
+              );
+            },
+          );
     Widget tile = CupertinoListTile(
       padding: contentPadding,
       leading: leading,
@@ -2303,7 +2342,7 @@ class PlatformListTile extends StatelessWidget {
         style: foreground == null ? null : TextStyle(color: foreground),
         child: title,
       ),
-      subtitle: subtitle,
+      subtitle: cupertinoSubtitle,
       trailing: trailing,
       backgroundColor: Colors.transparent,
       backgroundColorActivated: Colors.transparent,

@@ -9,6 +9,9 @@ import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/utility/PostTextUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/BilibiliWidget.dart';
+import 'package:discuz_flutter/widget/DiscuzAdaptiveTable.dart';
+import 'package:discuz_flutter/widget/DiscuzCodeBlock.dart';
+import 'package:discuz_flutter/widget/DiscuzQuoteBlock.dart';
 import 'package:discuz_flutter/widget/SteamGameWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -121,10 +124,24 @@ class DiscuzHtmlWidget extends StatelessWidget {
         final mutedText = textColor == null
             ? colorScheme.onSurfaceVariant
             : effectiveTextColor;
+        final htmlTextStyle = TextStyle(
+          color: effectiveTextColor,
+          fontSize: themeFontSize * scalingParameter,
+          fontWeight: useThinFont ? FontWeight.w300 : FontWeight.normal,
+          wordSpacing: defaultTextStyle?.wordSpacing,
+          letterSpacing: defaultTextStyle?.letterSpacing,
+          height: paragraphLineHeight,
+          textBaseline: defaultTextStyle?.textBaseline,
+        ).useSystemChineseFont();
+        final repairedSourceHtml = DiscuzTableNormalizer.normalizeHtml(html);
+        final normalizedHtml = PostTextUtils.getDecodedString(
+          repairedSourceHtml,
+          useCompactParagraph,
+        );
         //DiscuzImageDioCacheManager dioCacheManager = DiscuzImageDioCacheManager(futureDio);
 
         return HtmlWidget(
-          PostTextUtils.getDecodedString(html, useCompactParagraph),
+          normalizedHtml,
           //enableCaching: true,
           onTapUrl: (url) {
             URLUtils.openURL(context, onSelectTid, url, callback, tid);
@@ -133,26 +150,11 @@ class DiscuzHtmlWidget extends StatelessWidget {
           //factoryBuilder: () => DiscuzHtmlWidgetFactory(dioCacheManager),
           onTapImage: (imageMetaData) {
             for (var source in imageMetaData.sources) {
-              String src = source.url;
-              VibrationUtils.vibrateWithClickIfPossible();
-              Navigator.push(
-                  context,
-                  platformPageRoute(
-                      iosTitle: S.of(context).viewPicture,
-                      context: context,
-                      builder: (context) =>
-                          FullImagePage(src, getAllImageSrcList())));
+              _openImage(context, source.url);
+              break;
             }
           },
-          textStyle: TextStyle(
-            color: effectiveTextColor,
-            fontSize: themeFontSize * scalingParameter,
-            fontWeight: useThinFont ? FontWeight.w300 : FontWeight.normal,
-            wordSpacing: defaultTextStyle?.wordSpacing,
-            letterSpacing: defaultTextStyle?.letterSpacing,
-            height: paragraphLineHeight,
-            textBaseline: defaultTextStyle?.textBaseline,
-          ).useSystemChineseFont(),
+          textStyle: htmlTextStyle,
           // textStyle: Theme.of(context).useSystemChineseFont(Theme.of(context).brightness).textTheme.bodyLarge?..copyWith(
           //   fontSize: 12 * scalingParameter
           // ),
@@ -248,24 +250,36 @@ class DiscuzHtmlWidget extends StatelessWidget {
                 });
               case 'pre':
                 styles.addAll({
-                  'background-color': '#${cssColor(codeSurface)}',
-                  'border': '0.05em solid #${cssColor(subtleBorder)}',
-                  'border-radius': '0.65em',
-                  'padding': '0.8em',
-                  'margin': '0.8em 0',
-                  'font-family': 'monospace',
+                  'background-color': 'transparent',
+                  'border': 'none',
+                  'padding': '0',
+                  'margin': '0',
+                  'font-family': isCupertino(context) ? 'Menlo' : 'monospace',
                   'font-size': '0.9em',
                   'line-height': '1.45',
-                  'white-space': 'pre-wrap',
+                  'white-space': 'pre',
                 });
               case 'code':
-                styles.addAll({
-                  'background-color': '#${cssColor(codeSurface)}',
-                  'border-radius': '0.32em',
-                  'padding': '0.1em 0.28em',
-                  'font-family': 'monospace',
-                  'font-size': '0.9em',
-                });
+                if (element.parent?.localName == 'pre') {
+                  styles.addAll({
+                    'background-color': 'transparent',
+                    'border': 'none',
+                    'padding': '0',
+                    'font-family': isCupertino(context) ? 'Menlo' : 'monospace',
+                    'font-size': 'inherit',
+                  });
+                } else {
+                  styles.addAll({
+                    'background-color': '#${cssColor(codeSurface)}',
+                    'border': '0.04em solid #${cssColor(subtleBorder)}',
+                    'border-radius': '0.38em',
+                    'padding': '0.11em 0.32em',
+                    'color': '#${cssColor(colorScheme.primary)}',
+                    'font-family': isCupertino(context) ? 'Menlo' : 'monospace',
+                    'font-size': '0.9em',
+                    'font-weight': '500',
+                  });
+                }
               case 'ul':
               case 'ol':
                 styles.addAll({
@@ -343,7 +357,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
                 "color": "#${cssColor(effectiveTextColor)}",
                 "padding": "0.8em",
                 "margin": "0.8em 0",
-                "font-family": "monospace",
+                "font-family": isCupertino(context) ? "Menlo" : "monospace",
                 "font-size": "0.9em",
                 "line-height": "1.45",
               });
@@ -352,7 +366,69 @@ class DiscuzHtmlWidget extends StatelessWidget {
           },
           customWidgetBuilder: (element) {
             // "collapse", "spoil"
-            if (element.localName == "collapse" ||
+            if (element.localName == 'pre' ||
+                element.classes.contains('blockcode')) {
+              return DiscuzCodeBlock(
+                code: DiscuzCodeBlock.extractCode(element),
+                language: DiscuzCodeBlock.extractLanguage(element),
+                textStyle: htmlTextStyle,
+              );
+            } else if (element.localName == 'code' &&
+                !const {
+                  'p',
+                  'span',
+                  'a',
+                  'li',
+                  'td',
+                  'th',
+                  'pre',
+                  'h1',
+                  'h2',
+                  'h3',
+                  'h4',
+                  'h5',
+                  'h6',
+                }.contains(element.parent?.localName)) {
+              return DiscuzCodeBlock(
+                code: DiscuzCodeBlock.extractCode(element),
+                language: DiscuzCodeBlock.extractLanguage(element),
+                textStyle: htmlTextStyle,
+              );
+            } else if (element.localName == 'blockquote' ||
+                element.classes.contains('quote')) {
+              var quoteHtml = element.innerHtml;
+              if (element.classes.contains('quote') &&
+                  element.children.length == 1 &&
+                  element.children.first.localName == 'blockquote') {
+                quoteHtml = element.children.first.innerHtml;
+              }
+              return DiscuzQuoteBlock(
+                child: DiscuzHtmlWidget(
+                  discuz,
+                  quoteHtml,
+                  callback: callback,
+                  tid: tid,
+                  onSelectTid: onSelectTid,
+                  textColor: mutedText,
+                ),
+              );
+            } else if (element.localName == 'table') {
+              return DiscuzAdaptiveTable(
+                element: element,
+                textStyle: htmlTextStyle,
+                onTapUrl: (url) {
+                  URLUtils.openURL(
+                    context,
+                    onSelectTid,
+                    url,
+                    callback,
+                    tid,
+                  );
+                  return true;
+                },
+                onTapImage: (src) => _openImage(context, src),
+              );
+            } else if (element.localName == "collapse" ||
                 element.localName == "spoil") {
               String title = S.of(context).collapseItem;
               if (element.attributes["title"] != null) {
@@ -435,6 +511,18 @@ class DiscuzHtmlWidget extends StatelessWidget {
           },
         );
       }),
+    );
+  }
+
+  void _openImage(BuildContext context, String src) {
+    VibrationUtils.vibrateWithClickIfPossible();
+    Navigator.push(
+      context,
+      platformPageRoute(
+        iosTitle: S.of(context).viewPicture,
+        context: context,
+        builder: (context) => FullImagePage(src, getAllImageSrcList()),
+      ),
     );
   }
 

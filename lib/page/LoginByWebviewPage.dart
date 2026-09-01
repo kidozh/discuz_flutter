@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:cookie_jar/cookie_jar.dart';
-import 'package:dio/dio.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart' as DioCookieManager;
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -162,27 +160,26 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
   }
 
   void _checkUserLogined() async {
-    Dio _dio = Dio();
+    final dio = NetworkUtils.getDio();
     // trigger an alert
     EasyLoading.showInfo(S.of(context).checkUserLoginStatus);
     // transfer from webview to cookiejar
     // split by ;
-    List<Cookie> webviewCookie = [];
-    try {
-      webviewCookie = await webviewCookieManager.getCookies(discuz.baseURL);
-    } catch (e) {
+    final webviewCookie = await _readWebViewCookies();
+    if (webviewCookie == null) {
+      if (!mounted) return;
       EasyLoading.showError(S.of(context).invalidCookie);
       return;
     }
 
-    PersistCookieJar cookieJar = await NetworkUtils.getTemporaryCookieJar();
+    CookieJar cookieJar = await NetworkUtils.getTemporaryCookieJar();
     // transfer from cookie string
-    print("webcookie list ${webviewCookie}");
+    debugPrint('Read ${webviewCookie.length} cookies from the login WebView');
     await cookieJar.saveFromResponse(Uri.parse(discuz.baseURL), webviewCookie);
 
-    _dio.interceptors.add(DioCookieManager.CookieManager(cookieJar));
+    NetworkUtils.addCookieManager(dio, cookieJar);
 
-    final client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
+    final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
     client.userProfileResult(0).then((value) async {
       if (value.variables.member_uid != 0) {
@@ -195,27 +192,25 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           User? userInDataBase =
               dao.findUsersByDiscuzAndUid(discuz, value.variables.member_uid);
           if (userInDataBase != null) {
-            user = userInDataBase;
+            await dao.insertWithKey(userInDataBase.key, user);
           } else {
-            int id = await dao.insert(user);
-            // User? userInDataBase = dao.findUsersByDiscuzAndUid(discuz, value.variables.member_uid);
-            // if(userInDataBase != null){
-            //   user = userInDataBase;
-            // }
+            await dao.insert(user);
           }
 
           // save it in cookiejar
           List<Cookie> cookies =
               await cookieJar.loadForRequest(Uri.parse(discuz.baseURL));
-          PersistCookieJar savedCookieJar =
-              await NetworkUtils.getPersistentCookieJarByUser(user);
-          print("cookies ${cookies}");
-          savedCookieJar.saveFromResponse(Uri.parse(discuz.baseURL), cookies);
+          await NetworkUtils.replacePersistentCookiesForUser(
+            user,
+            Uri.parse(discuz.baseURL),
+            cookies,
+          );
+          if (!mounted) return;
           // pop the activity
           EasyLoading.showSuccess(
               S.of(context).signInSuccessTitle(user.username, discuz.siteName));
-          Provider.of<DiscuzAndUserNotifier>(context, listen: false).user =
-              user;
+          Provider.of<DiscuzAndUserNotifier>(context, listen: false)
+              .setUser(user);
 
           Navigator.pop(context);
         } catch (e) {
@@ -223,8 +218,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           EasyLoading.showError(e.toString());
         }
       } else {
-        print(
-            "Get auth ${value.variables.auth} ${value.variables.formHash} ${value}");
+        debugPrint('The login WebView did not return an authenticated user');
         // trigger a alert
         EasyLoading.showToast(S.of(context).websiteNotLogined);
       }
@@ -279,6 +273,27 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
     //   EasyLoading.showError(S.of(context).networkFailed);
     //
     // });
+  }
+
+  Future<List<Cookie>?> _readWebViewCookies() async {
+    Object? lastError;
+    StackTrace? lastStackTrace;
+    for (var attempt = 0; attempt < 2; attempt++) {
+      try {
+        return await webviewCookieManager.getCookies(discuz.baseURL);
+      } catch (error, stackTrace) {
+        lastError = error;
+        lastStackTrace = stackTrace;
+        if (attempt == 0) {
+          await Future<void>.delayed(const Duration(milliseconds: 250));
+        }
+      }
+    }
+    debugPrint(
+      'Unable to read WebView cookies for ${discuz.host}: $lastError\n'
+      '$lastStackTrace',
+    );
+    return null;
   }
 }
 

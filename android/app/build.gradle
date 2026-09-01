@@ -137,4 +137,5 @@ dependencies {
     implementation 'androidx.window:window:1.2.0'
     implementation 'androidx.window:window-java:1.2.0'
     implementation 'com.google.firebase:firebase-perf:22.0.3'
+    implementation 'com.google.mlkit:genai-prompt:1.0.0-beta2'
 }
