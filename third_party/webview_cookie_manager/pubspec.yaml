@@ -1,0 +1,23 @@
+name: webview_cookie_manager
+description: Locally maintained Android build compatibility fork.
+version: 2.0.7+android1
+repository: https://github.com/fryette/webview_cookie_manager
+homepage: https://github.com/fryette/webview_cookie_manager
+issue_tracker: https://github.com/fryette/webview_cookie_manager/issues
+
+environment:
+  sdk: ">=3.0.5 <4.0.0"
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: io.flutter.plugins.webview_cookie_manager
+        pluginClass: WebviewCookieManagerPlugin
+      ios:
+        pluginClass: WebviewCookieManagerPlugin

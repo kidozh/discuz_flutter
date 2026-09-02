@@ -1,104 +1,21 @@
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    ext.kotlin_version = '2.2.20'
-//    ext {
-//        agp_version = '7.4.2'
-//    }
-    dependencies {
-        // START: FlutterFire Configuration
-        classpath 'com.google.gms:google-services:4.3.15'
-        // END: FlutterFire Configuration
-        classpath 'com.android.tools.build:gradle:8.11.1'
-        classpath 'com.google.firebase:perf-plugin:2.0.2'
-    }
-}
-
 allprojects {
-    // ext.kotlin_version = '1.8.10'
     repositories {
         google()
         mavenCentral()
     }
-    // This code is where all the magic happens and fixes the error.
-    subprojects {
-        afterEvaluate { project ->
-            if (project.hasProperty('android')) {
-                project.android {
-                    if (namespace == null) {
-                        namespace project.group
-                    }
-                }
-            }
-        }
-    }
-    // This code is where all the magic happens and fixes the error.
 }
 
-rootProject.buildDir = '../build'
+def newBuildDir = rootProject.layout.buildDirectory.dir("../../build").get()
+rootProject.layout.buildDirectory.value(newBuildDir)
+
 subprojects {
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
-
-    afterEvaluate { project ->
-        // check if android block is available
-
-        if (it.hasProperty('android')) {
-
-            if (it.android.namespace == null) {
-                def manifest = new XmlSlurper().parse(file(it.android.sourceSets.main.manifest.srcFile))
-                def packageName = manifest.@package.text()
-                println("Setting ${packageName} as android namespace")
-                android.namespace = packageName
-            }
-
-//            if (project.plugins.hasPlugin("com.android.application") ||
-//                    project.plugins.hasPlugin("com.android.library")) {
-//                project.android {
-//                    compileSdkVersion 34
-//                    buildToolsVersion "34.0.0"
-//
-//                }
-//                project.android.defaultConfig{
-//                    minSdkVersion 30
-//                    //targetSdkVersion 34
-//                }
-//            }
-
-            def javaVersion = JavaVersion.VERSION_18
-            android {
-                def androidApiVersion = 36
-                compileSdkVersion androidApiVersion
-                defaultConfig {
-                    targetSdkVersion androidApiVersion
-                }
-                compileOptions {
-                    sourceCompatibility javaVersion
-                    targetCompatibility javaVersion
-                }
-                tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-                    kotlinOptions {
-                        jvmTarget = javaVersion.toString()
-                    }
-                }
-                println("Setting java version to ${javaVersion.toString()} which is $javaVersion")
-                println("Setting compileSdkVersion and targetSdkVersion to $androidApiVersion")
-            }
-        }
-
-    }
+    project.layout.buildDirectory.value(newBuildDir.dir(project.name))
 }
+
 subprojects {
-    project.evaluationDependsOn(':app')
+    project.evaluationDependsOn(":app")
 }
 
 tasks.register("clean", Delete) {
-    delete rootProject.buildDir
-}
-
-tasks.withType(JavaCompile).configureEach {
-    javaCompiler = javaToolchains.compilerFor {
-        languageVersion = JavaLanguageVersion.of(18)
-    }
+    delete(rootProject.layout.buildDirectory)
 }

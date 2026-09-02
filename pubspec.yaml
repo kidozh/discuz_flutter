@@ -53,9 +53,7 @@ dependencies:
   # open_file: ^3.2.1
   flutter_slidable:
   webview_cookie_manager:
-    git:
-      url: https://github.com/fryette/webview_cookie_manager
-      ref: 8572dd54c437c919aedc8dca6c5bffd25fe74b3
+    path: third_party/webview_cookie_manager
 
   intl: ^0.20.0
   adaptive_platform_ui: ^0.1.111
@@ -92,9 +90,7 @@ dependencies:
   dynamic_color: ^1.6.7
   intl_utils: ^2.8.1
   dual_screen:
-    git:
-      url: https://github.com/mwdavis84/flutter-dualscreen
-      ref: dd225c00293b5504a2d4b11787a00b2f1f81f6a1
+    path: third_party/dual_screen
   carousel_slider: ^5.0.0
   upgrader: ^12.0.0
   flutter_secure_storage: ^9.2.4

@@ -1,0 +1,22 @@
+group = "io.flutter.plugins.webview_cookie_manager"
+version = "2.0.7-android1"
+
+apply plugin: "com.android.library"
+
+android {
+    namespace = "io.flutter.plugins.webview_cookie_manager"
+    compileSdk = 36
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    defaultConfig {
+        minSdk = 16
+    }
+
+    lint {
+        disable += "InvalidPackage"
+    }
+}

@@ -348,12 +348,10 @@ packages:
   dual_screen:
     dependency: "direct main"
     description:
-      path: "."
-      ref: dd225c00293b5504a2d4b11787a00b2f1f81f6a1
-      resolved-ref: dd225c00293b5504a2d4b11787a00b2f1f81f6a1
-      url: "https://github.com/mwdavis84/flutter-dualscreen"
-    source: git
-    version: "1.0.5"
+      path: "third_party/dual_screen"
+      relative: true
+    source: path
+    version: "1.0.5+android1"
   dynamic_color:
     dependency: "direct main"
     description:
@@ -2126,12 +2124,10 @@ packages:
   webview_cookie_manager:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "8572dd54c437c919aedc8dca6c5bffd25fe74b3"
-      resolved-ref: "8572dd54c437c919aedc8dca6c5bffd25fe74b3c"
-      url: "https://github.com/fryette/webview_cookie_manager"
-    source: git
-    version: "2.0.7"
+      path: "third_party/webview_cookie_manager"
+      relative: true
+    source: path
+    version: "2.0.7+android1"
   webview_flutter:
     dependency: "direct main"
     description:

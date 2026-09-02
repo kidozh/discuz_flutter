@@ -1,0 +1,20 @@
+name: dual_screen
+description: Locally maintained compatibility fork of Microsoft's dual_screen plugin.
+version: 1.0.5+android1
+homepage: https://github.com/microsoft/flutter-dualscreen
+repository: https://github.com/microsoft/flutter-dualscreen
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.microsoft.flutterdualscreen
+        pluginClass: DualScreenInfo

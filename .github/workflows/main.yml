@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 env:
-  FLUTTER_VERSION: 3.47.0
+  FLUTTER_VERSION: 3.47.2
   # pubspec.lock is generated against the Flutter China mirrors. Keep the
   # hosted source stable so --enforce-lockfile does not re-resolve packages.
   PUB_HOSTED_URL: https://pub.flutter-io.cn
@@ -39,8 +39,12 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: "18"
+          java-version: "17"
           cache: gradle
+          cache-dependency-path: |
+            android/*.gradle
+            android/gradle/wrapper/gradle-wrapper.properties
+            pubspec.lock
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -60,6 +64,18 @@ jobs:
             echo "::error::The path dependency third_party/extended_text_field is missing."
             exit 1
           }
+          test -f third_party/dual_screen/pubspec.yaml || {
+            echo "::error::The path dependency third_party/dual_screen is missing. Commit the Android compatibility fork."
+            exit 1
+          }
+          test -f third_party/webview_cookie_manager/pubspec.yaml || {
+            echo "::error::The path dependency third_party/webview_cookie_manager is missing. Commit the Android compatibility fork."
+            exit 1
+          }
+          test -f lib/utility/NtcColorLocalization.dart || {
+            echo "::error::lib/utility/NtcColorLocalization.dart is imported by ChooseThemeColorPage.dart but is missing."
+            exit 1
+          }
           test -x android/gradlew || {
             echo "::error::android/gradlew must be committed and executable."
             exit 1
@@ -71,6 +87,9 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get --enforce-lockfile
+
+      - name: Validate Android toolchain
+        run: flutter analyze --suggestions
 
       - name: Validate release signing secrets
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -158,6 +177,18 @@ jobs:
           }
           test -f third_party/extended_text_field/pubspec.yaml || {
             echo "::error::The path dependency third_party/extended_text_field is missing."
+            exit 1
+          }
+          test -f third_party/dual_screen/pubspec.yaml || {
+            echo "::error::The path dependency third_party/dual_screen is missing."
+            exit 1
+          }
+          test -f third_party/webview_cookie_manager/pubspec.yaml || {
+            echo "::error::The path dependency third_party/webview_cookie_manager is missing."
+            exit 1
+          }
+          test -f lib/utility/NtcColorLocalization.dart || {
+            echo "::error::lib/utility/NtcColorLocalization.dart is imported by ChooseThemeColorPage.dart but is missing."
             exit 1
           }
 
