@@ -12,6 +12,17 @@ import '../provider/DiscuzAndUserNotifier.dart';
 import '../utility/NetworkUtils.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
 
+List<String> keylolTopicTitlesForCount(
+  List<String> candidates,
+  int topicCount,
+) =>
+    List<String>.generate(
+      topicCount,
+      (index) => index < candidates.length && candidates[index].isNotEmpty
+          ? candidates[index]
+          : '专题 ${index + 1}',
+    );
+
 class KeylolMobileTopicWidget extends StatelessWidget {
   final ValueChanged<int>? onSelectTid;
 
@@ -44,7 +55,7 @@ class KeylolMobileTopicState extends State<KeylolMobileTopicStatefulWidget> {
   bool isLoading = true;
   //List<KeylolPortalThreadItem> keylolPortalThreadList = [];
   List<List<KeylolPortalThreadItem>> keylolPortalThreadList_list = [];
-  List<String> mobileTopicTitleList = [];
+  final mobileTopicTitleCandidates = <String>[];
   int _selectedTopicIndex = 0;
 
   @override
@@ -74,7 +85,7 @@ class KeylolMobileTopicState extends State<KeylolMobileTopicStatefulWidget> {
         var slideTitleLink =
             slideTitleText.getElementsByTagName("a").firstOrNull;
         if (slideTitleLink != null) {
-          mobileTopicTitleList.add(slideTitleLink.innerHtml);
+          mobileTopicTitleCandidates.add(slideTitleLink.innerHtml);
         }
       }
 
@@ -83,8 +94,7 @@ class KeylolMobileTopicState extends State<KeylolMobileTopicStatefulWidget> {
       var slideshowElementList =
           document.getElementsByClassName("module cl xl xl1");
       //print("Get tb-c length ${slideshowElementList.length}");
-      int cnt = 0;
-
+      final parsedTopicLists = <List<KeylolPortalThreadItem>>[];
       for (var tabElement in slideshowElementList) {
         List<KeylolPortalThreadItem> keylolPortalThreadList = [];
         var listItemList = tabElement.getElementsByTagName("li");
@@ -147,12 +157,16 @@ class KeylolMobileTopicState extends State<KeylolMobileTopicStatefulWidget> {
                   title, forum, author, authorPid, tid, link, lastPoster);
           keylolPortalThreadList.add(keylolPortalThreadItem);
         }
-        keylolPortalThreadList_list.add(keylolPortalThreadList);
-        cnt += 1;
+        parsedTopicLists.add(keylolPortalThreadList);
       }
+      final topicTitles = keylolTopicTitlesForCount(
+        mobileTopicTitleCandidates,
+        parsedTopicLists.length,
+      );
+      if (!mounted) return;
       setState(() {
-        this.mobileTopicTitleList = mobileTopicTitleList;
-        this.keylolPortalThreadList_list = keylolPortalThreadList_list;
+        mobileTopicTitleList = topicTitles;
+        keylolPortalThreadList_list = parsedTopicLists;
       });
     });
   }

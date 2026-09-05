@@ -1684,7 +1684,13 @@ class PlatformLiquidGlassCard extends StatelessWidget {
     return Container(
       margin: margin,
       decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [highlight, baseColor],
+        ),
         borderRadius: borderRadius,
+        border: Border.all(color: borderColor, width: 0.8),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: light ? 0.13 : 0.28),
@@ -1693,24 +1699,7 @@ class PlatformLiquidGlassCard extends StatelessWidget {
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: borderRadius,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [highlight, baseColor],
-              ),
-              borderRadius: borderRadius,
-              border: Border.all(color: borderColor, width: 0.8),
-            ),
-            child: content,
-          ),
-        ),
-      ),
+      child: content,
     );
   }
 }
