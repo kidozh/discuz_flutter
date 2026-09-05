@@ -77,8 +77,6 @@ class KeylolMobileTopicState extends State<KeylolMobileTopicStatefulWidget> {
       var document = parse(html.data);
       //print("document ->  ${html}");
 
-      List<String> mobileTopicTitleList = [];
-
       // parse the titletext first
       var slideTitleTextList = document.getElementsByClassName("titletext");
       //print("Get slide title length ${slideTitleTextList.length}");
@@ -89,8 +87,6 @@ class KeylolMobileTopicState extends State<KeylolMobileTopicStatefulWidget> {
           mobileTopicTitleCandidates.add(slideTitleLink.innerHtml);
         }
       }
-
-      //print("Get mobile topic ${mobileTopicTitleList.length}");
 
       var slideshowElementList =
           document.getElementsByClassName("module cl xl xl1");
