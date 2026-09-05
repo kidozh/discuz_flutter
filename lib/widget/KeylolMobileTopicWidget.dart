@@ -55,6 +55,7 @@ class KeylolMobileTopicState extends State<KeylolMobileTopicStatefulWidget> {
   bool isLoading = true;
   //List<KeylolPortalThreadItem> keylolPortalThreadList = [];
   List<List<KeylolPortalThreadItem>> keylolPortalThreadList_list = [];
+  List<String> mobileTopicTitleList = [];
   final mobileTopicTitleCandidates = <String>[];
   int _selectedTopicIndex = 0;
 
