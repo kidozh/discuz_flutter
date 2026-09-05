@@ -400,10 +400,16 @@
   "dataBackupInTestTitle": "数据备份",
   "dataBackupInTestSubtitle": "版本变更有可能会引发数据的丢失，因此请务必做好数据备份工作。",
   "welcomeTitle": "你好",
+  "welcomeVersionTitle": "欢迎使用版本 {version}",
+  "@welcomeVersionTitle": {
+    "placeholders": {
+      "version": {}
+    }
+  },
   "welcomeSubtitle": "谈坛是支持Discuz X论坛的第三方客户端，欢迎使用我们的服务。",
   "continueToDo": "继续",
   "finishLoginInWeb": "完成登录",
-  "invalidCookie": "服务器的响应中包含一个或多个含有错误字符的Cookie,无法解析Cookie,无法登录.",
+  "invalidCookie": "暂时无法读取网页登录状态，请刷新登录页面后重试。",
   "addAPhoto": "照片",
   "takeAPicture": "照相",
   "networkFail": "连接服务器时出错。",
@@ -915,6 +921,17 @@
   "appleIntelligenceAddRule": "添加场景",
   "appleIntelligenceNotSupported": "您的设备目前不支持智能化设置",
   "appleIntelligenceNotSupportedInThisPlatform": "此设备上无法找到在设备端的人工智能服务。",
+  "appleIntelligenceUnavailableDeviceNotEligible": "此设备不支持所需的设备端基础模型。",
+  "appleIntelligenceUnavailableNotEnabled": "尚未启用 Apple 智能，请先前往系统“设置”启用后重试。",
+  "appleIntelligenceUnavailableModelNotReady": "设备端模型仍在下载或准备中，请稍后再试。",
+  "appleIntelligenceUnavailablePlatformTooOld": "当前系统版本（{osVersion}）过低，请升级系统后重试。",
+  "@appleIntelligenceUnavailablePlatformTooOld": {
+    "placeholders": {
+      "osVersion": {}
+    }
+  },
+  "appleIntelligenceUnavailableUnknown": "暂时无法使用设备端智能化服务，请稍后再试。",
+  "appleIntelligenceAvailabilityCheckFailed": "检查设备端智能化服务时出现错误，请稍后再试。",
   "appleIntelligenceHelp": "智能化服务说明",
   "appleIntelligenceRuleName": "名称",
   "appleIntelligenceRuleNameTemplate": "智能规则 {placeholder}",
@@ -947,5 +964,33 @@
   "appleIntelligencePromptExample": "将下列内容翻译成用户的语言",
   "appleIntelligenceRuleTranslationExampleNotice": "翻译规则是内置在系统中的，无法更改或者移除。",
   "appleIntelligenceUseHistory": "使用历史",
-  "appleIntelligenceLearnMoreFromOurPost": "阅读我们的宣言 ↗"
+  "appleIntelligenceLearnMoreFromOurPost": "阅读我们的宣言 ↗",
+  "onDeviceAiReadyDescription": "设备端模型已经就绪，内容将在本机处理。",
+  "onDeviceAiModelDownloadTitle": "下载设备端模型",
+  "onDeviceAiModelDownloadDescription": "此设备支持 Gemini Nano，但模型文件尚未就绪。请连接 Wi-Fi 并尽量保持充电，Android AICore 将负责下载。",
+  "onDeviceAiDownloadModel": "下载模型",
+  "onDeviceAiDownloadingModel": "正在下载模型…",
+  "onDeviceAiDownloadProgress": "已下载 {downloaded} MB",
+  "@onDeviceAiDownloadProgress": {
+    "placeholders": {
+      "downloaded": {}
+    }
+  },
+  "onDeviceAiDownloadFailed": "模型下载失败，请检查网络和可用存储空间后重试。",
+  "onDeviceAiAICoreTitle": "需要 Android AICore",
+  "onDeviceAiAICoreDescription": "Android AICore 尚未安装或版本过低。请安装或更新这项 Google 系统服务，返回后我们会重新检查。",
+  "onDeviceAiOpenGooglePlay": "前往 Google Play",
+  "onDeviceAiSystemUpdateTitle": "需要更新系统",
+  "onDeviceAiSystemUpdateDescription": "当前 Android 或 Apple 系统版本过低，无法使用设备端模型。请更新系统后重试。",
+  "onDeviceAiStorageTitle": "存储空间不足",
+  "onDeviceAiStorageDescription": "请先释放一些设备存储空间，再下载或使用设备端模型。",
+  "onDeviceAiTemporarilyUnavailableTitle": "暂时不可用",
+  "onDeviceAiTemporarilyUnavailableDescription": "系统智能服务仍在准备或暂时繁忙，请保持设备联网并稍后重试。",
+  "onDeviceAiRetry": "重新检查",
+  "onDeviceAiSetupRequired": "需要设置",
+  "onDeviceAiStatusDownloading": "正在下载",
+  "onDeviceAiProviderApple": "由 Apple 设备端基础模型提供",
+  "onDeviceAiProviderAndroid": "由 Gemini Nano 与 Android AICore 提供",
+  "onDeviceAiRequestTooLarge": "这篇帖子过长，超出了设备端模型的处理范围。",
+  "onDeviceAiRequestFailed": "设备端模型暂时无法完成此请求，请稍后再试。"
 }

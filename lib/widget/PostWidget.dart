@@ -19,6 +19,7 @@ import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/FoundationModelFrameworkUtils.dart';
+import 'package:discuz_flutter/utility/OnDeviceAiService.dart';
 import 'package:discuz_flutter/utility/PostTextUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -279,7 +280,7 @@ class PostState extends State<PostStatefulWidget> {
     });
   }
 
-  void translatePostMessage(BuildContext context) async {
+  Future<void> translatePostMessage() async {
     final preferences = context.read<UserPreferenceNotifierProvider>();
     if (!preferences.appleIntelligenceEnabled ||
         !preferences.appleIntelligenceAvailable) {
@@ -287,8 +288,7 @@ class PostState extends State<PostStatefulWidget> {
     }
     EasyLoading.show(status: S.of(context).loading);
     try {
-      final translatedText =
-          await FoundationModelFrameworkUtils.getTranslatedLanguages(
+      final translatedText = await OnDeviceAiService.translate(
         _post.message,
         guardrailLevel: FoundationModelFrameworkUtils.guardrailLevelFromName(
           preferences.appleIntelligenceGuardrail,
@@ -322,9 +322,22 @@ class PostState extends State<PostStatefulWidget> {
           ),
         ),
       );
-    } catch (error) {
+    } on OnDeviceAiException catch (error) {
       await EasyLoading.dismiss();
-      if (mounted) EasyLoading.showError(error.toString());
+      if (!mounted) return;
+      final message = switch (error.code) {
+        'request_too_large' => S.of(context).onDeviceAiRequestTooLarge,
+        'model_downloadable' ||
+        'model_downloading' =>
+          S.of(context).appleIntelligenceUnavailableModelNotReady,
+        _ => S.of(context).onDeviceAiRequestFailed,
+      };
+      EasyLoading.showError(message);
+    } catch (_) {
+      await EasyLoading.dismiss();
+      if (mounted) {
+        EasyLoading.showError(S.of(context).onDeviceAiRequestFailed);
+      }
     }
   }
 
@@ -548,7 +561,7 @@ class PostState extends State<PostStatefulWidget> {
           color: actionColor,
           semanticLabel: S.of(context).appleIntelligenceTranslate,
         ),
-        onPressed: () => translatePostMessage(context),
+        onPressed: translatePostMessage,
       ));
     }
 
@@ -654,7 +667,9 @@ class PostState extends State<PostStatefulWidget> {
                     overflow: TextOverflow.ellipsis,
                     text: TextSpan(
                       text: "",
-                      style: DefaultTextStyle.of(context).style,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                       children: [
                         TextSpan(
                             text: _post.author,
@@ -678,7 +693,9 @@ class PostState extends State<PostStatefulWidget> {
                         context,
                         _post.publishAt,
                       ),
-                      style: DefaultTextStyle.of(context).style,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                       children: [
                         if (_post.status & POST_REVISED != 0)
                           TextSpan(
@@ -713,7 +730,9 @@ class PostState extends State<PostStatefulWidget> {
             overflow: TextOverflow.ellipsis,
             text: TextSpan(
               text: "",
-              style: DefaultTextStyle.of(context).style,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
               children: [
                 TextSpan(
                     text: _post.author,

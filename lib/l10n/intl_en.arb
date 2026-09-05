@@ -400,10 +400,16 @@
   "dataBackupInTestTitle": "Data backup",
   "dataBackupInTestSubtitle": "The version is not permanent and your data may get lost in upgrading process.",
   "welcomeTitle": "Welcome",
+  "welcomeVersionTitle": "Welcome to version {version}",
+  "@welcomeVersionTitle": {
+    "placeholders": {
+      "version": {}
+    }
+  },
   "welcomeSubtitle": "Welcome to use our Services.",
   "continueToDo": "Continue",
   "finishLoginInWeb": "Finish",
-  "invalidCookie": "Invalid cookie from response.",
+  "invalidCookie": "Unable to read the web sign-in status. Refresh the sign-in page and try again.",
   "addAPhoto": "Photo",
   "takeAPicture": "Shot",
   "networkFail": "Error in connecting with the server.",
@@ -914,6 +920,17 @@
   "appleIntelligenceAddRule": "Add AI Rule",
   "appleIntelligenceNotSupported": "Not supported",
   "appleIntelligenceNotSupportedInThisPlatform": "The current device does not enable any LLM model services.",
+  "appleIntelligenceUnavailableDeviceNotEligible": "This device does not support the required on-device foundation model.",
+  "appleIntelligenceUnavailableNotEnabled": "Apple Intelligence is not enabled. Enable it in system Settings, then try again.",
+  "appleIntelligenceUnavailableModelNotReady": "The on-device model is still downloading or preparing. Try again shortly.",
+  "appleIntelligenceUnavailablePlatformTooOld": "The current system version ({osVersion}) is too old. Update the system and try again.",
+  "@appleIntelligenceUnavailablePlatformTooOld": {
+    "placeholders": {
+      "osVersion": {}
+    }
+  },
+  "appleIntelligenceUnavailableUnknown": "The on-device intelligence service is temporarily unavailable. Try again later.",
+  "appleIntelligenceAvailabilityCheckFailed": "An error occurred while checking the on-device intelligence service. Try again later.",
   "appleIntelligenceHelp": "Help",
   "appleIntelligenceRuleName": "Name",
   "appleIntelligenceRuleNameTemplate": "Rule {placeholder}",
@@ -946,5 +963,33 @@
   "appleIntelligencePromptExample": "Translate the following text into user's language",
   "appleIntelligenceRuleTranslationExampleNotice": "The translation rule is inherent into the app itself and can not be deleted.",
   "appleIntelligenceUseHistory": "AI chat history",
-  "appleIntelligenceLearnMoreFromOurPost": "Read our post ↗"
+  "appleIntelligenceLearnMoreFromOurPost": "Read our post ↗",
+  "onDeviceAiReadyDescription": "The on-device model is ready. Content is processed locally on this device.",
+  "onDeviceAiModelDownloadTitle": "Download the on-device model",
+  "onDeviceAiModelDownloadDescription": "Gemini Nano is supported but its model files are not ready. Connect to Wi-Fi and keep the device charged while Android AICore downloads them.",
+  "onDeviceAiDownloadModel": "Download model",
+  "onDeviceAiDownloadingModel": "Downloading model…",
+  "onDeviceAiDownloadProgress": "Downloaded {downloaded} MB",
+  "@onDeviceAiDownloadProgress": {
+    "placeholders": {
+      "downloaded": {}
+    }
+  },
+  "onDeviceAiDownloadFailed": "The model download failed. Check the network and available storage, then try again.",
+  "onDeviceAiAICoreTitle": "Android AICore is required",
+  "onDeviceAiAICoreDescription": "Android AICore is missing or outdated. Install or update the Google system service, then return here to check again.",
+  "onDeviceAiOpenGooglePlay": "Open Google Play",
+  "onDeviceAiSystemUpdateTitle": "System update required",
+  "onDeviceAiSystemUpdateDescription": "This Android or Apple system version is too old for the on-device model. Update the system and try again.",
+  "onDeviceAiStorageTitle": "Not enough storage",
+  "onDeviceAiStorageDescription": "Free some device storage before downloading or using the on-device model.",
+  "onDeviceAiTemporarilyUnavailableTitle": "Temporarily unavailable",
+  "onDeviceAiTemporarilyUnavailableDescription": "The system intelligence service is preparing or temporarily busy. Keep the device online and try again shortly.",
+  "onDeviceAiRetry": "Check again",
+  "onDeviceAiSetupRequired": "Setup required",
+  "onDeviceAiStatusDownloading": "Downloading",
+  "onDeviceAiProviderApple": "Provided by Apple Foundation Models",
+  "onDeviceAiProviderAndroid": "Provided by Gemini Nano and Android AICore",
+  "onDeviceAiRequestTooLarge": "This post is too long for the on-device model.",
+  "onDeviceAiRequestFailed": "The on-device model could not complete this request. Try again shortly."
 }

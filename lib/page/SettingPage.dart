@@ -9,6 +9,7 @@ import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
+import 'package:discuz_flutter/utility/OnDeviceAiService.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
@@ -61,11 +62,39 @@ class _SettingPageState extends State<SettingPage> {
     });
   }
 
+  String _intelligenceStatusText(
+    BuildContext context,
+    UserPreferenceNotifierProvider preference,
+  ) {
+    if (!preference.appleIntelligenceAvailabilityChecked) {
+      return S.of(context).pushNotificationOff;
+    }
+    return switch (preference.onDeviceAiStatus) {
+      OnDeviceAiAvailabilityStatus.available =>
+        preference.appleIntelligenceEnabled
+            ? S.of(context).pushNotificationOn
+            : S.of(context).pushNotificationOff,
+      OnDeviceAiAvailabilityStatus.downloadable ||
+      OnDeviceAiAvailabilityStatus.needsAICoreUpdate ||
+      OnDeviceAiAvailabilityStatus.needsSystemUpdate ||
+      OnDeviceAiAvailabilityStatus.notEnoughStorage =>
+        S.of(context).onDeviceAiSetupRequired,
+      OnDeviceAiAvailabilityStatus.downloading =>
+        S.of(context).onDeviceAiStatusDownloading,
+      OnDeviceAiAvailabilityStatus.temporarilyUnavailable =>
+        S.of(context).onDeviceAiTemporarilyUnavailableTitle,
+      _ => S.of(context).appleIntelligenceNotSupported,
+    };
+  }
+
   @override
   Widget build(BuildContext context) => PlatformScaffold(
         appBar: PlatformAppBar(
           liquidGlassTitle: S.of(context).settingTitle,
           title: Text(S.of(context).settingTitle),
+          // Avoid snapshot artifacts from a native UIKit platform view during
+          // the interactive back transition on this frequently-opened route.
+          liquidGlassUseNativeToolbar: false,
         ),
         iosContentPadding: true,
         body: _buildSettingsList(context),
@@ -96,14 +125,7 @@ class _SettingPageState extends State<SettingPage> {
             _GlassNavigationTile(
               title: S.of(context).appleIntelligence,
               leading: Icon(AppPlatformIcons(context).aiModel),
-              value: Text(
-                preference.appleIntelligenceAvailabilityChecked &&
-                        !preference.appleIntelligenceAvailable
-                    ? S.of(context).appleIntelligenceNotSupported
-                    : preference.appleIntelligenceEnabled
-                        ? S.of(context).pushNotificationOn
-                        : S.of(context).pushNotificationOff,
-              ),
+              value: Text(_intelligenceStatusText(context, preference)),
               onTap: () => _open(
                 context,
                 S.of(context).appleIntelligence,
@@ -364,7 +386,8 @@ class _GlassSettingsSection extends StatelessWidget {
                 children: [
                   for (var index = 0; index < children.length; index++) ...[
                     children[index],
-                    if (index < children.length - 1)
+                    if (index < children.length - 1 &&
+                        !usesLiquidGlass(context))
                       Divider(
                         height: 1,
                         indent: 54,

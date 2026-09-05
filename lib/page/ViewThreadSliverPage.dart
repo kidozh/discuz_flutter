@@ -41,6 +41,7 @@ import 'package:discuz_flutter/widget/LoadingStateWidget.dart';
 import 'package:discuz_flutter/widget/PollWidget.dart';
 import 'package:discuz_flutter/widget/PostTextField.dart';
 import 'package:discuz_flutter/widget/PostWidget.dart';
+import 'package:discuz_flutter/widget/ThreadReplyTargetBanner.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -508,11 +509,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   }
 
   Future<void> favoriteThread() async {
+    final user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     FavoriteThreadDao favoriteThreadDao =
         await AppDatabase.getFavoriteThreadDao();
     await favoriteThreadDao.insertFavoriteThread(FavoriteThreadInDatabase(
-        1,
-        _viewThreadResult.threadVariables.member_uid,
+        user == null ? 0 : 1,
+        user?.uid ?? _viewThreadResult.threadVariables.member_uid,
         tid,
         "tid",
         _viewThreadResult.threadVariables.threadInfo.authorId,
@@ -523,8 +526,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
         DateTime.now(),
         discuz));
     if (mounted) setState(() {});
-    if (Provider.of<DiscuzAndUserNotifier>(context, listen: false).user ==
-        null) {
+    if (user == null) {
       return;
     }
     client
@@ -542,6 +544,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
   }
 
   Future<void> unfavoriteThread() async {
+    final user =
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     FavoriteThreadDao favoriteThreadDao =
         await AppDatabase.getFavoriteThreadDao();
     FavoriteThreadInDatabase? favoriteThreadInDatabase =
@@ -549,8 +553,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
     if (favoriteThreadInDatabase != null) {
       await favoriteThreadDao.removeFavoriteThread(favoriteThreadInDatabase);
       if (mounted) setState(() {});
-      if (Provider.of<DiscuzAndUserNotifier>(context, listen: false).user ==
-          null) {
+      if (user == null) {
         return;
       }
       client
@@ -732,6 +735,28 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
 
   AutoScrollController _postAutoScrollController = AutoScrollController();
 
+  Widget _buildReplyTargetBanner(BuildContext context) {
+    return Consumer<ReplyPostNotifierProvider>(
+      builder: (context, replyPost, child) {
+        final post = replyPost.post;
+        if (post == null || _viewThreadResult.threadVariables.member_uid == 0) {
+          return const SizedBox.shrink();
+        }
+        return ThreadReplyTargetBanner(
+          author: post.author,
+          messageHtml: post.message,
+          picturePlaceholder: S.of(context).pictureTagInMessage,
+          embeddedInComposer: true,
+          onDismiss: () {
+            VibrationUtils.vibrateWithClickIfPossible();
+            Provider.of<ReplyPostNotifierProvider>(context, listen: false)
+                .setPost(null);
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     CustomizeColor.updateAndroidNavigationbar(context);
@@ -774,16 +799,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                   favoriteThreadInDatabase == null ? 'heart' : 'heart.fill',
               onPressed: () async {
                 VibrationUtils.vibrateWithClickIfPossible();
-                if (Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-                        .user !=
-                    null) {
-                  if (favoriteThreadInDatabase == null) {
-                    await favoriteThread();
-                  } else {
-                    await unfavoriteThread();
-                  }
+                if (favoriteThreadInDatabase == null) {
+                  await favoriteThread();
                 } else {
-                  // only save in the local storage
+                  await unfavoriteThread();
                 }
               },
               icon: Icon(
@@ -1012,7 +1031,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                                     index > 15) {
                                   return Container();
                                 } else {
-                                  return AppBannerAdWidget();
+                                  return const AppBannerAdWidget();
                                 }
                               })
                           ],
@@ -1053,91 +1072,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Consumer<ReplyPostNotifierProvider>(
-                          builder: (context, replyPost, child) {
-                            if (replyPost.post != null &&
-                                _viewThreadResult.threadVariables.member_uid !=
-                                    0) {
-                              return Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 8.0, horizontal: 4.0),
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .primaryContainer
-                                    .withOpacity(0.3),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    InkWell(
-                                      child: Icon(
-                                        PlatformIcons(context)
-                                            .clearThickCircled,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                      onTap: () {
-                                        VibrationUtils
-                                            .vibrateWithClickIfPossible();
-                                        // removing it
-                                        Provider.of<ReplyPostNotifierProvider>(
-                                                context,
-                                                listen: false)
-                                            .setPost(null);
-                                      },
-                                    ),
-                                    Expanded(
-                                        child: Container(
-                                      padding: EdgeInsets.only(
-                                          left: 8.0, right: 8.0),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            replyPost.post!.author,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onPrimaryContainer,
-                                                fontSize: 16),
-                                            maxLines: 1,
-                                          ),
-                                          Text(
-                                            replyPost.post!.message
-                                                .replaceAll(
-                                                    RegExp(r"<img*?>"),
-                                                    S
-                                                        .of(context)
-                                                        .pictureTagInMessage)
-                                                .replaceAll(
-                                                    RegExp(
-                                                        r"<div.*?>.*?</div>"),
-                                                    "")
-                                                .replaceAll(
-                                                    RegExp(r"<.*?>"), ""),
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onPrimaryContainer
-                                                    .withOpacity(0.5)),
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 1,
-                                          )
-                                        ],
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                      ),
-                                    ))
-                                  ],
-                                ),
-                              );
-                            } else {
-                              return Container(height: 0);
-                            }
-                          },
-                        ),
-
                         // input fields
                         if (_viewThreadResult.threadVariables.member_uid != 0)
                           Column(
@@ -1145,148 +1079,166 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget> {
                               SafeArea(
                                 top: false,
                                 child: PlatformLiquidGlassCard(
-                                  margin: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+                                  key: const ValueKey('thread-reply-composer'),
+                                  margin: EdgeInsets.fromLTRB(
+                                    8,
+                                    4,
+                                    8,
+                                    isCupertino(context) ? 2 : 8,
+                                  ),
                                   padding: const EdgeInsets.all(6),
                                   borderRadius: BorderRadius.circular(24),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      PlatformIconButton(
-                                        liquidGlassSymbol:
-                                            dialogStatus == SHOW_SMILEY_DIALOG
+                                      _buildReplyTargetBanner(context),
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          PlatformIconButton(
+                                            liquidGlassSymbol: dialogStatus ==
+                                                    SHOW_SMILEY_DIALOG
                                                 ? 'keyboard'
                                                 : 'plus',
-                                        liquidGlassButtonSize: 44,
-                                        liquidGlassIconSize: 17,
-                                        icon: AnimatedSwitcher(
-                                          duration:
-                                              const Duration(milliseconds: 160),
-                                          child: Icon(
-                                            dialogStatus == SHOW_SMILEY_DIALOG
-                                                ? PlatformIcons(context)
-                                                    .keyboard
-                                                : PlatformIcons(context).add,
-                                            key: ValueKey(dialogStatus ==
-                                                SHOW_SMILEY_DIALOG),
-                                            size: 20,
-                                            semanticLabel: dialogStatus ==
-                                                    SHOW_SMILEY_DIALOG
-                                                ? S
-                                                    .of(context)
-                                                    .closeKeyboardTooltip
-                                                : S
-                                                    .of(context)
-                                                    .extraFuncButtonTooltip,
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          VibrationUtils
-                                              .vibrateWithClickIfPossible();
-                                          if (dialogStatus ==
-                                              SHOW_SMILEY_DIALOG) {
-                                            FocusScope.of(context)
-                                                .requestFocus(_focusNode);
-                                            setState(() => dialogStatus =
-                                                SHOW_NONE_DIALOG);
-                                          } else {
-                                            FocusScope.of(context).unfocus();
-                                            setState(() => dialogStatus =
-                                                SHOW_SMILEY_DIALOG);
-                                          }
-                                        },
-                                      ),
-                                      const SizedBox(width: 3),
-                                      Expanded(
-                                        child: PostTextField(
-                                          discuz,
-                                          _replyController,
-                                          focusNode: _focusNode,
-                                          embeddedInComposer: true,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 5),
-                                      ValueListenableBuilder<bool>(
-                                        valueListenable: showExtraButton,
-                                        builder: (context, showExtra, _) {
-                                          final canSend = !showExtra;
-                                          if (_sendReplyStatus ==
-                                              SendReplyStatus.loading) {
-                                            return const SizedBox.square(
-                                              dimension: 44,
-                                              child: Center(
-                                                child: SizedBox.square(
-                                                  dimension: 18,
-                                                  child:
-                                                      PlatformCircularProgressIndicator(),
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                          if (_sendReplyStatus ==
-                                              SendReplyStatus.success) {
-                                            return PlatformIconButton(
-                                              liquidGlassSymbol:
-                                                  'checkmark.circle.fill',
-                                              liquidGlassButtonSize: 44,
-                                              liquidGlassIconSize: 17,
-                                              icon: Icon(
-                                                AppPlatformIcons(context)
-                                                    .checkCircleSolid,
-                                                size: 20,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
-                                              ),
-                                              onPressed: null,
-                                            );
-                                          }
-                                          if (_sendReplyStatus ==
-                                              SendReplyStatus.fail) {
-                                            return PlatformIconButton(
-                                              liquidGlassSymbol:
-                                                  'exclamationmark.triangle',
-                                              liquidGlassButtonSize: 44,
-                                              liquidGlassIconSize: 17,
-                                              icon: Icon(
-                                                AppPlatformIcons(context)
-                                                    .errorOutline,
-                                                size: 20,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .error,
-                                              ),
-                                              onPressed: null,
-                                            );
-                                          }
-                                          return PlatformIconButton(
-                                            liquidGlassSymbol: 'arrow.up',
                                             liquidGlassButtonSize: 44,
                                             liquidGlassIconSize: 17,
-                                            color: canSend
-                                                ? Theme.of(context)
-                                                    .colorScheme
-                                                    .primary
-                                                : null,
-                                            icon: Icon(
-                                              PlatformIcons(context).upArrow,
-                                              size: 20,
-                                              color: canSend
-                                                  ? Theme.of(context)
-                                                      .colorScheme
-                                                      .onPrimary
-                                                  : Theme.of(context)
-                                                      .disabledColor,
-                                              semanticLabel: S.of(context).send,
+                                            icon: AnimatedSwitcher(
+                                              duration: const Duration(
+                                                  milliseconds: 160),
+                                              child: Icon(
+                                                dialogStatus ==
+                                                        SHOW_SMILEY_DIALOG
+                                                    ? PlatformIcons(context)
+                                                        .keyboard
+                                                    : PlatformIcons(context)
+                                                        .add,
+                                                key: ValueKey(dialogStatus ==
+                                                    SHOW_SMILEY_DIALOG),
+                                                size: 20,
+                                                semanticLabel: dialogStatus ==
+                                                        SHOW_SMILEY_DIALOG
+                                                    ? S
+                                                        .of(context)
+                                                        .closeKeyboardTooltip
+                                                    : S
+                                                        .of(context)
+                                                        .extraFuncButtonTooltip,
+                                              ),
                                             ),
-                                            onPressed: canSend
-                                                ? () {
-                                                    VibrationUtils
-                                                        .vibrateWithClickIfPossible();
-                                                    _sendReply(context);
-                                                  }
-                                                : null,
-                                          );
-                                        },
+                                            onPressed: () {
+                                              VibrationUtils
+                                                  .vibrateWithClickIfPossible();
+                                              if (dialogStatus ==
+                                                  SHOW_SMILEY_DIALOG) {
+                                                FocusScope.of(context)
+                                                    .requestFocus(_focusNode);
+                                                setState(() => dialogStatus =
+                                                    SHOW_NONE_DIALOG);
+                                              } else {
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                                setState(() => dialogStatus =
+                                                    SHOW_SMILEY_DIALOG);
+                                              }
+                                            },
+                                          ),
+                                          const SizedBox(width: 3),
+                                          Expanded(
+                                            child: PostTextField(
+                                              discuz,
+                                              _replyController,
+                                              focusNode: _focusNode,
+                                              embeddedInComposer: true,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 5),
+                                          ValueListenableBuilder<bool>(
+                                            valueListenable: showExtraButton,
+                                            builder: (context, showExtra, _) {
+                                              final canSend = !showExtra;
+                                              if (_sendReplyStatus ==
+                                                  SendReplyStatus.loading) {
+                                                return const SizedBox.square(
+                                                  dimension: 44,
+                                                  child: Center(
+                                                    child: SizedBox.square(
+                                                      dimension: 18,
+                                                      child:
+                                                          PlatformCircularProgressIndicator(),
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                              if (_sendReplyStatus ==
+                                                  SendReplyStatus.success) {
+                                                return PlatformIconButton(
+                                                  liquidGlassSymbol:
+                                                      'checkmark.circle.fill',
+                                                  liquidGlassButtonSize: 44,
+                                                  liquidGlassIconSize: 17,
+                                                  icon: Icon(
+                                                    AppPlatformIcons(context)
+                                                        .checkCircleSolid,
+                                                    size: 20,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary,
+                                                  ),
+                                                  onPressed: null,
+                                                );
+                                              }
+                                              if (_sendReplyStatus ==
+                                                  SendReplyStatus.fail) {
+                                                return PlatformIconButton(
+                                                  liquidGlassSymbol:
+                                                      'exclamationmark.triangle',
+                                                  liquidGlassButtonSize: 44,
+                                                  liquidGlassIconSize: 17,
+                                                  icon: Icon(
+                                                    AppPlatformIcons(context)
+                                                        .errorOutline,
+                                                    size: 20,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .error,
+                                                  ),
+                                                  onPressed: null,
+                                                );
+                                              }
+                                              return PlatformIconButton(
+                                                liquidGlassSymbol: 'arrow.up',
+                                                liquidGlassButtonSize: 44,
+                                                liquidGlassIconSize: 17,
+                                                color: canSend
+                                                    ? Theme.of(context)
+                                                        .colorScheme
+                                                        .primary
+                                                    : null,
+                                                icon: Icon(
+                                                  PlatformIcons(context)
+                                                      .upArrow,
+                                                  size: 20,
+                                                  color: canSend
+                                                      ? Theme.of(context)
+                                                          .colorScheme
+                                                          .onPrimary
+                                                      : Theme.of(context)
+                                                          .disabledColor,
+                                                  semanticLabel:
+                                                      S.of(context).send,
+                                                ),
+                                                onPressed: canSend
+                                                    ? () {
+                                                        VibrationUtils
+                                                            .vibrateWithClickIfPossible();
+                                                        _sendReply(context);
+                                                      }
+                                                    : null,
+                                              );
+                                            },
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),

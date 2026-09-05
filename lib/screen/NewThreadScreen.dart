@@ -249,7 +249,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
                               return Container();
                             }
                             else{
-                              return AppBannerAdWidget();
+                              return const AppBannerAdWidget();
                             }
                           })
                       ],

@@ -2,24 +2,27 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/utility/DiscuzCheckResponseUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-/// Holds cookies extracted from the WebView after a security challenge completes.
+/// Holds the validated API response and any cookies extracted from the WebView
+/// after a security challenge completes.
 class SecurityChallengeResult {
   final List<Cookie> cookies;
+  final String? rawResponse;
 
-  SecurityChallengeResult({required this.cookies});
+  SecurityChallengeResult({required this.cookies, this.rawResponse});
 }
 
 /// A page that opens a URL inside a WebView so the user can complete a
 /// security challenge (e.g. a TencentEdgeOne / EdgeOne JavaScript challenge).
 ///
 /// Once the page content can be parsed as a Discuz JSON response the page pops
-/// and returns a [SecurityChallengeResult] containing the cookies from the
-/// WebView's cookie store so that they can be replayed with Dio.
+/// and returns a [SecurityChallengeResult]. The caller can consume the validated
+/// response directly and only needs to replay the cookies as a fallback.
 ///
 /// Usage:
 /// ```dart
@@ -63,6 +66,7 @@ class _SecurityChallengeWebviewState
 
   bool _isLoading = true;
   bool _challengeCompleted = false;
+  bool _isVerifying = false;
 
   @override
   void initState() {
@@ -98,34 +102,16 @@ class _SecurityChallengeWebviewState
 
   /// Reads the visible text of the page via JavaScript and tries to parse it
   /// as a Discuz API JSON response.  Returns true and pops the route if the
-  /// content is recognised as a valid JSON object with a `discuzversion` or
-  /// `sitename` key (i.e. the challenge has been completed and the real API
+  /// content is recognised as a valid JSON object with `discuzversion` and
+  /// `sitename` keys (i.e. the challenge has been completed and the real API
   /// response is now visible).
   Future<bool> _verifyChallengePassed() async {
-    if (_challengeCompleted || !mounted) return false;
+    if (_challengeCompleted || _isVerifying || !mounted) return false;
+    _isVerifying = true;
 
     try {
-      final raw = await _controller
-          .runJavaScriptReturningResult('document.body.innerText');
-
-      // The JS result is a JSON-encoded string literal; unwrap it.
-      String content = raw.toString();
-      if (content.length >= 2 &&
-          content.startsWith('"') &&
-          content.endsWith('"')) {
-        content = content.substring(1, content.length - 1);
-        content = content
-            .replaceAll(r'\"', '"')
-            .replaceAll(r'\\', '\\')
-            .replaceAll(r'\n', '\n')
-            .replaceAll(r'\r', '\r')
-            .replaceAll(r'\t', '\t');
-      }
-
-      final decoded = jsonDecode(content);
-      if (decoded is Map<String, dynamic> &&
-          (decoded.containsKey('discuzversion') ||
-              decoded.containsKey('sitename'))) {
+      final decoded = await _readCheckResponseFromPage();
+      if (decoded != null) {
         _challengeCompleted = true;
 
         List<Cookie> cookies = [];
@@ -136,15 +122,36 @@ class _SecurityChallengeWebviewState
         }
 
         if (mounted) {
-          Navigator.pop(context, SecurityChallengeResult(cookies: cookies));
+          Navigator.pop(
+            context,
+            SecurityChallengeResult(
+              cookies: cookies,
+              rawResponse: jsonEncode(decoded),
+            ),
+          );
         }
         return true;
       }
+      return false;
     } catch (_) {
       // Page is still showing the challenge or non-JSON content – do nothing.
+      return false;
+    } finally {
+      _isVerifying = false;
     }
+  }
 
-    return false;
+  Future<Map<String, dynamic>?> _readCheckResponseFromPage() async {
+    const scripts = <String>[
+      "document.querySelector('pre')?.textContent ?? document.body?.innerText ?? ''",
+      "document.documentElement?.outerHTML ?? ''",
+    ];
+    for (final script in scripts) {
+      final raw = await _controller.runJavaScriptReturningResult(script);
+      final decoded = DiscuzCheckResponseUtils.tryDecode(raw.toString());
+      if (decoded != null) return decoded;
+    }
+    return null;
   }
 
   @override

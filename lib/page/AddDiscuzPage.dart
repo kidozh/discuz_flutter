@@ -1,11 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart' as DioCookieManager;
 import 'package:discuz_flutter/JsonResult/CheckResult.dart';
 import 'package:discuz_flutter/JsonResult/SupportDiscuzListResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
@@ -15,6 +13,7 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/SecurityChallengeWebviewPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/utility/DiscuzCheckResponseUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -117,24 +116,31 @@ class _AddDiscuzFormFieldState
       discuz = dao.getDiscuzByIndex(insertId)!;
     }
 
+    if (!mounted) return;
     Provider.of<DiscuzAndUserNotifier>(context, listen: false)
         .setDiscuz(discuz);
     Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(null);
     // pop the activity
     if (_reportDiscuzResultToAnalytics) {
-      log("Send Discuz report to Google analytics");
-      await FirebaseAnalytics.instance.logEvent(
-        name: "discuz_add",
-        parameters: {
-          "url": discuz.host,
-          "sitename": discuz.siteName,
-          "full_result": discuz.toString()
-        },
-      );
-      await FirebaseAnalytics.instance
-          .logSelectContent(contentType: "discuz", itemId: discuz.host);
+      try {
+        log("Send Discuz report to Google analytics");
+        await FirebaseAnalytics.instance.logEvent(
+          name: "discuz_add",
+          parameters: {
+            "url": discuz.host,
+            "sitename": discuz.siteName,
+            "full_result": discuz.toString()
+          },
+        );
+        await FirebaseAnalytics.instance
+            .logSelectContent(contentType: "discuz", itemId: discuz.host);
+      } catch (analyticsError) {
+        // Analytics must never prevent a valid forum from being added.
+        log('Unable to report added Discuz: $analyticsError');
+      }
     }
 
+    if (!mounted) return;
     EasyLoading.showToast(S.of(context).addDiscuzSuccessfully(discuz.siteName));
     Navigator.pop(context);
   }
@@ -143,8 +149,9 @@ class _AddDiscuzFormFieldState
   /// (e.g. a TencentEdgeOne / EdgeOne JavaScript challenge) rather than a
   /// Discuz JSON response.
   bool _isSecurityChallengeResponse(String response) {
+    if (DiscuzCheckResponseUtils.tryDecode(response) != null) return false;
     final trimmed = response.trimLeft();
-    // Any HTML page that is not a JSON object is a challenge/error page.
+    // HTML without an embedded Discuz check response is a challenge/error page.
     if (trimmed.startsWith('<')) return true;
     // Specific EdgeOne markers in non-HTML responses.
     return response.contains('TencentEdgeOne') ||
@@ -161,9 +168,10 @@ class _AddDiscuzFormFieldState
 
   /// Attempts to parse [rawValue] as a [CheckResult] and, on success, saves
   /// the Discuz entry in the database.  Returns true on success.
-  bool _tryParseAndSave(String rawValue, String discuzUrl) {
+  Future<bool> _tryParseAndSave(String rawValue, String discuzUrl) async {
     try {
-      final Map<String, dynamic> checkResultJson = jsonDecode(rawValue);
+      final checkResultJson = DiscuzCheckResponseUtils.tryDecode(rawValue);
+      if (checkResultJson == null) return false;
       log('Json OBJ ${checkResultJson.toString()}');
       final CheckResult checkResult = CheckResult.fromJson(checkResultJson);
       log('GET TRUE Discuz VERSION ${checkResult.trueDiscuzVersion}');
@@ -171,7 +179,7 @@ class _AddDiscuzFormFieldState
         _checkResult = checkResult;
         error = null;
       });
-      _saveDiscuzInDb(checkResult.toDiscuz(discuzUrl));
+      await _saveDiscuzInDb(checkResult.toDiscuz(discuzUrl));
       return true;
     } catch (_) {
       return false;
@@ -245,7 +253,7 @@ class _AddDiscuzFormFieldState
       return;
     }
 
-    if (!_tryParseAndSave(rawValue, discuzUrl)) {
+    if (!await _tryParseAndSave(rawValue, discuzUrl)) {
       VibrationUtils.vibrateErrorIfPossible();
       setState(() {
         error = DiscuzError(
@@ -292,13 +300,20 @@ class _AddDiscuzFormFieldState
       error = null;
     });
 
+    // The WebView has already received a valid API response. Use that response
+    // directly so a second non-WebView request cannot be challenged again.
+    if (result.rawResponse != null &&
+        await _tryParseAndSave(result.rawResponse!, discuzUrl)) {
+      return;
+    }
+    if (!mounted) return;
+
     try {
-      final PersistCookieJar cookieJar =
-          await NetworkUtils.getTemporaryCookieJar();
+      final CookieJar cookieJar = await NetworkUtils.getTemporaryCookieJar();
       await cookieJar.saveFromResponse(Uri.parse(discuzUrl), result.cookies);
 
-      final Dio dio = Dio();
-      dio.interceptors.add(DioCookieManager.CookieManager(cookieJar));
+      final Dio dio = NetworkUtils.getDio();
+      NetworkUtils.addCookieManager(dio, cookieJar);
 
       final client = MobileApiClient(dio, baseUrl: discuzUrl);
       final rawValue = await client.getCheckResultInString();
@@ -320,7 +335,7 @@ class _AddDiscuzFormFieldState
         return;
       }
 
-      if (!_tryParseAndSave(rawValue, discuzUrl)) {
+      if (!await _tryParseAndSave(rawValue, discuzUrl)) {
         VibrationUtils.vibrateErrorIfPossible();
         setState(() {
           error = DiscuzError(
