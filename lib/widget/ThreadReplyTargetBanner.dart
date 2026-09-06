@@ -38,6 +38,67 @@ class ThreadReplyTargetBanner extends StatelessWidget {
     final colors = theme.colorScheme;
     final preview = plainTextPreview(messageHtml, picturePlaceholder);
 
+    if (visualStyle(context) == AppVisualStyle.cupertino) {
+      final textStyle = CupertinoTheme.of(context).textTheme.textStyle;
+      return Padding(
+        key: const ValueKey('thread-reply-target-banner'),
+        padding: EdgeInsetsDirectional.fromSTEB(
+            embeddedInComposer ? 54 : 12, 4, 0, 6),
+        child: Row(
+          // Keep dismissal visible even when a tall accessibility-size preview
+          // is shown in the composer's constrained/scrollable quote area.
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Container(
+                padding: const EdgeInsetsDirectional.only(start: 9),
+                decoration: BoxDecoration(
+                  border: BorderDirectional(
+                    start: BorderSide(
+                      color: CupertinoColors.systemBlue.resolveFrom(context),
+                      width: 2,
+                    ),
+                  ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(author,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: textStyle.copyWith(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: CupertinoColors.systemBlue
+                                .resolveFrom(context))),
+                    if (preview.isNotEmpty)
+                      Text(preview,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: textStyle.copyWith(
+                              fontSize: 13,
+                              color: CupertinoColors.secondaryLabel
+                                  .resolveFrom(context))),
+                  ],
+                ),
+              ),
+            ),
+            CupertinoButton(
+              padding: EdgeInsets.zero,
+              minimumSize: const Size(44, 44),
+              onPressed: onDismiss,
+              child: Icon(CupertinoIcons.clear_circled_solid,
+                  size: 20,
+                  color: CupertinoColors.tertiaryLabel.resolveFrom(context),
+                  semanticLabel:
+                      MaterialLocalizations.of(context).closeButtonTooltip),
+            ),
+          ],
+        ),
+      );
+    }
+
     final content = Row(
       children: [
         Icon(

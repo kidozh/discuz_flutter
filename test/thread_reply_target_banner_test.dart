@@ -15,12 +15,12 @@ void main() {
     );
   });
 
-  testWidgets('reply target uses the adaptive glass card and can be dismissed',
+  testWidgets('Material reply target keeps its existing card and dismissal',
       (tester) async {
     var dismissed = false;
     await tester.pumpWidget(
       PlatformProvider(
-        initialPlatform: TargetPlatform.iOS,
+        initialPlatform: TargetPlatform.android,
         builder: (context) => MaterialApp(
           home: Scaffold(
             body: ThreadReplyTargetBanner(

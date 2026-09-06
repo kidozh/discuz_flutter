@@ -18,6 +18,7 @@ import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
+import 'package:discuz_flutter/widget/cupertino_separated_item.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
@@ -171,7 +172,8 @@ class _PublicMessagePortalState extends State<PublicMessagePortalScreen>
                     itemCount: _messages.length,
                     itemBuilder: (context, index) {
                       final message = _messages[index];
-                      return PlatformCard(
+                      return CupertinoSeparatedItem(
+                          child: PlatformCard(
                         color: usesLiquidGlass(context)
                             ? Theme.of(context).colorScheme.primary
                             : null,
@@ -234,7 +236,7 @@ class _PublicMessagePortalState extends State<PublicMessagePortalScreen>
                             );
                           },
                         ),
-                      );
+                      ));
                     },
                   ),
                 ),

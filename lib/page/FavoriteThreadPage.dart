@@ -12,6 +12,7 @@ import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:discuz_flutter/widget/cupertino_separated_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
@@ -170,7 +171,8 @@ class FavoriteThreadCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformCard(
+    return CupertinoSeparatedItem(
+        child: PlatformCard(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       child: PlatformListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -219,6 +221,6 @@ class FavoriteThreadCardWidget extends StatelessWidget {
           );
         },
       ),
-    );
+    ));
   }
 }

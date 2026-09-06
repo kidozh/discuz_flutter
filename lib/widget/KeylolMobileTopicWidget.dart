@@ -1,290 +1,110 @@
-import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
-import 'package:discuz_flutter/entity/ForumThread.dart';
-import 'package:discuz_flutter/screen/EmptyScreen.dart';
-import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:html/parser.dart';
 import 'package:provider/provider.dart';
 
-import '../entity/Discuz.dart';
-import '../entity/User.dart';
+import '../JsonResult/DisplayForumResult.dart';
+import '../entity/DiscuzError.dart';
+import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
+import '../screen/EmptyScreen.dart';
+import '../utility/KeylolPortalParser.dart';
 import '../utility/NetworkUtils.dart';
-import '../utility/PlatformAdaptiveWidgets.dart';
+import 'ErrorCard.dart';
+import 'ForumThreadWidget.dart';
+import 'KeylolTopicTabs.dart';
+import 'LoadingStateWidget.dart';
 
-class KeylolMobileTopicWidget extends StatelessWidget {
+class KeylolMobileTopicWidget extends StatefulWidget {
   final ValueChanged<int>? onSelectTid;
 
-  KeylolMobileTopicWidget({super.key, this.onSelectTid});
+  const KeylolMobileTopicWidget({super.key, this.onSelectTid});
 
   @override
-  Widget build(BuildContext context) {
-    return KeylolMobileTopicStatefulWidget(
-      onSelectTid: this.onSelectTid,
-    );
-  }
+  State<KeylolMobileTopicWidget> createState() => _KeylolMobileTopicState();
 }
 
-class KeylolMobileTopicStatefulWidget extends StatefulWidget {
-  final ValueChanged<int>? onSelectTid;
-
-  KeylolMobileTopicStatefulWidget({super.key, this.onSelectTid});
-
-  @override
-  State<StatefulWidget> createState() {
-    return KeylolMobileTopicState(onSelectTid: this.onSelectTid);
-  }
-}
-
-class KeylolMobileTopicState extends State<KeylolMobileTopicStatefulWidget> {
-  final ValueChanged<int>? onSelectTid;
-
-  KeylolMobileTopicState({this.onSelectTid});
-
-  bool isLoading = true;
-  //List<KeylolPortalThreadItem> keylolPortalThreadList = [];
-  List<List<KeylolPortalThreadItem>> keylolPortalThreadList_list = [];
-  List<String> mobileTopicTitleList = [];
-  int _selectedTopicIndex = 0;
+class _KeylolMobileTopicState extends State<KeylolMobileTopicWidget> {
+  bool _isLoading = true;
+  List<KeylolPortalTopic> _topics = [];
+  DiscuzError? _error;
+  CancelToken? _request;
 
   @override
   void initState() {
     super.initState();
-    //  start to fetch it
-    _loadThreadSlideShow();
+    _loadTopics();
   }
 
-  String keylolBaseUrl = "https://keylol.com";
-
-  Future<void> _loadThreadSlideShow() async {
-    User? _user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    final dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
-
-    dio.get(keylolBaseUrl).then((html) {
-      var document = parse(html.data);
-      //print("document ->  ${html}");
-
-      List<String> mobileTopicTitleList = [];
-
-      // parse the titletext first
-      var slideTitleTextList = document.getElementsByClassName("titletext");
-      //print("Get slide title length ${slideTitleTextList.length}");
-      for (var slideTitleText in slideTitleTextList) {
-        var slideTitleLink =
-            slideTitleText.getElementsByTagName("a").firstOrNull;
-        if (slideTitleLink != null) {
-          mobileTopicTitleList.add(slideTitleLink.innerHtml);
-        }
-      }
-
-      //print("Get mobile topic ${mobileTopicTitleList.length}");
-
-      var slideshowElementList =
-          document.getElementsByClassName("module cl xl xl1");
-      //print("Get tb-c length ${slideshowElementList.length}");
-      int cnt = 0;
-
-      for (var tabElement in slideshowElementList) {
-        List<KeylolPortalThreadItem> keylolPortalThreadList = [];
-        var listItemList = tabElement.getElementsByTagName("li");
-
-        //print("Get listItem li ${listItemList.length}");
-        for (var listItem in listItemList) {
-          var threadLinkList = listItem.getElementsByTagName("a");
-          //print("Get link from thread ${threadLinkList.length}");
-          if (threadLinkList.length != 3) {
-            continue;
-          }
-          var usernameNode = threadLinkList[0];
-          var forumNode = threadLinkList[1];
-          var threadNode = threadLinkList[2];
-          var thread_title = threadNode.attributes["title"];
-          String authorLink = usernameNode.attributes["href"] == null
-              ? ""
-              : usernameNode.attributes["href"]!;
-          if (thread_title == null || authorLink.isEmpty) {
-            continue;
-          }
-          List<String> title_split_list = thread_title.split("\n");
-          String link = threadNode.attributes["href"] == null
-              ? ""
-              : threadNode.attributes["href"]!;
-          //print("title split list ${title_split_list.length}");
-          if (title_split_list.length < 4 || link.isEmpty) {
-            continue;
-          }
-          String forum = title_split_list[0].split(":").last;
-          String author = usernameNode.innerHtml;
-
-          RegExp authorPidRegExp = RegExp(r'suid-(\d+)');
-          RegExpMatch? match = authorPidRegExp.firstMatch(authorLink);
-          if (match == null || match.groupCount != 1) {
-            continue;
-          }
-          String authorPidString =
-              match.group(1) == null ? "" : match.group(1)!;
-          int authorPid = int.tryParse(authorPidString) == null
-              ? 0
-              : int.parse(authorPidString);
-
-          RegExp tidRegExp = RegExp(r't(\d+)');
-          RegExpMatch? tidMatch = tidRegExp.firstMatch(link);
-          if (tidMatch == null || tidMatch.groupCount != 1) {
-            continue;
-          }
-          String tidString =
-              tidMatch.group(1) == null ? "" : tidMatch.group(1)!;
-          int tid = int.tryParse(tidString) == null ? 0 : int.parse(tidString);
-
-          //author = title_split_list[1].split(":").last;
-          String lastPoster = title_split_list[3].split(":").last;
-          RegExp removeTagRegExp = RegExp(r'<.*?>');
-          String title = threadNode.innerHtml.replaceAll(removeTagRegExp, "");
-
-          KeylolPortalThreadItem keylolPortalThreadItem =
-              KeylolPortalThreadItem(
-                  title, forum, author, authorPid, tid, link, lastPoster);
-          keylolPortalThreadList.add(keylolPortalThreadItem);
-        }
-        keylolPortalThreadList_list.add(keylolPortalThreadList);
-        cnt += 1;
-      }
-      setState(() {
-        this.mobileTopicTitleList = mobileTopicTitleList;
-        this.keylolPortalThreadList_list = keylolPortalThreadList_list;
-      });
+  Future<void> _loadTopics() async {
+    _request?.cancel();
+    final request = CancelToken();
+    _request = request;
+    setState(() {
+      _isLoading = true;
+      _error = null;
     });
+    try {
+      final user = context.read<DiscuzAndUserNotifier>().user;
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      if (!mounted || request.isCancelled) return;
+      dio.options.connectTimeout = const Duration(seconds: 20);
+      final response = await dio.get<String>(
+        'https://keylol.com',
+        cancelToken: request,
+        options: Options(
+          responseType: ResponseType.plain,
+          receiveTimeout: const Duration(seconds: 20),
+        ),
+      );
+      if (!mounted || request.isCancelled) return;
+      final topics = parseKeylolPortalTopics(response.data ?? '');
+      setState(() {
+        _topics = topics;
+        _isLoading = false;
+      });
+    } catch (error) {
+      if (!mounted || request.isCancelled) return;
+      setState(() {
+        _isLoading = false;
+        _error = DiscuzError(
+          'keylol_portal_load_failed',
+          S.of(context).loadFailed,
+          dioError: error is DioException ? error : null,
+        );
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _request?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<DiscuzAndUserNotifier>(builder: (context, value, child) {
-      if (value.discuz == null) {
-        return Container();
-      } else {
-        Uri uri = Uri.parse(value.discuz!.baseURL);
-        if (uri.host != "keylol.com") {
-          // server doesn't have another site support
-          return Container();
-        } else {
-          if (mobileTopicTitleList.isEmpty) {
-            return EmptyScreen();
-          } else {
-            return renderKeylolMobileTopicDashboard();
-          }
-        }
-      }
-    });
-  }
-
-  Widget renderKeylolMobileTopicDashboard() {
-    final effectiveIndex =
-        _selectedTopicIndex.clamp(0, mobileTopicTitleList.length - 1).toInt();
-    if (isCupertino(context)) {
-      return Column(
-        children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.fromLTRB(8, 4, 8, 6),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minWidth: MediaQuery.sizeOf(context).width - 16,
-              ),
-              child: PlatformSegmentedControl(
-                labels: mobileTopicTitleList,
-                selectedIndex: effectiveIndex,
-                color: Theme.of(context).colorScheme.primary,
-                onValueChanged: (index) {
-                  setState(() => _selectedTopicIndex = index);
-                },
-              ),
-            ),
-          ),
-          Expanded(
-            child: IndexedStack(
-              index: effectiveIndex,
-              children: [
-                for (final threads in keylolPortalThreadList_list)
-                  ListView.builder(
-                    itemCount: threads.length,
-                    itemBuilder: (context, index) =>
-                        renderKeylolMobileTopicThread(threads[index]),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      );
+    final source = context.watch<DiscuzAndUserNotifier>();
+    final discuz = source.discuz;
+    if (discuz == null || Uri.tryParse(discuz.baseURL)?.host != 'keylol.com') {
+      return const SizedBox.shrink();
     }
-    return DefaultTabController(
-        length: mobileTopicTitleList.length,
-        child: Column(
-          children: [
-            TabBar(
-              isScrollable: true,
-              tabs: mobileTopicTitleList
-                  .map((e) => Tab(
-                        text: e,
-                      ))
-                  .toList(),
-              labelColor: Theme.of(context).colorScheme.primary,
-              indicatorColor: Theme.of(context).colorScheme.primary,
-              unselectedLabelColor:
-                  Theme.of(context).brightness == Brightness.light
-                      ? Colors.black54
-                      : Colors.white54,
-              unselectedLabelStyle:
-                  Theme.of(context).brightness == Brightness.light
-                      ? Theme.of(context).textTheme.bodyMedium
-                      : Theme.of(context).textTheme.titleMedium,
-            ),
-            Expanded(
-              child: TabBarView(
-                  children: keylolPortalThreadList_list
-                      .map((e) => ListView.builder(
-                          itemCount: e.length,
-                          itemBuilder: (context, index) =>
-                              renderKeylolMobileTopicThread(e[index])))
-                      .toList()),
-            )
-          ],
-        ));
-  }
-
-  Widget renderKeylolMobileTopicThread(KeylolPortalThreadItem threadItem) {
-    ThreadType threadType = ThreadType();
-    threadType.idNameMap = {"0": threadItem.forum};
-    ForumThread _forumThread = threadItem.convertToForumThread();
-    Discuz? _discuz = Provider.of<DiscuzAndUserNotifier>(context).discuz;
-    User? _user = Provider.of<DiscuzAndUserNotifier>(context).user;
-    if (_discuz == null) {
-      return EmptyScreen();
-    }
-    return ForumThreadWidget(
-        _discuz, _user, _forumThread, threadType, onSelectTid);
-  }
-}
-
-class KeylolPortalThreadItem {
-  String title = "";
-  String forum = "";
-  String author = "";
-  int authorId = 0;
-  int tid = 0;
-  String link = "";
-  String lastPoster = "";
-
-  KeylolPortalThreadItem(this.title, this.forum, this.author, this.authorId,
-      this.tid, this.link, this.lastPoster);
-
-  ForumThread convertToForumThread() {
-    ForumThread forumThread = ForumThread();
-    forumThread.authorId = authorId.toString();
-    forumThread.author = author;
-    forumThread.subject = title;
-    forumThread.tid = tid.toString();
-
-    return forumThread;
+    if (_isLoading) return const Center(child: LoadingStateWidget());
+    if (_error != null) return ErrorCard(_error!, _loadTopics);
+    if (_topics.isEmpty) return EmptyScreen();
+    return KeylolTopicTabs(
+      titles: _topics.map((topic) => topic.title).toList(),
+      topicBuilder: (context, topicIndex) {
+        final threads = _topics[topicIndex].threads;
+        return ListView.builder(
+          itemCount: threads.length,
+          itemBuilder: (context, index) {
+            final item = threads[index];
+            final threadType = ThreadType()..idNameMap = {'0': item.forum};
+            return ForumThreadWidget(discuz, source.user,
+                item.convertToForumThread(), threadType, widget.onSelectTid);
+          },
+        );
+      },
+    );
   }
 }

@@ -41,7 +41,6 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:upgrader/upgrader.dart';
 
-import '../main.dart';
 import '../provider/SelectedTidNotifierProvider.dart';
 import '../screen/TwoPaneEmptyScreen.dart';
 import '../utility/CustomizeColor.dart';
@@ -132,8 +131,8 @@ class _MyAppState extends State<MyApp> {
       Provider.of<ThemeNotifierProvider>(context, listen: false)
           .setCustomThemeColor(customThemeColor);
     }
-    Provider.of<ThemeNotifierProvider>(context, listen: false)
-        .setPlatformName(platformName);
+    // Appearance is already seeded before runApp. Do not overwrite a choice
+    // made while the deferred preferences / AI availability checks were running.
     Provider.of<ThemeNotifierProvider>(context, listen: false)
         .setDynamicSchemeVariant(dynamicSchemeVariant);
     Provider.of<TypeSettingNotifierProvider>(context, listen: false)
@@ -172,28 +171,6 @@ class _MyAppState extends State<MyApp> {
         .useCompactParagraph = useCompactParagraph;
   }
 
-  TargetPlatform? getTargetPlatformByName(String name) {
-    switch (name) {
-      case "android":
-        return TargetPlatform.android;
-      case "ios":
-        return TargetPlatform.iOS;
-    }
-    return null;
-  }
-
-  bool isUseCupertinoStyle(ThemeNotifierProvider themeNotifierProvider) {
-    if (themeNotifierProvider.platformName == "ios") {
-      return true;
-    }
-    if ((Platform.isIOS || Platform.isMacOS) &&
-        (themeNotifierProvider.platformName == "")) {
-      return true;
-    }
-
-    return false;
-  }
-
   @override
   Widget build(BuildContext context) {
     if (!_didStartInitialization) {
@@ -208,39 +185,11 @@ class _MyAppState extends State<MyApp> {
         ThemeMode? themeMode = null;
 
         Typography typography = Typography.material2021();
-        String platformName =
-            Provider.of<ThemeNotifierProvider>(context, listen: false)
-                .platformName;
-        // if in tablet mode should choose material only
-
-        TargetPlatform targetPlatform = TargetPlatform.android;
+        final targetPlatform =
+            themeColorEntity.visualStyle.effective.targetPlatform;
 
         TypeSettingNotifierProvider typeSetting =
             Provider.of<TypeSettingNotifierProvider>(context, listen: false);
-
-        switch (platformName) {
-          case "ios":
-            {
-              targetPlatform = TargetPlatform.iOS;
-              break;
-            }
-          case "android":
-            {
-              targetPlatform = TargetPlatform.android;
-              break;
-            }
-          case "":
-            {
-              targetPlatform = Theme.of(context).platform;
-            }
-        }
-
-        // if(MediaQuery.sizeOf(context).width >= TwoPaneUtils.mobileScreenSize){
-        //   platformName = "android";
-        //   initialPlatform = 'android';
-        //   targetPlatform = TargetPlatform.android;
-        //   //Provider.of<ThemeNotifierProvider>(context, listen: false).setPlatformName("android");
-        // }
 
         switch (typeSetting.typographyTheme) {
           case "material2014":
@@ -377,7 +326,7 @@ class _MyAppState extends State<MyApp> {
         }
 
         return PlatformProvider(
-          initialPlatform: getTargetPlatformByName(initialPlatform),
+          style: themeColorEntity.visualStyle,
           settings: PlatformSettingsData(),
           builder: (context) {
             return PlatformTheme(

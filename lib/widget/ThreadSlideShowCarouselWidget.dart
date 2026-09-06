@@ -260,30 +260,32 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image(
-                  image: CachedNetworkImageProvider(slideShow.image_src),
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => ColoredBox(
-                    color: colors.surfaceContainerHighest,
+                ImageFiltered(
+                  imageFilter: ImageFilter.blur(
+                    sigmaX: 5, sigmaY: 5, tileMode: TileMode.clamp,
+                  ),
+                  child: Image(
+                    image: CachedNetworkImageProvider(slideShow.image_src),
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => ColoredBox(
+                      color: colors.surfaceContainerHighest,
+                    ),
                   ),
                 ),
-                BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: light
-                            ? [
-                                Colors.white.withValues(alpha: 0.42),
-                                Colors.white.withValues(alpha: 0.16),
-                              ]
-                            : [
-                                Colors.black.withValues(alpha: 0.30),
-                                colors.surface.withValues(alpha: 0.16),
-                              ],
-                      ),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: light
+                          ? [
+                              Colors.white.withValues(alpha: 0.42),
+                              Colors.white.withValues(alpha: 0.16),
+                            ]
+                          : [
+                              Colors.black.withValues(alpha: 0.30),
+                              colors.surface.withValues(alpha: 0.16),
+                            ],
                     ),
                   ),
                 ),

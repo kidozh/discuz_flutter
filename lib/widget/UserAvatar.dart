@@ -23,6 +23,32 @@ class UserAvatar extends StatelessWidget {
     return this.size == null ? 16 : this.size!;
   }
 
+  Widget _fallback(BuildContext context, double avatarSize) => SizedBox(
+        width: avatarSize,
+        height: avatarSize,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: CustomizeColor.getColorBackgroundById(uid)),
+          child: Center(
+              child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    username.isNotEmpty
+                        ? String.fromCharCode(username.runes.first)
+                            .toUpperCase()
+                        : S.of(context).anonymous,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: (avatarSize * 0.4).clamp(9.0, 16.0),
+                        fontWeight: FontWeight.w600,
+                        height: 1),
+                  ))),
+        ),
+      );
+
   UserAvatar(this.discuz, this.uid, this.username,
       {this.size, this.disableTap});
 
@@ -34,43 +60,24 @@ class UserAvatar extends StatelessWidget {
       height: avatarSize,
       fit: BoxFit.cover,
       imageUrl: URLUtils.getAvatarURL(discuz, uid.toString()),
-      progressIndicatorBuilder: (context, url, downloadProgress) => SizedBox(
-        height: avatarSize,
-        width: avatarSize,
-        child: PlatformCircularProgressIndicator(
-          material: (_, __) => MaterialProgressIndicatorData(
-            value: downloadProgress.progress,
-          ),
-        ),
-      ),
-      errorWidget: (context, url, error) => SizedBox(
-        width: avatarSize,
-        height: avatarSize,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: CustomizeColor.getColorBackgroundById(uid),
-          ),
-          child: Center(
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                username.isNotEmpty
-                    ? String.fromCharCode(username.runes.first).toUpperCase()
-                    : S.of(context).anonymous,
-                maxLines: 1,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: (avatarSize * 0.4).clamp(9.0, 16.0),
-                  fontWeight: FontWeight.w600,
-                  height: 1,
+      // A list of pending tiny avatars should not run one perpetual ticker per
+      // row. Keep an accessible loading state and the original image/click path.
+      progressIndicatorBuilder: (context, url, downloadProgress) =>
+          isCupertino(context)
+              ? Semantics(
+                  label: '$username ${S.of(context).loading}',
+                  excludeSemantics: true,
+                  child: _fallback(context, avatarSize))
+              : SizedBox(
+                  height: avatarSize,
+                  width: avatarSize,
+                  child: PlatformCircularProgressIndicator(
+                    material: (_, __) => MaterialProgressIndicatorData(
+                      value: downloadProgress.progress,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
-        ),
-      ),
+      errorWidget: (context, url, error) => _fallback(context, avatarSize),
       imageBuilder: (context, imageProvider) => DecoratedBox(
         decoration: BoxDecoration(
           shape: BoxShape.circle,

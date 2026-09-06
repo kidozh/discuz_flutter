@@ -480,6 +480,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "This count down timezone shall be in Asia/Shanghai and might differ from your timezone",
     ),
     "credit": MessageLookupByLibrary.simpleMessage("Credit"),
+    "cupertinoStyle": MessageLookupByLibrary.simpleMessage("Cupertino"),
+    "cupertinoStyleDescription": MessageLookupByLibrary.simpleMessage(
+      "Classic Apple-style controls without custom Liquid Glass effects.",
+    ),
     "customColor": MessageLookupByLibrary.simpleMessage("Custom color"),
     "customColorNamed": m11,
     "customSignature": MessageLookupByLibrary.simpleMessage("Custom"),
@@ -847,6 +851,13 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "linkUnableToOpen": m31,
     "linuxDeviceName": m32,
+    "liquidGlassStyle": MessageLookupByLibrary.simpleMessage("Liquid Glass"),
+    "liquidGlassStyleDescription": MessageLookupByLibrary.simpleMessage(
+      "Native glass controls on iOS / iPadOS 26 or later.",
+    ),
+    "liquidGlassStyleUnavailable": MessageLookupByLibrary.simpleMessage(
+      "Requires iOS / iPadOS 26 or later. Unavailable on this device; a saved selection falls back to Cupertino.",
+    ),
     "loadFailed": MessageLookupByLibrary.simpleMessage("Load failed"),
     "loadFinish": MessageLookupByLibrary.simpleMessage("Load completed"),
     "loadMore": MessageLookupByLibrary.simpleMessage("LoadMore"),
@@ -886,6 +897,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "In the material setting, App\'s brightness will follow the system without any options to offer.",
     ),
     "materialDesign": MessageLookupByLibrary.simpleMessage("Material Design"),
+    "materialStyleDescription": MessageLookupByLibrary.simpleMessage(
+      "Material Design controls, available on all platforms.",
+    ),
     "me": MessageLookupByLibrary.simpleMessage("Me"),
     "menuDrawerTitle": MessageLookupByLibrary.simpleMessage("Menu"),
     "menuIconTooltip": MessageLookupByLibrary.simpleMessage("Menu"),
@@ -1308,6 +1322,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "shortcutUidHint": MessageLookupByLibrary.simpleMessage(
       "Input user id (uid)",
     ),
+    "showKeyboardTooltip": MessageLookupByLibrary.simpleMessage(
+      "Switch to keyboard",
+    ),
     "signInSuccessTitle": m47,
     "signInTitle": m48,
     "signInViaBrowser": MessageLookupByLibrary.simpleMessage("Sign in by web"),
@@ -1352,6 +1369,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "successfullyDeleteViewHistoryContent": m51,
     "successfullyDownloadFiles": m52,
     "syncSuccessfullyWithServer": m53,
+    "systemStyleDescription": MessageLookupByLibrary.simpleMessage(
+      "Liquid Glass on iOS 26 or later, Cupertino on earlier iOS, and Material Design on other platforms.",
+    ),
     "takeAPicture": MessageLookupByLibrary.simpleMessage("Shot"),
     "tapToWipeAndRelogin": MessageLookupByLibrary.simpleMessage(
       "Tap to wipe out and re-login user",

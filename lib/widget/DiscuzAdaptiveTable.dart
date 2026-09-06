@@ -193,7 +193,9 @@ class DiscuzAdaptiveTable extends StatelessWidget {
             ),
           ],
           for (var row = 0; row < data.rows.length; row++)
-            _buildWideRow(context, data, row),
+            // Cache rows independently: an image loading or a horizontal scroll
+            // must not re-record every other image/text cell in the table.
+            RepaintBoundary(child: _buildWideRow(context, data, row)),
         ],
       ),
     );

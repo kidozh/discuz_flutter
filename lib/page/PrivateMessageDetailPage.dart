@@ -20,6 +20,7 @@ import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/PrivateMessageDetailWidget.dart';
+import 'package:discuz_flutter/widget/thread_reply_composer.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -59,6 +60,8 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
   List<PrivateMessageDetail> _messages = [];
   late final EasyRefreshController _refreshController;
   late final TextEditingController _textController;
+  final FocusNode _composerFocus =
+      FocusNode(debugLabel: 'private-message-input');
   bool _showSmiley = false;
   bool _requestInFlight = false;
   bool _sending = false;
@@ -79,6 +82,24 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
       controlFinishRefresh: true,
     );
     _textController = TextEditingController()..addListener(_onTextChanged);
+    _composerFocus.addListener(_onComposerFocusChanged);
+  }
+
+  void _onComposerFocusChanged() {
+    if (_composerFocus.hasFocus && _showSmiley && mounted) {
+      setState(() => _showSmiley = false);
+    }
+  }
+
+  void _toggleSmiley() {
+    VibrationUtils.vibrateWithClickIfPossible();
+    if (_showSmiley) {
+      setState(() => _showSmiley = false);
+      _composerFocus.requestFocus();
+    } else {
+      _composerFocus.unfocus();
+      setState(() => _showSmiley = true);
+    }
   }
 
   void _onTextChanged() {
@@ -91,6 +112,7 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
       ..removeListener(_onTextChanged)
       ..dispose();
     _refreshController.dispose();
+    _composerFocus.dispose();
     super.dispose();
   }
 
@@ -456,7 +478,8 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
             ],
           ),
           body: PlatformLiquidGlassPageBackdrop(
-            child: Column(
+            child: CupertinoComposerViewport(
+                child: Column(
               children: [
                 if (_error != null)
                   ErrorCard(_error!, () => _refreshController.callRefresh()),
@@ -505,95 +528,106 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
                     ),
                   ),
                 ),
-                SafeArea(
-                  top: false,
-                  child: PlatformLiquidGlassCard(
-                    margin: const EdgeInsets.fromLTRB(8, 4, 8, 8),
-                    padding: const EdgeInsets.all(6),
-                    borderRadius: BorderRadius.circular(24),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        PlatformIconButton(
-                          liquidGlassSymbol:
-                              _showSmiley ? 'keyboard' : 'face.smiling',
-                          liquidGlassButtonSize: 44,
-                          liquidGlassIconSize: 17,
-                          icon: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 160),
-                            child: Icon(
-                              _showSmiley
-                                  ? PlatformIcons(context).keyboard
-                                  : PlatformIcons(context).smiley,
-                              key: ValueKey(_showSmiley),
-                              size: 20,
-                              semanticLabel: S.of(context).emoijButtonTooltip,
-                            ),
-                          ),
-                          onPressed: () {
-                            VibrationUtils.vibrateWithClickIfPossible();
-                            setState(() => _showSmiley = !_showSmiley);
-                          },
-                        ),
-                        const SizedBox(width: 3),
-                        Expanded(
-                          child: PlatformTextField(
-                            controller: _textController,
-                            minLines: 1,
-                            maxLines: 4,
-                            textInputAction: TextInputAction.newline,
-                            onSubmitted: (_) => _sendMessage(discuz),
-                          ),
-                        ),
-                        const SizedBox(width: 5),
-                        if (_sending)
-                          const SizedBox.square(
-                            dimension: 44,
-                            child: Center(
-                              child: SizedBox.square(
-                                dimension: 18,
-                                child: PlatformCircularProgressIndicator(),
-                              ),
-                            ),
-                          )
-                        else
+                if (visualStyle(context) == AppVisualStyle.cupertino)
+                  CupertinoPrivateMessageComposer(
+                    controller: _textController,
+                    focusNode: _composerFocus,
+                    panelVisible: _showSmiley,
+                    sending: _sending,
+                    canSend: _canSend,
+                    onTogglePanel: _toggleSmiley,
+                    onSend: () => _sendMessage(discuz),
+                  )
+                else
+                  SafeArea(
+                    top: false,
+                    child: PlatformLiquidGlassCard(
+                      margin: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+                      padding: const EdgeInsets.all(6),
+                      borderRadius: BorderRadius.circular(24),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
                           PlatformIconButton(
-                            liquidGlassSymbol: 'arrow.up',
+                            liquidGlassSymbol:
+                                _showSmiley ? 'keyboard' : 'face.smiling',
                             liquidGlassButtonSize: 44,
                             liquidGlassIconSize: 17,
-                            color: _canSend
-                                ? Theme.of(context).colorScheme.primary
-                                : null,
-                            onPressed:
-                                _canSend ? () => _sendMessage(discuz) : null,
-                            icon: Icon(
-                              PlatformIcons(context).upArrow,
-                              size: 20,
-                              color: _canSend
-                                  ? Theme.of(context).colorScheme.onPrimary
-                                  : Theme.of(context).disabledColor,
-                              semanticLabel: S.of(context).send,
+                            icon: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 160),
+                              child: Icon(
+                                _showSmiley
+                                    ? PlatformIcons(context).keyboard
+                                    : PlatformIcons(context).smiley,
+                                key: ValueKey(_showSmiley),
+                                size: 20,
+                                semanticLabel: S.of(context).emoijButtonTooltip,
+                              ),
+                            ),
+                            onPressed: _toggleSmiley,
+                          ),
+                          const SizedBox(width: 3),
+                          Expanded(
+                            child: PlatformTextField(
+                              controller: _textController,
+                              focusNode: _composerFocus,
+                              minLines: 1,
+                              maxLines: 4,
+                              textInputAction: TextInputAction.newline,
+                              onSubmitted: (_) => _sendMessage(discuz),
                             ),
                           ),
-                      ],
+                          const SizedBox(width: 5),
+                          if (_sending)
+                            const SizedBox.square(
+                              dimension: 44,
+                              child: Center(
+                                child: SizedBox.square(
+                                  dimension: 18,
+                                  child: PlatformCircularProgressIndicator(),
+                                ),
+                              ),
+                            )
+                          else
+                            PlatformIconButton(
+                              liquidGlassSymbol: 'arrow.up',
+                              liquidGlassButtonSize: 44,
+                              liquidGlassIconSize: 17,
+                              color: _canSend
+                                  ? Theme.of(context).colorScheme.primary
+                                  : null,
+                              onPressed:
+                                  _canSend ? () => _sendMessage(discuz) : null,
+                              icon: Icon(
+                                PlatformIcons(context).upArrow,
+                                size: 20,
+                                color: _canSend
+                                    ? Theme.of(context).colorScheme.onPrimary
+                                    : Theme.of(context).disabledColor,
+                                semanticLabel: S.of(context).send,
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 220),
-                  reverseDuration: const Duration(milliseconds: 160),
-                  switchInCurve: Curves.easeOutCubic,
-                  switchOutCurve: Curves.easeInCubic,
-                  child: _showSmiley
-                      ? SmileyListScreen(
-                          (smiley) => _insertSmiley(smiley.code),
-                        )
-                      : const SizedBox.shrink(
-                          key: ValueKey('private_message_smiley_hidden'),
-                        ),
-                ),
+                CupertinoKeyboardAccessory(
+                    enabled: visualStyle(context) == AppVisualStyle.cupertino,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 220),
+                      reverseDuration: const Duration(milliseconds: 160),
+                      switchInCurve: Curves.easeOutCubic,
+                      switchOutCurve: Curves.easeInCubic,
+                      child: _showSmiley
+                          ? SmileyListScreen(
+                              (smiley) => _insertSmiley(smiley.code),
+                            )
+                          : const SizedBox.shrink(
+                              key: ValueKey('private_message_smiley_hidden'),
+                            ),
+                    )),
               ],
-            ),
+            )),
           ),
         );
       },

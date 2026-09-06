@@ -7,6 +7,7 @@ import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
+import 'package:discuz_flutter/widget/cupertino_separated_item.dart';
 import 'package:flutter/material.dart';
 
 class DiscuzNotificationWidget extends StatelessWidget {
@@ -24,7 +25,8 @@ class DiscuzNotificationWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isNew = notification.isNew == '1';
-    return PlatformCard(
+    return CupertinoSeparatedItem(
+        child: PlatformCard(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
       color: isNew ? Theme.of(context).colorScheme.primaryContainer : null,
@@ -73,7 +75,7 @@ class DiscuzNotificationWidget extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 
   Widget _buildAvatar(BuildContext context) {

@@ -27,15 +27,13 @@ class ExclusiveDiscuzApp extends StatefulWidget {
 }
 
 class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
-  late String platformName = widget.initialPlatformName;
-
+  final _navigatorKey = GlobalKey<NavigatorState>();
   ThemeMode? themeMode;
   bool _didLoadPreferences = false;
 
   Future<void> _loadPreference(BuildContext context) async {
     FlexScheme colorScheme = await UserPreferencesUtils.getThemeColor();
     Color? customThemeColor = await UserPreferencesUtils.getCustomThemeColor();
-    platformName = await UserPreferencesUtils.getPlatformPreference();
     double scale = await UserPreferencesUtils.getTypesettingScalePreference();
     Brightness? brightness =
         await UserPreferencesUtils.getInterfaceBrightnessPreference();
@@ -59,8 +57,8 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
       Provider.of<ThemeNotifierProvider>(context, listen: false)
           .setCustomThemeColor(customThemeColor);
     }
-    Provider.of<ThemeNotifierProvider>(context, listen: false)
-        .setPlatformName(platformName);
+    // Appearance is initialized before runApp, independently of these slower
+    // preferences, so a new user selection cannot be reset by this callback.
     Provider.of<TypeSettingNotifierProvider>(context, listen: false)
         .setScalingParameter(scale);
     Provider.of<ThemeNotifierProvider>(context, listen: false)
@@ -72,16 +70,6 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
     preferences.setAppleIntelligenceEnabled(
       intelligenceEnabled && intelligenceAvailability.isAvailable,
     );
-  }
-
-  TargetPlatform? getTargetPlatformByName(String name) {
-    switch (name) {
-      case "android":
-        return TargetPlatform.android;
-      case "ios":
-        return TargetPlatform.iOS;
-    }
-    return null;
   }
 
   @override
@@ -152,7 +140,7 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
         }
 
         return PlatformProvider(
-          initialPlatform: getTargetPlatformByName(platformName),
+          style: themeColorEntity.visualStyle,
           settings: PlatformSettingsData(),
           builder: (context) {
             // here insert the app
@@ -166,6 +154,7 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
                   this.themeMode = themeMode;
                 },
                 builder: (context) => PlatformApp(
+                      navigatorKey: _navigatorKey,
                       debugShowCheckedModeBanner: false,
                       //title: S.of(context).appName,
                       // localization
