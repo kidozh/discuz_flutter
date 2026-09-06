@@ -15,6 +15,7 @@ import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
+import 'package:discuz_flutter/widget/cupertino_separated_item.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -189,7 +190,8 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
           SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
               FavoriteThread favoriteThread = _pmList[index];
-              return PlatformCard(
+              return CupertinoSeparatedItem(
+                  child: PlatformCard(
                 margin: const EdgeInsets.symmetric(
                   horizontal: 8,
                   vertical: 5,
@@ -237,7 +239,7 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
                                 )));
                   },
                 ),
-              );
+              ));
             }, childCount: _pmList.length),
           ),
         ],

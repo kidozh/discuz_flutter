@@ -148,7 +148,9 @@ Widget _buildRootApp({
 }) {
   return MultiProvider(
     providers: [
-      ChangeNotifierProvider.value(value: ThemeNotifierProvider()),
+      ChangeNotifierProvider.value(
+        value: ThemeNotifierProvider(platformName: initialPlatform),
+      ),
       ChangeNotifierProvider.value(value: DiscuzAndUserNotifier()),
       ChangeNotifierProvider.value(value: ReplyPostNotifierProvider()),
       ChangeNotifierProvider.value(value: TypeSettingNotifierProvider()),

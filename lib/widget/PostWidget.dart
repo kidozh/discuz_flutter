@@ -21,11 +21,14 @@ import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/FoundationModelFrameworkUtils.dart';
 import 'package:discuz_flutter/utility/OnDeviceAiService.dart';
 import 'package:discuz_flutter/utility/PostTextUtils.dart';
+import 'package:discuz_flutter/utility/ReadingPerformanceProbe.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/AttachmentWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/PostCommentWidget.dart';
+import 'package:discuz_flutter/widget/reading_glass_sliver_card.dart';
+import 'package:discuz_flutter/widget/cupertino_separated_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
@@ -51,9 +54,14 @@ class PostWidget extends StatelessWidget {
   bool? ignoreFontCustomization = false;
   int? tid;
   int? fid;
+  final bool asSliver;
+  final VoidCallback? onBodyReady;
 
   PostWidget(this._discuz, this._post, this._authorId, this.formhash,
-      {this.onAuthorSelectedCallback,
+      {super.key,
+      this.asSliver = false,
+      this.onBodyReady,
+      this.onAuthorSelectedCallback,
       this.postCommentList,
       this.ignoreFontCustomization,
       this.jumpToPidCallback,
@@ -73,6 +81,8 @@ class PostWidget extends StatelessWidget {
       jumpToPidCallback: this.jumpToPidCallback,
       fid: this.fid,
       tid: this.tid,
+      asSliver: asSliver,
+      onBodyReady: onBodyReady,
     );
   }
 }
@@ -88,9 +98,13 @@ class PostStatefulWidget extends StatefulWidget {
   bool? ignoreFontCustomization = false;
   int? tid;
   int? fid;
+  final bool asSliver;
+  final VoidCallback? onBodyReady;
 
   PostStatefulWidget(this._discuz, this._post, this._authorId, this.formhash,
-      {this.onAuthorSelectedCallback,
+      {this.asSliver = false,
+      this.onBodyReady,
+      this.onAuthorSelectedCallback,
       this.postCommentList,
       this.ignoreFontCustomization,
       this.jumpToPidCallback,
@@ -164,6 +178,22 @@ class PostState extends State<PostStatefulWidget> {
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(covariant PostStatefulWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // A refreshed/cached first post keeps its key; do not retain stale content.
+    _post = widget._post;
+    _discuz = widget._discuz;
+    _authorId = widget._authorId;
+    formhash = widget.formhash;
+    onAuthorSelectedCallback = widget.onAuthorSelectedCallback;
+    postCommentList = widget.postCommentList;
+    ignoreFontCustomization = widget.ignoreFontCustomization;
+    jumpToPidCallback = widget.jumpToPidCallback;
+    tid = widget.tid;
+    fid = widget.fid;
+  }
+
   late BlockUserDao _blockUserDao;
   bool isUserBlocked = false;
   String groupTitle = "";
@@ -184,6 +214,7 @@ class PostState extends State<PostStatefulWidget> {
       _user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
       List<BlockUser> userBlockedInDB =
           await _blockUserDao.isUserBlocked(_post.authorId, discuz);
+      if (!mounted) return;
       if (userBlockedInDB.isEmpty) {
         setState(() {
           this.isUserBlocked = false;
@@ -200,7 +231,7 @@ class PostState extends State<PostStatefulWidget> {
   Widget build(BuildContext context) {
     if (this.isUserBlocked) {
       // show blocked user interface
-      return PlatformWidgetBuilder(
+      final blocked = PlatformWidgetBuilder(
         material: (_, child, __) => PlatformCard(
           elevation: 2,
           surfaceTintColor: Theme.of(context).colorScheme.surface,
@@ -250,12 +281,25 @@ class PostState extends State<PostStatefulWidget> {
               ],
             )),
       );
+      return CupertinoSeparatedItem(
+        sliver: widget.asSliver,
+        child: widget.asSliver ? SliverToBoxAdapter(child: blocked) : blocked,
+      );
     }
 
     return Consumer<TypeSettingNotifierProvider>(
         builder: (context, typesetting, _) {
+      if (widget.asSliver) {
+        return CupertinoSeparatedItem(
+          sliver: true,
+          child: ReadingGlassSliverCard(
+              sliver: getPostContent(context, typesetting.useCompactParagraph,
+                  asSliver: true)),
+        );
+      }
       // should return the container
-      return PlatformWidgetBuilder(
+      return CupertinoSeparatedItem(
+          child: PlatformWidgetBuilder(
         material: (_, child, platform) => PlatformCard(
           //surfaceTintColor: Theme.of(context).colorScheme.background,
           surfaceTintColor: Theme.of(context).brightness == Brightness.light
@@ -276,7 +320,7 @@ class PostState extends State<PostStatefulWidget> {
           child: child ?? const SizedBox.shrink(),
         ),
         child: getPostContent(context, typesetting.useCompactParagraph),
-      );
+      ));
     });
   }
 
@@ -341,7 +385,17 @@ class PostState extends State<PostStatefulWidget> {
     }
   }
 
-  Widget getPostContent(BuildContext context, bool compactParagraph) {
+  Widget getPostContent(BuildContext context, bool compactParagraph,
+      {bool asSliver = false}) {
+    if (ReadingPerformanceProbe.enabled) {
+      ReadingPerformanceProbe.record('post.content', {
+        'pid': _post.pid,
+        'first': _post.first,
+        'number': _post.number,
+        'html_chars': _post.message.length,
+        'sliver': asSliver,
+      });
+    }
     String _html = _post.message;
     log("Original HTML ${_html}");
 
@@ -380,81 +434,81 @@ class PostState extends State<PostStatefulWidget> {
 
     log("AFTER HTML ${_html}");
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        // post header
-        getPostHeader(context),
-        // banned or warn
-        if (_post.status & POST_BLOCKED != 0) getPostBlockedBlock(context),
-        if (_post.status & POST_WARNED != 0) getPostWarnBlock(context),
-        if (_post.status & POST_REVISED != 0) getPostRevisedBlock(context),
-
-        // rich text rendering
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 0.0),
-          child: Column(
-            children: [
-              // add a padding btm
-              SizedBox(
-                height: 8,
-              ),
-              DiscuzHtmlWidget(
-                _discuz,
-                _html,
-                tid: this.tid,
-                callback: jumpToPidCallback,
-              ),
-              if (_post.attachmentMapper.isNotEmpty)
-                ListView.builder(
-                  padding: EdgeInsets.zero,
-                  itemBuilder: (context, index) {
-                    Attachment attachment = _post.getAttachmentList()[index];
-                    return AttachmentWidget(_discuz, attachment);
-                  },
-                  itemCount: _post.getAttachmentList().length,
-                  physics: new NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                ),
-              if (getCommentList().length != 0)
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                    ),
-                    child: ListView.builder(
-                      padding: EdgeInsets.zero,
-                      itemBuilder: (context, index) {
-                        Comment comment = getCommentList()[index];
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            PostCommentWidget(comment),
-                            if (index != getCommentList().length - 1)
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Divider(),
-                              )
-                          ],
-                        );
-                      },
-                      itemCount: getCommentList().length,
-                      physics: new NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                    ),
-                  ),
-                ),
-            ],
+    final header = <Widget>[
+      // post header
+      getPostHeader(context),
+      // banned or warn
+      if (_post.status & POST_BLOCKED != 0) getPostBlockedBlock(context),
+      if (_post.status & POST_WARNED != 0) getPostWarnBlock(context),
+      if (_post.status & POST_REVISED != 0) getPostRevisedBlock(context),
+      const SizedBox(height: 8),
+    ];
+    final body = DiscuzHtmlWidget(
+      _discuz,
+      _html,
+      tid: this.tid,
+      callback: jumpToPidCallback,
+      asSliver: asSliver,
+      onBodyReady: widget.onBodyReady,
+    );
+    final footer = <Widget>[
+      if (_post.attachmentMapper.isNotEmpty)
+        ListView.builder(
+          padding: EdgeInsets.zero,
+          itemBuilder: (context, index) {
+            Attachment attachment = _post.getAttachmentList()[index];
+            return AttachmentWidget(_discuz, attachment);
+          },
+          itemCount: _post.getAttachmentList().length,
+          physics: new NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+        ),
+      if (getCommentList().length != 0)
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+              color: Theme.of(context).colorScheme.primaryContainer,
+            ),
+            child: ListView.builder(
+              padding: EdgeInsets.zero,
+              itemBuilder: (context, index) {
+                Comment comment = getCommentList()[index];
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    PostCommentWidget(comment),
+                    if (index != getCommentList().length - 1)
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Divider(),
+                      )
+                  ],
+                );
+              },
+              itemCount: getCommentList().length,
+              physics: new NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+            ),
           ),
         ),
-        getPostTailWidget(context)
-      ],
-    );
+      getPostTailWidget(context)
+    ];
+    if (asSliver) {
+      return SliverMainAxisGroup(slivers: [
+        SliverToBoxAdapter(
+            child: Column(mainAxisSize: MainAxisSize.min, children: header)),
+        body,
+        SliverToBoxAdapter(
+            child: Column(mainAxisSize: MainAxisSize.min, children: footer)),
+      ]);
+    }
+    return Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [...header, body, ...footer]);
   }
 
   Widget getPostPopupMenu(BuildContext context) {

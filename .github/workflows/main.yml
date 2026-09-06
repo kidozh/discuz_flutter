@@ -120,8 +120,12 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         shell: bash
         run: |
-          flutter build apk --release --no-pub
-          flutter build appbundle --release --no-pub
+          # Release builds must regenerate plugin registration for release mode.
+          # --no-pub can retain dev-only plugins such as integration_test from
+          # the dependency/toolchain checks, while Gradle excludes them.
+          flutter build apk --release
+          flutter build appbundle --release
+          git diff --exit-code -- pubspec.lock
           mkdir -p release
           cp build/app/outputs/flutter-apk/app-release.apk release/
           cp build/app/outputs/bundle/release/app-release.aab release/

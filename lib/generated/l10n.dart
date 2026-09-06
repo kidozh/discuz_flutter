@@ -1755,6 +1755,76 @@ class S {
     return Intl.message('iOS', name: 'ios', desc: '', args: []);
   }
 
+  /// `Liquid Glass`
+  String get liquidGlassStyle {
+    return Intl.message(
+      'Liquid Glass',
+      name: 'liquidGlassStyle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cupertino`
+  String get cupertinoStyle {
+    return Intl.message(
+      'Cupertino',
+      name: 'cupertinoStyle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Liquid Glass on iOS 26 or later, Cupertino on earlier iOS, and Material Design on other platforms.`
+  String get systemStyleDescription {
+    return Intl.message(
+      'Liquid Glass on iOS 26 or later, Cupertino on earlier iOS, and Material Design on other platforms.',
+      name: 'systemStyleDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Native glass controls on iOS / iPadOS 26 or later.`
+  String get liquidGlassStyleDescription {
+    return Intl.message(
+      'Native glass controls on iOS / iPadOS 26 or later.',
+      name: 'liquidGlassStyleDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Requires iOS / iPadOS 26 or later. Unavailable on this device; a saved selection falls back to Cupertino.`
+  String get liquidGlassStyleUnavailable {
+    return Intl.message(
+      'Requires iOS / iPadOS 26 or later. Unavailable on this device; a saved selection falls back to Cupertino.',
+      name: 'liquidGlassStyleUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Classic Apple-style controls without custom Liquid Glass effects.`
+  String get cupertinoStyleDescription {
+    return Intl.message(
+      'Classic Apple-style controls without custom Liquid Glass effects.',
+      name: 'cupertinoStyleDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Material Design controls, available on all platforms.`
+  String get materialStyleDescription {
+    return Intl.message(
+      'Material Design controls, available on all platforms.',
+      name: 'materialStyleDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Material Design`
   String get materialDesign {
     return Intl.message(
@@ -4040,6 +4110,16 @@ class S {
     return Intl.message(
       'Close the keyboard',
       name: 'closeKeyboardTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Switch to keyboard`
+  String get showKeyboardTooltip {
+    return Intl.message(
+      'Switch to keyboard',
+      name: 'showKeyboardTooltip',
       desc: '',
       args: [],
     );

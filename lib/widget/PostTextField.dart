@@ -46,28 +46,129 @@ class PostTextFieldState extends State<PostTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final classicCupertino = visualStyle(context) == AppVisualStyle.cupertino;
     final glassSurface = usesAppleTranslucentSurface(context);
     final seamless = glassSurface || embeddedInComposer;
+    final cupertinoTheme = CupertinoTheme.of(context);
+    final cupertinoStyle = cupertinoTheme.textTheme.textStyle.copyWith(
+      color: CupertinoColors.label.resolveFrom(context),
+      fontSize: cupertinoTheme.textTheme.textStyle.fontSize ?? 17,
+      textBaseline: TextBaseline.alphabetic,
+    );
     final textField = ExtendedTextField(
       controller: _controller,
       specialTextSpanBuilder: PostSpecialTextSpanBuilder(_discuz),
-      selectionControls: isCupertino(context)
-          ? CupertinoTextSelectionControls()
-          : MaterialTextSelectionControls(),
+      selectionControls: classicCupertino
+          ? cupertinoTextSelectionHandleControls
+          : isCupertino(context)
+              ? CupertinoTextSelectionControls()
+              : MaterialTextSelectionControls(),
+      style: classicCupertino ? cupertinoStyle : null,
+      cursorColor: classicCupertino
+          ? embeddedInComposer
+              ? CupertinoColors.systemBlue.resolveFrom(context)
+              : cupertinoTheme.primaryColor
+          : null,
+      cursorRadius: classicCupertino ? const Radius.circular(2) : null,
+      cursorOpacityAnimates: classicCupertino ? true : null,
+      keyboardAppearance: classicCupertino
+          ? cupertinoTheme.brightness ?? Theme.of(context).brightness
+          : null,
+      extendedContextMenuBuilder: (context, editable) => classicCupertino
+          ? CupertinoAdaptiveTextSelectionToolbar.buttonItems(
+              anchors: editable.contextMenuAnchors,
+              buttonItems: editable.contextMenuButtonItems,
+            )
+          : AdaptiveTextSelectionToolbar.buttonItems(
+              anchors: editable.contextMenuAnchors,
+              buttonItems: editable.contextMenuButtonItems,
+            ),
       focusNode: focusNode,
       minLines: expanded == null ? 1 : null,
-      maxLines: expanded == null ? 3 : null,
+      maxLines: expanded == null
+          ? (classicCupertino && embeddedInComposer ? 5 : 3)
+          : null,
       expands: expanded == null ? false : true,
-      decoration: InputDecoration(
-        hintText: S.of(context).sendReplyHint,
-        border: seamless ? InputBorder.none : null,
-        enabledBorder: seamless ? InputBorder.none : null,
-        focusedBorder: seamless ? InputBorder.none : null,
-        contentPadding: seamless
-            ? const EdgeInsets.symmetric(horizontal: 14, vertical: 10)
-            : null,
-      ),
+      decoration: classicCupertino
+          ? null
+          : InputDecoration(
+              hintText: S.of(context).sendReplyHint,
+              border: seamless ? InputBorder.none : null,
+              enabledBorder: seamless ? InputBorder.none : null,
+              focusedBorder: seamless ? InputBorder.none : null,
+              contentPadding: seamless
+                  ? const EdgeInsets.symmetric(horizontal: 14, vertical: 10)
+                  : null,
+            ),
     );
+
+    if (classicCupertino) {
+      // Keep ExtendedTextField's smiley / attachment spans and editing model.
+      // Only replace the Material decorator with a Cupertino field surface.
+      return Theme(
+        data: Theme.of(context).copyWith(platform: TargetPlatform.iOS),
+        child: Material(
+          type: MaterialType.transparency,
+          child: Semantics(
+            label: S.of(context).sendReplyHint,
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: focusNode.requestFocus,
+              child: Container(
+                key: const ValueKey('cupertino-post-input'),
+                constraints:
+                    BoxConstraints(minHeight: embeddedInComposer ? 44 : 36),
+                // The message composer owns the single bubble around both the
+                // editable text and send button; never draw a second input box.
+                decoration: embeddedInComposer
+                    ? null
+                    : BoxDecoration(
+                        color: CupertinoColors.systemBackground
+                            .resolveFrom(context),
+                        border: Border.all(
+                          color: CupertinoColors.separator.resolveFrom(context),
+                          width: 1 / MediaQuery.devicePixelRatioOf(context),
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                padding: embeddedInComposer
+                    ? const EdgeInsetsDirectional.fromSTEB(12, 10, 0, 10)
+                    : const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Stack(
+                  fit: expanded == null ? StackFit.loose : StackFit.expand,
+                  children: [
+                    PositionedDirectional(
+                      start: 0,
+                      end: 0,
+                      top: 0,
+                      child: ValueListenableBuilder<TextEditingValue>(
+                        valueListenable: _controller,
+                        builder: (context, value, _) => value.text.isNotEmpty
+                            ? const SizedBox.shrink()
+                            : ExcludeSemantics(
+                                child: IgnorePointer(
+                                  child: Text(
+                                    S.of(context).sendReplyHint,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: cupertinoStyle.copyWith(
+                                      color: CupertinoColors.placeholderText
+                                          .resolveFrom(context),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                      ),
+                    ),
+                    textField,
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     if (!glassSurface || embeddedInComposer) return textField;
     final radius = BorderRadius.circular(expanded == null ? 18 : 22);

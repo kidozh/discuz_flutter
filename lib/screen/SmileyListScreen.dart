@@ -15,6 +15,7 @@ import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -90,6 +91,7 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
   late SmileyDao _smileyDao;
   final PageController _pageController = PageController();
   final ScrollController _tabScrollController = ScrollController();
+  final GlobalKey _cupertinoTabsKey = GlobalKey();
   List<Smiley> _savedSmileyList = [];
   int _selectedTabIndex = 0;
 
@@ -97,6 +99,17 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
   void initState() {
     super.initState();
     _initialize();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Recenter after a style, text-scale, or viewport change as well as a tap.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && visualStyle(context) == AppVisualStyle.cupertino) {
+        _scrollSelectedTabIntoView(_selectedTabIndex);
+      }
+    });
   }
 
   @override
@@ -221,8 +234,18 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
   void _scrollSelectedTabIntoView(int index) {
     if (!_tabScrollController.hasClients) return;
     final position = _tabScrollController.position;
-    final itemCenter =
+    var itemCenter =
         index * (_tabItemExtent + _tabGap) + _tabItemExtent / 2 + _tabGap;
+    final cupertinoTabs = _cupertinoTabsKey.currentWidget;
+    final cupertinoBox = _cupertinoTabsKey.currentContext?.findRenderObject();
+    if (cupertinoTabs is PlatformSegmentedControl &&
+        cupertinoBox is RenderBox &&
+        cupertinoBox.hasSize) {
+      // Classic segments use equal widths measured from their labels, not the
+      // fixed-width glass pills. ScrollPosition handles either text direction.
+      itemCenter =
+          (index + 0.5) * cupertinoBox.size.width / cupertinoTabs.labels.length;
+    }
     final target = (itemCenter - position.viewportDimension / 2)
         .clamp(0.0, position.maxScrollExtent)
         .toDouble();
@@ -231,6 +254,29 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
       duration: const Duration(milliseconds: 220),
       curve: Curves.easeOutCubic,
     );
+  }
+
+  Widget _buildScrollableCupertinoTabs(
+    BuildContext context,
+    List<String> labels,
+    int selectedIndex,
+  ) {
+    return LayoutBuilder(builder: (context, constraints) {
+      return SingleChildScrollView(
+        controller: _tabScrollController,
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minWidth: constraints.maxWidth),
+          child: PlatformSegmentedControl(
+            key: _cupertinoTabsKey,
+            labels: labels,
+            selectedIndex: selectedIndex,
+            onValueChanged: _selectTab,
+          ),
+        ),
+      );
+    });
   }
 
   Widget _buildScrollableGlassTabs(
@@ -411,11 +457,11 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 6, 8, 4),
-              child: _buildScrollableGlassTabs(
-                context,
-                smileyTabLabels,
-                effectiveIndex,
-              ),
+              child: visualStyle(context) == AppVisualStyle.cupertino
+                  ? _buildScrollableCupertinoTabs(
+                      context, smileyTabLabels, effectiveIndex)
+                  : _buildScrollableGlassTabs(
+                      context, smileyTabLabels, effectiveIndex),
             ),
             Expanded(
               child: PageView(
@@ -525,9 +571,12 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
               ],
             );
           } else {
+            final classicCupertino =
+                visualStyle(context) == AppVisualStyle.cupertino;
             List<Widget> smileyImageList = [
-              for (final action in actions)
-                _SmileyPanelActionTile(action: action),
+              if (!classicCupertino)
+                for (final action in actions)
+                  _SmileyPanelActionTile(action: action),
             ];
             for (int j = 0; j < smileyData.length; j++) {
               Smiley smiley = smileyData[j];
@@ -558,6 +607,34 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
                     )),
               );
             }
+            if (classicCupertino && actions.isNotEmpty) {
+              // Attachment actions need more room than a six-column smiley
+              // cell, especially with large text. Keep them above the grid.
+              return CustomScrollView(slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (final action in actions)
+                          Expanded(
+                              child: _SmileyPanelActionTile(action: action)),
+                      ],
+                    ),
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.all(4),
+                  sliver: SliverGrid(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 6),
+                    delegate: SliverChildListDelegate(smileyImageList),
+                  ),
+                ),
+              ]);
+            }
             return GridView.count(
               shrinkWrap: true,
               crossAxisCount: 6,
@@ -579,6 +656,34 @@ class _SmileyPanelActionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    if (visualStyle(context) == AppVisualStyle.cupertino) {
+      return CupertinoButton(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        onPressed: () {
+          VibrationUtils.vibrateWithClickIfPossible();
+          action.onPressed();
+        },
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: CupertinoColors.tertiarySystemFill.resolveFrom(context)),
+            child: Icon(action.icon,
+                size: 24,
+                color: CupertinoColors.systemBlue.resolveFrom(context)),
+          ),
+          const SizedBox(height: 5),
+          Text(action.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
+                  fontSize: 13,
+                  color: CupertinoColors.label.resolveFrom(context))),
+        ]),
+      );
+    }
     return Semantics(
       button: true,
       label: action.label,

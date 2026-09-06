@@ -7,97 +7,69 @@ import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 
-class ChoosePlatformPage extends StatefulWidget {
-  @override
-  _ChoosePlatformState createState() => _ChoosePlatformState();
-}
-
-class _ChoosePlatformState extends State<ChoosePlatformPage> {
-  String _selectedPlatformName = "";
+class ChoosePlatformPage extends StatelessWidget {
+  const ChoosePlatformPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    _selectedPlatformName =
-        Provider.of<ThemeNotifierProvider>(context, listen: false).platformName;
+    final selectedStyle = context.watch<ThemeNotifierProvider>().visualStyle;
+    final strings = S.of(context);
+    final supportsGlass = AppVisualStyle.supportsLiquidGlass;
+
+    SettingsTile styleTile(
+      AppVisualStyle style,
+      String title,
+      String description, {
+      bool enabled = true,
+    }) =>
+        SettingsTile(
+          key: ValueKey('appearance-${style.name}'),
+          title: Text(title),
+          description: Text(description),
+          enabled: enabled,
+          trailing: selectedStyle == style
+              ? Icon(PlatformIcons(context).checkMark,
+                  color: Theme.of(context).colorScheme.primary)
+              : const SizedBox.shrink(),
+          onPressed: enabled ? (_) => _changeStyle(context, style) : null,
+        );
 
     return PlatformScaffold(
       iosContentPadding: true,
       appBar: PlatformAppBar(
-        title: Text(S.of(context).appearanceOptimizedPlatform),
+        title: Text(strings.appearanceOptimizedPlatform),
       ),
       body: PlatformAdaptiveSettingsList(
         sections: [
           SettingsSection(tiles: [
-            SettingsTile(
-              title: Text(S.of(context).followSystem),
-              trailing: trailingWidget(""),
-              onPressed: (BuildContext context) {
-                changePlatform("");
-              },
+            styleTile(AppVisualStyle.system, strings.followSystem,
+                strings.systemStyleDescription),
+            styleTile(
+              AppVisualStyle.liquidGlass,
+              strings.liquidGlassStyle,
+              supportsGlass
+                  ? strings.liquidGlassStyleDescription
+                  : strings.liquidGlassStyleUnavailable,
+              enabled: supportsGlass,
             ),
-            SettingsTile(
-              title: Text(S.of(context).materialDesign),
-              trailing: trailingWidget("android"),
-              onPressed: (BuildContext context) {
-                changePlatform("android");
-              },
-            ),
-            SettingsTile(
-              title: Text(S.of(context).ios),
-              trailing: trailingWidget("ios"),
-              onPressed: (BuildContext context) {
-                changePlatform("ios");
-              },
-            ),
-            // SettingsTile(
-            //   title: S.of(context).fuchsia,
-            //   trailing: trailingWidget("fuchsia"),
-            //   onPressed: (BuildContext context) {
-            //     changePlatform("fuchsia");
-            //   },
-            // ),
+            styleTile(AppVisualStyle.cupertino, strings.cupertinoStyle,
+                strings.cupertinoStyleDescription),
+            styleTile(AppVisualStyle.material, strings.materialDesign,
+                strings.materialStyleDescription),
           ]),
         ],
       ),
     );
   }
 
-  Widget trailingWidget(String platformName) {
-    return (_selectedPlatformName == platformName)
-        ? Icon(PlatformIcons(context).checkMark,
-            color: Theme.of(context).colorScheme.primary)
-        : Icon(null);
-  }
-
-  void changePlatform(String platformName) {
-    setState(() {
-      _selectedPlatformName = platformName;
-    });
-    print("change theme color to $platformName");
-
-    Provider.of<ThemeNotifierProvider>(context, listen: false)
-        .setPlatformName(platformName);
-    UserPreferencesUtils.putPlatformPreference(platformName);
-
-    if (PlatformProvider.of(context) != null) {
-      switch (platformName) {
-        case "":
-          {
-            PlatformProvider.of(context)!.changeToAutoDetectPlatform();
-            break;
-          }
-        case "ios":
-          {
-            PlatformProvider.of(context)!.changeToCupertinoPlatform();
-            break;
-          }
-        case "android":
-          {
-            PlatformProvider.of(context)!.changeToMaterialPlatform();
-            break;
-          }
-      }
+  void _changeStyle(BuildContext context, AppVisualStyle style) {
+    if (style == AppVisualStyle.liquidGlass &&
+        !AppVisualStyle.supportsLiquidGlass) {
+      return;
     }
+    context.read<ThemeNotifierProvider>().setPlatformName(style.preference);
+    PlatformProvider.of(context)?.changeStyle(style);
+    UserPreferencesUtils.putPlatformPreference(style.preference);
     VibrationUtils.vibrateSuccessfullyIfPossible();
   }
 }

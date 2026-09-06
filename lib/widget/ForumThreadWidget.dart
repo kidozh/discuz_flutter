@@ -20,6 +20,7 @@ import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
 import 'package:flutter/material.dart';
+import 'package:discuz_flutter/widget/cupertino_separated_item.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:provider/provider.dart';
@@ -107,12 +108,15 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
 
   void loadDatabase() async {
     ViewHistoryDao viewHistoryDao = await AppDatabase.getViewHistoryDao();
+    if (!mounted) return;
     _dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
+    if (!mounted) return;
     setState(() {
       _discuzImageDioCacheManager = DiscuzImageDioCacheManager(_dio);
       dao = viewHistoryDao;
     });
     blockUserDao = await AppDatabase.getBlockUserDao();
+    if (!mounted) return;
     // check with block information
     List<BlockUser> userBlockedInDB =
         blockUserDao.isUserBlocked(_forumThread.getAuthorId(), _discuz);
@@ -139,7 +143,8 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
         bool selected = selectedTid.tid == _forumThread.getTid();
         bool lastSelected = selectedTid.tid == afterTid;
         log("Select changed ${_forumThread.tid} ${selected} ${afterTid} ${lastSelected}");
-        return InkWell(
+        return CupertinoSeparatedItem(
+            child: InkWell(
           child: PlatformWidgetBuilder(
               material: (context, child, platform) => PlatformCard(
                     elevation: selected ? 0.0 : 4.0,
@@ -169,7 +174,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
           onLongPress: () async {
             triggerLongPressFunction();
           },
-        );
+        ));
       },
     );
   }
@@ -683,7 +688,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     if (isUserBlocked) {
-      return Container(
+      return CupertinoSeparatedItem(
         child: PlatformCard(
           elevation: 4.0,
           color: Theme.of(context).brightness == Brightness.light

@@ -1,4 +1,5 @@
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/utility/app_visual_style.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 
@@ -48,6 +49,9 @@ extension ColorsExt on Color {
 }
 
 class ThemeNotifierProvider with ChangeNotifier {
+  ThemeNotifierProvider({String platformName = ''})
+      : _platformName = AppVisualStyle.fromPreference(platformName).preference;
+
   FlexScheme _themeColor = FlexScheme.blueWhale;
   Color? _customThemeColor;
 
@@ -103,7 +107,7 @@ class ThemeNotifierProvider with ChangeNotifier {
     }
   }
 
-  String _platformName = "";
+  String _platformName;
 
   //String get themeColorName => ColorTools.nameThatColor(Color(_themeColor));
 
@@ -144,8 +148,11 @@ class ThemeNotifierProvider with ChangeNotifier {
 
   String get platformName => _platformName;
 
+  AppVisualStyle get visualStyle =>
+      AppVisualStyle.fromPreference(_platformName);
+
   setPlatformName(String platformName) {
-    _platformName = platformName;
+    _platformName = AppVisualStyle.fromPreference(platformName).preference;
     notifyListeners();
   }
 
@@ -157,17 +164,12 @@ class ThemeNotifierProvider with ChangeNotifier {
   DynamicSchemeVariant get dynamicSchemeVariant => _dynamicSchemeVariant;
 
   String getPlatformLocaleName(BuildContext context) {
-    Map<String, String> platformMap = {
-      "": S.of(context).followSystem,
-      "ios": S.of(context).ios,
-      "android": S.of(context).materialDesign,
-      "fuchsia": S.of(context).fuchsia
+    return switch (visualStyle) {
+      AppVisualStyle.system => S.of(context).followSystem,
+      AppVisualStyle.liquidGlass => S.of(context).liquidGlassStyle,
+      AppVisualStyle.cupertino => S.of(context).cupertinoStyle,
+      AppVisualStyle.material => S.of(context).materialDesign,
     };
-    if (platformMap.containsKey(_platformName)) {
-      return platformMap[_platformName]!;
-    } else {
-      return S.of(context).followSystem;
-    }
   }
 
   String getBrightnessName(BuildContext context) {

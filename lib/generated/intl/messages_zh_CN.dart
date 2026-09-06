@@ -409,6 +409,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "此倒计时很有可能是北京时间，如果您不处于东八区，那么此倒计时很有可能不准确",
     ),
     "credit": MessageLookupByLibrary.simpleMessage("积分"),
+    "cupertinoStyle": MessageLookupByLibrary.simpleMessage("Cupertino"),
+    "cupertinoStyleDescription": MessageLookupByLibrary.simpleMessage(
+      "经典苹果风格控件，不启用自定义 Liquid Glass 效果。",
+    ),
     "customColor": MessageLookupByLibrary.simpleMessage("自定义颜色"),
     "customColorNamed": m11,
     "customSignature": MessageLookupByLibrary.simpleMessage("自定义"),
@@ -676,6 +680,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "legalInformation": MessageLookupByLibrary.simpleMessage("法律信息"),
     "linkUnableToOpen": m31,
     "linuxDeviceName": m32,
+    "liquidGlassStyle": MessageLookupByLibrary.simpleMessage("Liquid Glass"),
+    "liquidGlassStyleDescription": MessageLookupByLibrary.simpleMessage(
+      "使用 iOS / iPadOS 26 及以上系统的原生玻璃控件。",
+    ),
+    "liquidGlassStyleUnavailable": MessageLookupByLibrary.simpleMessage(
+      "需要 iOS / iPadOS 26 及以上。本设备不支持；已保存的选择将回退为 Cupertino。",
+    ),
     "loadFailed": MessageLookupByLibrary.simpleMessage("加载失败"),
     "loadFinish": MessageLookupByLibrary.simpleMessage("加载完成"),
     "loadMore": MessageLookupByLibrary.simpleMessage("加载"),
@@ -710,6 +721,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "materialBrightnessSwitchDisabledText":
         MessageLookupByLibrary.simpleMessage("在质感设计的界面下，应用界面将跟随系统深浅设置 。"),
     "materialDesign": MessageLookupByLibrary.simpleMessage("质感设计"),
+    "materialStyleDescription": MessageLookupByLibrary.simpleMessage(
+      "使用 Material Design 控件，适用于所有平台。",
+    ),
     "me": MessageLookupByLibrary.simpleMessage("我"),
     "menuDrawerTitle": MessageLookupByLibrary.simpleMessage("菜单"),
     "menuIconTooltip": MessageLookupByLibrary.simpleMessage("菜单"),
@@ -1029,6 +1043,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "shortcutGo": MessageLookupByLibrary.simpleMessage("跳转"),
     "shortcutTidHint": MessageLookupByLibrary.simpleMessage("输入帖子编号 (tid)"),
     "shortcutUidHint": MessageLookupByLibrary.simpleMessage("输入用户编号 (uid)"),
+    "showKeyboardTooltip": MessageLookupByLibrary.simpleMessage("切换到键盘"),
     "signInSuccessTitle": m47,
     "signInTitle": m48,
     "signInViaBrowser": MessageLookupByLibrary.simpleMessage("使用网页登录"),
@@ -1061,6 +1076,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "successfullyDeleteViewHistoryContent": m51,
     "successfullyDownloadFiles": m52,
     "syncSuccessfullyWithServer": m53,
+    "systemStyleDescription": MessageLookupByLibrary.simpleMessage(
+      "iOS 26 及以上使用 Liquid Glass，较早的 iOS 使用 Cupertino，其他平台使用质感设计。",
+    ),
     "takeAPicture": MessageLookupByLibrary.simpleMessage("照相"),
     "tapToWipeAndRelogin": MessageLookupByLibrary.simpleMessage(
       "点击以移除此用户并重新登陆",

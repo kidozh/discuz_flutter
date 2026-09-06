@@ -3,6 +3,7 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/page/PrivateMessageDetailPage.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
+import 'package:discuz_flutter/widget/cupertino_separated_item.dart';
 import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 
@@ -21,7 +22,8 @@ class PrivateMessagePortalWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformCard(
+    return CupertinoSeparatedItem(
+        child: PlatformCard(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       color: _privateMessagePortal.isNew
           ? Theme.of(context).colorScheme.primaryContainer
@@ -122,6 +124,6 @@ class PrivateMessagePortalWidget extends StatelessWidget {
           onConversationClosed?.call();
         },
       ),
-    );
+    ));
   }
 }
