@@ -1,5 +1,6 @@
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/ChoosePlatformPage.dart';
+import 'package:discuz_flutter/widget/UserProfileListItem.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/utility/PlatformGlass.dart'
@@ -11,7 +12,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:settings_ui/settings_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -50,6 +50,76 @@ void main() {
     expect(AppVisualStyle.fromPreference('fuchsia'), AppVisualStyle.system);
     expect(AppVisualStyle.fromPreference('invalid'), AppVisualStyle.system);
   });
+
+  for (final brightness in Brightness.values) {
+    testWidgets('Cupertino profile keeps its colored card background ($brightness)',
+        (tester) async {
+      await tester.pumpWidget(PlatformProvider(
+        style: AppVisualStyle.cupertino,
+        builder: (_) => MaterialApp(
+          theme: ThemeData(brightness: brightness),
+          home: const Scaffold(
+            body: PlatformCard(
+              color: Colors.purple,
+              child: UserProfileListItem(
+                title: 'Credits',
+                titleColor: Colors.white,
+                describe: '120',
+                describeColor: Colors.white,
+                icon: Icon(Icons.star, color: Colors.white),
+              ),
+            ),
+          ),
+        ),
+      ));
+      final surface = tester.widgetList<Container>(find.descendant(
+        of: find.byType(PlatformLiquidGlassCard),
+        matching: find.byType(Container),
+      )).firstWhere((widget) => widget.decoration is BoxDecoration);
+      expect((surface.decoration! as BoxDecoration).color, Colors.purple);
+      expect(tester.widget<Text>(find.text('Credits')).style!.color, Colors.white);
+      expect(tester.widget<Text>(find.text('120')).style!.color, Colors.white);
+      expect(find.byType(BackdropFilter), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final brightness in Brightness.values) {
+    testWidgets('Cupertino incognito menu keeps foreground and background paired ($brightness)',
+        (tester) async {
+      final colors = ColorScheme.fromSeed(
+        seedColor: Colors.blue,
+        brightness: brightness,
+      );
+      await tester.pumpWidget(PlatformProvider(
+        style: AppVisualStyle.cupertino,
+        builder: (_) => MaterialApp(
+          theme: ThemeData(colorScheme: colors),
+          home: Scaffold(
+            body: PlatformCard(
+              color: colors.primary,
+              child: PlatformListTile(
+                title: Text('匿名模式', style: TextStyle(color: colors.onPrimary)),
+                subtitle: Text('某些功能可能不可用',
+                    style: TextStyle(color: colors.onPrimary)),
+                trailing: Icon(Icons.expand_more, color: colors.onPrimary),
+              ),
+            ),
+          ),
+        ),
+      ));
+      final surface = tester.widgetList<Container>(find.descendant(
+        of: find.byType(PlatformLiquidGlassCard),
+        matching: find.byType(Container),
+      )).firstWhere((widget) => widget.decoration is BoxDecoration);
+      expect((surface.decoration! as BoxDecoration).color, colors.primary);
+      expect(tester.widget<Text>(find.text('匿名模式')).style!.color,
+          colors.onPrimary);
+      expect(tester.widget<Text>(find.text('某些功能可能不可用')).style!.color,
+          colors.onPrimary);
+      expect(tester.takeException(), isNull);
+    });
+  }
 
   testWidgets('classic Cupertino keeps controls and removes custom glass',
       (tester) async {
@@ -97,7 +167,7 @@ void main() {
 
   for (final locale in [const Locale('en'), const Locale('zh', 'CN')]) {
     testWidgets(
-        'appearance selection persists and unsupported glass is disabled ($locale)',
+        'appearance selection persists and unsupported glass is hidden ($locale)',
         (tester) async {
       SharedPreferences.setMockInitialValues({});
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
@@ -142,11 +212,9 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Open appearance'));
       await tester.pumpAndSettle();
-      final liquidTile = tester.widget<SettingsTile>(
-          find.byKey(const ValueKey('appearance-liquidGlass')));
-      expect(liquidTile.enabled, isFalse);
-      expect(liquidTile.onPressed, isNull);
-      expect(find.text('Liquid Glass'), findsOneWidget);
+      expect(
+          find.byKey(const ValueKey('appearance-liquidGlass')), findsNothing);
+      expect(find.text('Liquid Glass'), findsNothing);
       expect(find.text('Cupertino'), findsOneWidget);
       await tester.tap(find.text('Cupertino'));
       await tester.pumpAndSettle();

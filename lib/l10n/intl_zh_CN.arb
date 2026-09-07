@@ -530,20 +530,19 @@
   "noSignature": "不使用签名",
   "deviceNameSignature": "使用设备名称",
   "customSignature": "自定义",
-  "windowsDeviceName":"{name}的Windows电脑",
+  "windowsDeviceName": "{name}的Windows电脑",
   "@windowsDeviceName": {
     "placeholders": {
       "name": {}
     }
   },
-  "linuxDeviceName":"{name}的Linux电脑",
+  "linuxDeviceName": "{name}的Linux电脑",
   "@linuxDeviceName": {
     "placeholders": {
       "name": {}
     }
   },
-
-  "macOSDeviceName":"{name}的MacOS设备",
+  "macOSDeviceName": "{name}的MacOS设备",
   "@macOSDeviceName": {
     "placeholders": {
       "name": {}
@@ -736,7 +735,6 @@
       "discuz": {}
     }
   },
-
   "emailChannelBody": "我建议添加 {discuz}（{discuzUrl}）到订阅频道获得定时的推送。",
   "@emailChannelBody": {
     "placeholders": {
@@ -917,7 +915,7 @@
   "keylolPortal": "其乐头条",
   "appleIntelligence": "智能化",
   "appleIntelligenceEnabled": "启用智能化",
-  "appleIntelligenceUseNotice": "人工智能技术应当作为一种审慎的工具来使用，始终以人类判断为导向，并对其风险和益处进行审慎评估。",
+  "appleIntelligenceUseNotice": "在帖子中使用翻译，或通过自定义场景让设备端模型处理文本。内容在本机处理，不会为此发送到云端模型；模型首次准备可能需要联网下载。生成结果可能有误，请核对重要信息。",
   "appleIntelligenceLearnMore": "了解更多 ↗",
   "appleIntelligenceTranslate": "翻译",
   "appleIntelligencePromptHint": "提示词",
@@ -973,9 +971,9 @@
   "appleIntelligenceRuleTranslationExampleNotice": "翻译规则是内置在系统中的，无法更改或者移除。",
   "appleIntelligenceUseHistory": "使用历史",
   "appleIntelligenceLearnMoreFromOurPost": "阅读我们的宣言 ↗",
-  "onDeviceAiReadyDescription": "设备端模型已经就绪，内容将在本机处理。",
+  "onDeviceAiReadyDescription": "本机模型已就绪。启用后可在帖子中使用翻译及自定义文本处理场景。",
   "onDeviceAiModelDownloadTitle": "下载设备端模型",
-  "onDeviceAiModelDownloadDescription": "此设备支持 Gemini Nano，但模型文件尚未就绪。请连接 Wi-Fi 并尽量保持充电，Android AICore 将负责下载。",
+  "onDeviceAiModelDownloadDescription": "设备已报告支持此模型，但所需文件尚未下载完成。点击“下载模型”后由 Android AICore 下载，建议使用 Wi-Fi；下载完成后才能启用智能化。",
   "onDeviceAiDownloadModel": "下载模型",
   "onDeviceAiDownloadingModel": "正在下载模型…",
   "onDeviceAiDownloadProgress": "已下载 {downloaded} MB",
@@ -986,7 +984,7 @@
   },
   "onDeviceAiDownloadFailed": "模型下载失败，请检查网络和可用存储空间后重试。",
   "onDeviceAiAICoreTitle": "需要 Android AICore",
-  "onDeviceAiAICoreDescription": "Android AICore 尚未安装或版本过低。请安装或更新这项 Google 系统服务，返回后我们会重新检查。",
+  "onDeviceAiAICoreDescription": "AICore 与此功能所需的版本不兼容。请在受支持的真机上通过 Google Play 检查 AICore 更新，再返回重新检查；仅安装 AICore 无法让不支持的设备获得此能力。",
   "onDeviceAiOpenGooglePlay": "前往 Google Play",
   "onDeviceAiSystemUpdateTitle": "需要更新系统",
   "onDeviceAiSystemUpdateDescription": "当前 Android 或 Apple 系统版本过低，无法使用设备端模型。请更新系统后重试。",
@@ -997,8 +995,47 @@
   "onDeviceAiRetry": "重新检查",
   "onDeviceAiSetupRequired": "需要设置",
   "onDeviceAiStatusDownloading": "正在下载",
-  "onDeviceAiProviderApple": "由 Apple 设备端基础模型提供",
-  "onDeviceAiProviderAndroid": "由 Gemini Nano 与 Android AICore 提供",
+  "onDeviceAiProviderApple": "Apple 设备使用系统提供的设备端基础模型，需要兼容设备、启用 Apple 智能并完成模型准备。",
+  "onDeviceAiProviderAndroid": "Android 使用 Gemini Nano，由系统服务 AICore 运行。需要 Google 支持的真机及可用的模型；普通 Android 模拟器不在官方支持范围内，安装 Gemini 应用或 Google Play 并不代表支持此功能。",
   "onDeviceAiRequestTooLarge": "这篇帖子过长，超出了设备端模型的处理范围。",
-  "onDeviceAiRequestFailed": "设备端模型暂时无法完成此请求，请稍后再试。"
+  "onDeviceAiRequestFailed": "设备端模型暂时无法完成此请求，请稍后再试。",
+  "onDeviceAiChecking": "正在检查本机模型是否可用…",
+  "onDeviceAiCheckingAndroid": "正在等待 Android AICore 返回状态，最多等待 15 秒。此步骤仅检测可用性，不是在下载模型。",
+  "onDeviceAiCheckTimeoutTitle": "设备端服务未响应",
+  "onDeviceAiCheckTimeoutDescription": "Android AICore 在 15 秒内没有返回检测结果，尚无法确认模型是否可用。模拟器请改用受支持的真机；真机请检查系统和 AICore 更新后重新检查。",
+  "onDeviceAiAndroidUnavailable": "当前设备或系统配置尚未提供本应用所需的 Gemini Nano 模型。不代表所有 ML Kit 功能都不可用。请先查看官方支持设备列表；受支持的真机可更新系统和 AICore、联网等待配置就绪后重新检查。",
+  "onDeviceAiSupportedDevices": "查看 Google 支持的设备 ↗",
+  "onDeviceAiServiceBusy": "系统模型正在忙碌，请稍后点击“重新检查”。",
+  "onDeviceAiBatteryQuota": "已达到系统对本应用的模型使用配额，请稍后再试；重复检查不会重置配额。",
+  "onDeviceAiForegroundRequired": "系统仅允许应用在前台使用模型，请保持本应用在前台后重试。",
+  "reportIssueSettingsTitle": "报告问题 · GitHub",
+  "reportIssue": "报告问题 · GitHub ↗",
+  "reportIssueHint": "如果此问题持续出现，可前往 GitHub 提交 issue，说明操作步骤和遇到的现象。",
+  "reportIssueOpenFailed": "无法打开浏览器，请手动访问 https://github.com/kidozh/discuz_flutter/issues",
+  "onDeviceAiNameApple": "Apple Foundation Models",
+  "onDeviceAiNameAndroid": "Gemini Nano",
+  "onDeviceAiEnableApple": "启用 Apple Foundation Models",
+  "onDeviceAiEnableAndroid": "启用 Gemini Nano",
+  "steamTypeGame": "游戏",
+  "steamTypeDlc": "追加内容（DLC）",
+  "steamTypeMusic": "原声音乐",
+  "steamTypeDemo": "试玩版",
+  "steamTypeSoftware": "软件",
+  "steamTypeVideo": "视频",
+  "steamTypeOther": "Steam 内容",
+  "steamParentApp": "关联游戏：{name}",
+  "steamPriceUnavailable": "价格请查看 Steam 商店",
+  "steamComingSoon": "即将推出",
+  "@steamParentApp": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "savedPasswordsUnavailable": "暂时无法读取已保存的密码，原数据已保留。你可以手动输入账号和密码登录。",
+  "passwordSaveFailed": "可以继续登录，但本次密码未能保存。",
+  "passwordRecoveryTitle": "无法读取已保存的密码",
+  "passwordRecoveryMessage": "旧密码库无法打开或迁移。是否创建一个新的空密码库？之后需要重新输入并保存密码。旧的加密数据会保留，但不再自动使用。",
+  "passwordRecoveryCreate": "创建新密码库"
 }

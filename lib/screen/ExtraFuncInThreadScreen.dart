@@ -233,13 +233,13 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
                         final compressionPath =
                             directory.path + "/" + file.path.split("/").last;
                         // with 90% compression
-                        File? compressedFile =
+                        final compressedFile =
                             await FlutterImageCompress.compressAndGetFile(
                           file.path,
                           compressionPath,
                         );
                         if (compressedFile != null) {
-                          file = compressedFile;
+                          file = File(compressedFile.path);
                         }
 
                         String respString = await uploadPhotoToDiscuzServer(
@@ -341,7 +341,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
                         final compressionPath =
                             directory.path + "/" + file.path.split("/").last;
                         // with 90% compression
-                        File? compressedFile =
+                        final compressedFile =
                             await FlutterImageCompress.compressAndGetFile(
                           file.path,
                           compressionPath,

@@ -1,3 +1,5 @@
+import 'package:discuz_flutter/utility/on_device_ai_labels.dart';
+import 'package:discuz_flutter/utility/BugReportUtils.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/AppleIntelligenceConfPage.dart';
 import 'package:discuz_flutter/page/ChooseAdExemptPage.dart';
@@ -123,12 +125,12 @@ class _SettingPageState extends State<SettingPage> {
               ),
             ),
             _GlassNavigationTile(
-              title: S.of(context).appleIntelligence,
+              title: OnDeviceAiLabels.name(S.of(context)),
               leading: Icon(AppPlatformIcons(context).aiModel),
               value: Text(_intelligenceStatusText(context, preference)),
               onTap: () => _open(
                 context,
-                S.of(context).appleIntelligence,
+                OnDeviceAiLabels.name(S.of(context)),
                 AppleIntelligenceConfPage(),
               ),
             ),
@@ -257,6 +259,11 @@ class _SettingPageState extends State<SettingPage> {
         _GlassSettingsSection(
           title: S.of(context).legalInformation,
           children: [
+            _GlassNavigationTile(
+              title: S.of(context).reportIssueSettingsTitle,
+              leading: Icon(PlatformIcons(context).errorOutline),
+              onTap: () => BugReportUtils.openIssuePage(context),
+            ),
             _GlassNavigationTile(
               title: S.of(context).termsOfService,
               leading: Icon(AppPlatformIcons(context).privacyPolicyOutlined),

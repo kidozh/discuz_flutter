@@ -185,20 +185,38 @@ class _MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final material = !isCupertino(context);
+    final colors = Theme.of(context).colorScheme;
+    final foreground = material
+        ? (isMine ? colors.onPrimaryContainer : colors.onSurface)
+        : (isMine ? Colors.white : colors.onSurface);
     final content = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       child: DefaultTextStyle.merge(
         style: TextStyle(
-          color:
-              isMine ? Colors.white : Theme.of(context).colorScheme.onSurface,
+          color: foreground,
         ),
         child: DiscuzHtmlWidget(
           discuz,
           message,
-          textColor: isMine ? Colors.white : null,
+          textColor: foreground,
         ),
       ),
     );
+
+    if (material) {
+      return Material(
+        color: isMine ? colors.primaryContainer : colors.surfaceContainerHigh,
+        borderRadius: BorderRadius.only(
+          topLeft: const Radius.circular(24),
+          topRight: const Radius.circular(24),
+          bottomLeft: Radius.circular(!isMine && hasTail ? 6 : 24),
+          bottomRight: Radius.circular(isMine && hasTail ? 6 : 24),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: content,
+      );
+    }
 
     if (!isMine) {
       return PlatformLiquidGlassCard(

@@ -245,6 +245,7 @@ class AppDatabase {
       privateMessageCacheBox = await Hive.openBox<PrivateMessageCache>(
         '${hiveBoxPrefix}_private_message_cache_v2',
         encryptionCipher: cipher,
+        crashRecovery: false,
       );
     }
     return PrivateMessageCacheDao(privateMessageCacheBox!);

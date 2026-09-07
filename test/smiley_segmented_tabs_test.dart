@@ -102,7 +102,7 @@ void main() {
       final finder = find.byType(PlatformSegmentedControl);
       PlatformSegmentedControl control() =>
           tester.widget<PlatformSegmentedControl>(finder);
-      expect(find.byType(CupertinoSegmentedControl<int>), findsOneWidget);
+      expect(find.byType(CupertinoSlidingSegmentedControl<int>), findsOneWidget);
       expect(find.byType(PlatformLiquidGlassCard), findsNothing);
       expect(find.byType(TabBar), findsNothing);
       expect(control().labels, hasLength(8));

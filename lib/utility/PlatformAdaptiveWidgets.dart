@@ -1,3 +1,4 @@
+import 'package:discuz_flutter/utility/app_motion.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -1673,6 +1674,8 @@ class PlatformLiquidGlassCard extends StatelessWidget {
   final BorderRadius borderRadius;
   final bool selected;
   final Color? tintColor;
+  /// Solid fill used when translucent surfaces are disabled.
+  final Color? backgroundColor;
   final PlatformGlassEffect effect;
 
   const PlatformLiquidGlassCard({
@@ -1682,6 +1685,7 @@ class PlatformLiquidGlassCard extends StatelessWidget {
     this.borderRadius = const BorderRadius.all(Radius.circular(18)),
     this.selected = false,
     this.tintColor,
+    this.backgroundColor,
     this.effect = PlatformGlassEffect.automatic,
     super.key,
   });
@@ -1718,12 +1722,14 @@ class PlatformLiquidGlassCard extends StatelessWidget {
       return Container(
         margin: margin,
         decoration: BoxDecoration(
-          color: selected
-              ? Theme.of(context).colorScheme.primaryContainer
-              : CupertinoColors.secondarySystemGroupedBackground
-                  .resolveFrom(context),
+          color: backgroundColor ??
+              (selected
+                  ? Theme.of(context).colorScheme.primaryContainer
+                  : CupertinoColors.secondarySystemGroupedBackground
+                      .resolveFrom(context)),
           borderRadius: borderRadius,
         ),
+        clipBehavior: Clip.antiAlias,
         child: PlatformGlassScope(child: content),
       );
     }
@@ -2065,6 +2071,7 @@ class PlatformCard extends StatelessWidget {
       padding: padding,
       borderRadius: _borderRadius(),
       tintColor: color,
+      backgroundColor: color,
       child: clipBehavior == null || clipBehavior == Clip.none
           ? child ?? const SizedBox.shrink()
           : ClipRRect(
@@ -2553,8 +2560,8 @@ class PlatformSegmentedControl extends StatelessWidget {
     // UiKitView cannot size itself in an unbounded Row or horizontal scroller.
     // Measure labels only in that case; a bounded parent owns the control width.
     return LayoutBuilder(builder: (context, constraints) {
-      // A sliding thumb owns horizontal drags. Use Cupertino's tap-based
-      // segments inside horizontal scrollers so long tab bars remain scrollable.
+      // In horizontal scrollers, separate the native-looking visual control
+      // from tap handling so dragging scrolls the category bar.
       final scrollableCupertino = classicCupertino &&
           !constraints.hasBoundedWidth &&
           Scrollable.maybeOf(context, axis: Axis.horizontal) != null;
@@ -2650,19 +2657,58 @@ class PlatformSegmentedControl extends StatelessWidget {
         }
 
         if (scrollableCupertino) {
-          control = CupertinoSegmentedControl<int>(
-            groupValue: effectiveIndex,
-            padding: const EdgeInsets.all(3),
-            selectedColor:
-                CupertinoTheme.brightnessOf(context) == Brightness.light
-                    ? CupertinoColors.white
-                    : CupertinoColors.systemGrey2.resolveFrom(context),
-            unselectedColor:
-                CupertinoColors.tertiarySystemFill.resolveFrom(context),
-            borderColor: CupertinoColors.systemGrey4.resolveFrom(context),
-            pressedColor: CupertinoColors.systemGrey4.resolveFrom(context),
-            onValueChanged: onValueChanged,
-            children: children,
+          // Let the parent scroller own horizontal drags while Cupertino paints
+          // and animates the system track and thumb. The overlay owns labels,
+          // taps and accessibility, so there is only one interactive layer.
+          final labelPainter = TextPainter(
+            text: TextSpan(text: 'Mg', style: cupertinoLabelStyle),
+            textDirection: Directionality.of(context),
+            textScaler: MediaQuery.textScalerOf(context),
+          )..layout();
+          final segmentHeight = labelPainter.height + 16;
+          labelPainter.dispose();
+          control = Stack(
+            // The hit region can be taller than the visual system track.
+            // Center both layers so their labels and thumb share the same axis.
+            alignment: Alignment.center,
+            children: [
+              ExcludeSemantics(
+                child: IgnorePointer(
+                  child: SizedBox(
+                    width: width,
+                    child: CupertinoSlidingSegmentedControl<int>(
+                      groupValue: effectiveIndex,
+                      onValueChanged: onChanged,
+                      children: {
+                        for (var index = 0; index < labels.length; index++)
+                          index: SizedBox(height: segmentHeight),
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                  child: Row(
+                    children: [
+                      for (var index = 0; index < labels.length; index++)
+                        Expanded(
+                          child: Semantics(
+                            button: true,
+                            selected: index == effectiveIndex,
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () => onValueChanged(index),
+                              child: Center(child: children[index]),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           );
         } else if (classicCupertino) {
           control = CupertinoSlidingSegmentedControl<int>(
@@ -3141,14 +3187,16 @@ PageRoute<T> platformPageRoute<T>({
   bool fullscreenDialog = false,
 }) =>
     isCupertino(context)
-        ? CupertinoPageRoute<T>(
+        ? AppCupertinoPageRoute<T>(
+            reduceMotion: MediaQuery.disableAnimationsOf(context),
             builder: builder,
             title: iosTitle,
             settings: settings,
             maintainState: maintainState,
             fullscreenDialog: fullscreenDialog,
           )
-        : MaterialPageRoute<T>(
+        : AppMaterialPageRoute<T>(
+            reduceMotion: MediaQuery.disableAnimationsOf(context),
             builder: builder,
             settings: settings,
             maintainState: maintainState,

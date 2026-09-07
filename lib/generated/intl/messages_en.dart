@@ -130,30 +130,32 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m49(index) => "Smiley #${index}";
 
-  static String m50(checked, allowed) => "Submit (${checked} / ${allowed})";
+  static String m50(name) => "Related game: ${name}";
 
-  static String m51(title) => "Successfully remove view history ${title}.";
+  static String m51(checked, allowed) => "Submit (${checked} / ${allowed})";
 
-  static String m52(filename) => "Successfully download file: ${filename}.";
+  static String m52(title) => "Successfully remove view history ${title}.";
 
-  static String m53(num) =>
+  static String m53(filename) => "Successfully download file: ${filename}.";
+
+  static String m54(num) =>
       "All ${num} favorite threads are synced from the server.";
 
-  static String m54(num) => "RP ${num}";
+  static String m55(num) => "RP ${num}";
 
-  static String m55(reply) => "${reply} replies";
+  static String m56(reply) => "${reply} replies";
 
-  static String m56(view) => "${view} views";
+  static String m57(view) => "${view} views";
 
-  static String m57(username) => "User ${username} expired";
+  static String m58(username) => "User ${username} expired";
 
-  static String m58(uid) => "UserId ${uid}";
+  static String m59(uid) => "UserId ${uid}";
 
-  static String m59(user) => "View ${user}\'s profile.";
+  static String m60(user) => "View ${user}\'s profile.";
 
-  static String m60(version) => "Welcome to version ${version}";
+  static String m61(version) => "Welcome to version ${version}";
 
-  static String m61(name) => "${name}\'s Windows device";
+  static String m62(name) => "${name}\'s Windows device";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -231,9 +233,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "appearanceOptimizedPlatformSubtitle": MessageLookupByLibrary.simpleMessage(
       "Choose the app appearance on preferred platform.",
     ),
-    "appleIntelligence": MessageLookupByLibrary.simpleMessage(
-      "Foundation Model",
-    ),
+    "appleIntelligence": MessageLookupByLibrary.simpleMessage("On-device AI"),
     "appleIntelligenceAddRule": MessageLookupByLibrary.simpleMessage(
       "Add AI Rule",
     ),
@@ -244,7 +244,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "appleIntelligenceDeleteRuleContentemplate": m1,
     "appleIntelligenceDeleteRuleTitleTemplate": m2,
     "appleIntelligenceEnabled": MessageLookupByLibrary.simpleMessage(
-      "Enable foundation model",
+      "Enable on-device AI",
     ),
     "appleIntelligenceGuardrailLevel": MessageLookupByLibrary.simpleMessage(
       "Guardrail Level",
@@ -310,7 +310,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "AI chat history",
     ),
     "appleIntelligenceUseNotice": MessageLookupByLibrary.simpleMessage(
-      "AI shall be used as a deliberate tool, always guided by human judgment and a mindful assessment of its risks and benefits.",
+      "Translate posts or process text with custom on-device AI rules. Content is processed locally rather than sent to a cloud model for these actions. Initial model setup may require an internet download. Generated results can be inaccurate; check important information.",
     ),
     "attachFile": m6,
     "attachmentUploadExceedingSizeDescription":
@@ -956,10 +956,28 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "ok": MessageLookupByLibrary.simpleMessage("OK"),
     "onDeviceAiAICoreDescription": MessageLookupByLibrary.simpleMessage(
-      "Android AICore is missing or outdated. Install or update the Google system service, then return here to check again.",
+      "AICore is incompatible with the version required by this feature. Check for AICore updates in Google Play on a supported physical device, then check again. Installing AICore alone does not make an unsupported device compatible.",
     ),
     "onDeviceAiAICoreTitle": MessageLookupByLibrary.simpleMessage(
       "Android AICore is required",
+    ),
+    "onDeviceAiAndroidUnavailable": MessageLookupByLibrary.simpleMessage(
+      "This device or its system configuration has not made the required Gemini Nano model available to this app. This does not mean all ML Kit features are unavailable. Check the official device list. On a supported device, update the system and AICore, stay online while configuration is prepared, then check again.",
+    ),
+    "onDeviceAiBatteryQuota": MessageLookupByLibrary.simpleMessage(
+      "The system model usage quota for this app has been reached. Try later; checking again does not reset the quota.",
+    ),
+    "onDeviceAiCheckTimeoutDescription": MessageLookupByLibrary.simpleMessage(
+      "Android AICore did not return a status within 15 seconds, so model availability is still unknown. Use a supported physical device instead of an emulator. On a physical device, check system and AICore updates, then check again.",
+    ),
+    "onDeviceAiCheckTimeoutTitle": MessageLookupByLibrary.simpleMessage(
+      "On-device service did not respond",
+    ),
+    "onDeviceAiChecking": MessageLookupByLibrary.simpleMessage(
+      "Checking whether the on-device model is available…",
+    ),
+    "onDeviceAiCheckingAndroid": MessageLookupByLibrary.simpleMessage(
+      "Waiting up to 15 seconds for Android AICore. This checks availability; it is not a model download.",
     ),
     "onDeviceAiDownloadFailed": MessageLookupByLibrary.simpleMessage(
       "The model download failed. Check the network and available storage, then try again.",
@@ -971,23 +989,38 @@ class MessageLookup extends MessageLookupByLibrary {
     "onDeviceAiDownloadingModel": MessageLookupByLibrary.simpleMessage(
       "Downloading model…",
     ),
+    "onDeviceAiEnableAndroid": MessageLookupByLibrary.simpleMessage(
+      "Enable Gemini Nano",
+    ),
+    "onDeviceAiEnableApple": MessageLookupByLibrary.simpleMessage(
+      "Enable Apple Foundation Models",
+    ),
+    "onDeviceAiForegroundRequired": MessageLookupByLibrary.simpleMessage(
+      "The system only allows model use while the app is in the foreground. Keep this app open and try again.",
+    ),
     "onDeviceAiModelDownloadDescription": MessageLookupByLibrary.simpleMessage(
-      "Gemini Nano is supported but its model files are not ready. Connect to Wi-Fi and keep the device charged while Android AICore downloads them.",
+      "The device reports model support, but the required files are not ready. Tap Download model to let Android AICore download them, preferably over Wi-Fi. Intelligence can be enabled once the download is complete.",
     ),
     "onDeviceAiModelDownloadTitle": MessageLookupByLibrary.simpleMessage(
       "Download the on-device model",
+    ),
+    "onDeviceAiNameAndroid": MessageLookupByLibrary.simpleMessage(
+      "Gemini Nano",
+    ),
+    "onDeviceAiNameApple": MessageLookupByLibrary.simpleMessage(
+      "Apple Foundation Models",
     ),
     "onDeviceAiOpenGooglePlay": MessageLookupByLibrary.simpleMessage(
       "Open Google Play",
     ),
     "onDeviceAiProviderAndroid": MessageLookupByLibrary.simpleMessage(
-      "Provided by Gemini Nano and Android AICore",
+      "Android uses Gemini Nano through the AICore system service. A Google-supported physical device and a ready model are required. Standard Android emulators are not in the official support list; having Google Play or the Gemini app does not establish support.",
     ),
     "onDeviceAiProviderApple": MessageLookupByLibrary.simpleMessage(
-      "Provided by Apple Foundation Models",
+      "Apple devices use the system on-device foundation model. A compatible device, enabled Apple Intelligence, and a ready model are required.",
     ),
     "onDeviceAiReadyDescription": MessageLookupByLibrary.simpleMessage(
-      "The on-device model is ready. Content is processed locally on this device.",
+      "The on-device model is ready. Enable it to translate posts and use custom text-processing rules.",
     ),
     "onDeviceAiRequestFailed": MessageLookupByLibrary.simpleMessage(
       "The on-device model could not complete this request. Try again shortly.",
@@ -996,6 +1029,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "This post is too long for the on-device model.",
     ),
     "onDeviceAiRetry": MessageLookupByLibrary.simpleMessage("Check again"),
+    "onDeviceAiServiceBusy": MessageLookupByLibrary.simpleMessage(
+      "The system model is busy. Wait a little, then check again.",
+    ),
     "onDeviceAiSetupRequired": MessageLookupByLibrary.simpleMessage(
       "Setup required",
     ),
@@ -1007,6 +1043,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "onDeviceAiStorageTitle": MessageLookupByLibrary.simpleMessage(
       "Not enough storage",
+    ),
+    "onDeviceAiSupportedDevices": MessageLookupByLibrary.simpleMessage(
+      "View Google-supported devices ↗",
     ),
     "onDeviceAiSystemUpdateDescription": MessageLookupByLibrary.simpleMessage(
       "This Android or Apple system version is too old for the on-device model. Update the system and try again.",
@@ -1054,6 +1093,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "password": MessageLookupByLibrary.simpleMessage("Password"),
     "passwordIsEmpty": MessageLookupByLibrary.simpleMessage(
       "Password is empty in the form",
+    ),
+    "passwordRecoveryCreate": MessageLookupByLibrary.simpleMessage(
+      "Create new store",
+    ),
+    "passwordRecoveryMessage": MessageLookupByLibrary.simpleMessage(
+      "The existing password store could not be opened or migrated. Create a new empty password store? You will need to enter and save your passwords again. The old encrypted data will be kept, but will no longer be used automatically.",
+    ),
+    "passwordRecoveryTitle": MessageLookupByLibrary.simpleMessage(
+      "Saved passwords could not be read",
+    ),
+    "passwordSaveFailed": MessageLookupByLibrary.simpleMessage(
+      "Login can continue, but the password could not be saved.",
     ),
     "pictureBedActive": MessageLookupByLibrary.simpleMessage("Active"),
     "pictureBedAgreeToService": MessageLookupByLibrary.simpleMessage("Agree"),
@@ -1260,6 +1311,18 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
     "reportDiscuzApiInformationToAnalyticsTitle":
         MessageLookupByLibrary.simpleMessage("Report availability to us"),
+    "reportIssue": MessageLookupByLibrary.simpleMessage(
+      "Report a problem · GitHub ↗",
+    ),
+    "reportIssueHint": MessageLookupByLibrary.simpleMessage(
+      "If this problem persists, open a GitHub issue describing what you did and what happened.",
+    ),
+    "reportIssueOpenFailed": MessageLookupByLibrary.simpleMessage(
+      "Could not open a browser. Visit https://github.com/kidozh/discuz_flutter/issues manually.",
+    ),
+    "reportIssueSettingsTitle": MessageLookupByLibrary.simpleMessage(
+      "Report a problem · GitHub",
+    ),
     "reportOtherReasonHint": MessageLookupByLibrary.simpleMessage(
       "Type to report other reason",
     ),
@@ -1280,6 +1343,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Save Image to device successfully.",
     ),
     "savePictureToDevice": MessageLookupByLibrary.simpleMessage("Save"),
+    "savedPasswordsUnavailable": MessageLookupByLibrary.simpleMessage(
+      "Saved passwords are unavailable. Existing data has been preserved. You can enter your account and password manually.",
+    ),
     "savedSmileyTabTitle": MessageLookupByLibrary.simpleMessage(
       "Recently used",
     ),
@@ -1353,9 +1419,23 @@ class MessageLookup extends MessageLookupByLibrary {
       "Sort thread in descent order",
     ),
     "spam": MessageLookupByLibrary.simpleMessage("Spam"),
+    "steamComingSoon": MessageLookupByLibrary.simpleMessage("Coming soon"),
+    "steamParentApp": m50,
+    "steamPriceUnavailable": MessageLookupByLibrary.simpleMessage(
+      "See Steam for pricing",
+    ),
+    "steamTypeDemo": MessageLookupByLibrary.simpleMessage("Demo"),
+    "steamTypeDlc": MessageLookupByLibrary.simpleMessage("DLC"),
+    "steamTypeGame": MessageLookupByLibrary.simpleMessage("Game"),
+    "steamTypeMusic": MessageLookupByLibrary.simpleMessage(
+      "Soundtrack / Music",
+    ),
+    "steamTypeOther": MessageLookupByLibrary.simpleMessage("Steam content"),
+    "steamTypeSoftware": MessageLookupByLibrary.simpleMessage("Software"),
+    "steamTypeVideo": MessageLookupByLibrary.simpleMessage("Video"),
     "stickyThread": MessageLookupByLibrary.simpleMessage("Pinned thread"),
     "style": MessageLookupByLibrary.simpleMessage("Style"),
-    "submitPoll": m50,
+    "submitPoll": m51,
     "subscribe": MessageLookupByLibrary.simpleMessage("Subscribe"),
     "subscribeChannel": MessageLookupByLibrary.simpleMessage(
       "Push subscription",
@@ -1366,9 +1446,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionSuccess": MessageLookupByLibrary.simpleMessage(
       "Subscription change successful.",
     ),
-    "successfullyDeleteViewHistoryContent": m51,
-    "successfullyDownloadFiles": m52,
-    "syncSuccessfullyWithServer": m53,
+    "successfullyDeleteViewHistoryContent": m52,
+    "successfullyDownloadFiles": m53,
+    "syncSuccessfullyWithServer": m54,
     "systemStyleDescription": MessageLookupByLibrary.simpleMessage(
       "Liquid Glass on iOS 26 or later, Cupertino on earlier iOS, and Material Design on other platforms.",
     ),
@@ -1392,9 +1472,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "thread": MessageLookupByLibrary.simpleMessage("Thread"),
     "threadIsClosed": MessageLookupByLibrary.simpleMessage("Thread is closed."),
-    "threadReadAccess": m54,
-    "threadReply": m55,
-    "threadView": m56,
+    "threadReadAccess": m55,
+    "threadReply": m56,
+    "threadView": m57,
     "trashAd": MessageLookupByLibrary.simpleMessage("Trash Advertisement"),
     "trustHostActionText": MessageLookupByLibrary.simpleMessage(
       "Trust this host",
@@ -1518,8 +1598,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "userExpiredSubtitle": MessageLookupByLibrary.simpleMessage(
       "The current user is expired, some function may not work.",
     ),
-    "userExpiredTitle": m57,
-    "userIdTitle": m58,
+    "userExpiredTitle": m58,
+    "userIdTitle": m59,
     "userPost": MessageLookupByLibrary.simpleMessage("Posts"),
     "userProfile": MessageLookupByLibrary.simpleMessage("User Profile"),
     "userProfileTitle": MessageLookupByLibrary.simpleMessage("User Profiles"),
@@ -1542,7 +1622,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "viewThreadTwoPaneText": MessageLookupByLibrary.simpleMessage(
       "Click thread to view posts inside.",
     ),
-    "viewUserInfo": m59,
+    "viewUserInfo": m60,
     "warnedPost": MessageLookupByLibrary.simpleMessage("The post is warned."),
     "watchPictureInFullScreen": MessageLookupByLibrary.simpleMessage(
       "Full display",
@@ -1554,9 +1634,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Welcome to use our Services.",
     ),
     "welcomeTitle": MessageLookupByLibrary.simpleMessage("Welcome"),
-    "welcomeVersionTitle": m60,
+    "welcomeVersionTitle": m61,
     "wheelColorPickerType": MessageLookupByLibrary.simpleMessage("Wheel"),
-    "windowsDeviceName": m61,
+    "windowsDeviceName": m62,
     "workProcedure": MessageLookupByLibrary.simpleMessage(
       "How does push service work?",
     ),

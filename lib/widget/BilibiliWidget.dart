@@ -1,7 +1,7 @@
+import 'package:discuz_flutter/utility/app_motion.dart';
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/BilibiliDynamicDetailResult.dart';
 import 'package:discuz_flutter/JsonResult/BilibiliVideoResult.dart';
 import 'package:discuz_flutter/client/BilibiliApiClient.dart';
@@ -12,6 +12,8 @@ import 'package:discuz_flutter/utility/WbiSign.dart';
 import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import 'cupertino_media_outline.dart';
 
 enum BilibiliWidgetType { video, live, opus }
 
@@ -27,7 +29,7 @@ class BilibiliWidget extends StatefulWidget {
 }
 
 class BilibiliVideoState extends State<BilibiliWidget> {
-  final String url;
+  String url;
 
   BilibiliVideoState(this.url);
 
@@ -47,6 +49,25 @@ class BilibiliVideoState extends State<BilibiliWidget> {
     parseUrl();
   }
 
+  int _requestVersion = 0;
+
+  @override
+  void didUpdateWidget(covariant BilibiliWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.url != widget.url) {
+      ++_requestVersion;
+      url = widget.url;
+      uri = null;
+      type = BilibiliWidgetType.video;
+      videoRequestParameter = '';
+      videoRequestType = BilibiliVideoRequestType.bvid;
+      videoResult = BilibiliVideoResult();
+      opusResult = BilibiliDynamicDetailResult();
+      isLoadingApi = false;
+      parseUrl();
+    }
+  }
+
   void parseUrl() {
     Uri? bilibiliUri = Uri.tryParse(url);
     if (bilibiliUri != null) {
@@ -64,12 +85,13 @@ class BilibiliVideoState extends State<BilibiliWidget> {
         List<String> urlPathFilteredList = urlPathList
             .where((i) => i != "/" && i.isNotEmpty && i != "opus")
             .toList();
+        if (urlPathFilteredList.isEmpty) return;
         String videoParameterAtLast = urlPathFilteredList.last;
         if (int.tryParse(videoParameterAtLast) != null) {
           videoRequestParameter = videoParameterAtLast;
         }
         log("load bilibili OPUS information ${url} with ${videoRequestParameter} from list : ${urlPathFilteredList}");
-        loadBilibiliVideoApi();
+        if (videoRequestParameter.isNotEmpty) loadBilibiliVideoApi();
       } else if (bilibiliUri.path.startsWith("/video")) {
         type = BilibiliWidgetType.video;
         // judge whether it's bvid or avid
@@ -78,11 +100,17 @@ class BilibiliVideoState extends State<BilibiliWidget> {
         List<String> urlPathFilteredList = urlPathList
             .where((i) => i != "/" && i.isNotEmpty && i != "video")
             .toList();
+        if (urlPathFilteredList.isEmpty) return;
         String videoParameterAtLast = urlPathFilteredList.last;
 
+        if (videoParameterAtLast.startsWith('av')) {
+          videoParameterAtLast = videoParameterAtLast.substring(2);
+        }
         if (int.tryParse(videoParameterAtLast) != null) {
           videoRequestType = BilibiliVideoRequestType.aid;
         }
+        if (int.tryParse(videoParameterAtLast) == null &&
+            !RegExp(r'^BV[0-9A-Za-z]+$').hasMatch(videoParameterAtLast)) return;
         videoRequestParameter = videoParameterAtLast;
         // start fetch it?
         log("load bilibili information ${url} with ${videoRequestParameter} from list : ${urlPathFilteredList}");
@@ -92,82 +120,52 @@ class BilibiliVideoState extends State<BilibiliWidget> {
   }
 
   Future<void> loadBilibiliVideoApi() async {
-    setState(() {
-      isLoadingApi = true;
-    });
-    Dio dio = await NetworkUtils.getDioWithPersistCookieJar(null);
-
-    BilibiliApiClient client =
-        BilibiliApiClient(dio, baseUrl: "https://api.bilibili.com");
-    switch (type) {
-      case BilibiliWidgetType.video:
-        {
-          // if it is a video
-          switch (videoRequestType) {
-            case BilibiliVideoRequestType.aid:
-              {
-                client
-                    .getVideoResultByAid(videoRequestParameter)
-                    .then((result) => renderVideoResult(result))
-                    .catchError((onError) => callbackResultError(onError));
-                break;
-              }
-            case BilibiliVideoRequestType.bvid:
-              {
-                client
-                    .getVideoResultByBvid(videoRequestParameter)
-                    .then((result) => renderVideoResult(result))
-                    .catchError((onError) => callbackResultError(onError));
-                break;
-              }
-          }
-        }
-      case BilibiliWidgetType.live:
-        {
+    if (!mounted || videoRequestParameter.isEmpty) return;
+    final version = ++_requestVersion;
+    final requestType = type;
+    final parameter = videoRequestParameter;
+    final byAid = videoRequestType == BilibiliVideoRequestType.aid;
+    setState(() => isLoadingApi = true);
+    try {
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(null);
+      if (!mounted || version != _requestVersion) return;
+      final client =
+          BilibiliApiClient(dio, baseUrl: 'https://api.bilibili.com');
+      switch (requestType) {
+        case BilibiliWidgetType.video:
+          final result = byAid
+              ? await client.getVideoResultByAid(parameter)
+              : await client.getVideoResultByBvid(parameter);
+          if (!mounted || version != _requestVersion) return;
+          setState(() => videoResult = result);
+        case BilibiliWidgetType.opus:
+          final queries = await WbiSign().makSign({'id': int.parse(parameter)});
+          if (!mounted || version != _requestVersion) return;
+          final result = await client.getOpusDynamicResultByIdInMaps(queries);
+          if (!mounted || version != _requestVersion) return;
+          setState(() => opusResult = result);
+        case BilibiliWidgetType.live:
           break;
-        }
-      case BilibiliWidgetType.opus:
-        {
-          // if it is a opus
-          log("Render opus information");
-          // generate w_rid and wts
-          Map<String, dynamic> tmp = {"id": int.parse(videoRequestParameter)};
-
-          WbiSign webSign = WbiSign();
-          final webSignedQueries = await webSign.makSign(tmp);
-          //final wbiResult = await BilibiliWbiUtils.signWithCache(tmp);
-
-          client
-              .getOpusDynamicResultByIdInMaps(webSignedQueries)
-              .then((result) => renderOpusResult(result))
-              .catchError((onError) => callbackResultError(onError));
-          break;
-        }
+      }
+    } catch (error) {
+      log('Unable to load Bilibili preview: $error');
+    } finally {
+      if (mounted && version == _requestVersion) {
+        setState(() => isLoadingApi = false);
+      }
     }
   }
 
-  Future<void> renderOpusResult(BilibiliDynamicDetailResult result) async {
-    setState(() {
-      isLoadingApi = false;
-      opusResult = result;
-    });
-  }
-
-  Future<void> renderVideoResult(BilibiliVideoResult result) async {
-    setState(() {
-      isLoadingApi = false;
-      videoResult = result;
-    });
-  }
-
-  Future<void> callbackResultError(error) async {
-    setState(() {
-      isLoadingApi = false;
-    });
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => AppContentTransition(
+        child: KeyedSubtree(
+          key: ValueKey(
+              '$url:${videoResult.data.viewData.pic}:${opusResult.data.item.modules.moduleAuthor.name}:${opusResult.data.item.modules.moduleDynamic.desc.text}'),
+          child: _buildContent(context),
+        ),
+      );
+
+  Widget _buildContent(BuildContext context) {
     if (uri == null) {
       return Text("Not a valid Bilibili link ${url}");
     } else if (type == BilibiliWidgetType.video &&
@@ -213,9 +211,12 @@ class BilibiliVideoState extends State<BilibiliWidget> {
         elevation: 4,
         child: child,
       ),
-      cupertino: (_, child, __) => PlatformLiquidGlassCard(
+      cupertino: (_, child, __) => CupertinoMediaOutline(
         borderRadius: BorderRadius.circular(22),
-        child: child ?? const SizedBox.shrink(),
+        child: PlatformLiquidGlassCard(
+          borderRadius: BorderRadius.circular(22),
+          child: child ?? const SizedBox.shrink(),
+        ),
       ),
     );
   }

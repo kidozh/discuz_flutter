@@ -1,8 +1,41 @@
+import 'dart:async';
+import 'package:flutter/services.dart';
 import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
 import 'package:discuz_flutter/utility/OnDeviceAiService.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  const channel = MethodChannel('com.kidozh.discuz_flutter/on_device_ai');
+  final messenger =
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+  tearDown(() => messenger.setMockMethodCallHandler(channel, null));
+
+  testWidgets('Android availability times out when the native service stalls',
+      (tester) async {
+    messenger.setMockMethodCallHandler(
+        channel, (_) => Completer<Object?>().future);
+    final pending = OnDeviceAiService.checkAndroidAvailability();
+    await tester.pump(const Duration(seconds: 16));
+    final result = await pending;
+    expect(result.status, OnDeviceAiAvailabilityStatus.error);
+    expect(result.reasonCode, 'check_timeout');
+  });
+
+  test('Android availability handles an unregistered plugin', () async {
+    final result = await OnDeviceAiService.checkAndroidAvailability();
+    expect(result.status, OnDeviceAiAvailabilityStatus.error);
+    expect(result.reasonCode, 'check_failed');
+  });
+
+  test('Android availability preserves a successful service response',
+      () async {
+    messenger.setMockMethodCallHandler(
+        channel, (_) async => {'status': 'available', 'platform': 'android'});
+    expect((await OnDeviceAiService.checkAndroidAvailability()).isAvailable,
+        isTrue);
+  });
+
   group('OnDeviceAiAvailability', () {
     const cases = <String, OnDeviceAiAvailabilityStatus>{
       'available': OnDeviceAiAvailabilityStatus.available,
