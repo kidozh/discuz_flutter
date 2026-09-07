@@ -23,6 +23,7 @@ class ForumCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final description = _forum.description.trim();
     final leadingExtent = embeddedInGlass ? 36.0 : 40.0;
     final avatarSize = embeddedInGlass ? 34.0 : 38.0;
     final tile = PlatformListTile(
@@ -68,17 +69,17 @@ class ForumCardWidget extends StatelessWidget {
         children: [
           Text(
             _forum.name,
-            maxLines: _forum.description.isNotEmpty ? 1 : 2,
+            maxLines: description.isNotEmpty ? 1 : 2,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               height: 1.18,
             ),
           ),
-          if (_forum.description.isNotEmpty) ...[
+          if (description.isNotEmpty) ...[
             const SizedBox(height: 3),
             Text(
-              _forum.description,
+              description,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(

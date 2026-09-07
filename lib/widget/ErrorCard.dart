@@ -1,12 +1,13 @@
 import 'dart:developer';
 
+import 'package:discuz_flutter/utility/BugReportUtils.dart';
+
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../entity/Discuz.dart';
 import '../entity/DiscuzError.dart';
@@ -22,6 +23,32 @@ class ErrorCard extends StatelessWidget {
   final VoidCallback? onRefreshCallback;
   bool? largeSize = true;
   String? webpageUrl = null;
+
+  bool _canReportIssue(BuildContext context) {
+    final strings = S.of(context);
+    return !discuzError.isNetworkError &&
+        errorType != ErrorType.userExpired &&
+        discuzError.errorType != ErrorType.userExpired &&
+        discuzError.key != strings.networkFailed &&
+        discuzError.key != strings.networkFail;
+  }
+
+  Widget _reportIssueAction(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(top: 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(S.of(context).reportIssueHint,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall),
+            PlatformTextButton(
+              key: const ValueKey('error-report-issue'),
+              onPressed: () => BugReportUtils.openIssuePage(context),
+              child: Text(S.of(context).reportIssue),
+            ),
+          ],
+        ),
+      );
 
   String getTranslatedMessage(BuildContext context, String string) {
     switch (string) {
@@ -122,6 +149,7 @@ class ErrorCard extends StatelessWidget {
                     },
                   ),
                 ),
+              if (_canReportIssue(context)) _reportIssueAction(context),
             ],
           ),
         ),
@@ -164,17 +192,6 @@ class ErrorCard extends StatelessWidget {
                       onPressed: () {
                         VibrationUtils.vibrateWithClickIfPossible();
                         onRefreshCallback!();
-                      },
-                    ),
-                  if (discuzError.key == "AddDiscuzParseError" ||
-                      discuzError.key == "AddDiscuzDioException")
-                    PlatformTextButton(
-                      child: Text(S.of(context).contactUsViaEmail),
-                      onPressed: () async {
-                        VibrationUtils.vibrateWithClickIfPossible();
-                        await launchUrl(Uri.parse(
-                            "mailto:kidozh@gmail.com?subject=${discuzError.errorURL == null ? "" : discuzError.errorURL}"));
-                        //Navigator.of(context).pop();
                       },
                     ),
                   if (errorType == ErrorType.userExpired)
@@ -238,6 +255,7 @@ class ErrorCard extends StatelessWidget {
                 ],
               ),
             ),
+            if (_canReportIssue(context)) _reportIssueAction(context),
           ],
         ),
       );

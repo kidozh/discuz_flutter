@@ -1,3 +1,4 @@
+import 'package:discuz_flutter/utility/on_device_ai_labels.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -91,14 +92,23 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage>
       case OnDeviceAiAvailabilityStatus.notEnoughStorage:
         return strings.onDeviceAiStorageDescription;
       case OnDeviceAiAvailabilityStatus.temporarilyUnavailable:
-        return strings.onDeviceAiTemporarilyUnavailableDescription;
+        return switch (availability.reasonCode) {
+          'service_busy' => strings.onDeviceAiServiceBusy,
+          'battery_quota_exceeded' => strings.onDeviceAiBatteryQuota,
+          'background_use_blocked' => strings.onDeviceAiForegroundRequired,
+          _ => strings.onDeviceAiTemporarilyUnavailableDescription,
+        };
       case OnDeviceAiAvailabilityStatus.unsupportedPlatform:
         return strings.appleIntelligenceNotSupportedInThisPlatform;
       case OnDeviceAiAvailabilityStatus.error:
+        if (availability.reasonCode == 'check_timeout') {
+          return strings.onDeviceAiCheckTimeoutDescription;
+        }
         return availability.reasonCode == 'download_failed'
             ? strings.onDeviceAiDownloadFailed
             : strings.appleIntelligenceAvailabilityCheckFailed;
       case OnDeviceAiAvailabilityStatus.unavailable:
+        if (_isAndroid) return strings.onDeviceAiAndroidUnavailable;
         return switch (availability.reasonCode) {
           'device_not_eligible' =>
             strings.appleIntelligenceUnavailableDeviceNotEligible,
@@ -115,6 +125,9 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage>
 
   String _availabilityTitle() {
     final strings = S.of(context);
+    if (_availability.reasonCode == 'check_timeout') {
+      return strings.onDeviceAiCheckTimeoutTitle;
+    }
     return switch (_availability.status) {
       OnDeviceAiAvailabilityStatus.downloadable =>
         strings.onDeviceAiModelDownloadTitle,
@@ -212,7 +225,7 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage>
     return PlatformScaffold(
       iosContentPadding: true,
       appBar: PlatformAppBar(
-        title: Text(S.of(context).appleIntelligence),
+        title: Text(OnDeviceAiLabels.name(S.of(context))),
         trailingActions: [
           if (appleAiEnabled)
             PlatformIconButton(
@@ -239,7 +252,20 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage>
               child: PlatformLiquidGlassCard(
                 padding: const EdgeInsets.all(22),
                 borderRadius: BorderRadius.circular(24),
-                child: const PlatformCircularProgressIndicator(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const PlatformCircularProgressIndicator(),
+                    const SizedBox(height: 12),
+                    Text(S.of(context).onDeviceAiChecking,
+                        textAlign: TextAlign.center),
+                    if (_isAndroid) ...[
+                      const SizedBox(height: 8),
+                      Text(S.of(context).onDeviceAiCheckingAndroid,
+                          textAlign: TextAlign.center),
+                    ],
+                  ],
+                ),
               ),
             )
           : _aiAvailable
@@ -249,9 +275,6 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage>
   }
 
   Widget _buildAvailableSettings() {
-    final providerDescription = _isAndroid
-        ? S.of(context).onDeviceAiProviderAndroid
-        : S.of(context).onDeviceAiProviderApple;
     return PlatformAdaptiveSettingsList(
       sections: [
         SettingsSection(
@@ -269,10 +292,7 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage>
                 );
               },
               title: Text(S.of(context).appleIntelligenceEnabled),
-              description: Text(
-                '${S.of(context).onDeviceAiReadyDescription}\n'
-                '$providerDescription',
-              ),
+              description: Text(S.of(context).onDeviceAiReadyDescription),
             ),
             if (appleAiEnabled && _isApple)
               SettingsTile.navigation(
@@ -445,6 +465,19 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage>
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
+              if (_isAndroid) ...[
+                const SizedBox(height: 16),
+                Text(
+                  S.of(context).onDeviceAiProviderAndroid,
+                  textAlign: TextAlign.center,
+                ),
+                _buildInlineLink(
+                  label: S.of(context).onDeviceAiSupportedDevices,
+                  onTap: () => URLUtils.launchURL(
+                    'https://developers.google.com/ml-kit/genai#prompt_api_device_support',
+                  ),
+                ),
+              ],
               if (isDownloading) ...[
                 const SizedBox(height: 22),
                 LinearProgressIndicator(value: progress),

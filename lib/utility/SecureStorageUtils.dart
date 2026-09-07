@@ -1,4 +1,5 @@
-import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'encrypted_box_key.dart';
 import 'dart:developer';
 
 import 'package:discuz_flutter/entity/DiscuzAuthentication.dart';
@@ -27,6 +28,8 @@ class SecureStorageUtils {
   static FlutterSecureStorage getFlutterSecureStorage() {
     AndroidOptions _getAndroidOptions() => const AndroidOptions(
           encryptedSharedPreferences: true,
+          resetOnError: false,
+          migrateWithBackup: true,
         );
     final storage = FlutterSecureStorage(aOptions: _getAndroidOptions());
     return storage;
@@ -75,26 +78,72 @@ class SecureStorageUtils {
 
   static String discuzAuthentificationKey = "discuzAuthentificationKey";
 
+  static Future<Box<DiscuzAuthentication>>? _authenticationOpening;
+
   static Future<Box<DiscuzAuthentication>> getDiscuzAuthenticationBox() async {
-    final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
-    String? encryptedKey =
-        await secureStorage.read(key: discuz_password_storage_key);
-    if (encryptedKey == null) {
-      List<int> encryptedHiveKey = Hive.generateSecureKey();
-      await secureStorage.write(
-          key: discuz_password_storage_key,
-          value: base64UrlEncode(encryptedHiveKey));
-      encryptedKey = base64UrlEncode(encryptedHiveKey);
+    if (discuzAuthentificationBox?.isOpen == true)
+      return discuzAuthentificationBox!;
+    final pending = _authenticationOpening;
+    if (pending != null) return pending;
+    discuzAuthentificationBox = null;
+    final opening = _openAuthenticationBox();
+    _authenticationOpening = opening;
+    try {
+      return discuzAuthentificationBox = await opening;
+    } finally {
+      _authenticationOpening = null;
     }
-    var encryptionBase64Key = base64Url.decode(encryptedKey);
+  }
 
-    if (discuzAuthentificationBox == null) {
-      discuzAuthentificationBox = await Hive.openBox<DiscuzAuthentication>(
-          '${discuzAuthentificationKey}_password',
-          encryptionCipher: HiveAesCipher(encryptionBase64Key));
+  static const _passwordStoreSelection = 'active_password_store';
+
+  static Future<Box<DiscuzAuthentication>> _openAuthenticationBox() async {
+    final prefs = await SharedPreferences.getInstance();
+    return _openPasswordStore(prefs.getString(_passwordStoreSelection));
+  }
+
+  static Future<Box<DiscuzAuthentication>> _openPasswordStore(
+      String? store) async {
+    final secureStorage = FlutterSecureStorage(
+      aOptions: AndroidOptions(
+        resetOnError: false,
+        migrateWithBackup: true,
+        storageNamespace: store,
+      ),
+    );
+    final keyName = store == null
+        ? discuz_password_storage_key
+        : '${discuz_password_storage_key}_$store';
+    final boxName = store == null
+        ? '${discuzAuthentificationKey}_password'
+        : '${discuzAuthentificationKey}_$store';
+    final encryptionBase64Key = await readEncryptedBoxKey(
+      read: () => secureStorage.read(key: keyName),
+      write: (value) => secureStorage.write(key: keyName, value: value),
+      boxExists: () => Hive.boxExists(boxName),
+      generate: Hive.generateSecureKey,
+    );
+
+    return Hive.openBox<DiscuzAuthentication>(boxName,
+        encryptionCipher: HiveAesCipher(encryptionBase64Key),
+        crashRecovery: false);
+  }
+
+  /// Called only after explicit confirmation. Never deletes the previous store.
+  static Future<DiscuzAuthenticationDao> createNewPasswordStore() async {
+    final store = 'passwords_${DateTime.now().microsecondsSinceEpoch}';
+    final box = await _openPasswordStore(store);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (!await prefs.setString(_passwordStoreSelection, store)) {
+        throw StateError('Unable to select the new password store');
+      }
+    } catch (_) {
+      await box.close();
+      rethrow;
     }
-
-    return discuzAuthentificationBox!;
+    discuzAuthentificationBox = box;
+    return DiscuzAuthenticationDao(box);
   }
 
   static Future<DiscuzAuthenticationDao> getDiscuzAuthenticationDao() async {
@@ -103,18 +152,30 @@ class SecureStorageUtils {
     return DiscuzAuthenticationDao(discuzAuthentificationBox);
   }
 
+  static Future<HiveCipher>? _privateMessageCipher;
+
   static Future<HiveCipher> getPrivateMessageCacheCipher() async {
-    final FlutterSecureStorage secureStorage = getFlutterSecureStorage();
-    String? encryptedKey = await secureStorage.read(
-      key: private_message_cache_storage_key,
-    );
-    if (encryptedKey == null) {
-      encryptedKey = base64UrlEncode(Hive.generateSecureKey());
-      await secureStorage.write(
-        key: private_message_cache_storage_key,
-        value: encryptedKey,
-      );
+    final pending = _privateMessageCipher;
+    if (pending != null) return pending;
+    final opening = _readPrivateMessageCacheCipher();
+    _privateMessageCipher = opening;
+    try {
+      return await opening;
+    } finally {
+      _privateMessageCipher = null;
     }
-    return HiveAesCipher(base64Url.decode(encryptedKey));
+  }
+
+  static Future<HiveCipher> _readPrivateMessageCacheCipher() async {
+    final storage = getFlutterSecureStorage();
+    final key = await readEncryptedBoxKey(
+      read: () => storage.read(key: private_message_cache_storage_key),
+      write: (value) =>
+          storage.write(key: private_message_cache_storage_key, value: value),
+      boxExists: () =>
+          Hive.boxExists('discuz_flutter_private_message_cache_v2'),
+      generate: Hive.generateSecureKey,
+    );
+    return HiveAesCipher(key);
   }
 }

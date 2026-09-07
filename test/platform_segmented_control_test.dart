@@ -100,21 +100,44 @@ void main() {
         ),
         brightness: brightness,
       ));
-      final finder = find.byType(CupertinoSegmentedControl<int>);
-      final control = tester.widget<CupertinoSegmentedControl<int>>(finder);
+      final finder = find.byType(CupertinoSlidingSegmentedControl<int>);
+      final control = tester.widget<CupertinoSlidingSegmentedControl<int>>(finder);
       final context = tester.element(finder);
-      expect(
-          control.selectedColor,
-          brightness == Brightness.light
-              ? CupertinoColors.white
-              : CupertinoColors.systemGrey2.resolveFrom(context));
-      expect(control.unselectedColor,
-          CupertinoColors.tertiarySystemFill.resolveFrom(context));
-      expect(control.borderColor,
-          CupertinoColors.systemGrey4.resolveFrom(context));
+      final defaults = CupertinoSlidingSegmentedControl<int>(
+        children: const {0: Text('A'), 1: Text('B')},
+        onValueChanged: (_) {},
+      );
+      expect(CupertinoDynamicColor.resolve(control.thumbColor, context),
+          CupertinoDynamicColor.resolve(defaults.thumbColor, context));
+      expect(control.backgroundColor, defaults.backgroundColor);
       expect(tester.widget<Text>(find.text('Second')).style!.color,
           CupertinoColors.label.resolveFrom(context));
-      expect(find.byType(CupertinoSlidingSegmentedControl<int>), findsNothing);
+      expect(find.byType(CupertinoSegmentedControl<int>), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final scale in [1.0, 2.0]) {
+    testWidgets('scrollable labels stay centered on the Cupertino track at scale $scale',
+        (tester) async {
+      await tester.pumpWidget(_host(
+        MediaQuery(
+          data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: PlatformSegmentedControl(
+              labels: const ['最近使用', '默认表情', 'Keylol'],
+              selectedIndex: 1,
+              onValueChanged: (_) {},
+            ),
+          ),
+        ),
+      ));
+      final track = find.byType(CupertinoSlidingSegmentedControl<int>);
+      for (final label in ['最近使用', '默认表情', 'Keylol']) {
+        expect(tester.getCenter(find.text(label)).dy,
+            closeTo(tester.getCenter(track).dy, 0.5));
+      }
       expect(tester.takeException(), isNull);
     });
   }

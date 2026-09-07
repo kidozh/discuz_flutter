@@ -97,6 +97,7 @@ class PollState extends State<PollStatefulWidget>{
       final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
       final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
       return await client.votePoll(fid,tid, this.formhash, checkedOptionIds).then((value){
+        if (!mounted) return false;
         if(value.errorResult != null && value.errorResult!.key == "thread_poll_succeed"){
 
           // it's a success

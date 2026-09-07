@@ -1,3 +1,5 @@
+import 'package:discuz_flutter/utility/app_motion.dart';
+import 'package:discuz_flutter/widget/message_composer_surface.dart';
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
@@ -65,7 +67,6 @@ import '../provider/DiscuzNotificationProvider.dart';
 import '../provider/UserPreferenceNotifierProvider.dart';
 import '../utility/EasyRefreshUtils.dart';
 import '../widget/AppBannerAdWidget.dart';
-import '../widget/AppPlatformSliverAppbar.dart';
 import '../widget/DiscuzNotificationAppbarIconWidget.dart';
 import 'InternalWebviewBrowserPage.dart';
 import 'SettingPage.dart';
@@ -863,11 +864,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   Widget build(BuildContext context) {
     CustomizeColor.updateAndroidNavigationbar(context);
     ModalRoute<Object?>? route = ModalRoute.of(context);
-    final threadSubject =
-        _viewThreadResult.threadVariables.threadInfo.subject.isEmpty
-            ? S.of(context).viewThreadTitle
-            : HtmlUnescape()
-                .convert(_viewThreadResult.threadVariables.threadInfo.subject);
+    final loadedSubject = _viewThreadResult.threadVariables.threadInfo.subject;
+    final threadSubject = HtmlUnescape().convert(loadedSubject.isNotEmpty
+        ? loadedSubject
+        : passedSubject ?? S.of(context).viewThreadTitle);
     final favoriteThreadInDatabase =
         favoriteThreadDao?.getFavoriteThreadByTid(tid, discuz);
     // A long main post must share the outer viewport to lay out only nearby
@@ -891,10 +891,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
           : PlatformBackButton(
               onPressed: onClosed,
             ),
-      //middle: Text(S.of(context).forumDisplayTitle),
-      // title: Text(S.of(context).viewThreadTitle),
-      liquidGlassTitle: threadSubject,
-      title: Text(threadSubject, overflow: TextOverflow.ellipsis),
+      // The full, wrapping title lives in the reading viewport. Keep the
+      // fixed-height navigation bar for navigation and actions only.
+      title: const SizedBox.shrink(),
+      liquidGlassUseNativeToolbar: false,
       trailingActions: [
         if (hasDiscuzNotification(context))
           buildDiscuzNotificationAppbarIcon(context),
@@ -982,6 +982,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     );
 
     return PlatformScaffold(
+      appBar: adaptiveAppBar,
+      iosContentPadding: true,
       body: CupertinoComposerViewport(
           child: Column(
         mainAxisSize: MainAxisSize.max,
@@ -1015,31 +1017,18 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                 child: CustomScrollView(
                   controller: _scrollController,
                   slivers: [
-                    AppPlatformSliverAppBar(
-                      title: adaptiveAppBar.title,
-                      leading: adaptiveAppBar.leading,
-                      pinned: true,
-                      actions: adaptiveAppBar.trailingActions,
-                      previousPageTitle: adaptiveAppBar.cupertino
-                          ?.call(context, platform(context))
-                          .previousPageTitle,
-                      cupertinoTransitionBetweenRoutes: false,
-                    ),
                     const HeaderLocator.sliver(),
                     if (!_isFirstLoading &&
                         _viewThreadResult.errorResult == null)
-                      SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                        (context, _) {
-                          return Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                          child: Semantics(
+                            header: true,
                             child: Text(
-                              _viewThreadResult.threadVariables.threadInfo
-                                          .subject.isEmpty &&
-                                      passedSubject != null
-                                  ? HtmlUnescape().convert(passedSubject!)
-                                  : HtmlUnescape().convert(_viewThreadResult
-                                      .threadVariables.threadInfo.subject),
+                              threadSubject,
+                              softWrap: true,
+                              overflow: TextOverflow.visible,
                               style: Theme.of(context)
                                   .textTheme
                                   .headlineSmall
@@ -1047,12 +1036,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                     color:
                                         Theme.of(context).colorScheme.onSurface,
                                     fontWeight: FontWeight.bold,
+                                    height: 1.3,
                                   ),
                             ),
-                          );
-                        },
-                        childCount: 1,
-                      )),
+                          ),
+                        ),
+                      ),
                     if (_error != null)
                       SliverList(
                           delegate: SliverChildBuilderDelegate(
@@ -1192,7 +1181,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                               else
                                 SafeArea(
                                   top: false,
-                                  child: PlatformLiquidGlassCard(
+                                  child: MessageComposerSurface(
                                     key:
                                         const ValueKey('thread-reply-composer'),
                                     margin: EdgeInsets.fromLTRB(
@@ -1219,8 +1208,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                               liquidGlassButtonSize: 44,
                                               liquidGlassIconSize: 17,
                                               icon: AnimatedSwitcher(
-                                                duration: const Duration(
-                                                    milliseconds: 160),
+                                                duration: AppMotion.duration(
+                                                    context, 140),
                                                 child: Icon(
                                                   dialogStatus ==
                                                           SHOW_SMILEY_DIALOG
@@ -1321,6 +1310,17 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                                     onPressed: null,
                                                   );
                                                 }
+                                                if (!isCupertino(context)) {
+                                                  return MaterialMessageSendButton(
+                                                    onPressed: canSend
+                                                        ? () {
+                                                            VibrationUtils
+                                                                .vibrateWithClickIfPossible();
+                                                            _sendReply();
+                                                          }
+                                                        : null,
+                                                  );
+                                                }
                                                 return PlatformIconButton(
                                                   liquidGlassSymbol: 'arrow.up',
                                                   liquidGlassButtonSize: 44,
@@ -1335,9 +1335,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                                         .upArrow,
                                                     size: 20,
                                                     color: canSend
-                                                        ? Theme.of(context)
-                                                            .colorScheme
-                                                            .onPrimary
+                                                        ? (usesLiquidGlass(
+                                                                context)
+                                                            ? Theme.of(context)
+                                                                .colorScheme
+                                                                .onPrimary
+                                                            : Theme.of(context)
+                                                                .colorScheme
+                                                                .primary)
                                                         : Theme.of(context)
                                                             .disabledColor,
                                                     semanticLabel:
@@ -1371,9 +1376,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                   enabled: visualStyle(context) ==
                                       AppVisualStyle.cupertino,
                                   child: AnimatedSwitcher(
-                                    duration: const Duration(milliseconds: 220),
+                                    duration: AppMotion.duration(context, 200),
                                     reverseDuration:
-                                        const Duration(milliseconds: 160),
+                                        AppMotion.duration(context, 140),
                                     switchInCurve: Curves.easeOutCubic,
                                     switchOutCurve: Curves.easeInCubic,
                                     child: dialogStatus == SHOW_SMILEY_DIALOG

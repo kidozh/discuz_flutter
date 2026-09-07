@@ -1,3 +1,4 @@
+import 'package:discuz_flutter/utility/steam_store_link.dart';
 import 'dart:developer';
 
 import 'package:chinese_font_library/chinese_font_library.dart';
@@ -519,10 +520,14 @@ class DiscuzHtmlWidget extends StatelessWidget {
               element.attributes["href"]!
                   .startsWith("https://www.bilibili.com")) {
             return BilibiliWidget(element.attributes["href"]!);
-          } else if (element.attributes["src"] != null &&
-              element.attributes["src"]!
-                  .startsWith("https://store.steampowered.com/widget")) {
-            return SteamGameWidget(element.attributes["src"]!);
+          }
+          final steamLink = element.localName == 'a'
+              ? element.attributes['href']
+              : element.localName == 'iframe'
+                  ? element.attributes['src']
+                  : null;
+          if (steamAppId(steamLink) != null) {
+            return SteamGameWidget(steamLink!);
           }
           return null;
         },

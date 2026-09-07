@@ -999,6 +999,7 @@ class PostState extends State<PostStatefulWidget> {
     client
         .banPostResult(formhash, fid!, _post.tid, [_post.pid], banned, "")
         .then((value) {
+      if (!mounted) return;
       if (value.errorResult?.key == "admin_succeed") {
         // it should be banned
         Post newPostStage = _post;
@@ -1039,6 +1040,7 @@ class PostState extends State<PostStatefulWidget> {
     client
         .warnPostResult(formhash, fid!, _post.tid, [_post.pid], banned, "")
         .then((value) {
+      if (!mounted) return;
       if (value.errorResult?.key == "admin_succeed") {
         // it should be banned
         Post newPostStage = _post;
@@ -1079,6 +1081,7 @@ class PostState extends State<PostStatefulWidget> {
     client
         .deletePostResult(formhash, fid!, _post.tid, [_post.pid], banned, "")
         .then((value) {
+      if (!mounted) return;
       if (value.errorResult?.key == "admin_succeed") {
         // it should be banned
         Post newPostStage = _post;

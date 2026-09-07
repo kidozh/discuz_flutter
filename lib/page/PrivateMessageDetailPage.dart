@@ -1,3 +1,5 @@
+import 'package:discuz_flutter/utility/app_motion.dart';
+import 'package:discuz_flutter/widget/message_composer_surface.dart';
 import 'dart:async';
 import 'dart:developer';
 
@@ -18,6 +20,7 @@ import 'package:discuz_flutter/utility/EasyRefreshUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:discuz_flutter/utility/private_message_pagination.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/PrivateMessageDetailWidget.dart';
 import 'package:discuz_flutter/widget/thread_reply_composer.dart';
@@ -56,14 +59,16 @@ class PrivateMessageDetailPage extends StatefulWidget {
 class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
   PrivateMessageDetailResult result = PrivateMessageDetailResult();
   DiscuzError? _error;
-  int _nextPage = 1;
+  PrivateMessagePagination _pagination = PrivateMessagePagination();
+  final ScrollController _messageScrollController =
+      ScrollController(keepScrollOffset: false);
   List<PrivateMessageDetail> _messages = [];
   late final EasyRefreshController _refreshController;
   late final TextEditingController _textController;
   final FocusNode _composerFocus =
       FocusNode(debugLabel: 'private-message-input');
   bool _showSmiley = false;
-  bool _requestInFlight = false;
+  int? _requestGeneration;
   bool _sending = false;
   bool _hasLoaded = false;
   String? _accountIdentity;
@@ -112,6 +117,7 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
       ..removeListener(_onTextChanged)
       ..dispose();
     _refreshController.dispose();
+    _messageScrollController.dispose();
     _composerFocus.dispose();
     super.dispose();
   }
@@ -121,7 +127,7 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
     if (_accountIdentity == identity) return;
     _accountIdentity = identity;
     final generation = ++_generation;
-    _nextPage = 1;
+    _pagination = PrivateMessagePagination();
     _messages = [];
     _error = null;
     _hasLoaded = false;
@@ -185,8 +191,6 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
     Discuz discuz, {
     int? generation,
   }) {
-    _nextPage = 1;
-    _refreshController.resetFooter();
     return _loadMessages(
       discuz,
       generation: generation ?? _generation,
@@ -199,12 +203,14 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
     required int generation,
     bool replace = false,
   }) async {
-    if (_requestInFlight) return IndicatorResult.fail;
+    if (_requestGeneration == generation) return IndicatorResult.fail;
+    if (!replace && !_pagination.hasMore) return IndicatorResult.noMore;
     final user =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     if (user == null) return IndicatorResult.fail;
-    _requestInFlight = true;
-    final requestPage = _nextPage;
+    _requestGeneration = generation;
+    final requestPage = _pagination.pageFor(latest: replace);
+    final showLatest = !_hasLoaded;
     try {
       final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
       final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
@@ -212,13 +218,31 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
           await client.privateMessageDetailResult(widget.toUid, requestPage);
       if (!mounted || generation != _generation) return IndicatorResult.fail;
 
+      DiscuzError? nextError;
+      if (value.variables.member_uid != user.uid) {
+        nextError = DiscuzError(
+          S.of(context).userExpiredTitle(user.username),
+          S.of(context).userExpiredSubtitle,
+          errorType: ErrorType.userExpired,
+        );
+      } else if (value.errorResult != null) {
+        nextError =
+            DiscuzError(value.errorResult!.key, value.errorResult!.content);
+      }
+      if (nextError != null) {
+        setState(() => _error = nextError);
+        _refreshController.finishRefresh(IndicatorResult.fail);
+        _refreshController.finishLoad(IndicatorResult.fail);
+        return IndicatorResult.fail;
+      }
+
       await _cacheMessages(discuz, user, value.variables.pmList);
       if (!mounted || generation != _generation) return IndicatorResult.fail;
 
       final merged = <String, PrivateMessageDetail>{};
       if (replace) {
         for (final message in _messages) {
-          if (message.plid >= 0) merged[_messageIdentity(message)] = message;
+          if (message.plid < 0) merged[_messageIdentity(message)] = message;
         }
       } else {
         for (final message in _messages) {
@@ -229,16 +253,6 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
         merged[_messageIdentity(message)] = message;
       }
 
-      DiscuzError? nextError;
-      if (value.variables.member_uid != user.uid) {
-        nextError = DiscuzError(
-          S.of(context).userExpiredTitle(user.username),
-          S.of(context).userExpiredSubtitle,
-        );
-      } else if (value.errorResult != null) {
-        nextError =
-            DiscuzError(value.errorResult!.key, value.errorResult!.content);
-      }
       setState(() {
         result = value;
         _error = nextError;
@@ -249,16 +263,17 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
         // Discuz installations differ on whether each page is ascending or
         // descending, and mixing pages otherwise scrambles the conversation.
         _messages.sort(_compareMessagesNewestFirst);
-        _nextPage = requestPage + 1;
+        _pagination.accept(value.variables);
       });
 
       if (value.getErrorString() != null) {
         EasyLoading.showError(value.getErrorString()!);
       }
-      final indicator = _messages.length >= value.variables.count ||
-              value.variables.pmList.isEmpty
-          ? IndicatorResult.noMore
-          : IndicatorResult.success;
+      final indicator = _pagination.hasMore
+          ? IndicatorResult.success
+          : IndicatorResult.noMore;
+      if (replace) _refreshController.resetFooter();
+      if (showLatest) _scrollToLatest();
       _refreshController.finishRefresh(indicator);
       _refreshController.finishLoad(indicator);
       return indicator;
@@ -273,8 +288,19 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
       }
       return IndicatorResult.fail;
     } finally {
-      _requestInFlight = false;
+      if (_requestGeneration == generation) _requestGeneration = null;
     }
+  }
+
+  void _scrollToLatest() {
+    final generation = _generation;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted &&
+          generation == _generation &&
+          _messageScrollController.hasClients) {
+        _messageScrollController.jumpTo(0);
+      }
+    });
   }
 
   String _messageIdentity(PrivateMessageDetail message) {
@@ -358,6 +384,7 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
       _pendingMessageIds.add(localId);
       _messages.insert(0, optimisticMessage);
     });
+    _scrollToLatest();
     if (retryMessage == null) _textController.clear();
     VibrationUtils.vibrateWithClickIfPossible();
     try {
@@ -493,6 +520,7 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
                     onLoad: () =>
                         _loadMessages(discuz, generation: _generation),
                     child: ListView.builder(
+                      controller: _messageScrollController,
                       reverse: true,
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       itemCount: _messages.length,
@@ -541,7 +569,7 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
                 else
                   SafeArea(
                     top: false,
-                    child: PlatformLiquidGlassCard(
+                    child: MessageComposerSurface(
                       margin: const EdgeInsets.fromLTRB(8, 4, 8, 8),
                       padding: const EdgeInsets.all(6),
                       borderRadius: BorderRadius.circular(24),
@@ -554,7 +582,7 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
                             liquidGlassButtonSize: 44,
                             liquidGlassIconSize: 17,
                             icon: AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 160),
+                              duration: AppMotion.duration(context, 140),
                               child: Icon(
                                 _showSmiley
                                     ? PlatformIcons(context).keyboard
@@ -569,6 +597,7 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
                           const SizedBox(width: 3),
                           Expanded(
                             child: PlatformTextField(
+                              hintText: S.of(context).sendReplyHint,
                               controller: _textController,
                               focusNode: _composerFocus,
                               minLines: 1,
@@ -588,6 +617,11 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
                                 ),
                               ),
                             )
+                          else if (!isCupertino(context))
+                            MaterialMessageSendButton(
+                              onPressed:
+                                  _canSend ? () => _sendMessage(discuz) : null,
+                            )
                           else
                             PlatformIconButton(
                               liquidGlassSymbol: 'arrow.up',
@@ -602,7 +636,11 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
                                 PlatformIcons(context).upArrow,
                                 size: 20,
                                 color: _canSend
-                                    ? Theme.of(context).colorScheme.onPrimary
+                                    ? (usesLiquidGlass(context)
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary
+                                        : Theme.of(context).colorScheme.primary)
                                     : Theme.of(context).disabledColor,
                                 semanticLabel: S.of(context).send,
                               ),
@@ -614,8 +652,8 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
                 CupertinoKeyboardAccessory(
                     enabled: visualStyle(context) == AppVisualStyle.cupertino,
                     child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 220),
-                      reverseDuration: const Duration(milliseconds: 160),
+                      duration: AppMotion.duration(context, 200),
+                      reverseDuration: AppMotion.duration(context, 140),
                       switchInCurve: Curves.easeOutCubic,
                       switchOutCurve: Curves.easeInCubic,
                       child: _showSmiley

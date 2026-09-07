@@ -5595,30 +5595,30 @@ class S {
     );
   }
 
-  /// `Foundation Model`
+  /// `On-device AI`
   String get appleIntelligence {
     return Intl.message(
-      'Foundation Model',
+      'On-device AI',
       name: 'appleIntelligence',
       desc: '',
       args: [],
     );
   }
 
-  /// `Enable foundation model`
+  /// `Enable on-device AI`
   String get appleIntelligenceEnabled {
     return Intl.message(
-      'Enable foundation model',
+      'Enable on-device AI',
       name: 'appleIntelligenceEnabled',
       desc: '',
       args: [],
     );
   }
 
-  /// `AI shall be used as a deliberate tool, always guided by human judgment and a mindful assessment of its risks and benefits.`
+  /// `Translate posts or process text with custom on-device AI rules. Content is processed locally rather than sent to a cloud model for these actions. Initial model setup may require an internet download. Generated results can be inaccurate; check important information.`
   String get appleIntelligenceUseNotice {
     return Intl.message(
-      'AI shall be used as a deliberate tool, always guided by human judgment and a mindful assessment of its risks and benefits.',
+      'Translate posts or process text with custom on-device AI rules. Content is processed locally rather than sent to a cloud model for these actions. Initial model setup may require an internet download. Generated results can be inaccurate; check important information.',
       name: 'appleIntelligenceUseNotice',
       desc: '',
       args: [],
@@ -5925,10 +5925,10 @@ class S {
     );
   }
 
-  /// `The on-device model is ready. Content is processed locally on this device.`
+  /// `The on-device model is ready. Enable it to translate posts and use custom text-processing rules.`
   String get onDeviceAiReadyDescription {
     return Intl.message(
-      'The on-device model is ready. Content is processed locally on this device.',
+      'The on-device model is ready. Enable it to translate posts and use custom text-processing rules.',
       name: 'onDeviceAiReadyDescription',
       desc: '',
       args: [],
@@ -5945,10 +5945,10 @@ class S {
     );
   }
 
-  /// `Gemini Nano is supported but its model files are not ready. Connect to Wi-Fi and keep the device charged while Android AICore downloads them.`
+  /// `The device reports model support, but the required files are not ready. Tap Download model to let Android AICore download them, preferably over Wi-Fi. Intelligence can be enabled once the download is complete.`
   String get onDeviceAiModelDownloadDescription {
     return Intl.message(
-      'Gemini Nano is supported but its model files are not ready. Connect to Wi-Fi and keep the device charged while Android AICore downloads them.',
+      'The device reports model support, but the required files are not ready. Tap Download model to let Android AICore download them, preferably over Wi-Fi. Intelligence can be enabled once the download is complete.',
       name: 'onDeviceAiModelDownloadDescription',
       desc: '',
       args: [],
@@ -6005,10 +6005,10 @@ class S {
     );
   }
 
-  /// `Android AICore is missing or outdated. Install or update the Google system service, then return here to check again.`
+  /// `AICore is incompatible with the version required by this feature. Check for AICore updates in Google Play on a supported physical device, then check again. Installing AICore alone does not make an unsupported device compatible.`
   String get onDeviceAiAICoreDescription {
     return Intl.message(
-      'Android AICore is missing or outdated. Install or update the Google system service, then return here to check again.',
+      'AICore is incompatible with the version required by this feature. Check for AICore updates in Google Play on a supported physical device, then check again. Installing AICore alone does not make an unsupported device compatible.',
       name: 'onDeviceAiAICoreDescription',
       desc: '',
       args: [],
@@ -6115,20 +6115,20 @@ class S {
     );
   }
 
-  /// `Provided by Apple Foundation Models`
+  /// `Apple devices use the system on-device foundation model. A compatible device, enabled Apple Intelligence, and a ready model are required.`
   String get onDeviceAiProviderApple {
     return Intl.message(
-      'Provided by Apple Foundation Models',
+      'Apple devices use the system on-device foundation model. A compatible device, enabled Apple Intelligence, and a ready model are required.',
       name: 'onDeviceAiProviderApple',
       desc: '',
       args: [],
     );
   }
 
-  /// `Provided by Gemini Nano and Android AICore`
+  /// `Android uses Gemini Nano through the AICore system service. A Google-supported physical device and a ready model are required. Standard Android emulators are not in the official support list; having Google Play or the Gemini app does not establish support.`
   String get onDeviceAiProviderAndroid {
     return Intl.message(
-      'Provided by Gemini Nano and Android AICore',
+      'Android uses Gemini Nano through the AICore system service. A Google-supported physical device and a ready model are required. Standard Android emulators are not in the official support list; having Google Play or the Gemini app does not establish support.',
       name: 'onDeviceAiProviderAndroid',
       desc: '',
       args: [],
@@ -6150,6 +6150,306 @@ class S {
     return Intl.message(
       'The on-device model could not complete this request. Try again shortly.',
       name: 'onDeviceAiRequestFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Checking whether the on-device model is available…`
+  String get onDeviceAiChecking {
+    return Intl.message(
+      'Checking whether the on-device model is available…',
+      name: 'onDeviceAiChecking',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Waiting up to 15 seconds for Android AICore. This checks availability; it is not a model download.`
+  String get onDeviceAiCheckingAndroid {
+    return Intl.message(
+      'Waiting up to 15 seconds for Android AICore. This checks availability; it is not a model download.',
+      name: 'onDeviceAiCheckingAndroid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `On-device service did not respond`
+  String get onDeviceAiCheckTimeoutTitle {
+    return Intl.message(
+      'On-device service did not respond',
+      name: 'onDeviceAiCheckTimeoutTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Android AICore did not return a status within 15 seconds, so model availability is still unknown. Use a supported physical device instead of an emulator. On a physical device, check system and AICore updates, then check again.`
+  String get onDeviceAiCheckTimeoutDescription {
+    return Intl.message(
+      'Android AICore did not return a status within 15 seconds, so model availability is still unknown. Use a supported physical device instead of an emulator. On a physical device, check system and AICore updates, then check again.',
+      name: 'onDeviceAiCheckTimeoutDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This device or its system configuration has not made the required Gemini Nano model available to this app. This does not mean all ML Kit features are unavailable. Check the official device list. On a supported device, update the system and AICore, stay online while configuration is prepared, then check again.`
+  String get onDeviceAiAndroidUnavailable {
+    return Intl.message(
+      'This device or its system configuration has not made the required Gemini Nano model available to this app. This does not mean all ML Kit features are unavailable. Check the official device list. On a supported device, update the system and AICore, stay online while configuration is prepared, then check again.',
+      name: 'onDeviceAiAndroidUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View Google-supported devices ↗`
+  String get onDeviceAiSupportedDevices {
+    return Intl.message(
+      'View Google-supported devices ↗',
+      name: 'onDeviceAiSupportedDevices',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The system model is busy. Wait a little, then check again.`
+  String get onDeviceAiServiceBusy {
+    return Intl.message(
+      'The system model is busy. Wait a little, then check again.',
+      name: 'onDeviceAiServiceBusy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The system model usage quota for this app has been reached. Try later; checking again does not reset the quota.`
+  String get onDeviceAiBatteryQuota {
+    return Intl.message(
+      'The system model usage quota for this app has been reached. Try later; checking again does not reset the quota.',
+      name: 'onDeviceAiBatteryQuota',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The system only allows model use while the app is in the foreground. Keep this app open and try again.`
+  String get onDeviceAiForegroundRequired {
+    return Intl.message(
+      'The system only allows model use while the app is in the foreground. Keep this app open and try again.',
+      name: 'onDeviceAiForegroundRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Report a problem · GitHub`
+  String get reportIssueSettingsTitle {
+    return Intl.message(
+      'Report a problem · GitHub',
+      name: 'reportIssueSettingsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Report a problem · GitHub ↗`
+  String get reportIssue {
+    return Intl.message(
+      'Report a problem · GitHub ↗',
+      name: 'reportIssue',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `If this problem persists, open a GitHub issue describing what you did and what happened.`
+  String get reportIssueHint {
+    return Intl.message(
+      'If this problem persists, open a GitHub issue describing what you did and what happened.',
+      name: 'reportIssueHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not open a browser. Visit https://github.com/kidozh/discuz_flutter/issues manually.`
+  String get reportIssueOpenFailed {
+    return Intl.message(
+      'Could not open a browser. Visit https://github.com/kidozh/discuz_flutter/issues manually.',
+      name: 'reportIssueOpenFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Apple Foundation Models`
+  String get onDeviceAiNameApple {
+    return Intl.message(
+      'Apple Foundation Models',
+      name: 'onDeviceAiNameApple',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Gemini Nano`
+  String get onDeviceAiNameAndroid {
+    return Intl.message(
+      'Gemini Nano',
+      name: 'onDeviceAiNameAndroid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable Apple Foundation Models`
+  String get onDeviceAiEnableApple {
+    return Intl.message(
+      'Enable Apple Foundation Models',
+      name: 'onDeviceAiEnableApple',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable Gemini Nano`
+  String get onDeviceAiEnableAndroid {
+    return Intl.message(
+      'Enable Gemini Nano',
+      name: 'onDeviceAiEnableAndroid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Game`
+  String get steamTypeGame {
+    return Intl.message('Game', name: 'steamTypeGame', desc: '', args: []);
+  }
+
+  /// `DLC`
+  String get steamTypeDlc {
+    return Intl.message('DLC', name: 'steamTypeDlc', desc: '', args: []);
+  }
+
+  /// `Soundtrack / Music`
+  String get steamTypeMusic {
+    return Intl.message(
+      'Soundtrack / Music',
+      name: 'steamTypeMusic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Demo`
+  String get steamTypeDemo {
+    return Intl.message('Demo', name: 'steamTypeDemo', desc: '', args: []);
+  }
+
+  /// `Software`
+  String get steamTypeSoftware {
+    return Intl.message(
+      'Software',
+      name: 'steamTypeSoftware',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Video`
+  String get steamTypeVideo {
+    return Intl.message('Video', name: 'steamTypeVideo', desc: '', args: []);
+  }
+
+  /// `Steam content`
+  String get steamTypeOther {
+    return Intl.message(
+      'Steam content',
+      name: 'steamTypeOther',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Related game: {name}`
+  String steamParentApp(String name) {
+    return Intl.message(
+      'Related game: $name',
+      name: 'steamParentApp',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `See Steam for pricing`
+  String get steamPriceUnavailable {
+    return Intl.message(
+      'See Steam for pricing',
+      name: 'steamPriceUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Coming soon`
+  String get steamComingSoon {
+    return Intl.message(
+      'Coming soon',
+      name: 'steamComingSoon',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Saved passwords are unavailable. Existing data has been preserved. You can enter your account and password manually.`
+  String get savedPasswordsUnavailable {
+    return Intl.message(
+      'Saved passwords are unavailable. Existing data has been preserved. You can enter your account and password manually.',
+      name: 'savedPasswordsUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Login can continue, but the password could not be saved.`
+  String get passwordSaveFailed {
+    return Intl.message(
+      'Login can continue, but the password could not be saved.',
+      name: 'passwordSaveFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Saved passwords could not be read`
+  String get passwordRecoveryTitle {
+    return Intl.message(
+      'Saved passwords could not be read',
+      name: 'passwordRecoveryTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The existing password store could not be opened or migrated. Create a new empty password store? You will need to enter and save your passwords again. The old encrypted data will be kept, but will no longer be used automatically.`
+  String get passwordRecoveryMessage {
+    return Intl.message(
+      'The existing password store could not be opened or migrated. Create a new empty password store? You will need to enter and save your passwords again. The old encrypted data will be kept, but will no longer be used automatically.',
+      name: 'passwordRecoveryMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create new store`
+  String get passwordRecoveryCreate {
+    return Intl.message(
+      'Create new store',
+      name: 'passwordRecoveryCreate',
       desc: '',
       args: [],
     );

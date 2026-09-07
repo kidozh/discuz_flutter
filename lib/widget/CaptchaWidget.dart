@@ -122,9 +122,11 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
   }
 
   _loadCaptchaInfo() async{
+    if (!mounted) return;
     // refresh
     _client = MobileApiClient(_dio, baseUrl: _discuz.baseURL);
     _client.captchaResult(this.captchaType).then((value) async {
+      if (!mounted) return;
       print("GET ${value.variables.secCodeURL} ${value.variables.secHash}");
       // the captcha html
       setState(() {
@@ -143,6 +145,7 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
           options: Options(
               responseType: ResponseType.bytes,
               headers: {"Referer": value.variables.secCodeURL}));
+      if (!mounted) return;
       if (rs.data != null) {
         //print("Recv response data ${rs.data}");
         setState(() {
@@ -151,6 +154,7 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
 
       }
     }).onError((error, stackTrace){
+      if (!mounted) return;
       setState(() {
         loaded = true;
       });

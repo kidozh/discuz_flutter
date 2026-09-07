@@ -292,7 +292,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
                       _toggleNavigationStatus();
                     },
                     title: Text(S.of(context).incognitoTitle),
-                    subtitle: Text(S.of(context).incognitoTitle),
+                    subtitle: Text(S.of(context).incognitoSubtitle),
                     leading: const _IncognitoAvatar()),
               ],
             );
@@ -338,7 +338,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
                           _toggleNavigationStatus();
                         },
                         title: Text(S.of(context).incognitoTitle),
-                        subtitle: Text(S.of(context).incognitoTitle),
+                        subtitle: Text(S.of(context).incognitoSubtitle),
                         leading: const _IncognitoAvatar());
                   }
                 });

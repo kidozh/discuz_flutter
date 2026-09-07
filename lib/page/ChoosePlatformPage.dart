@@ -44,14 +44,12 @@ class ChoosePlatformPage extends StatelessWidget {
           SettingsSection(tiles: [
             styleTile(AppVisualStyle.system, strings.followSystem,
                 strings.systemStyleDescription),
-            styleTile(
-              AppVisualStyle.liquidGlass,
-              strings.liquidGlassStyle,
-              supportsGlass
-                  ? strings.liquidGlassStyleDescription
-                  : strings.liquidGlassStyleUnavailable,
-              enabled: supportsGlass,
-            ),
+            if (supportsGlass)
+              styleTile(
+                AppVisualStyle.liquidGlass,
+                strings.liquidGlassStyle,
+                strings.liquidGlassStyleDescription,
+              ),
             styleTile(AppVisualStyle.cupertino, strings.cupertinoStyle,
                 strings.cupertinoStyleDescription),
             styleTile(AppVisualStyle.material, strings.materialDesign,

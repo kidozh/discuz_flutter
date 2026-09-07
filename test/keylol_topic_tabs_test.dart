@@ -195,13 +195,13 @@ void main() {
         ),
       ),
     ))));
-    final control = find.byType(CupertinoSegmentedControl<int>);
+    final control = find.byType(CupertinoSlidingSegmentedControl<int>);
     final box = tester.renderObject<RenderBox>(control);
     expect(box.constraints.hasBoundedWidth, isTrue);
     expect(box.size.width.isFinite, isTrue);
     expect(box.size.width, greaterThan(240));
     expect(
-        tester.widget<CupertinoSegmentedControl<int>>(control).groupValue, 4);
+        tester.widget<CupertinoSlidingSegmentedControl<int>>(control).groupValue, 4);
     expect(tester.takeException(), isNull);
   });
 

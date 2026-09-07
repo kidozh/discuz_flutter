@@ -530,20 +530,19 @@
   "noSignature": "No signature",
   "deviceNameSignature": "Use device name",
   "customSignature": "Custom",
-  "windowsDeviceName":"{name}'s Windows device",
+  "windowsDeviceName": "{name}'s Windows device",
   "@windowsDeviceName": {
     "placeholders": {
       "name": {}
     }
   },
-  "linuxDeviceName":"{name}'s Linux device",
+  "linuxDeviceName": "{name}'s Linux device",
   "@linuxDeviceName": {
     "placeholders": {
       "name": {}
     }
   },
-
-  "macOSDeviceName":"{name}'s MacOS device",
+  "macOSDeviceName": "{name}'s MacOS device",
   "@macOSDeviceName": {
     "placeholders": {
       "name": {}
@@ -734,7 +733,6 @@
       "discuz": {}
     }
   },
-
   "emailChannelBody": "I hereby would like to add {discuz}({discuzUrl}) to subscription list",
   "@emailChannelBody": {
     "placeholders": {
@@ -914,9 +912,9 @@
   "responseStatusError404": "404 Not Found",
   "pictureBedImgBB": "ImgBB",
   "keylolPortal": "Keylol Portal",
-  "appleIntelligence": "Foundation Model",
-  "appleIntelligenceEnabled": "Enable foundation model",
-  "appleIntelligenceUseNotice": "AI shall be used as a deliberate tool, always guided by human judgment and a mindful assessment of its risks and benefits.",
+  "appleIntelligence": "On-device AI",
+  "appleIntelligenceEnabled": "Enable on-device AI",
+  "appleIntelligenceUseNotice": "Translate posts or process text with custom on-device AI rules. Content is processed locally rather than sent to a cloud model for these actions. Initial model setup may require an internet download. Generated results can be inaccurate; check important information.",
   "appleIntelligenceLearnMore": "Learn more ↗",
   "appleIntelligenceTranslate": "Translate",
   "appleIntelligencePromptHint": "Prompt hint",
@@ -972,9 +970,9 @@
   "appleIntelligenceRuleTranslationExampleNotice": "The translation rule is inherent into the app itself and can not be deleted.",
   "appleIntelligenceUseHistory": "AI chat history",
   "appleIntelligenceLearnMoreFromOurPost": "Read our post ↗",
-  "onDeviceAiReadyDescription": "The on-device model is ready. Content is processed locally on this device.",
+  "onDeviceAiReadyDescription": "The on-device model is ready. Enable it to translate posts and use custom text-processing rules.",
   "onDeviceAiModelDownloadTitle": "Download the on-device model",
-  "onDeviceAiModelDownloadDescription": "Gemini Nano is supported but its model files are not ready. Connect to Wi-Fi and keep the device charged while Android AICore downloads them.",
+  "onDeviceAiModelDownloadDescription": "The device reports model support, but the required files are not ready. Tap Download model to let Android AICore download them, preferably over Wi-Fi. Intelligence can be enabled once the download is complete.",
   "onDeviceAiDownloadModel": "Download model",
   "onDeviceAiDownloadingModel": "Downloading model…",
   "onDeviceAiDownloadProgress": "Downloaded {downloaded} MB",
@@ -985,7 +983,7 @@
   },
   "onDeviceAiDownloadFailed": "The model download failed. Check the network and available storage, then try again.",
   "onDeviceAiAICoreTitle": "Android AICore is required",
-  "onDeviceAiAICoreDescription": "Android AICore is missing or outdated. Install or update the Google system service, then return here to check again.",
+  "onDeviceAiAICoreDescription": "AICore is incompatible with the version required by this feature. Check for AICore updates in Google Play on a supported physical device, then check again. Installing AICore alone does not make an unsupported device compatible.",
   "onDeviceAiOpenGooglePlay": "Open Google Play",
   "onDeviceAiSystemUpdateTitle": "System update required",
   "onDeviceAiSystemUpdateDescription": "This Android or Apple system version is too old for the on-device model. Update the system and try again.",
@@ -996,8 +994,47 @@
   "onDeviceAiRetry": "Check again",
   "onDeviceAiSetupRequired": "Setup required",
   "onDeviceAiStatusDownloading": "Downloading",
-  "onDeviceAiProviderApple": "Provided by Apple Foundation Models",
-  "onDeviceAiProviderAndroid": "Provided by Gemini Nano and Android AICore",
+  "onDeviceAiProviderApple": "Apple devices use the system on-device foundation model. A compatible device, enabled Apple Intelligence, and a ready model are required.",
+  "onDeviceAiProviderAndroid": "Android uses Gemini Nano through the AICore system service. A Google-supported physical device and a ready model are required. Standard Android emulators are not in the official support list; having Google Play or the Gemini app does not establish support.",
   "onDeviceAiRequestTooLarge": "This post is too long for the on-device model.",
-  "onDeviceAiRequestFailed": "The on-device model could not complete this request. Try again shortly."
+  "onDeviceAiRequestFailed": "The on-device model could not complete this request. Try again shortly.",
+  "onDeviceAiChecking": "Checking whether the on-device model is available…",
+  "onDeviceAiCheckingAndroid": "Waiting up to 15 seconds for Android AICore. This checks availability; it is not a model download.",
+  "onDeviceAiCheckTimeoutTitle": "On-device service did not respond",
+  "onDeviceAiCheckTimeoutDescription": "Android AICore did not return a status within 15 seconds, so model availability is still unknown. Use a supported physical device instead of an emulator. On a physical device, check system and AICore updates, then check again.",
+  "onDeviceAiAndroidUnavailable": "This device or its system configuration has not made the required Gemini Nano model available to this app. This does not mean all ML Kit features are unavailable. Check the official device list. On a supported device, update the system and AICore, stay online while configuration is prepared, then check again.",
+  "onDeviceAiSupportedDevices": "View Google-supported devices ↗",
+  "onDeviceAiServiceBusy": "The system model is busy. Wait a little, then check again.",
+  "onDeviceAiBatteryQuota": "The system model usage quota for this app has been reached. Try later; checking again does not reset the quota.",
+  "onDeviceAiForegroundRequired": "The system only allows model use while the app is in the foreground. Keep this app open and try again.",
+  "reportIssueSettingsTitle": "Report a problem · GitHub",
+  "reportIssue": "Report a problem · GitHub ↗",
+  "reportIssueHint": "If this problem persists, open a GitHub issue describing what you did and what happened.",
+  "reportIssueOpenFailed": "Could not open a browser. Visit https://github.com/kidozh/discuz_flutter/issues manually.",
+  "onDeviceAiNameApple": "Apple Foundation Models",
+  "onDeviceAiNameAndroid": "Gemini Nano",
+  "onDeviceAiEnableApple": "Enable Apple Foundation Models",
+  "onDeviceAiEnableAndroid": "Enable Gemini Nano",
+  "steamTypeGame": "Game",
+  "steamTypeDlc": "DLC",
+  "steamTypeMusic": "Soundtrack / Music",
+  "steamTypeDemo": "Demo",
+  "steamTypeSoftware": "Software",
+  "steamTypeVideo": "Video",
+  "steamTypeOther": "Steam content",
+  "steamParentApp": "Related game: {name}",
+  "steamPriceUnavailable": "See Steam for pricing",
+  "steamComingSoon": "Coming soon",
+  "@steamParentApp": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "savedPasswordsUnavailable": "Saved passwords are unavailable. Existing data has been preserved. You can enter your account and password manually.",
+  "passwordSaveFailed": "Login can continue, but the password could not be saved.",
+  "passwordRecoveryTitle": "Saved passwords could not be read",
+  "passwordRecoveryMessage": "The existing password store could not be opened or migrated. Create a new empty password store? You will need to enter and save your passwords again. The old encrypted data will be kept, but will no longer be used automatically.",
+  "passwordRecoveryCreate": "Create new store"
 }

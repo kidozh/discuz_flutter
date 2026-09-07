@@ -426,7 +426,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
             getStickyThreadHead(viewed, selected),
           PlatformListTile(
             selected: selected,
-            isThreeLine: true,
+            isThreeLine: false,
             contentPadding: const EdgeInsets.fromLTRB(12, 9, 12, 6),
             leading: UserAvatar(
               _discuz,

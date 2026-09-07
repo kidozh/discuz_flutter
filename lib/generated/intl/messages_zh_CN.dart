@@ -125,29 +125,31 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m49(index) => "表情 ${index}";
 
-  static String m50(checked, allowed) => "投票 (${checked} / ${allowed})";
+  static String m50(name) => "关联游戏：${name}";
 
-  static String m51(title) => "成功删除历史记录 ${title}.";
+  static String m51(checked, allowed) => "投票 (${checked} / ${allowed})";
 
-  static String m52(filename) => "成功下载文件： ${filename}。";
+  static String m52(title) => "成功删除历史记录 ${title}.";
 
-  static String m53(num) => "已同步所有${num}个收藏的帖子";
+  static String m53(filename) => "成功下载文件： ${filename}。";
 
-  static String m54(num) => "阅读权限 ${num}";
+  static String m54(num) => "已同步所有${num}个收藏的帖子";
 
-  static String m55(reply) => "${reply}回复";
+  static String m55(num) => "阅读权限 ${num}";
 
-  static String m56(view) => "${view}浏览";
+  static String m56(reply) => "${reply}回复";
 
-  static String m57(username) => "用户 ${username} 已失效";
+  static String m57(view) => "${view}浏览";
 
-  static String m58(uid) => "用户编号： ${uid}";
+  static String m58(username) => "用户 ${username} 已失效";
 
-  static String m59(user) => "查看${user}详情";
+  static String m59(uid) => "用户编号： ${uid}";
 
-  static String m60(version) => "欢迎使用版本 ${version}";
+  static String m60(user) => "查看${user}详情";
 
-  static String m61(name) => "${name}的Windows电脑";
+  static String m61(version) => "欢迎使用版本 ${version}";
+
+  static String m62(name) => "${name}的Windows电脑";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -277,7 +279,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "appleIntelligenceUseHistory": MessageLookupByLibrary.simpleMessage("使用历史"),
     "appleIntelligenceUseNotice": MessageLookupByLibrary.simpleMessage(
-      "人工智能技术应当作为一种审慎的工具来使用，始终以人类判断为导向，并对其风险和益处进行审慎评估。",
+      "在帖子中使用翻译，或通过自定义场景让设备端模型处理文本。内容在本机处理，不会为此发送到云端模型；模型首次准备可能需要联网下载。生成结果可能有误，请核对重要信息。",
     ),
     "attachFile": m6,
     "attachmentUploadExceedingSizeDescription":
@@ -764,10 +766,26 @@ class MessageLookup extends MessageLookupByLibrary {
     "nullDiscuzTitle": MessageLookupByLibrary.simpleMessage("还没有指定一个论坛"),
     "ok": MessageLookupByLibrary.simpleMessage("确定"),
     "onDeviceAiAICoreDescription": MessageLookupByLibrary.simpleMessage(
-      "Android AICore 尚未安装或版本过低。请安装或更新这项 Google 系统服务，返回后我们会重新检查。",
+      "AICore 与此功能所需的版本不兼容。请在受支持的真机上通过 Google Play 检查 AICore 更新，再返回重新检查；仅安装 AICore 无法让不支持的设备获得此能力。",
     ),
     "onDeviceAiAICoreTitle": MessageLookupByLibrary.simpleMessage(
       "需要 Android AICore",
+    ),
+    "onDeviceAiAndroidUnavailable": MessageLookupByLibrary.simpleMessage(
+      "当前设备或系统配置尚未提供本应用所需的 Gemini Nano 模型。不代表所有 ML Kit 功能都不可用。请先查看官方支持设备列表；受支持的真机可更新系统和 AICore、联网等待配置就绪后重新检查。",
+    ),
+    "onDeviceAiBatteryQuota": MessageLookupByLibrary.simpleMessage(
+      "已达到系统对本应用的模型使用配额，请稍后再试；重复检查不会重置配额。",
+    ),
+    "onDeviceAiCheckTimeoutDescription": MessageLookupByLibrary.simpleMessage(
+      "Android AICore 在 15 秒内没有返回检测结果，尚无法确认模型是否可用。模拟器请改用受支持的真机；真机请检查系统和 AICore 更新后重新检查。",
+    ),
+    "onDeviceAiCheckTimeoutTitle": MessageLookupByLibrary.simpleMessage(
+      "设备端服务未响应",
+    ),
+    "onDeviceAiChecking": MessageLookupByLibrary.simpleMessage("正在检查本机模型是否可用…"),
+    "onDeviceAiCheckingAndroid": MessageLookupByLibrary.simpleMessage(
+      "正在等待 Android AICore 返回状态，最多等待 15 秒。此步骤仅检测可用性，不是在下载模型。",
     ),
     "onDeviceAiDownloadFailed": MessageLookupByLibrary.simpleMessage(
       "模型下载失败，请检查网络和可用存储空间后重试。",
@@ -777,23 +795,38 @@ class MessageLookup extends MessageLookupByLibrary {
     "onDeviceAiDownloadingModel": MessageLookupByLibrary.simpleMessage(
       "正在下载模型…",
     ),
+    "onDeviceAiEnableAndroid": MessageLookupByLibrary.simpleMessage(
+      "启用 Gemini Nano",
+    ),
+    "onDeviceAiEnableApple": MessageLookupByLibrary.simpleMessage(
+      "启用 Apple Foundation Models",
+    ),
+    "onDeviceAiForegroundRequired": MessageLookupByLibrary.simpleMessage(
+      "系统仅允许应用在前台使用模型，请保持本应用在前台后重试。",
+    ),
     "onDeviceAiModelDownloadDescription": MessageLookupByLibrary.simpleMessage(
-      "此设备支持 Gemini Nano，但模型文件尚未就绪。请连接 Wi-Fi 并尽量保持充电，Android AICore 将负责下载。",
+      "设备已报告支持此模型，但所需文件尚未下载完成。点击“下载模型”后由 Android AICore 下载，建议使用 Wi-Fi；下载完成后才能启用智能化。",
     ),
     "onDeviceAiModelDownloadTitle": MessageLookupByLibrary.simpleMessage(
       "下载设备端模型",
+    ),
+    "onDeviceAiNameAndroid": MessageLookupByLibrary.simpleMessage(
+      "Gemini Nano",
+    ),
+    "onDeviceAiNameApple": MessageLookupByLibrary.simpleMessage(
+      "Apple Foundation Models",
     ),
     "onDeviceAiOpenGooglePlay": MessageLookupByLibrary.simpleMessage(
       "前往 Google Play",
     ),
     "onDeviceAiProviderAndroid": MessageLookupByLibrary.simpleMessage(
-      "由 Gemini Nano 与 Android AICore 提供",
+      "Android 使用 Gemini Nano，由系统服务 AICore 运行。需要 Google 支持的真机及可用的模型；普通 Android 模拟器不在官方支持范围内，安装 Gemini 应用或 Google Play 并不代表支持此功能。",
     ),
     "onDeviceAiProviderApple": MessageLookupByLibrary.simpleMessage(
-      "由 Apple 设备端基础模型提供",
+      "Apple 设备使用系统提供的设备端基础模型，需要兼容设备、启用 Apple 智能并完成模型准备。",
     ),
     "onDeviceAiReadyDescription": MessageLookupByLibrary.simpleMessage(
-      "设备端模型已经就绪，内容将在本机处理。",
+      "本机模型已就绪。启用后可在帖子中使用翻译及自定义文本处理场景。",
     ),
     "onDeviceAiRequestFailed": MessageLookupByLibrary.simpleMessage(
       "设备端模型暂时无法完成此请求，请稍后再试。",
@@ -802,12 +835,18 @@ class MessageLookup extends MessageLookupByLibrary {
       "这篇帖子过长，超出了设备端模型的处理范围。",
     ),
     "onDeviceAiRetry": MessageLookupByLibrary.simpleMessage("重新检查"),
+    "onDeviceAiServiceBusy": MessageLookupByLibrary.simpleMessage(
+      "系统模型正在忙碌，请稍后点击“重新检查”。",
+    ),
     "onDeviceAiSetupRequired": MessageLookupByLibrary.simpleMessage("需要设置"),
     "onDeviceAiStatusDownloading": MessageLookupByLibrary.simpleMessage("正在下载"),
     "onDeviceAiStorageDescription": MessageLookupByLibrary.simpleMessage(
       "请先释放一些设备存储空间，再下载或使用设备端模型。",
     ),
     "onDeviceAiStorageTitle": MessageLookupByLibrary.simpleMessage("存储空间不足"),
+    "onDeviceAiSupportedDevices": MessageLookupByLibrary.simpleMessage(
+      "查看 Google 支持的设备 ↗",
+    ),
     "onDeviceAiSystemUpdateDescription": MessageLookupByLibrary.simpleMessage(
       "当前 Android 或 Apple 系统版本过低，无法使用设备端模型。请更新系统后重试。",
     ),
@@ -843,6 +882,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "outerlinkOpenTitle": MessageLookupByLibrary.simpleMessage("你正要打开外链"),
     "password": MessageLookupByLibrary.simpleMessage("密码"),
     "passwordIsEmpty": MessageLookupByLibrary.simpleMessage("密码为空"),
+    "passwordRecoveryCreate": MessageLookupByLibrary.simpleMessage("创建新密码库"),
+    "passwordRecoveryMessage": MessageLookupByLibrary.simpleMessage(
+      "旧密码库无法打开或迁移。是否创建一个新的空密码库？之后需要重新输入并保存密码。旧的加密数据会保留，但不再自动使用。",
+    ),
+    "passwordRecoveryTitle": MessageLookupByLibrary.simpleMessage("无法读取已保存的密码"),
+    "passwordSaveFailed": MessageLookupByLibrary.simpleMessage(
+      "可以继续登录，但本次密码未能保存。",
+    ),
     "pictureBedActive": MessageLookupByLibrary.simpleMessage("已启用"),
     "pictureBedAgreeToService": MessageLookupByLibrary.simpleMessage("我同意"),
     "pictureBedApiKeyEmpty": MessageLookupByLibrary.simpleMessage(
@@ -1003,6 +1050,16 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
     "reportDiscuzApiInformationToAnalyticsTitle":
         MessageLookupByLibrary.simpleMessage("帮助我们优化应用"),
+    "reportIssue": MessageLookupByLibrary.simpleMessage("报告问题 · GitHub ↗"),
+    "reportIssueHint": MessageLookupByLibrary.simpleMessage(
+      "如果此问题持续出现，可前往 GitHub 提交 issue，说明操作步骤和遇到的现象。",
+    ),
+    "reportIssueOpenFailed": MessageLookupByLibrary.simpleMessage(
+      "无法打开浏览器，请手动访问 https://github.com/kidozh/discuz_flutter/issues",
+    ),
+    "reportIssueSettingsTitle": MessageLookupByLibrary.simpleMessage(
+      "报告问题 · GitHub",
+    ),
     "reportOtherReasonHint": MessageLookupByLibrary.simpleMessage("提供举报原因"),
     "reportSuccessfully": m46,
     "reportThreadTooltip": MessageLookupByLibrary.simpleMessage("举报不当内容"),
@@ -1017,6 +1074,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "成功保存图片至此设备中.",
     ),
     "savePictureToDevice": MessageLookupByLibrary.simpleMessage("保存图片至此设备"),
+    "savedPasswordsUnavailable": MessageLookupByLibrary.simpleMessage(
+      "暂时无法读取已保存的密码，原数据已保留。你可以手动输入账号和密码登录。",
+    ),
     "savedSmileyTabTitle": MessageLookupByLibrary.simpleMessage("最近使用"),
     "second": MessageLookupByLibrary.simpleMessage("秒"),
     "securityChallengeTitle": MessageLookupByLibrary.simpleMessage("完成安全验证"),
@@ -1064,18 +1124,30 @@ class MessageLookup extends MessageLookupByLibrary {
     "sortThreadInAscendOrder": MessageLookupByLibrary.simpleMessage("从旧到新排列"),
     "sortThreadInDescendOrder": MessageLookupByLibrary.simpleMessage("从新到旧排列"),
     "spam": MessageLookupByLibrary.simpleMessage("恶意灌水"),
+    "steamComingSoon": MessageLookupByLibrary.simpleMessage("即将推出"),
+    "steamParentApp": m50,
+    "steamPriceUnavailable": MessageLookupByLibrary.simpleMessage(
+      "价格请查看 Steam 商店",
+    ),
+    "steamTypeDemo": MessageLookupByLibrary.simpleMessage("试玩版"),
+    "steamTypeDlc": MessageLookupByLibrary.simpleMessage("追加内容（DLC）"),
+    "steamTypeGame": MessageLookupByLibrary.simpleMessage("游戏"),
+    "steamTypeMusic": MessageLookupByLibrary.simpleMessage("原声音乐"),
+    "steamTypeOther": MessageLookupByLibrary.simpleMessage("Steam 内容"),
+    "steamTypeSoftware": MessageLookupByLibrary.simpleMessage("软件"),
+    "steamTypeVideo": MessageLookupByLibrary.simpleMessage("视频"),
     "stickyThread": MessageLookupByLibrary.simpleMessage("置顶帖"),
     "style": MessageLookupByLibrary.simpleMessage("样式"),
-    "submitPoll": m50,
+    "submitPoll": m51,
     "subscribe": MessageLookupByLibrary.simpleMessage("订阅"),
     "subscribeChannel": MessageLookupByLibrary.simpleMessage("订阅推送"),
     "subscribeChannelForMore": MessageLookupByLibrary.simpleMessage(
       "订阅此论坛频道获得实时的最新消息",
     ),
     "subscriptionSuccess": MessageLookupByLibrary.simpleMessage("成功同步至推送服务器"),
-    "successfullyDeleteViewHistoryContent": m51,
-    "successfullyDownloadFiles": m52,
-    "syncSuccessfullyWithServer": m53,
+    "successfullyDeleteViewHistoryContent": m52,
+    "successfullyDownloadFiles": m53,
+    "syncSuccessfullyWithServer": m54,
     "systemStyleDescription": MessageLookupByLibrary.simpleMessage(
       "iOS 26 及以上使用 Liquid Glass，较早的 iOS 使用 Cupertino，其他平台使用质感设计。",
     ),
@@ -1097,9 +1169,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "textFieldShouldNotBeEmpty": MessageLookupByLibrary.simpleMessage("此项不应为空"),
     "thread": MessageLookupByLibrary.simpleMessage("帖子"),
     "threadIsClosed": MessageLookupByLibrary.simpleMessage("此贴已关闭发帖。"),
-    "threadReadAccess": m54,
-    "threadReply": m55,
-    "threadView": m56,
+    "threadReadAccess": m55,
+    "threadReply": m56,
+    "threadView": m57,
     "trashAd": MessageLookupByLibrary.simpleMessage("垃圾广告"),
     "trustHostActionText": MessageLookupByLibrary.simpleMessage("信任此域名"),
     "trustHostTitle": MessageLookupByLibrary.simpleMessage("主机域名白名单"),
@@ -1185,8 +1257,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "userExpiredSubtitle": MessageLookupByLibrary.simpleMessage(
       "当前用户授权已过期，你需要重新登录以重新激活此用户。",
     ),
-    "userExpiredTitle": m57,
-    "userIdTitle": m58,
+    "userExpiredTitle": m58,
+    "userIdTitle": m59,
     "userPost": MessageLookupByLibrary.simpleMessage("回复"),
     "userProfile": MessageLookupByLibrary.simpleMessage("用户中心"),
     "userProfileTitle": MessageLookupByLibrary.simpleMessage("用户信息"),
@@ -1203,7 +1275,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "viewThreadTwoPaneText": MessageLookupByLibrary.simpleMessage(
       "点击左侧的帖子以查看内容。",
     ),
-    "viewUserInfo": m59,
+    "viewUserInfo": m60,
     "warnedPost": MessageLookupByLibrary.simpleMessage("此贴被警告。"),
     "watchPictureInFullScreen": MessageLookupByLibrary.simpleMessage("查看大图"),
     "websiteNotLogined": MessageLookupByLibrary.simpleMessage(
@@ -1213,9 +1285,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "谈坛是支持Discuz X论坛的第三方客户端，欢迎使用我们的服务。",
     ),
     "welcomeTitle": MessageLookupByLibrary.simpleMessage("你好"),
-    "welcomeVersionTitle": m60,
+    "welcomeVersionTitle": m61,
     "wheelColorPickerType": MessageLookupByLibrary.simpleMessage("轮抽选色"),
-    "windowsDeviceName": m61,
+    "windowsDeviceName": m62,
     "workProcedure": MessageLookupByLibrary.simpleMessage("推送服务是如何工作的？"),
     "writeStorageDenied": MessageLookupByLibrary.simpleMessage("无法获得写入权限。"),
   };

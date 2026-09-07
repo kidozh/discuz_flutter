@@ -1,3 +1,4 @@
+import 'package:discuz_flutter/utility/password_store_recovery.dart';
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -30,6 +31,7 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
       AuthenticationStatus.could_not_authenticate;
 
   DiscuzAuthenticationDao? discuzAuthenticationDao = null;
+  bool _storageUnavailable = false;
 
   @override
   void initState() {
@@ -40,6 +42,7 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
   Future<void> _loadAuthenticationStatus() async {
     AuthenticationStatus _status =
         await SecureStorageUtils.getAuthenticationStatus();
+    if (!mounted) return;
     setState(() {
       authenticationStatus = _status;
     });
@@ -50,19 +53,29 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
   }
 
   Future<void> _loadAuthenticationList() async {
-    bool result = await SecureStorageUtils.authenticateWithSystem(context);
-    if (!result) {
+    if (!mounted) return;
+    setState(() => _storageUnavailable = false);
+    try {
+      final authenticated =
+          await SecureStorageUtils.authenticateWithSystem(context);
+      if (!mounted) return;
+      if (!authenticated) {
+        setState(() => authenticationStatus = AuthenticationStatus.failed);
+        return;
+      }
+      final dao = await openPasswordStoreWithRecovery(context);
+      if (dao == null) {
+        if (mounted) setState(() => _storageUnavailable = true);
+        return;
+      }
+      if (!mounted) return;
       setState(() {
-        authenticationStatus = AuthenticationStatus.failed;
-      });
-    } else {
-      // success
-      discuzAuthenticationDao =
-          await SecureStorageUtils.getDiscuzAuthenticationDao();
-
-      setState(() {
+        discuzAuthenticationDao = dao;
         authenticationStatus = AuthenticationStatus.success;
       });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _storageUnavailable = true);
     }
   }
 
@@ -92,6 +105,20 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
   }
 
   Widget getStatusWidget() {
+    if (_storageUnavailable) {
+      return Center(
+          child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Text(S.of(context).savedPasswordsUnavailable,
+              textAlign: TextAlign.center),
+          const SizedBox(height: 12),
+          PlatformTextButton(
+              onPressed: _loadAuthenticationList,
+              child: Text(S.of(context).retry)),
+        ]),
+      ));
+    }
     switch (authenticationStatus) {
       case AuthenticationStatus.can_authenticate:
         // check with it

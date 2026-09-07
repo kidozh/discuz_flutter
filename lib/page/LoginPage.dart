@@ -1,3 +1,4 @@
+import 'package:discuz_flutter/utility/password_store_recovery.dart';
 import 'dart:developer';
 import 'dart:io';
 
@@ -82,6 +83,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
       new CaptchaController(new CaptchaFields("", "login", ""));
   bool canAuthenticate = false;
   bool _rememberPassword = true;
+  bool _autofillInProgress = false;
   bool _isAuthed = false;
 
   _LoginFormFieldState(this.discuz, this.accountName) {}
@@ -98,46 +100,63 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
   }
 
   Future<void> _checkWithAuthentication() async {
-    bool canAuth = await SecureStorageUtils.canAuthenticated();
-    setState(() {
-      canAuthenticate = canAuth;
-      _rememberPassword = canAuth;
-    });
-
-    if (canAuth) {
-      await _authWithSystemAndAutoFill();
+    // Capability checks never prompt for authentication or open secure storage.
+    try {
+      final canAuth = await SecureStorageUtils.canAuthenticated();
+      if (!mounted) return;
+      setState(() {
+        canAuthenticate = canAuth;
+        _rememberPassword = canAuth;
+      });
+      if (canAuth) await _authWithSystemAndAutoFill();
+    } catch (_) {
+      if (mounted) setState(() => canAuthenticate = false);
     }
   }
 
   Future<void> _authWithSystemAndAutoFill() async {
-    bool canAuth = await SecureStorageUtils.canAuthenticated();
+    if (_autofillInProgress || !mounted) return;
+    _autofillInProgress = true;
+    try {
+      bool canAuth = await SecureStorageUtils.canAuthenticated();
 
-    if (canAuth) {
-      bool isAuthed = await SecureStorageUtils.authenticateWithSystem(context);
+      if (canAuth) {
+        bool isAuthed =
+            await SecureStorageUtils.authenticateWithSystem(context);
 
-      if (isAuthed) {
-        // check into system
-        DiscuzAuthenticationDao discuzAuthentificationDao =
-            await SecureStorageUtils.getDiscuzAuthenticationDao();
-        List<DiscuzAuthentication> discuzAuthentificationList =
-            discuzAuthentificationDao
-                .getDiscuzAuthenticationListByHost(discuz.host);
-        log("The list of authentification ${discuzAuthentificationList.length}");
-        if (discuzAuthentificationList.length == 1) {
-          // only one element in authentication
-          DiscuzAuthentication discuzAuthentification =
-              discuzAuthentificationList.first;
-          _autoFillLoginForm(
-              discuzAuthentification.account, discuzAuthentification.password);
-        } else if (discuzAuthentificationList.isEmpty) {
-          EasyLoading.showInfo(S.of(context).noAuthenticationFoundInApp);
+        if (!mounted) return;
+        if (isAuthed) {
+          // check into system
+          final discuzAuthentificationDao =
+              await openPasswordStoreWithRecovery(context);
+          if (discuzAuthentificationDao == null) return;
+          if (!mounted) return;
+          List<DiscuzAuthentication> discuzAuthentificationList =
+              discuzAuthentificationDao
+                  .getDiscuzAuthenticationListByHost(discuz.host);
+          log("The list of authentification ${discuzAuthentificationList.length}");
+          if (discuzAuthentificationList.length == 1) {
+            // only one element in authentication
+            DiscuzAuthentication discuzAuthentification =
+                discuzAuthentificationList.first;
+            _autoFillLoginForm(discuzAuthentification.account,
+                discuzAuthentification.password);
+          } else if (discuzAuthentificationList.isEmpty) {
+            EasyLoading.showInfo(S.of(context).noAuthenticationFoundInApp);
+          } else {
+            // multiple choices
+            _showAutoFillDialog(discuzAuthentificationList);
+          }
         } else {
-          // multiple choices
-          _showAutoFillDialog(discuzAuthentificationList);
+          EasyLoading.showError(S.of(context).unableToAuthenticate);
         }
-      } else {
-        EasyLoading.showError(S.of(context).unableToAuthenticate);
       }
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _rememberPassword = false);
+      EasyLoading.showError(S.of(context).savedPasswordsUnavailable);
+    } finally {
+      _autofillInProgress = false;
     }
   }
 
@@ -213,17 +232,21 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
   }
 
   Future<void> _saveAuthentificationToSecureDatabase() async {
-    String account = _accountController.text;
-    String password = _passwdController.text;
-    DiscuzAuthenticationDao discuzAuthentificationDao =
-        await SecureStorageUtils.getDiscuzAuthenticationDao();
-    DiscuzAuthentication discuzAuthentification = DiscuzAuthentication();
-    discuzAuthentification.account = account;
-    discuzAuthentification.password = password;
-    discuzAuthentification.discuz_host = discuz.host;
-    discuzAuthentification.updateTime = DateTime.now();
-    discuzAuthentificationDao
-        .insertDiscuzAuthentication(discuzAuthentification);
+    try {
+      String account = _accountController.text;
+      String password = _passwdController.text;
+      DiscuzAuthenticationDao discuzAuthentificationDao =
+          await SecureStorageUtils.getDiscuzAuthenticationDao();
+      DiscuzAuthentication discuzAuthentification = DiscuzAuthentication();
+      discuzAuthentification.account = account;
+      discuzAuthentification.password = password;
+      discuzAuthentification.discuz_host = discuz.host;
+      discuzAuthentification.updateTime = DateTime.now();
+      await discuzAuthentificationDao
+          .insertDiscuzAuthentication(discuzAuthentification);
+    } catch (_) {
+      if (mounted) EasyLoading.showError(S.of(context).passwordSaveFailed);
+    }
   }
 
   Dio _dio = Dio();
@@ -646,11 +669,12 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                     child: InkWell(
                       child: Icon(
                         AppPlatformIcons(context).authenticationSecureSolid,
+                        semanticLabel: S.of(context).autofillDialogTitle,
                         size: 36,
                       ),
                       onTap: () async {
                         VibrationUtils.vibrateWithClickIfPossible();
-                        await _checkWithAuthentication();
+                        await _authWithSystemAndAutoFill();
                       },
                     ),
                   ))

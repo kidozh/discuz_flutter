@@ -1,3 +1,4 @@
+import 'package:discuz_flutter/widget/SteamGameWidget.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
@@ -67,6 +68,24 @@ Future<void> _waitForHtml(WidgetTester tester) async {
 }
 
 void main() {
+  for (final html in [
+    '<iframe src="https://store.steampowered.com/widget/123/"></iframe>',
+    '<a href="https://store.steampowered.com/app/123/">Steam item</a>',
+  ]) {
+    testWidgets('Steam HTML is routed to a preview: $html', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final controller = ScrollController();
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(_host(html, controller, sliver: false));
+      await tester.pump();
+      expect(find.byType(SteamGameWidget), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(seconds: 60));
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets(
       'asynchronous box body signals readiness after real content exists',
       (tester) async {

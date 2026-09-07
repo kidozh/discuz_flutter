@@ -182,34 +182,54 @@ class OnDeviceAiService {
 
     if (Platform.isAndroid) {
       _ensureAndroidChannelInitialized();
-      try {
-        final response =
-            await _androidChannel.invokeMapMethod<dynamic, dynamic>(
-          'checkAvailability',
-        );
-        if (response == null) {
-          throw const OnDeviceAiException(
-            'empty_availability',
-            'The Android intelligence service returned no availability data.',
-          );
-        }
-        return OnDeviceAiAvailability.fromMap(response);
-      } on PlatformException catch (error) {
-        final exception = OnDeviceAiException.fromPlatformException(error);
-        return OnDeviceAiAvailability(
-          status: OnDeviceAiAvailabilityStatus.error,
-          reasonCode: exception.code,
-          errorMessage: exception.message,
-          nativeCode: exception.nativeCode,
-          platform: 'android',
-        );
-      }
+      return checkAndroidAvailability();
     }
 
     return const OnDeviceAiAvailability(
       status: OnDeviceAiAvailabilityStatus.unsupportedPlatform,
       reasonCode: 'unsupported_platform',
     );
+  }
+
+  /// Checks the Android bridge separately so missing or stalled services are
+  /// reported as a retryable error instead of leaving the UI loading forever.
+  static Future<OnDeviceAiAvailability> checkAndroidAvailability() async {
+    try {
+      final response = await _androidChannel
+          .invokeMapMethod<dynamic, dynamic>(
+            'checkAvailability',
+          )
+          .timeout(const Duration(seconds: 15));
+      if (response == null) {
+        throw const OnDeviceAiException(
+          'empty_availability',
+          'The Android intelligence service returned no availability data.',
+        );
+      }
+      return OnDeviceAiAvailability.fromMap(response);
+    } on PlatformException catch (error) {
+      final exception = OnDeviceAiException.fromPlatformException(error);
+      return OnDeviceAiAvailability(
+        status: OnDeviceAiAvailabilityStatus.error,
+        reasonCode: exception.code,
+        errorMessage: exception.message,
+        nativeCode: exception.nativeCode,
+        platform: 'android',
+      );
+    } on TimeoutException {
+      return const OnDeviceAiAvailability(
+        status: OnDeviceAiAvailabilityStatus.error,
+        reasonCode: 'check_timeout',
+        platform: 'android',
+      );
+    } catch (error) {
+      return OnDeviceAiAvailability(
+        status: OnDeviceAiAvailabilityStatus.error,
+        reasonCode: 'check_failed',
+        errorMessage: error.toString(),
+        platform: 'android',
+      );
+    }
   }
 
   static OnDeviceAiAvailabilityStatus _appleUnavailableStatus(
