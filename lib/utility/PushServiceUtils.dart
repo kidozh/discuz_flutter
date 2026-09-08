@@ -441,7 +441,7 @@ class PushServiceUtils{
         android: initializationSettingsAndroid,
         iOS: initializationSettingsIOS,
         macOS: initializationSettingsIOS);
-    await flutterLocalNotificationsPlugin.initialize(settings: initializationSettings);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
     return flutterLocalNotificationsPlugin;
   }
 
@@ -470,10 +470,10 @@ class PushServiceUtils{
     NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = await initFirebaseLocalNotification();
     await flutterLocalNotificationsPlugin.show(
-      id: 1,
-      title: data["title"],
-      body: data["message"],
-      notificationDetails: platformChannelSpecifics,
+      1,
+      data["title"],
+      data["message"],
+      platformChannelSpecifics,
       payload: jsonEncode(data)
     );
 
@@ -504,10 +504,10 @@ class PushServiceUtils{
     int? tid = int.tryParse(data["tid"]);
 
     await flutterLocalNotificationsPlugin.show(
-        id: tid ?? 0,
-        title: data["title"],
-        body: data["message"],
-        notificationDetails: platformChannelSpecifics,
+        tid ?? 0,
+        data["title"],
+        data["message"],
+        platformChannelSpecifics,
         payload: jsonEncode(data)
     );
 

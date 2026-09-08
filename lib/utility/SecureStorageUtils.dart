@@ -29,7 +29,6 @@ class SecureStorageUtils {
     AndroidOptions _getAndroidOptions() => const AndroidOptions(
           encryptedSharedPreferences: true,
           resetOnError: false,
-          migrateWithBackup: true,
         );
     final storage = FlutterSecureStorage(aOptions: _getAndroidOptions());
     return storage;
@@ -107,8 +106,8 @@ class SecureStorageUtils {
     final secureStorage = FlutterSecureStorage(
       aOptions: AndroidOptions(
         resetOnError: false,
-        migrateWithBackup: true,
-        storageNamespace: store,
+        encryptedSharedPreferences: store != null,
+        sharedPreferencesName: store,
       ),
     );
     final keyName = store == null
