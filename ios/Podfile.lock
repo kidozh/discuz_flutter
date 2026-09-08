@@ -62,7 +62,6 @@ PODS:
   - Flutter (1.0.0)
   - flutter_image_compress_common (1.0.0):
     - Flutter
-    - Mantle
     - SDWebImage
     - SDWebImageWebPCoder
   - flutter_local_notifications (0.0.1):
@@ -159,9 +158,6 @@ PODS:
   - local_auth_darwin (0.0.1):
     - Flutter
     - FlutterMacOS
-  - Mantle (2.2.0):
-    - Mantle/extobjc (= 2.2.0)
-  - Mantle/extobjc (2.2.0)
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
     - nanopb/encode (= 3.30910.0)
@@ -256,7 +252,6 @@ SPEC REPOS:
     - GoogleUserMessagingPlatform
     - GoogleUtilities
     - libwebp
-    - Mantle
     - nanopb
     - PromisesObjC
     - SDWebImage
@@ -340,7 +335,7 @@ SPEC CHECKSUMS:
   FirebaseInstallations: 933b2747e8594084c9117b65e8358fce29d7ced7
   FirebaseMessaging: 422bb80cbf8ff83e69e50bea4d4984fc4704f665
   Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
-  flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
+  flutter_image_compress_common: d1d827ee42025290fc9e3203ece582e4c74182ed
   flutter_local_notifications: ff50f8405aaa0ccdc7dcfb9022ca192e8ad9688f
   flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
   foundation_models_framework: cd23b9972b415c5f5e6fb7a09498f72a6bd65ddc
@@ -357,7 +352,6 @@ SPEC CHECKSUMS:
   just_audio: a42c63806f16995daf5b219ae1d679deb76e6a79
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   local_auth_darwin: 63c73d6d28cc3e239be2b6aa460ea6e317cd5100
-  Mantle: c5aa8794a29a022dfbbfc9799af95f477a69b62d
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   open_filex: 6e26e659846ec990262224a12ef1c528bb4edbe4
   package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4

@@ -40,15 +40,16 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
   }
 
   Future<void> _loadAuthenticationStatus() async {
-    AuthenticationStatus _status =
-        await SecureStorageUtils.getAuthenticationStatus();
-    if (!mounted) return;
-    setState(() {
-      authenticationStatus = _status;
-    });
-
-    if (_status == AuthenticationStatus.can_authenticate) {
-      await _loadAuthenticationList();
+    try {
+      final status = await SecureStorageUtils.getAuthenticationStatus();
+      if (!mounted) return;
+      setState(() => authenticationStatus = status);
+      if (status == AuthenticationStatus.can_authenticate) {
+        await _loadAuthenticationList();
+      }
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => authenticationStatus = AuthenticationStatus.failed);
     }
   }
 

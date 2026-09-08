@@ -100,7 +100,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
   }
 
   Future<void> _checkWithAuthentication() async {
-    // Capability checks never prompt for authentication or open secure storage.
+    // After checking support, keep the automatic verification/autofill flow.
     try {
       final canAuth = await SecureStorageUtils.canAuthenticated();
       if (!mounted) return;
@@ -153,7 +153,6 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
       }
     } catch (_) {
       if (!mounted) return;
-      setState(() => _rememberPassword = false);
       EasyLoading.showError(S.of(context).savedPasswordsUnavailable);
     } finally {
       _autofillInProgress = false;
@@ -235,8 +234,9 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
     try {
       String account = _accountController.text;
       String password = _passwdController.text;
-      DiscuzAuthenticationDao discuzAuthentificationDao =
-          await SecureStorageUtils.getDiscuzAuthenticationDao();
+      if (!mounted) return;
+      final discuzAuthentificationDao = await openPasswordStoreWithRecovery(context);
+      if (discuzAuthentificationDao == null) return;
       DiscuzAuthentication discuzAuthentification = DiscuzAuthentication();
       discuzAuthentification.account = account;
       discuzAuthentification.password = password;

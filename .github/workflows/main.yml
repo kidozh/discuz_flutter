@@ -120,15 +120,39 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         shell: bash
         run: |
+          version=$(awk '$1 == "version:" { print $2; exit }' pubspec.yaml)
+          if [[ ! "$version" =~ ^([0-9]+\.[0-9]+\.[0-9]+)\+([1-9][0-9]*)$ ]]; then
+            echo "::error::Expected pubspec.yaml version in name+build format (for example 2.0.4+160)."
+            exit 1
+          fi
+          build_name="${BASH_REMATCH[1]}"
+          build_number="${BASH_REMATCH[2]}"
           # Release builds must regenerate plugin registration for release mode.
           # --no-pub can retain dev-only plugins such as integration_test from
           # the dependency/toolchain checks, while Gradle excludes them.
-          flutter build apk --release
-          flutter build appbundle --release
-          git diff --exit-code -- pubspec.lock
           mkdir -p release
+          flutter build apk --release --build-name="$build_name" --build-number="$build_number"
+          test -s build/app/outputs/mapping/release/mapping.txt
+          cp build/app/outputs/mapping/release/mapping.txt release/apk-mapping.txt
+          flutter build appbundle --release --build-name="$build_name" --build-number="$build_number"
+          git diff --exit-code -- pubspec.lock
           cp build/app/outputs/flutter-apk/app-release.apk release/
           cp build/app/outputs/bundle/release/app-release.aab release/
+          # Extract from the submitted AAB so this mapping always matches it.
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+
+          with ZipFile('release/app-release.aab') as bundle:
+              mapping = bundle.read('BUNDLE-METADATA/com.android.tools.build.obfuscation/proguard.map')
+          if not mapping.strip():
+              raise SystemExit('AAB contains an empty R8 mapping; check release minification.')
+          Path('release/mapping.txt').write_bytes(mapping)
+          PY
+          printf 'Version: %s\nCommit: %s\nCI run: %s\n\nSubmit app-release.aab to Google Play.\nIts R8 mapping is embedded; use mapping.txt if a manual upload is requested.\napk-mapping.txt corresponds to app-release.apk.\n' \
+            "$version" "$GITHUB_SHA" "$GITHUB_RUN_ID" > release/android-release-info.txt
+          (cd release && sha256sum app-release.apk app-release.aab mapping.txt apk-mapping.txt > SHA256SUMS.txt)
+          cat release/android-release-info.txt >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build Android debug artifact
         if: github.event_name != 'push' || github.ref != 'refs/heads/master'
@@ -200,7 +224,19 @@ jobs:
         run: flutter pub get --enforce-lockfile
 
       - name: Build unsigned iOS app
-        run: flutter build ios --release --no-codesign --no-pub
+        shell: bash
+        run: |
+          version=$(awk '$1 == "version:" { print $2; exit }' pubspec.yaml)
+          if [[ ! "$version" =~ ^([0-9]+\.[0-9]+\.[0-9]+)\+([1-9][0-9]*)$ ]]; then
+            echo "::error::Expected pubspec.yaml version in name+build format."
+            exit 1
+          fi
+          build_name="${BASH_REMATCH[1]}"
+          build_number="${BASH_REMATCH[2]}"
+          flutter build ios --release --no-codesign --no-pub --build-name="$build_name" --build-number="$build_number"
+          plist=build/ios/iphoneos/Runner.app/Info.plist
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$plist")" = "$build_name"
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$plist")" = "$build_number"
 
       - name: Package iOS build
         shell: bash
@@ -261,6 +297,10 @@ jobs:
           gh release create "$RELEASE_TAG" \
             dist/app-release.apk \
             dist/app-release.aab \
+            dist/mapping.txt \
+            dist/apk-mapping.txt \
+            dist/android-release-info.txt \
+            dist/SHA256SUMS.txt \
             dist/Runner-ios.tar.gz \
             --target "$GITHUB_SHA" \
             --title "$RELEASE_TAG" \

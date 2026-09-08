@@ -109,16 +109,22 @@ jobs:
           api-key-id: ${{ vars.APPSTORE_API_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
-      - name: Determine build number
+      - name: Determine release version
         id: version
         shell: bash
         env:
           REQUESTED_BUILD_NUMBER: ${{ inputs.build_number }}
         run: |
+          version=$(awk '$1 == "version:" { print $2; exit }' pubspec.yaml)
+          if [[ ! "$version" =~ ^([0-9]+\.[0-9]+\.[0-9]+)\+([1-9][0-9]*)$ ]]; then
+            echo "::error::Expected pubspec.yaml version in name+build format."
+            exit 1
+          fi
+          build_name="${BASH_REMATCH[1]}"
+          source_build="${BASH_REMATCH[2]}"
           if [[ -n "$REQUESTED_BUILD_NUMBER" ]]; then
             build_number="$REQUESTED_BUILD_NUMBER"
           else
-            source_build=$(awk -F'+' '$1 ~ /^version:/ { print $2; exit }' pubspec.yaml)
             build_number="$source_build"
           fi
           if [[ ! "$build_number" =~ ^[1-9][0-9]*$ ]]; then
@@ -126,15 +132,26 @@ jobs:
             exit 1
           fi
           echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
-          echo "Building App Store version with build number $build_number"
+          echo "build_name=$build_name" >> "$GITHUB_OUTPUT"
+          echo "Building App Store version $build_name ($build_number)"
 
       - name: Build signed IPA
         run: >-
           flutter build ipa
           --release
           --no-pub
+          --build-name=${{ steps.version.outputs.build_name }}
           --build-number=${{ steps.version.outputs.build_number }}
           --export-options-plist=ios/ExportOptions.plist
+
+      - name: Verify archived iOS version
+        env:
+          EXPECTED_BUILD_NAME: ${{ steps.version.outputs.build_name }}
+          EXPECTED_BUILD_NUMBER: ${{ steps.version.outputs.build_number }}
+        run: |
+          plist=build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app/Info.plist
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$plist")" = "$EXPECTED_BUILD_NAME"
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$plist")" = "$EXPECTED_BUILD_NUMBER"
 
       - name: Locate IPA
         id: ipa
@@ -157,6 +174,24 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      - name: Prepare TestFlight release notes
+        id: testflight_notes
+        env:
+          CUSTOM_RELEASE_NOTES: ${{ inputs.release_notes }}
+        run: |
+          python3 - <<'PYNOTES'
+          import os
+          import uuid
+          from pathlib import Path
+
+          notice = Path('docs/testflight-release-notes.txt').read_text().strip()
+          custom = os.environ.get('CUSTOM_RELEASE_NOTES', '').strip()
+          notes = '\n\n'.join(part for part in (custom, notice) if part)
+          delimiter = 'notes_' + uuid.uuid4().hex
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write(f'notes<<{delimiter}\n{notes}\n{delimiter}\n')
+          PYNOTES
+
       - name: Upload to App Store Connect and TestFlight
         uses: apple-actions/upload-testflight-build@v5
         with:
@@ -164,5 +199,5 @@ jobs:
           issuer-id: ${{ vars.APPSTORE_ISSUER_ID }}
           api-key-id: ${{ vars.APPSTORE_API_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
-          release-notes: ${{ inputs.release_notes }}
+          release-notes: ${{ steps.testflight_notes.outputs.notes }}
           wait-for-processing: "true"

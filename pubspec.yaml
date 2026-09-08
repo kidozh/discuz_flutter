@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.0.3+159
+version: 2.0.4+160
 
 environment:
   sdk: ">=3.12.0 <4.0.0"
@@ -64,18 +64,18 @@ dependencies:
   image_picker: ^1.0.4
   flutter_image_compress: ^2.5.1
 
-  package_info_plus: ^10.2.1
+  package_info_plus: ^9.0.1
   flutter_native_splash: ^2.3.2
   slide_countdown: ^2.0.0
 
   hive_ce: ^2.10.1
   hive_ce_flutter: ^2.2.0
-  device_info_plus: ^13.2.0
-  share_plus: ^13.3.0
+  device_info_plus: ^12.4.0
+  share_plus: ^12.0.2
   firebase_messaging: ^16.0.0
   font_awesome_flutter: ^11.0.0
   firebase_analytics: ^12.0.0
-  flutter_local_notifications: ^22.3.0
+  flutter_local_notifications: ^19.5.0
   # flutter_apns: ^1.6.0
   scroll_to_index: any
   easy_refresh: ^3.0.2+2
@@ -89,8 +89,8 @@ dependencies:
     path: third_party/dual_screen
   carousel_slider: ^5.0.0
   upgrader: ^13.7.0
-  # Keep v10 migration support for accounts saved by v9; do not jump to v11.
-  flutter_secure_storage: ^10.3.1
+  # v10 changes the storage backend/ciphers; keep v9 until device migration is verified.
+  flutter_secure_storage: 9.2.4
   local_auth: ^3.0.0
   flex_color_picker: ^3.3.1
   google_fonts: ^8.2.1
