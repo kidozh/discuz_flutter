@@ -87,6 +87,11 @@ abstract class MobileApiClient {
   Future<String> viewThreadRaw(@Query("tid") int tid, @Query("page") int page,
       @Queries() Map<String, dynamic> queries);
 
+  @GET("/api/mobile/index.php?version=4&module=viewthread")
+  Future<ViewThreadResult> viewThreadPage(@Query("tid") int tid,
+      @Query("page") int page, @Query("ppp") int ppp,
+      @Queries() Map<String, dynamic> queries);
+
   // map{
   // "seccodemodid", "forum::viewthread",
   // "seccodehash" , CAPTCHA_HASH,

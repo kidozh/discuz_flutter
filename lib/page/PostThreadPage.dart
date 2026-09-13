@@ -1,3 +1,6 @@
+import 'PollComposerPage.dart';
+import '../entity/PollDraft.dart';
+import '../client/ForumInteractionClient.dart';
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/screen/SmileyListScreen.dart';
@@ -11,6 +14,7 @@ import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:provider/provider.dart';
 
 import '../JsonResult/DisplayForumResult.dart';
+import '../widget/PostPermissionGate.dart';
 import '../dao/DraftDao.dart';
 import '../dao/ImageAttachmentDao.dart';
 import '../database/AppDatabase.dart';
@@ -36,8 +40,17 @@ class PostThreadPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PostThreadStatefulWidget(this.discuz, this.fid, this.tid,
-        draft: draft);
+    final user = context.watch<DiscuzAndUserNotifier>().user;
+    return PostPermissionGate(
+      key: ValueKey('${discuz.baseURL}:$fid:${user?.uid}'),
+      reply: false,
+      fullPage: true,
+      load: () async => MobileApiClient(
+        await NetworkUtils.getDioWithPersistCookieJar(user),
+        baseUrl: discuz.baseURL,
+      ).checkPost(fid, null),
+      child: PostThreadStatefulWidget(discuz, fid, tid, draft: draft),
+    );
   }
 }
 
@@ -61,11 +74,15 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   int tid;
   TextEditingController _controller = TextEditingController();
   TextEditingController _titleEditingController = TextEditingController();
-  CaptchaController captchaController =
-      CaptchaController(new CaptchaFields("", "post", ""));
+  CaptchaController captchaController = CaptchaController(
+    new CaptchaFields("", "post", ""),
+  );
   FocusNode focusNode = FocusNode();
   List<String> insertedAidList = [];
   Draft? draft;
+  PollDraft? _pollDraft;
+  bool _sending = false;
+  Future<void> _draftWrite = Future.value();
   // dropdown menu status
   String? selectedTypeId;
 
@@ -74,13 +91,74 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   @override
   void initState() {
     super.initState();
+    if (draft != null) {
+      _titleEditingController.text = draft!.title;
+      _controller.text = draft!.text;
+      selectedTypeId = draft!.typeid;
+      _pollDraft = PollDraft.decode(draft!.pollJson);
+    }
     _loadForumInfo();
     // add backup option
     backupDraftIfPossible();
   }
 
+  Future<void> _configurePoll() async {
+    final account = context.read<DiscuzAndUserNotifier>();
+    final user = account.user;
+    if (user == null || account.discuz?.baseURL != discuz.baseURL) return;
+    try {
+      final api = ForumInteractionClient(
+        await NetworkUtils.getDioWithPersistCookieJar(user),
+        discuz.baseURL,
+      );
+      final permission = await api.request('newthread', {
+        'fid': fid,
+        'special': 1,
+      });
+      permission.requireData('formhash');
+      if ('${permission.variables['member_uid']}' != '${user.uid}')
+        throw const ForumApiException('account_changed', '');
+      if (!mounted || account.user != user) return;
+      final value = await Navigator.push<PollDraft>(
+        context,
+        platformPageRoute(
+          context: context,
+          builder: (_) => PollComposerPage(initial: _pollDraft),
+        ),
+      );
+      if (mounted && value != null) {
+        setState(() => _pollDraft = value);
+        await backupDraft();
+      }
+    } catch (e) {
+      if (mounted)
+        EasyLoading.showError(
+          e is ForumApiException && e.message.isNotEmpty
+              ? e.message
+              : S.of(context).pollUnavailable,
+        );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_forumLoadError != null) {
+      return PlatformScaffold(
+        appBar: PlatformAppBar(title: Text(S.of(context).pushThreadTitle)),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(_forumLoadError!),
+              PlatformTextButton(
+                onPressed: _loadForumInfo,
+                child: Text(S.of(context).refresh),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     if (_displayForumResult == null) {
       return Container(
         width: 64,
@@ -94,10 +172,8 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
               height: 32,
               child: PlatformCircularProgressIndicator(),
             ),
-            SizedBox(
-              height: 32,
-            ),
-            Text(S.of(context).loadingForumInformation)
+            SizedBox(height: 32),
+            Text(S.of(context).loadingForumInformation),
           ],
         ),
       );
@@ -120,7 +196,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
               VibrationUtils.vibrateWithClickIfPossible();
               await _launchCaptchaDialog(context);
             },
-          )
+          ),
         ],
       ),
       body: PlatformLiquidGlassPageBackdrop(
@@ -144,10 +220,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                             onPressed: _showThreadTypePicker,
                             child: Row(
                               children: [
-                                Icon(
-                                  PlatformIcons(context).tagSolid,
-                                  size: 16,
-                                ),
+                                Icon(PlatformIcons(context).tagSolid, size: 16),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
@@ -177,6 +250,30 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                       ),
                       const SizedBox(height: 8),
                     ],
+                    Row(
+                      children: [
+                        Expanded(
+                          child: PlatformTextButton(
+                            onPressed: _sending ? null : _configurePoll,
+                            child: Text(
+                              _pollDraft == null
+                                  ? S.of(context).createPoll
+                                  : S.of(context).editPoll,
+                            ),
+                          ),
+                        ),
+                        if (_pollDraft != null)
+                          PlatformTextButton(
+                            onPressed: _sending
+                                ? null
+                                : () {
+                                    setState(() => _pollDraft = null);
+                                    backupDraft();
+                                  },
+                            child: Text(S.of(context).removePoll),
+                          ),
+                      ],
+                    ),
                     PlatformTextField(
                       controller: _titleEditingController,
                       textInputAction: TextInputAction.next,
@@ -186,15 +283,16 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                 ),
               ),
               Expanded(
-                  child: Padding(
-                padding: EdgeInsets.all(4.0),
-                child: PostTextField(
-                  discuz,
-                  _controller,
-                  focusNode: focusNode,
-                  expanded: true,
+                child: Padding(
+                  padding: EdgeInsets.all(4.0),
+                  child: PostTextField(
+                    discuz,
+                    _controller,
+                    focusNode: focusNode,
+                    expanded: true,
+                  ),
                 ),
-              )),
+              ),
               SafeArea(
                 top: false,
                 child: Padding(
@@ -237,10 +335,11 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                             VibrationUtils.vibrateWithClickIfPossible();
                             // popup a smiley dialog
                             showPlatformModalSheet(
-                                context: context,
-                                builder: (context) => SmileyListScreen((p0) {
-                                      insertSmiley(p0);
-                                    }));
+                              context: context,
+                              builder: (context) => SmileyListScreen((p0) {
+                                insertSmiley(p0);
+                              }),
+                            );
                           },
                         ),
                         PlatformIconButton(
@@ -249,58 +348,63 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                           onPressed: () {
                             VibrationUtils.vibrateWithClickIfPossible();
                             showPlatformModalSheet(
-                                context: context,
-                                builder: (context) => ExtraFuncInThreadScreen(
-                                      discuz,
-                                      tid,
-                                      fid,
-                                      onReplyWithImage: (aid, path) async {
-                                        // fill with text first
-                                        // refresh the layout
-                                        // insertedAidList.clear();
-                                        if (aid.isNotEmpty) {
-                                          String insertedAidString =
-                                              "[attachimg]${aid}[/attachimg]";
-                                          insertString(insertedAidString);
-                                          // add aid to list
-                                          insertedAidList.add(aid);
-                                          // add to historical attachment
-                                          bool savedInDatabase =
-                                              await UserPreferencesUtils
-                                                  .getRecordHistoryEnabled();
-                                          if (savedInDatabase) {
-                                            // save it to database
-                                            ImageAttachmentDao
-                                                imageAttachmentDao =
-                                                await AppDatabase
-                                                    .getImageAttachmentDao();
-                                            ImageAttachment? imageAttachment =
-                                                imageAttachmentDao
-                                                    .findImageAttachmentByDiscuzAndAid(
-                                                        discuz, aid);
-                                            if (imageAttachment != null) {
-                                              imageAttachment.updateAt =
-                                                  DateTime.now();
-                                              imageAttachmentDao
-                                                  .insertImageAttachmentWithKey(
-                                                      imageAttachment.key,
-                                                      imageAttachment);
-                                            } else {
-                                              imageAttachmentDao
-                                                  .insertImageAttachment(
-                                                      ImageAttachment(
-                                                          aid, discuz, path));
-                                            }
-                                          }
-                                        } else {}
-                                      },
-                                      onReplyWithHostedImage: (imageUrl, path) {
-                                        if (imageUrl.isNotEmpty) {
-                                          insertString("[img]$imageUrl[/img]");
-                                        }
-                                      },
-                                      showHistoricalAttachment: false,
-                                    ));
+                              context: context,
+                              builder: (context) => ExtraFuncInThreadScreen(
+                                discuz,
+                                tid,
+                                fid,
+                                onReplyWithImage: (aid, path) async {
+                                  // fill with text first
+                                  // refresh the layout
+                                  // insertedAidList.clear();
+                                  if (aid.isNotEmpty) {
+                                    String insertedAidString =
+                                        "[attachimg]${aid}[/attachimg]";
+                                    insertString(insertedAidString);
+                                    // add aid to list
+                                    insertedAidList.add(aid);
+                                    // add to historical attachment
+                                    bool savedInDatabase =
+                                        await UserPreferencesUtils.getRecordHistoryEnabled();
+                                    if (savedInDatabase) {
+                                      // save it to database
+                                      ImageAttachmentDao imageAttachmentDao =
+                                          await AppDatabase.getImageAttachmentDao();
+                                      ImageAttachment?
+                                      imageAttachment = imageAttachmentDao
+                                          .findImageAttachmentByDiscuzAndAid(
+                                            discuz,
+                                            aid,
+                                          );
+                                      if (imageAttachment != null) {
+                                        imageAttachment.updateAt =
+                                            DateTime.now();
+                                        imageAttachmentDao
+                                            .insertImageAttachmentWithKey(
+                                              imageAttachment.key,
+                                              imageAttachment,
+                                            );
+                                      } else {
+                                        imageAttachmentDao
+                                            .insertImageAttachment(
+                                              ImageAttachment(
+                                                aid,
+                                                discuz,
+                                                path,
+                                              ),
+                                            );
+                                      }
+                                    }
+                                  } else {}
+                                },
+                                onReplyWithHostedImage: (imageUrl, path) {
+                                  if (imageUrl.isNotEmpty) {
+                                    insertString("[img]$imageUrl[/img]");
+                                  }
+                                },
+                                showHistoricalAttachment: false,
+                              ),
+                            );
                           },
                         ),
                         // PlatformIconButton(
@@ -319,18 +423,26 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   }
 
   DisplayForumResult? _displayForumResult = null;
+  String? _forumLoadError;
 
   Future<void> _loadForumInfo() async {
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    User? user = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).user;
     Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
-    // fetch the information soon
-    client.displayForumResult(fid.toString(), 0, {}).then((value) {
+    try {
+      if (mounted) setState(() => _forumLoadError = null);
+      final value = await client.displayForumResult(fid.toString(), 1, {});
+      if (!mounted) return;
       setState(() {
-        _displayForumResult = value;
+        _forumLoadError = value.getErrorString();
+        if (_forumLoadError == null) _displayForumResult = value;
       });
-    });
+    } catch (_) {
+      if (mounted) setState(() => _forumLoadError = S.of(context).networkFail);
+    }
   }
 
   List<MapEntry<String, String>> get _threadTypeEntries =>
@@ -366,8 +478,8 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                 child: Text(
                   S.of(context).forumFilterTypeIdTitle,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               Flexible(
@@ -386,8 +498,9 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                         trailing: selectedTypeId == entry.key
                             ? Icon(
                                 PlatformIcons(sheetContext).checkMark,
-                                color:
-                                    Theme.of(sheetContext).colorScheme.primary,
+                                color: Theme.of(
+                                  sheetContext,
+                                ).colorScheme.primary,
                                 size: 18,
                               )
                             : null,
@@ -434,16 +547,21 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
         end = start;
       }
       _controller.value = value.copyWith(
-          text: newText,
-          selection: selection.copyWith(
-              baseOffset: end + text.length, extentOffset: end + text.length));
+        text: newText,
+        selection: selection.copyWith(
+          baseOffset: end + text.length,
+          extentOffset: end + text.length,
+        ),
+      );
     } else {
       String newText = "";
       newText = _controller.text + text;
       _controller.value = TextEditingValue(
-          text: newText,
-          selection:
-              TextSelection.fromPosition(TextPosition(offset: newText.length)));
+        text: newText,
+        selection: TextSelection.fromPosition(
+          TextPosition(offset: newText.length),
+        ),
+      );
     }
   }
 
@@ -470,22 +588,27 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
         end = start;
       }
       _controller.value = value.copyWith(
-          text: newText,
-          selection: selection.copyWith(
-              baseOffset: end + text.length, extentOffset: end + text.length));
+        text: newText,
+        selection: selection.copyWith(
+          baseOffset: end + text.length,
+          extentOffset: end + text.length,
+        ),
+      );
     } else {
       String newText = "";
       newText = _controller.text + text;
       _controller.value = TextEditingValue(
-          text: newText,
-          selection:
-              TextSelection.fromPosition(TextPosition(offset: newText.length)));
+        text: newText,
+        selection: TextSelection.fromPosition(
+          TextPosition(offset: newText.length),
+        ),
+      );
     }
   }
 
   void backupDraftIfPossible() {
-    if (draft == null) {
-      // shall create a new one
+    {
+      // Save both new and restored drafts.
       _titleEditingController.addListener(() {
         backupDraft();
       });
@@ -496,87 +619,124 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     }
   }
 
-  Future<void> backupDraft() async {
-    // start to collect edittext
-    String title = _titleEditingController.text;
-    String content = _titleEditingController.text;
-
-    if (draft == null) {
-      draft = Draft(
-          title,
-          content,
-          fid,
-          selectedTypeId == null ? "" : selectedTypeId!,
-          DateTime.now(),
-          discuz);
-    }
-
-    // start to save it
-    DraftDao draftDao = await AppDatabase.getDraftDao();
-    draft = await draftDao.insertDraftAndReturnInsertObj(draft!);
+  Future<void> backupDraft() {
+    final title = _titleEditingController.text;
+    final content = _controller.text;
+    final category = selectedTypeId ?? '';
+    final poll = _pollDraft?.encode() ?? '';
+    _draftWrite = _draftWrite.catchError((Object _) {}).then((_) async {
+      draft ??= Draft(title, content, fid, category, DateTime.now(), discuz);
+      draft!
+        ..title = title
+        ..text = content
+        ..typeid = category
+        ..updateTime = DateTime.now()
+        ..pollJson = poll;
+      final dao = await AppDatabase.getDraftDao();
+      draft = await dao.insertDraftAndReturnInsertObj(draft!);
+    });
+    return _draftWrite;
   }
 
   Future<void> _launchCaptchaDialog(BuildContext context) async {
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    User? user = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).user;
     Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     // MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
     showPlatformDialog(
-        context: context,
-        builder: (context) {
-          return PlatformAlertDialog(
-            title: Text(S.of(context).pushThreadTitle),
-            content: Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CaptchaWidget(
-                    dio,
-                    discuz,
-                    user,
-                    "post",
-                    captchaController: captchaController,
-                    showProgress: true,
-                  ),
-                ],
-              ),
+      context: context,
+      builder: (context) {
+        return PlatformAlertDialog(
+          title: Text(S.of(context).pushThreadTitle),
+          content: Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CaptchaWidget(
+                  dio,
+                  discuz,
+                  user,
+                  "post",
+                  captchaController: captchaController,
+                  showProgress: true,
+                ),
+              ],
             ),
-            actions: [
-              PlatformDialogAction(
-                child: Text(S.of(context).send),
-                onPressed: () {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  postThread();
-                  Navigator.of(context).pop();
-                },
-              ),
-              PlatformDialogAction(
-                child: Text(S.of(context).cancel),
-                onPressed: () {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
-          );
-        });
+          ),
+          actions: [
+            PlatformDialogAction(
+              child: Text(S.of(context).send),
+              onPressed: () {
+                VibrationUtils.vibrateWithClickIfPossible();
+                postThread();
+                Navigator.of(context).pop();
+              },
+            ),
+            PlatformDialogAction(
+              child: Text(S.of(context).cancel),
+              onPressed: () {
+                VibrationUtils.vibrateWithClickIfPossible();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> postThread() async {
+    if (_sending) return;
+    setState(() => _sending = true);
+    try {
+      await _submitThread();
+    } catch (_) {
+      if (mounted) EasyLoading.showError(S.of(context).forumSubmissionUnknown);
+    } finally {
+      if (mounted) setState(() => _sending = false);
+    }
+  }
+
+  Future<void> _submitThread() async {
     // prepare client
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    User? user = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).user;
     Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
+    String submitHash = '';
+    try {
+      final permission = await client.checkPost(fid, null);
+      if (!mounted) return;
+      submitHash = permission.variables.formHash;
+      if (permission.getErrorString() != null ||
+          permission.variables.allowPerm.allowPost != true) {
+        EasyLoading.showError(
+          permission.getErrorString() ??
+              (permission.variables.allowPerm.allowPost == false
+                  ? S.of(context).postPermissionDenied
+                  : S.of(context).postPermissionUnknown),
+        );
+        return;
+      }
+    } catch (_) {
+      if (mounted) EasyLoading.showError(S.of(context).postPermissionUnknown);
+      return;
+    }
+    if (!mounted || context.read<DiscuzAndUserNotifier>().user != user) return;
     String title = _titleEditingController.text;
     String content = PostTextFieldUtils.getPostMessage(_controller.text);
     // need to process aid
-    List<String> aidList =
-        PostTextFieldUtils.getAttachmentAidList(_controller.text);
-    Map<String, String> dataMap = {};
+    List<String> aidList = PostTextFieldUtils.getAttachmentAidList(
+      _controller.text,
+    );
+    Map<String, String> dataMap = {...?_pollDraft?.fields};
     for (var aid in aidList) {
       String key = "attachnew[${aid}][description]";
       dataMap[key] = "";
@@ -594,32 +754,37 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       captchaMod = "forum::post";
       //captchaMod = "forum::viewthread";
       print(
-          "Captcha hash: ${captchaFields.captchaFormHash} verification: ${captchaFields.verification}");
+        "Captcha hash: ${captchaFields.captchaFormHash} verification: ${captchaFields.verification}",
+      );
     }
 
     if (_displayForumResult != null) {
-      client
+      await client
           .postNewThread(
-              _displayForumResult!.discuzIndexVariables.formHash,
-              fid,
-              typeId,
-              title,
-              content,
-              captchaHash,
-              captchaMod,
-              verification,
-              aidList,
-              dataMap)
+            submitHash,
+            fid,
+            typeId,
+            title,
+            content,
+            captchaHash,
+            captchaMod,
+            verification,
+            aidList,
+            dataMap,
+          )
           .then((value) {
-        if (value.errorResult?.key == "post_newthread_succeed") {
-          EasyLoading.showSuccess(
-              "${value.errorResult?.content}(${value.errorResult?.key})");
-          Navigator.of(context).pop();
-        } else {
-          EasyLoading.showError(
-              "${value.errorResult?.content}(${value.errorResult?.key})");
-        }
-      });
+            if (!mounted) return;
+            if (value.errorResult?.key == "post_newthread_succeed") {
+              EasyLoading.showSuccess(
+                "${value.errorResult?.content}(${value.errorResult?.key})",
+              );
+              Navigator.of(context).pop();
+            } else {
+              EasyLoading.showError(
+                "${value.errorResult?.content}(${value.errorResult?.key})",
+              );
+            }
+          });
     }
   }
 }

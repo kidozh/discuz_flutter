@@ -10,8 +10,7 @@ ForumThread _$ForumThreadFromJson(Map<String, dynamic> json) => ForumThread()
   ..tid = json['tid'] as String
   ..typeId = json['typeid'] as String? ?? '0'
   ..price = json['price'] as String? ?? '0'
-  ..readPerm =
-      const StringToIntConverter().fromJson(json['readperm'] as String?)
+  ..readPerm = const StringToIntConverter().fromJson(json['readperm'])
   ..author = json['author'] as String? ?? ''
   ..authorId = json['authorid'] as String
   ..subject = json['subject'] as String? ?? ''
@@ -21,29 +20,30 @@ ForumThread _$ForumThreadFromJson(Map<String, dynamic> json) => ForumThread()
   ..views = json['views'] as String? ?? ''
   ..replies = json['replies'] == null
       ? 0
-      : const StringToIntConverter().fromJson(json['replies'] as String?)
+      : const StringToIntConverter().fromJson(json['replies'])
   ..displayOrder = json['displayorder'] as String? ?? '0'
   ..digest = json['digest'] as String? ?? '0'
   ..special = json['special'] as String? ?? '0'
   ..attachment = json['attachment'] as String? ?? '0'
   ..replyCredit = json['replycredit'] as String? ?? '0'
-  ..dbdatelineMinutes =
-      const SecondToDateTimeConverter().fromJson(json['dbdateline'] as String?)
+  ..dbdatelineMinutes = const SecondToDateTimeConverter().fromJson(
+    json['dbdateline'],
+  )
   ..dblastpostMinutes = json['dblastpost'] as String
-  ..reply = (json['reply'] as List<dynamic>?)
+  ..reply =
+      (json['reply'] as List<dynamic>?)
           ?.map((e) => ShortReply.fromJson(e as Map<String, dynamic>))
           .toList() ??
       []
   ..message = json['message'] as String? ?? ''
   ..attachmentImageNumber = json['attachmentImageNumber'] == null
       ? 0
-      : const StringToIntConverter()
-          .fromJson(json['attachmentImageNumber'] as String?)
+      : const StringToIntConverter().fromJson(json['attachmentImageNumber'])
   ..attachmentImagePreviewList =
       (json['attachmentImagePreviewList'] as List<dynamic>?)
-              ?.map(AttachmentPreview.fromJson)
-              .toList() ??
-          []
+          ?.map(AttachmentPreview.fromJson)
+          .toList() ??
+      []
   ..typeName = json['typename'] as String? ?? '';
 
 Map<String, dynamic> _$ForumThreadToJson(ForumThread instance) =>
@@ -65,13 +65,15 @@ Map<String, dynamic> _$ForumThreadToJson(ForumThread instance) =>
       'special': instance.special,
       'attachment': instance.attachment,
       'replycredit': instance.replyCredit,
-      'dbdateline':
-          const SecondToDateTimeConverter().toJson(instance.dbdatelineMinutes),
+      'dbdateline': const SecondToDateTimeConverter().toJson(
+        instance.dbdatelineMinutes,
+      ),
       'dblastpost': instance.dblastpostMinutes,
       'reply': instance.reply,
       'message': instance.message,
-      'attachmentImageNumber':
-          const StringToIntConverter().toJson(instance.attachmentImageNumber),
+      'attachmentImageNumber': const StringToIntConverter().toJson(
+        instance.attachmentImageNumber,
+      ),
       'attachmentImagePreviewList': instance.attachmentImagePreviewList,
       'typename': instance.typeName,
     };
@@ -79,8 +81,7 @@ Map<String, dynamic> _$ForumThreadToJson(ForumThread instance) =>
 ShortReply _$ShortReplyFromJson(Map<String, dynamic> json) => ShortReply()
   ..pid = json['pid'] as String
   ..author = json['author'] as String
-  ..authorId =
-      const StringToIntConverter().fromJson(json['authorid'] as String?)
+  ..authorId = const StringToIntConverter().fromJson(json['authorid'])
   ..message = json['message'] as String;
 
 Map<String, dynamic> _$ShortReplyToJson(ShortReply instance) =>
@@ -98,17 +99,17 @@ AttachmentPreview _$AttachmentPreviewFromJson(Map<String, dynamic> json) =>
       ..attachment = json['attachment'] as String? ?? ''
       ..fileSize = json['filesize'] == null
           ? 0
-          : const StringToIntConverter().fromJson(json['filesize'] as String?)
+          : const StringToIntConverter().fromJson(json['filesize'])
       ..description = json['description'] as String? ?? ''
       ..readPerm = json['readperm'] == null
           ? 0
-          : const StringToIntConverter().fromJson(json['readperm'] as String?)
+          : const StringToIntConverter().fromJson(json['readperm'])
       ..width = json['width'] == null
           ? 0
-          : const StringToIntConverter().fromJson(json['width'] as String?)
+          : const StringToIntConverter().fromJson(json['width'])
       ..height = json['height'] == null
           ? 0
-          : const StringToIntConverter().fromJson(json['height'] as String?);
+          : const StringToIntConverter().fromJson(json['height']);
 
 Map<String, dynamic> _$AttachmentPreviewToJson(AttachmentPreview instance) =>
     <String, dynamic>{

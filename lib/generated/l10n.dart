@@ -1419,6 +1419,61 @@ class S {
     return Intl.message('Public', name: 'publicMessage', desc: '', args: []);
   }
 
+  /// `Published {date}`
+  String bilibiliPublishedAt(String date) {
+    return Intl.message(
+      'Published $date',
+      name: 'bilibiliPublishedAt',
+      desc: '',
+      args: [date],
+    );
+  }
+
+  /// `Duration {duration}`
+  String bilibiliDuration(String duration) {
+    return Intl.message(
+      'Duration $duration',
+      name: 'bilibiliDuration',
+      desc: '',
+      args: [duration],
+    );
+  }
+
+  /// `{count} parts`
+  String bilibiliParts(int count) {
+    return Intl.message(
+      '$count parts',
+      name: 'bilibiliParts',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Blocked`
+  String get postBlockedLabel {
+    return Intl.message(
+      'Blocked',
+      name: 'postBlockedLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Warned`
+  String get postWarnedLabel {
+    return Intl.message('Warned', name: 'postWarnedLabel', desc: '', args: []);
+  }
+
+  /// `Edited after review`
+  String get postRevisedLabel {
+    return Intl.message(
+      'Edited after review',
+      name: 'postRevisedLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `The post is warned.`
   String get warnedPost {
     return Intl.message(
@@ -6450,6 +6505,1106 @@ class S {
     return Intl.message(
       'Create new store',
       name: 'passwordRecoveryCreate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reward`
+  String get specialReward {
+    return Intl.message('Reward', name: 'specialReward', desc: '', args: []);
+  }
+
+  /// `Reward amount`
+  String get specialRewardAmount {
+    return Intl.message(
+      'Reward amount',
+      name: 'specialRewardAmount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View best answer`
+  String get specialBestAnswer {
+    return Intl.message(
+      'View best answer',
+      name: 'specialBestAnswer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Activity`
+  String get specialActivity {
+    return Intl.message(
+      'Activity',
+      name: 'specialActivity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Classified information`
+  String get specialClassified {
+    return Intl.message(
+      'Classified information',
+      name: 'specialClassified',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View details on website`
+  String get specialOpenWebsite {
+    return Intl.message(
+      'View details on website',
+      name: 'specialOpenWebsite',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Location`
+  String get activityPlace {
+    return Intl.message('Location', name: 'activityPlace', desc: '', args: []);
+  }
+
+  /// `Starts`
+  String get activityStarts {
+    return Intl.message('Starts', name: 'activityStarts', desc: '', args: []);
+  }
+
+  /// `Ends`
+  String get activityEnds {
+    return Intl.message('Ends', name: 'activityEnds', desc: '', args: []);
+  }
+
+  /// `Applicants`
+  String get activityApplicants {
+    return Intl.message(
+      'Applicants',
+      name: 'activityApplicants',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Registration credits`
+  String get activityCost {
+    return Intl.message(
+      'Registration credits',
+      name: 'activityCost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Registration pending`
+  String get activityWaiting {
+    return Intl.message(
+      'Registration pending',
+      name: 'activityWaiting',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Registered`
+  String get activityJoined {
+    return Intl.message(
+      'Registered',
+      name: 'activityJoined',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Registration available`
+  String get activityCanJoin {
+    return Intl.message(
+      'Registration available',
+      name: 'activityCanJoin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Registration processed`
+  String get activityComplete {
+    return Intl.message(
+      'Registration processed',
+      name: 'activityComplete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Registration closed`
+  String get activityClosed {
+    return Intl.message(
+      'Registration closed',
+      name: 'activityClosed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your account cannot create threads in this forum`
+  String get postPermissionDenied {
+    return Intl.message(
+      'Your account cannot create threads in this forum',
+      name: 'postPermissionDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your account cannot reply to this thread`
+  String get replyPermissionDenied {
+    return Intl.message(
+      'Your account cannot reply to this thread',
+      name: 'replyPermissionDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not verify posting permission. Please retry.`
+  String get postPermissionUnknown {
+    return Intl.message(
+      'Could not verify posting permission. Please retry.',
+      name: 'postPermissionUnknown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This file type is not allowed by the forum`
+  String get uploadTypeDenied {
+    return Intl.message(
+      'This file type is not allowed by the forum',
+      name: 'uploadTypeDenied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Daily attachment count exhausted`
+  String get uploadCountExhausted {
+    return Intl.message(
+      'Daily attachment count exhausted',
+      name: 'uploadCountExhausted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `File exceeds the remaining daily upload quota`
+  String get uploadDailySizeExceeded {
+    return Intl.message(
+      'File exceeds the remaining daily upload quota',
+      name: 'uploadDailySizeExceeded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `File exceeds the size limit for this type`
+  String get uploadFileSizeExceeded {
+    return Intl.message(
+      'File exceeds the size limit for this type',
+      name: 'uploadFileSizeExceeded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remaining daily quota`
+  String get uploadQuotaLabel {
+    return Intl.message(
+      'Remaining daily quota',
+      name: 'uploadQuotaLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unlimited`
+  String get uploadUnlimited {
+    return Intl.message(
+      'Unlimited',
+      name: 'uploadUnlimited',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not provided`
+  String get uploadQuotaUnknown {
+    return Intl.message(
+      'Not provided',
+      name: 'uploadQuotaUnknown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allowed types`
+  String get uploadTypesLabel {
+    return Intl.message(
+      'Allowed types',
+      name: 'uploadTypesLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not locate this post. It may have been deleted or restricted.`
+  String get postLocateFailed {
+    return Intl.message(
+      'Could not locate this post. It may have been deleted or restricted.',
+      name: 'postLocateFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Locating post…`
+  String get postLocating {
+    return Intl.message(
+      'Locating post…',
+      name: 'postLocating',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Back to full thread`
+  String get postReturnThread {
+    return Intl.message(
+      'Back to full thread',
+      name: 'postReturnThread',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Confirm`
+  String get forumConfirm {
+    return Intl.message('Confirm', name: 'forumConfirm', desc: '', args: []);
+  }
+
+  /// `Sign in to this forum first`
+  String get forumSignInRequired {
+    return Intl.message(
+      'Sign in to this forum first',
+      name: 'forumSignInRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Insufficient balance or invalid quote. Refresh and try again.`
+  String get forumPurchaseUnavailable {
+    return Intl.message(
+      'Insufficient balance or invalid quote. Refresh and try again.',
+      name: 'forumPurchaseUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Confirm purchase`
+  String get forumConfirmPurchase {
+    return Intl.message(
+      'Confirm purchase',
+      name: 'forumConfirmPurchase',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Price`
+  String get forumPurchasePrice {
+    return Intl.message(
+      'Price',
+      name: 'forumPurchasePrice',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Balance after purchase`
+  String get forumBalanceAfterPurchase {
+    return Intl.message(
+      'Balance after purchase',
+      name: 'forumBalanceAfterPurchase',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Action not completed`
+  String get forumActionFailed {
+    return Intl.message(
+      'Action not completed',
+      name: 'forumActionFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The submission result is unknown. Refresh to check its status before trying again.`
+  String get forumSubmissionUnknown {
+    return Intl.message(
+      'The submission result is unknown. Refresh to check its status before trying again.',
+      name: 'forumSubmissionUnknown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not load. Please try again.`
+  String get forumLoadFailed {
+    return Intl.message(
+      'Could not load. Please try again.',
+      name: 'forumLoadFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Working…`
+  String get forumWorking {
+    return Intl.message('Working…', name: 'forumWorking', desc: '', args: []);
+  }
+
+  /// `View all comments`
+  String get forumAllComments {
+    return Intl.message(
+      'View all comments',
+      name: 'forumAllComments',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My replies`
+  String get forumMyReplies {
+    return Intl.message(
+      'My replies',
+      name: 'forumMyReplies',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My threads`
+  String get forumMyThreads {
+    return Intl.message(
+      'My threads',
+      name: 'forumMyThreads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Account changed. Go back and reopen this page.`
+  String get forumAccountChanged {
+    return Intl.message(
+      'Account changed. Go back and reopen this page.',
+      name: 'forumAccountChanged',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Refresh`
+  String get forumRefresh {
+    return Intl.message('Refresh', name: 'forumRefresh', desc: '', args: []);
+  }
+
+  /// `These are threads you replied to. Open a thread to read it.`
+  String get forumReplyThreadsHint {
+    return Intl.message(
+      'These are threads you replied to. Open a thread to read it.',
+      name: 'forumReplyThreadsHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Load more`
+  String get forumLoadMore {
+    return Intl.message('Load more', name: 'forumLoadMore', desc: '', args: []);
+  }
+
+  /// `No content yet`
+  String get forumEmpty {
+    return Intl.message(
+      'No content yet',
+      name: 'forumEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All loaded`
+  String get forumNoMore {
+    return Intl.message('All loaded', name: 'forumNoMore', desc: '', args: []);
+  }
+
+  /// `replies`
+  String get forumReplies {
+    return Intl.message('replies', name: 'forumReplies', desc: '', args: []);
+  }
+
+  /// `Recommend`
+  String get forumRecommend {
+    return Intl.message(
+      'Recommend',
+      name: 'forumRecommend',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recommended`
+  String get forumRecommended {
+    return Intl.message(
+      'Recommended',
+      name: 'forumRecommended',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Buy thread`
+  String get forumBuyThread {
+    return Intl.message(
+      'Buy thread',
+      name: 'forumBuyThread',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Buy attachment`
+  String get forumBuyAttachment {
+    return Intl.message(
+      'Buy attachment',
+      name: 'forumBuyAttachment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Purchased`
+  String get forumPurchased {
+    return Intl.message(
+      'Purchased',
+      name: 'forumPurchased',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not Recommend`
+  String get forumDisrecommend {
+    return Intl.message(
+      'Not Recommend',
+      name: 'forumDisrecommend',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not recommended`
+  String get forumNotRecommended {
+    return Intl.message(
+      'Not recommended',
+      name: 'forumNotRecommended',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Feedback submitted`
+  String get forumFeedbackSent {
+    return Intl.message(
+      'Feedback submitted',
+      name: 'forumFeedbackSent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not open the NetEase Cloud Music song link.`
+  String get neteaseUnavailable {
+    return Intl.message(
+      'Could not open the NetEase Cloud Music song link.',
+      name: 'neteaseUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open in NetEase Cloud Music`
+  String get neteaseOpenSong {
+    return Intl.message(
+      'Open in NetEase Cloud Music',
+      name: 'neteaseOpenSong',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change avatar`
+  String get changeAvatar {
+    return Intl.message(
+      'Change avatar',
+      name: 'changeAvatar',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose image`
+  String get chooseAvatar {
+    return Intl.message(
+      'Choose image',
+      name: 'chooseAvatar',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upload avatar`
+  String get uploadAvatar {
+    return Intl.message(
+      'Upload avatar',
+      name: 'uploadAvatar',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Preview your image, then tap Upload. The forum generates the avatar sizes.`
+  String get avatarPreviewHint {
+    return Intl.message(
+      'Preview your image, then tap Upload. The forum generates the avatar sizes.',
+      name: 'avatarPreviewHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cannot read this image. Choose an image at least 10×10 pixels and below 20 MB.`
+  String get avatarImageInvalid {
+    return Intl.message(
+      'Cannot read this image. Choose an image at least 10×10 pixels and below 20 MB.',
+      name: 'avatarImageInvalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Avatar upload failed. Please try again.`
+  String get avatarUploadFailed {
+    return Intl.message(
+      'Avatar upload failed. Please try again.',
+      name: 'avatarUploadFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Accept as best answer`
+  String get selectBestAnswer {
+    return Intl.message(
+      'Accept as best answer',
+      name: 'selectBestAnswer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Accept the reply by {author} as the best answer? This settles the reward and cannot be undone in the app.`
+  String confirmBestAnswer(String author) {
+    return Intl.message(
+      'Accept the reply by $author as the best answer? This settles the reward and cannot be undone in the app.',
+      name: 'confirmBestAnswer',
+      desc: '',
+      args: [author],
+    );
+  }
+
+  /// `Accepted`
+  String get bestAnswerSelected {
+    return Intl.message(
+      'Accepted',
+      name: 'bestAnswerSelected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The reward or reply has changed, or you lack permission. Refresh the thread and try again.`
+  String get bestAnswerChanged {
+    return Intl.message(
+      'The reward or reply has changed, or you lack permission. Refresh the thread and try again.',
+      name: 'bestAnswerChanged',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Friends`
+  String get friendList {
+    return Intl.message('Friends', name: 'friendList', desc: '', args: []);
+  }
+
+  /// `Popular forums`
+  String get hotForums {
+    return Intl.message(
+      'Popular forums',
+      name: 'hotForums',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pinned threads`
+  String get pinnedThreads {
+    return Intl.message(
+      'Pinned threads',
+      name: 'pinnedThreads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Posts today`
+  String get directoryTodayPosts {
+    return Intl.message(
+      'Posts today',
+      name: 'directoryTodayPosts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add poll`
+  String get createPoll {
+    return Intl.message('Add poll', name: 'createPoll', desc: '', args: []);
+  }
+
+  /// `Edit poll`
+  String get editPoll {
+    return Intl.message('Edit poll', name: 'editPoll', desc: '', args: []);
+  }
+
+  /// `Remove poll`
+  String get removePoll {
+    return Intl.message('Remove poll', name: 'removePoll', desc: '', args: []);
+  }
+
+  /// `One option per line, 2–20 options, up to 80 characters each.`
+  String get pollOptionsHint {
+    return Intl.message(
+      'One option per line, 2–20 options, up to 80 characters each.',
+      name: 'pollOptionsHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Maximum selections (1 for single choice)`
+  String get pollChoicesHint {
+    return Intl.message(
+      'Maximum selections (1 for single choice)',
+      name: 'pollChoicesHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Duration in days (0 for no deadline)`
+  String get pollDaysHint {
+    return Intl.message(
+      'Duration in days (0 for no deadline)',
+      name: 'pollDaysHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check the options, duplicates, maximum selections and duration.`
+  String get pollInvalid {
+    return Intl.message(
+      'Check the options, duplicates, maximum selections and duration.',
+      name: 'pollInvalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This forum or account cannot create polls, or the permission check failed.`
+  String get pollUnavailable {
+    return Intl.message(
+      'This forum or account cannot create polls, or the permission check failed.',
+      name: 'pollUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Moderate thread`
+  String get moderateThread {
+    return Intl.message(
+      'Moderate thread',
+      name: 'moderateThread',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pin in this forum`
+  String get modStick {
+    return Intl.message(
+      'Pin in this forum',
+      name: 'modStick',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unpin`
+  String get modUnstick {
+    return Intl.message('Unpin', name: 'modUnstick', desc: '', args: []);
+  }
+
+  /// `Mark as digest`
+  String get modDigest {
+    return Intl.message(
+      'Mark as digest',
+      name: 'modDigest',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove digest`
+  String get modUndigest {
+    return Intl.message(
+      'Remove digest',
+      name: 'modUndigest',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close thread`
+  String get modClose {
+    return Intl.message('Close thread', name: 'modClose', desc: '', args: []);
+  }
+
+  /// `Reopen thread`
+  String get modOpen {
+    return Intl.message('Reopen thread', name: 'modOpen', desc: '', args: []);
+  }
+
+  /// `Move thread`
+  String get modMove {
+    return Intl.message('Move thread', name: 'modMove', desc: '', args: []);
+  }
+
+  /// `Highlight in bold red`
+  String get modHighlight {
+    return Intl.message(
+      'Highlight in bold red',
+      name: 'modHighlight',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove highlight`
+  String get modUnhighlight {
+    return Intl.message(
+      'Remove highlight',
+      name: 'modUnhighlight',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a reason and select a destination forum if needed.`
+  String get moderationRequired {
+    return Intl.message(
+      'Enter a reason and select a destination forum if needed.',
+      name: 'moderationRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reason`
+  String get moderationReason {
+    return Intl.message('Reason', name: 'moderationReason', desc: '', args: []);
+  }
+
+  /// `Destination forum`
+  String get moveDestination {
+    return Intl.message(
+      'Destination forum',
+      name: 'moveDestination',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No category`
+  String get directoryNoType {
+    return Intl.message(
+      'No category',
+      name: 'directoryNoType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Activity registration`
+  String get activityRegistration {
+    return Intl.message(
+      'Activity registration',
+      name: 'activityRegistration',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Complete all required fields and check the contribution amount.`
+  String get activityRequired {
+    return Intl.message(
+      'Complete all required fields and check the contribution amount.',
+      name: 'activityRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Join activity`
+  String get joinActivity {
+    return Intl.message(
+      'Join activity',
+      name: 'joinActivity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cancel registration`
+  String get cancelActivity {
+    return Intl.message(
+      'Cancel registration',
+      name: 'cancelActivity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cancel this registration? Any credit refund is determined by the forum.`
+  String get cancelActivityHint {
+    return Intl.message(
+      'Cancel this registration? Any credit refund is determined by the forum.',
+      name: 'cancelActivityHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Confirm registration. The forum may deduct the required credits.`
+  String get activityPaymentHint {
+    return Intl.message(
+      'Confirm registration. The forum may deduct the required credits.',
+      name: 'activityPaymentHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Registration credits`
+  String get activityCredits {
+    return Intl.message(
+      'Registration credits',
+      name: 'activityCredits',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The activity status, costs or fields changed. Refresh and confirm again.`
+  String get activityChanged {
+    return Intl.message(
+      'The activity status, costs or fields changed. Refresh and confirm again.',
+      name: 'activityChanged',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Specify a contribution amount`
+  String get activityContribute {
+    return Intl.message(
+      'Specify a contribution amount',
+      name: 'activityContribute',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `When off, choose to pay your own expenses.`
+  String get activitySelfPay {
+    return Intl.message(
+      'When off, choose to pay your own expenses.',
+      name: 'activitySelfPay',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Message / cancellation reason`
+  String get activityMessage {
+    return Intl.message(
+      'Message / cancellation reason',
+      name: 'activityMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This activity is closed or has fields that need the website. Open the website to continue.`
+  String get activityWebsiteRequired {
+    return Intl.message(
+      'This activity is closed or has fields that need the website. Open the website to continue.',
+      name: 'activityWebsiteRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add comment`
+  String get postAddComment {
+    return Intl.message(
+      'Add comment',
+      name: 'postAddComment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Write a short comment (up to 200 characters). The forum may apply a shorter limit.`
+  String get postCommentHint {
+    return Intl.message(
+      'Write a short comment (up to 200 characters). The forum may apply a shorter limit.',
+      name: 'postCommentHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Commenting is unavailable. Refresh and check your login or continue on the website for verification.`
+  String get postCommentUnavailable {
+    return Intl.message(
+      'Commenting is unavailable. Refresh and check your login or continue on the website for verification.',
+      name: 'postCommentUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Forums for new threads`
+  String get feedForumsTitle {
+    return Intl.message(
+      'Forums for new threads',
+      name: 'feedForumsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Changes save automatically. Newly available forums are selected; previously deselected forums stay off.`
+  String get feedForumsHint {
+    return Intl.message(
+      'Changes save automatically. Newly available forums are selected; previously deselected forums stay off.',
+      name: 'feedForumsHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select all`
+  String get feedSelectAll {
+    return Intl.message(
+      'Select all',
+      name: 'feedSelectAll',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select none`
+  String get feedSelectNone {
+    return Intl.message(
+      'Select none',
+      name: 'feedSelectNone',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No forums selected. Choose forums in Settings.`
+  String get feedNoForums {
+    return Intl.message(
+      'No forums selected. Choose forums in Settings.',
+      name: 'feedNoForums',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No popular threads yet`
+  String get portalNoHotThreads {
+    return Intl.message(
+      'No popular threads yet',
+      name: 'portalNoHotThreads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Guest`
+  String get feedGuest {
+    return Intl.message('Guest', name: 'feedGuest', desc: '', args: []);
+  }
+
+  /// `Dashboard order`
+  String get dashboardOrder {
+    return Intl.message(
+      'Dashboard order',
+      name: 'dashboardOrder',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Drag the handles to reorder. Changes save automatically.`
+  String get dashboardOrderHint {
+    return Intl.message(
+      'Drag the handles to reorder. Changes save automatically.',
+      name: 'dashboardOrderHint',
       desc: '',
       args: [],
     );

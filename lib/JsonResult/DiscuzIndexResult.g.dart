@@ -8,14 +8,15 @@ part of 'DiscuzIndexResult.dart';
 
 DiscuzIndexResult _$DiscuzIndexResultFromJson(Map<String, dynamic> json) =>
     DiscuzIndexResult()
-      ..version = json['Version'] as String
-      ..charset = json['Charset'] as String
+      ..version = json['Version'] as String? ?? ''
+      ..charset = json['Charset'] as String? ?? ''
       ..errorResult = json['Message'] == null
           ? null
           : ErrorResult.fromJson(json['Message'] as Map<String, dynamic>)
       ..error = json['error'] as String?
       ..discuzIndexVariables = DiscuzIndexVariables.fromJson(
-          json['Variables'] as Map<String, dynamic>);
+        json['Variables'] as Map<String, dynamic>,
+      );
 
 Map<String, dynamic> _$DiscuzIndexResultToJson(DiscuzIndexResult instance) =>
     <String, dynamic>{
@@ -27,77 +28,74 @@ Map<String, dynamic> _$DiscuzIndexResultToJson(DiscuzIndexResult instance) =>
     };
 
 DiscuzIndexVariables _$DiscuzIndexVariablesFromJson(
-        Map<String, dynamic> json) =>
-    DiscuzIndexVariables()
-      ..cookiepre = json['cookiepre'] as String
-      ..auth = json['auth'] as String?
-      ..saltkey = json['saltkey'] as String
-      ..member_username = json['member_username'] as String
-      ..member_avatar = json['member_avatar'] as String
-      ..member_uid =
-          const StringToIntConverter().fromJson(json['member_uid'] as String?)
-      ..groupId =
-          const StringToIntConverter().fromJson(json['groupid'] as String?)
-      ..readAccess =
-          const StringToIntConverter().fromJson(json['readaccess'] as String?)
-      ..formHash = json['formhash'] as String
-      ..isModerator =
-          const StringToIntConverter().fromJson(json['ismoderator'] as String?)
-      ..noticeCount =
-          NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
-      ..memberEmail = json['member_email'] as String?
-      ..memberCredits = json['member_credits'] as String
-      ..bbClosed = json['setting_bbclosed'] as String
-      ..groupInfo = GroupInfo.fromJson(json['group'] as Map<String, dynamic>)
-      ..forumPartitionList = (json['catlist'] as List<dynamic>)
-          .map((e) => ForumPartition.fromJson(e as Map<String, dynamic>))
-          .toList()
-      ..forumList = (json['forumlist'] as List<dynamic>)
-          .map((e) => Forum.fromJson(e as Map<String, dynamic>))
-          .toList();
+  Map<String, dynamic> json,
+) => DiscuzIndexVariables()
+  ..cookiepre = json['cookiepre'] as String? ?? ''
+  ..auth = json['auth'] as String?
+  ..saltkey = json['saltkey'] as String? ?? ''
+  ..member_username = json['member_username'] as String? ?? ''
+  ..member_avatar = json['member_avatar'] as String? ?? ''
+  ..member_uid = const StringToIntConverter().fromJson(json['member_uid'])
+  ..groupId = const StringToIntConverter().fromJson(json['groupid'])
+  ..readAccess = const StringToIntConverter().fromJson(json['readaccess'])
+  ..formHash = json['formhash'] as String? ?? ''
+  ..isModerator = const StringToIntConverter().fromJson(json['ismoderator'])
+  ..noticeCount = noticeFromJson(json['notice'])
+  ..memberEmail = json['member_email'] as String?
+  ..memberCredits = json['member_credits'] as String
+  ..bbClosed = json['setting_bbclosed'] as String
+  ..groupInfo = GroupInfo.fromJson(json['group'] as Map<String, dynamic>)
+  ..forumPartitionList = (json['catlist'] as List<dynamic>)
+      .map((e) => ForumPartition.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..forumList = (json['forumlist'] as List<dynamic>)
+      .map((e) => Forum.fromJson(e as Map<String, dynamic>))
+      .toList();
 
 Map<String, dynamic> _$DiscuzIndexVariablesToJson(
-        DiscuzIndexVariables instance) =>
-    <String, dynamic>{
-      'cookiepre': instance.cookiepre,
-      'auth': instance.auth,
-      'saltkey': instance.saltkey,
-      'member_username': instance.member_username,
-      'member_avatar': instance.member_avatar,
-      'member_uid': const StringToIntConverter().toJson(instance.member_uid),
-      'groupid': const StringToIntConverter().toJson(instance.groupId),
-      'readaccess': const StringToIntConverter().toJson(instance.readAccess),
-      'formhash': instance.formHash,
-      'ismoderator': const StringToIntConverter().toJson(instance.isModerator),
-      'notice': instance.noticeCount,
-      'member_email': instance.memberEmail,
-      'member_credits': instance.memberCredits,
-      'setting_bbclosed': instance.bbClosed,
-      'group': instance.groupInfo,
-      'catlist': instance.forumPartitionList,
-      'forumlist': instance.forumList,
-    };
+  DiscuzIndexVariables instance,
+) => <String, dynamic>{
+  'cookiepre': instance.cookiepre,
+  'auth': instance.auth,
+  'saltkey': instance.saltkey,
+  'member_username': instance.member_username,
+  'member_avatar': instance.member_avatar,
+  'member_uid': const StringToIntConverter().toJson(instance.member_uid),
+  'groupid': const StringToIntConverter().toJson(instance.groupId),
+  'readaccess': const StringToIntConverter().toJson(instance.readAccess),
+  'formhash': instance.formHash,
+  'ismoderator': const StringToIntConverter().toJson(instance.isModerator),
+  'notice': instance.noticeCount,
+  'member_email': instance.memberEmail,
+  'member_credits': instance.memberCredits,
+  'setting_bbclosed': instance.bbClosed,
+  'group': instance.groupInfo,
+  'catlist': instance.forumPartitionList,
+  'forumlist': instance.forumList,
+};
 
 GroupInfo _$GroupInfoFromJson(Map<String, dynamic> json) => GroupInfo()
   ..groupId = json['groupid'] as String
   ..groupTitle = json['grouptitle'] as String
-  ..allowThreadPlugins = (json['allowthreadplugin'] as List<dynamic>?)
+  ..allowThreadPlugins =
+      (json['allowthreadplugin'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList() ??
       [];
 
 Map<String, dynamic> _$GroupInfoToJson(GroupInfo instance) => <String, dynamic>{
-      'groupid': instance.groupId,
-      'grouptitle': instance.groupTitle,
-      'allowthreadplugin': instance.allowThreadPlugins,
-    };
+  'groupid': instance.groupId,
+  'grouptitle': instance.groupTitle,
+  'allowthreadplugin': instance.allowThreadPlugins,
+};
 
 ForumPartition _$ForumPartitionFromJson(Map<String, dynamic> json) =>
     ForumPartition()
       ..fid = json['fid'] as String
       ..name = json['name'] as String
-      ..forumIdList =
-          (json['forums'] as List<dynamic>).map((e) => e as String).toList();
+      ..forumIdList = (json['forums'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList();
 
 Map<String, dynamic> _$ForumPartitionToJson(ForumPartition instance) =>
     <String, dynamic>{
@@ -114,18 +112,19 @@ Forum _$ForumFromJson(Map<String, dynamic> json) => Forum()
   ..posts = json['posts'] as String? ?? '0'
   ..iconUrl = json['icon'] as String? ?? ''
   ..todayPosts = json['todayposts'] as String? ?? ''
-  ..subForumList = (json['sublist'] as List<dynamic>?)
+  ..subForumList =
+      (json['sublist'] as List<dynamic>?)
           ?.map((e) => Forum.fromJson(e as Map<String, dynamic>))
           .toList() ??
       [];
 
 Map<String, dynamic> _$ForumToJson(Forum instance) => <String, dynamic>{
-      'fid': instance.fid,
-      'description': instance.description,
-      'name': instance.name,
-      'threads': instance.threads,
-      'posts': instance.posts,
-      'icon': instance.iconUrl,
-      'todayposts': instance.todayPosts,
-      'sublist': instance.subForumList,
-    };
+  'fid': instance.fid,
+  'description': instance.description,
+  'name': instance.name,
+  'threads': instance.threads,
+  'posts': instance.posts,
+  'icon': instance.iconUrl,
+  'todayposts': instance.todayPosts,
+  'sublist': instance.subForumList,
+};

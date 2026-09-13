@@ -19,6 +19,7 @@ import '../page/ViewThreadSliverPage.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../widget/DiscuzHtmlWidget.dart';
 import 'RewriteRuleUtils.dart';
+import 'post_locator.dart';
 import 'VibrationUtils.dart';
 
 class URLUtils {
@@ -74,6 +75,11 @@ class URLUtils {
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     if (urlString != null) {
       urlString = urlString.replaceAll("&amp;", "&");
+      if (urlString.startsWith('#') && callback != null) {
+        final match = RegExp(r'^#(?:pid|post_)(\d+)$').firstMatch(urlString);
+        final pid = int.tryParse(match?.group(1) ?? '');
+        if (pid != null && pid > 0) { callback(pid); return; }
+      }
       bool urlLauchable = await canLaunchUrl(Uri.parse(urlString));
 
       // judge if it is a path
@@ -94,6 +100,20 @@ class URLUtils {
         if (uri.host != Uri.parse(discuz.baseURL).host) {
           VibrationUtils.vibrateWithClickIfPossible();
           await checkWithDbAndOpenURL(context, urlString);
+          return;
+        }
+
+        final target = PostLinkTarget.parse(uri);
+        if (target?.pid != null) {
+          if (target!.tid == originalTid && callback != null) {
+            callback(target.pid!);
+          } else {
+            // The old two-pane callback carries only a TID. Push a route here
+            // so notification targets do not silently lose their PID.
+            await Navigator.push(context, platformPageRoute(context: context,
+              builder: (_) => ViewThreadSliverPage(discuz, user, target!.tid,
+                initialPid: target.pid)));
+          }
           return;
         }
 

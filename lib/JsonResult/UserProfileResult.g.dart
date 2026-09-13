@@ -8,14 +8,15 @@ part of 'UserProfileResult.dart';
 
 UserProfileResult _$UserProfileResultFromJson(Map<String, dynamic> json) =>
     UserProfileResult()
-      ..version = json['Version'] as String
-      ..charset = json['Charset'] as String
+      ..version = json['Version'] as String? ?? ''
+      ..charset = json['Charset'] as String? ?? ''
       ..errorResult = json['Message'] == null
           ? null
           : ErrorResult.fromJson(json['Message'] as Map<String, dynamic>)
       ..error = json['error'] as String?
       ..variables = UserProfileVariables.fromJson(
-          json['Variables'] as Map<String, dynamic>);
+        json['Variables'] as Map<String, dynamic>,
+      );
 
 Map<String, dynamic> _$UserProfileResultToJson(UserProfileResult instance) =>
     <String, dynamic>{
@@ -27,98 +28,75 @@ Map<String, dynamic> _$UserProfileResultToJson(UserProfileResult instance) =>
     };
 
 UserProfileVariables _$UserProfileVariablesFromJson(
-        Map<String, dynamic> json) =>
-    UserProfileVariables()
-      ..cookiepre = json['cookiepre'] as String
-      ..auth = json['auth'] as String?
-      ..saltkey = json['saltkey'] as String
-      ..member_username = json['member_username'] as String
-      ..member_avatar = json['member_avatar'] as String
-      ..member_uid =
-          const StringToIntConverter().fromJson(json['member_uid'] as String?)
-      ..groupId =
-          const StringToIntConverter().fromJson(json['groupid'] as String?)
-      ..readAccess =
-          const StringToIntConverter().fromJson(json['readaccess'] as String?)
-      ..formHash = json['formhash'] as String
-      ..isModerator =
-          const StringToIntConverter().fromJson(json['ismoderator'] as String?)
-      ..noticeCount =
-          NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
-      ..space = json['space'] == null
-          ? null
-          : SpaceVariables.fromJson(json['space'] as Map<String, dynamic>)
-      ..extendCreditMap = (json['extcredits'] as Map<String, dynamic>?)?.map(
-            (k, e) =>
-                MapEntry(k, ExtendCredit.fromJson(e as Map<String, dynamic>)),
-          ) ??
-          {};
+  Map<String, dynamic> json,
+) => UserProfileVariables()
+  ..cookiepre = json['cookiepre'] as String? ?? ''
+  ..auth = json['auth'] as String?
+  ..saltkey = json['saltkey'] as String? ?? ''
+  ..member_username = json['member_username'] as String? ?? ''
+  ..member_avatar = json['member_avatar'] as String? ?? ''
+  ..member_uid = const StringToIntConverter().fromJson(json['member_uid'])
+  ..groupId = const StringToIntConverter().fromJson(json['groupid'])
+  ..readAccess = const StringToIntConverter().fromJson(json['readaccess'])
+  ..formHash = json['formhash'] as String? ?? ''
+  ..isModerator = const StringToIntConverter().fromJson(json['ismoderator'])
+  ..noticeCount = noticeFromJson(json['notice'])
+  ..space = json['space'] == null
+      ? null
+      : SpaceVariables.fromJson(json['space'] as Map<String, dynamic>)
+  ..extendCreditMap =
+      (json['extcredits'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, ExtendCredit.fromJson(e as Map<String, dynamic>)),
+      ) ??
+      {};
 
 Map<String, dynamic> _$UserProfileVariablesToJson(
-        UserProfileVariables instance) =>
-    <String, dynamic>{
-      'cookiepre': instance.cookiepre,
-      'auth': instance.auth,
-      'saltkey': instance.saltkey,
-      'member_username': instance.member_username,
-      'member_avatar': instance.member_avatar,
-      'member_uid': const StringToIntConverter().toJson(instance.member_uid),
-      'groupid': const StringToIntConverter().toJson(instance.groupId),
-      'readaccess': const StringToIntConverter().toJson(instance.readAccess),
-      'formhash': instance.formHash,
-      'ismoderator': const StringToIntConverter().toJson(instance.isModerator),
-      'notice': instance.noticeCount,
-      'space': instance.space,
-      'extcredits': instance.extendCreditMap,
-    };
+  UserProfileVariables instance,
+) => <String, dynamic>{
+  'cookiepre': instance.cookiepre,
+  'auth': instance.auth,
+  'saltkey': instance.saltkey,
+  'member_username': instance.member_username,
+  'member_avatar': instance.member_avatar,
+  'member_uid': const StringToIntConverter().toJson(instance.member_uid),
+  'groupid': const StringToIntConverter().toJson(instance.groupId),
+  'readaccess': const StringToIntConverter().toJson(instance.readAccess),
+  'formhash': instance.formHash,
+  'ismoderator': const StringToIntConverter().toJson(instance.isModerator),
+  'notice': instance.noticeCount,
+  'space': instance.space,
+  'extcredits': instance.extendCreditMap,
+};
 
 SpaceVariables _$SpaceVariablesFromJson(Map<String, dynamic> json) =>
     SpaceVariables()
-      ..uid = const StringToIntConverter().fromJson(json['uid'] as String?)
+      ..uid = const StringToIntConverter().fromJson(json['uid'])
       ..username = json['username'] as String
-      ..status =
-          const StringToIntConverter().fromJson(json['status'] as String?)
+      ..status = const StringToIntConverter().fromJson(json['status'])
       ..registerDateString = json['regdate'] as String? ?? ''
-      ..credits =
-          const StringToIntConverter().fromJson(json['credits'] as String?)
-      ..extcredits1 =
-          const StringToIntConverter().fromJson(json['extcredits1'] as String?)
-      ..extcredits2 =
-          const StringToIntConverter().fromJson(json['extcredits2'] as String?)
-      ..extcredits3 =
-          const StringToIntConverter().fromJson(json['extcredits3'] as String?)
-      ..extcredits4 =
-          const StringToIntConverter().fromJson(json['extcredits4'] as String?)
-      ..extcredits5 =
-          const StringToIntConverter().fromJson(json['extcredits5'] as String?)
-      ..extcredits6 =
-          const StringToIntConverter().fromJson(json['extcredits6'] as String?)
-      ..extcredits7 =
-          const StringToIntConverter().fromJson(json['extcredits7'] as String?)
-      ..extcredits8 =
-          const StringToIntConverter().fromJson(json['extcredits8'] as String?)
-      ..friends =
-          const StringToIntConverter().fromJson(json['friends'] as String?)
-      ..posts = const StringToIntConverter().fromJson(json['posts'] as String?)
-      ..threads =
-          const StringToIntConverter().fromJson(json['threads'] as String?)
-      ..digestposts =
-          const StringToIntConverter().fromJson(json['digestposts'] as String?)
-      ..oltime =
-          const StringToIntConverter().fromJson(json['oltime'] as String?)
+      ..credits = const StringToIntConverter().fromJson(json['credits'])
+      ..extcredits1 = const StringToIntConverter().fromJson(json['extcredits1'])
+      ..extcredits2 = const StringToIntConverter().fromJson(json['extcredits2'])
+      ..extcredits3 = const StringToIntConverter().fromJson(json['extcredits3'])
+      ..extcredits4 = const StringToIntConverter().fromJson(json['extcredits4'])
+      ..extcredits5 = const StringToIntConverter().fromJson(json['extcredits5'])
+      ..extcredits6 = const StringToIntConverter().fromJson(json['extcredits6'])
+      ..extcredits7 = const StringToIntConverter().fromJson(json['extcredits7'])
+      ..extcredits8 = const StringToIntConverter().fromJson(json['extcredits8'])
+      ..friends = const StringToIntConverter().fromJson(json['friends'])
+      ..posts = const StringToIntConverter().fromJson(json['posts'])
+      ..threads = const StringToIntConverter().fromJson(json['threads'])
+      ..digestposts = const StringToIntConverter().fromJson(json['digestposts'])
+      ..oltime = const StringToIntConverter().fromJson(json['oltime'])
       ..recentNote = json['recentnote'] as String? ?? ''
       ..customStatus = json['customstatus'] as String? ?? ''
       ..medalList = const MedalListConverter().fromJson(json['medals'])
       ..signatureHtml = json['sightml'] as String? ?? ''
-      ..male = const StringToBoolConverter().fromJson(json['gender'] as String?)
-      ..birthYear =
-          const StringToIntConverter().fromJson(json['birthyear'] as String?)
-      ..birthMonth =
-          const StringToIntConverter().fromJson(json['birthmonth'] as String?)
-      ..birthDay =
-          const StringToIntConverter().fromJson(json['birthday'] as String?)
-      ..groupId =
-          const StringToIntConverter().fromJson(json['groupid'] as String?)
+      ..gender = const StringToIntConverter().fromJson(json['gender'])
+      ..birthYear = const StringToIntConverter().fromJson(json['birthyear'])
+      ..birthMonth = const StringToIntConverter().fromJson(json['birthmonth'])
+      ..birthDay = const StringToIntConverter().fromJson(json['birthday'])
+      ..groupId = const StringToIntConverter().fromJson(json['groupid'])
       ..constellation = json['constellation'] as String? ?? ''
       ..zodiac = json['zodiac'] as String? ?? ''
       ..nationality = json['nationality'] as String? ?? ''
@@ -146,14 +124,14 @@ SpaceVariables _$SpaceVariablesFromJson(Map<String, dynamic> json) =>
       ..lastactivity = json['lastactivity'] as String? ?? ''
       ..lastpost = json['lastpost'] as String? ?? ''
       ..lastsendmail = json['lastsendmail'] as String? ?? ''
-      ..favtimes =
-          const StringToIntConverter().fromJson(json['favtimes'] as String?)
-      ..sharetimes =
-          const StringToIntConverter().fromJson(json['sharetimes'] as String?)
-      ..profileprogress = const StringToIntConverter()
-          .fromJson(json['profileprogress'] as String?)
-      ..adminGroupInfo =
-          AdminGroupInfo.fromJson(json['admingroup'] as Map<String, dynamic>)
+      ..favtimes = const StringToIntConverter().fromJson(json['favtimes'])
+      ..sharetimes = const StringToIntConverter().fromJson(json['sharetimes'])
+      ..profileprogress = const StringToIntConverter().fromJson(
+        json['profileprogress'],
+      )
+      ..adminGroupInfo = AdminGroupInfo.fromJson(
+        json['admingroup'] as Map<String, dynamic>,
+      )
       ..groupInfo = GroupInfo.fromJson(json['group'] as Map<String, dynamic>)
       ..bio = json['bio'] as String
       ..interest = json['interest'] as String;
@@ -182,7 +160,7 @@ Map<String, dynamic> _$SpaceVariablesToJson(SpaceVariables instance) =>
       'customstatus': instance.customStatus,
       'medals': const MedalListConverter().toJson(instance.medalList),
       'sightml': instance.signatureHtml,
-      'gender': const StringToBoolConverter().toJson(instance.male),
+      'gender': const StringToIntConverter().toJson(instance.gender),
       'birthyear': const StringToIntConverter().toJson(instance.birthYear),
       'birthmonth': const StringToIntConverter().toJson(instance.birthMonth),
       'birthday': const StringToIntConverter().toJson(instance.birthDay),
@@ -216,8 +194,9 @@ Map<String, dynamic> _$SpaceVariablesToJson(SpaceVariables instance) =>
       'lastsendmail': instance.lastsendmail,
       'favtimes': const StringToIntConverter().toJson(instance.favtimes),
       'sharetimes': const StringToIntConverter().toJson(instance.sharetimes),
-      'profileprogress':
-          const StringToIntConverter().toJson(instance.profileprogress),
+      'profileprogress': const StringToIntConverter().toJson(
+        instance.profileprogress,
+      ),
       'admingroup': instance.adminGroupInfo,
       'group': instance.groupInfo,
       'bio': instance.bio,
@@ -228,24 +207,23 @@ Medal _$MedalFromJson(Map<String, dynamic> json) => Medal()
   ..name = json['name'] as String
   ..image = json['image'] as String
   ..description = json['description'] as String
-  ..medalId = const StringToIntConverter().fromJson(json['medalid'] as String?);
+  ..medalId = const StringToIntConverter().fromJson(json['medalid']);
 
 Map<String, dynamic> _$MedalToJson(Medal instance) => <String, dynamic>{
-      'name': instance.name,
-      'image': instance.image,
-      'description': instance.description,
-      'medalid': const StringToIntConverter().toJson(instance.medalId),
-    };
+  'name': instance.name,
+  'image': instance.image,
+  'description': instance.description,
+  'medalid': const StringToIntConverter().toJson(instance.medalId),
+};
 
 AdminGroupInfo _$AdminGroupInfoFromJson(Map<String, dynamic> json) =>
     AdminGroupInfo()
       ..type = json['type'] as String? ?? ''
       ..groupTitle = json['grouptitle'] as String? ?? ''
-      ..stars = const StringToIntConverter().fromJson(json['stars'] as String?)
+      ..stars = const StringToIntConverter().fromJson(json['stars'])
       ..icon = json['icon'] as String? ?? ''
       ..color = json['color'] as String? ?? ''
-      ..readAccess =
-          const StringToIntConverter().fromJson(json['readaccess'] as String?);
+      ..readAccess = const StringToIntConverter().fromJson(json['readaccess']);
 
 Map<String, dynamic> _$AdminGroupInfoToJson(AdminGroupInfo instance) =>
     <String, dynamic>{
@@ -259,21 +237,20 @@ Map<String, dynamic> _$AdminGroupInfoToJson(AdminGroupInfo instance) =>
 
 GroupInfo _$GroupInfoFromJson(Map<String, dynamic> json) => GroupInfo()
   ..type = json['type'] as String? ?? ''
-  ..groupTitle = json['grouptitle'] as String
-  ..stars = const StringToIntConverter().fromJson(json['stars'] as String?)
+  ..groupTitle = json['grouptitle'] as String? ?? ''
+  ..stars = const StringToIntConverter().fromJson(json['stars'])
   ..icon = json['icon'] as String? ?? ''
   ..color = json['color'] as String? ?? ''
-  ..readAccess =
-      const StringToIntConverter().fromJson(json['readaccess'] as String?);
+  ..readAccess = const StringToIntConverter().fromJson(json['readaccess']);
 
 Map<String, dynamic> _$GroupInfoToJson(GroupInfo instance) => <String, dynamic>{
-      'type': instance.type,
-      'grouptitle': instance.groupTitle,
-      'stars': const StringToIntConverter().toJson(instance.stars),
-      'icon': instance.icon,
-      'color': instance.color,
-      'readaccess': const StringToIntConverter().toJson(instance.readAccess),
-    };
+  'type': instance.type,
+  'grouptitle': instance.groupTitle,
+  'stars': const StringToIntConverter().toJson(instance.stars),
+  'icon': instance.icon,
+  'color': instance.color,
+  'readaccess': const StringToIntConverter().toJson(instance.readAccess),
+};
 
 ExtendCredit _$ExtendCreditFromJson(Map<String, dynamic> json) => ExtendCredit()
   ..img = json['img'] as String? ?? ''

@@ -156,9 +156,7 @@ class DiscuzAdaptiveTable extends StatelessWidget {
                   colors.primary.withValues(alpha: dark ? 0.22 : 0.12),
                   colors.onSurface.withValues(alpha: dark ? 0.28 : 0.16),
                 )
-              : colors.outlineVariant.withValues(
-                  alpha: dark ? 0.58 : 0.78,
-                ),
+              : colors.outlineVariant.withValues(alpha: dark ? 0.58 : 0.78),
           width: glass ? 0.8 : 1,
         ),
       ),
@@ -233,8 +231,9 @@ class DiscuzAdaptiveTable extends StatelessWidget {
                       context,
                       cells[column]!.html,
                       style: textStyle.copyWith(
-                        fontWeight:
-                            header ? FontWeight.w600 : textStyle.fontWeight,
+                        fontWeight: header
+                            ? FontWeight.w600
+                            : textStyle.fontWeight,
                         height: 1.35,
                       ),
                     ),
@@ -249,8 +248,8 @@ class DiscuzAdaptiveTable extends StatelessWidget {
         color: header
             ? colors.primary.withValues(alpha: dark ? 0.24 : 0.13)
             : rowIndex.isEven
-                ? colors.onSurface.withValues(alpha: dark ? 0.045 : 0.025)
-                : Colors.transparent,
+            ? colors.onSurface.withValues(alpha: dark ? 0.045 : 0.025)
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(glass ? 11 : 5),
       ),
       child: data.columnCount != 2
@@ -283,8 +282,9 @@ class DiscuzAdaptiveTable extends StatelessWidget {
                     child: Container(
                       width: 0.8,
                       color: colors.outlineVariant.withValues(
-                        alpha:
-                            glass ? (dark ? 0.52 : 0.44) : (dark ? 0.58 : 0.76),
+                        alpha: glass
+                            ? (dark ? 0.52 : 0.44)
+                            : (dark ? 0.58 : 0.76),
                       ),
                     ),
                   ),
@@ -294,10 +294,7 @@ class DiscuzAdaptiveTable extends StatelessWidget {
     );
   }
 
-  Widget _buildFallbackTable(
-    BuildContext context,
-    _DiscuzTableData data,
-  ) {
+  Widget _buildFallbackTable(BuildContext context, _DiscuzTableData data) {
     final colors = Theme.of(context).colorScheme;
     final dark = Theme.of(context).brightness == Brightness.dark;
     String cssColor(Color color) =>
@@ -312,23 +309,23 @@ class DiscuzAdaptiveTable extends StatelessWidget {
       customStylesBuilder: (element) {
         return switch (element.localName) {
           'table' => {
-              'background-color': 'transparent',
-              'border': 'none',
-              'border-spacing': '0',
-              'margin': '0',
-            },
+            'background-color': 'transparent',
+            'border': 'none',
+            'border-spacing': '0',
+            'margin': '0',
+          },
           'th' => {
-              'background-color':
-                  '#${cssColor(colors.primary.withValues(alpha: 0.15))}',
-              'border': '0.05em solid #${cssColor(border)}',
-              'padding': '0.55em 0.65em',
-              'font-weight': '600',
-            },
+            'background-color':
+                '#${cssColor(colors.primary.withValues(alpha: 0.15))}',
+            'border': '0.05em solid #${cssColor(border)}',
+            'padding': '0.55em 0.65em',
+            'font-weight': '600',
+          },
           'td' => {
-              'background-color': 'transparent',
-              'border': '0.05em solid #${cssColor(border)}',
-              'padding': '0.55em 0.65em',
-            },
+            'background-color': 'transparent',
+            'border': '0.05em solid #${cssColor(border)}',
+            'padding': '0.55em 0.65em',
+          },
           _ => _cellStyles(context, element),
         };
       },
@@ -350,10 +347,7 @@ class DiscuzAdaptiveTable extends StatelessWidget {
     );
   }
 
-  Map<String, String>? _cellStyles(
-    BuildContext context,
-    dom.Element element,
-  ) {
+  Map<String, String>? _cellStyles(BuildContext context, dom.Element element) {
     final colors = Theme.of(context).colorScheme;
     String cssColor(Color color) =>
         color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2);
@@ -435,9 +429,7 @@ class _DiscuzTableData {
 
     for (final rowElement in rowElements) {
       final cellElements = rowElement.children
-          .where(
-            (child) => child.localName == 'td' || child.localName == 'th',
-          )
+          .where((child) => child.localName == 'td' || child.localName == 'th')
           .toList(growable: false);
       if (cellElements.isEmpty) continue;
       final cells = <_DiscuzTableCell>[];
@@ -459,7 +451,8 @@ class _DiscuzTableData {
       rows.add(
         _DiscuzTableRow(
           cells: cells,
-          isHeader: parentTag == 'thead' ||
+          isHeader:
+              parentTag == 'thead' ||
               cellElements.every((cell) => cell.localName == 'th'),
         ),
       );
@@ -532,18 +525,31 @@ class _DiscuzHorizontalTableViewportState
       padding: const EdgeInsets.only(bottom: 6),
       child: widget.child,
     );
-    if (isCupertino(context)) {
-      return CupertinoScrollbar(
-        controller: _controller,
-        thumbVisibility: true,
-        child: scrollView,
-      );
-    }
-    return Scrollbar(
-      controller: _controller,
-      thumbVisibility: true,
-      scrollbarOrientation: ScrollbarOrientation.bottom,
-      child: scrollView,
+    final scrollbar = isCupertino(context)
+        ? CupertinoScrollbar(
+            controller: _controller,
+            thumbVisibility: true,
+            child: scrollView,
+          )
+        : Scrollbar(
+            controller: _controller,
+            thumbVisibility: true,
+            scrollbarOrientation: ScrollbarOrientation.bottom,
+            child: scrollView,
+          );
+    // EasyRefresh supplies physics through inherited ScrollConfiguration. A
+    // table must not inherit those vertical refresh/loading edge extensions.
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) =>
+          notification.metrics.axis == Axis.horizontal,
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(
+          physics: const ClampingScrollPhysics(),
+          overscroll: false,
+          scrollbars: false,
+        ),
+        child: scrollbar,
+      ),
     );
   }
 }

@@ -4,13 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class ToastUtils {
+  // MaterialApp and CupertinoApp replace each other when appearance changes.
+  // Reparent the singleton host instead of attaching a second one before the
+  // old app subtree is disposed (EasyLoading 4 rejects overlapping hosts).
+  static final GlobalKey _loadingHostKey = GlobalKey(debugLabel: 'app-loading');
+
   static TransitionBuilder easyLoadingBuilder() {
-    return EasyLoading.init(
-      builder: (context, child) {
-        _configureEasyLoading(context);
-        return child ?? const SizedBox.shrink();
-      },
-    );
+    return (context, child) {
+      _configureEasyLoading(context);
+      // The host animates this inherited text style. Both app shells must use
+      // a resolved style; MaterialApp's debug fallback cannot interpolate with
+      // Cupertino's non-inheriting text style during reparenting.
+      final textStyle = isCupertino(context)
+          ? CupertinoTheme.of(context).textTheme.textStyle
+          : Theme.of(context).textTheme.bodyMedium!;
+      return DefaultTextStyle(
+        style: textStyle.copyWith(inherit: false),
+        child: FlutterEasyLoading(key: _loadingHostKey, child: child),
+      );
+    };
   }
 
   static Future<void> showSuccessfulToast(String msg) {
@@ -91,8 +103,9 @@ class ToastUtils {
     final successColor = glass
         ? CupertinoColors.systemGreen.resolveFrom(context)
         : colors.primary;
-    final errorColor =
-        glass ? CupertinoColors.systemRed.resolveFrom(context) : colors.error;
+    final errorColor = glass
+        ? CupertinoColors.systemRed.resolveFrom(context)
+        : colors.error;
     final infoColor = glass
         ? CupertinoColors.systemBlue.resolveFrom(context)
         : colors.primary;
@@ -136,10 +149,7 @@ class ToastUtils {
       )
       ..indicatorWidget = glass
           ? CupertinoActivityIndicator(radius: 14, color: indicatorColor)
-          : CircularProgressIndicator(
-              strokeWidth: 2.4,
-              color: indicatorColor,
-            )
+          : CircularProgressIndicator(strokeWidth: 2.4, color: indicatorColor)
       ..successWidget = Icon(
         glass ? CupertinoIcons.check_mark_circled_solid : Icons.check_circle,
         color: successColor,
@@ -159,31 +169,22 @@ class ToastUtils {
       );
   }
 
-  // EasyLoading owns the status content and reserves a fixed 50-point outer
-  // margin. The glass is inset by the same amount so only the actual toast,
-  // rather than its positioning area, receives the frosted material.
+  // EasyLoading 4 applies safe-area spacing outside the animation child.
+  // Wrap the panel itself so the glass and accessible content share bounds.
   static Widget _glassBehindEasyLoading(Widget child) {
     return Builder(
       builder: (context) {
         if (!usesAppleTranslucentSurface(context)) return child;
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            const Positioned.fill(
-              child: Padding(
-                padding: EdgeInsets.all(50),
-                child: PlatformLiquidGlassCard(
-                  borderRadius: BorderRadius.all(Radius.circular(22)),
-                  child: SizedBox.expand(),
-                ),
-              ),
-            ),
-            child,
-          ],
-        );
+        return toastGlassPanel(child);
       },
     );
   }
+
+  @visibleForTesting
+  static Widget toastGlassPanel(Widget child) => PlatformLiquidGlassCard(
+    borderRadius: const BorderRadius.all(Radius.circular(22)),
+    child: child,
+  );
 
   // static void showInfoToast(BuildContext context, String msg) {
   //   // EasyLoading.showSuccess(

@@ -8,18 +8,15 @@ part of 'DiscuzNotification.dart';
 
 DiscuzNotification _$DiscuzNotificationFromJson(Map<String, dynamic> json) =>
     DiscuzNotification()
-      ..id = const StringToIntConverter().fromJson(json['id'] as String?)
-      ..uid = const StringToIntConverter().fromJson(json['uid'] as String?)
+      ..id = const StringToIntConverter().fromJson(json['id'])
+      ..uid = const StringToIntConverter().fromJson(json['uid'])
       ..type = json['type'] as String
       ..isNew = json['new'] as String? ?? '0'
       ..author = json['author'] as String? ?? ''
-      ..authorId =
-          const StringToIntConverter().fromJson(json['authorid'] as String?)
+      ..authorId = const StringToIntConverter().fromJson(json['authorid'])
       ..note = json['note'] as String
-      ..dateline = const SecondToDateTimeConverter()
-          .fromJson(json['dateline'] as String?)
-      ..fromId =
-          const StringToIntConverter().fromJson(json['from_id'] as String?)
+      ..dateline = const SecondToDateTimeConverter().fromJson(json['dateline'])
+      ..fromId = const StringToIntConverter().fromJson(json['from_id'])
       ..fromIdType = json['from_idtype'] as String? ?? '';
 
 Map<String, dynamic> _$DiscuzNotificationToJson(DiscuzNotification instance) =>

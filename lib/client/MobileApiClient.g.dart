@@ -8,7 +8,7 @@ part of 'MobileApiClient.dart';
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main,avoid_redundant_argument_values
 
 class _MobileApiClient implements MobileApiClient {
   _MobileApiClient(this._dio, {this.baseUrl, this.errorLogger}) {
@@ -30,11 +30,11 @@ class _MobileApiClient implements MobileApiClient {
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<CheckResult>(
       Options(
-        method: 'GET',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/json',
-      )
+            method: 'GET',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/json',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=check',
@@ -63,11 +63,11 @@ class _MobileApiClient implements MobileApiClient {
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<String>(
       Options(
-        method: 'GET',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/json',
-      )
+            method: 'GET',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/json',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=check',
@@ -107,11 +107,11 @@ class _MobileApiClient implements MobileApiClient {
     };
     final _options = _setStreamType<LoginResult>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=login&mod=logging&action=login&loginfield=username&loginsubmit=yes&cookietime=2592000',
@@ -151,11 +151,11 @@ class _MobileApiClient implements MobileApiClient {
     };
     final _options = _setStreamType<String>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=login&mod=logging&action=login&loginfield=username&loginsubmit=yes&cookietime=2592000',
@@ -358,6 +358,43 @@ class _MobileApiClient implements MobileApiClient {
   }
 
   @override
+  Future<ViewThreadResult> viewThreadPage(
+    int tid,
+    int page,
+    int ppp,
+    Map<String, dynamic> queries,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'tid': tid,
+      r'page': page,
+      r'ppp': ppp,
+    };
+    queryParameters.addAll(queries);
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<ViewThreadResult>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/mobile/index.php?version=4&module=viewthread',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late ViewThreadResult _value;
+    try {
+      _value = ViewThreadResult.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<String> sendReplyRaw(
     int fid,
     int tid,
@@ -383,11 +420,11 @@ class _MobileApiClient implements MobileApiClient {
     };
     final _options = _setStreamType<String>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=sendreply&action=reply&replysubmit=yes&usesig=1&seccodemodid=forum::viewthread',
@@ -440,11 +477,11 @@ class _MobileApiClient implements MobileApiClient {
     _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<ApiResult>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=sendreply&action=reply&replysubmit=yes&usesig=1&seccodemodid=forum::viewthread',
@@ -612,11 +649,11 @@ class _MobileApiClient implements MobileApiClient {
     final _data = {'formhash': formHash, 'pollanswers[]': checkedOptionId};
     final _options = _setStreamType<ApiResult>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes&action=votepoll',
@@ -649,11 +686,11 @@ class _MobileApiClient implements MobileApiClient {
     final _data = {'formhash': formHash, 'pollanswers[]': checkedOptionId};
     final _options = _setStreamType<String>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes&action=votepoll',
@@ -852,11 +889,11 @@ class _MobileApiClient implements MobileApiClient {
     final _data = {'formhash': formHash, 'message': message, 'touid': toUid};
     final _options = _setStreamType<ApiResult>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&ac=pm&op=send&daterange=0&module=sendpm&pmsubmit=yes',
@@ -949,11 +986,11 @@ class _MobileApiClient implements MobileApiClient {
     );
     final _options = _setStreamType<String>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'multipart/form-data',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'multipart/form-data',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=forumupload&type=image',
@@ -1021,11 +1058,11 @@ class _MobileApiClient implements MobileApiClient {
     };
     final _options = _setStreamType<String>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/misc.php?mod=report&inajax=1&handlekey=miscreport120&reportsubmit=true',
@@ -1053,11 +1090,11 @@ class _MobileApiClient implements MobileApiClient {
     final _data = {'formhash': formhash, 'id': tid};
     final _options = _setStreamType<ApiResult>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=favthread&type=thread&ac=favorite&favoritesubmit=true',
@@ -1088,11 +1125,11 @@ class _MobileApiClient implements MobileApiClient {
     final _data = {'formhash': formhash, 'favid': favid};
     final _options = _setStreamType<ApiResult>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=favthread&type=thread&ac=favorite&deletesubmit=true&op=delete',
@@ -1147,11 +1184,11 @@ class _MobileApiClient implements MobileApiClient {
     final _data = {'formhash': formhash, 'id': fid};
     final _options = _setStreamType<ApiResult>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=favforum&type=thread&ac=favorite&favoritesubmit=true',
@@ -1182,11 +1219,11 @@ class _MobileApiClient implements MobileApiClient {
     final _data = {'formhash': formhash, 'favid': favid};
     final _options = _setStreamType<ApiResult>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=favforum&type=thread&ac=favorite&deletesubmit=true&op=delete',
@@ -1280,11 +1317,11 @@ class _MobileApiClient implements MobileApiClient {
     };
     final _options = _setStreamType<PostTokenResult>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/plugin.php?id=dhpush:token',
@@ -1334,11 +1371,11 @@ class _MobileApiClient implements MobileApiClient {
     };
     final _options = _setStreamType<ApiResult>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=newthread&topicsubmit=yes&usesig=1',
@@ -1366,11 +1403,11 @@ class _MobileApiClient implements MobileApiClient {
     final _data = {'hash': formhash};
     final _options = _setStreamType<ApiResult>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=mobilesign&type=thread&ac=favorite&deletesubmit=true&op=delete',
@@ -1412,11 +1449,11 @@ class _MobileApiClient implements MobileApiClient {
     };
     final _options = _setStreamType<ApiResult>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=topicadmin&action=warn&modsubmit=yes&sendreasonpm=on',
@@ -1458,11 +1495,11 @@ class _MobileApiClient implements MobileApiClient {
     };
     final _options = _setStreamType<ApiResult>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=topicadmin&action=banpost&modsubmit=yes&sendreasonpm=on',
@@ -1504,11 +1541,11 @@ class _MobileApiClient implements MobileApiClient {
     };
     final _options = _setStreamType<ApiResult>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/api/mobile/index.php?version=4&module=topicadmin&action=delpost&modsubmit=yes&sendreasonpm=on',

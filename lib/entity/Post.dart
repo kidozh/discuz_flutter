@@ -5,6 +5,7 @@ import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../widget/PostWidget.dart';
+import '../utility/discuz_json.dart';
 import 'Discuz.dart';
 
 part 'Post.g.dart';
@@ -55,10 +56,10 @@ class Post{
   @SecondToDateTimeConverter()
   DateTime publishAt = DateTime.now();
 
-  @JsonKey(name: "attachlist",defaultValue: [])
+  @JsonKey(name: "attachlist", fromJson: discuzIds)
   List<String> attachmentIdList = [];
 
-  @JsonKey(name: "imagelist",defaultValue: [])
+  @JsonKey(name: "imagelist", fromJson: discuzIds)
   List<String> imageIdList = [];
 
   @JsonKey(name:"groupiconid",defaultValue: "0")
@@ -78,7 +79,7 @@ class Post{
 
 
   Post();
-  factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);
+  factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(discuzScalars(json));
   Map<String, dynamic> toJson() => _$PostToJson(this);
 
   @override
@@ -87,9 +88,11 @@ class Post{
   }
 }
 
-@JsonSerializable(ignoreUnannotated: true)
+@JsonSerializable()
 @StringToIntConverter()
 class Attachment{
+  @StringToIntConverter()
+  int price = 0;
   @StringToIntConverter()
   int aid=0, tid=0, pid=0, uid=0;
   @JsonKey(defaultValue: "")
@@ -129,7 +132,7 @@ class Attachment{
   // String? imageAlt = "";
 
   Attachment();
-  factory Attachment.fromJson(Map<String, dynamic> json) => _$AttachmentFromJson(json);
+  factory Attachment.fromJson(Map<String, dynamic> json) => _$AttachmentFromJson(discuzScalars(json));
   Map<String, dynamic> toJson() => _$AttachmentToJson(this);
 
   String getAttachmentRealUrl(Discuz discuz){

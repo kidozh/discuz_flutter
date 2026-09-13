@@ -1,4 +1,5 @@
 import 'package:discuz_flutter/utility/app_motion.dart';
+import 'package:discuz_flutter/generated/l10n.dart';
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -74,7 +75,9 @@ class BilibiliVideoState extends State<BilibiliWidget> {
       setState(() {
         uri = bilibiliUri;
       });
-      log("Get Bilibili URL ${url}, host: ${bilibiliUri.host}, path: ${bilibiliUri.path}, split: ${bilibiliUri.path.split("/")}");
+      log(
+        "Get Bilibili URL ${url}, host: ${bilibiliUri.host}, path: ${bilibiliUri.path}, split: ${bilibiliUri.path.split("/")}",
+      );
 
       // not the live
       if (bilibiliUri.host == "live.bilibili.com") {
@@ -90,7 +93,9 @@ class BilibiliVideoState extends State<BilibiliWidget> {
         if (int.tryParse(videoParameterAtLast) != null) {
           videoRequestParameter = videoParameterAtLast;
         }
-        log("load bilibili OPUS information ${url} with ${videoRequestParameter} from list : ${urlPathFilteredList}");
+        log(
+          "load bilibili OPUS information ${url} with ${videoRequestParameter} from list : ${urlPathFilteredList}",
+        );
         if (videoRequestParameter.isNotEmpty) loadBilibiliVideoApi();
       } else if (bilibiliUri.path.startsWith("/video")) {
         type = BilibiliWidgetType.video;
@@ -110,10 +115,13 @@ class BilibiliVideoState extends State<BilibiliWidget> {
           videoRequestType = BilibiliVideoRequestType.aid;
         }
         if (int.tryParse(videoParameterAtLast) == null &&
-            !RegExp(r'^BV[0-9A-Za-z]+$').hasMatch(videoParameterAtLast)) return;
+            !RegExp(r'^BV[0-9A-Za-z]+$').hasMatch(videoParameterAtLast))
+          return;
         videoRequestParameter = videoParameterAtLast;
         // start fetch it?
-        log("load bilibili information ${url} with ${videoRequestParameter} from list : ${urlPathFilteredList}");
+        log(
+          "load bilibili information ${url} with ${videoRequestParameter} from list : ${urlPathFilteredList}",
+        );
         loadBilibiliVideoApi();
       }
     }
@@ -129,8 +137,10 @@ class BilibiliVideoState extends State<BilibiliWidget> {
     try {
       final dio = await NetworkUtils.getDioWithPersistCookieJar(null);
       if (!mounted || version != _requestVersion) return;
-      final client =
-          BilibiliApiClient(dio, baseUrl: 'https://api.bilibili.com');
+      final client = BilibiliApiClient(
+        dio,
+        baseUrl: 'https://api.bilibili.com',
+      );
       switch (requestType) {
         case BilibiliWidgetType.video:
           final result = byAid
@@ -158,12 +168,13 @@ class BilibiliVideoState extends State<BilibiliWidget> {
 
   @override
   Widget build(BuildContext context) => AppContentTransition(
-        child: KeyedSubtree(
-          key: ValueKey(
-              '$url:${videoResult.data.viewData.pic}:${opusResult.data.item.modules.moduleAuthor.name}:${opusResult.data.item.modules.moduleDynamic.desc.text}'),
-          child: _buildContent(context),
-        ),
-      );
+    child: KeyedSubtree(
+      key: ValueKey(
+        '$url:${videoResult.data.viewData.pic}:${opusResult.data.item.modules.moduleAuthor.name}:${opusResult.data.item.modules.moduleDynamic.desc.text}',
+      ),
+      child: _buildContent(context),
+    ),
+  );
 
   Widget _buildContent(BuildContext context) {
     if (uri == null) {
@@ -205,26 +216,26 @@ class BilibiliVideoState extends State<BilibiliWidget> {
       ),
     );
 
-    return PlatformWidgetBuilder(
-      child: content,
-      material: (_, child, __) => PlatformCard(
-        elevation: 4,
-        child: child,
-      ),
-      cupertino: (_, child, __) => CupertinoMediaOutline(
-        borderRadius: BorderRadius.circular(22),
-        child: PlatformLiquidGlassCard(
-          borderRadius: BorderRadius.circular(22),
-          child: child ?? const SizedBox.shrink(),
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 900),
+        child: PlatformWidgetBuilder(
+          child: content,
+          material: (_, child, __) => PlatformCard(elevation: 4, child: child),
+          cupertino: (_, child, __) => CupertinoMediaOutline(
+            borderRadius: BorderRadius.circular(22),
+            child: PlatformLiquidGlassCard(
+              borderRadius: BorderRadius.circular(22),
+              child: child ?? const SizedBox.shrink(),
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _glassPill({
-    required Widget child,
-    bool onMedia = false,
-  }) {
+  Widget _glassPill({required Widget child, bool onMedia = false}) {
     final dark = Theme.of(context).brightness == Brightness.dark;
     final background = onMedia
         ? Colors.black.withValues(alpha: 0.48)
@@ -279,12 +290,12 @@ class BilibiliVideoState extends State<BilibiliWidget> {
     );
   }
 
-  Widget _videoCover() {
+  Widget _videoCover({bool wide = false}) {
     final viewData = videoResult.data.viewData;
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: AspectRatio(
-        aspectRatio: 16 / 10,
+        aspectRatio: wide ? 16 / 9 : 16 / 10,
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -325,7 +336,7 @@ class BilibiliVideoState extends State<BilibiliWidget> {
                 ),
               ),
             ),
-            if (viewData.duration > 0)
+            if (!wide && viewData.duration > 0)
               Positioned(
                 right: 8,
                 bottom: 8,
@@ -348,7 +359,7 @@ class BilibiliVideoState extends State<BilibiliWidget> {
     );
   }
 
-  Widget _videoDetails() {
+  Widget _videoDetails({bool wide = false}) {
     final viewData = videoResult.data.viewData;
     final colors = Theme.of(context).colorScheme;
     return Column(
@@ -388,12 +399,32 @@ class BilibiliVideoState extends State<BilibiliWidget> {
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             color: colors.onSurface,
-            fontSize: 15,
+            fontSize: wide ? 18 : 15,
             height: 1.22,
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 9),
+        if (wide && viewData.desc.trim().isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Text(
+            viewData.desc.trim(),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: colors.onSurfaceVariant,
+              fontSize: 13,
+              height: 1.4,
+            ),
+          ),
+        ],
+        if (wide &&
+            (viewData.pubdate > 0 ||
+                viewData.duration > 0 ||
+                viewData.videos > 1)) ...[
+          const SizedBox(height: 10),
+          _videoMetadata(),
+        ],
+        SizedBox(height: wide ? 14 : 9),
         Row(
           children: [
             _avatar(viewData.owner.face),
@@ -420,6 +451,52 @@ class BilibiliVideoState extends State<BilibiliWidget> {
     );
   }
 
+  Widget _videoMetadata() {
+    final data = videoResult.data.viewData;
+    final strings = S.of(context);
+    final colors = Theme.of(context).colorScheme;
+
+    Widget item(IconData icon, String label) => Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14, color: colors.onSurfaceVariant),
+        const SizedBox(width: 5),
+        Flexible(
+          child: Text(
+            label,
+            style: TextStyle(color: colors.onSurfaceVariant, fontSize: 12),
+          ),
+        ),
+      ],
+    );
+
+    return Wrap(
+      spacing: 14,
+      runSpacing: 7,
+      children: [
+        if (data.pubdate > 0)
+          item(
+            Icons.calendar_today_outlined,
+            strings.bilibiliPublishedAt(
+              MaterialLocalizations.of(context).formatMediumDate(
+                DateTime.fromMillisecondsSinceEpoch(data.pubdate * 1000),
+              ),
+            ),
+          ),
+        if (data.duration > 0)
+          item(
+            Icons.schedule,
+            strings.bilibiliDuration(_formatDuration(data.duration)),
+          ),
+        if (data.videos > 1)
+          item(
+            Icons.video_library_outlined,
+            strings.bilibiliParts(data.videos),
+          ),
+      ],
+    );
+  }
+
   String _formatDuration(int seconds) {
     final duration = Duration(seconds: seconds);
     final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
@@ -431,91 +508,104 @@ class BilibiliVideoState extends State<BilibiliWidget> {
   }
 
   Widget get bilibiliDefaultWidget => _interactiveSurface(
-        child: Row(
-          children: [
-            SizedBox.square(
-              dimension: 42,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: _bilibiliPink.withValues(alpha: 0.16),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: _bilibiliPink.withValues(alpha: 0.32),
-                  ),
-                ),
-                child: Center(
-                  child: isLoadingApi
-                      ? SizedBox.square(
-                          dimension: 19,
-                          child: PlatformCircularProgressIndicator(),
-                        )
-                      : FaIcon(
-                          FontAwesomeIcons.bilibili,
-                          size: 20,
-                          color: _bilibiliPink,
-                        ),
-                ),
-              ),
+    child: Row(
+      children: [
+        SizedBox.square(
+          dimension: 42,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: _bilibiliPink.withValues(alpha: 0.16),
+              shape: BoxShape.circle,
+              border: Border.all(color: _bilibiliPink.withValues(alpha: 0.32)),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isLoadingApi ? '正在载入哔哩哔哩内容' : '哔哩哔哩链接',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontWeight: FontWeight.w600,
+            child: Center(
+              child: isLoadingApi
+                  ? SizedBox.square(
+                      dimension: 19,
+                      child: PlatformCircularProgressIndicator(),
+                    )
+                  : FaIcon(
+                      FontAwesomeIcons.bilibili,
+                      size: 20,
+                      color: _bilibiliPink,
                     ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    url,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
             ),
-            const SizedBox(width: 8),
-            Icon(
-              PlatformIcons(context).forward,
-              size: 16,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-          ],
+          ),
         ),
-      );
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                isLoadingApi ? '正在载入哔哩哔哩内容' : '哔哩哔哩链接',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                url,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 8),
+        Icon(
+          PlatformIcons(context).forward,
+          size: 16,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      ],
+    ),
+  );
 
   Widget get bilibiliVideoPreviewWidget => _interactiveSurface(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            if (constraints.maxWidth < 330) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _videoCover(),
-                  const SizedBox(height: 12),
-                  _videoDetails(),
-                ],
-              );
-            }
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(flex: 9, child: _videoCover()),
-                const SizedBox(width: 12),
-                Expanded(flex: 10, child: _videoDetails()),
-              ],
-            );
-          },
-        ),
-      );
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        // Use the actual post width: a tablet's narrow reading pane should
+        // keep the compact layout, even when the whole screen is wide.
+        if (constraints.maxWidth >= 600) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: (constraints.maxWidth * .36).clamp(220.0, 280.0),
+                child: _videoCover(wide: true),
+              ),
+              const SizedBox(width: 20),
+              Expanded(child: _videoDetails(wide: true)),
+            ],
+          );
+        }
+        if (constraints.maxWidth < 330) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _videoCover(),
+              const SizedBox(height: 12),
+              _videoDetails(),
+            ],
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(flex: 9, child: _videoCover()),
+            const SizedBox(width: 12),
+            Expanded(flex: 10, child: _videoDetails()),
+          ],
+        );
+      },
+    ),
+  );
 
   Widget get bilibiliOpusPreviewWidget {
     final author = opusResult.data.item.modules.moduleAuthor;

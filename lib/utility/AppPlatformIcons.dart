@@ -9,8 +9,7 @@ extension PlatformIconsExt on BuildContext {
   IconData platformIcon({
     required IconData material,
     required IconData cupertino,
-  }) =>
-      isMaterial(this) ? material : cupertino;
+  }) => isMaterial(this) ? material : cupertino;
 }
 
 class AppPlatformIcons {
@@ -48,6 +47,14 @@ class AppPlatformIcons {
   IconData get pushServiceOutlined => isMaterial(context)
       ? Icons.quickreply_outlined
       : CupertinoIcons.captions_bubble;
+
+  IconData get feedForumsOutlined => isMaterial(context)
+      ? Icons.checklist_outlined
+      : CupertinoIcons.list_bullet;
+
+  IconData get dashboardOrderOutlined => isMaterial(context)
+      ? Icons.swap_vert
+      : CupertinoIcons.arrow_up_arrow_down;
 
   IconData get pushServiceSolid => isMaterial(context)
       ? Icons.quickreply

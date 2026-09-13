@@ -1,3 +1,4 @@
+import '../widget/PortalHighlights.dart';
 import 'dart:convert';
 import 'dart:developer';
 
@@ -37,7 +38,12 @@ class DiscuzPortalScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const DiscuzPortalStatefulWidget();
+    final account = context.watch<DiscuzAndUserNotifier>();
+    return DiscuzPortalStatefulWidget(
+      key: ValueKey(
+        '${account.discuz?.baseURL}:${account.user?.uid}:${account.user?.auth}',
+      ),
+    );
   }
 }
 
@@ -60,6 +66,13 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
   bool _enableControlFinish = false;
 
   bool _isFirstlyRefreshing = true;
+  int _highlightRefresh = 0;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   _DiscuzPortalState();
 
@@ -67,7 +80,9 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
   void initState() {
     super.initState();
     _controller = EasyRefreshController(
-        controlFinishLoad: true, controlFinishRefresh: true);
+      controlFinishLoad: true,
+      controlFinishRefresh: true,
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializePortal();
     });
@@ -76,15 +91,14 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
   FavoriteForumDao? favoriteForumDao;
 
   Future<void> _initializePortal() async {
-    await Future.wait([
-      _loadFavoriteForum(),
-      _loadPortalCache(),
-    ]);
+    await Future.wait([_loadFavoriteForum(), _loadPortalCache()]);
     if (!mounted) return;
-    final discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    final discuz = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).discuz;
     if (discuz != null) {
-      await _loadPortalContent(discuz);
+      await _loadPortalContent(discuz, refreshHighlights: false);
     }
   }
 
@@ -97,8 +111,10 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
 
   Future<void> _loadPortalCache() async {
     // load cache first
-    Discuz? discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).discuz;
     if (discuz != null) {
       String portalJson =
           await UserPreferencesUtils.getDiscuzPortalResultCacheJson(discuz);
@@ -107,8 +123,9 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
         return;
       }
       try {
-        DiscuzIndexResult discuzIndexResult =
-            DiscuzIndexResult.fromJson(jsonDecode(portalJson));
+        DiscuzIndexResult discuzIndexResult = DiscuzIndexResult.fromJson(
+          jsonDecode(portalJson),
+        );
         setState(() {
           result = discuzIndexResult;
         });
@@ -118,135 +135,166 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
     }
   }
 
-  Future<IndicatorResult> _loadPortalContent(Discuz discuz) async {
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+  Future<IndicatorResult> _loadPortalContent(
+    Discuz discuz, {
+    bool refreshHighlights = true,
+  }) async {
+    setState(() {
+      if (refreshHighlights) _highlightRefresh++;
+      _error = null;
+    });
+    User? user = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).user;
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
 
-    IndicatorResult indictaorResult =
-        await _client.getDiscuzPortalResult().then((value) async {
-      // render page
-      setState(() {
-        result = value;
-        _isFirstlyRefreshing = false;
-      });
-      Provider.of<DiscuzNotificationProvider>(context, listen: false)
-          .setNotificationCount(value.discuzIndexVariables.noticeCount);
-      // get fids;
-      if (value.discuzIndexVariables.forumList.isNotEmpty) {
-        String fids = "";
-        for (var forum in value.discuzIndexVariables.forumList) {
-          fids += "${forum.fid},";
-        }
-        UserPreferencesUtils.putDiscuzForumFids(discuz, fids);
-        log("Save fids ${fids} to User Preference");
-        // save cache
-        UserPreferencesUtils.putDiscuzPortalResultCacheJson(
-            discuz, jsonEncode(value.toJson()));
-        // save group title and id mapping
-        if (value.discuzIndexVariables.groupInfo.getGroupId() != 0) {
-          UserPreferencesUtils.putDiscuzGroupNameById(
+    IndicatorResult indictaorResult = await _client
+        .getDiscuzPortalResult()
+        .then((value) async {
+          if (!mounted) return IndicatorResult.none;
+          // render page
+          setState(() {
+            result = value;
+            _isFirstlyRefreshing = false;
+          });
+          Provider.of<DiscuzNotificationProvider>(
+            context,
+            listen: false,
+          ).setNotificationCount(value.discuzIndexVariables.noticeCount);
+          // get fids;
+          if (value.discuzIndexVariables.forumList.isNotEmpty) {
+            String fids = "";
+            for (var forum in value.discuzIndexVariables.forumList) {
+              fids += "${forum.fid},";
+            }
+            UserPreferencesUtils.putDiscuzForumFids(discuz, fids);
+            log("Save fids ${fids} to User Preference");
+            // save cache
+            UserPreferencesUtils.putDiscuzPortalResultCacheJson(
               discuz,
-              value.discuzIndexVariables.groupInfo.getGroupId(),
-              value.discuzIndexVariables.groupInfo.groupTitle);
-        }
-      }
-      if (value.getErrorString() != null) {
-        EasyLoading.showError(value.getErrorString()!);
-      }
-      if (!_enableControlFinish) {
-        //_controller.resetLoadState();
-        _controller.finishRefresh();
-      }
-      if (!_enableControlFinish) {
-        _controller.finishLoad(IndicatorResult.noMore);
-      }
+              jsonEncode(value.toJson()),
+            );
+            // save group title and id mapping
+            if (value.discuzIndexVariables.groupInfo.getGroupId() != 0) {
+              UserPreferencesUtils.putDiscuzGroupNameById(
+                discuz,
+                value.discuzIndexVariables.groupInfo.getGroupId(),
+                value.discuzIndexVariables.groupInfo.groupTitle,
+              );
+            }
+          }
+          if (value.getErrorString() != null) {
+            EasyLoading.showError(value.getErrorString()!);
+          }
+          if (!_enableControlFinish) {
+            //_controller.resetLoadState();
+            _controller.finishRefresh();
+          }
+          if (!_enableControlFinish) {
+            _controller.finishLoad(IndicatorResult.noMore);
+          }
 
-      // check with user
-      if (user != null && value.discuzIndexVariables.member_uid != user.uid) {
-        log("Recv user ${value.discuzIndexVariables.member_uid} ${user.uid}");
-        setState(() {
-          _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
-              S.of(context).userExpiredSubtitle,
-              errorType: ErrorType.userExpired);
-        });
-      }
-
-      if (user != null && value.discuzIndexVariables.member_uid == user.uid) {
-        // conduct mobile sign
-        await MobileSignUtils.conductMobileSign(
-            context, discuz, user, value.discuzIndexVariables.formHash);
-      }
-
-      return IndicatorResult.noMore;
-    }).catchError((onError) {
-      if (mounted) {
-        setState(() {
-          _isFirstlyRefreshing = false;
-        });
-      }
-      _controller.finishLoad(IndicatorResult.fail);
-      switch (onError.runtimeType) {
-        case DioException:
-          {
-            DioException dioError = onError;
-            log("${dioError.message} >-> ${dioError.type}");
-            EasyLoading.showError("${dioError.message} (${dioError})");
+          // check with user
+          if (user != null &&
+              value.discuzIndexVariables.member_uid != user.uid) {
+            log(
+              "Recv user ${value.discuzIndexVariables.member_uid} ${user.uid}",
+            );
             setState(() {
               _error = DiscuzError(
-                  dioError.message == null
-                      ? S.of(context).error
-                      : dioError.message!,
-                  dioError.type.name,
-                  dioError: dioError);
+                S.of(context).userExpiredTitle(user.username),
+                S.of(context).userExpiredSubtitle,
+                errorType: ErrorType.userExpired,
+              );
             });
-
-            break;
           }
-        default:
-          {
+
+          if (user != null &&
+              value.discuzIndexVariables.member_uid == user.uid) {
+            // conduct mobile sign
+            await MobileSignUtils.conductMobileSign(
+              context,
+              discuz,
+              user,
+              value.discuzIndexVariables.formHash,
+            );
+          }
+
+          return IndicatorResult.noMore;
+        })
+        .catchError((onError) {
+          if (!mounted) return IndicatorResult.none;
+          if (mounted) {
             setState(() {
-              _error = DiscuzError(
-                  onError.runtimeType.toString(), onError.toString());
+              _isFirstlyRefreshing = false;
             });
           }
-      }
+          _controller.finishLoad(IndicatorResult.fail);
+          switch (onError.runtimeType) {
+            case DioException:
+              {
+                DioException dioError = onError;
+                log("${dioError.message} >-> ${dioError.type}");
+                EasyLoading.showError("${dioError.message} (${dioError})");
+                setState(() {
+                  _error = DiscuzError(
+                    dioError.message == null
+                        ? S.of(context).error
+                        : dioError.message!,
+                    dioError.type.name,
+                    dioError: dioError,
+                  );
+                });
 
-      return IndicatorResult.fail;
-    });
+                break;
+              }
+            default:
+              {
+                setState(() {
+                  _error = DiscuzError(
+                    onError.runtimeType.toString(),
+                    onError.toString(),
+                  );
+                });
+              }
+          }
+
+          return IndicatorResult.fail;
+        });
     return indictaorResult;
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<DiscuzAndUserNotifier>(
-        builder: (context, discuzAndUser, child) {
-      if (discuzAndUser.discuz == null) {
-        return NullDiscuzScreen();
-      } else {
-        return PlatformLiquidGlassPageBackdrop(
-          child: Column(
-            children: [
-              if (_error != null)
-                ErrorCard(
-                  _error!,
-                  () {
-                    _controller.callRefresh();
-                  },
-                  errorType: _error!.errorType,
-                ),
-              Expanded(
-                child: getEasyRefreshWidget(
-                  discuzAndUser.discuz!,
-                  discuzAndUser.user,
-                ),
+      builder: (context, discuzAndUser, child) {
+        if (discuzAndUser.discuz == null) {
+          return NullDiscuzScreen();
+        } else {
+          return SafeArea(
+            bottom: false,
+            child: PlatformLiquidGlassPageBackdrop(
+              child: Column(
+                children: [
+                  if (_error != null)
+                    ErrorCard(_error!, () {
+                      _controller.callRefresh();
+                    }, errorType: _error!.errorType),
+                  Expanded(
+                    child: getEasyRefreshWidget(
+                      discuzAndUser.discuz!,
+                      discuzAndUser.user,
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        );
-      }
-    });
+            ),
+          );
+        }
+      },
+    );
   }
 
   Widget getEasyRefreshWidget(Discuz discuz, User? user) {
@@ -265,55 +313,60 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       },
       child: CustomScrollView(
         slivers: [
-          SliverList(
-              delegate: SliverChildBuilderDelegate(
-                  (context, index) => SafeArea(
-                        child: Container(),
-                        bottom: false,
-                      ),
-                  childCount: 1)),
-          if (favoriteForumDao != null)
-            ValueListenableBuilder(
-                valueListenable:
-                    favoriteForumDao!.favoriteForumBox.listenable(),
-                builder: (BuildContext context, value, Widget? child) {
-                  List<FavoriteForumInDatabase> favoriteForumInDbList =
-                      favoriteForumDao!.getFavoriteForumList(discuz);
-                  return SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                    return FavoriteForumCardWidget(
-                        discuz, user, favoriteForumInDbList[index]);
-                  }, childCount: favoriteForumInDbList.length));
-                }),
-          if (result.discuzIndexVariables.forumPartitionList.isEmpty)
-            SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-              return _isFirstlyRefreshing
-                  ? LoadingStateWidget()
-                  : EmptyListScreen(EmptyItemType.forum);
-            }, childCount: 1)),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                List<ForumPartition> forumPartitionList =
-                    result.discuzIndexVariables.forumPartitionList;
-                List<Forum> _allForumList =
-                    result.discuzIndexVariables.forumList;
-                ForumPartition forumPartition = forumPartitionList[index];
-                //log("Forum partition length ${result!.discuzIndexVariables.forumPartitionList.length} all ${_allForumList.length}" );
-                return ForumPartitionWidget(
-                    discuz, user, forumPartition, _allForumList);
-              },
-              childCount: result.discuzIndexVariables.forumPartitionList.length,
+          SliverToBoxAdapter(
+            child: PortalHighlights(
+              key: ValueKey('${discuz.baseURL}:${user?.uid}:${user?.auth}'),
+              discuz: discuz,
+              user: user,
+              refresh: _highlightRefresh,
             ),
           ),
+          if (favoriteForumDao != null)
+            ValueListenableBuilder(
+              valueListenable: favoriteForumDao!.favoriteForumBox.listenable(),
+              builder: (BuildContext context, value, Widget? child) {
+                List<FavoriteForumInDatabase> favoriteForumInDbList =
+                    favoriteForumDao!.getFavoriteForumList(discuz);
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    return FavoriteForumCardWidget(
+                      discuz,
+                      user,
+                      favoriteForumInDbList[index],
+                    );
+                  }, childCount: favoriteForumInDbList.length),
+                );
+              },
+            ),
+          if (result.discuzIndexVariables.forumPartitionList.isEmpty)
+            SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                return _isFirstlyRefreshing
+                    ? LoadingStateWidget()
+                    : EmptyListScreen(EmptyItemType.forum);
+              }, childCount: 1),
+            ),
           SliverList(
-              delegate: SliverChildBuilderDelegate(
-                  (context, index) => SafeArea(
-                        child: Container(),
-                        top: false,
-                      ),
-                  childCount: 1)),
+            delegate: SliverChildBuilderDelegate((context, index) {
+              List<ForumPartition> forumPartitionList =
+                  result.discuzIndexVariables.forumPartitionList;
+              List<Forum> _allForumList = result.discuzIndexVariables.forumList;
+              ForumPartition forumPartition = forumPartitionList[index];
+              //log("Forum partition length ${result!.discuzIndexVariables.forumPartitionList.length} all ${_allForumList.length}" );
+              return ForumPartitionWidget(
+                discuz,
+                user,
+                forumPartition,
+                _allForumList,
+              );
+            }, childCount: result.discuzIndexVariables.forumPartitionList.length),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => SafeArea(child: Container(), top: false),
+              childCount: 1,
+            ),
+          ),
         ],
       ),
     );
@@ -347,22 +400,30 @@ class FavoriteForumCardWidget extends StatelessWidget {
             : null,
         title: Text(
           favoriteForumInDatabase.title,
-          style: TextStyle(color: Theme.of(context).colorScheme.primary
-              //fontWeight: FontWeight.bold
-              ),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.primary,
+            //fontWeight: FontWeight.bold
+          ),
         ),
         onTap: () async {
           VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(
-              context,
-              platformPageRoute(
-                  context: context,
-                  iosTitle: favoriteForumInDatabase.title,
-                  builder: (context) => DisplayForumTwoPanePage(
-                      discuz, user, favoriteForumInDatabase.idKey)));
+            context,
+            platformPageRoute(
+              context: context,
+              iosTitle: favoriteForumInDatabase.title,
+              builder: (context) => DisplayForumTwoPanePage(
+                discuz,
+                user,
+                favoriteForumInDatabase.idKey,
+              ),
+            ),
+          );
         },
-        trailing: Icon(PlatformIcons(context).forward,
-            color: Theme.of(context).colorScheme.primary),
+        trailing: Icon(
+          PlatformIcons(context).forward,
+          color: Theme.of(context).colorScheme.primary,
+        ),
       ),
     );
   }

@@ -8,14 +8,15 @@ part of 'CaptchaResult.dart';
 
 CaptchaResult _$CaptchaResultFromJson(Map<String, dynamic> json) =>
     CaptchaResult()
-      ..version = json['Version'] as String
-      ..charset = json['Charset'] as String
+      ..version = json['Version'] as String? ?? ''
+      ..charset = json['Charset'] as String? ?? ''
       ..errorResult = json['Message'] == null
           ? null
           : ErrorResult.fromJson(json['Message'] as Map<String, dynamic>)
       ..error = json['error'] as String?
-      ..variables =
-          CaptchaVariable.fromJson(json['Variables'] as Map<String, dynamic>);
+      ..variables = CaptchaVariable.fromJson(
+        json['Variables'] as Map<String, dynamic>,
+      );
 
 Map<String, dynamic> _$CaptchaResultToJson(CaptchaResult instance) =>
     <String, dynamic>{
@@ -28,22 +29,17 @@ Map<String, dynamic> _$CaptchaResultToJson(CaptchaResult instance) =>
 
 CaptchaVariable _$CaptchaVariableFromJson(Map<String, dynamic> json) =>
     CaptchaVariable()
-      ..cookiepre = json['cookiepre'] as String
+      ..cookiepre = json['cookiepre'] as String? ?? ''
       ..auth = json['auth'] as String?
-      ..saltkey = json['saltkey'] as String
-      ..member_username = json['member_username'] as String
-      ..member_avatar = json['member_avatar'] as String
-      ..member_uid =
-          const StringToIntConverter().fromJson(json['member_uid'] as String?)
-      ..groupId =
-          const StringToIntConverter().fromJson(json['groupid'] as String?)
-      ..readAccess =
-          const StringToIntConverter().fromJson(json['readaccess'] as String?)
-      ..formHash = json['formhash'] as String
-      ..isModerator =
-          const StringToIntConverter().fromJson(json['ismoderator'] as String?)
-      ..noticeCount =
-          NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
+      ..saltkey = json['saltkey'] as String? ?? ''
+      ..member_username = json['member_username'] as String? ?? ''
+      ..member_avatar = json['member_avatar'] as String? ?? ''
+      ..member_uid = const StringToIntConverter().fromJson(json['member_uid'])
+      ..groupId = const StringToIntConverter().fromJson(json['groupid'])
+      ..readAccess = const StringToIntConverter().fromJson(json['readaccess'])
+      ..formHash = json['formhash'] as String? ?? ''
+      ..isModerator = const StringToIntConverter().fromJson(json['ismoderator'])
+      ..noticeCount = noticeFromJson(json['notice'])
       ..secHash = json['sechash'] as String? ?? ''
       ..secCodeURL = json['seccode'] as String? ?? '';
 

@@ -27,6 +27,7 @@ class ErrorCard extends StatelessWidget {
   bool _canReportIssue(BuildContext context) {
     final strings = S.of(context);
     return !discuzError.isNetworkError &&
+        discuzError.key != 'mobile_template_no_found' &&
         errorType != ErrorType.userExpired &&
         discuzError.errorType != ErrorType.userExpired &&
         discuzError.key != strings.networkFailed &&
@@ -34,21 +35,23 @@ class ErrorCard extends StatelessWidget {
   }
 
   Widget _reportIssueAction(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(top: 12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(S.of(context).reportIssueHint,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodySmall),
-            PlatformTextButton(
-              key: const ValueKey('error-report-issue'),
-              onPressed: () => BugReportUtils.openIssuePage(context),
-              child: Text(S.of(context).reportIssue),
-            ),
-          ],
+    padding: const EdgeInsets.only(top: 12),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          S.of(context).reportIssueHint,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodySmall,
         ),
-      );
+        PlatformTextButton(
+          key: const ValueKey('error-report-issue'),
+          onPressed: () => BugReportUtils.openIssuePage(context),
+          child: Text(S.of(context).reportIssue),
+        ),
+      ],
+    ),
+  );
 
   String getTranslatedMessage(BuildContext context, String string) {
     switch (string) {
@@ -60,8 +63,30 @@ class ErrorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log("GET ERROR ${discuzError.dioError} ${discuzError.key} ${discuzError.content}");
-
+    if (isCupertino(context) && errorType == ErrorType.userExpired) {
+      return Semantics(
+        container: true,
+        child: PlatformCard(
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(discuzError.content),
+              const SizedBox(height: 8),
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: PlatformTextButton(
+                  onPressed: () => _loginAgain(context),
+                  child: Text(S.of(context).loginTitle),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     if ((largeSize == null || largeSize == true) &&
         (discuzError.key != "mobile_template_no_found")) {
       return Padding(
@@ -78,9 +103,7 @@ class ErrorCard extends StatelessWidget {
                 color: Theme.of(context).colorScheme.error,
                 size: 48,
               ),
-              SizedBox(
-                height: 24.0,
-              ),
+              SizedBox(height: 24.0),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -93,10 +116,7 @@ class ErrorCard extends StatelessWidget {
                   //Text(getErrorLocalizedKey(context), style: Theme.of(context).textTheme.bodyMedium,),
                 ],
               ),
-              if (errorType == ErrorType.userExpired)
-                SizedBox(
-                  height: 64.0,
-                ),
+              if (errorType == ErrorType.userExpired) SizedBox(height: 64.0),
               if (errorType == ErrorType.userExpired)
                 SizedBox(
                   width: double.infinity,
@@ -104,34 +124,14 @@ class ErrorCard extends StatelessWidget {
                     child: Text(
                       S.of(context).loginTitle,
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary),
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      ),
                     ),
                     color: Theme.of(context).colorScheme.primary,
-                    onPressed: () {
-                      VibrationUtils.vibrateWithClickIfPossible();
-
-                      Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
-                              context,
-                              listen: false)
-                          .discuz;
-                      User? user = Provider.of<DiscuzAndUserNotifier>(context,
-                              listen: false)
-                          .user;
-                      if (discuz != null) {
-                        Navigator.push(
-                            context,
-                            platformPageRoute(
-                                iosTitle: S.of(context).loginTitle,
-                                context: context,
-                                builder: (context) =>
-                                    LoginPage(discuz, user?.username)));
-                      }
-                    },
+                    onPressed: () => _loginAgain(context),
                   ),
                 ),
-              SizedBox(
-                height: 16.0,
-              ),
+              SizedBox(height: 16.0),
               if (onRefreshCallback != null)
                 SizedBox(
                   width: double.infinity,
@@ -139,8 +139,8 @@ class ErrorCard extends StatelessWidget {
                     child: Text(
                       S.of(context).retry,
                       style: TextStyle(
-                          color:
-                              Theme.of(context).colorScheme.onPrimaryContainer),
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ),
                     ),
                     color: Theme.of(context).colorScheme.primaryContainer,
                     onPressed: () {
@@ -187,7 +187,8 @@ class ErrorCard extends StatelessWidget {
                       child: Text(
                         S.of(context).retry,
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary),
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
                       ),
                       onPressed: () {
                         VibrationUtils.vibrateWithClickIfPossible();
@@ -200,27 +201,10 @@ class ErrorCard extends StatelessWidget {
                       child: Text(
                         S.of(context).loginTitle,
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary),
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
                       ),
-                      onPressed: () async {
-                        VibrationUtils.vibrateWithClickIfPossible();
-                        Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
-                                context,
-                                listen: false)
-                            .discuz;
-                        User? user = Provider.of<DiscuzAndUserNotifier>(context,
-                                listen: false)
-                            .user;
-                        if (discuz != null) {
-                          await Navigator.push(
-                              context,
-                              platformPageRoute(
-                                  iosTitle: S.of(context).loginTitle,
-                                  context: context,
-                                  builder: (context) =>
-                                      LoginPage(discuz, user?.username)));
-                        }
-                      },
+                      onPressed: () => _loginAgain(context),
                     ),
                   if (discuzError.key == "mobile_template_no_found" &&
                       this.webpageUrl != null)
@@ -228,27 +212,33 @@ class ErrorCard extends StatelessWidget {
                       child: Text(
                         S.of(context).navigateToWebPage,
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary),
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
                       onPressed: () {
                         VibrationUtils.vibrateWithClickIfPossible();
                         // need go to webpage
                         Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
-                                context,
-                                listen: false)
-                            .discuz;
-                        User? user = Provider.of<DiscuzAndUserNotifier>(context,
-                                listen: false)
-                            .user;
+                          context,
+                          listen: false,
+                        ).discuz;
+                        User? user = Provider.of<DiscuzAndUserNotifier>(
+                          context,
+                          listen: false,
+                        ).user;
                         if (discuz != null) {
                           Navigator.push(
-                              context,
-                              platformPageRoute(
-                                  context: context,
-                                  iosTitle: S.of(context).navigateToWebPage,
-                                  builder: (context) =>
-                                      InternalWebviewBrowserPage(
-                                          discuz, user, webpageUrl!)));
+                            context,
+                            platformPageRoute(
+                              context: context,
+                              iosTitle: S.of(context).navigateToWebPage,
+                              builder: (context) => InternalWebviewBrowserPage(
+                                discuz,
+                                user,
+                                webpageUrl!,
+                              ),
+                            ),
+                          );
                         }
                       },
                     ),
@@ -262,8 +252,33 @@ class ErrorCard extends StatelessWidget {
     }
   }
 
-  ErrorCard(this.discuzError, this.onRefreshCallback,
-      {this.largeSize, this.errorType, this.webpageUrl});
+  Future<void> _loginAgain(BuildContext context) async {
+    VibrationUtils.vibrateWithClickIfPossible();
+    final account = context.read<DiscuzAndUserNotifier>();
+    final discuz = account.discuz;
+    if (discuz == null) return;
+    await Navigator.push(
+      context,
+      platformPageRoute(
+        context: context,
+        iosTitle: S.of(context).loginTitle,
+        builder: (_) => LoginPage(discuz, account.user?.username),
+      ),
+    );
+    if (context.mounted && account.discuz == discuz) {
+      onRefreshCallback?.call();
+    }
+  }
+
+  ErrorCard(
+    this.discuzError,
+    this.onRefreshCallback, {
+    this.largeSize,
+    this.errorType,
+    this.webpageUrl,
+  }) {
+    errorType ??= discuzError.errorType;
+  }
 
   String getErrorLocalizedKey(BuildContext context) {
     log("GET Dio ERROR ${discuzError.dioError} ${discuzError.key}");

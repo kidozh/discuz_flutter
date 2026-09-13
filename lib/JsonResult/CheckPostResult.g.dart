@@ -8,44 +8,37 @@ part of 'CheckPostResult.dart';
 
 CheckPostResult _$CheckPostResultFromJson(Map<String, dynamic> json) =>
     CheckPostResult()
-      ..version = json['Version'] as String
-      ..charset = json['Charset'] as String
+      ..version = json['Version'] as String? ?? ''
+      ..charset = json['Charset'] as String? ?? ''
       ..errorResult = json['Message'] == null
           ? null
           : ErrorResult.fromJson(json['Message'] as Map<String, dynamic>)
       ..error = json['error'] as String?
-      ..variables = CheckPostVariables.fromJson(
-          json['Variables'] as Map<String, dynamic>);
+      ..variables = _variablesFromJson(json['Variables']);
 
 Map<String, dynamic> _$CheckPostResultToJson(CheckPostResult instance) =>
     <String, dynamic>{
       'Version': instance.version,
       'Charset': instance.charset,
-      'Message': instance.errorResult,
+      'Message': instance.errorResult?.toJson(),
       'error': instance.error,
-      'Variables': instance.variables,
+      'Variables': instance.variables.toJson(),
     };
 
 CheckPostVariables _$CheckPostVariablesFromJson(Map<String, dynamic> json) =>
     CheckPostVariables()
-      ..cookiepre = json['cookiepre'] as String
+      ..cookiepre = json['cookiepre'] as String? ?? ''
       ..auth = json['auth'] as String?
-      ..saltkey = json['saltkey'] as String
-      ..member_username = json['member_username'] as String
-      ..member_avatar = json['member_avatar'] as String
-      ..member_uid =
-          const StringToIntConverter().fromJson(json['member_uid'] as String?)
-      ..groupId =
-          const StringToIntConverter().fromJson(json['groupid'] as String?)
-      ..readAccess =
-          const StringToIntConverter().fromJson(json['readaccess'] as String?)
-      ..formHash = json['formhash'] as String
-      ..isModerator =
-          const StringToIntConverter().fromJson(json['ismoderator'] as String?)
-      ..noticeCount =
-          NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
-      ..allowPerm =
-          AllowPerm.fromJson(json['allowperm'] as Map<String, dynamic>);
+      ..saltkey = json['saltkey'] as String? ?? ''
+      ..member_username = json['member_username'] as String? ?? ''
+      ..member_avatar = json['member_avatar'] as String? ?? ''
+      ..member_uid = const StringToIntConverter().fromJson(json['member_uid'])
+      ..groupId = const StringToIntConverter().fromJson(json['groupid'])
+      ..readAccess = const StringToIntConverter().fromJson(json['readaccess'])
+      ..formHash = json['formhash'] as String? ?? ''
+      ..isModerator = const StringToIntConverter().fromJson(json['ismoderator'])
+      ..noticeCount = noticeFromJson(json['notice'])
+      ..allowPerm = AllowPerm.fromJson(json['allowperm']);
 
 Map<String, dynamic> _$CheckPostVariablesToJson(CheckPostVariables instance) =>
     <String, dynamic>{
@@ -59,40 +52,6 @@ Map<String, dynamic> _$CheckPostVariablesToJson(CheckPostVariables instance) =>
       'readaccess': const StringToIntConverter().toJson(instance.readAccess),
       'formhash': instance.formHash,
       'ismoderator': const StringToIntConverter().toJson(instance.isModerator),
-      'notice': instance.noticeCount,
-      'allowperm': instance.allowPerm,
-    };
-
-AllowPerm _$AllowPermFromJson(Map<String, dynamic> json) => AllowPerm()
-  ..allowPost =
-      const StringToBoolConverter().fromJson(json['allowpost'] as String?)
-  ..allowReply =
-      const StringToBoolConverter().fromJson(json['allowreply'] as String?)
-  ..uploadHash = json['uploadhash'] as String
-  ..allowUpload =
-      AllowUpload.fromJson(json['allowupload'] as Map<String, dynamic>)
-  ..attachRemain =
-      AttachRemain.fromJson(json['attachremain'] as Map<String, dynamic>);
-
-Map<String, dynamic> _$AllowPermToJson(AllowPerm instance) => <String, dynamic>{
-      'allowpost': const StringToBoolConverter().toJson(instance.allowPost),
-      'allowreply': const StringToBoolConverter().toJson(instance.allowReply),
-      'uploadhash': instance.uploadHash,
-      'allowupload': instance.allowUpload,
-      'attachremain': instance.attachRemain,
-    };
-
-AllowUpload _$AllowUploadFromJson(Map<String, dynamic> json) => AllowUpload();
-
-Map<String, dynamic> _$AllowUploadToJson(AllowUpload instance) =>
-    <String, dynamic>{};
-
-AttachRemain _$AttachRemainFromJson(Map<String, dynamic> json) => AttachRemain()
-  ..size = const StringToIntConverter().fromJson(json['size'] as String?)
-  ..count = const StringToIntConverter().fromJson(json['count'] as String?);
-
-Map<String, dynamic> _$AttachRemainToJson(AttachRemain instance) =>
-    <String, dynamic>{
-      'size': const StringToIntConverter().toJson(instance.size),
-      'count': const StringToIntConverter().toJson(instance.count),
+      'notice': instance.noticeCount.toJson(),
+      'allowperm': instance.allowPerm.toJson(),
     };
