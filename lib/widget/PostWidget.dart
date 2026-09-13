@@ -1,3 +1,5 @@
+import '../entity/SpecialThread.dart';
+import '../page/ForumListsPage.dart';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -27,6 +29,7 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/AttachmentWidget.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
 import 'package:discuz_flutter/widget/PostCommentWidget.dart';
+import 'package:discuz_flutter/widget/post_status_badges.dart';
 import 'package:discuz_flutter/widget/reading_glass_sliver_card.dart';
 import 'package:discuz_flutter/widget/cupertino_separated_item.dart';
 import 'package:flutter/material.dart';
@@ -56,17 +59,30 @@ class PostWidget extends StatelessWidget {
   int? fid;
   final bool asSliver;
   final VoidCallback? onBodyReady;
+  final VoidCallback? onContentChanged;
+  final int? commentCount;
+  final RewardInfo? reward;
+  final VoidCallback? onAddComment;
 
-  PostWidget(this._discuz, this._post, this._authorId, this.formhash,
-      {super.key,
-      this.asSliver = false,
-      this.onBodyReady,
-      this.onAuthorSelectedCallback,
-      this.postCommentList,
-      this.ignoreFontCustomization,
-      this.jumpToPidCallback,
-      this.fid,
-      this.tid});
+  PostWidget(
+    this._discuz,
+    this._post,
+    this._authorId,
+    this.formhash, {
+    super.key,
+    this.asSliver = false,
+    this.onBodyReady,
+    this.onContentChanged,
+    this.commentCount,
+    this.reward,
+    this.onAddComment,
+    this.onAuthorSelectedCallback,
+    this.postCommentList,
+    this.ignoreFontCustomization,
+    this.jumpToPidCallback,
+    this.fid,
+    this.tid,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +99,10 @@ class PostWidget extends StatelessWidget {
       tid: this.tid,
       asSliver: asSliver,
       onBodyReady: onBodyReady,
+      onContentChanged: onContentChanged,
+      commentCount: commentCount,
+      reward: reward,
+      onAddComment: onAddComment,
     );
   }
 }
@@ -100,26 +120,44 @@ class PostStatefulWidget extends StatefulWidget {
   int? fid;
   final bool asSliver;
   final VoidCallback? onBodyReady;
+  final VoidCallback? onContentChanged;
+  final int? commentCount;
+  final RewardInfo? reward;
+  final VoidCallback? onAddComment;
 
-  PostStatefulWidget(this._discuz, this._post, this._authorId, this.formhash,
-      {this.asSliver = false,
-      this.onBodyReady,
-      this.onAuthorSelectedCallback,
-      this.postCommentList,
-      this.ignoreFontCustomization,
-      this.jumpToPidCallback,
-      this.fid,
-      this.tid});
+  PostStatefulWidget(
+    this._discuz,
+    this._post,
+    this._authorId,
+    this.formhash, {
+    this.asSliver = false,
+    this.onBodyReady,
+    this.onContentChanged,
+    this.commentCount,
+    this.reward,
+    this.onAddComment,
+    this.onAuthorSelectedCallback,
+    this.postCommentList,
+    this.ignoreFontCustomization,
+    this.jumpToPidCallback,
+    this.fid,
+    this.tid,
+  });
 
   @override
   PostState createState() {
-    return PostState(this._discuz, this._post, this._authorId, this.formhash,
-        onAuthorSelectedCallback: this.onAuthorSelectedCallback,
-        postCommentList: this.postCommentList,
-        ignoreFontCustomization: this.ignoreFontCustomization,
-        jumpToPidCallback: this.jumpToPidCallback,
-        fid: this.fid,
-        tid: this.tid);
+    return PostState(
+      this._discuz,
+      this._post,
+      this._authorId,
+      this.formhash,
+      onAuthorSelectedCallback: this.onAuthorSelectedCallback,
+      postCommentList: this.postCommentList,
+      ignoreFontCustomization: this.ignoreFontCustomization,
+      jumpToPidCallback: this.jumpToPidCallback,
+      fid: this.fid,
+      tid: this.tid,
+    );
   }
 }
 
@@ -157,13 +195,18 @@ class PostState extends State<PostStatefulWidget> {
     }
   }
 
-  PostState(this._discuz, this._post, this._authorId, this.formhash,
-      {this.onAuthorSelectedCallback,
-      this.postCommentList,
-      this.ignoreFontCustomization,
-      this.jumpToPidCallback,
-      this.fid,
-      this.tid});
+  PostState(
+    this._discuz,
+    this._post,
+    this._authorId,
+    this.formhash, {
+    this.onAuthorSelectedCallback,
+    this.postCommentList,
+    this.ignoreFontCustomization,
+    this.jumpToPidCallback,
+    this.fid,
+    this.tid,
+  });
 
   @override
   void initState() {
@@ -203,17 +246,25 @@ class PostState extends State<PostStatefulWidget> {
     _blockUserDao = await AppDatabase.getBlockUserDao();
     // need to remove
     groupTitle = await UserPreferencesUtils.getDiscuzGroupNameById(
-        _discuz, _post.groupId);
+      _discuz,
+      _post.groupId,
+    );
     groupStar = await UserPreferencesUtils.getDiscuzGroupStarById(
-        _discuz, _post.groupId);
+      _discuz,
+      _post.groupId,
+    );
     groupTitle = groupTitle.replaceAll(RegExp(r'<.*?>'), "");
     // query whether use get blocked
     if (mounted) {
-      Discuz discuz =
-          Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
+      Discuz discuz = Provider.of<DiscuzAndUserNotifier>(
+        context,
+        listen: false,
+      ).discuz!;
       _user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-      List<BlockUser> userBlockedInDB =
-          await _blockUserDao.isUserBlocked(_post.authorId, discuz);
+      List<BlockUser> userBlockedInDB = await _blockUserDao.isUserBlocked(
+        _post.authorId,
+        discuz,
+      );
       if (!mounted) return;
       if (userBlockedInDB.isEmpty) {
         setState(() {
@@ -238,90 +289,106 @@ class PostState extends State<PostStatefulWidget> {
           color: Theme.of(context).colorScheme.surface,
           child: child,
         ),
-        cupertino: (_, child, __) => PlatformLiquidGlassCard(
-          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        cupertino: (_, child, __) => ReadingPostCard(
           padding: const EdgeInsets.all(8),
           child: child ?? const SizedBox.shrink(),
         ),
         child: Padding(
-            padding:
-                isMaterial(context) ? const EdgeInsets.all(8) : EdgeInsets.zero,
-            child: Column(
-              children: [
-                Text(S.of(context).contentPostByBlockUserTitle(_post.author),
-                    style: Theme.of(context).textTheme.headlineSmall),
-                Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    PlatformTextButton(
-                      child: Text(S.of(context).unblockContent),
-                      onPressed: () async {
-                        VibrationUtils.vibrateWithClickIfPossible();
-                        setState(() {
-                          this.isUserBlocked = false;
-                        });
-                      },
-                    ),
-                    PlatformTextButton(
-                      child: Text(S.of(context).unblockUser),
-                      onPressed: () async {
-                        // unblock user
-                        VibrationUtils.vibrateWithClickIfPossible();
-                        setState(() {
-                          this.isUserBlocked = false;
-                        });
-                        await _blockUserDao.deleteBlockUserByUid(
-                            _post.authorId, _discuz);
-                      },
-                    )
-                  ],
-                )
-              ],
-            )),
+          padding: isMaterial(context)
+              ? const EdgeInsets.all(8)
+              : EdgeInsets.zero,
+          child: Column(
+            children: [
+              Text(
+                S.of(context).contentPostByBlockUserTitle(_post.author),
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  PlatformTextButton(
+                    child: Text(S.of(context).unblockContent),
+                    onPressed: () async {
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      setState(() {
+                        this.isUserBlocked = false;
+                      });
+                    },
+                  ),
+                  PlatformTextButton(
+                    child: Text(S.of(context).unblockUser),
+                    onPressed: () async {
+                      // unblock user
+                      VibrationUtils.vibrateWithClickIfPossible();
+                      setState(() {
+                        this.isUserBlocked = false;
+                      });
+                      await _blockUserDao.deleteBlockUserByUid(
+                        _post.authorId,
+                        _discuz,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       );
       return CupertinoSeparatedItem(
+        reading: true,
         sliver: widget.asSliver,
         child: widget.asSliver ? SliverToBoxAdapter(child: blocked) : blocked,
       );
     }
 
     return Consumer<TypeSettingNotifierProvider>(
-        builder: (context, typesetting, _) {
-      if (widget.asSliver) {
+      builder: (context, typesetting, _) {
+        if (widget.asSliver) {
+          return CupertinoSeparatedItem(
+            reading: true,
+            sliver: true,
+            child: ReadingGlassSliverCard(
+              sliver: getPostContent(
+                context,
+                typesetting.useCompactParagraph,
+                asSliver: true,
+              ),
+            ),
+          );
+        }
+        // should return the container
         return CupertinoSeparatedItem(
-          sliver: true,
-          child: ReadingGlassSliverCard(
-              sliver: getPostContent(context, typesetting.useCompactParagraph,
-                  asSliver: true)),
-        );
-      }
-      // should return the container
-      return CupertinoSeparatedItem(
+          reading: true,
           child: PlatformWidgetBuilder(
-        material: (_, child, platform) => PlatformCard(
-          //surfaceTintColor: Theme.of(context).colorScheme.background,
-          surfaceTintColor: Theme.of(context).brightness == Brightness.light
-              ? Colors.white
-              : Colors.black38,
-          color: Theme.of(context).brightness == Brightness.light
-              ? Colors.white
-              : Colors.white24,
-          elevation: _post.first ? 0 : 8.0,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-            child: child,
+            material: (_, child, platform) => PlatformCard(
+              //surfaceTintColor: Theme.of(context).colorScheme.background,
+              surfaceTintColor: Theme.of(context).brightness == Brightness.light
+                  ? Colors.white
+                  : Colors.black38,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.white
+                  : Colors.white24,
+              elevation: _post.first ? 0 : 8.0,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 12,
+                ),
+                child: child,
+              ),
+            ),
+            cupertino: (_, child, platform) => ReadingPostCard(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              child: child ?? const SizedBox.shrink(),
+            ),
+            child: getPostContent(context, typesetting.useCompactParagraph),
           ),
-        ),
-        cupertino: (_, child, platform) => PlatformLiquidGlassCard(
-          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-          child: child ?? const SizedBox.shrink(),
-        ),
-        child: getPostContent(context, typesetting.useCompactParagraph),
-      ));
-    });
+        );
+      },
+    );
   }
 
   Future<void> translatePostMessage() async {
@@ -371,8 +438,7 @@ class PostState extends State<PostStatefulWidget> {
       if (!mounted) return;
       final message = switch (error.code) {
         'request_too_large' => S.of(context).onDeviceAiRequestTooLarge,
-        'model_downloadable' ||
-        'model_downloading' =>
+        'model_downloadable' || 'model_downloading' =>
           S.of(context).appleIntelligenceUnavailableModelNotReady,
         _ => S.of(context).onDeviceAiRequestFailed,
       };
@@ -385,8 +451,11 @@ class PostState extends State<PostStatefulWidget> {
     }
   }
 
-  Widget getPostContent(BuildContext context, bool compactParagraph,
-      {bool asSliver = false}) {
+  Widget getPostContent(
+    BuildContext context,
+    bool compactParagraph, {
+    bool asSliver = false,
+  }) {
     if (ReadingPerformanceProbe.enabled) {
       ReadingPerformanceProbe.record('post.content', {
         'pid': _post.pid,
@@ -399,8 +468,10 @@ class PostState extends State<PostStatefulWidget> {
     String _html = _post.message;
     log("Original HTML ${_html}");
 
-    if (Provider.of<TypeSettingNotifierProvider>(context, listen: false)
-        .ignoreCustomFontStyle) {
+    if (Provider.of<TypeSettingNotifierProvider>(
+      context,
+      listen: false,
+    ).ignoreCustomFontStyle) {
       // regex
       // _html = _html
       //     .replaceAll(RegExp(r'<font.*?>', multiLine: true), "")
@@ -414,10 +485,12 @@ class PostState extends State<PostStatefulWidget> {
     if (compactParagraph) {
       _html = _html.replaceAll(RegExp("[\r\n]+"), "");
       _html = _html.replaceAll(
-              RegExp(r"<br.?/>(<br.?/>)+", multiLine: true), "<br />")
-          //.replaceAll(RegExp(r"\s+$"), "")
-          //.replaceAll(RegExp(r"[(<br.?/>)]+$"), "")
-          ;
+        RegExp(r"<br.?/>(<br.?/>)+", multiLine: true),
+        "<br />",
+      )
+      //.replaceAll(RegExp(r"\s+$"), "")
+      //.replaceAll(RegExp(r"[(<br.?/>)]+$"), "")
+      ;
 
       _html = _html.replaceAllMapped(RegExp("<br\\W+/>"), (match) {
         //print("match! ${match.group(0)} ${match.end} ${_html.length}");
@@ -437,10 +510,13 @@ class PostState extends State<PostStatefulWidget> {
     final header = <Widget>[
       // post header
       getPostHeader(context),
-      // banned or warn
-      if (_post.status & POST_BLOCKED != 0) getPostBlockedBlock(context),
-      if (_post.status & POST_WARNED != 0) getPostWarnBlock(context),
-      if (_post.status & POST_REVISED != 0) getPostRevisedBlock(context),
+      PostStatusBadges(
+        blocked: _post.blocked,
+        warned: _post.warned,
+        revised: _post.revised,
+        reward: widget.reward,
+        onSelectPost: jumpToPidCallback,
+      ),
       const SizedBox(height: 8),
     ];
     final body = DiscuzHtmlWidget(
@@ -450,6 +526,7 @@ class PostState extends State<PostStatefulWidget> {
       callback: jumpToPidCallback,
       asSliver: asSliver,
       onBodyReady: widget.onBodyReady,
+      onContentChanged: widget.onContentChanged,
     );
     final footer = <Widget>[
       if (_post.attachmentMapper.isNotEmpty)
@@ -457,7 +534,11 @@ class PostState extends State<PostStatefulWidget> {
           padding: EdgeInsets.zero,
           itemBuilder: (context, index) {
             Attachment attachment = _post.getAttachmentList()[index];
-            return AttachmentWidget(_discuz, attachment);
+            return AttachmentWidget(
+              _discuz,
+              attachment,
+              onContentChanged: widget.onContentChanged,
+            );
           },
           itemCount: _post.getAttachmentList().length,
           physics: new NeverScrollableScrollPhysics(),
@@ -479,12 +560,19 @@ class PostState extends State<PostStatefulWidget> {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    PostCommentWidget(comment),
-                    if (index != getCommentList().length - 1)
+                    PostCommentWidget(
+                      comment,
+                      textColor: Theme.of(
+                        context,
+                      ).colorScheme.onPrimaryContainer,
+                    ),
+                    if (index != getCommentList().length - 1 &&
+                        (!isCupertino(context) ||
+                            Theme.of(context).brightness == Brightness.light))
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 8.0),
                         child: Divider(),
-                      )
+                      ),
                   ],
                 );
               },
@@ -494,129 +582,185 @@ class PostState extends State<PostStatefulWidget> {
             ),
           ),
         ),
-      getPostTailWidget(context)
+      if (tid != null && ((widget.commentCount ?? getCommentList().length) > 0))
+        PlatformTextButton(
+          onPressed: () => Navigator.push(
+            context,
+            platformPageRoute(
+              context: context,
+              builder: (_) => ForumListsPage(
+                discuz: _discuz,
+                user: context.read<DiscuzAndUserNotifier>().user,
+                tid: tid,
+                pid: _post.pid,
+              ),
+            ),
+          ),
+          child: Text(
+            '${S.of(context).forumAllComments}${widget.commentCount == null ? '' : ' (${widget.commentCount})'}',
+          ),
+        ),
+      getPostTailWidget(context),
     ];
     if (asSliver) {
-      return SliverMainAxisGroup(slivers: [
-        SliverToBoxAdapter(
-            child: Column(mainAxisSize: MainAxisSize.min, children: header)),
-        body,
-        SliverToBoxAdapter(
-            child: Column(mainAxisSize: MainAxisSize.min, children: footer)),
-      ]);
+      return SliverMainAxisGroup(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(mainAxisSize: MainAxisSize.min, children: header),
+          ),
+          body,
+          SliverToBoxAdapter(
+            child: Column(mainAxisSize: MainAxisSize.min, children: footer),
+          ),
+        ],
+      );
     }
     return Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [...header, body, ...footer]);
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [...header, body, ...footer],
+    );
   }
 
   Widget getPostPopupMenu(BuildContext context) {
     return PlatformPopupMenu(
-        icon: Icon(
-          PlatformIcons(context).ellipsis,
-          size: 18,
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
+      icon: Icon(
+        PlatformIcons(context).ellipsis,
+        size: 18,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+      options: [
+        PopupMenuOption(
+          label: S.of(context).replyPost,
+          onTap: (option) {
+            VibrationUtils.vibrateWithClickIfPossible();
+            Provider.of<ReplyPostNotifierProvider>(
+              context,
+              listen: false,
+            ).setPost(_post);
+          },
         ),
-        options: [
+        PopupMenuOption(
+          label: S.of(context).viewUserInfo(_post.author),
+          onTap: (option) {
+            VibrationUtils.vibrateWithClickIfPossible();
+            User? user = Provider.of<DiscuzAndUserNotifier>(
+              context,
+              listen: false,
+            ).user;
+            Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                iosTitle: S.of(context).userProfile,
+                builder: (context) => UserProfilePage(
+                  _discuz,
+                  user,
+                  _post.authorId,
+                  username: _post.author,
+                ),
+              ),
+            );
+          },
+        ),
+        PopupMenuOption(
+          label: S.of(context).onlyViewAuthor,
+          onTap: (option) {
+            VibrationUtils.vibrateWithClickIfPossible();
+            if (onAuthorSelectedCallback != null) {
+              VibrationUtils.vibrateWithClickIfPossible();
+              onAuthorSelectedCallback!();
+            }
+          },
+        ),
+        if (!this.isUserBlocked)
           PopupMenuOption(
-              label: S.of(context).replyPost,
-              onTap: (option) {
-                VibrationUtils.vibrateWithClickIfPossible();
-                Provider.of<ReplyPostNotifierProvider>(context, listen: false)
-                    .setPost(_post);
-              }),
+            label: S.of(context).blockUser,
+            onTap: (option) async {
+              VibrationUtils.vibrateWithClickIfPossible();
+              // block user
+              setState(() {
+                this.isUserBlocked = true;
+              });
+              BlockUser blockUser = BlockUser(
+                _post.authorId,
+                _post.author,
+                DateTime.now(),
+                _discuz,
+              );
+              int insertId = await _blockUserDao.insertBlockUser(blockUser);
+            },
+            material: (context, platform) => MaterialPopupMenuOptionData(
+              textStyle: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+            cupertino: (context, platform) =>
+                CupertinoPopupMenuOptionData(isDestructiveAction: true),
+          ),
+        if (this.isUserBlocked)
           PopupMenuOption(
-              label: S.of(context).viewUserInfo(_post.author),
-              onTap: (option) {
-                VibrationUtils.vibrateWithClickIfPossible();
-                User? user =
-                    Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-                        .user;
-                Navigator.push(
-                    context,
-                    platformPageRoute(
-                        context: context,
-                        iosTitle: S.of(context).userProfile,
-                        builder: (context) => UserProfilePage(
-                              _discuz,
-                              user,
-                              _post.authorId,
-                              username: _post.author,
-                            )));
-              }),
-          PopupMenuOption(
-              label: S.of(context).onlyViewAuthor,
-              onTap: (option) {
-                VibrationUtils.vibrateWithClickIfPossible();
-                if (onAuthorSelectedCallback != null) {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  onAuthorSelectedCallback!();
-                }
-              }),
-          if (!this.isUserBlocked)
-            PopupMenuOption(
-                label: S.of(context).blockUser,
-                onTap: (option) async {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  // block user
-                  setState(() {
-                    this.isUserBlocked = true;
-                  });
-                  BlockUser blockUser = BlockUser(
-                      _post.authorId, _post.author, DateTime.now(), _discuz);
-                  int insertId = await _blockUserDao.insertBlockUser(blockUser);
-                },
-                material: (context, platform) => MaterialPopupMenuOptionData(
-                    textStyle:
-                        TextStyle(color: Theme.of(context).colorScheme.error)),
-                cupertino: (context, platform) =>
-                    CupertinoPopupMenuOptionData(isDestructiveAction: true)),
-          if (this.isUserBlocked)
-            PopupMenuOption(
-                label: S.of(context).unblockUser,
-                onTap: (option) {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  setState(() {
-                    this.isUserBlocked = false;
-                  });
-                  _blockUserDao.deleteBlockUserByUid(_post.authorId, _discuz);
-                },
-                cupertino: (context, platform) =>
-                    CupertinoPopupMenuOptionData(isDestructiveAction: true)),
-        ]);
+            label: S.of(context).unblockUser,
+            onTap: (option) {
+              VibrationUtils.vibrateWithClickIfPossible();
+              setState(() {
+                this.isUserBlocked = false;
+              });
+              _blockUserDao.deleteBlockUserByUid(_post.authorId, _discuz);
+            },
+            cupertino: (context, platform) =>
+                CupertinoPopupMenuOptionData(isDestructiveAction: true),
+          ),
+      ],
+    );
   }
 
   Widget getUserAvatar(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.symmetric(
-            vertical: _post.first ? 4 : 2, horizontal: 8.0),
-        child: UserAvatar(
-          _discuz,
-          _post.authorId,
-          _post.author,
-          size: _post.first ? 30.0 : 24.0,
-        ));
+      padding: EdgeInsets.symmetric(
+        vertical: _post.first ? 4 : 2,
+        horizontal: 8.0,
+      ),
+      child: UserAvatar(
+        _discuz,
+        _post.authorId,
+        _post.author,
+        size: _post.first ? 30.0 : 24.0,
+      ),
+    );
   }
 
   Widget getPostFunctionWidget(BuildContext context) {
     final notification = Provider.of<DiscuzNotificationProvider>(context);
     final intelligence = Provider.of<UserPreferenceNotifierProvider>(context);
     final actionColor = Theme.of(context).colorScheme.onSurfaceVariant;
-    final actions = <Widget>[];
+    final actions = <Widget>[
+      if (widget.onAddComment != null)
+        PlatformIconButton(
+          liquidGlassSymbol: 'text.bubble',
+          liquidGlassIconSize: 18,
+          icon: Icon(
+            Icons.mode_comment_outlined,
+            size: 18,
+            color: actionColor,
+            semanticLabel: S.of(context).postAddComment,
+          ),
+          onPressed: widget.onAddComment,
+        ),
+    ];
     if (intelligence.appleIntelligenceEnabled &&
         intelligence.appleIntelligenceAvailable) {
-      actions.add(PlatformIconButton(
-        liquidGlassSymbol: 'character.bubble',
-        liquidGlassIconSize: 18,
-        icon: Icon(
-          PlatformIcons(context).translate,
-          size: 18,
-          color: actionColor,
-          semanticLabel: S.of(context).appleIntelligenceTranslate,
+      actions.add(
+        PlatformIconButton(
+          liquidGlassSymbol: 'character.bubble',
+          liquidGlassIconSize: 18,
+          icon: Icon(
+            PlatformIcons(context).translate,
+            size: 18,
+            color: actionColor,
+            semanticLabel: S.of(context).appleIntelligenceTranslate,
+          ),
+          onPressed: translatePostMessage,
         ),
-        onPressed: translatePostMessage,
-      ));
+      );
     }
 
     if (notification.baseVariableResult.isModerator == 0) {
@@ -638,12 +782,8 @@ class PostState extends State<PostStatefulWidget> {
                 platformPageRoute(
                   context: context,
                   iosTitle: S.of(context).reportThreadTooltip,
-                  builder: (context) => ReportContentPage(
-                    _post.author,
-                    _post.pid,
-                    0,
-                    formhash,
-                  ),
+                  builder: (context) =>
+                      ReportContentPage(_post.author, _post.pid, 0, formhash),
                 ),
               );
             },
@@ -670,27 +810,34 @@ class PostState extends State<PostStatefulWidget> {
               child: Container(
                 color: Theme.of(context).colorScheme.primary,
                 padding: EdgeInsets.all(2.0),
-                child: Text("Lv ${groupStar}",
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                        fontWeight: FontWeight.bold,
-                        fontSize:
-                            Theme.of(context).textTheme.bodySmall?.fontSize)),
+                child: Text(
+                  "Lv ${groupStar}",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
+                  ),
+                ),
               ),
             ),
           Padding(
-              padding:
-                  EdgeInsets.only(right: 6.0, left: groupStar == 0 ? 6.0 : 0.0),
-              child: Container(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                padding: EdgeInsets.all(2.0),
-                child: Text(groupTitle,
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.normal,
-                        fontSize:
-                            Theme.of(context).textTheme.bodySmall?.fontSize)),
-              ))
+            padding: EdgeInsets.only(
+              right: 6.0,
+              left: groupStar == 0 ? 6.0 : 0.0,
+            ),
+            child: Container(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              padding: EdgeInsets.all(2.0),
+              child: Text(
+                groupTitle,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  fontWeight: FontWeight.normal,
+                  fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -707,68 +854,76 @@ class PostState extends State<PostStatefulWidget> {
         children: [
           getUserAvatar(context),
           Expanded(
-              child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: 4.0,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // username and OP come first
-                  RichText(
-                    overflow: TextOverflow.ellipsis,
-                    text: TextSpan(
-                      text: "",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                      children: [
-                        TextSpan(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(width: 4.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // username and OP come first
+                    RichText(
+                      overflow: TextOverflow.ellipsis,
+                      text: TextSpan(
+                        text: "",
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        children: [
+                          TextSpan(
                             text: _post.author,
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16)),
-                        if (_authorId == _post.authorId)
-                          TextSpan(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          if (_authorId == _post.authorId)
+                            TextSpan(
                               text: ' ' + S.of(context).postAuthorLabel,
                               style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontSize: 14)),
-                      ],
-                    ),
-                  ),
-
-                  RichText(
-                    overflow: TextOverflow.ellipsis,
-                    text: TextSpan(
-                      text: TimeDisplayUtils.getLocaledTimeDisplay(
-                        context,
-                        _post.publishAt,
+                                fontWeight: FontWeight.w300,
+                                color: Theme.of(context).colorScheme.primary,
+                                fontSize: 14,
+                              ),
+                            ),
+                        ],
                       ),
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                      children: [
-                        if (_post.status & POST_REVISED != 0)
-                          TextSpan(
+                    ),
+
+                    RichText(
+                      overflow: TextOverflow.ellipsis,
+                      text: TextSpan(
+                        text: TimeDisplayUtils.getLocaledTimeDisplay(
+                          context,
+                          _post.publishAt,
+                        ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        children: [
+                          if (_post.status & POST_REVISED != 0)
+                            TextSpan(
                               text: ' · ' + S.of(context).editedPost,
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 14)),
-                        if (_post.ipLocation != "")
-                          TextSpan(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          if (_post.ipLocation != "")
+                            TextSpan(
                               text: ' ' + _post.ipLocation,
-                              style: TextStyle(fontSize: 14)),
-                        if (groupTitle != "") getGroupWidgetSpan(context),
-                      ],
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          if (groupTitle != "") getGroupWidgetSpan(context),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          )),
-          getPostFunctionWidget(context)
+                  ],
+                ),
+              ],
+            ),
+          ),
+          getPostFunctionWidget(context),
         ],
       );
     } else {
@@ -779,38 +934,43 @@ class PostState extends State<PostStatefulWidget> {
         children: [
           getUserAvatar(context),
           Expanded(
-              // the author
-              child: RichText(
-            overflow: TextOverflow.ellipsis,
-            text: TextSpan(
-              text: "",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-              children: [
-                TextSpan(
-                    text: _post.author,
-                    style:
-                        TextStyle(fontWeight: FontWeight.w600, fontSize: 18)),
-                if (groupTitle != "") getGroupWidgetSpan(context),
-                if (_authorId == _post.authorId)
+            // the author
+            child: RichText(
+              overflow: TextOverflow.ellipsis,
+              text: TextSpan(
+                text: "",
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                children: [
                   TextSpan(
+                    text: _post.author,
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+                  ),
+                  if (groupTitle != "") getGroupWidgetSpan(context),
+                  if (_authorId == _post.authorId)
+                    TextSpan(
                       text: ' ' + S.of(context).postAuthorLabel,
                       style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          color: Theme.of(context).colorScheme.primary,
-                          fontSize: 18)),
-              ],
+                        fontWeight: FontWeight.normal,
+                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: 18,
+                      ),
+                    ),
+                ],
+              ),
             ),
-          )),
+          ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8),
             child: Text(
               _post.position.toString(),
               style: TextStyle(
-                  fontSize: 18, color: Theme.of(context).disabledColor),
+                fontSize: 18,
+                color: Theme.of(context).disabledColor,
+              ),
             ),
-          )
+          ),
         ],
       );
     }
@@ -831,152 +991,82 @@ class PostState extends State<PostStatefulWidget> {
                   text: "",
                   children: [
                     TextSpan(
-                        text: TimeDisplayUtils.getLocaledTimeDisplay(
-                          context,
-                          _post.publishAt,
-                        ),
-                        style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            color: Theme.of(context).disabledColor)),
+                      text: TimeDisplayUtils.getLocaledTimeDisplay(
+                        context,
+                        _post.publishAt,
+                      ),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14,
+                        color: Theme.of(context).disabledColor,
+                      ),
+                    ),
                     if (_post.status & POST_REVISED != 0)
                       TextSpan(
-                          text: ' · ' + S.of(context).editedPost,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 14,
-                              color: Theme.of(context).disabledColor)),
+                        text: ' · ' + S.of(context).editedPost,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                          color: Theme.of(context).disabledColor,
+                        ),
+                      ),
                     if (_post.ipLocation != "")
                       TextSpan(
-                          text: ' ' + _post.ipLocation,
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: Theme.of(context).disabledColor)),
+                        text: ' ' + _post.ipLocation,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context).disabledColor,
+                        ),
+                      ),
                   ],
                 ),
               ),
             ),
             // reports etcs
-            getPostFunctionWidget(context)
+            getPostFunctionWidget(context),
           ],
         ),
       );
     }
   }
 
-  Widget getPostBlockedBlock(BuildContext context) {
-    return Container(
-      color: Colors.red.withOpacity(0.15),
-      child: Padding(
-        padding: EdgeInsets.all(6.0),
-        child: Row(
-          children: [
-            Icon(
-              PlatformIcons(context).blocked,
-              color: Colors.red,
-            ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  S.of(context).blockedPost,
-                  style:
-                      TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget getPostWarnBlock(BuildContext context) {
-    return Container(
-      color: Colors.deepOrange.withOpacity(0.15),
-      child: Padding(
-        padding: EdgeInsets.all(6.0),
-        child: Row(
-          children: [
-            Icon(
-              PlatformIcons(context).warning,
-              color: Colors.deepOrange,
-            ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  S.of(context).warnedPost,
-                  style: TextStyle(
-                      color: Colors.deepOrange, fontWeight: FontWeight.bold),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget getPostRevisedBlock(BuildContext context) {
-    return Container(
-      color: Colors.blue.withOpacity(0.15),
-      child: Padding(
-        padding: EdgeInsets.all(6.0),
-        child: Row(
-          children: [
-            Icon(
-              PlatformIcons(context).edit,
-              color: Colors.blue,
-            ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  S.of(context).revisedPost,
-                  style: TextStyle(color: Colors.blue),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget get adminPostPopupMenu => PlatformPopupMenu(
-          liquidGlassSymbol: 'shield',
-          icon: Icon(
-            AppPlatformIcons(context).adminPostSolid,
-            size: 18,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-          options: [
-            PopupMenuOption(
-                label: _post.warned
-                    ? S.of(context).adminUnwarnPost
-                    : S.of(context).adminWarnPost,
-                onTap: (option) {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  toggleAdminWarnRequest();
-                }),
-            PopupMenuOption(
-                label: _post.blocked
-                    ? S.of(context).adminUnblockPost
-                    : S.of(context).adminBlockPost,
-                onTap: (option) {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  toggleAdminBlockRequest();
-                }),
-            PopupMenuOption(
-                label: S.of(context).adminDeletePost,
-                cupertino: (context, platform) =>
-                    CupertinoPopupMenuOptionData(isDestructiveAction: true),
-                onTap: (option) {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  adminDeletePostRequest();
-                }),
-          ]);
+    liquidGlassSymbol: 'shield',
+    icon: Icon(
+      AppPlatformIcons(context).adminPostSolid,
+      size: 18,
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+    ),
+    options: [
+      PopupMenuOption(
+        label: _post.warned
+            ? S.of(context).adminUnwarnPost
+            : S.of(context).adminWarnPost,
+        onTap: (option) {
+          VibrationUtils.vibrateWithClickIfPossible();
+          toggleAdminWarnRequest();
+        },
+      ),
+      PopupMenuOption(
+        label: _post.blocked
+            ? S.of(context).adminUnblockPost
+            : S.of(context).adminBlockPost,
+        onTap: (option) {
+          VibrationUtils.vibrateWithClickIfPossible();
+          toggleAdminBlockRequest();
+        },
+      ),
+      PopupMenuOption(
+        label: S.of(context).adminDeletePost,
+        cupertino: (context, platform) =>
+            CupertinoPopupMenuOptionData(isDestructiveAction: true),
+        onTap: (option) {
+          VibrationUtils.vibrateWithClickIfPossible();
+          adminDeletePostRequest();
+        },
+      ),
+    ],
+  );
 
   bool isSendingAdminRequest = false;
 
@@ -984,10 +1074,14 @@ class PostState extends State<PostStatefulWidget> {
     setState(() {
       isSendingAdminRequest = true;
     });
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    Discuz? discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    User? user = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).user;
+    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).discuz;
     if (discuz == null || fid == null) {
       return;
     }
@@ -999,77 +1093,93 @@ class PostState extends State<PostStatefulWidget> {
     client
         .banPostResult(formhash, fid!, _post.tid, [_post.pid], banned, "")
         .then((value) {
-      if (!mounted) return;
-      if (value.errorResult?.key == "admin_succeed") {
-        // it should be banned
-        Post newPostStage = _post;
-        newPostStage.status = newPostStage.status ^ POST_BLOCKED;
-        setState(() {
-          _post = newPostStage;
+          if (!mounted) return;
+          if (value.errorResult?.key == "admin_succeed") {
+            // it should be banned
+            Post newPostStage = _post;
+            newPostStage.status = newPostStage.status ^ POST_BLOCKED;
+            setState(() {
+              _post = newPostStage;
+            });
+            EasyLoading.showSuccess(
+              value.errorResult?.content == null
+                  ? S.of(context).ok
+                  : value.errorResult!.content,
+            );
+          } else {
+            EasyLoading.showError(
+              value.errorResult?.content == null
+                  ? S.of(context).error
+                  : value.errorResult!.content,
+            );
+          }
+          setState(() {
+            isSendingAdminRequest = false;
+          });
         });
-        EasyLoading.showSuccess(value.errorResult?.content == null
-            ? S.of(context).ok
-            : value.errorResult!.content);
-      } else {
-        EasyLoading.showError(value.errorResult?.content == null
-            ? S.of(context).error
-            : value.errorResult!.content);
-      }
-      setState(() {
-        isSendingAdminRequest = false;
-      });
-    });
   }
 
   Future<void> toggleAdminWarnRequest() async {
     setState(() {
       isSendingAdminRequest = true;
     });
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    Discuz? discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    User? user = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).user;
+    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).discuz;
     if (discuz == null || fid == null) {
       return;
     }
     Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
-    int banned = _post.blocked ? 0 : 1;
+    int banned = _post.warned ? 0 : 1;
 
     client
         .warnPostResult(formhash, fid!, _post.tid, [_post.pid], banned, "")
         .then((value) {
-      if (!mounted) return;
-      if (value.errorResult?.key == "admin_succeed") {
-        // it should be banned
-        Post newPostStage = _post;
-        newPostStage.status = newPostStage.status ^ POST_WARNED;
-        setState(() {
-          _post = newPostStage;
+          if (!mounted) return;
+          if (value.errorResult?.key == "admin_succeed") {
+            // it should be banned
+            Post newPostStage = _post;
+            newPostStage.status = newPostStage.status ^ POST_WARNED;
+            setState(() {
+              _post = newPostStage;
+            });
+            EasyLoading.showSuccess(
+              value.errorResult?.content == null
+                  ? S.of(context).ok
+                  : value.errorResult!.content,
+            );
+          } else {
+            EasyLoading.showError(
+              value.errorResult?.content == null
+                  ? S.of(context).error
+                  : value.errorResult!.content,
+            );
+          }
+          setState(() {
+            isSendingAdminRequest = false;
+          });
         });
-        EasyLoading.showSuccess(value.errorResult?.content == null
-            ? S.of(context).ok
-            : value.errorResult!.content);
-      } else {
-        EasyLoading.showError(value.errorResult?.content == null
-            ? S.of(context).error
-            : value.errorResult!.content);
-      }
-      setState(() {
-        isSendingAdminRequest = false;
-      });
-    });
   }
 
   Future<void> adminDeletePostRequest() async {
     setState(() {
       isSendingAdminRequest = true;
     });
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    Discuz? discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    User? user = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).user;
+    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).discuz;
     if (discuz == null || fid == null) {
       return;
     }
@@ -1081,26 +1191,30 @@ class PostState extends State<PostStatefulWidget> {
     client
         .deletePostResult(formhash, fid!, _post.tid, [_post.pid], banned, "")
         .then((value) {
-      if (!mounted) return;
-      if (value.errorResult?.key == "admin_succeed") {
-        // it should be banned
-        Post newPostStage = _post;
-        newPostStage.status = newPostStage.status ^ POST_BLOCKED;
-        setState(() {
-          _post = newPostStage;
+          if (!mounted) return;
+          if (value.errorResult?.key == "admin_succeed") {
+            // it should be banned
+            Post newPostStage = _post;
+            newPostStage.status = newPostStage.status ^ POST_BLOCKED;
+            setState(() {
+              _post = newPostStage;
+            });
+            EasyLoading.showSuccess(
+              value.errorResult?.content == null
+                  ? S.of(context).ok
+                  : value.errorResult!.content,
+            );
+          } else {
+            EasyLoading.showError(
+              value.errorResult?.content == null
+                  ? S.of(context).error
+                  : value.errorResult!.content,
+            );
+          }
+          setState(() {
+            isSendingAdminRequest = false;
+          });
+          // Navigator.of(context).pop();
         });
-        EasyLoading.showSuccess(value.errorResult?.content == null
-            ? S.of(context).ok
-            : value.errorResult!.content);
-      } else {
-        EasyLoading.showError(value.errorResult?.content == null
-            ? S.of(context).error
-            : value.errorResult!.content);
-      }
-      setState(() {
-        isSendingAdminRequest = false;
-      });
-      // Navigator.of(context).pop();
-    });
   }
 }

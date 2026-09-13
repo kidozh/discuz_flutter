@@ -1,3 +1,4 @@
+import 'ForumListsPage.dart';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -72,15 +73,25 @@ class DisplayForumAltSliverPage extends StatelessWidget {
   final ValueChanged<int>? onSelectTid;
   String? forumTitle = null;
 
-  DisplayForumAltSliverPage(this.discuz, this.user, this.fid,
-      {this.onSelectTid, this.forumTitle});
+  DisplayForumAltSliverPage(
+    this.discuz,
+    this.user,
+    this.fid, {
+    this.onSelectTid,
+    this.forumTitle,
+  });
 
   @override
   Widget build(BuildContext context) {
     CustomizeColor.updateAndroidNavigationbar(context);
     // try ios
-    return DisplayForumSliverStatefulWidget(discuz, user, fid,
-        onSelectTid: this.onSelectTid, forumTitle: this.forumTitle);
+    return DisplayForumSliverStatefulWidget(
+      discuz,
+      user,
+      fid,
+      onSelectTid: this.onSelectTid,
+      forumTitle: this.forumTitle,
+    );
   }
 }
 
@@ -92,13 +103,23 @@ class DisplayForumSliverStatefulWidget extends StatefulWidget {
   final ValueChanged<int>? onSelectTid;
   String? forumTitle = null;
 
-  DisplayForumSliverStatefulWidget(this.discuz, this.user, this.fid,
-      {this.onSelectTid, this.forumTitle});
+  DisplayForumSliverStatefulWidget(
+    this.discuz,
+    this.user,
+    this.fid, {
+    this.onSelectTid,
+    this.forumTitle,
+  });
 
   @override
   _DisplayForumSliverState createState() {
-    return _DisplayForumSliverState(this.discuz, this.user, this.fid,
-        onSelectTid: this.onSelectTid, forumTitle: this.forumTitle);
+    return _DisplayForumSliverState(
+      this.discuz,
+      this.user,
+      this.fid,
+      onSelectTid: this.onSelectTid,
+      forumTitle: this.forumTitle,
+    );
   }
 }
 
@@ -118,8 +139,13 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   final ValueChanged<int>? onSelectTid;
   String? forumTitle = null;
 
-  _DisplayForumSliverState(this.discuz, this.user, this.fid,
-      {required this.onSelectTid, this.forumTitle});
+  _DisplayForumSliverState(
+    this.discuz,
+    this.user,
+    this.fid, {
+    required this.onSelectTid,
+    this.forumTitle,
+  });
 
   late EasyRefreshController _controller;
   late Dio dio;
@@ -130,14 +156,18 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   void initState() {
     super.initState();
     _controller = EasyRefreshController(
-        controlFinishLoad: true, controlFinishRefresh: true);
+      controlFinishLoad: true,
+      controlFinishRefresh: true,
+    );
     _loadClient();
     _loadFavoriteDao();
   }
 
   Future<void> _loadClient() async {
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    User? user = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).user;
     dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     client = MobileApiClient(dio, baseUrl: discuz.baseURL);
   }
@@ -158,10 +188,13 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   }
 
   Future<void> favoriteForum() async {
-    final user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    final user = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).user;
     FavoriteForumDao favoriteForumDao = await AppDatabase.getFavoriteForumDao();
-    await favoriteForumDao.insertFavoriteForum(FavoriteForumInDatabase(
+    await favoriteForumDao.insertFavoriteForum(
+      FavoriteForumInDatabase(
         0,
         user?.uid ?? _displayForumResult.discuzIndexVariables.member_uid,
         fid,
@@ -169,32 +202,51 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         _displayForumResult.discuzIndexVariables.forum.name,
         _displayForumResult.discuzIndexVariables.forum.description,
         DateTime.now(),
-        discuz));
+        discuz,
+      ),
+    );
     if (mounted) setState(() {});
     if (user == null) {
       return;
     }
     client
         .favoriteForumActionResult(
-            _displayForumResult.discuzIndexVariables.formHash, fid)
+          _displayForumResult.discuzIndexVariables.formHash,
+          fid,
+        )
         .then((value) {
-      if (value.errorResult != null && value.errorResult!.key == "do_success") {
-        EasyLoading.showSuccess(S.of(context).discuzOperationMessage(
-            value.errorResult!.key, value.errorResult!.content));
-      } else {
-        EasyLoading.showToast(S.of(context).discuzOperationMessage(
-            value.errorResult!.key, value.errorResult!.content));
-      }
-    });
+          if (value.errorResult != null &&
+              value.errorResult!.key == "do_success") {
+            EasyLoading.showSuccess(
+              S
+                  .of(context)
+                  .discuzOperationMessage(
+                    value.errorResult!.key,
+                    value.errorResult!.content,
+                  ),
+            );
+          } else {
+            EasyLoading.showToast(
+              S
+                  .of(context)
+                  .discuzOperationMessage(
+                    value.errorResult!.key,
+                    value.errorResult!.content,
+                  ),
+            );
+          }
+        });
   }
 
   Future<void> unfavoriteForum() async {
-    final user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    final user = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).user;
     FavoriteForumDao favoriteForumDao = await AppDatabase.getFavoriteForumDao();
 
-    FavoriteForumInDatabase? favoriteForumInDatabase =
-        favoriteForumDao.getFavoriteForumByFid(fid, discuz);
+    FavoriteForumInDatabase? favoriteForumInDatabase = favoriteForumDao
+        .getFavoriteForumByFid(fid, discuz);
     if (favoriteForumInDatabase != null) {
       await favoriteForumDao.removeFavoriteForum(favoriteForumInDatabase);
       if (mounted) setState(() {});
@@ -203,18 +255,31 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       }
       client
           .unfavoriteForumActionResult(
-              _displayForumResult.discuzIndexVariables.formHash,
-              favoriteForumInDatabase.favid)
+            _displayForumResult.discuzIndexVariables.formHash,
+            favoriteForumInDatabase.favid,
+          )
           .then((value) {
-        if (value.errorResult != null &&
-            value.errorResult!.key == "do_success") {
-          EasyLoading.showSuccess(S.of(context).discuzOperationMessage(
-              value.errorResult!.key, value.errorResult!.content));
-        } else {
-          EasyLoading.showToast(S.of(context).discuzOperationMessage(
-              value.errorResult!.key, value.errorResult!.content));
-        }
-      });
+            if (value.errorResult != null &&
+                value.errorResult!.key == "do_success") {
+              EasyLoading.showSuccess(
+                S
+                    .of(context)
+                    .discuzOperationMessage(
+                      value.errorResult!.key,
+                      value.errorResult!.content,
+                    ),
+              );
+            } else {
+              EasyLoading.showToast(
+                S
+                    .of(context)
+                    .discuzOperationMessage(
+                      value.errorResult!.key,
+                      value.errorResult!.content,
+                    ),
+              );
+            }
+          });
     }
   }
 
@@ -236,15 +301,16 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     }
 
     ViewHistory insertViewHistory = ViewHistory(
-        forumDetail.name,
-        forumDetail.description,
-        forumDetail.rules,
-        "forum",
-        forumDetail.fid,
-        "",
-        0,
-        discuz,
-        DateTime.now());
+      forumDetail.name,
+      forumDetail.description,
+      forumDetail.rules,
+      "forum",
+      forumDetail.fid,
+      "",
+      0,
+      discuz,
+      DateTime.now(),
+    );
     int primaryKey = await dao.insertViewHistory(insertViewHistory);
     print("save history with primary key ${primaryKey}");
     historySaved = true;
@@ -252,8 +318,10 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
   Future<IndicatorResult> _loadForumContent() async {
     // check the availability
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    User? user = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).user;
     var dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
@@ -270,121 +338,140 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     }
 
     print(
-        "Request display forum map ${_displayForumQuery.generateForumQueriesMap()}");
+      "Request display forum map ${_displayForumQuery.generateForumQueriesMap()}",
+    );
 
     IndicatorResult result = await client
         .displayForumResult(
-            fid.toString(), _page, _displayForumQuery.generateForumQueriesMap())
+          fid.toString(),
+          _page,
+          _displayForumQuery.generateForumQueriesMap(),
+        )
         .then((value) {
-      if (!historySaved && _page == 1) {
-        _saveViewHistory(value.discuzIndexVariables.forum);
-      }
+          if (!historySaved && _page == 1) {
+            _saveViewHistory(value.discuzIndexVariables.forum);
+          }
 
-      setState(() {
-        _displayForumResult = value;
-        _error = null;
-        print("GET page ${_page} results");
-        _isFirstLoading = false;
-      });
+          setState(() {
+            _displayForumResult = value;
+            _error = null;
+            print("GET page ${_page} results");
+            _isFirstLoading = false;
+          });
 
-      if (_page == 1) {
-        print("Clearing list since page ${_page} results");
-        setState(() {
-          _forumThreadList = [];
-        });
-
-        setState(() {
-          _forumThreadList = value.discuzIndexVariables.forumThreadList;
-        });
-      } else {
-        setState(() {
-          _forumThreadList.addAll(value.discuzIndexVariables.forumThreadList);
-        });
-      }
-      _page += 1;
-      _controller.finishRefresh();
-      _controller.resetFooter();
-      _controller.finishLoad(_forumThreadList.length >=
-              value.discuzIndexVariables.forum.getThreadCount()
-          ? IndicatorResult.noMore
-          : IndicatorResult.success);
-
-      if (value.getErrorString() != null) {
-        EasyLoading.showError(value.getErrorString()!);
-      }
-
-      if (value.errorResult != null) {
-        setState(() {
-          _error =
-              DiscuzError(value.errorResult!.key, value.errorResult!.content);
-        });
-      } else {
-        setState(() {
-          _error = null;
-        });
-      }
-
-      Provider.of<DiscuzNotificationProvider>(context, listen: false)
-          .setNotificationCount(value.discuzIndexVariables.noticeCount);
-
-      // check with user
-      if (user != null && value.discuzIndexVariables.member_uid != user.uid) {
-        setState(() {
-          _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
-              S.of(context).userExpiredSubtitle,
-              errorType: ErrorType.userExpired);
-        });
-      }
-      if (_forumThreadList.length >=
-          value.discuzIndexVariables.forum.getThreadCount()) {
-        return IndicatorResult.noMore;
-      } else {
-        return IndicatorResult.success;
-      }
-
-      //log("set successful result ${_displayForumResult} ${_forumThreadList.length}");
-    }).catchError((onError) {
-      if (!mounted) {
-        return IndicatorResult.fail;
-      }
-      VibrationUtils.vibrateErrorIfPossible();
-      //log(onError);
-      EasyLoading.showError('${onError}');
-      _controller.finishRefresh();
-      setState(() {
-        _isFirstLoading = false;
-      });
-
-      switch (onError.runtimeType) {
-        case DioException:
-          {
-            DioException dioError = onError;
-            log("${dioError.message} >-> ${dioError.type}");
-            EasyLoading.showError("${dioError.message} (${dioError})");
-            print(dioError.stackTrace);
+          if (_page == 1) {
+            print("Clearing list since page ${_page} results");
             setState(() {
-              _error = DiscuzError(
-                  dioError.message == null
-                      ? S.of(context).error
-                      : dioError.message!,
-                  dioError.type.name,
-                  dioError: dioError);
+              _forumThreadList = [];
             });
 
-            break;
-          }
-        default:
-          {
             setState(() {
-              _error = DiscuzError(
-                  onError.runtimeType.toString(), onError.toString());
+              _forumThreadList = value.discuzIndexVariables.forumThreadList;
+            });
+          } else {
+            setState(() {
+              _forumThreadList.addAll(
+                value.discuzIndexVariables.forumThreadList,
+              );
             });
           }
-      }
-      print(onError.stackTrace);
+          _page += 1;
+          _controller.finishRefresh();
+          _controller.resetFooter();
+          _controller.finishLoad(
+            _forumThreadList.length >=
+                    value.discuzIndexVariables.forum.getThreadCount()
+                ? IndicatorResult.noMore
+                : IndicatorResult.success,
+          );
 
-      return IndicatorResult.fail;
-    });
+          if (value.getErrorString() != null) {
+            EasyLoading.showError(value.getErrorString()!);
+          }
+
+          if (value.errorResult != null) {
+            setState(() {
+              _error = DiscuzError(
+                value.errorResult!.key,
+                value.errorResult!.content,
+              );
+            });
+          } else {
+            setState(() {
+              _error = null;
+            });
+          }
+
+          Provider.of<DiscuzNotificationProvider>(
+            context,
+            listen: false,
+          ).setNotificationCount(value.discuzIndexVariables.noticeCount);
+
+          // check with user
+          if (user != null &&
+              value.discuzIndexVariables.member_uid != user.uid) {
+            setState(() {
+              _error = DiscuzError(
+                S.of(context).userExpiredTitle(user.username),
+                S.of(context).userExpiredSubtitle,
+                errorType: ErrorType.userExpired,
+              );
+            });
+          }
+          if (_forumThreadList.length >=
+              value.discuzIndexVariables.forum.getThreadCount()) {
+            return IndicatorResult.noMore;
+          } else {
+            return IndicatorResult.success;
+          }
+
+          //log("set successful result ${_displayForumResult} ${_forumThreadList.length}");
+        })
+        .catchError((onError) {
+          if (!mounted) {
+            return IndicatorResult.fail;
+          }
+          VibrationUtils.vibrateErrorIfPossible();
+          //log(onError);
+          EasyLoading.showError('${onError}');
+          _controller.finishRefresh();
+          setState(() {
+            _isFirstLoading = false;
+          });
+
+          switch (onError.runtimeType) {
+            case DioException:
+              {
+                DioException dioError = onError;
+                log("${dioError.message} >-> ${dioError.type}");
+                EasyLoading.showError("${dioError.message} (${dioError})");
+                print(dioError.stackTrace);
+                setState(() {
+                  _error = DiscuzError(
+                    dioError.message == null
+                        ? S.of(context).error
+                        : dioError.message!,
+                    dioError.type.name,
+                    dioError: dioError,
+                  );
+                });
+
+                break;
+              }
+            default:
+              {
+                setState(() {
+                  _error = DiscuzError(
+                    onError.runtimeType.toString(),
+                    onError.toString(),
+                  );
+                });
+              }
+          }
+          print(onError.stackTrace);
+
+          return IndicatorResult.fail;
+        });
     return result;
   }
 
@@ -393,8 +480,10 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     ModalRoute<Object?>? route = ModalRoute.of(context);
-    final favoriteForumInDatabase =
-        favoriteForumDao?.getFavoriteForumByFid(fid, discuz);
+    final favoriteForumInDatabase = favoriteForumDao?.getFavoriteForumByFid(
+      fid,
+      discuz,
+    );
     final hasUser = Provider.of<DiscuzAndUserNotifier>(context).user != null;
 
     final adaptiveAppBar = PlatformAppBar(
@@ -404,8 +493,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
           buildDiscuzNotificationAppbarIcon(context),
         if (favoriteForumDao != null)
           PlatformIconButton(
-            liquidGlassSymbol:
-                favoriteForumInDatabase == null ? 'heart' : 'heart.fill',
+            liquidGlassSymbol: favoriteForumInDatabase == null
+                ? 'heart'
+                : 'heart.fill',
             icon: Icon(
               favoriteForumInDatabase == null
                   ? PlatformIcons(context).favoriteOutline
@@ -429,96 +519,127 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
           ),
         if (hasUser)
           PlatformIconButton(
-              liquidGlassSymbol: 'plus.circle',
-              icon: Icon(
-                AppPlatformIcons(context).publishPostOutlined,
-                size: 24,
-                semanticLabel: S.of(context).postThread,
-              ),
-              onPressed: () {
-                if (_displayForumResult.discuzIndexVariables.forum.fid != 0) {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  Navigator.push(
-                      context,
-                      platformPageRoute(
-                          context: context,
-                          iosTitle: S.of(context).postThread,
-                          builder: (context) => PostThreadPage(
-                              discuz,
-                              _displayForumResult
-                                  .discuzIndexVariables.forum.fid,
-                              0)));
-                } else {
-                  EasyLoading.showInfo(S.of(context).loading);
-                }
-              }),
-        PlatformPopupMenu(
+            liquidGlassSymbol: 'plus.circle',
             icon: Icon(
-              PlatformIcons(context).ellipsis,
+              AppPlatformIcons(context).publishPostOutlined,
               size: 24,
+              semanticLabel: S.of(context).postThread,
             ),
-            options: [
-              PopupMenuOption(
-                  label: S.of(context).forumInformation,
-                  onTap: (option) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    _showInformationBottomSheet(context);
-                  }),
-              PopupMenuOption(
-                  label: S.of(context).forumSortPosts,
-                  onTap: (option) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    _showForumFilterBottomSheet(context);
-                  }),
-              PopupMenuOption(
-                  label: S.of(context).openViaInternalBrowser,
-                  onTap: (option) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.push(
-                        context,
-                        platformPageRoute(
-                            context: context,
-                            iosTitle: S.of(context).openViaInternalBrowser,
-                            builder: (context) => InternalWebviewBrowserPage(
-                                discuz,
-                                user,
-                                URLUtils.getForumDisplayURL(discuz, fid))));
-                  }),
-              PopupMenuOption(
-                  label: S.of(context).share,
-                  onTap: (option) {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Share.share(URLUtils.getForumDisplayURL(discuz, fid),
-                        subject: _displayForumResult
-                            .discuzIndexVariables.forum.name);
-                  }),
-              PopupMenuOption(
-                  label: S.of(context).settings,
-                  onTap: (option) async {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    await Navigator.push(
-                        context,
-                        platformPageRoute(
-                            iosTitle: S.of(context).settings,
-                            context: context,
-                            builder: (context) => SettingPage()));
-                  }),
-            ]),
+            onPressed: () {
+              if (_displayForumResult.discuzIndexVariables.forum.fid != 0) {
+                VibrationUtils.vibrateWithClickIfPossible();
+                Navigator.push(
+                  context,
+                  platformPageRoute(
+                    context: context,
+                    iosTitle: S.of(context).postThread,
+                    builder: (context) => PostThreadPage(
+                      discuz,
+                      _displayForumResult.discuzIndexVariables.forum.fid,
+                      0,
+                    ),
+                  ),
+                );
+              } else {
+                EasyLoading.showInfo(S.of(context).loading);
+              }
+            },
+          ),
+        PlatformPopupMenu(
+          icon: Icon(PlatformIcons(context).ellipsis, size: 24),
+          options: [
+            PopupMenuOption(
+              label: S.of(context).pinnedThreads,
+              onTap: (_) => Navigator.push(
+                context,
+                platformPageRoute(
+                  context: context,
+                  builder: (_) => ForumListsPage(
+                    discuz: discuz,
+                    user: context.read<DiscuzAndUserNotifier>().user,
+                    fid: fid,
+                    directory: ForumDirectory.pinnedThreads,
+                  ),
+                ),
+              ),
+            ),
+            PopupMenuOption(
+              label: S.of(context).forumInformation,
+              onTap: (option) {
+                VibrationUtils.vibrateWithClickIfPossible();
+                _showInformationBottomSheet(context);
+              },
+            ),
+            PopupMenuOption(
+              label: S.of(context).forumSortPosts,
+              onTap: (option) {
+                VibrationUtils.vibrateWithClickIfPossible();
+                _showForumFilterBottomSheet(context);
+              },
+            ),
+            PopupMenuOption(
+              label: S.of(context).openViaInternalBrowser,
+              onTap: (option) {
+                VibrationUtils.vibrateWithClickIfPossible();
+                Navigator.push(
+                  context,
+                  platformPageRoute(
+                    context: context,
+                    iosTitle: S.of(context).openViaInternalBrowser,
+                    builder: (context) => InternalWebviewBrowserPage(
+                      discuz,
+                      user,
+                      URLUtils.getForumDisplayURL(discuz, fid),
+                    ),
+                  ),
+                );
+              },
+            ),
+            PopupMenuOption(
+              label: S.of(context).share,
+              onTap: (option) {
+                VibrationUtils.vibrateWithClickIfPossible();
+                Share.share(
+                  URLUtils.getForumDisplayURL(discuz, fid),
+                  subject: _displayForumResult.discuzIndexVariables.forum.name,
+                );
+              },
+            ),
+            PopupMenuOption(
+              label: S.of(context).settings,
+              onTap: (option) async {
+                VibrationUtils.vibrateWithClickIfPossible();
+                await Navigator.push(
+                  context,
+                  platformPageRoute(
+                    iosTitle: S.of(context).settings,
+                    context: context,
+                    builder: (context) => SettingPage(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ],
-      title: Text(_displayForumResult.discuzIndexVariables.forum.name,
-          overflow: TextOverflow.ellipsis),
-      backgroundColor: Theme.of(context)
-          .navigationBarTheme
-          .backgroundColor
-          ?.withOpacity(0.5),
+      title: Text(
+        _displayForumResult.discuzIndexVariables.forum.name,
+        overflow: TextOverflow.ellipsis,
+      ),
+      backgroundColor: Theme.of(
+        context,
+      ).navigationBarTheme.backgroundColor?.withOpacity(0.5),
       cupertino: (context, platform) => CupertinoNavigationBarData(
-          previousPageTitle: (route != null &&
-                  route is CupertinoPageRoute<dynamic> &&
-                  route.previousTitle.value != null)
-              ? route.previousTitle.value
-              : Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-                  .discuz
-                  ?.siteName),
+        previousPageTitle:
+            (route != null &&
+                route is CupertinoPageRoute<dynamic> &&
+                route.previousTitle.value != null)
+            ? route.previousTitle.value
+            : Provider.of<DiscuzAndUserNotifier>(
+                context,
+                listen: false,
+              ).discuz?.siteName,
+      ),
     );
 
     return PlatformScaffold(
@@ -552,90 +673,99 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
             const HeaderLocator.sliver(),
             if (_error != null)
               SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                (context, _) {
-                  return ErrorCard(
-                    _error!,
-                    () {
-                      _controller.callRefresh();
-                    },
-                    errorType: _error!.errorType,
-                  );
-                },
-                childCount: 1,
-              )),
+                delegate: SliverChildBuilderDelegate((context, _) {
+                  return ErrorCard(_error!, () {
+                    _controller.callRefresh();
+                  }, errorType: _error!.errorType);
+                }, childCount: 1),
+              ),
             // check with sub forum
             if (_displayForumResult
-                .discuzIndexVariables.subForumList.isNotEmpty)
+                .discuzIndexVariables
+                .subForumList
+                .isNotEmpty)
               SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                var subForum = _displayForumResult
-                    .discuzIndexVariables.subForumList[index];
-                return PlatformCard(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
-                  elevation: 4,
-                  child: PlatformListTile(
-                    title: Text(subForum.name,
-                        style: TextStyle(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSecondaryContainer,
-                        )),
-                    leading: Icon(AppPlatformIcons(context).forumOutlined,
-                        color:
-                            Theme.of(context).colorScheme.onSecondaryContainer),
-                    trailing: Icon(AppPlatformIcons(context).goToSolid,
-                        color:
-                            Theme.of(context).colorScheme.onSecondaryContainer),
-                    onTap: () async {
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      await Navigator.push(
-                          context,
-                          platformPageRoute(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    var subForum = _displayForumResult
+                        .discuzIndexVariables
+                        .subForumList[index];
+                    return PlatformCard(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      elevation: 4,
+                      child: PlatformListTile(
+                        title: Text(
+                          subForum.name,
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSecondaryContainer,
+                          ),
+                        ),
+                        leading: Icon(
+                          AppPlatformIcons(context).forumOutlined,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSecondaryContainer,
+                        ),
+                        trailing: Icon(
+                          AppPlatformIcons(context).goToSolid,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSecondaryContainer,
+                        ),
+                        onTap: () async {
+                          VibrationUtils.vibrateWithClickIfPossible();
+                          await Navigator.push(
+                            context,
+                            platformPageRoute(
                               context: context,
                               iosTitle: subForum.name,
                               builder: (context) => DisplayForumTwoPanePage(
-                                    discuz,
-                                    user,
-                                    subForum.fid,
-                                    forumTitle: subForum.name,
-                                  )));
-                    },
-                  ),
-                );
-              },
-                      childCount: _displayForumResult
-                          .discuzIndexVariables.subForumList.length)),
+                                discuz,
+                                user,
+                                subForum.fid,
+                                forumTitle: subForum.name,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  childCount: _displayForumResult
+                      .discuzIndexVariables
+                      .subForumList
+                      .length,
+                ),
+              ),
             if (_forumThreadList.isEmpty)
               SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
                   return _isFirstLoading
-                      ? LoadingStateWidget(
-                          hintText: forumTitle,
-                        )
+                      ? LoadingStateWidget(hintText: forumTitle)
                       : EmptyListScreen(EmptyItemType.thread);
                 }, childCount: 1),
               ),
 
             SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ForumThreadWidget(
-                        discuz,
-                        user,
-                        _forumThreadList[index],
-                        _displayForumResult.discuzIndexVariables.threadType,
-                        onSelectTid,
-                        afterTid: index < _forumThreadList.length - 1
-                            ? _forumThreadList[index + 1].getTid()
-                            : null,
-                      ),
-                      if (index % 15 == 0 && index != 0)
-                        Consumer<UserPreferenceNotifierProvider>(
-                            builder: (context, value, child) {
+              delegate: SliverChildBuilderDelegate((context, index) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ForumThreadWidget(
+                      discuz,
+                      user,
+                      _forumThreadList[index],
+                      _displayForumResult.discuzIndexVariables.threadType,
+                      onSelectTid,
+                      afterTid: index < _forumThreadList.length - 1
+                          ? _forumThreadList[index + 1].getTid()
+                          : null,
+                    ),
+                    if (index % 15 == 0 && index != 0)
+                      Consumer<UserPreferenceNotifierProvider>(
+                        builder: (context, value, child) {
                           if (value.signature ==
                                   PostTextFieldUtils.USE_APP_SIGNATURE &&
                               index > 10) {
@@ -643,12 +773,11 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                           } else {
                             return const AppBannerAdWidget();
                           }
-                        })
-                    ],
-                  );
-                },
-                childCount: _forumThreadList.length,
-              ),
+                        },
+                      ),
+                  ],
+                );
+              }, childCount: _forumThreadList.length),
             ),
           ],
         ),
@@ -658,60 +787,69 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
   void _showInformationBottomSheet(BuildContext context) {
     showPlatformModalSheet(
-        //isScrollControlled: false,
-        context: context,
-        builder: (context) {
-          return Container(
-            constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.65),
-            color: usesLiquidGlass(context)
-                ? Colors.transparent
-                : Theme.of(context).colorScheme.surface,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Icon(
-                          PlatformIcons(context).document,
-                          color: Colors.blue,
-                        ),
+      //isScrollControlled: false,
+      context: context,
+      builder: (context) {
+        return Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.65,
+          ),
+          color: usesLiquidGlass(context)
+              ? Colors.transparent
+              : Theme.of(context).colorScheme.surface,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Icon(
+                        PlatformIcons(context).document,
+                        color: Colors.blue,
                       ),
-                      Expanded(
-                          child: DiscuzHtmlWidget(
-                              discuz,
-                              _displayForumResult
-                                  .discuzIndexVariables.forum.description))
-                    ],
-                  ),
-                  Divider(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-                        child: Icon(
-                          PlatformIcons(context).rule,
-                          color: Colors.redAccent,
-                        ),
+                    ),
+                    Expanded(
+                      child: DiscuzHtmlWidget(
+                        discuz,
+                        _displayForumResult
+                            .discuzIndexVariables
+                            .forum
+                            .description,
                       ),
-                      Expanded(
-                          child: DiscuzHtmlWidget(
-                              discuz,
-                              _displayForumResult
-                                  .discuzIndexVariables.forum.rules))
-                    ],
-                  )
-                ],
-              ),
+                    ),
+                  ],
+                ),
+                Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 8,
+                      ),
+                      child: Icon(
+                        PlatformIcons(context).rule,
+                        color: Colors.redAccent,
+                      ),
+                    ),
+                    Expanded(
+                      child: DiscuzHtmlWidget(
+                        discuz,
+                        _displayForumResult.discuzIndexVariables.forum.rules,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   void _showForumFilterBottomSheet(BuildContext context) {
@@ -722,11 +860,11 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       threadTypeList = threadType.getThreadTypeList();
     }
     showPlatformModalSheet(
-        context: context,
-        material: const MaterialModalSheetData(isScrollControlled: false),
-        builder: (sheetContext) {
-          return StatefulBuilder(
-              builder: (BuildContext context, StateSetter setModalState) {
+      context: context,
+      material: const MaterialModalSheetData(isScrollControlled: false),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setModalState) {
             final colors = Theme.of(context).colorScheme;
 
             Widget filterSection(
@@ -759,9 +897,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                         Expanded(
                           child: Text(
                             title,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
+                            style: Theme.of(context).textTheme.titleMedium
                                 ?.copyWith(
                                   color: colors.onSurface,
                                   fontWeight: FontWeight.w600,
@@ -793,12 +929,17 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       for (final threadTypeInfo in threadTypeList)
                         PlatformChoiceChip(
                           label: Text(threadTypeInfo.typeName),
-                          selected: _displayForumQuery.typeId ==
+                          selected:
+                              _displayForumQuery.typeId ==
                               threadTypeInfo.typeId,
                           onSelected: (selected) {
                             VibrationUtils.vibrateWithClickIfPossible();
-                            setModalState(() => _displayForumQuery.setTypeId(
-                                threadTypeInfo.typeId, selected));
+                            setModalState(
+                              () => _displayForumQuery.setTypeId(
+                                threadTypeInfo.typeId,
+                                selected,
+                              ),
+                            );
                           },
                         ),
                     ],
@@ -812,8 +953,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       selected: _displayForumQuery.orderBy == "lastpost",
                       onSelected: (_) {
                         VibrationUtils.vibrateWithClickIfPossible();
-                        setModalState(() =>
-                            _displayForumQuery.setOrderBy("lastpost", true));
+                        setModalState(
+                          () => _displayForumQuery.setOrderBy("lastpost", true),
+                        );
                       },
                     ),
                     PlatformChoiceChip(
@@ -821,8 +963,12 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       selected: _displayForumQuery.orderBy == "dateline",
                       onSelected: (selected) {
                         VibrationUtils.vibrateWithClickIfPossible();
-                        setModalState(() => _displayForumQuery.setOrderBy(
-                            "dateline", selected));
+                        setModalState(
+                          () => _displayForumQuery.setOrderBy(
+                            "dateline",
+                            selected,
+                          ),
+                        );
                       },
                     ),
                     PlatformChoiceChip(
@@ -830,8 +976,10 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       selected: _displayForumQuery.orderBy == "views",
                       onSelected: (selected) {
                         VibrationUtils.vibrateWithClickIfPossible();
-                        setModalState(() =>
-                            _displayForumQuery.setOrderBy("views", selected));
+                        setModalState(
+                          () =>
+                              _displayForumQuery.setOrderBy("views", selected),
+                        );
                       },
                     ),
                     PlatformChoiceChip(
@@ -839,8 +987,10 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       selected: _displayForumQuery.orderBy == "heats",
                       onSelected: (selected) {
                         VibrationUtils.vibrateWithClickIfPossible();
-                        setModalState(() =>
-                            _displayForumQuery.setOrderBy("heats", selected));
+                        setModalState(
+                          () =>
+                              _displayForumQuery.setOrderBy("heats", selected),
+                        );
                       },
                     ),
                   ],
@@ -854,8 +1004,12 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       selected: _displayForumQuery.specialType == "poll",
                       onSelected: (selected) {
                         VibrationUtils.vibrateWithClickIfPossible();
-                        setModalState(() => _displayForumQuery.setSpecialType(
-                            "poll", selected));
+                        setModalState(
+                          () => _displayForumQuery.setSpecialType(
+                            "poll",
+                            selected,
+                          ),
+                        );
                       },
                     ),
                     PlatformChoiceChip(
@@ -863,8 +1017,12 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       selected: _displayForumQuery.specialType == "debate",
                       onSelected: (selected) {
                         VibrationUtils.vibrateWithClickIfPossible();
-                        setModalState(() => _displayForumQuery.setSpecialType(
-                            "debate", selected));
+                        setModalState(
+                          () => _displayForumQuery.setSpecialType(
+                            "debate",
+                            selected,
+                          ),
+                        );
                       },
                     ),
                     PlatformChoiceChip(
@@ -872,8 +1030,12 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       selected: _displayForumQuery.specialType == "activity",
                       onSelected: (selected) {
                         VibrationUtils.vibrateWithClickIfPossible();
-                        setModalState(() => _displayForumQuery.setSpecialType(
-                            "activity", selected));
+                        setModalState(
+                          () => _displayForumQuery.setSpecialType(
+                            "activity",
+                            selected,
+                          ),
+                        );
                       },
                     ),
                   ],
@@ -887,8 +1049,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       selected: _displayForumQuery.dateline == 86400,
                       onSelected: (selected) {
                         VibrationUtils.vibrateWithClickIfPossible();
-                        setModalState(() =>
-                            _displayForumQuery.setDateline(86400, selected));
+                        setModalState(
+                          () => _displayForumQuery.setDateline(86400, selected),
+                        );
                       },
                     ),
                     PlatformChoiceChip(
@@ -896,8 +1059,10 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       selected: _displayForumQuery.dateline == 604800,
                       onSelected: (selected) {
                         VibrationUtils.vibrateWithClickIfPossible();
-                        setModalState(() =>
-                            _displayForumQuery.setDateline(604800, selected));
+                        setModalState(
+                          () =>
+                              _displayForumQuery.setDateline(604800, selected),
+                        );
                       },
                     ),
                     PlatformChoiceChip(
@@ -905,8 +1070,10 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       selected: _displayForumQuery.dateline == 2592000,
                       onSelected: (selected) {
                         VibrationUtils.vibrateWithClickIfPossible();
-                        setModalState(() =>
-                            _displayForumQuery.setDateline(2592000, selected));
+                        setModalState(
+                          () =>
+                              _displayForumQuery.setDateline(2592000, selected),
+                        );
                       },
                     ),
                     PlatformChoiceChip(
@@ -914,8 +1081,10 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       selected: _displayForumQuery.dateline == 7948800,
                       onSelected: (selected) {
                         VibrationUtils.vibrateWithClickIfPossible();
-                        setModalState(() =>
-                            _displayForumQuery.setDateline(7948800, selected));
+                        setModalState(
+                          () =>
+                              _displayForumQuery.setDateline(7948800, selected),
+                        );
                       },
                     ),
                     PlatformChoiceChip(
@@ -923,8 +1092,12 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       selected: _displayForumQuery.dateline == 31536000,
                       onSelected: (selected) {
                         VibrationUtils.vibrateWithClickIfPossible();
-                        setModalState(() =>
-                            _displayForumQuery.setDateline(31536000, selected));
+                        setModalState(
+                          () => _displayForumQuery.setDateline(
+                            31536000,
+                            selected,
+                          ),
+                        );
                       },
                     ),
                   ],
@@ -940,7 +1113,8 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       onSelected: (selected) {
                         VibrationUtils.vibrateWithClickIfPossible();
                         setModalState(
-                            () => _displayForumQuery.setDigest(selected));
+                          () => _displayForumQuery.setDigest(selected),
+                        );
                       },
                     ),
                     PlatformChoiceChip(
@@ -950,15 +1124,18 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       onSelected: (selected) {
                         VibrationUtils.vibrateWithClickIfPossible();
                         setModalState(
-                            () => _displayForumQuery.setHot(selected));
+                          () => _displayForumQuery.setHot(selected),
+                        );
                       },
                     ),
                   ],
                 ),
               ],
             );
-          });
-        }).whenComplete(() {
+          },
+        );
+      },
+    ).whenComplete(() {
       setState(() {
         _forumThreadList = [];
       });
@@ -984,7 +1161,7 @@ class DisplayForumActionControls extends StatelessWidget {
           liquidGlassSymbol: 'info.circle',
           icon: Icon(PlatformIcons(context).info),
           onPressed: () {},
-        )
+        ),
       ],
     );
   }
@@ -1112,15 +1289,17 @@ class DisplayForumTwoPanePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return DisplayForumTwoPaneStatefulWidget(
-        discuz: discuz,
-        fid: fid,
-        restorationId: "DisplayForumFid",
-        type: TwoPaneUtils.getTwoPaneType(constraints),
-        forumTitle: this.forumTitle,
-      );
-    });
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return DisplayForumTwoPaneStatefulWidget(
+          discuz: discuz,
+          fid: fid,
+          restorationId: "DisplayForumFid",
+          type: TwoPaneUtils.getTwoPaneType(constraints),
+          forumTitle: this.forumTitle,
+        );
+      },
+    );
   }
 }
 
@@ -1133,18 +1312,23 @@ class DisplayForumTwoPaneStatefulWidget extends StatefulWidget {
   final int fid;
   String? forumTitle = null;
 
-  DisplayForumTwoPaneStatefulWidget(
-      {required this.discuz,
-      this.user,
-      required this.fid,
-      required this.restorationId,
-      required this.type,
-      this.forumTitle});
+  DisplayForumTwoPaneStatefulWidget({
+    required this.discuz,
+    this.user,
+    required this.fid,
+    required this.restorationId,
+    required this.type,
+    this.forumTitle,
+  });
 
   @override
   State<StatefulWidget> createState() {
-    return DisplayForumTwoPaneState(this.discuz, this.user, this.fid,
-        forumTitle: this.forumTitle);
+    return DisplayForumTwoPaneState(
+      this.discuz,
+      this.user,
+      this.fid,
+      forumTitle: this.forumTitle,
+    );
   }
 }
 
@@ -1156,8 +1340,12 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget>
   int tid = 0;
   String? forumTitle = null;
 
-  DisplayForumTwoPaneState(this.discuz, this.user, this.fid,
-      {this.forumTitle}) {
+  DisplayForumTwoPaneState(
+    this.discuz,
+    this.user,
+    this.fid, {
+    this.forumTitle,
+  }) {
     _currentFid = RestorableInt(fid);
   }
 
@@ -1185,8 +1373,9 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget>
     var panePriority = TwoPanePriority.both;
     // directly give small Screen layout
     if (widget.type == TwoPaneType.smallScreen) {
-      panePriority =
-          _currentTid.value == 0 ? TwoPanePriority.start : TwoPanePriority.end;
+      panePriority = _currentTid.value == 0
+          ? TwoPanePriority.start
+          : TwoPanePriority.end;
       return DisplayForumAltSliverPage(
         discuz,
         user,
@@ -1197,57 +1386,63 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget>
 
     double paneProportion = 0.35;
 
-    return OrientationBuilder(builder: (context, orientation) {
-      if (widget.type != TwoPaneType.smallScreen &&
-          orientation == Orientation.portrait) {
-        paneProportion = 0.5;
-      }
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        if (widget.type != TwoPaneType.smallScreen &&
+            orientation == Orientation.portrait) {
+          paneProportion = 0.5;
+        }
 
-      return TwoPaneScaffold(
+        return TwoPaneScaffold(
           type: widget.type,
           child: TwoPane(
-              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-              paneProportion: paneProportion,
-              panePriority: panePriority,
-              startPane: DisplayForumAltSliverPage(
-                discuz,
-                user,
-                fid,
-                onSelectTid: (tid) async {
-                  if (tid != _currentTid.value) {
-                    log("Reselected a tid ${tid} ${_currentTid.value}");
-                    Provider.of<SelectedTidNotifierProvider>(context,
-                            listen: false)
-                        .setTid(tid);
-                    setState(() {
-                      _currentTid.value = 0;
-                    });
-                    // I don't know why it takes time to refresh
-                    await Future.delayed(const Duration(milliseconds: 100));
-                    setState(() {
-                      _currentTid.value = tid;
-                      _currentTid.didUpdateValue(tid);
-                    });
-                    log("Changed current tid ${_currentTid.value}");
-                  }
-                },
-                forumTitle: this.forumTitle,
-              ),
-              endPane: _currentTid.value == 0
-                  ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText)
-                  : ViewThreadSliverPage(
-                      discuz,
-                      user,
-                      _currentTid.value,
-                      onClosed: () {
-                        Provider.of<SelectedTidNotifierProvider>(context,
-                                listen: false)
-                            .setTid(0);
-                        setState(() {
-                          _currentTid.value = 0;
-                        });
-                      },
-                    )));
-    });
+            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+            paneProportion: paneProportion,
+            panePriority: panePriority,
+            startPane: DisplayForumAltSliverPage(
+              discuz,
+              user,
+              fid,
+              onSelectTid: (tid) async {
+                if (tid != _currentTid.value) {
+                  log("Reselected a tid ${tid} ${_currentTid.value}");
+                  Provider.of<SelectedTidNotifierProvider>(
+                    context,
+                    listen: false,
+                  ).setTid(tid);
+                  setState(() {
+                    _currentTid.value = 0;
+                  });
+                  // I don't know why it takes time to refresh
+                  await Future.delayed(const Duration(milliseconds: 100));
+                  setState(() {
+                    _currentTid.value = tid;
+                    _currentTid.didUpdateValue(tid);
+                  });
+                  log("Changed current tid ${_currentTid.value}");
+                }
+              },
+              forumTitle: this.forumTitle,
+            ),
+            endPane: _currentTid.value == 0
+                ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText)
+                : ViewThreadSliverPage(
+                    discuz,
+                    user,
+                    _currentTid.value,
+                    onClosed: () {
+                      Provider.of<SelectedTidNotifierProvider>(
+                        context,
+                        listen: false,
+                      ).setTid(0);
+                      setState(() {
+                        _currentTid.value = 0;
+                      });
+                    },
+                  ),
+          ),
+        );
+      },
+    );
   }
 }

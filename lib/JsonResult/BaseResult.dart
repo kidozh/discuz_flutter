@@ -5,12 +5,12 @@ part 'BaseResult.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class BaseResult{
-    @JsonKey(name: "Version")
+    @JsonKey(name: "Version", defaultValue: "")
     String version = "";
     int getApiVersion(){
       return int.parse(version);
     }
-    @JsonKey(name: "Charset")
+    @JsonKey(name: "Charset", defaultValue: "")
     String charset = "";
     @JsonKey(name: "Message",required: false)
     ErrorResult? errorResult;

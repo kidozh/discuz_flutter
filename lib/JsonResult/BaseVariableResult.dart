@@ -9,7 +9,7 @@ part 'BaseVariableResult.g.dart';
 
 @JsonSerializable(ignoreUnannotated: true, explicitToJson: true)
 class BaseVariableResult{
-  @JsonKey(name:"cookiepre")
+  @JsonKey(name: "cookiepre", defaultValue: "")
   String cookiepre = "";
   @JsonKey(name:"auth")
   String? auth;
@@ -21,11 +21,11 @@ class BaseVariableResult{
       return this.auth!;
     }
   }
-  @JsonKey(name:"saltkey")
+  @JsonKey(name: "saltkey", defaultValue: "")
   String saltkey = "";
-  @JsonKey(name:"member_username")
+  @JsonKey(name: "member_username", defaultValue: "")
   String member_username = "";
-  @JsonKey(name:"member_avatar")
+  @JsonKey(name: "member_avatar", defaultValue: "")
   String member_avatar = "";
   @JsonKey(name:"member_uid")
   @StringToIntConverter()
@@ -37,13 +37,13 @@ class BaseVariableResult{
   @JsonKey(name: "readaccess")
   @StringToIntConverter()
   int readAccess = 0;
-  @JsonKey(name: "formhash")
+  @JsonKey(name: "formhash", defaultValue: "")
   String formHash = "";
   @StringToIntConverter()
   @JsonKey(name: "ismoderator")
   int isModerator = 0;
 
-  @JsonKey(name: "notice")
+  @JsonKey(name: "notice", fromJson: noticeFromJson)
   NoticeCount noticeCount = NoticeCount();
 
   User getUser(Discuz discuz){
@@ -88,3 +88,4 @@ class NoticeCount{
     return super.toString().toString();
   }
 }
+NoticeCount noticeFromJson(Object? value) => NoticeCount.fromJson(value is Map<String, dynamic> ? value : {});

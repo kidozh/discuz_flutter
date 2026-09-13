@@ -21,6 +21,9 @@ class Draft extends HiveObject{
   Discuz discuz;
   @HiveField(6)
   int fid = 0;
+  @HiveField(8, defaultValue: '')
+  String pollJson = '';
+
   @HiveField(7)
   String typeid;
 

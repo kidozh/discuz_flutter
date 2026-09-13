@@ -7,8 +7,8 @@ part of 'BaseResult.dart';
 // **************************************************************************
 
 BaseResult _$BaseResultFromJson(Map<String, dynamic> json) => BaseResult()
-  ..version = json['Version'] as String
-  ..charset = json['Charset'] as String
+  ..version = json['Version'] as String? ?? ''
+  ..charset = json['Charset'] as String? ?? ''
   ..errorResult = json['Message'] == null
       ? null
       : ErrorResult.fromJson(json['Message'] as Map<String, dynamic>)

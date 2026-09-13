@@ -8,14 +8,15 @@ part of 'DisplayForumResult.dart';
 
 DisplayForumResult _$DisplayForumResultFromJson(Map<String, dynamic> json) =>
     DisplayForumResult()
-      ..version = json['Version'] as String
-      ..charset = json['Charset'] as String
+      ..version = json['Version'] as String? ?? ''
+      ..charset = json['Charset'] as String? ?? ''
       ..errorResult = json['Message'] == null
           ? null
           : ErrorResult.fromJson(json['Message'] as Map<String, dynamic>)
       ..error = json['error'] as String?
-      ..discuzIndexVariables =
-          ForumVariables.fromJson(json['Variables'] as Map<String, dynamic>);
+      ..discuzIndexVariables = ForumVariables.fromJson(
+        json['Variables'] as Map<String, dynamic>,
+      );
 
 Map<String, dynamic> _$DisplayForumResultToJson(DisplayForumResult instance) =>
     <String, dynamic>{
@@ -28,22 +29,17 @@ Map<String, dynamic> _$DisplayForumResultToJson(DisplayForumResult instance) =>
 
 ForumVariables _$ForumVariablesFromJson(Map<String, dynamic> json) =>
     ForumVariables()
-      ..cookiepre = json['cookiepre'] as String
+      ..cookiepre = json['cookiepre'] as String? ?? ''
       ..auth = json['auth'] as String?
-      ..saltkey = json['saltkey'] as String
-      ..member_username = json['member_username'] as String
-      ..member_avatar = json['member_avatar'] as String
-      ..member_uid =
-          const StringToIntConverter().fromJson(json['member_uid'] as String?)
-      ..groupId =
-          const StringToIntConverter().fromJson(json['groupid'] as String?)
-      ..readAccess =
-          const StringToIntConverter().fromJson(json['readaccess'] as String?)
-      ..formHash = json['formhash'] as String
-      ..isModerator =
-          const StringToIntConverter().fromJson(json['ismoderator'] as String?)
-      ..noticeCount =
-          NoticeCount.fromJson(json['notice'] as Map<String, dynamic>)
+      ..saltkey = json['saltkey'] as String? ?? ''
+      ..member_username = json['member_username'] as String? ?? ''
+      ..member_avatar = json['member_avatar'] as String? ?? ''
+      ..member_uid = const StringToIntConverter().fromJson(json['member_uid'])
+      ..groupId = const StringToIntConverter().fromJson(json['groupid'])
+      ..readAccess = const StringToIntConverter().fromJson(json['readaccess'])
+      ..formHash = json['formhash'] as String? ?? ''
+      ..isModerator = const StringToIntConverter().fromJson(json['ismoderator'])
+      ..noticeCount = noticeFromJson(json['notice'])
       ..forum = ForumDetail.fromJson(json['forum'] as Map<String, dynamic>)
       ..group = Group.fromJson(json['group'] as Map<String, dynamic>)
       ..forumThreadList = (json['forum_threadlist'] as List<dynamic>)
@@ -55,7 +51,8 @@ ForumVariables _$ForumVariablesFromJson(Map<String, dynamic> json) =>
       ..threadType = json['threadtypes'] == null
           ? null
           : ThreadType.fromJson(json['threadtypes'] as Map<String, dynamic>)
-      ..subForumList = (json['sublist'] as List<dynamic>?)
+      ..subForumList =
+          (json['sublist'] as List<dynamic>?)
               ?.map((e) => SubForum.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [];
@@ -84,10 +81,10 @@ Map<String, dynamic> _$ForumVariablesToJson(ForumVariables instance) =>
     };
 
 ForumDetail _$ForumDetailFromJson(Map<String, dynamic> json) => ForumDetail()
-  ..fid = const StringToIntConverter().fromJson(json['fid'] as String?)
-  ..fup = const StringToIntConverter().fromJson(json['fup'] as String?)
-  ..threads = const StringToIntConverter().fromJson(json['threads'] as String?)
-  ..posts = const StringToIntConverter().fromJson(json['posts'] as String?)
+  ..fid = const StringToIntConverter().fromJson(json['fid'])
+  ..fup = const StringToIntConverter().fromJson(json['fup'])
+  ..threads = const StringToIntConverter().fromJson(json['threads'])
+  ..posts = const StringToIntConverter().fromJson(json['posts'])
   ..description = json['description'] as String? ?? ''
   ..rules = json['rules'] as String? ?? ''
   ..name = json['name'] as String? ?? ''
@@ -122,9 +119,9 @@ Group _$GroupFromJson(Map<String, dynamic> json) => Group()
   ..groupTitle = json['grouptitle'] as String?;
 
 Map<String, dynamic> _$GroupToJson(Group instance) => <String, dynamic>{
-      'groupid': instance.groupId,
-      'grouptitle': instance.groupTitle,
-    };
+  'groupid': instance.groupId,
+  'grouptitle': instance.groupTitle,
+};
 
 ThreadType _$ThreadTypeFromJson(Map<String, dynamic> json) => ThreadType()
   ..required = json['required'] as String
@@ -133,11 +130,13 @@ ThreadType _$ThreadTypeFromJson(Map<String, dynamic> json) => ThreadType()
   ..idNameMap = json['types'] == null
       ? {}
       : const ThreadTypeConverter().fromJson(json['types'])
-  ..idIconMap = (json['icons'] as Map<String, dynamic>?)?.map(
+  ..idIconMap =
+      (json['icons'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ) ??
       {}
-  ..idModeratorMap = (json['moderators'] as Map<String, dynamic>?)?.map(
+  ..idModeratorMap =
+      (json['moderators'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String?),
       ) ??
       {};
@@ -153,17 +152,16 @@ Map<String, dynamic> _$ThreadTypeToJson(ThreadType instance) =>
     };
 
 SubForum _$SubForumFromJson(Map<String, dynamic> json) => SubForum()
-  ..fid = const StringToIntConverter().fromJson(json['fid'] as String?)
-  ..threads = const StringToIntConverter().fromJson(json['threads'] as String?)
-  ..posts = const StringToIntConverter().fromJson(json['posts'] as String?)
-  ..todayposts =
-      const StringToIntConverter().fromJson(json['todayposts'] as String?)
+  ..fid = const StringToIntConverter().fromJson(json['fid'])
+  ..threads = const StringToIntConverter().fromJson(json['threads'])
+  ..posts = const StringToIntConverter().fromJson(json['posts'])
+  ..todayposts = const StringToIntConverter().fromJson(json['todayposts'])
   ..name = json['name'] as String;
 
 Map<String, dynamic> _$SubForumToJson(SubForum instance) => <String, dynamic>{
-      'fid': const StringToIntConverter().toJson(instance.fid),
-      'threads': const StringToIntConverter().toJson(instance.threads),
-      'posts': const StringToIntConverter().toJson(instance.posts),
-      'todayposts': const StringToIntConverter().toJson(instance.todayposts),
-      'name': instance.name,
-    };
+  'fid': const StringToIntConverter().toJson(instance.fid),
+  'threads': const StringToIntConverter().toJson(instance.threads),
+  'posts': const StringToIntConverter().toJson(instance.posts),
+  'todayposts': const StringToIntConverter().toJson(instance.todayposts),
+  'name': instance.name,
+};

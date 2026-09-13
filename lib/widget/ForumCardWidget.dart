@@ -37,29 +37,41 @@ class ForumCardWidget extends StatelessWidget {
           isLabelVisible: _forum.todayPosts != "0" ? true : false,
           child: PlatformLiquidGlassAvatar(
             size: avatarSize,
-            child: CachedNetworkImage(
-              imageUrl: _forum.iconUrl,
-              fit: BoxFit.cover,
-              progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  Center(
-                child: SizedBox.square(
-                  dimension: 16,
-                  child: PlatformCircularProgressIndicator(
-                    material: (_, __) => MaterialProgressIndicatorData(
-                      value: downloadProgress.progress,
+            child: _forum.iconUrl.trim().isEmpty
+                ? ColoredBox(
+                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    child: Icon(
+                      PlatformIcons(context).tagSolid,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                      size: 18,
+                    ),
+                  )
+                : CachedNetworkImage(
+                    imageUrl: _forum.iconUrl,
+                    fit: BoxFit.cover,
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) => Center(
+                          child: SizedBox.square(
+                            dimension: 16,
+                            child: PlatformCircularProgressIndicator(
+                              material: (_, __) =>
+                                  MaterialProgressIndicatorData(
+                                    value: downloadProgress.progress,
+                                  ),
+                            ),
+                          ),
+                        ),
+                    errorWidget: (context, url, error) => ColoredBox(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      child: Icon(
+                        PlatformIcons(context).tagSolid,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSecondaryContainer,
+                        size: 18,
+                      ),
                     ),
                   ),
-                ),
-              ),
-              errorWidget: (context, url, error) => ColoredBox(
-                color: Theme.of(context).colorScheme.secondaryContainer,
-                child: Icon(
-                  PlatformIcons(context).tagSolid,
-                  color: Theme.of(context).colorScheme.onSecondaryContainer,
-                  size: 18,
-                ),
-              ),
-            ),
           ),
         ),
       ),
@@ -71,10 +83,7 @@ class ForumCardWidget extends StatelessWidget {
             _forum.name,
             maxLines: description.isNotEmpty ? 1 : 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              height: 1.18,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.bold, height: 1.18),
           ),
           if (description.isNotEmpty) ...[
             const SizedBox(height: 3),
@@ -94,16 +103,18 @@ class ForumCardWidget extends StatelessWidget {
       onTap: () async {
         VibrationUtils.vibrateWithClickIfPossible();
         await Navigator.push(
-            context,
-            platformPageRoute(
-                context: context,
-                iosTitle: _forum.name,
-                builder: (context) => DisplayForumTwoPanePage(
-                      _discuz,
-                      _user,
-                      _forum.getFid(),
-                      forumTitle: _forum.name,
-                    )));
+          context,
+          platformPageRoute(
+            context: context,
+            iosTitle: _forum.name,
+            builder: (context) => DisplayForumTwoPanePage(
+              _discuz,
+              _user,
+              _forum.getFid(),
+              forumTitle: _forum.name,
+            ),
+          ),
+        );
       },
     );
     if (embeddedInGlass) {

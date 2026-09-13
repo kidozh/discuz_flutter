@@ -16,36 +16,34 @@ PushTokenListResult _$PushTokenListResultFromJson(Map<String, dynamic> json) =>
           .toList();
 
 Map<String, dynamic> _$PushTokenListResultToJson(
-        PushTokenListResult instance) =>
-    <String, dynamic>{
-      'result': instance.result,
-      'maxToken': instance.maxToken,
-      'formhash': instance.formhash,
-      'list': instance.list,
-    };
+  PushTokenListResult instance,
+) => <String, dynamic>{
+  'result': instance.result,
+  'maxToken': instance.maxToken,
+  'formhash': instance.formhash,
+  'list': instance.list,
+};
 
 PushToken _$PushTokenFromJson(Map<String, dynamic> json) => PushToken()
-  ..id = const StringToIntConverter().fromJson(json['id'] as String?)
-  ..uid = const StringToIntConverter().fromJson(json['uid'] as String?)
+  ..id = const StringToIntConverter().fromJson(json['id'])
+  ..uid = const StringToIntConverter().fromJson(json['uid'])
   ..username = json['username'] as String
   ..token = json['token'] as String
-  ..allowPush =
-      const StringToBoolConverter().fromJson(json['allowPush'] as String?)
+  ..allowPush = const StringToBoolConverter().fromJson(json['allowPush'])
   ..deviceName = json['deviceName'] as String
-  ..updateAt =
-      const SecondToDateTimeConverter().fromJson(json['updateAt'] as String?)
+  ..updateAt = const SecondToDateTimeConverter().fromJson(json['updateAt'])
   ..channel = json['channel'] as String;
 
 Map<String, dynamic> _$PushTokenToJson(PushToken instance) => <String, dynamic>{
-      'id': const StringToIntConverter().toJson(instance.id),
-      'uid': const StringToIntConverter().toJson(instance.uid),
-      'username': instance.username,
-      'token': instance.token,
-      'allowPush': const StringToBoolConverter().toJson(instance.allowPush),
-      'deviceName': instance.deviceName,
-      'updateAt': const SecondToDateTimeConverter().toJson(instance.updateAt),
-      'channel': instance.channel,
-    };
+  'id': const StringToIntConverter().toJson(instance.id),
+  'uid': const StringToIntConverter().toJson(instance.uid),
+  'username': instance.username,
+  'token': instance.token,
+  'allowPush': const StringToBoolConverter().toJson(instance.allowPush),
+  'deviceName': instance.deviceName,
+  'updateAt': const SecondToDateTimeConverter().toJson(instance.updateAt),
+  'channel': instance.channel,
+};
 
 PostTokenResult _$PostTokenResultFromJson(Map<String, dynamic> json) =>
     PostTokenResult()
@@ -53,7 +51,4 @@ PostTokenResult _$PostTokenResultFromJson(Map<String, dynamic> json) =>
       ..formhash = json['formhash'] as String;
 
 Map<String, dynamic> _$PostTokenResultToJson(PostTokenResult instance) =>
-    <String, dynamic>{
-      'result': instance.result,
-      'formhash': instance.formhash,
-    };
+    <String, dynamic>{'result': instance.result, 'formhash': instance.formhash};

@@ -28,10 +28,8 @@ export 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart'
         PlatformWidget,
         PlatformWidgetBuilder;
 
-typedef PlatformBuilder<T> = T Function(
-  BuildContext context,
-  TargetPlatform platform,
-);
+typedef PlatformBuilder<T> =
+    T Function(BuildContext context, TargetPlatform platform);
 
 TargetPlatform platform(BuildContext context) =>
     PlatformProvider.of(context)?.platform ??
@@ -274,10 +272,10 @@ class PlatformProviderState extends State<PlatformProvider> {
 
   @override
   Widget build(BuildContext context) => _PlatformProviderScope(
-        state: this,
-        style: _style,
-        child: Builder(builder: widget.builder),
-      );
+    state: this,
+    style: _style,
+    child: Builder(builder: widget.builder),
+  );
 }
 
 class _PlatformProviderScope extends InheritedWidget {
@@ -319,13 +317,13 @@ class PlatformTheme extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => _PlatformThemeScope(
-        materialLightTheme: materialLightTheme,
-        materialDarkTheme: materialDarkTheme,
-        cupertinoLightTheme: cupertinoLightTheme,
-        cupertinoDarkTheme: cupertinoDarkTheme,
-        themeMode: themeMode,
-        child: Builder(builder: builder),
-      );
+    materialLightTheme: materialLightTheme,
+    materialDarkTheme: materialDarkTheme,
+    cupertinoLightTheme: cupertinoLightTheme,
+    cupertinoDarkTheme: cupertinoDarkTheme,
+    themeMode: themeMode,
+    child: Builder(builder: builder),
+  );
 }
 
 class _PlatformThemeScope extends InheritedWidget {
@@ -428,8 +426,9 @@ class PlatformApp extends StatelessWidget {
         builder: (context, child) {
           final builtChild =
               builder?.call(context, child) ?? child ?? const SizedBox.shrink();
-          final materialTheme =
-              useDark ? themes?.materialDarkTheme : themes?.materialLightTheme;
+          final materialTheme = useDark
+              ? themes?.materialDarkTheme
+              : themes?.materialLightTheme;
           Widget themedChild = builtChild;
           if (materialTheme != null) {
             // CupertinoApp does not insert a Material Theme. Shared widgets
@@ -457,8 +456,9 @@ class PlatformApp extends StatelessWidget {
         checkerboardOffscreenLayers: checkerboardOffscreenLayers,
         showSemanticsDebugger: showSemanticsDebugger,
         debugShowCheckedModeBanner: debugShowCheckedModeBanner,
-        theme:
-            useDark ? themes?.cupertinoDarkTheme : themes?.cupertinoLightTheme,
+        theme: useDark
+            ? themes?.cupertinoDarkTheme
+            : themes?.cupertinoLightTheme,
       );
     }
     return MaterialApp(
@@ -576,18 +576,28 @@ class PlatformAppBar {
   }) {
     if (bottom != null) return null;
 
+    // Keep the grouped glass actions when a page opts out of the native
+    // toolbar; converting them to actions loses the capsule in its fallback.
+    if (!liquidGlassUseNativeToolbar) {
+      return liquid.AdaptiveAppBar(
+        useNativeToolbar: false,
+        cupertinoNavigationBar: createCupertinoWidget(context),
+      );
+    }
+
     final actions = _createLiquidGlassActions(context);
     if (actions == null) return null;
 
     final canPop = Navigator.maybeOf(context)?.canPop() ?? false;
-    final effectiveLeading = leading ??
+    final effectiveLeading =
+        leading ??
         (!suppressAutomaticLeading &&
                 automaticallyImplyLeading != false &&
                 canPop
             ? const PlatformBackButton()
             : (suppressAutomaticLeading || automaticallyImplyLeading == false
-                ? const SizedBox.shrink()
-                : null));
+                  ? const SizedBox.shrink()
+                  : null));
 
     return liquid.AdaptiveAppBar(
       title: liquidGlassTitle,
@@ -595,7 +605,8 @@ class PlatformAppBar {
       titleWidget: liquidGlassTitle == null ? title : null,
       leading: effectiveLeading,
       actions: actions,
-      tintColor: liquidGlassTintColor ??
+      tintColor:
+          liquidGlassTintColor ??
           Theme.of(context).iconTheme.color ??
           CupertinoColors.label.resolveFrom(context),
       useNativeToolbar: liquidGlassUseNativeToolbar,
@@ -603,7 +614,8 @@ class PlatformAppBar {
   }
 
   List<liquid.AdaptiveAppBarAction>? _createLiquidGlassActions(
-      BuildContext context) {
+    BuildContext context,
+  ) {
     final widgets = trailingActions;
     if (widgets == null || widgets.isEmpty) return const [];
 
@@ -617,7 +629,9 @@ class PlatformAppBar {
   }
 
   liquid.AdaptiveAppBarAction? _liquidGlassActionForWidget(
-      BuildContext context, Widget widget) {
+    BuildContext context,
+    Widget widget,
+  ) {
     if (widget is PlatformIconButton && widget.onPressed != null) {
       final iconWidget = widget.cupertinoIcon ?? widget.icon;
       final symbol =
@@ -694,7 +708,8 @@ class PlatformAppBar {
   ObstructingPreferredSizeWidget createCupertinoWidget(BuildContext context) {
     final data = cupertino?.call(context, platform(context));
     final canPop = Navigator.maybeOf(context)?.canPop() ?? false;
-    final useGlassBackButton = usesLiquidGlass(context) &&
+    final useGlassBackButton =
+        usesLiquidGlass(context) &&
         leading == null &&
         automaticallyImplyLeading != false &&
         canPop;
@@ -702,18 +717,19 @@ class PlatformAppBar {
     final trailing = actions == null || actions.isEmpty
         ? null
         : actions.length == 1
-            ? actions.first
-            : usesLiquidGlass(context)
-                ? PlatformLiquidGlassToolbarGroup(children: actions)
-                : Row(mainAxisSize: MainAxisSize.min, children: actions);
+        ? actions.first
+        : usesLiquidGlass(context)
+        ? PlatformLiquidGlassToolbarGroup(children: actions)
+        : Row(mainAxisSize: MainAxisSize.min, children: actions);
     return CupertinoNavigationBar(
       key: widgetKey,
       middle: title,
       backgroundColor: backgroundColor,
       leading: useGlassBackButton ? const PlatformBackButton() : leading,
       bottom: bottom,
-      automaticallyImplyLeading:
-          useGlassBackButton ? false : automaticallyImplyLeading ?? true,
+      automaticallyImplyLeading: useGlassBackButton
+          ? false
+          : automaticallyImplyLeading ?? true,
       previousPageTitle: data?.previousPageTitle,
       trailing: data?.trailing ?? trailing,
       transitionBetweenRoutes: data?.transitionBetweenRoutes ?? true,
@@ -778,24 +794,26 @@ class PlatformScaffold extends StatelessWidget {
         final scaffold = liquid.AdaptiveScaffold(
           key: widgetKey,
           appBar: liquidAppBar,
-          bottomNavigationBar:
-              bottomNavigationBar?.createLiquidGlassBottomNavigationBar(),
+          bottomNavigationBar: bottomNavigationBar
+              ?.createLiquidGlassBottomNavigationBar(),
           minimizeBehavior:
               bottomNavigationBar?.liquidGlassMinimizeOnScroll == false
-                  ? liquid.TabBarMinimizeBehavior.never
-                  : liquid.TabBarMinimizeBehavior.automatic,
+              ? liquid.TabBarMinimizeBehavior.never
+              : liquid.TabBarMinimizeBehavior.automatic,
           body: content,
-          useHeroBackButton: bottomNavigationBar == null &&
+          useHeroBackButton:
+              bottomNavigationBar == null &&
               appBar?.automaticallyImplyLeading != false,
         );
-        final tabTint = bottomNavigationBar?.liquidGlassSelectedItemColor ??
+        final tabTint =
+            bottomNavigationBar?.liquidGlassSelectedItemColor ??
             bottomNavigationBar?.selectedItemColor;
         return tabTint == null
             ? scaffold
             : CupertinoTheme(
-                data: CupertinoTheme.of(context).copyWith(
-                  primaryColor: tabTint,
-                ),
+                data: CupertinoTheme.of(
+                  context,
+                ).copyWith(primaryColor: tabTint),
                 child: scaffold,
               );
       }
@@ -851,10 +869,14 @@ class PlatformBottomNavigationBar {
     this.liquidGlassSelectedItemColor,
     this.liquidGlassUnselectedItemColor,
     this.liquidGlassMinimizeOnScroll = true,
-  })  : assert(liquidGlassSymbols == null ||
-            liquidGlassSymbols.length == items.length),
-        assert(liquidGlassSelectedSymbols == null ||
-            liquidGlassSelectedSymbols.length == items.length);
+  }) : assert(
+         liquidGlassSymbols == null ||
+             liquidGlassSymbols.length == items.length,
+       ),
+       assert(
+         liquidGlassSelectedSymbols == null ||
+             liquidGlassSelectedSymbols.length == items.length,
+       );
 
   liquid.AdaptiveBottomNavigationBar createLiquidGlassBottomNavigationBar() {
     return liquid.AdaptiveBottomNavigationBar(
@@ -866,10 +888,12 @@ class PlatformBottomNavigationBar {
       items: [
         for (var index = 0; index < items.length; index++)
           liquid.AdaptiveNavigationDestination(
-            icon: liquidGlassSymbols?[index] ??
+            icon:
+                liquidGlassSymbols?[index] ??
                 _liquidGlassSymbolForWidget(items[index].icon) ??
                 items[index].icon,
-            selectedIcon: liquidGlassSelectedSymbols?[index] ??
+            selectedIcon:
+                liquidGlassSelectedSymbols?[index] ??
                 _liquidGlassSymbolForWidget(items[index].activeIcon) ??
                 items[index].activeIcon,
             label: items[index].label ?? '',
@@ -1138,8 +1162,10 @@ class _PlatformLiquidGlassToolbarGroupScope extends InheritedWidget {
   const _PlatformLiquidGlassToolbarGroupScope({required super.child});
 
   static bool contains(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<
-          _PlatformLiquidGlassToolbarGroupScope>() !=
+      context
+          .dependOnInheritedWidgetOfExactType<
+            _PlatformLiquidGlassToolbarGroupScope
+          >() !=
       null;
 
   @override
@@ -1151,10 +1177,7 @@ class _PlatformLiquidGlassToolbarGroupScope extends InheritedWidget {
 class PlatformLiquidGlassToolbarGroup extends StatelessWidget {
   final List<Widget> children;
 
-  const PlatformLiquidGlassToolbarGroup({
-    required this.children,
-    super.key,
-  });
+  const PlatformLiquidGlassToolbarGroup({required this.children, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -1332,8 +1355,9 @@ class PlatformIconButton extends StatelessWidget {
         onLongPress: onLongPress,
         child: cupertinoIcon ?? icon ?? const SizedBox.shrink(),
       );
-      final semanticLabel =
-          _iconForWidget(cupertinoIcon ?? icon)?.semanticLabel;
+      final semanticLabel = _iconForWidget(
+        cupertinoIcon ?? icon,
+      )?.semanticLabel;
       if (semanticLabel != null) {
         button = Semantics(
           label: semanticLabel,
@@ -1364,16 +1388,16 @@ class PlatformBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => PlatformIconButton(
-        liquidGlassSymbol: 'chevron.left',
-        liquidGlassButtonSize: 44,
-        liquidGlassIconSize: 18,
-        onPressed: onPressed ?? () => Navigator.maybePop(context),
-        materialIcon: const Icon(Icons.arrow_back),
-        cupertinoIcon: Icon(
-          CupertinoIcons.back,
-          semanticLabel: CupertinoLocalizations.of(context).backButtonLabel,
-        ),
-      );
+    liquidGlassSymbol: 'chevron.left',
+    liquidGlassButtonSize: 44,
+    liquidGlassIconSize: 18,
+    onPressed: onPressed ?? () => Navigator.maybePop(context),
+    materialIcon: const Icon(Icons.arrow_back),
+    cupertinoIcon: Icon(
+      CupertinoIcons.back,
+      semanticLabel: CupertinoLocalizations.of(context).backButtonLabel,
+    ),
+  );
 }
 
 class PlatformCircularProgressIndicator extends StatelessWidget {
@@ -1570,7 +1594,8 @@ class PlatformLiquidGlassSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final blur = usesLiquidGlass(context) &&
+    final blur =
+        usesLiquidGlass(context) &&
         PlatformGlassScope.shouldBlur(context, PlatformGlassEffect.automatic);
     return PlatformGlassScope(
       child: blur
@@ -1674,8 +1699,12 @@ class PlatformLiquidGlassCard extends StatelessWidget {
   final BorderRadius borderRadius;
   final bool selected;
   final Color? tintColor;
+
   /// Solid fill used when translucent surfaces are disabled.
   final Color? backgroundColor;
+
+  /// Optional backing color beneath the translucent glass gradient.
+  final Color? glassBackgroundColor;
   final PlatformGlassEffect effect;
 
   const PlatformLiquidGlassCard({
@@ -1686,6 +1715,7 @@ class PlatformLiquidGlassCard extends StatelessWidget {
     this.selected = false,
     this.tintColor,
     this.backgroundColor,
+    this.glassBackgroundColor,
     this.effect = PlatformGlassEffect.automatic,
     super.key,
   });
@@ -1708,25 +1738,23 @@ class PlatformLiquidGlassCard extends StatelessWidget {
     final borderColor = selected
         ? primary.withValues(alpha: light ? 0.46 : 0.58)
         : light
-            ? Color.alphaBlend(
-                primary.withValues(alpha: 0.10),
-                Colors.black.withValues(alpha: 0.08),
-              )
-            : Colors.white.withValues(alpha: 0.20);
+        ? Color.alphaBlend(
+            primary.withValues(alpha: 0.10),
+            Colors.black.withValues(alpha: 0.08),
+          )
+        : Colors.white.withValues(alpha: 0.20);
 
-    final content = Padding(
-      padding: padding ?? EdgeInsets.zero,
-      child: child,
-    );
+    final content = Padding(padding: padding ?? EdgeInsets.zero, child: child);
     if (!usesAppleTranslucentSurface(context)) {
       return Container(
         margin: margin,
         decoration: BoxDecoration(
-          color: backgroundColor ??
+          color:
+              backgroundColor ??
               (selected
                   ? Theme.of(context).colorScheme.primaryContainer
                   : CupertinoColors.secondarySystemGroupedBackground
-                      .resolveFrom(context)),
+                        .resolveFrom(context)),
           borderRadius: borderRadius,
         ),
         clipBehavior: Clip.antiAlias,
@@ -1755,7 +1783,16 @@ class PlatformLiquidGlassCard extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [highlight, baseColor],
+                colors: [
+                  Color.alphaBlend(
+                    highlight,
+                    glassBackgroundColor ?? Colors.transparent,
+                  ),
+                  Color.alphaBlend(
+                    baseColor,
+                    glassBackgroundColor ?? Colors.transparent,
+                  ),
+                ],
               ),
               borderRadius: borderRadius,
               border: Border.all(color: borderColor, width: 0.8),
@@ -1805,7 +1842,8 @@ class PlatformAdaptiveSettingsList extends StatelessWidget {
     return ListView.builder(
       shrinkWrap: shrinkWrap,
       physics: physics,
-      padding: contentPadding ??
+      padding:
+          contentPadding ??
           const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       itemCount: sections.length,
       itemBuilder: (context, index) =>
@@ -1839,9 +1877,9 @@ class _PlatformAdaptiveSettingsSection extends StatelessWidget {
               padding: const EdgeInsetsDirectional.fromSTEB(12, 6, 12, 6),
               child: DefaultTextStyle.merge(
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.w600,
+                ),
                 child: settingsSection.title!,
               ),
             ),
@@ -1851,9 +1889,11 @@ class _PlatformAdaptiveSettingsSection extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                for (var index = 0;
-                    index < settingsSection.tiles.length;
-                    index++) ...[
+                for (
+                  var index = 0;
+                  index < settingsSection.tiles.length;
+                  index++
+                ) ...[
                   _PlatformAdaptiveSettingsTile(
                     tile: settingsSection.tiles[index],
                   ),
@@ -1861,8 +1901,10 @@ class _PlatformAdaptiveSettingsSection extends StatelessWidget {
                       !usesLiquidGlass(context))
                     Divider(
                       height: 1,
-                      indent: _settingsTileHasLeading(
-                              settingsSection.tiles[index + 1])
+                      indent:
+                          _settingsTileHasLeading(
+                            settingsSection.tiles[index + 1],
+                          )
                           ? 54
                           : 14,
                       endIndent: 12,
@@ -1929,11 +1971,7 @@ class _PlatformAdaptiveSettingsTile extends StatelessWidget {
               ),
             ),
           if (settingsTile.value != null) const SizedBox(width: 6),
-          Icon(
-            CupertinoIcons.chevron_forward,
-            size: 16,
-            color: secondaryColor,
-          ),
+          Icon(CupertinoIcons.chevron_forward, size: 16, color: secondaryColor),
         ],
       );
     } else if (settingsTile.value != null) {
@@ -1952,8 +1990,8 @@ class _PlatformAdaptiveSettingsTile extends StatelessWidget {
     if (enabled) {
       if (settingsTile.tileType == settings.SettingsTileType.switchTile &&
           settingsTile.onToggle != null) {
-        onTap =
-            () => settingsTile.onToggle!(!(settingsTile.initialValue ?? false));
+        onTap = () =>
+            settingsTile.onToggle!(!(settingsTile.initialValue ?? false));
       } else if (settingsTile.onPressed != null) {
         onTap = () => settingsTile.onPressed!(context);
       }
@@ -2096,7 +2134,9 @@ class PlatformLiquidGlassAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!usesAppleTranslucentSurface(context)) {
-      return ClipOval(child: SizedBox.square(dimension: size, child: child));
+      return ClipOval(
+        child: SizedBox.square(dimension: size, child: child),
+      );
     }
     final light = Theme.of(context).brightness == Brightness.light;
     return Container(
@@ -2391,8 +2431,10 @@ class PlatformListTile extends StatelessWidget {
       onTap: enabled && onTap != null ? () => onTap!() : null,
     );
     if (iconColor != null) {
-      tile =
-          IconTheme.merge(data: IconThemeData(color: iconColor), child: tile);
+      tile = IconTheme.merge(
+        data: IconThemeData(color: iconColor),
+        child: tile,
+      );
     }
     if (enabled && onLongPress != null) {
       tile = GestureDetector(onLongPress: onLongPress, child: tile);
@@ -2547,193 +2589,209 @@ class PlatformSegmentedControl extends StatelessWidget {
     // neutral system palette; only the other styles use those overrides.
     final cupertinoLabelStyle = classicCupertino
         ? CupertinoTheme.of(context).textTheme.textStyle.copyWith(
-              fontSize: 13,
-              color: CupertinoColors.label.resolveFrom(context),
-            )
+            fontSize: 13,
+            color: CupertinoColors.label.resolveFrom(context),
+          )
         : null;
     final colors = Theme.of(context).colorScheme;
     final effectiveTextColor =
         cupertinoLabelStyle?.color ?? textColor ?? colors.onSurfaceVariant;
-    final effectiveSelectedTextColor = cupertinoLabelStyle?.color ??
+    final effectiveSelectedTextColor =
+        cupertinoLabelStyle?.color ??
         selectedTextColor ??
         (color == null ? colors.onSurface : _contrastColor(context, color!));
     // UiKitView cannot size itself in an unbounded Row or horizontal scroller.
     // Measure labels only in that case; a bounded parent owns the control width.
-    return LayoutBuilder(builder: (context, constraints) {
-      // In horizontal scrollers, separate the native-looking visual control
-      // from tap handling so dragging scrolls the category bar.
-      final scrollableCupertino = classicCupertino &&
-          !constraints.hasBoundedWidth &&
-          Scrollable.maybeOf(context, axis: Axis.horizontal) != null;
-      var width = constraints.maxWidth;
-      if (!constraints.hasBoundedWidth) {
-        var labelWidth = 0.0;
-        for (final label in labels) {
-          final painter = TextPainter(
-            text: TextSpan(
-              text: label,
-              style: (cupertinoLabelStyle ?? DefaultTextStyle.of(context).style)
-                  .copyWith(
-                fontWeight: FontWeight.w600,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // In horizontal scrollers, separate the native-looking visual control
+        // from tap handling so dragging scrolls the category bar.
+        final scrollableCupertino =
+            classicCupertino &&
+            !constraints.hasBoundedWidth &&
+            Scrollable.maybeOf(context, axis: Axis.horizontal) != null;
+        var width = constraints.maxWidth;
+        if (!constraints.hasBoundedWidth) {
+          var labelWidth = 0.0;
+          for (final label in labels) {
+            final painter = TextPainter(
+              text: TextSpan(
+                text: label,
+                style:
+                    (cupertinoLabelStyle ?? DefaultTextStyle.of(context).style)
+                        .copyWith(fontWeight: FontWeight.w600),
+              ),
+              textDirection: Directionality.of(context),
+              textScaler: MediaQuery.textScalerOf(context),
+            )..layout();
+            labelWidth = math.max(labelWidth, painter.width);
+            painter.dispose();
+          }
+          final segmentPadding = scrollableCupertino ? 42 : 40;
+          width = math.max(
+            constraints.minWidth,
+            (labelWidth + segmentPadding) * labels.length + 8,
+          );
+        }
+        final Widget control;
+        if (usesLiquidGlass(context)) {
+          control = liquid.AdaptiveSegmentedControl(
+            // The native implementation doesn't update labels on an existing view.
+            key: ValueKey(labels.join('\u0000')),
+            labels: labels,
+            selectedIndex: effectiveIndex,
+            onValueChanged: (index) {
+              if (index >= 0 && index < labels.length) onValueChanged(index);
+            },
+            color: color,
+            textColor: effectiveTextColor,
+            selectedTextColor: effectiveSelectedTextColor,
+            height: 44,
+          );
+        } else if (isMaterial(context)) {
+          control = SegmentedButton<int>(
+            segments: [
+              for (var index = 0; index < labels.length; index++)
+                ButtonSegment(value: index, label: Text(labels[index])),
+            ],
+            selected: {effectiveIndex},
+            showSelectedIcon: false,
+            style: ButtonStyle(
+              backgroundColor: WidgetStateProperty.resolveWith(
+                (states) =>
+                    states.contains(WidgetState.selected) ? color : null,
+              ),
+              foregroundColor: WidgetStateProperty.resolveWith(
+                (states) => states.contains(WidgetState.selected)
+                    ? effectiveSelectedTextColor
+                    : effectiveTextColor,
+              ),
+              minimumSize: const WidgetStatePropertyAll(Size(44, 44)),
+            ),
+            onSelectionChanged: (values) => onValueChanged(values.single),
+          );
+        } else if (labels.length == 1) {
+          // CupertinoSlidingSegmentedControl requires at least two children.
+          control = Semantics(
+            selected: true,
+            child: CupertinoButton(
+              onPressed: () => onValueChanged(0),
+              child: Text(
+                labels.single,
+                style:
+                    cupertinoLabelStyle ?? TextStyle(color: effectiveTextColor),
               ),
             ),
-            textDirection: Directionality.of(context),
-            textScaler: MediaQuery.textScalerOf(context),
-          )..layout();
-          labelWidth = math.max(labelWidth, painter.width);
-          painter.dispose();
-        }
-        final segmentPadding = scrollableCupertino ? 42 : 40;
-        width = math.max(constraints.minWidth,
-            (labelWidth + segmentPadding) * labels.length + 8);
-      }
-      final Widget control;
-      if (usesLiquidGlass(context)) {
-        control = liquid.AdaptiveSegmentedControl(
-          // The native implementation doesn't update labels on an existing view.
-          key: ValueKey(labels.join('\u0000')),
-          labels: labels,
-          selectedIndex: effectiveIndex,
-          onValueChanged: (index) {
-            if (index >= 0 && index < labels.length) onValueChanged(index);
-          },
-          color: color,
-          textColor: effectiveTextColor,
-          selectedTextColor: effectiveSelectedTextColor,
-          height: 44,
-        );
-      } else if (isMaterial(context)) {
-        control = SegmentedButton<int>(
-          segments: [
+          );
+        } else {
+          final children = {
             for (var index = 0; index < labels.length; index++)
-              ButtonSegment(value: index, label: Text(labels[index])),
-          ],
-          selected: {effectiveIndex},
-          showSelectedIcon: false,
-          style: ButtonStyle(
-            backgroundColor: WidgetStateProperty.resolveWith((states) =>
-                states.contains(WidgetState.selected) ? color : null),
-            foregroundColor: WidgetStateProperty.resolveWith((states) =>
-                states.contains(WidgetState.selected)
-                    ? effectiveSelectedTextColor
-                    : effectiveTextColor),
-            minimumSize: const WidgetStatePropertyAll(Size(44, 44)),
-          ),
-          onSelectionChanged: (values) => onValueChanged(values.single),
-        );
-      } else if (labels.length == 1) {
-        // CupertinoSlidingSegmentedControl requires at least two children.
-        control = Semantics(
-          selected: true,
-          child: CupertinoButton(
-            onPressed: () => onValueChanged(0),
-            child: Text(labels.single,
-                style: cupertinoLabelStyle ??
-                    TextStyle(color: effectiveTextColor)),
-          ),
-        );
-      } else {
-        final children = {
-          for (var index = 0; index < labels.length; index++)
-            index: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              child: Text(
-                labels[index],
-                style: (cupertinoLabelStyle ?? const TextStyle()).copyWith(
-                  color: index == effectiveIndex
-                      ? effectiveSelectedTextColor
-                      : effectiveTextColor,
-                  fontWeight: index == effectiveIndex
-                      ? FontWeight.w600
-                      : classicCupertino
-                          ? FontWeight.w400
-                          : FontWeight.w500,
+              index: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 8,
+                ),
+                child: Text(
+                  labels[index],
+                  style: (cupertinoLabelStyle ?? const TextStyle()).copyWith(
+                    color: index == effectiveIndex
+                        ? effectiveSelectedTextColor
+                        : effectiveTextColor,
+                    fontWeight: index == effectiveIndex
+                        ? FontWeight.w600
+                        : classicCupertino
+                        ? FontWeight.w400
+                        : FontWeight.w500,
+                  ),
                 ),
               ),
-            ),
-        };
-        void onChanged(int? value) {
-          if (value != null) onValueChanged(value);
-        }
+          };
+          void onChanged(int? value) {
+            if (value != null) onValueChanged(value);
+          }
 
-        if (scrollableCupertino) {
-          // Let the parent scroller own horizontal drags while Cupertino paints
-          // and animates the system track and thumb. The overlay owns labels,
-          // taps and accessibility, so there is only one interactive layer.
-          final labelPainter = TextPainter(
-            text: TextSpan(text: 'Mg', style: cupertinoLabelStyle),
-            textDirection: Directionality.of(context),
-            textScaler: MediaQuery.textScalerOf(context),
-          )..layout();
-          final segmentHeight = labelPainter.height + 16;
-          labelPainter.dispose();
-          control = Stack(
-            // The hit region can be taller than the visual system track.
-            // Center both layers so their labels and thumb share the same axis.
-            alignment: Alignment.center,
-            children: [
-              ExcludeSemantics(
-                child: IgnorePointer(
-                  child: SizedBox(
-                    width: width,
-                    child: CupertinoSlidingSegmentedControl<int>(
-                      groupValue: effectiveIndex,
-                      onValueChanged: onChanged,
-                      children: {
-                        for (var index = 0; index < labels.length; index++)
-                          index: SizedBox(height: segmentHeight),
-                      },
+          if (scrollableCupertino) {
+            // Let the parent scroller own horizontal drags while Cupertino paints
+            // and animates the system track and thumb. The overlay owns labels,
+            // taps and accessibility, so there is only one interactive layer.
+            final labelPainter = TextPainter(
+              text: TextSpan(text: 'Mg', style: cupertinoLabelStyle),
+              textDirection: Directionality.of(context),
+              textScaler: MediaQuery.textScalerOf(context),
+            )..layout();
+            final segmentHeight = labelPainter.height + 16;
+            labelPainter.dispose();
+            control = Stack(
+              // The hit region can be taller than the visual system track.
+              // Center both layers so their labels and thumb share the same axis.
+              alignment: Alignment.center,
+              children: [
+                ExcludeSemantics(
+                  child: IgnorePointer(
+                    child: SizedBox(
+                      width: width,
+                      child: CupertinoSlidingSegmentedControl<int>(
+                        groupValue: effectiveIndex,
+                        onValueChanged: onChanged,
+                        children: {
+                          for (var index = 0; index < labels.length; index++)
+                            index: SizedBox(height: segmentHeight),
+                        },
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Positioned.fill(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
-                  child: Row(
-                    children: [
-                      for (var index = 0; index < labels.length; index++)
-                        Expanded(
-                          child: Semantics(
-                            button: true,
-                            selected: index == effectiveIndex,
-                            child: GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTap: () => onValueChanged(index),
-                              child: Center(child: children[index]),
+                Positioned.fill(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 3,
+                      vertical: 2,
+                    ),
+                    child: Row(
+                      children: [
+                        for (var index = 0; index < labels.length; index++)
+                          Expanded(
+                            child: Semantics(
+                              button: true,
+                              selected: index == effectiveIndex,
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () => onValueChanged(index),
+                                child: Center(child: children[index]),
+                              ),
                             ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          );
-        } else if (classicCupertino) {
-          control = CupertinoSlidingSegmentedControl<int>(
-            groupValue: effectiveIndex,
-            // Keep Flutter's dynamic system thumb and track colors.
-            onValueChanged: onChanged,
-            children: children,
-          );
-        } else {
-          control = CupertinoSlidingSegmentedControl<int>(
-            groupValue: effectiveIndex,
-            thumbColor: color ?? CupertinoColors.systemGrey5,
-            onValueChanged: onChanged,
-            children: children,
-          );
+              ],
+            );
+          } else if (classicCupertino) {
+            control = CupertinoSlidingSegmentedControl<int>(
+              groupValue: effectiveIndex,
+              // Keep Flutter's dynamic system thumb and track colors.
+              onValueChanged: onChanged,
+              children: children,
+            );
+          } else {
+            control = CupertinoSlidingSegmentedControl<int>(
+              groupValue: effectiveIndex,
+              thumbColor: color ?? CupertinoColors.systemGrey5,
+              onValueChanged: onChanged,
+              children: children,
+            );
+          }
         }
-      }
-      return SizedBox(
-        width: width,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 44),
-          child: control,
-        ),
-      );
-    });
+        return SizedBox(
+          width: width,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 44),
+            child: control,
+          ),
+        );
+      },
+    );
   }
 
   Color _contrastColor(BuildContext context, Color background) {
@@ -2804,10 +2862,13 @@ class _PlatformTabScaffoldState extends State<PlatformTabScaffold> {
           items: [
             for (final destination in widget.tabDestinations)
               liquid.AdaptiveNavigationDestination(
-                icon: _liquidGlassSymbolForWidget(destination.inactiveIcon) ??
+                icon:
+                    _liquidGlassSymbolForWidget(destination.inactiveIcon) ??
                     destination.inactiveIcon,
-                selectedIcon: _liquidGlassSymbolForWidget(
-                        destination.activeIcon ?? destination.inactiveIcon) ??
+                selectedIcon:
+                    _liquidGlassSymbolForWidget(
+                      destination.activeIcon ?? destination.inactiveIcon,
+                    ) ??
                     destination.activeIcon ??
                     destination.inactiveIcon,
                 label: destination.label,
@@ -2865,9 +2926,15 @@ class PlatformAlertDialog extends StatelessWidget {
   final Widget? title;
   final Widget? content;
   final List<Widget>? actions;
+  final Color? glassBackgroundColor;
 
-  const PlatformAlertDialog(
-      {this.title, this.content, this.actions, super.key});
+  const PlatformAlertDialog({
+    this.title,
+    this.content,
+    this.actions,
+    this.glassBackgroundColor,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -2896,6 +2963,7 @@ class PlatformAlertDialog extends StatelessWidget {
               maxHeight: MediaQuery.sizeOf(context).height * 0.82,
             ),
             child: PlatformLiquidGlassCard(
+              glassBackgroundColor: glassBackgroundColor,
               borderRadius: BorderRadius.circular(30),
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
               child: SingleChildScrollView(
@@ -2906,10 +2974,8 @@ class PlatformAlertDialog extends StatelessWidget {
                     if (title != null)
                       DefaultTextStyle.merge(
                         textAlign: TextAlign.center,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w600),
                         child: title!,
                       ),
                     if (title != null && content != null)
@@ -3028,10 +3094,10 @@ Future<void> showPlatformAlert({
             style: action.isDestructiveAction
                 ? liquid.AlertActionStyle.destructive
                 : action.isCancelAction
-                    ? liquid.AlertActionStyle.cancel
-                    : action.isDefaultAction
-                        ? liquid.AlertActionStyle.primary
-                        : liquid.AlertActionStyle.defaultAction,
+                ? liquid.AlertActionStyle.cancel
+                : action.isDefaultAction
+                ? liquid.AlertActionStyle.primary
+                : liquid.AlertActionStyle.defaultAction,
             onPressed: () {
               if (action.onPressed != null) {
                 unawaited(Future.sync(action.onPressed!));
@@ -3075,18 +3141,17 @@ Future<T?> showPlatformDialog<T>({
   required BuildContext context,
   required WidgetBuilder builder,
   bool barrierDismissible = true,
-}) =>
-    isCupertino(context)
-        ? showCupertinoDialog<T>(
-            context: context,
-            builder: builder,
-            barrierDismissible: barrierDismissible,
-          )
-        : showDialog<T>(
-            context: context,
-            builder: builder,
-            barrierDismissible: barrierDismissible,
-          );
+}) => isCupertino(context)
+    ? showCupertinoDialog<T>(
+        context: context,
+        builder: builder,
+        barrierDismissible: barrierDismissible,
+      )
+    : showDialog<T>(
+        context: context,
+        builder: builder,
+        barrierDismissible: barrierDismissible,
+      );
 
 class MaterialModalSheetData {
   final bool isScrollControlled;
@@ -3098,48 +3163,28 @@ Future<T?> showPlatformModalSheet<T>({
   required BuildContext context,
   required WidgetBuilder builder,
   MaterialModalSheetData? material,
-}) =>
-    isCupertino(context)
-        ? showCupertinoModalPopup<T>(
-            context: context,
-            builder: (sheetContext) {
-              final colors = Theme.of(sheetContext).colorScheme;
-              final sheetContent = CupertinoUserInterfaceLevel(
-                data: CupertinoUserInterfaceLevelData.elevated,
-                child: DefaultTextStyle.merge(
-                  style: TextStyle(color: colors.onSurface),
-                  child: IconTheme.merge(
-                    data: IconThemeData(color: colors.onSurfaceVariant),
-                    child: builder(sheetContext),
-                  ),
-                ),
-              );
-              if (!usesLiquidGlass(sheetContext)) {
-                return Align(
-                  alignment: Alignment.bottomCenter,
-                  child: CupertinoPopupSurface(
-                    isSurfacePainted: true,
-                    child: SafeArea(
-                      top: false,
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxHeight:
-                                MediaQuery.sizeOf(sheetContext).height * 0.90,
-                          ),
-                          child: PlatformGlassScope(child: sheetContent),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }
-              return SafeArea(
-                top: false,
-                minimum: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                child: Align(
-                  alignment: Alignment.bottomCenter,
+}) => isCupertino(context)
+    ? showCupertinoModalPopup<T>(
+        context: context,
+        builder: (sheetContext) {
+          final colors = Theme.of(sheetContext).colorScheme;
+          final sheetContent = CupertinoUserInterfaceLevel(
+            data: CupertinoUserInterfaceLevelData.elevated,
+            child: DefaultTextStyle.merge(
+              style: TextStyle(color: colors.onSurface),
+              child: IconTheme.merge(
+                data: IconThemeData(color: colors.onSurfaceVariant),
+                child: builder(sheetContext),
+              ),
+            ),
+          );
+          if (!usesLiquidGlass(sheetContext)) {
+            return Align(
+              alignment: Alignment.bottomCenter,
+              child: CupertinoPopupSurface(
+                isSurfacePainted: true,
+                child: SafeArea(
+                  top: false,
                   child: SizedBox(
                     width: double.infinity,
                     child: ConstrainedBox(
@@ -3147,36 +3192,54 @@ Future<T?> showPlatformModalSheet<T>({
                         maxHeight:
                             MediaQuery.sizeOf(sheetContext).height * 0.90,
                       ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(28),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.18),
-                              blurRadius: 24,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
+                      child: PlatformGlassScope(child: sheetContent),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }
+          return SafeArea(
+            top: false,
+            minimum: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: SizedBox(
+                width: double.infinity,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.90,
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.18),
+                          blurRadius: 24,
+                          offset: const Offset(0, 10),
                         ),
-                        child: Material(
-                          type: MaterialType.transparency,
-                          child: PlatformLiquidGlassSurface(
-                            borderRadius: BorderRadius.circular(28),
-                            child: sheetContent,
-                          ),
-                        ),
+                      ],
+                    ),
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: PlatformLiquidGlassSurface(
+                        borderRadius: BorderRadius.circular(28),
+                        child: sheetContent,
                       ),
                     ),
                   ),
                 ),
-              );
-            },
-          )
-        : showModalBottomSheet<T>(
-            context: context,
-            builder: builder,
-            isScrollControlled: material?.isScrollControlled ?? false,
+              ),
+            ),
           );
+        },
+      )
+    : showModalBottomSheet<T>(
+        context: context,
+        builder: builder,
+        isScrollControlled: material?.isScrollControlled ?? false,
+      );
 
 PageRoute<T> platformPageRoute<T>({
   required BuildContext context,
@@ -3185,23 +3248,22 @@ PageRoute<T> platformPageRoute<T>({
   RouteSettings? settings,
   bool maintainState = true,
   bool fullscreenDialog = false,
-}) =>
-    isCupertino(context)
-        ? AppCupertinoPageRoute<T>(
-            reduceMotion: MediaQuery.disableAnimationsOf(context),
-            builder: builder,
-            title: iosTitle,
-            settings: settings,
-            maintainState: maintainState,
-            fullscreenDialog: fullscreenDialog,
-          )
-        : AppMaterialPageRoute<T>(
-            reduceMotion: MediaQuery.disableAnimationsOf(context),
-            builder: builder,
-            settings: settings,
-            maintainState: maintainState,
-            fullscreenDialog: fullscreenDialog,
-          );
+}) => isCupertino(context)
+    ? AppCupertinoPageRoute<T>(
+        reduceMotion: MediaQuery.disableAnimationsOf(context),
+        builder: builder,
+        title: iosTitle,
+        settings: settings,
+        maintainState: maintainState,
+        fullscreenDialog: fullscreenDialog,
+      )
+    : AppMaterialPageRoute<T>(
+        reduceMotion: MediaQuery.disableAnimationsOf(context),
+        builder: builder,
+        settings: settings,
+        maintainState: maintainState,
+        fullscreenDialog: fullscreenDialog,
+      );
 
 class MaterialPopupMenuOptionData {
   final TextStyle? textStyle;
@@ -3265,7 +3327,8 @@ class PlatformPopupMenu extends StatelessWidget {
                         PlatformListTile(
                           title: Text(
                             option.label,
-                            style: option.cupertino
+                            style:
+                                option.cupertino
                                         ?.call(context, platform(context))
                                         .isDestructiveAction ??
                                     false
@@ -3305,7 +3368,8 @@ class PlatformPopupMenu extends StatelessWidget {
           liquid.AdaptivePopupMenuItem<PopupMenuOption>(
             label: option.label,
             value: option,
-            isDestructive: option.cupertino
+            isDestructive:
+                option.cupertino
                     ?.call(context, platform(context))
                     .isDestructiveAction ??
                 false,
@@ -3315,7 +3379,8 @@ class PlatformPopupMenu extends StatelessWidget {
         icon: liquidGlassSymbol,
         items: items,
         size: liquidGlassButtonSize,
-        tint: _iconForWidget(icon)?.color ??
+        tint:
+            _iconForWidget(icon)?.color ??
             CupertinoColors.label.resolveFrom(context),
         buttonStyle: grouped
             ? liquid.PopupButtonStyle.plain
@@ -3337,8 +3402,9 @@ class PlatformPopupMenu extends StatelessWidget {
         for (final option in options)
           PopupMenuItem(
             value: option,
-            textStyle:
-                option.material?.call(context, platform(context)).textStyle,
+            textStyle: option.material
+                ?.call(context, platform(context))
+                .textStyle,
             child: Text(option.label),
           ),
       ],
@@ -3403,7 +3469,9 @@ class PlatformIcons {
   IconData get failedMessage =>
       pick(Icons.sms_failed_outlined, CupertinoIcons.exclamationmark_bubble);
   IconData get failedSync => pick(
-      Icons.sync_problem_outlined, CupertinoIcons.arrow_2_circlepath_circle);
+    Icons.sync_problem_outlined,
+    CupertinoIcons.arrow_2_circlepath_circle,
+  );
   IconData get flame => pick(Icons.whatshot_rounded, CupertinoIcons.flame_fill);
   IconData get flag => pick(Icons.flag, CupertinoIcons.flag);
   IconData get favoriteOutline =>
@@ -3474,7 +3542,9 @@ class PlatformIcons {
   IconData get verifiedUser =>
       pick(Icons.verified_user_rounded, CupertinoIcons.checkmark_shield_fill);
   IconData get warning => pick(
-      Icons.warning_amber_outlined, CupertinoIcons.exclamationmark_triangle);
+    Icons.warning_amber_outlined,
+    CupertinoIcons.exclamationmark_triangle,
+  );
   IconData get wifiWarning =>
       pick(Icons.explore_off_outlined, CupertinoIcons.wifi_exclamationmark);
   IconData get work => pick(Icons.work_outline, CupertinoIcons.briefcase);
@@ -3495,6 +3565,5 @@ extension PlatformIconsExt on BuildContext {
   IconData platformIcon({
     required IconData material,
     required IconData cupertino,
-  }) =>
-      isMaterial(this) ? material : cupertino;
+  }) => isMaterial(this) ? material : cupertino;
 }

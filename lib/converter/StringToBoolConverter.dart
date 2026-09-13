@@ -1,30 +1,17 @@
-
 import 'package:json_annotation/json_annotation.dart';
 
-class StringToBoolConverter implements JsonConverter<bool, String?> {
+class StringToBoolConverter implements JsonConverter<bool, Object?> {
   const StringToBoolConverter();
-
   @override
-  bool fromJson(String? json) {
-    if(json == null || json.isEmpty || json == "0"){
-      return false;
+  bool fromJson(Object? json) {
+    if (json is bool) return json;
+    if (json is num) return json != 0;
+    if (json is String) {
+      return json.isNotEmpty && json != '0' && json.toLowerCase() != 'false';
     }
-    else{
-      return true;
-    }
-
+    return false;
   }
 
   @override
-  String toJson(bool object) {
-    if(object){
-      return "1";
-    }
-    else{
-      return "0";
-    }
-    //return json.encode(object);
-
-  }
-  
+  String toJson(bool object) => object ? '1' : '0';
 }

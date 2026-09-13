@@ -7,19 +7,20 @@ part of 'ApiResult.dart';
 // **************************************************************************
 
 ApiResult _$ApiResultFromJson(Map<String, dynamic> json) => ApiResult()
-  ..version = json['Version'] as String
-  ..charset = json['Charset'] as String
+  ..version = json['Version'] as String? ?? ''
+  ..charset = json['Charset'] as String? ?? ''
   ..errorResult = json['Message'] == null
       ? null
       : ErrorResult.fromJson(json['Message'] as Map<String, dynamic>)
   ..error = json['error'] as String?
-  ..variables =
-      BaseVariableResult.fromJson(json['Variables'] as Map<String, dynamic>);
+  ..variables = BaseVariableResult.fromJson(
+    json['Variables'] as Map<String, dynamic>,
+  );
 
 Map<String, dynamic> _$ApiResultToJson(ApiResult instance) => <String, dynamic>{
-      'Version': instance.version,
-      'Charset': instance.charset,
-      'Message': instance.errorResult,
-      'error': instance.error,
-      'Variables': instance.variables,
-    };
+  'Version': instance.version,
+  'Charset': instance.charset,
+  'Message': instance.errorResult,
+  'error': instance.error,
+  'Variables': instance.variables,
+};

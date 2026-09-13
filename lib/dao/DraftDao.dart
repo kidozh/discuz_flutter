@@ -16,7 +16,7 @@ class DraftDao{
   Future<Draft?> insertDraftAndReturnInsertObj(Draft draft) async{
     if(draft.key == null){
       int index = await draftBox.add(draft);
-      Draft? savedDraft = await draftBox.getAt(index);
+      Draft? savedDraft = await draftBox.get(index);
       return savedDraft;
     }
     else{

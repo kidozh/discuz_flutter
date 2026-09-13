@@ -1,62 +1,45 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
-import '../utility/PlatformAdaptiveWidgets.dart';
-import '../utility/PlatformGlass.dart';
+BoxDecoration _postDecoration(BuildContext context) => BoxDecoration(
+      color: CupertinoColors.secondarySystemGroupedBackground.resolveFrom(context),
+      borderRadius: const BorderRadius.all(Radius.circular(18)),
+    );
 
-/// Sliver equivalent of the default, unselected scrolling glass card. Keeping
-/// the decoration on a sliver lets the HTML body share the outer viewport.
-/// Like automatic glass cards in lists, it has tint/highlight but no backdrop.
+/// Opaque post background. Embedded controls retain their own glass styling.
+class ReadingPostCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+
+  const ReadingPostCard({
+    required this.child,
+    this.padding = const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) => Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        padding: padding,
+        decoration: _postDecoration(context),
+        child: child,
+      );
+}
+
+/// Keeps the HTML body in the outer viewport, with an opaque post background.
+/// No glass scope: embedded cards and folding controls manage their own effects.
 class ReadingGlassSliverCard extends StatelessWidget {
   final Widget sliver;
   const ReadingGlassSliverCard({required this.sliver, super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final light = Theme.of(context).brightness == Brightness.light;
-    final primary = Theme.of(context).colorScheme.primary;
-    final translucent = usesAppleTranslucentSurface(context);
-    final border = light
-        ? Color.alphaBlend(
-            primary.withValues(alpha: .10), Colors.black.withValues(alpha: .08))
-        : Colors.white.withValues(alpha: .20);
-    final decoration = BoxDecoration(
-      color: translucent
-          ? null
-          : CupertinoColors.secondarySystemGroupedBackground
-              .resolveFrom(context),
-      borderRadius: const BorderRadius.all(Radius.circular(18)),
-      gradient: translucent
-          ? LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withValues(alpha: light ? .70 : .18),
-                Colors.white.withValues(alpha: light ? .44 : .10)
-              ],
-            )
-          : null,
-      border: translucent ? Border.all(color: border, width: .8) : null,
-      boxShadow: translucent
-          ? [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: light ? .13 : .28),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              )
-            ]
-          : null,
-    );
-    return PlatformGlassScope(
-        child: SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      sliver: DecoratedSliver(
-        decoration: decoration,
-        sliver: SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-          sliver: sliver,
+  Widget build(BuildContext context) => SliverPadding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        sliver: DecoratedSliver(
+          decoration: _postDecoration(context),
+          sliver: SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+            sliver: sliver,
+          ),
         ),
-      ),
-    ));
-  }
+      );
 }

@@ -1,73 +1,98 @@
-import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
-import 'package:discuz_flutter/converter/StringToBoolConverter.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:discuz_flutter/converter/StringToIntConverter.dart';
-
 import 'BaseResult.dart';
 import 'ErrorResult.dart';
-
+import '../converter/StringToIntConverter.dart';
+import 'BaseVariableResult.dart';
+import '../utility/discuz_json.dart';
 
 part 'CheckPostResult.g.dart';
 
-@JsonSerializable(disallowUnrecognizedKeys: false, ignoreUnannotated:true)
-class CheckPostResult extends BaseResult{
-
-  @JsonKey(name: "Variables")
+@JsonSerializable(explicitToJson: true)
+class CheckPostResult extends BaseResult {
+  @JsonKey(name: 'Variables', fromJson: _variablesFromJson)
   CheckPostVariables variables = CheckPostVariables();
-
-  CheckPostResult(){}
-
-  factory CheckPostResult.fromJson(Map<String, dynamic> json) => _$CheckPostResultFromJson(json);
+  CheckPostResult();
+  factory CheckPostResult.fromJson(Map<String, dynamic> json) =>
+      _$CheckPostResultFromJson(json);
 }
 
-@JsonSerializable(ignoreUnannotated: true)
-class CheckPostVariables extends BaseVariableResult{
-  @JsonKey(name: "allowperm")
+CheckPostVariables _variablesFromJson(Object? json) =>
+    CheckPostVariables.fromJson(discuzMap(json));
+
+@JsonSerializable(explicitToJson: true)
+class CheckPostVariables extends BaseVariableResult {
+  @JsonKey(name: 'allowperm', fromJson: AllowPerm.fromJson)
   AllowPerm allowPerm = AllowPerm();
-
-  CheckPostVariables(){}
-  factory CheckPostVariables.fromJson(Map<String, dynamic> json) => _$CheckPostVariablesFromJson(json);
-
+  CheckPostVariables();
+  @override
+  Map<String, dynamic> toJson() => _$CheckPostVariablesToJson(this);
+  factory CheckPostVariables.fromJson(Map<String, dynamic> json) =>
+      _$CheckPostVariablesFromJson(json);
 }
 
-@JsonSerializable(ignoreUnannotated: true)
-class AllowPerm{
-  @JsonKey(name: "allowpost")
-  @StringToBoolConverter()
-  bool allowPost = true;
-  @JsonKey(name: "allowreply")
-  @StringToBoolConverter()
-  bool allowReply = true;
-  @JsonKey(name: "uploadhash")
-  String uploadHash = "";
-  @JsonKey(name: "allowupload")
+class AllowPerm {
+  // Missing permission is unknown, never an affirmative grant.
+  bool? allowPost;
+  bool? allowReply;
+  String uploadHash = '';
   AllowUpload allowUpload = AllowUpload();
-  @JsonKey(name: "attachremain")
   AttachRemain attachRemain = AttachRemain();
-
   AllowPerm();
+  factory AllowPerm.fromJson(Object? value) {
+    final json = discuzMap(value);
+    return AllowPerm()
+      ..allowPost = discuzPermission(json['allowpost'])
+      ..allowReply = discuzPermission(json['allowreply'])
+      ..uploadHash = discuzString(json['uploadhash'])
+      ..allowUpload = AllowUpload.fromJson(json['allowupload'])
+      ..attachRemain = AttachRemain.fromJson(json['attachremain']);
+  }
+  Map<String, dynamic> toJson() => {
+    'allowpost': allowPost,
+    'allowreply': allowReply,
+    'uploadhash': uploadHash,
+    'allowupload': allowUpload.toJson(),
+    'attachremain': attachRemain.toJson(),
+  };
 
-  factory AllowPerm.fromJson(Map<String, dynamic> json) => _$AllowPermFromJson(json);
-
+  UploadRestriction? validateUpload(String filename, int bytes) {
+    final extension = filename.split('.').last.toLowerCase();
+    final limit = allowUpload.limits[extension];
+    if (uploadHash.isEmpty || limit == null || limit == 0 || limit < -1)
+      return UploadRestriction.type;
+    if (attachRemain.count == 0) return UploadRestriction.count;
+    if (attachRemain.size != null &&
+        attachRemain.size! >= 0 &&
+        bytes > attachRemain.size!)
+      return UploadRestriction.dailySize;
+    if (limit > 0 && bytes > limit) return UploadRestriction.fileSize;
+    return null;
+  }
 }
 
-@JsonSerializable(ignoreUnannotated: true)
-class AllowUpload{
-  @StringToIntConverter()
-  int jpg = 0, jpeg = 0, gif = 0, png = 0, mp3 = 0, txt = 0, zip = -1, rar = -1, pdf = -1;
+enum UploadRestriction { type, count, dailySize, fileSize }
 
-  AllowUpload();
-
-  factory AllowUpload.fromJson(Map<String, dynamic> json) => _$AllowUploadFromJson(json);
+/// Official sub_checkpost: 0 denied, -1 no per-type limit supplied, positive bytes.
+class AllowUpload {
+  final Map<String, int> limits;
+  AllowUpload([this.limits = const {}]);
+  factory AllowUpload.fromJson(Object? json) => AllowUpload({
+    for (final entry in discuzMap(json).entries)
+      entry.key.toLowerCase(): discuzInt(entry.value),
+  });
+  Map<String, int> toJson() => limits;
 }
 
-@JsonSerializable()
-class AttachRemain{
-  @StringToIntConverter()
-  int size = 0, count = 0;
-
+/// -1 is unlimited; omitted is unknown; zero is exhausted.
+class AttachRemain {
+  int? size;
+  int? count;
   AttachRemain();
-
-  factory AttachRemain.fromJson(Map<String, dynamic> json) => _$AttachRemainFromJson(json);
+  factory AttachRemain.fromJson(Object? value) {
+    final json = discuzMap(value);
+    return AttachRemain()
+      ..size = json['size'] == null ? null : discuzInt(json['size'])
+      ..count = json['count'] == null ? null : discuzInt(json['count']);
+  }
+  Map<String, dynamic> toJson() => {'size': size, 'count': count};
 }
-

@@ -1,31 +1,10 @@
 import 'package:json_annotation/json_annotation.dart';
+import '../utility/discuz_json.dart';
 
-class StringToIntConverter implements JsonConverter<int, String?> {
+class StringToIntConverter implements JsonConverter<int, Object?> {
   const StringToIntConverter();
-
   @override
-  int fromJson(String? json) {
-    if(json == null){
-      return 0;
-    }
-    else{
-      int? value = int.tryParse(json);
-      if(value!= null){
-        return value;
-      }
-      else{
-        return 0;
-      }
-
-    }
-
-
-  }
-
+  int fromJson(Object? json) => discuzInt(json);
   @override
-  String toJson(int object) {
-    return object.toString();
-
-  }
-  
+  String toJson(int object) => object.toString();
 }

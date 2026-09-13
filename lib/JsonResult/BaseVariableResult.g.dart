@@ -8,22 +8,17 @@ part of 'BaseVariableResult.dart';
 
 BaseVariableResult _$BaseVariableResultFromJson(Map<String, dynamic> json) =>
     BaseVariableResult()
-      ..cookiepre = json['cookiepre'] as String
+      ..cookiepre = json['cookiepre'] as String? ?? ''
       ..auth = json['auth'] as String?
-      ..saltkey = json['saltkey'] as String
-      ..member_username = json['member_username'] as String
-      ..member_avatar = json['member_avatar'] as String
-      ..member_uid =
-          const StringToIntConverter().fromJson(json['member_uid'] as String?)
-      ..groupId =
-          const StringToIntConverter().fromJson(json['groupid'] as String?)
-      ..readAccess =
-          const StringToIntConverter().fromJson(json['readaccess'] as String?)
-      ..formHash = json['formhash'] as String
-      ..isModerator =
-          const StringToIntConverter().fromJson(json['ismoderator'] as String?)
-      ..noticeCount =
-          NoticeCount.fromJson(json['notice'] as Map<String, dynamic>);
+      ..saltkey = json['saltkey'] as String? ?? ''
+      ..member_username = json['member_username'] as String? ?? ''
+      ..member_avatar = json['member_avatar'] as String? ?? ''
+      ..member_uid = const StringToIntConverter().fromJson(json['member_uid'])
+      ..groupId = const StringToIntConverter().fromJson(json['groupid'])
+      ..readAccess = const StringToIntConverter().fromJson(json['readaccess'])
+      ..formHash = json['formhash'] as String? ?? ''
+      ..isModerator = const StringToIntConverter().fromJson(json['ismoderator'])
+      ..noticeCount = noticeFromJson(json['notice']);
 
 Map<String, dynamic> _$BaseVariableResultToJson(BaseVariableResult instance) =>
     <String, dynamic>{
@@ -41,12 +36,10 @@ Map<String, dynamic> _$BaseVariableResultToJson(BaseVariableResult instance) =>
     };
 
 NoticeCount _$NoticeCountFromJson(Map<String, dynamic> json) => NoticeCount()
-  ..newpush = const StringToIntConverter().fromJson(json['newpush'] as String?)
-  ..newpm = const StringToIntConverter().fromJson(json['newpm'] as String?)
-  ..newprompt =
-      const StringToIntConverter().fromJson(json['newprompt'] as String?)
-  ..newmypost =
-      const StringToIntConverter().fromJson(json['newmypost'] as String?);
+  ..newpush = const StringToIntConverter().fromJson(json['newpush'])
+  ..newpm = const StringToIntConverter().fromJson(json['newpm'])
+  ..newprompt = const StringToIntConverter().fromJson(json['newprompt'])
+  ..newmypost = const StringToIntConverter().fromJson(json['newmypost']);
 
 Map<String, dynamic> _$NoticeCountToJson(NoticeCount instance) =>
     <String, dynamic>{

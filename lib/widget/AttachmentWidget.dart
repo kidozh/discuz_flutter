@@ -1,3 +1,4 @@
+import 'ForumInteractionWidgets.dart';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -23,7 +24,8 @@ class AttachmentWidget extends StatelessWidget {
   Discuz _discuz;
   Attachment _attachment;
 
-  AttachmentWidget(this._discuz, this._attachment);
+  final VoidCallback? onContentChanged;
+  AttachmentWidget(this._discuz, this._attachment, {this.onContentChanged});
 
   double downloadPercent = 0.0;
 
@@ -43,50 +45,86 @@ class AttachmentWidget extends StatelessWidget {
     String appDocPath = appDocDir.path;
     String savePath = "${appDocPath}/${_attachment.filename}";
 
-    Discuz discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    Discuz discuz = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).discuz!;
+    User? user = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).user;
     Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-    String urlPath =
-        URLUtils.getAttachmentURLWithAidEncode(discuz, _attachment.aidEncode);
+    String urlPath = URLUtils.getAttachmentURLWithAidEncode(
+      discuz,
+      _attachment.aidEncode,
+    );
     EasyLoading.showInfo(S.of(context).downloadingFiles(_attachment.filename));
-    dio.download(urlPath, savePath, onReceiveProgress: (int loaded, int total) {
-      if (loaded >= total) {
-        showPlatformAlert(
-          context: context,
-          title: S.of(context).successfullyDownloadFiles(_attachment.filename),
-          message: S.of(context).openFileInExternalAppContent,
-          actions: [
-            PlatformAlertAction(
-              label: S.of(context).cancel,
-              isCancelAction: true,
-              onPressed: VibrationUtils.vibrateWithClickIfPossible,
-            ),
-            PlatformAlertAction(
-              label: S.of(context).openFileInExternalAppActionText,
-              isDefaultAction: true,
-              onPressed: () async {
-                VibrationUtils.vibrateWithClickIfPossible();
-                final result = await OpenFilex.open(savePath);
-                if (result.type != ResultType.done) {
-                  EasyLoading.showError("${result.message}(${result.type})");
-                }
-              },
-            ),
-          ],
-        );
-      }
-    });
+    dio.download(
+      urlPath,
+      savePath,
+      onReceiveProgress: (int loaded, int total) {
+        if (loaded >= total) {
+          showPlatformAlert(
+            context: context,
+            title: S
+                .of(context)
+                .successfullyDownloadFiles(_attachment.filename),
+            message: S.of(context).openFileInExternalAppContent,
+            actions: [
+              PlatformAlertAction(
+                label: S.of(context).cancel,
+                isCancelAction: true,
+                onPressed: VibrationUtils.vibrateWithClickIfPossible,
+              ),
+              PlatformAlertAction(
+                label: S.of(context).openFileInExternalAppActionText,
+                isDefaultAction: true,
+                onPressed: () async {
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  final result = await OpenFilex.open(savePath);
+                  if (result.type != ResultType.done) {
+                    EasyLoading.showError("${result.message}(${result.type})");
+                  }
+                },
+              ),
+            ],
+          );
+        }
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    Discuz discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
+    if (_attachment.price > 0 && !_attachment.payed) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(_attachment.filename),
+          ForumActionButton(
+            discuz: _discuz,
+            tid: _attachment.tid,
+            aid: _attachment.aid,
+            purchase: true,
+            label: S.of(context).forumBuyAttachment,
+            onChanged: onContentChanged ?? () {},
+          ),
+        ],
+      );
+    }
+    Discuz discuz = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).discuz!;
 
-    if (["jpg", "png", "svg", "bmp", "gif", "jpeg"]
-        .contains(_attachment.ext.toLowerCase())) {
+    if ([
+      "jpg",
+      "png",
+      "svg",
+      "bmp",
+      "gif",
+      "jpeg",
+    ].contains(_attachment.ext.toLowerCase())) {
       return InkWell(
         child: PlatformCard(
           elevation: 8.0,
@@ -112,17 +150,24 @@ class AttachmentWidget extends StatelessWidget {
           VibrationUtils.vibrateWithClickIfPossible();
 
           Navigator.push(
-              context,
-              platformPageRoute(
-                  context: context,
-                  iosTitle: S.of(context).viewPicture,
-                  builder: (context) => FullImagePage(
-                          URLUtils.getAttachmentURLWithAidEncode(
-                              discuz, _attachment.aidEncode),
-                          [
-                            URLUtils.getAttachmentURLWithAidEncode(
-                                discuz, _attachment.aidEncode)
-                          ])));
+            context,
+            platformPageRoute(
+              context: context,
+              iosTitle: S.of(context).viewPicture,
+              builder: (context) => FullImagePage(
+                URLUtils.getAttachmentURLWithAidEncode(
+                  discuz,
+                  _attachment.aidEncode,
+                ),
+                [
+                  URLUtils.getAttachmentURLWithAidEncode(
+                    discuz,
+                    _attachment.aidEncode,
+                  ),
+                ],
+              ),
+            ),
+          );
         },
       );
     }
@@ -148,9 +193,9 @@ class AttachmentWidget extends StatelessWidget {
                 Icon(PlatformIcons(context).error),
             progressIndicatorBuilder: (context, url, progress) =>
                 PlatformCircularProgressIndicator(
-              material: (_, __) =>
-                  MaterialProgressIndicatorData(value: progress.progress),
-            ),
+                  material: (_, __) =>
+                      MaterialProgressIndicatorData(value: progress.progress),
+                ),
           ),
           Wrap(
             alignment: WrapAlignment.start,
@@ -158,45 +203,59 @@ class AttachmentWidget extends StatelessWidget {
             runSpacing: 8,
             children: [
               PlatformTextButton(
+                onPressed: () {
+                  _downloadFile(context);
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(PlatformIcons(context).download, size: 20),
+                    const SizedBox(width: 6),
+                    Text(S.of(context).downloadAttachment),
+                  ],
+                ),
+              ),
+              if ([
+                "jpg",
+                "png",
+                "svg",
+                "bmp",
+                "gif",
+              ].contains(_attachment.ext.toLowerCase()))
+                PlatformTextButton(
                   onPressed: () {
-                    _downloadFile(context);
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    Navigator.push(
+                      context,
+                      platformPageRoute(
+                        context: context,
+                        iosTitle: S.of(context).viewPicture,
+                        builder: (context) => FullImagePage(
+                          URLUtils.getAttachmentURLWithAidEncode(
+                            discuz,
+                            _attachment.aidEncode,
+                          ),
+                          [
+                            URLUtils.getAttachmentURLWithAidEncode(
+                              discuz,
+                              _attachment.aidEncode,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
                   },
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(PlatformIcons(context).download, size: 20),
+                      Icon(PlatformIcons(context).fullscreen, size: 20),
                       const SizedBox(width: 6),
-                      Text(S.of(context).downloadAttachment),
+                      Text(S.of(context).watchPictureInFullScreen),
                     ],
-                  )),
-              if (["jpg", "png", "svg", "bmp", "gif"]
-                  .contains(_attachment.ext.toLowerCase()))
-                PlatformTextButton(
-                    onPressed: () {
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      Navigator.push(
-                          context,
-                          platformPageRoute(
-                              context: context,
-                              iosTitle: S.of(context).viewPicture,
-                              builder: (context) => FullImagePage(
-                                      URLUtils.getAttachmentURLWithAidEncode(
-                                          discuz, _attachment.aidEncode),
-                                      [
-                                        URLUtils.getAttachmentURLWithAidEncode(
-                                            discuz, _attachment.aidEncode)
-                                      ])));
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(PlatformIcons(context).fullscreen, size: 20),
-                        const SizedBox(width: 6),
-                        Text(S.of(context).watchPictureInFullScreen),
-                      ],
-                    ))
+                  ),
+                ),
             ],
-          )
+          ),
         ],
       ),
     );

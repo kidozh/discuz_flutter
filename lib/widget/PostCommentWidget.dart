@@ -5,42 +5,46 @@ import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:html/parser.dart' show parseFragment;
 
 class PostCommentWidget extends StatelessWidget {
-  Comment _comment;
+  final Comment _comment;
+  final Color? textColor;
 
-  PostCommentWidget(this._comment);
+  const PostCommentWidget(this._comment, {super.key, this.textColor});
 
   @override
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: Theme.of(context).colorScheme.onPrimaryContainer,
-        );
+      color: textColor ?? Theme.of(context).colorScheme.onSurface,
+    );
+    final author = parseFragment(_comment.author).text ?? '';
+    final fallback = ColoredBox(
+      color: CustomizeColor.getColorBackgroundById(_comment.authorId),
+      child: Center(
+        child: Text(
+          author.isEmpty ? '?' : author.characters.first,
+          style: const TextStyle(color: Colors.white),
+        ),
+      ),
+    );
     return PlatformListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
       leading: PlatformLiquidGlassAvatar(
         size: 32,
-        child: CachedNetworkImage(
-          imageUrl: _comment.avatar,
-          fit: BoxFit.cover,
-          progressIndicatorBuilder: (context, url, downloadProgress) =>
-              PlatformCircularProgressIndicator(
-            material: (_, __) => MaterialProgressIndicatorData(
-              value: downloadProgress.progress,
-            ),
-          ),
-          errorWidget: (context, url, error) => ColoredBox(
-            color: CustomizeColor.getColorBackgroundById(_comment.authorId),
-            child: Center(
-              child: Text(
-                _comment.author.isNotEmpty
-                    ? _comment.author[0].toUpperCase()
-                    : S.of(context).anonymous,
-                style: const TextStyle(color: Colors.white),
+        child: _comment.avatar.isEmpty
+            ? fallback
+            : CachedNetworkImage(
+                imageUrl: _comment.avatar,
+                fit: BoxFit.cover,
+                progressIndicatorBuilder: (context, url, downloadProgress) =>
+                    PlatformCircularProgressIndicator(
+                      material: (_, __) => MaterialProgressIndicatorData(
+                        value: downloadProgress.progress,
+                      ),
+                    ),
+                errorWidget: (context, url, error) => fallback,
               ),
-            ),
-          ),
-        ),
       ),
       title: RichText(
         textAlign: TextAlign.start,
@@ -48,13 +52,13 @@ class PostCommentWidget extends StatelessWidget {
           style: textStyle,
           children: [
             TextSpan(
-              text: _comment.author,
+              text: author.isEmpty ? S.of(context).anonymous : author,
               style: textStyle?.copyWith(fontWeight: FontWeight.bold),
             ),
             const TextSpan(text: ' · '),
-            TextSpan(text: _comment.dateline.replaceAll('&nbsp;', '')),
+            TextSpan(text: parseFragment(_comment.dateline).text ?? ''),
             const TextSpan(text: '  '),
-            TextSpan(text: _comment.comment),
+            TextSpan(text: parseFragment(_comment.comment).text ?? ''),
           ],
         ),
       ),

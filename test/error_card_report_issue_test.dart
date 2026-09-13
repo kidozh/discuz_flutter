@@ -49,6 +49,7 @@ void main() {
           'network and expired session errors hide report: $style large=$large',
           (tester) async {
         for (final error in [
+          DiscuzError('mobile_template_no_found', 'No mobile template'),
           DiscuzError('network_fail', 'Offline'),
           DiscuzError('login', 'Sign in again',
               errorType: ErrorType.userExpired),
@@ -62,6 +63,7 @@ void main() {
           await tester.pumpAndSettle();
           expect(
               find.byKey(const ValueKey('error-report-issue')), findsNothing);
+          expect(find.text(S.current.reportIssueHint), findsNothing);
         }
       });
     }

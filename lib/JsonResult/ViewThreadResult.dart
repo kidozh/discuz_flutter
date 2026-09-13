@@ -9,6 +9,8 @@ import 'package:discuz_flutter/entity/Post.dart';
 
 
 import 'BaseResult.dart';
+import '../utility/discuz_json.dart';
+import '../entity/SpecialThread.dart';
 import 'ErrorResult.dart';
 
 
@@ -22,7 +24,7 @@ class ViewThreadResult extends BaseResult{
 
   ViewThreadResult();
 
-  factory ViewThreadResult.fromJson(Map<String, dynamic> json) => _$ViewThreadResultFromJson(json);
+  factory ViewThreadResult.fromJson(Map<String, dynamic> json) => _$ViewThreadResultFromJson({...discuzScalars(json), 'Variables': discuzMap(json['Variables'])});
   Map<String, dynamic> toJson() => _$ViewThreadResultToJson(this);
 
 
@@ -41,8 +43,9 @@ class ThreadVariables extends BaseVariableResult{
 
 
 
-  // @JsonKey(name:"allowpostcomment",defaultValue: [])
-  // List<String>? allowPostCommentList = [];
+  @JsonKey(name: 'allowpostcomment', fromJson: discuzIds)
+  List<String> commentModes = [];
+  bool get commentsEnabled => commentModes.contains('1');
   @ViewThreadCommentConverter()
   @JsonKey(name: "comments")
   Map<String, List<Comment>> commentList = {};
@@ -53,6 +56,7 @@ class ThreadVariables extends BaseVariableResult{
   RewriteRule rewriteRule = RewriteRule();
 
 
+  @JsonKey(defaultValue: "0")
   String ppp = "0";
   @JsonKey(defaultValue: "1")
   String? page = "1";
@@ -69,16 +73,40 @@ class ThreadVariables extends BaseVariableResult{
   @JsonKey(name: "special_poll",defaultValue: null)
   Poll? poll;
 
+  @JsonKey(name: 'special_reward', fromJson: RewardInfo.parse)
+  RewardInfo? reward;
+  @JsonKey(name: 'special_activity', fromJson: ActivityInfo.parse)
+  ActivityInfo? activity;
+  @JsonKey(name: 'threadsortshow', fromJson: ThreadSortInfo.parse)
+  ThreadSortInfo? threadSort;
 
+
+
+  @JsonKey(name: 'forum_threadpay')
+  @StringToBoolConverter()
+  bool threadPayRequired = false;
+  @JsonKey(name: 'commentcount', fromJson: discuzMap)
+  Map<String, dynamic> commentCounts = {};
   ThreadVariables();
 
-  factory ThreadVariables.fromJson(Map<String, dynamic> json) => _$ThreadVariablesFromJson(json);
+  factory ThreadVariables.fromJson(Map<String, dynamic> json) => _$ThreadVariablesFromJson({...discuzScalars(json), 'thread': discuzMap(json['thread']), 'ismoderator': json['ismoderator'] == true ? 1 : json['ismoderator']});
   Map<String, dynamic> toJson() => _$ThreadVariablesToJson(this);
 
 }
 
 @JsonSerializable(explicitToJson: true)
 class DetailedThreadInfo {
+  @StringToIntConverter()
+  int special = 0;
+  @JsonKey(name: 'recommend_add')
+  @StringToIntConverter()
+  int recommendCount = 0;
+  @JsonKey(name: 'recommend_sub')
+  @StringToIntConverter()
+  int disrecommendCount = 0;
+  @JsonKey(name: 'recommend')
+  @StringToBoolConverter()
+  bool recommended = false;
 
   @StringToIntConverter()
   int tid = 0;
@@ -91,6 +119,7 @@ class DetailedThreadInfo {
   // @StringToIntConverter()
   // @JsonKey(name:"typeid")
   // int typeId= 0;
+  @JsonKey(defaultValue: "")
   String author= "", subject= "";
   @JsonKey(name: "readperm")
   @StringToIntConverter()
@@ -109,16 +138,16 @@ class DetailedThreadInfo {
   @JsonKey(defaultValue: "")
   String lastposter= "";
 
-  @JsonKey(name:"displayorder")
+  @JsonKey(name:"displayorder", defaultValue: "0")
   String displayOrder = "";
 
+  @JsonKey(defaultValue: "0")
   String views = "";
   @JsonKey(name:"replies")
   @StringToIntConverter()
   int replies = 0;
   @JsonKey(defaultValue: "")
   String highlight = "";
-  @JsonKey(defaultValue: "0")
   // String special="0", moderated="0", is_archived="0";
   @JsonKey(defaultValue: "0")
   String rate = "0", status = "0", digest= "0";
@@ -170,7 +199,7 @@ class DetailedThreadInfo {
   // ReplyCreditRule? creditRule = ReplyCreditRule();
 
   DetailedThreadInfo();
-  factory DetailedThreadInfo.fromJson(Map<String, dynamic> json) => _$DetailedThreadInfoFromJson(json);
+  factory DetailedThreadInfo.fromJson(Map<String, dynamic> json) => _$DetailedThreadInfoFromJson(discuzScalars(json));
   Map<String, dynamic> toJson() => _$DetailedThreadInfoToJson(this);
 }
 
@@ -210,7 +239,10 @@ class Comment{
   int authorId = 0;
 
   Comment();
-  factory Comment.fromJson(Map<String, dynamic> json) => _$CommentFromJson(json);
+  factory Comment.fromJson(Map<String, dynamic> json) => _$CommentFromJson({
+    'author': '', 'dateline': '', 'comment': '', 'avatar': '',
+    ...discuzScalars(json).map((key, value) => MapEntry(key, value ?? '')),
+  });
   Map<String, dynamic> toJson() => _$CommentToJson(this);
 }
 

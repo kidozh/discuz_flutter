@@ -1,3 +1,6 @@
+import 'DashboardOrderPage.dart';
+import 'ForumFeedSettingsPage.dart';
+import '../provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/on_device_ai_labels.dart';
 import 'package:discuz_flutter/utility/BugReportUtils.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
@@ -91,21 +94,22 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) => PlatformScaffold(
-        appBar: PlatformAppBar(
-          liquidGlassTitle: S.of(context).settingTitle,
-          title: Text(S.of(context).settingTitle),
-          // Avoid snapshot artifacts from a native UIKit platform view during
-          // the interactive back transition on this frequently-opened route.
-          liquidGlassUseNativeToolbar: false,
-        ),
-        iosContentPadding: true,
-        body: _buildSettingsList(context),
-      );
+    appBar: PlatformAppBar(
+      liquidGlassTitle: S.of(context).settingTitle,
+      title: Text(S.of(context).settingTitle),
+      // Avoid snapshot artifacts from a native UIKit platform view during
+      // the interactive back transition on this frequently-opened route.
+      liquidGlassUseNativeToolbar: false,
+    ),
+    iosContentPadding: true,
+    body: _buildSettingsList(context),
+  );
 
   Widget _buildSettingsList(BuildContext context) {
     final theme = context.watch<ThemeNotifierProvider>();
     final typeSetting = context.watch<TypeSettingNotifierProvider>();
     final preference = context.watch<UserPreferenceNotifierProvider>();
+    final account = context.watch<DiscuzAndUserNotifier>();
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 32),
@@ -163,6 +167,29 @@ class _SettingPageState extends State<SettingPage> {
                 SetPushNotificationPage(),
               ),
             ),
+            if (account.discuz != null)
+              _GlassNavigationTile(
+                title: S.of(context).feedForumsTitle,
+                leading: Icon(AppPlatformIcons(context).feedForumsOutlined),
+                onTap: () => _open(
+                  context,
+                  S.of(context).feedForumsTitle,
+                  ForumFeedSettingsPage(
+                    discuz: account.discuz!,
+                    user: account.user,
+                  ),
+                ),
+              ),
+
+            _GlassNavigationTile(
+              title: S.of(context).dashboardOrder,
+              leading: Icon(AppPlatformIcons(context).dashboardOrderOutlined),
+              onTap: () => _open(
+                context,
+                S.of(context).dashboardOrder,
+                const DashboardOrderPage(),
+              ),
+            ),
           ],
         ),
         _GlassSettingsSection(
@@ -191,7 +218,9 @@ class _SettingPageState extends State<SettingPage> {
             _GlassNavigationTile(
               title: S.of(context).typeSetting,
               value: Text(
-                S.of(context).fontSizeScaleParameterUnit(
+                S
+                    .of(context)
+                    .fontSizeScaleParameterUnit(
                       typeSetting.scalingParameter.toStringAsFixed(3),
                     ),
               ),
@@ -269,9 +298,7 @@ class _SettingPageState extends State<SettingPage> {
               leading: Icon(AppPlatformIcons(context).privacyPolicyOutlined),
               onTap: () {
                 VibrationUtils.vibrateWithClickIfPossible();
-                URLUtils.launchURL(
-                  'https://discuzhub.kidozh.com/term_of_use/',
-                );
+                URLUtils.launchURL('https://discuzhub.kidozh.com/term_of_use/');
               },
             ),
             _GlassNavigationTile(
@@ -314,7 +341,9 @@ class _SettingPageState extends State<SettingPage> {
               ),
               const SizedBox(height: 8),
               Text(
-                S.of(context).buildVersionDescription(
+                S
+                    .of(context)
+                    .buildVersionDescription(
                       packageVersion,
                       packageBuildNumber,
                     ),
@@ -340,15 +369,12 @@ class _SettingPageState extends State<SettingPage> {
     return S.of(context).customSignature;
   }
 
-  String _themeColorLabel(
-    BuildContext context,
-    ThemeNotifierProvider theme,
-  ) {
+  String _themeColorLabel(BuildContext context, ThemeNotifierProvider theme) {
     final customColor = theme.customThemeColor;
     if (customColor != null) {
-      return S.of(context).customColorNamed(
-            localizedCustomColorName(context, customColor),
-          );
+      return S
+          .of(context)
+          .customColorNamed(localizedCustomColorName(context, customColor));
     }
     return localizedFlexSchemeName(context, theme.themeColor);
   }
@@ -373,42 +399,41 @@ class _GlassSettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
-              child: Text(
-                title,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
+    padding: const EdgeInsets.only(bottom: 12),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.w600,
             ),
-            PlatformCard(
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              child: Column(
-                children: [
-                  for (var index = 0; index < children.length; index++) ...[
-                    children[index],
-                    if (index < children.length - 1 &&
-                        !usesLiquidGlass(context))
-                      Divider(
-                        height: 1,
-                        indent: 54,
-                        color: Theme.of(context)
-                            .dividerColor
-                            .withValues(alpha: 0.35),
-                      ),
-                  ],
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
-      );
+        PlatformCard(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          child: Column(
+            children: [
+              for (var index = 0; index < children.length; index++) ...[
+                children[index],
+                if (index < children.length - 1 && !usesLiquidGlass(context))
+                  Divider(
+                    height: 1,
+                    indent: 54,
+                    color: Theme.of(
+                      context,
+                    ).dividerColor.withValues(alpha: 0.35),
+                  ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _GlassNavigationTile extends StatelessWidget {
@@ -426,33 +451,33 @@ class _GlassNavigationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => PlatformListTile(
-        leading: IconTheme.merge(
-          data: IconThemeData(color: Theme.of(context).colorScheme.primary),
-          child: leading,
-        ),
-        title: Text(title),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (value != null)
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 170),
-                child: DefaultTextStyle.merge(
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontSize: 14,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  child: value!,
-                ),
+    leading: IconTheme.merge(
+      data: IconThemeData(color: Theme.of(context).colorScheme.primary),
+      child: leading,
+    ),
+    title: Text(title),
+    trailing: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (value != null)
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 170),
+            child: DefaultTextStyle.merge(
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 14,
               ),
-            const SizedBox(width: 6),
-            Icon(PlatformIcons(context).forward, size: 18),
-          ],
-        ),
-        onTap: onTap,
-      );
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              child: value!,
+            ),
+          ),
+        const SizedBox(width: 6),
+        Icon(PlatformIcons(context).forward, size: 18),
+      ],
+    ),
+    onTap: onTap,
+  );
 }
 
 class _GlassSwitchTile extends StatelessWidget {
@@ -470,16 +495,16 @@ class _GlassSwitchTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => PlatformListTile(
-        leading: IconTheme.merge(
-          data: IconThemeData(color: Theme.of(context).colorScheme.primary),
-          child: leading,
-        ),
-        title: Text(title),
-        trailing: PlatformSwitch(
-          value: value,
-          activeColor: Theme.of(context).colorScheme.primary,
-          onChanged: onChanged,
-        ),
-        onTap: () => onChanged(!value),
-      );
+    leading: IconTheme.merge(
+      data: IconThemeData(color: Theme.of(context).colorScheme.primary),
+      child: leading,
+    ),
+    title: Text(title),
+    trailing: PlatformSwitch(
+      value: value,
+      activeColor: Theme.of(context).colorScheme.primary,
+      onChanged: onChanged,
+    ),
+    onTap: () => onChanged(!value),
+  );
 }

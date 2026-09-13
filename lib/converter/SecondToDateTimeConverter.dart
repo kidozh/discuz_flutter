@@ -1,26 +1,17 @@
-import 'dart:convert';
-
 import 'package:json_annotation/json_annotation.dart';
 
-class SecondToDateTimeConverter implements JsonConverter<DateTime, String?> {
+class SecondToDateTimeConverter implements JsonConverter<DateTime, Object?> {
   const SecondToDateTimeConverter();
-
   @override
-  DateTime fromJson(String? json) {
-    if(json != null){
-      return DateTime.fromMillisecondsSinceEpoch(int.parse(json) * 1000);
+  DateTime fromJson(Object? json) {
+    final seconds = json is num ? json : num.tryParse(json?.toString() ?? '');
+    if (seconds == null || !seconds.isFinite || seconds.abs() > 8640000000000) {
+      return DateTime.fromMillisecondsSinceEpoch(0);
     }
-    else{
-      return DateTime.now();
-    }
-
-
+    return DateTime.fromMillisecondsSinceEpoch((seconds * 1000).toInt());
   }
 
   @override
-  String toJson(DateTime object) {
-    return json.encode((object.millisecondsSinceEpoch ~/ 1000));
-
-  }
-  
+  String toJson(DateTime object) =>
+      (object.millisecondsSinceEpoch ~/ 1000).toString();
 }

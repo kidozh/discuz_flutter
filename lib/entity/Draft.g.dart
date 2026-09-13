@@ -17,19 +17,21 @@ class DraftAdapter extends TypeAdapter<Draft> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Draft(
-      fields[1] as String,
-      fields[2] as String,
-      (fields[6] as num).toInt(),
-      fields[7] as String,
-      fields[4] as DateTime,
-      fields[5] as Discuz,
-    )..insertTime = fields[3] as DateTime;
+        fields[1] as String,
+        fields[2] as String,
+        (fields[6] as num).toInt(),
+        fields[7] as String,
+        fields[4] as DateTime,
+        fields[5] as Discuz,
+      )
+      ..insertTime = fields[3] as DateTime
+      ..pollJson = fields[8] == null ? '' : fields[8] as String;
   }
 
   @override
   void write(BinaryWriter writer, Draft obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(1)
       ..write(obj.title)
       ..writeByte(2)
@@ -43,7 +45,9 @@ class DraftAdapter extends TypeAdapter<Draft> {
       ..writeByte(6)
       ..write(obj.fid)
       ..writeByte(7)
-      ..write(obj.typeid);
+      ..write(obj.typeid)
+      ..writeByte(8)
+      ..write(obj.pollJson);
   }
 
   @override

@@ -1,3 +1,6 @@
+import '../utility/ForumFeedPreferences.dart';
+import '../client/ForumInteractionClient.dart';
+import '../widget/ForumFeedEmptyState.dart';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -31,19 +34,28 @@ import 'EmptyListScreen.dart';
 class HotThreadScreen extends StatelessWidget {
   final ValueChanged<int>? onSelectTid;
 
-  HotThreadScreen({this.onSelectTid}){
+  HotThreadScreen({this.onSelectTid}) {
     log("Hot thread When create it ${onSelectTid}");
   }
 
   @override
   Widget build(BuildContext context) {
-    return HotThreadStatefulWidget(onSelectTid: onSelectTid,);
+    final account = context.watch<DiscuzAndUserNotifier>();
+    return ValueListenableBuilder<int>(
+      valueListenable: ForumFeedPreferences.revision,
+      builder: (_, revision, __) => HotThreadStatefulWidget(
+        key: ValueKey(
+          '${account.discuz?.baseURL}:${account.user?.uid}:${account.user?.auth}:$revision',
+        ),
+        onSelectTid: onSelectTid,
+      ),
+    );
   }
 }
 
 class HotThreadStatefulWidget extends StatefulWidget {
   final ValueChanged<int>? onSelectTid;
-  HotThreadStatefulWidget({this.onSelectTid});
+  HotThreadStatefulWidget({super.key, this.onSelectTid});
 
   _HotThreadState createState() {
     return _HotThreadState(onSelectTid: onSelectTid);
@@ -58,8 +70,8 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
   HotThreadResult result = HotThreadResult();
   DiscuzError? _error;
   int _page = 1;
+  bool _selectionEmpty = false;
   List<HotThread> _hotThreadList = [];
-
 
   late EasyRefreshController _controller;
 
@@ -70,7 +82,9 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
     // TODO: implement initState
     super.initState();
     _controller = EasyRefreshController(
-        controlFinishLoad: true, controlFinishRefresh: true);
+      controlFinishLoad: true,
+      controlFinishRefresh: true,
+    );
   }
 
   Future<IndicatorResult> _invalidateHotThreadContent(Discuz discuz) async {
@@ -79,135 +93,185 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
   }
 
   Future<IndicatorResult> _loadHotThreadContent(Discuz discuz) async {
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    User? user = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).user;
     this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
 
-    return await _client.hotThreadResult(_page).then((value) async {
-      _controller.finishRefresh();
-      Provider.of<DiscuzNotificationProvider>(context, listen: false).setNotificationCount(value.variables.noticeCount);
-      setState(() {
-        _isFirstLoading = false;
-        result = value;
-        _error = null;
-        if (_page == 1) {
-          _hotThreadList = value.variables.hotThreadList;
-        } else {
-          _hotThreadList.addAll(value.variables.hotThreadList);
-        }
-      });
-      _page += 1;
-      _controller.finishRefresh();
-
-      // check for loaded all?
-      log("Get HotThread ${_hotThreadList.length} ${value.variables.perPage}");
-      _controller.finishLoad(
-          value.variables.hotThreadList.length < value.variables.perPage
-              ? IndicatorResult.noMore
-              : IndicatorResult.success);
-
-      if (user != null && value.variables.member_uid != user.uid) {
+    try {
+      final fids = await ForumFeedPreferences.resolveFids(
+        ForumFeedPreferences.scope(discuz, user),
+        ForumInteractionClient(_dio, discuz.baseURL),
+      );
+      if (!mounted) return IndicatorResult.none;
+      _selectionEmpty = fids.isEmpty;
+      if (_selectionEmpty) {
         setState(() {
-          _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
-              S.of(context).userExpiredSubtitle,
-              errorType: ErrorType.userExpired);
-        });
-      }
-
-      if (value.getErrorString() != null) {
-        EasyLoading.showError(value.getErrorString()!);
-      }
-
-      if (value.errorResult != null) {
-        setState(() {
-          _error =
-              DiscuzError(value.errorResult!.key, value.errorResult!.content);
-        });
-      } else {
-        setState(() {
+          _hotThreadList = [];
           _error = null;
-        });
-      }
-      if(user!= null && value.variables.member_uid == user.uid){
-        // conduct mobile sign
-        await MobileSignUtils.conductMobileSign(context, discuz, user, value.variables.formHash);
-      }
-      if (value.variables.hotThreadList.length < value.variables.perPage) {
-        return IndicatorResult.noMore;
-      } else {
-        return IndicatorResult.success;
-      }
-    }).catchError((onError) {
-      if(mounted){
-        setState(() {
           _isFirstLoading = false;
         });
+        _controller.finishRefresh(IndicatorResult.success);
+        _controller.finishLoad(IndicatorResult.noMore);
+        return IndicatorResult.noMore;
       }
-      switch (onError.runtimeType) {
-        case DioException:
-          {
-            DioException dioError = onError;
-            log("${dioError.message} >-> ${dioError.type}");
-            EasyLoading.showError("${dioError.message} (${dioError})");
-            setState(() {
-              _error = DiscuzError(dioError.message==null?S.of(context).error: dioError.message!, dioError.type.name,
-                  dioError: dioError);
-            });
+    } catch (_) {
+      if (!mounted) return IndicatorResult.none;
+      // A directory outage should not prevent the independent hot-thread API.
+    }
+    return await _client
+        .hotThreadResult(_page)
+        .then((value) async {
+          if (!mounted) return IndicatorResult.none;
+          _controller.finishRefresh();
+          Provider.of<DiscuzNotificationProvider>(
+            context,
+            listen: false,
+          ).setNotificationCount(value.variables.noticeCount);
+          setState(() {
+            _isFirstLoading = false;
+            result = value;
+            _error = null;
+            if (_page == 1) {
+              _hotThreadList = value.variables.hotThreadList;
+            } else {
+              _hotThreadList.addAll(value.variables.hotThreadList);
+            }
+          });
+          _page += 1;
+          _controller.finishRefresh();
 
-            break;
-          }
-        default:
-          {
+          // check for loaded all?
+          log(
+            "Get HotThread ${_hotThreadList.length} ${value.variables.perPage}",
+          );
+          _controller.finishLoad(
+            value.variables.hotThreadList.length < value.variables.perPage
+                ? IndicatorResult.noMore
+                : IndicatorResult.success,
+          );
+
+          if (user != null && value.variables.member_uid != user.uid) {
             setState(() {
               _error = DiscuzError(
-                  onError.runtimeType.toString(), onError.toString());
+                S.of(context).userExpiredTitle(user.username),
+                S.of(context).userExpiredSubtitle,
+                errorType: ErrorType.userExpired,
+              );
             });
           }
-      }
-      return IndicatorResult.fail;
-      // VibrationUtils.vibrateErrorIfPossible();
-      // // EasyLoading.showError('${onError}');
-      // if (!_enableControlFinish) {
-      //   _controller.resetLoadState();
-      //   try{
-      //     _controller.finishRefresh();
-      //     setState(() {
-      //       _error = DiscuzError(
-      //           onError.runtimeType.toString(), onError.toString());
-      //     });
-      //   }
-      //   catch(e){
-      //
-      //   }
-      //
-      // }
-    });
+
+          if (value.getErrorString() != null) {
+            EasyLoading.showError(value.getErrorString()!);
+          }
+
+          if (value.errorResult != null) {
+            setState(() {
+              _error = DiscuzError(
+                value.errorResult!.key,
+                value.errorResult!.content,
+              );
+            });
+          } else {
+            setState(() {
+              _error = null;
+            });
+          }
+          if (user != null && value.variables.member_uid == user.uid) {
+            // conduct mobile sign
+            await MobileSignUtils.conductMobileSign(
+              context,
+              discuz,
+              user,
+              value.variables.formHash,
+            );
+          }
+          if (value.variables.hotThreadList.length < value.variables.perPage) {
+            return IndicatorResult.noMore;
+          } else {
+            return IndicatorResult.success;
+          }
+        })
+        .catchError((onError) {
+          if (!mounted) return IndicatorResult.none;
+          if (mounted) {
+            setState(() {
+              _isFirstLoading = false;
+            });
+          }
+          switch (onError.runtimeType) {
+            case DioException:
+              {
+                DioException dioError = onError;
+                log("${dioError.message} >-> ${dioError.type}");
+                EasyLoading.showError("${dioError.message} (${dioError})");
+                setState(() {
+                  _error = DiscuzError(
+                    dioError.message == null
+                        ? S.of(context).error
+                        : dioError.message!,
+                    dioError.type.name,
+                    dioError: dioError,
+                  );
+                });
+
+                break;
+              }
+            default:
+              {
+                setState(() {
+                  _error = DiscuzError(
+                    onError.runtimeType.toString(),
+                    onError.toString(),
+                  );
+                });
+              }
+          }
+          return IndicatorResult.fail;
+          // VibrationUtils.vibrateErrorIfPossible();
+          // // EasyLoading.showError('${onError}');
+          // if (!_enableControlFinish) {
+          //   _controller.resetLoadState();
+          //   try{
+          //     _controller.finishRefresh();
+          //     setState(() {
+          //       _error = DiscuzError(
+          //           onError.runtimeType.toString(), onError.toString());
+          //     });
+          //   }
+          //   catch(e){
+          //
+          //   }
+          //
+          // }
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<DiscuzAndUserNotifier>(
-        builder: (context, discuzAndUser, child) {
-      if (discuzAndUser.discuz == null) {
-        return NullDiscuzScreen();
-      }
-      return Column(
-        children: [
-          if (_error != null)
-            ErrorCard(
-              _error!,
-              () {
+      builder: (context, discuzAndUser, child) {
+        if (discuzAndUser.discuz == null) {
+          return NullDiscuzScreen();
+        }
+        return Column(
+          children: [
+            if (_error != null)
+              ErrorCard(_error!, () {
                 _controller.callRefresh();
-              },
-              errorType: _error!.errorType,
-            ),
-          Expanded(
+              }, errorType: _error!.errorType),
+            Expanded(
               child: getEasyRefreshWidget(
-                  discuzAndUser.discuz!, discuzAndUser.user)),
-        ],
-      );
-    });
+                discuzAndUser.discuz!,
+                discuzAndUser.user,
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget getEasyRefreshWidget(Discuz discuz, User? user) {
@@ -217,8 +281,9 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       refreshOnStart: true,
       controller: _controller,
       onRefresh: () async {
-        IndicatorResult indicatorResult =
-            await _invalidateHotThreadContent(discuz);
+        IndicatorResult indicatorResult = await _invalidateHotThreadContent(
+          discuz,
+        );
         _controller.finishRefresh();
         return indicatorResult;
       },
@@ -227,33 +292,49 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       },
       child: CustomScrollView(
         slivers: [
-
-
           if (_hotThreadList.isEmpty && result.errorResult == null)
             SliverList(
-                delegate: SliverChildBuilderDelegate(
-                    (context, index) => _isFirstLoading? LoadingStateWidget(): EmptyListScreen(EmptyItemType.thread),
-                    childCount: 1)),
-          SliverList(
               delegate: SliverChildBuilderDelegate(
-                  (context, index) => Column(
-                        children: [
-                          if(index == 0) ThreadSlideShowCarouselWidget(onSelectTid: onSelectTid,),
-                          HotThreadWidget(discuz, user, _hotThreadList[index], onSelectTid,
-                              afterTid: index < _hotThreadList.length - 1 ? _hotThreadList[index+1].tid: null
-                          ),
-                          if (index % 15 == 0 && index != 0)
-                            Consumer<UserPreferenceNotifierProvider>(builder: (context, value, child){
-                              if(value.signature == PostTextFieldUtils.USE_APP_SIGNATURE && index > 20){
-                                return Container();
-                              }
-                              else{
-                                return const AppBannerAdWidget();
-                              }
-                            })
-                        ],
-                      ),
-                  childCount: _hotThreadList.length))
+                (context, index) => _isFirstLoading
+                    ? LoadingStateWidget()
+                    : _selectionEmpty
+                    ? ForumFeedEmptyState(discuz: discuz, user: user)
+                    : EmptyListScreen(EmptyItemType.thread),
+                childCount: 1,
+              ),
+            ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => Column(
+                children: [
+                  if (index == 0)
+                    ThreadSlideShowCarouselWidget(onSelectTid: onSelectTid),
+                  HotThreadWidget(
+                    discuz,
+                    user,
+                    _hotThreadList[index],
+                    onSelectTid,
+                    afterTid: index < _hotThreadList.length - 1
+                        ? _hotThreadList[index + 1].tid
+                        : null,
+                  ),
+                  if (index % 15 == 0 && index != 0)
+                    Consumer<UserPreferenceNotifierProvider>(
+                      builder: (context, value, child) {
+                        if (value.signature ==
+                                PostTextFieldUtils.USE_APP_SIGNATURE &&
+                            index > 20) {
+                          return Container();
+                        } else {
+                          return const AppBannerAdWidget();
+                        }
+                      },
+                    ),
+                ],
+              ),
+              childCount: _hotThreadList.length,
+            ),
+          ),
         ],
       ),
     );

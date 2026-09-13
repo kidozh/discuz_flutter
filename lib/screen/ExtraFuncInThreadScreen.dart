@@ -35,21 +35,26 @@ class ExtraFuncInThreadScreen extends StatefulWidget {
   Discuz discuz;
   bool? showHistoricalAttachment;
 
-  ExtraFuncInThreadScreen(this.discuz, this.tid, this.fid,
-      {required this.onReplyWithImage,
-      this.onReplyWithHostedImage,
-      this.showHistoricalAttachment,
-      super.key});
+  ExtraFuncInThreadScreen(
+    this.discuz,
+    this.tid,
+    this.fid, {
+    required this.onReplyWithImage,
+    this.onReplyWithHostedImage,
+    this.showHistoricalAttachment,
+    super.key,
+  });
 
   @override
   ExtraFuncInThreadState createState() {
     return ExtraFuncInThreadState(
-        this.discuz,
-        this.tid,
-        this.fid,
-        this.onReplyWithImage,
-        this.onReplyWithHostedImage,
-        this.showHistoricalAttachment);
+      this.discuz,
+      this.tid,
+      this.fid,
+      this.onReplyWithImage,
+      this.onReplyWithHostedImage,
+      this.showHistoricalAttachment,
+    );
   }
 }
 
@@ -58,6 +63,8 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
 
   CheckPostResult _checkPostResult = CheckPostResult();
   DiscuzError? _discuzError;
+  bool _permissionLoaded = false;
+  bool _uploading = false;
   bool? showHistoricalAttachment;
 
   int tid = 0;
@@ -68,8 +75,14 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
   Discuz discuz;
   Map<ChevertoPictureBed, String> chevertoPictureBedTokens = {};
 
-  ExtraFuncInThreadState(this.discuz, this.tid, this.fid, this.onReplyWithImage,
-      this.onReplyWithHostedImage, this.showHistoricalAttachment);
+  ExtraFuncInThreadState(
+    this.discuz,
+    this.tid,
+    this.fid,
+    this.onReplyWithImage,
+    this.onReplyWithHostedImage,
+    this.showHistoricalAttachment,
+  );
 
   void pickImageFromGallery() => _triggerMediaAction(0);
 
@@ -80,7 +93,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
       EasyLoading.showError(_discuzError!.content);
       return;
     }
-    if (_checkPostResult.variables.allowPerm.uploadHash.isEmpty) {
+    if (!_permissionLoaded) {
       EasyLoading.showInfo(S.of(context).preparingPage);
       return;
     }
@@ -101,6 +114,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
   void _loadAllSavedImageAttachment() async {
     ImageAttachmentDao imageAttachmentDao =
         await AppDatabase.getImageAttachmentDao();
+    if (!mounted) return;
     setState(() {
       imageAttachmentList = imageAttachmentDao.getFavoriteThreadList(discuz);
     });
@@ -128,53 +142,102 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
       return Container(
         height: MediaQuery.of(context).size.height * 0.25,
         child: PlatformListTile(
-          leading: Icon(
-            PlatformIcons(context).errorOutline,
-            color: Colors.red,
-          ),
+          leading: Icon(PlatformIcons(context).errorOutline, color: Colors.red),
           title: Text(_discuzError!.content),
         ),
       );
-    } else if (_checkPostResult.variables.allowPerm.uploadHash.isEmpty) {
+    } else if (!_permissionLoaded) {
       return Container(
-          height: MediaQuery.of(context).size.height * 0.25,
-          child: PlatformListTile(
-            leading: PlatformCircularProgressIndicator(),
-            title: Text(S.of(context).preparingPage),
-          ));
+        height: MediaQuery.of(context).size.height * 0.25,
+        child: PlatformListTile(
+          leading: PlatformCircularProgressIndicator(),
+          title: Text(S.of(context).preparingPage),
+        ),
+      );
     } else {
       return Container(
         height: MediaQuery.of(context).size.height * 0.25,
-        child: GridView.count(
-          crossAxisCount: 4,
-          padding: EdgeInsets.all(4.0),
-          shrinkWrap: true,
-          children: extraFuncListWidget(),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              child: Text(
+                _quotaSummary(),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 4,
+                padding: const EdgeInsets.all(4),
+                children: extraFuncListWidget(),
+              ),
+            ),
+          ],
         ),
       );
     }
   }
 
+  String _restrictionMessage(UploadRestriction restriction) {
+    final s = S.of(context);
+    return switch (restriction) {
+      UploadRestriction.type => s.uploadTypeDenied,
+      UploadRestriction.count => s.uploadCountExhausted,
+      UploadRestriction.dailySize => s.uploadDailySizeExceeded,
+      UploadRestriction.fileSize => s.uploadFileSizeExceeded,
+    };
+  }
+
+  String _quotaSummary() {
+    final s = S.of(context);
+    final permission = _checkPostResult.variables.allowPerm;
+    String quota(int? value, {bool bytes = false}) => value == null
+        ? s.uploadQuotaUnknown
+        : value < 0
+        ? s.uploadUnlimited
+        : bytes
+        ? '${(value / 1024 / 1024).toStringAsFixed(1)} MB'
+        : '$value';
+    final types = permission.allowUpload.limits.entries
+        .where((e) => e.value != 0)
+        .map(
+          (e) => e.value > 0
+              ? '${e.key} ≤${(e.value / 1024 / 1024).toStringAsFixed(1)} MB'
+              : e.key,
+        )
+        .join(', ');
+    return '${s.uploadQuotaLabel}: ${quota(permission.attachRemain.size, bytes: true)} / ${quota(permission.attachRemain.count)}\n${s.uploadTypesLabel}: ${types.isEmpty ? '—' : types}';
+  }
+
   List<Widget> extraFuncListWidget() {
     List<Widget> widgetList = [
       ExtraFuncBlockButton(
-          PlatformIcons(context).collectionsSolid, S.of(context).addAPhoto,
-          onPressed: () async {
-        // recv the photo from gallery
-        VibrationUtils.vibrateWithClickIfPossible();
-        final XFile? image =
-            await _picker.pickImage(source: ImageSource.gallery);
+        PlatformIcons(context).collectionsSolid,
+        S.of(context).addAPhoto,
+        onPressed: () async {
+          // recv the photo from gallery
+          VibrationUtils.vibrateWithClickIfPossible();
+          final XFile? image = await _picker.pickImage(
+            source: ImageSource.gallery,
+          );
 
-        // then upload to the server
-        if (image != null) {
-          File file = File(image.path);
-          // check with the size
-          int file_size = await file.length();
-          bool file_not_exceeding_size = file_size <
-              _checkPostResult.variables.allowPerm.attachRemain.size;
-          log("Get file size ${file_size} <-> ${_checkPostResult.variables.allowPerm.attachRemain.size} HASH ${_checkPostResult.variables.allowPerm.uploadHash}");
-          // confirm with user
-          showPlatformDialog(
+          // then upload to the server
+          if (image != null) {
+            File file = File(image.path);
+            // check with the size
+            int file_size = await file.length();
+            bool file_not_exceeding_size =
+                _checkPostResult.variables.allowPerm.validateUpload(
+                  file.path,
+                  file_size,
+                ) ==
+                null;
+            log(
+              "Get file size ${file_size} <-> ${_checkPostResult.variables.allowPerm.attachRemain.size} HASH ${_checkPostResult.variables.allowPerm.uploadHash}",
+            );
+            // confirm with user
+            showPlatformDialog(
               context: context,
               builder: (context) {
                 bool isUploadingPicture = false;
@@ -195,16 +258,18 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
                             child: SizedBox(
                               width: double.infinity,
                               child: Text(
-                                S
-                                    .of(context)
-                                    .attachmentUploadExceedingSizeDescription,
+                                _restrictionMessage(
+                                  _checkPostResult.variables.allowPerm
+                                      .validateUpload(file.path, file_size)!,
+                                ),
                                 style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.onPrimary,
-                                    fontSize: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.fontSize),
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimary,
+                                  fontSize: Theme.of(
+                                    context,
+                                  ).textTheme.bodyMedium?.fontSize,
+                                ),
                               ),
                             ),
                           ),
@@ -224,32 +289,37 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
                           isUploadingPicture = true;
                         });
                         EasyLoading.showInfo(
-                            S.of(context).uploadingImageToServer);
+                          S.of(context).uploadingImageToServer,
+                        );
                         // compress it first
                         // get a temp directory
 
                         Directory directory =
                             await getApplicationDocumentsDirectory();
                         final compressionPath =
-                            directory.path + "/" + file.path.split("/").last;
+                            '${directory.path}/discuz-upload-${DateTime.now().microsecondsSinceEpoch}.jpg';
                         // with 90% compression
                         final compressedFile =
                             await FlutterImageCompress.compressAndGetFile(
-                          file.path,
-                          compressionPath,
-                        );
+                              file.path,
+                              compressionPath,
+                            );
                         if (compressedFile != null) {
                           file = File(compressedFile.path);
                         }
 
                         String respString = await uploadPhotoToDiscuzServer(
-                            context, File(file.path));
+                          context,
+                          File(file.path),
+                        );
                         setState(() {
                           isUploadingPicture = false;
                         });
                         print("Successful upload image string ${respString}");
-                        String aid =
-                            getAidFromDiscuzUploadResponse(context, respString);
+                        String aid = getAidFromDiscuzUploadResponse(
+                          context,
+                          respString,
+                        );
                         if (aid.isNotEmpty) {
                           // send it with aid
                           onReplyWithImage(aid, file.path);
@@ -265,15 +335,20 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
                             isUploadingPicture = true;
                           });
                           EasyLoading.showInfo(
-                              S.of(context).uploadingImageToServer);
+                            S.of(context).uploadingImageToServer,
+                          );
                           String respString = await uploadPhotoToDiscuzServer(
-                              context, File(file.path));
+                            context,
+                            File(file.path),
+                          );
                           setState(() {
                             isUploadingPicture = false;
                           });
                           print("Successful upload image string ${respString}");
                           String aid = getAidFromDiscuzUploadResponse(
-                              context, respString);
+                            context,
+                            respString,
+                          );
                           if (aid.isNotEmpty) {
                             // send it with aid
                             onReplyWithImage(aid, file.path);
@@ -288,26 +363,34 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
                         // cancel it
                         Navigator.of(context).pop();
                       },
-                    )
+                    ),
                   ],
                 );
-              });
-        } else {
-          EasyLoading.showToast(S.of(context).noImagePicked);
-        }
-      }),
+              },
+            );
+          } else {
+            EasyLoading.showToast(S.of(context).noImagePicked);
+          }
+        },
+      ),
       ExtraFuncBlockButton(
-          PlatformIcons(context).photoCameraSolid, S.of(context).takeAPicture,
-          onPressed: () async {
-        final XFile? image =
-            await _picker.pickImage(source: ImageSource.camera);
-        if (image != null) {
-          File file = File(image.path);
-          int file_size = await file.length();
-          bool file_not_exceeding_size = file_size <
-              _checkPostResult.variables.allowPerm.attachRemain.size;
+        PlatformIcons(context).photoCameraSolid,
+        S.of(context).takeAPicture,
+        onPressed: () async {
+          final XFile? image = await _picker.pickImage(
+            source: ImageSource.camera,
+          );
+          if (image != null) {
+            File file = File(image.path);
+            int file_size = await file.length();
+            bool file_not_exceeding_size =
+                _checkPostResult.variables.allowPerm.validateUpload(
+                  file.path,
+                  file_size,
+                ) ==
+                null;
 
-          showPlatformDialog(
+            showPlatformDialog(
               context: context,
               builder: (context) {
                 bool isUploadingPicture = false;
@@ -331,7 +414,8 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
                           isUploadingPicture = true;
                         });
                         EasyLoading.showInfo(
-                            S.of(context).uploadingImageToServer);
+                          S.of(context).uploadingImageToServer,
+                        );
                         // compress it first
                         // get a temp directory
 
@@ -339,24 +423,28 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
                             await getApplicationDocumentsDirectory();
 
                         final compressionPath =
-                            directory.path + "/" + file.path.split("/").last;
+                            '${directory.path}/discuz-upload-${DateTime.now().microsecondsSinceEpoch}.jpg';
                         // with 90% compression
                         final compressedFile =
                             await FlutterImageCompress.compressAndGetFile(
-                          file.path,
-                          compressionPath,
-                        );
+                              file.path,
+                              compressionPath,
+                            );
                         if (compressedFile != null) {
                           file = File(compressedFile.path);
                         }
-                        String respString =
-                            await uploadPhotoToDiscuzServer(context, file);
+                        String respString = await uploadPhotoToDiscuzServer(
+                          context,
+                          file,
+                        );
                         setState(() {
                           isUploadingPicture = false;
                         });
                         print("Successful upload image string ${respString}");
-                        String aid =
-                            getAidFromDiscuzUploadResponse(context, respString);
+                        String aid = getAidFromDiscuzUploadResponse(
+                          context,
+                          respString,
+                        );
                         if (aid.isNotEmpty) {
                           // send it with aid
                           onReplyWithImage(aid, file.path);
@@ -372,15 +460,20 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
                             isUploadingPicture = true;
                           });
                           EasyLoading.showInfo(
-                              S.of(context).uploadingImageToServer);
-                          String respString =
-                              await uploadPhotoToDiscuzServer(context, file);
+                            S.of(context).uploadingImageToServer,
+                          );
+                          String respString = await uploadPhotoToDiscuzServer(
+                            context,
+                            file,
+                          );
                           setState(() {
                             isUploadingPicture = false;
                           });
                           print("Successful upload image string ${respString}");
                           String aid = getAidFromDiscuzUploadResponse(
-                              context, respString);
+                            context,
+                            respString,
+                          );
                           if (aid.isNotEmpty) {
                             // send it with aid
                             onReplyWithImage(aid, file.path);
@@ -395,14 +488,16 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
                         // cancel it
                         Navigator.of(context).pop();
                       },
-                    )
+                    ),
                   ],
                 );
-              });
-        } else {
-          EasyLoading.showToast(S.of(context).noImagePicked);
-        }
-      }),
+              },
+            );
+          } else {
+            EasyLoading.showToast(S.of(context).noImagePicked);
+          }
+        },
+      ),
       // comes with inserted attachment
     ];
 
@@ -411,28 +506,34 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
       return widgetList;
     }
     for (var imageAttachment in imageAttachmentList) {
-      widgetList.add(InkWell(
-        child: Image.file(File(imageAttachment.path)),
-        onTap: () async {
-          VibrationUtils.vibrateWithClickIfPossible();
-          // add to textfields
-          onReplyWithImage(imageAttachment.aid, imageAttachment.path);
-          // change with
-          ImageAttachmentDao imageAttachmentDao =
-              await AppDatabase.getImageAttachmentDao();
-          ImageAttachment insertedIA = imageAttachment;
-          insertedIA.updateAt = DateTime.now();
-          imageAttachmentDao.insertImageAttachmentWithKey(
-              insertedIA.key, insertedIA);
-        },
-      ));
+      widgetList.add(
+        InkWell(
+          child: Image.file(File(imageAttachment.path)),
+          onTap: () async {
+            VibrationUtils.vibrateWithClickIfPossible();
+            // add to textfields
+            onReplyWithImage(imageAttachment.aid, imageAttachment.path);
+            // change with
+            ImageAttachmentDao imageAttachmentDao =
+                await AppDatabase.getImageAttachmentDao();
+            ImageAttachment insertedIA = imageAttachment;
+            insertedIA.updateAt = DateTime.now();
+            imageAttachmentDao.insertImageAttachmentWithKey(
+              insertedIA.key,
+              insertedIA,
+            );
+          },
+        ),
+      );
     }
 
     return widgetList;
   }
 
   List<Widget> buildCheveretoUploadActions(
-      BuildContext context, File photoFile) {
+    BuildContext context,
+    File photoFile,
+  ) {
     if (onReplyWithHostedImage == null || chevertoPictureBedTokens.isEmpty) {
       return [];
     }
@@ -440,10 +541,14 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
     return chevertoPictureBedTokens.keys.map((pictureBed) {
       return PlatformDialogAction(
         child: Text(
-            "${S.of(context).uploadRawImageToServer} (${getChevertoPictureBedName(context, pictureBed)})"),
+          "${S.of(context).uploadRawImageToServer} (${getChevertoPictureBedName(context, pictureBed)})",
+        ),
         onPressed: () async {
           await uploadPhotoToCheveretoPictureBed(
-              context, photoFile, pictureBed);
+            context,
+            photoFile,
+            pictureBed,
+          );
           Navigator.of(context).pop();
         },
       );
@@ -451,7 +556,9 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
   }
 
   String getChevertoPictureBedName(
-      BuildContext context, ChevertoPictureBed pictureBed) {
+    BuildContext context,
+    ChevertoPictureBed pictureBed,
+  ) {
     switch (pictureBed) {
       case ChevertoPictureBed.imgbb:
         return S.of(context).pictureBedImgBB;
@@ -460,9 +567,13 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
     }
   }
 
-  Future<void> uploadPhotoToCheveretoPictureBed(BuildContext context,
-      File photoFile, ChevertoPictureBed pictureBed) async {
-    String apiToken = chevertoPictureBedTokens[pictureBed] ??
+  Future<void> uploadPhotoToCheveretoPictureBed(
+    BuildContext context,
+    File photoFile,
+    ChevertoPictureBed pictureBed,
+  ) async {
+    String apiToken =
+        chevertoPictureBedTokens[pictureBed] ??
         await PictureBedUtils.getChevertoApiToken(pictureBed);
     apiToken = apiToken.trim();
     if (apiToken.isEmpty) {
@@ -479,8 +590,9 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
       final result = await client.uploadImageToCheveretoByBinaryFile(
         apiToken,
         photoFile,
-        sourceFieldName:
-            PictureBedUtils.getChevertoUploadSourceFieldName(pictureBed),
+        sourceFieldName: PictureBedUtils.getChevertoUploadSourceFieldName(
+          pictureBed,
+        ),
       );
       final imageUrl = result.imageUrl;
       if (result.isSuccess && imageUrl != null && imageUrl.isNotEmpty) {
@@ -488,7 +600,8 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
         EasyLoading.showSuccess(S.of(context).uploadImageSuccessfully);
       } else {
         EasyLoading.showError(
-            result.errorMessage ?? S.of(context).uploadImageFailed);
+          result.errorMessage ?? S.of(context).uploadImageFailed,
+        );
       }
     } on DioException catch (e) {
       EasyLoading.showError(e.message ?? S.of(context).uploadImageFailed);
@@ -498,7 +611,9 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
   }
 
   Future<String> uploadPhotoToDiscuzServer(
-      BuildContext context, File photoFile) async {
+    BuildContext context,
+    File photoFile,
+  ) async {
     DiscuzAndUserNotifier discuzAndUserNotifier =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false);
     if (discuzAndUserNotifier.discuz == null ||
@@ -509,17 +624,52 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
       Discuz discuz = discuzAndUserNotifier.discuz!;
       User user = discuzAndUserNotifier.user!;
       final dio = await NetworkUtils.getDioWithPersistCookieJar(
-          discuzAndUserNotifier.user);
+        discuzAndUserNotifier.user,
+      );
       final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
-      String uploadedString = await client.uploadImage(
-          user.uid, _checkPostResult.variables.allowPerm.uploadHash, photoFile);
-      return uploadedString;
+      if (_uploading) return '';
+      _uploading = true;
+      try {
+        // Refresh quota before each upload; other devices may have consumed it.
+        final permission = await client.checkPost(fid, tid > 0 ? tid : null);
+        if (!mounted) return '';
+        final error = permission.getErrorString();
+        if (error != null) {
+          EasyLoading.showError(error);
+          return '';
+        }
+        setState(() => _checkPostResult = permission);
+        final restriction = permission.variables.allowPerm.validateUpload(
+          photoFile.path,
+          await photoFile.length(),
+        );
+        if (!mounted) return '';
+        if (restriction != null) {
+          EasyLoading.showError(_restrictionMessage(restriction));
+          return '';
+        }
+        final uploadedString = await client.uploadImage(
+          user.uid,
+          permission.variables.allowPerm.uploadHash,
+          photoFile,
+        );
+        if (mounted) _loadCheckPostInfo();
+        return uploadedString;
+      } catch (_) {
+        if (mounted) EasyLoading.showError(S.of(context).uploadImageFailed);
+        return '';
+      } finally {
+        _uploading = false;
+      }
     }
   }
 
   String getAidFromDiscuzUploadResponse(
-      BuildContext context, String respString) {
+    BuildContext context,
+    String respString,
+  ) {
+    if (respString.isEmpty) return '';
     // like DISCUZUPLOAD|0|8|1|0
     // or DISCUZUPLOAD|0|9|1|0
     // or DISCUZUPLOAD|0|10|1|0
@@ -675,9 +825,18 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
     DiscuzAndUserNotifier discuzAndUserNotifier =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false);
     print(
-        "load check post func by ${discuzAndUserNotifier.discuz} User: ${discuzAndUserNotifier.user}");
+      "load check post func by ${discuzAndUserNotifier.discuz} User: ${discuzAndUserNotifier.user}",
+    );
     if (discuzAndUserNotifier.discuz == null ||
         discuzAndUserNotifier.user == null) {
+      if (mounted)
+        setState(() {
+          _permissionLoaded = true;
+          _discuzError = DiscuzError(
+            'login_required',
+            S.of(context).postPermissionUnknown,
+          );
+        });
       return;
     } else {
       Discuz discuz = discuzAndUserNotifier.discuz!;
@@ -685,17 +844,29 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
       final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
       final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
-      client.checkPost(fid, tid).then((value) {
-        print("Did get the value ${value}");
-        setState(() {
-          _checkPostResult = value;
-        });
-      }).catchError((e, s) {
-        print("${e} ${s}");
-        setState(() {
-          _discuzError = DiscuzError("network_fail", S.of(context).networkFail);
-        });
-      });
+      client
+          .checkPost(fid, tid > 0 ? tid : null)
+          .then((value) {
+            if (!mounted) return;
+            print("Did get the value ${value}");
+            setState(() {
+              _checkPostResult = value;
+              _permissionLoaded = true;
+              _discuzError = value.getErrorString() == null
+                  ? null
+                  : DiscuzError('checkpost', value.getErrorString()!);
+            });
+          })
+          .catchError((e, s) {
+            if (!mounted) return;
+            print("${e} ${s}");
+            setState(() {
+              _discuzError = DiscuzError(
+                "network_fail",
+                S.of(context).networkFail,
+              );
+            });
+          });
     }
   }
 }
@@ -722,13 +893,8 @@ class ExtraFuncBlockButton extends StatelessWidget {
               size: 24,
               color: Theme.of(context).unselectedWidgetColor,
             ),
-            SizedBox(
-              height: 6,
-            ),
-            Text(
-              text,
-              style: Theme.of(context).textTheme.titleMedium,
-            )
+            SizedBox(height: 6),
+            Text(text, style: Theme.of(context).textTheme.titleMedium),
           ],
         ),
       ),

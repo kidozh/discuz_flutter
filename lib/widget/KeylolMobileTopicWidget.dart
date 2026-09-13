@@ -1,3 +1,4 @@
+import '../utility/DashboardPreferences.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -85,7 +86,7 @@ class _KeylolMobileTopicState extends State<KeylolMobileTopicWidget> {
   Widget build(BuildContext context) {
     final source = context.watch<DiscuzAndUserNotifier>();
     final discuz = source.discuz;
-    if (discuz == null || Uri.tryParse(discuz.baseURL)?.host != 'keylol.com') {
+    if (discuz == null || !DashboardPreferences.isKeylol(discuz.baseURL)) {
       return const SizedBox.shrink();
     }
     if (_isLoading) return const Center(child: LoadingStateWidget());
@@ -100,8 +101,13 @@ class _KeylolMobileTopicState extends State<KeylolMobileTopicWidget> {
           itemBuilder: (context, index) {
             final item = threads[index];
             final threadType = ThreadType()..idNameMap = {'0': item.forum};
-            return ForumThreadWidget(discuz, source.user,
-                item.convertToForumThread(), threadType, widget.onSelectTid);
+            return ForumThreadWidget(
+              discuz,
+              source.user,
+              item.convertToForumThread(),
+              threadType,
+              widget.onSelectTid,
+            );
           },
         );
       },

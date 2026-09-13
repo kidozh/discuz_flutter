@@ -1,10 +1,10 @@
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:discuz_flutter/converter/MedalListConverter.dart';
-import 'package:discuz_flutter/converter/StringToBoolConverter.dart';
 import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'BaseResult.dart';
+import '../utility/discuz_json.dart';
 import 'ErrorResult.dart';
 
 part 'UserProfileResult.g.dart';
@@ -61,8 +61,8 @@ class SpaceVariables{
   @JsonKey(name: "sightml",defaultValue: "")
   String signatureHtml = "";
   @JsonKey(name:"gender")
-  @StringToBoolConverter()
-  bool male = true;
+  @StringToIntConverter()
+  int gender = 0;
   @JsonKey(name: "birthyear")
   @StringToIntConverter()
   int birthYear = 0;
@@ -122,12 +122,13 @@ class SpaceVariables{
 
   SpaceVariables();
   factory SpaceVariables.fromJson(Map<String, dynamic> json){
-    try{
-      return _$SpaceVariablesFromJson(json);
-    }
-    catch (e){
-      return SpaceVariables();
-    }
+    return _$SpaceVariablesFromJson({
+      ...discuzScalars(json),
+      'username': discuzString(json['username']),
+      'bio': discuzString(json['bio']), 'interest': discuzString(json['interest']),
+      'admingroup': discuzMap(json['admingroup']),
+      'group': discuzMap(json['group']),
+    });
   }
 
 
@@ -169,7 +170,7 @@ class AdminGroupInfo{
 class GroupInfo{
   @JsonKey(defaultValue: "")
   String type = "";
-  @JsonKey(name: "grouptitle")
+  @JsonKey(name: "grouptitle", defaultValue: "")
   String groupTitle = "";
   @StringToIntConverter()
   int stars = 0;
