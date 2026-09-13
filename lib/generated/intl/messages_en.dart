@@ -1351,6 +1351,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "post": MessageLookupByLibrary.simpleMessage("Post"),
     "postAddComment": MessageLookupByLibrary.simpleMessage("Add comment"),
+    "postAgainst": MessageLookupByLibrary.simpleMessage("Oppose"),
+    "postAlreadyReviewed": MessageLookupByLibrary.simpleMessage(
+      "Already voted",
+    ),
     "postAuthorLabel": MessageLookupByLibrary.simpleMessage("OP"),
     "postBlockedLabel": MessageLookupByLibrary.simpleMessage("Blocked"),
     "postCommentHint": MessageLookupByLibrary.simpleMessage(
@@ -1364,6 +1368,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "postLocating": MessageLookupByLibrary.simpleMessage("Locating post…"),
     "postNumber": MessageLookupByLibrary.simpleMessage("Post number"),
+    "postOpposed": MessageLookupByLibrary.simpleMessage("Opposed"),
     "postPermissionDenied": MessageLookupByLibrary.simpleMessage(
       "Your account cannot create threads in this forum",
     ),
@@ -1371,13 +1376,34 @@ class MessageLookup extends MessageLookupByLibrary {
       "Could not verify posting permission. Please retry.",
     ),
     "postPosition": m46,
+    "postRate": MessageLookupByLibrary.simpleMessage("Rate"),
+    "postRatingChanged": MessageLookupByLibrary.simpleMessage(
+      "Rating limits or terms changed. Review them and confirm again.",
+    ),
+    "postRatingInvalid": MessageLookupByLibrary.simpleMessage(
+      "Choose a nonzero score within the allowed range and remaining allowance.",
+    ),
+    "postRatingNotify": MessageLookupByLibrary.simpleMessage("Notify author"),
+    "postRatingReason": MessageLookupByLibrary.simpleMessage("Reason"),
+    "postRatingRemaining": MessageLookupByLibrary.simpleMessage(
+      "Remaining today",
+    ),
+    "postRatingUnavailable": MessageLookupByLibrary.simpleMessage(
+      "Rating options are unavailable. You may lack permission or the site may use a different rating form.",
+    ),
+    "postRatingsUnavailable": MessageLookupByLibrary.simpleMessage(
+      "No rating records could be displayed, or this site uses an unsupported format. Use the browser button to view them on the website.",
+    ),
     "postReturnThread": MessageLookupByLibrary.simpleMessage(
       "Back to full thread",
     ),
     "postRevisedLabel": MessageLookupByLibrary.simpleMessage(
       "Edited after review",
     ),
+    "postSupport": MessageLookupByLibrary.simpleMessage("Support"),
+    "postSupported": MessageLookupByLibrary.simpleMessage("Supported"),
     "postThread": MessageLookupByLibrary.simpleMessage("Post thread"),
+    "postViewRatings": MessageLookupByLibrary.simpleMessage("View ratings"),
     "postWarnedLabel": MessageLookupByLibrary.simpleMessage("Warned"),
     "preparingPage": MessageLookupByLibrary.simpleMessage(
       "Preparing the page.",
@@ -1697,6 +1723,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "successfullyDeleteViewHistoryContent": m56,
     "successfullyDownloadFiles": m57,
     "syncSuccessfullyWithServer": m58,
+    "systemStyleAndroidDescription": MessageLookupByLibrary.simpleMessage(
+      "Follow the system using Material Design.",
+    ),
     "systemStyleDescription": MessageLookupByLibrary.simpleMessage(
       "Liquid Glass on iOS 26 or later, Cupertino on earlier iOS, and Material Design on other platforms.",
     ),

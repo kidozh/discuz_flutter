@@ -1,3 +1,10 @@
+import '../utility/rating_allowance_cache.dart';
+import '../utility/DashboardPreferences.dart';
+import '../page/PostRatingsPage.dart';
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
+import '../client/PostReviewClient.dart';
+import '../client/ForumInteractionClient.dart';
+import '../page/PostRatingDialog.dart';
 import '../entity/SpecialThread.dart';
 import '../page/ForumListsPage.dart';
 import 'dart:developer';
@@ -58,11 +65,14 @@ class PostWidget extends StatelessWidget {
   int? tid;
   int? fid;
   final bool asSliver;
+  final bool showSeparator;
   final VoidCallback? onBodyReady;
   final VoidCallback? onContentChanged;
   final int? commentCount;
   final RewardInfo? reward;
-  final VoidCallback? onAddComment;
+  final bool isBestAnswer;
+  final int sessionUid;
+  final Future<void> Function()? onAddComment;
 
   PostWidget(
     this._discuz,
@@ -71,10 +81,13 @@ class PostWidget extends StatelessWidget {
     this.formhash, {
     super.key,
     this.asSliver = false,
+    this.showSeparator = true,
     this.onBodyReady,
     this.onContentChanged,
     this.commentCount,
     this.reward,
+    this.isBestAnswer = false,
+    this.sessionUid = 0,
     this.onAddComment,
     this.onAuthorSelectedCallback,
     this.postCommentList,
@@ -98,10 +111,13 @@ class PostWidget extends StatelessWidget {
       fid: this.fid,
       tid: this.tid,
       asSliver: asSliver,
+      showSeparator: showSeparator,
       onBodyReady: onBodyReady,
       onContentChanged: onContentChanged,
       commentCount: commentCount,
       reward: reward,
+      isBestAnswer: isBestAnswer,
+      sessionUid: sessionUid,
       onAddComment: onAddComment,
     );
   }
@@ -119,11 +135,14 @@ class PostStatefulWidget extends StatefulWidget {
   int? tid;
   int? fid;
   final bool asSliver;
+  final bool showSeparator;
   final VoidCallback? onBodyReady;
   final VoidCallback? onContentChanged;
   final int? commentCount;
   final RewardInfo? reward;
-  final VoidCallback? onAddComment;
+  final bool isBestAnswer;
+  final int sessionUid;
+  final Future<void> Function()? onAddComment;
 
   PostStatefulWidget(
     this._discuz,
@@ -131,10 +150,13 @@ class PostStatefulWidget extends StatefulWidget {
     this._authorId,
     this.formhash, {
     this.asSliver = false,
+    this.showSeparator = true,
     this.onBodyReady,
     this.onContentChanged,
     this.commentCount,
     this.reward,
+    this.isBestAnswer = false,
+    this.sessionUid = 0,
     this.onAddComment,
     this.onAuthorSelectedCallback,
     this.postCommentList,
@@ -175,6 +197,113 @@ class PostState extends State<PostStatefulWidget> {
   int? tid;
   int? fid;
 
+  String? get _quotaKey {
+    final user = context.read<DiscuzAndUserNotifier>().user;
+    return user == null
+        ? null
+        : RatingAllowanceCache.key(_discuz.baseURL, user.uid, user.auth);
+  }
+
+  bool get _quickRating =>
+      DashboardPreferences.isKeylol(_discuz.baseURL) &&
+      _canReview &&
+      (_quotaKey == null ||
+          RatingAllowanceCache.available(_quotaKey!) != false);
+  void _quotaChanged() {
+    if (mounted) setState(() {});
+  }
+
+  bool _reviewBusy = false;
+  static final Expando<Map<String, int>> _reviews = Expando();
+  String _reviewKey(User user) =>
+      '${_discuz.baseURL}:${_post.pid}:${user.uid}:${user.auth}';
+  int? get _reviewState {
+    final account = context.read<DiscuzAndUserNotifier>();
+    final user = account.user;
+    return user == null ? null : _reviews[account]?[_reviewKey(user)];
+  }
+
+  bool get _canReview {
+    final account = context.read<DiscuzAndUserNotifier>();
+    return account.discuz?.baseURL == _discuz.baseURL &&
+        account.user != null &&
+        account.user!.uid > 0 &&
+        widget.sessionUid == account.user!.uid &&
+        _post.authorId > 0 &&
+        _post.authorId != account.user!.uid &&
+        _post.pid > 0;
+  }
+
+  Future<void> _reviewPost({bool? positive}) async {
+    if (positive == null && !DashboardPreferences.isKeylol(_discuz.baseURL))
+      return;
+    if (_reviewBusy ||
+        !_canReview ||
+        (positive != null && (_post.first || _reviewState != null)))
+      return;
+    final account = context.read<DiscuzAndUserNotifier>();
+    final user = account.user!;
+    final key = _reviewKey(user);
+    bool sameAccount() =>
+        mounted &&
+        account.discuz?.baseURL == _discuz.baseURL &&
+        account.user?.uid == user.uid &&
+        account.user?.auth == user.auth;
+    setState(() => _reviewBusy = true);
+    try {
+      final client = PostReviewClient(
+        ForumInteractionClient(
+          await NetworkUtils.getDioWithPersistCookieJar(user),
+          _discuz.baseURL,
+        ),
+      );
+      if (!sameAccount()) return;
+      if (positive == null) {
+        final changed = await showPlatformDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => PostRatingDialog(
+            client: client,
+            quotaKey: _quotaKey,
+            tid: _post.tid,
+            pid: _post.pid,
+            uid: user.uid,
+            sameAccount: sameAccount,
+          ),
+        );
+        if (changed == true && sameAccount()) widget.onContentChanged?.call();
+      } else {
+        await client.vote(
+          _post.tid,
+          _post.pid,
+          user.uid,
+          positive,
+          sameAccount,
+        );
+        if (sameAccount()) {
+          (_reviews[account] ??= {})[key] = positive ? 1 : -1;
+          widget.onContentChanged?.call();
+        }
+      }
+    } catch (e) {
+      if (!sameAccount()) return;
+      if (e is ForumApiException && e.code == 'noreply_voted_error') {
+        (_reviews[account] ??= {})[key] = 0;
+      } else {
+        await showPlatformAlert(
+          context: context,
+          title: S.of(context).forumActionFailed,
+          message: e is ForumApiException && e.message.isNotEmpty
+              ? e.message
+              : S.of(context).forumSubmissionUnknown,
+          actions: [PlatformAlertAction(label: S.of(context).forumConfirm)],
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _reviewBusy = false);
+    }
+  }
+
   bool isFontStyleIgnored() {
     if (ignoreFontCustomization == null || ignoreFontCustomization == false) {
       return false;
@@ -211,6 +340,8 @@ class PostState extends State<PostStatefulWidget> {
   @override
   void initState() {
     super.initState();
+    RatingAllowanceCache.revision.addListener(_quotaChanged);
+    RatingAllowanceCache.load();
     if (mounted) {
       _loadDB();
     }
@@ -218,6 +349,7 @@ class PostState extends State<PostStatefulWidget> {
 
   @override
   void dispose() {
+    RatingAllowanceCache.revision.removeListener(_quotaChanged);
     super.dispose();
   }
 
@@ -338,6 +470,7 @@ class PostState extends State<PostStatefulWidget> {
         ),
       );
       return CupertinoSeparatedItem(
+        enabled: widget.showSeparator,
         reading: true,
         sliver: widget.asSliver,
         child: widget.asSliver ? SliverToBoxAdapter(child: blocked) : blocked,
@@ -348,6 +481,7 @@ class PostState extends State<PostStatefulWidget> {
       builder: (context, typesetting, _) {
         if (widget.asSliver) {
           return CupertinoSeparatedItem(
+            enabled: widget.showSeparator,
             reading: true,
             sliver: true,
             child: ReadingGlassSliverCard(
@@ -361,6 +495,7 @@ class PostState extends State<PostStatefulWidget> {
         }
         // should return the container
         return CupertinoSeparatedItem(
+          enabled: widget.showSeparator,
           reading: true,
           child: PlatformWidgetBuilder(
             material: (_, child, platform) => PlatformCard(
@@ -515,6 +650,7 @@ class PostState extends State<PostStatefulWidget> {
         warned: _post.warned,
         revised: _post.revised,
         reward: widget.reward,
+        isBestAnswer: widget.isBestAnswer,
         onSelectPost: jumpToPidCallback,
       ),
       const SizedBox(height: 8),
@@ -583,21 +719,25 @@ class PostState extends State<PostStatefulWidget> {
           ),
         ),
       if (tid != null && ((widget.commentCount ?? getCommentList().length) > 0))
-        PlatformTextButton(
-          onPressed: () => Navigator.push(
-            context,
-            platformPageRoute(
-              context: context,
-              builder: (_) => ForumListsPage(
-                discuz: _discuz,
-                user: context.read<DiscuzAndUserNotifier>().user,
-                tid: tid,
-                pid: _post.pid,
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: PlatformTextButton(
+            onPressed: () => Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                builder: (_) => ForumListsPage(
+                  discuz: _discuz,
+                  user: context.read<DiscuzAndUserNotifier>().user,
+                  tid: tid,
+                  pid: _post.pid,
+                  onAddComment: widget.onAddComment,
+                ),
               ),
             ),
-          ),
-          child: Text(
-            '${S.of(context).forumAllComments}${widget.commentCount == null ? '' : ' (${widget.commentCount})'}',
+            child: Text(
+              '${S.of(context).forumAllComments}${widget.commentCount == null ? '' : ' (${widget.commentCount})'}',
+            ),
           ),
         ),
       getPostTailWidget(context),
@@ -630,6 +770,30 @@ class PostState extends State<PostStatefulWidget> {
         color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
       options: [
+        if (DashboardPreferences.isKeylol(_discuz.baseURL))
+          PopupMenuOption(
+            label: S.of(context).postViewRatings,
+            onTap: (_) => Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                builder: (_) => PostRatingsPage(
+                  discuz: _discuz,
+                  user: context.read<DiscuzAndUserNotifier>().user,
+                  tid: _post.tid,
+                  pid: _post.pid,
+                ),
+              ),
+            ),
+          ),
+        if (DashboardPreferences.isKeylol(_discuz.baseURL) &&
+            _canReview &&
+            !_quickRating &&
+            !_reviewBusy)
+          PopupMenuOption(
+            label: S.of(context).postRate,
+            onTap: (_) => _reviewPost(),
+          ),
         PopupMenuOption(
           label: S.of(context).replyPost,
           onTap: (option) {
@@ -673,6 +837,39 @@ class PostState extends State<PostStatefulWidget> {
             }
           },
         ),
+        if (context
+                    .read<DiscuzNotificationProvider>()
+                    .baseVariableResult
+                    .isModerator ==
+                0 &&
+            _user != null)
+          PopupMenuOption(
+            label: S.of(context).reportContentTitle(_post.author),
+            onTap: (_) => Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                iosTitle: S.of(context).reportThreadTooltip,
+                builder: (_) =>
+                    ReportContentPage(_post.author, _post.pid, 0, formhash),
+              ),
+            ),
+            material: (context, _) => MaterialPopupMenuOptionData(
+              textStyle: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+            cupertino: (_, __) =>
+                const CupertinoPopupMenuOptionData(isDestructiveAction: true),
+          ),
+        if (_canReview && !_post.first && _reviewState == null && !_reviewBusy)
+          PopupMenuOption(
+            label: S.of(context).postAgainst,
+            onTap: (_) => _reviewPost(positive: false),
+            material: (context, _) => MaterialPopupMenuOptionData(
+              textStyle: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+            cupertino: (_, __) =>
+                const CupertinoPopupMenuOptionData(isDestructiveAction: true),
+          ),
         if (!this.isUserBlocked)
           PopupMenuOption(
             label: S.of(context).blockUser,
@@ -732,13 +929,72 @@ class PostState extends State<PostStatefulWidget> {
     final notification = Provider.of<DiscuzNotificationProvider>(context);
     final intelligence = Provider.of<UserPreferenceNotifierProvider>(context);
     final actionColor = Theme.of(context).colorScheme.onSurfaceVariant;
+    final state = _reviewState;
+    final reviewLabel = state == 1
+        ? S.of(context).postSupported
+        : state == -1
+        ? S.of(context).postOpposed
+        : state == 0
+        ? S.of(context).postAlreadyReviewed
+        : S.of(context).postSupport;
     final actions = <Widget>[
+      if (_quickRating)
+        Tooltip(
+          message: S.of(context).postRate,
+          child: PlatformIconButton(
+            liquidGlassSymbol: 'star.bubble',
+            liquidGlassIconSize: 18,
+            icon: Icon(
+              isCupertino(context)
+                  ? CupertinoIcons.star
+                  : Icons.star_outline_rounded,
+              size: 18,
+              color: actionColor,
+              semanticLabel: S.of(context).postRate,
+            ),
+            onPressed: _reviewBusy ? null : () => _reviewPost(),
+          ),
+        ),
+      if (_canReview && !_post.first)
+        Tooltip(
+          message: reviewLabel,
+          child: PlatformIconButton(
+            liquidGlassSymbol: state == -1
+                ? 'hand.thumbsdown.fill'
+                : state == 1
+                ? 'hand.thumbsup.fill'
+                : state == 0
+                ? 'checkmark'
+                : 'hand.thumbsup',
+            icon: Icon(
+              state == -1
+                  ? CupertinoIcons.hand_thumbsdown_fill
+                  : state == 1
+                  ? CupertinoIcons.hand_thumbsup_fill
+                  : state == 0
+                  ? CupertinoIcons.check_mark
+                  : CupertinoIcons.hand_thumbsup,
+              size: 18,
+              semanticLabel: reviewLabel,
+              color: state == -1
+                  ? Theme.of(context).colorScheme.error
+                  : state == 1
+                  ? Theme.of(context).colorScheme.primary
+                  : actionColor,
+            ),
+            onPressed: _reviewBusy || state != null
+                ? null
+                : () => _reviewPost(positive: true),
+          ),
+        ),
       if (widget.onAddComment != null)
         PlatformIconButton(
           liquidGlassSymbol: 'text.bubble',
           liquidGlassIconSize: 18,
           icon: Icon(
-            Icons.mode_comment_outlined,
+            isCupertino(context)
+                ? CupertinoIcons.text_bubble
+                : Icons.mode_comment_outlined,
             size: 18,
             color: actionColor,
             semanticLabel: S.of(context).postAddComment,
@@ -763,34 +1019,7 @@ class PostState extends State<PostStatefulWidget> {
       );
     }
 
-    if (notification.baseVariableResult.isModerator == 0) {
-      if (_user != null) {
-        actions.add(
-          PlatformIconButton(
-            liquidGlassSymbol: 'flag',
-            liquidGlassIconSize: 18,
-            icon: Icon(
-              PlatformIcons(context).flag,
-              size: 18,
-              color: actionColor,
-              semanticLabel: S.of(context).reportContentTitle(_post.author),
-            ),
-            onPressed: () {
-              VibrationUtils.vibrateWithClickIfPossible();
-              Navigator.push(
-                context,
-                platformPageRoute(
-                  context: context,
-                  iosTitle: S.of(context).reportThreadTooltip,
-                  builder: (context) =>
-                      ReportContentPage(_post.author, _post.pid, 0, formhash),
-                ),
-              );
-            },
-          ),
-        );
-      }
-    } else if (fid != null) {
+    if (notification.baseVariableResult.isModerator != 0 && fid != null) {
       actions.add(adminPostPopupMenu);
     }
 

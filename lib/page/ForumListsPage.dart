@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'DisplayForumSliverPage.dart';
 import 'UserProfilePage.dart';
 import '../widget/PostCommentWidget.dart';
@@ -24,6 +25,7 @@ class ForumListsPage extends StatefulWidget {
   final String type;
   final int? tid, pid, fid;
   final ForumDirectory? directory;
+  final Future<void> Function()? onAddComment;
   final Future<ForumInteractionClient> Function()? createClient;
   const ForumListsPage({
     super.key,
@@ -32,6 +34,7 @@ class ForumListsPage extends StatefulWidget {
     this.createClient,
     this.type = 'thread',
     this.directory,
+    this.onAddComment,
     this.fid,
     this.tid,
     this.pid,
@@ -44,6 +47,7 @@ class _ForumListsPageState extends State<ForumListsPage> {
   final List<Map<String, dynamic>> rows = [];
   int page = 1, generation = 0;
   bool loading = false, more = true;
+  bool composing = false;
   String? error;
   bool get comments => widget.pid != null;
   bool get sameAccount {
@@ -149,7 +153,41 @@ class _ForumListsPageState extends State<ForumListsPage> {
     context.watch<DiscuzAndUserNotifier>();
     final s = S.of(context);
     return PlatformScaffold(
+      iosContentPadding: true,
       appBar: PlatformAppBar(
+        trailingActions: comments
+            ? [
+                PlatformIconButton(
+                  liquidGlassSymbol: 'arrow.clockwise',
+                  icon: Icon(Icons.refresh, semanticLabel: s.forumRefresh),
+                  onPressed: loading ? null : () => load(refresh: true),
+                ),
+                if (sameAccount &&
+                    widget.user != null &&
+                    widget.onAddComment != null)
+                  PlatformIconButton(
+                    liquidGlassSymbol: 'square.and.pencil',
+                    icon: Icon(
+                      isCupertino(context)
+                          ? CupertinoIcons.square_pencil
+                          : Icons.edit_outlined,
+                      semanticLabel: s.postAddComment,
+                    ),
+                    onPressed: composing
+                        ? null
+                        : () async {
+                            setState(() => composing = true);
+                            try {
+                              await widget.onAddComment!();
+                              if (mounted && sameAccount)
+                                await load(refresh: true);
+                            } finally {
+                              if (mounted) setState(() => composing = false);
+                            }
+                          },
+                  ),
+              ]
+            : null,
         title: Text(
           widget.directory != null
               ? switch (widget.directory!) {
@@ -168,10 +206,11 @@ class _ForumListsPageState extends State<ForumListsPage> {
           ? Center(child: Text(s.forumAccountChanged))
           : Column(
               children: [
-                PlatformTextButton(
-                  onPressed: loading ? null : () => load(refresh: true),
-                  child: Text(s.forumRefresh),
-                ),
+                if (!comments)
+                  PlatformTextButton(
+                    onPressed: loading ? null : () => load(refresh: true),
+                    child: Text(s.forumRefresh),
+                  ),
                 if (!comments &&
                     widget.directory == null &&
                     widget.type == 'reply')
@@ -181,6 +220,9 @@ class _ForumListsPageState extends State<ForumListsPage> {
                   ),
                 Expanded(
                   child: ListView.builder(
+                    padding: comments
+                        ? const EdgeInsets.symmetric(horizontal: 6, vertical: 8)
+                        : null,
                     itemCount: rows.length + 1,
                     itemBuilder: (context, index) {
                       if (index == rows.length)

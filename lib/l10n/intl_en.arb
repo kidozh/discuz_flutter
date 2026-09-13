@@ -330,6 +330,7 @@
   "ios": "iOS",
   "liquidGlassStyle": "Liquid Glass",
   "cupertinoStyle": "Cupertino",
+  "systemStyleAndroidDescription": "Follow the system using Material Design.",
   "systemStyleDescription": "Liquid Glass on iOS 26 or later, Cupertino on earlier iOS, and Material Design on other platforms.",
   "liquidGlassStyleDescription": "Native glass controls on iOS / iPadOS 26 or later.",
   "liquidGlassStyleUnavailable": "Requires iOS / iPadOS 26 or later. Unavailable on this device; a saved selection falls back to Cupertino.",
@@ -1190,5 +1191,19 @@
   "portalNoHotThreads": "No popular threads yet",
   "feedGuest": "Guest",
   "dashboardOrder": "Dashboard order",
-  "dashboardOrderHint": "Drag the handles to reorder. Changes save automatically."
+  "dashboardOrderHint": "Drag the handles to reorder. Changes save automatically.",
+  "postSupport": "Support",
+  "postSupported": "Supported",
+  "postAgainst": "Oppose",
+  "postOpposed": "Opposed",
+  "postAlreadyReviewed": "Already voted",
+  "postRate": "Rate",
+  "postRatingUnavailable": "Rating options are unavailable. You may lack permission or the site may use a different rating form.",
+  "postRatingInvalid": "Choose a nonzero score within the allowed range and remaining allowance.",
+  "postRatingChanged": "Rating limits or terms changed. Review them and confirm again.",
+  "postRatingRemaining": "Remaining today",
+  "postRatingReason": "Reason",
+  "postRatingNotify": "Notify author",
+  "postViewRatings": "View ratings",
+  "postRatingsUnavailable": "No rating records could be displayed, or this site uses an unsupported format. Use the browser button to view them on the website."
 }

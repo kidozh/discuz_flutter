@@ -3141,17 +3141,23 @@ Future<T?> showPlatformDialog<T>({
   required BuildContext context,
   required WidgetBuilder builder,
   bool barrierDismissible = true,
-}) => isCupertino(context)
-    ? showCupertinoDialog<T>(
-        context: context,
-        builder: builder,
-        barrierDismissible: barrierDismissible,
-      )
-    : showDialog<T>(
-        context: context,
-        builder: builder,
-        barrierDismissible: barrierDismissible,
-      );
+}) {
+  // Dialog routes may sit above a page-local appearance provider.
+  final style = visualStyle(context);
+  Widget dialogBuilder(BuildContext dialogContext) =>
+      PlatformProvider(style: style, builder: (context) => builder(context));
+  return isCupertino(context)
+      ? showCupertinoDialog<T>(
+          context: context,
+          builder: dialogBuilder,
+          barrierDismissible: barrierDismissible,
+        )
+      : showDialog<T>(
+          context: context,
+          builder: dialogBuilder,
+          barrierDismissible: barrierDismissible,
+        );
+}
 
 class MaterialModalSheetData {
   final bool isScrollControlled;

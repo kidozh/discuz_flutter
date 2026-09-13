@@ -470,7 +470,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "credit": MessageLookupByLibrary.simpleMessage("积分"),
     "cupertinoStyle": MessageLookupByLibrary.simpleMessage("Cupertino"),
     "cupertinoStyleDescription": MessageLookupByLibrary.simpleMessage(
-      "经典苹果风格控件，不启用自定义 Liquid Glass 效果。",
+      "经典苹果风格控件，不启用自定义 液态玻璃 效果。",
     ),
     "customColor": MessageLookupByLibrary.simpleMessage("自定义颜色"),
     "customColorNamed": m15,
@@ -795,7 +795,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "legalInformation": MessageLookupByLibrary.simpleMessage("法律信息"),
     "linkUnableToOpen": m35,
     "linuxDeviceName": m36,
-    "liquidGlassStyle": MessageLookupByLibrary.simpleMessage("Liquid Glass"),
+    "liquidGlassStyle": MessageLookupByLibrary.simpleMessage("液态玻璃"),
     "liquidGlassStyleDescription": MessageLookupByLibrary.simpleMessage(
       "使用 iOS / iPadOS 26 及以上系统的原生玻璃控件。",
     ),
@@ -1071,6 +1071,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "portalNoHotThreads": MessageLookupByLibrary.simpleMessage("暂无热帖"),
     "post": MessageLookupByLibrary.simpleMessage("发帖"),
     "postAddComment": MessageLookupByLibrary.simpleMessage("发表点评"),
+    "postAgainst": MessageLookupByLibrary.simpleMessage("反对"),
+    "postAlreadyReviewed": MessageLookupByLibrary.simpleMessage("已评价"),
     "postAuthorLabel": MessageLookupByLibrary.simpleMessage("楼主"),
     "postBlockedLabel": MessageLookupByLibrary.simpleMessage("已屏蔽"),
     "postCommentHint": MessageLookupByLibrary.simpleMessage(
@@ -1084,6 +1086,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "postLocating": MessageLookupByLibrary.simpleMessage("正在定位楼层…"),
     "postNumber": MessageLookupByLibrary.simpleMessage("回帖数"),
+    "postOpposed": MessageLookupByLibrary.simpleMessage("已反对"),
     "postPermissionDenied": MessageLookupByLibrary.simpleMessage(
       "当前账号没有在此版块发帖的权限",
     ),
@@ -1091,9 +1094,28 @@ class MessageLookup extends MessageLookupByLibrary {
       "暂时无法确认发帖权限，请重试",
     ),
     "postPosition": m46,
+    "postRate": MessageLookupByLibrary.simpleMessage("评分"),
+    "postRatingChanged": MessageLookupByLibrary.simpleMessage(
+      "评分额度或规则已变化，请核对后重新确认。",
+    ),
+    "postRatingInvalid": MessageLookupByLibrary.simpleMessage(
+      "请选择非零分值，并遵守评分范围和剩余额度。",
+    ),
+    "postRatingNotify": MessageLookupByLibrary.simpleMessage("通知作者"),
+    "postRatingReason": MessageLookupByLibrary.simpleMessage("评分理由"),
+    "postRatingRemaining": MessageLookupByLibrary.simpleMessage("今日剩余"),
+    "postRatingUnavailable": MessageLookupByLibrary.simpleMessage(
+      "当前无法获取评分项目，可能没有评分权限或论坛使用了不同的评分表单。",
+    ),
+    "postRatingsUnavailable": MessageLookupByLibrary.simpleMessage(
+      "暂无可显示的评分记录，或论坛返回的格式暂不支持。可点右上角在网页查看。",
+    ),
     "postReturnThread": MessageLookupByLibrary.simpleMessage("返回完整主题"),
     "postRevisedLabel": MessageLookupByLibrary.simpleMessage("审核后编辑"),
+    "postSupport": MessageLookupByLibrary.simpleMessage("支持"),
+    "postSupported": MessageLookupByLibrary.simpleMessage("已支持"),
     "postThread": MessageLookupByLibrary.simpleMessage("发帖"),
+    "postViewRatings": MessageLookupByLibrary.simpleMessage("查看评分"),
     "postWarnedLabel": MessageLookupByLibrary.simpleMessage("已警告"),
     "preparingPage": MessageLookupByLibrary.simpleMessage("正在准备此界面。"),
     "preventAbuseUser": MessageLookupByLibrary.simpleMessage(
@@ -1325,8 +1347,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "successfullyDeleteViewHistoryContent": m56,
     "successfullyDownloadFiles": m57,
     "syncSuccessfullyWithServer": m58,
+    "systemStyleAndroidDescription": MessageLookupByLibrary.simpleMessage(
+      "跟随系统，使用质感设计。",
+    ),
     "systemStyleDescription": MessageLookupByLibrary.simpleMessage(
-      "iOS 26 及以上使用 Liquid Glass，较早的 iOS 使用 Cupertino，其他平台使用质感设计。",
+      "iOS 26 及以上使用 液态玻璃，较早的 iOS 使用 Cupertino，其他平台使用质感设计。",
     ),
     "takeAPicture": MessageLookupByLibrary.simpleMessage("照相"),
     "tapToWipeAndRelogin": MessageLookupByLibrary.simpleMessage(

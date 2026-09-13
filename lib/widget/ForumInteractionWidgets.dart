@@ -217,6 +217,10 @@ class ThreadFeedbackBar extends StatefulWidget {
 }
 
 class _ThreadFeedbackBarState extends State<ThreadFeedbackBar> {
+  // Keep successful feedback across reader refreshes and route reconstruction.
+  // Scope to the exact site, thread and login; never infer a vote's direction
+  // from Discuz's directionless `recommend` flag.
+  static final Expando<Map<String, bool>> _feedbackBySession = Expando();
   bool busy = false, sent = false;
   bool? acceptedDirection;
   String? accountKey;
@@ -224,12 +228,14 @@ class _ThreadFeedbackBarState extends State<ThreadFeedbackBar> {
   Widget build(BuildContext context) {
     final account = context.watch<DiscuzAndUserNotifier>();
     final user = account.user;
-    final nextKey = '${user?.uid}:${user?.auth}';
+    final acceptedFeedback = _feedbackBySession[account] ??= <String, bool>{};
+    final nextKey =
+        '${widget.discuz.baseURL}:${widget.tid}:${user?.uid}:${user?.auth}';
     if (nextKey != accountKey) {
       accountKey = nextKey;
       busy = false;
       sent = false;
-      acceptedDirection = null;
+      acceptedDirection = acceptedFeedback[nextKey];
     }
     if (user == null ||
         user.uid <= 0 ||
@@ -258,7 +264,11 @@ class _ThreadFeedbackBarState extends State<ThreadFeedbackBar> {
                     tid: widget.tid,
                     formhash: widget.formhash,
                     positive: positive,
-                    enabled: !busy && !sent && !widget.voted,
+                    enabled:
+                        !busy &&
+                        !sent &&
+                        !widget.voted &&
+                        acceptedDirection == null,
                     icon: positive
                         ? CupertinoIcons.hand_thumbsup
                         : CupertinoIcons.hand_thumbsdown,
@@ -268,6 +278,7 @@ class _ThreadFeedbackBarState extends State<ThreadFeedbackBar> {
                               : s.forumNotRecommended)
                         : '${positive ? s.forumRecommend : s.forumDisrecommend} (${positive ? widget.positiveCount : widget.negativeCount})',
                     onFeedbackAccepted: (direction) {
+                      acceptedFeedback[nextKey] = direction;
                       setState(() => acceptedDirection = direction);
                     },
                     onBusyChanged: (value) {
