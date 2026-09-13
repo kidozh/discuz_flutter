@@ -154,6 +154,7 @@ class _MyAppState extends State<MyApp> {
         .adExemptHost = adExemptHost;
     final userPreferences =
         Provider.of<UserPreferenceNotifierProvider>(context, listen: false);
+    userPreferences.setAutoSummarizeEnabled(await UserPreferencesUtils.getAutoSummarizeEnabled());
     userPreferences.setAppleIntelligenceGuardrail(appleIntelligenceGuardrail);
     userPreferences.setOnDeviceAiAvailability(onDeviceAiAvailability);
     userPreferences.setAppleIntelligenceEnabled(

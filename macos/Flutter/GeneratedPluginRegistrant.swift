@@ -5,6 +5,7 @@
 import FlutterMacOS
 import Foundation
 
+import apple_post_translation
 import audio_session
 import device_info_plus
 import dynamic_color
@@ -30,6 +31,7 @@ import wakelock_plus
 import webview_flutter_wkwebview
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
+  ApplePostTranslationPlugin.register(with: registry.registrar(forPlugin: "ApplePostTranslationPlugin"))
   AudioSessionPlugin.register(with: registry.registrar(forPlugin: "AudioSessionPlugin"))
   DeviceInfoPlusMacosPlugin.register(with: registry.registrar(forPlugin: "DeviceInfoPlusMacosPlugin"))
   DynamicColorPlugin.register(with: registry.registrar(forPlugin: "DynamicColorPlugin"))

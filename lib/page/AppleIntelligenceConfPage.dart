@@ -294,6 +294,16 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage>
               title: Text(S.of(context).appleIntelligenceEnabled),
               description: Text(S.of(context).onDeviceAiReadyDescription),
             ),
+            if (_isApple)
+              SettingsTile.switchTile(
+                initialValue: context.watch<UserPreferenceNotifierProvider>().autoSummarizeEnabled,
+                title: Text(S.of(context).autoSummarizeTitle),
+                description: Text(S.of(context).autoSummarizeDescription),
+                onToggle: (value) {
+                  context.read<UserPreferenceNotifierProvider>().setAutoSummarizeEnabled(value);
+                  unawaited(UserPreferencesUtils.putAutoSummarizeEnabled(value));
+                },
+              ),
             if (appleAiEnabled && _isApple)
               SettingsTile.navigation(
                 title: Text(S.of(context).appleIntelligenceGuardrailLevel),

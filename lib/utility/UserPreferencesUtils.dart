@@ -161,6 +161,16 @@ class UserPreferencesUtils {
     return FlexScheme.blueWhale;
   }
 
+  static Future<void> putAutoSummarizeEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('autoSummarizeEnabledV1', enabled);
+  }
+
+  static Future<bool> getAutoSummarizeEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('autoSummarizeEnabledV1') ?? true;
+  }
+
   static const String appleIntelligenceEnabledKey =
       "appleIntelligenceEnabledKeyV1";
   static const String appleIntelligenceGuardrailKey =

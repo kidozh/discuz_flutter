@@ -118,6 +118,8 @@ dependencies:
 
   firebase_core: any
   foundation_models_framework: ^0.2.0
+  apple_post_translation:
+    path: third_party/apple_post_translation
   crypto: any
   http: any
 dev_dependencies:

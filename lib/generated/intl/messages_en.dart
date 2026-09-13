@@ -407,6 +407,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "authorizedSite": MessageLookupByLibrary.simpleMessage("Authorized site"),
     "autoFillUsername": m8,
+    "autoSummarizeDescription": MessageLookupByLibrary.simpleMessage(
+      "Summarize posts over 1,500 characters when Apple Intelligence is enabled. The original remains available.",
+    ),
+    "autoSummarizeTitle": MessageLookupByLibrary.simpleMessage(
+      "Automatically summarize long posts",
+    ),
     "autofillDialogSubtitle": MessageLookupByLibrary.simpleMessage(
       "Select the username to fill the login form",
     ),
@@ -1400,9 +1406,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "postRevisedLabel": MessageLookupByLibrary.simpleMessage(
       "Edited after review",
     ),
+    "postShowOriginal": MessageLookupByLibrary.simpleMessage("Show original"),
+    "postSummaryFailed": MessageLookupByLibrary.simpleMessage(
+      "Summary failed. Tap to retry.",
+    ),
+    "postSummaryLoading": MessageLookupByLibrary.simpleMessage("Summarizing…"),
+    "postSummaryTitle": MessageLookupByLibrary.simpleMessage("AI summary"),
     "postSupport": MessageLookupByLibrary.simpleMessage("Support"),
     "postSupported": MessageLookupByLibrary.simpleMessage("Supported"),
     "postThread": MessageLookupByLibrary.simpleMessage("Post thread"),
+    "postTranslating": MessageLookupByLibrary.simpleMessage("Translating…"),
     "postViewRatings": MessageLookupByLibrary.simpleMessage("View ratings"),
     "postWarnedLabel": MessageLookupByLibrary.simpleMessage("Warned"),
     "preparingPage": MessageLookupByLibrary.simpleMessage(
@@ -1752,6 +1765,25 @@ class MessageLookup extends MessageLookupByLibrary {
     "threadReadAccess": m59,
     "threadReply": m60,
     "threadView": m61,
+    "translationAppLanguage": MessageLookupByLibrary.simpleMessage(
+      "Device language",
+    ),
+    "translationLanguage": MessageLookupByLibrary.simpleMessage("Translate to"),
+    "translationLanguagesFailed": MessageLookupByLibrary.simpleMessage(
+      "Unable to load translation languages. Please try again.",
+    ),
+    "translationLongPress": MessageLookupByLibrary.simpleMessage(
+      "Hold to choose language",
+    ),
+    "translationSimulator": MessageLookupByLibrary.simpleMessage(
+      "Apple Translation requires a physical device. It is not available in the iOS simulator.",
+    ),
+    "translationUnavailable": MessageLookupByLibrary.simpleMessage(
+      "Apple Translation requires iOS 18 or macOS 15 or later.",
+    ),
+    "translationUnchanged": MessageLookupByLibrary.simpleMessage(
+      "The text is already in the target language or no different translation was produced.",
+    ),
     "trashAd": MessageLookupByLibrary.simpleMessage("Trash Advertisement"),
     "trustHostActionText": MessageLookupByLibrary.simpleMessage(
       "Trust this host",

@@ -349,6 +349,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "authorizedSite": MessageLookupByLibrary.simpleMessage("已验证站点"),
     "autoFillUsername": m8,
+    "autoSummarizeDescription": MessageLookupByLibrary.simpleMessage(
+      "启用 Apple Intelligence 后，自动总结超过 1500 字的帖子，保留原文。",
+    ),
+    "autoSummarizeTitle": MessageLookupByLibrary.simpleMessage("长帖自动总结"),
     "autofillDialogSubtitle": MessageLookupByLibrary.simpleMessage(
       "选择用户名以自动填充登陆表格",
     ),
@@ -1112,9 +1116,14 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "postReturnThread": MessageLookupByLibrary.simpleMessage("返回完整主题"),
     "postRevisedLabel": MessageLookupByLibrary.simpleMessage("审核后编辑"),
+    "postShowOriginal": MessageLookupByLibrary.simpleMessage("查看原文"),
+    "postSummaryFailed": MessageLookupByLibrary.simpleMessage("总结失败，点击重试。"),
+    "postSummaryLoading": MessageLookupByLibrary.simpleMessage("正在总结…"),
+    "postSummaryTitle": MessageLookupByLibrary.simpleMessage("AI 总结"),
     "postSupport": MessageLookupByLibrary.simpleMessage("支持"),
     "postSupported": MessageLookupByLibrary.simpleMessage("已支持"),
     "postThread": MessageLookupByLibrary.simpleMessage("发帖"),
+    "postTranslating": MessageLookupByLibrary.simpleMessage("翻译中…"),
     "postViewRatings": MessageLookupByLibrary.simpleMessage("查看评分"),
     "postWarnedLabel": MessageLookupByLibrary.simpleMessage("已警告"),
     "preparingPage": MessageLookupByLibrary.simpleMessage("正在准备此界面。"),
@@ -1374,6 +1383,21 @@ class MessageLookup extends MessageLookupByLibrary {
     "threadReadAccess": m59,
     "threadReply": m60,
     "threadView": m61,
+    "translationAppLanguage": MessageLookupByLibrary.simpleMessage("跟随设备语言"),
+    "translationLanguage": MessageLookupByLibrary.simpleMessage("翻译为"),
+    "translationLanguagesFailed": MessageLookupByLibrary.simpleMessage(
+      "无法读取系统翻译语言，请重试。",
+    ),
+    "translationLongPress": MessageLookupByLibrary.simpleMessage("长按选择语言"),
+    "translationSimulator": MessageLookupByLibrary.simpleMessage(
+      "Apple 专用翻译需要真机，iOS 模拟器不支持。",
+    ),
+    "translationUnavailable": MessageLookupByLibrary.simpleMessage(
+      "Apple 翻译需要 iOS 18 或 macOS 15 及以上系统。",
+    ),
+    "translationUnchanged": MessageLookupByLibrary.simpleMessage(
+      "正文已是目标语言，或未生成不同的译文。",
+    ),
     "trashAd": MessageLookupByLibrary.simpleMessage("垃圾广告"),
     "trustHostActionText": MessageLookupByLibrary.simpleMessage("信任此域名"),
     "trustHostTitle": MessageLookupByLibrary.simpleMessage("主机域名白名单"),

@@ -1205,5 +1205,19 @@
   "postRatingReason": "Reason",
   "postRatingNotify": "Notify author",
   "postViewRatings": "View ratings",
-  "postRatingsUnavailable": "No rating records could be displayed, or this site uses an unsupported format. Use the browser button to view them on the website."
+  "postRatingsUnavailable": "No rating records could be displayed, or this site uses an unsupported format. Use the browser button to view them on the website.",
+  "autoSummarizeTitle": "Automatically summarize long posts",
+  "autoSummarizeDescription": "Summarize posts over 1,500 characters when Apple Intelligence is enabled. The original remains available.",
+  "postSummaryTitle": "AI summary",
+  "postSummaryLoading": "Summarizing…",
+  "postSummaryFailed": "Summary failed. Tap to retry.",
+  "translationUnchanged": "The text is already in the target language or no different translation was produced.",
+  "postTranslating": "Translating…",
+  "postShowOriginal": "Show original",
+  "translationLanguage": "Translate to",
+  "translationAppLanguage": "Device language",
+  "translationLongPress": "Hold to choose language",
+  "translationLanguagesFailed": "Unable to load translation languages. Please try again.",
+  "translationSimulator": "Apple Translation requires a physical device. It is not available in the iOS simulator.",
+  "translationUnavailable": "Apple Translation requires iOS 18 or macOS 15 or later."
 }

@@ -65,6 +65,7 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
         .setBrightness(brightness);
     final preferences =
         Provider.of<UserPreferenceNotifierProvider>(context, listen: false);
+    preferences.setAutoSummarizeEnabled(await UserPreferencesUtils.getAutoSummarizeEnabled());
     preferences.setAppleIntelligenceGuardrail(intelligenceGuardrail);
     preferences.setOnDeviceAiAvailability(intelligenceAvailability);
     preferences.setAppleIntelligenceEnabled(

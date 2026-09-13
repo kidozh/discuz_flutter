@@ -7729,6 +7729,146 @@ class S {
       args: [],
     );
   }
+
+  /// `Automatically summarize long posts`
+  String get autoSummarizeTitle {
+    return Intl.message(
+      'Automatically summarize long posts',
+      name: 'autoSummarizeTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Summarize posts over 1,500 characters when Apple Intelligence is enabled. The original remains available.`
+  String get autoSummarizeDescription {
+    return Intl.message(
+      'Summarize posts over 1,500 characters when Apple Intelligence is enabled. The original remains available.',
+      name: 'autoSummarizeDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `AI summary`
+  String get postSummaryTitle {
+    return Intl.message(
+      'AI summary',
+      name: 'postSummaryTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Summarizing…`
+  String get postSummaryLoading {
+    return Intl.message(
+      'Summarizing…',
+      name: 'postSummaryLoading',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Summary failed. Tap to retry.`
+  String get postSummaryFailed {
+    return Intl.message(
+      'Summary failed. Tap to retry.',
+      name: 'postSummaryFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The text is already in the target language or no different translation was produced.`
+  String get translationUnchanged {
+    return Intl.message(
+      'The text is already in the target language or no different translation was produced.',
+      name: 'translationUnchanged',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Translating…`
+  String get postTranslating {
+    return Intl.message(
+      'Translating…',
+      name: 'postTranslating',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show original`
+  String get postShowOriginal {
+    return Intl.message(
+      'Show original',
+      name: 'postShowOriginal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Translate to`
+  String get translationLanguage {
+    return Intl.message(
+      'Translate to',
+      name: 'translationLanguage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Device language`
+  String get translationAppLanguage {
+    return Intl.message(
+      'Device language',
+      name: 'translationAppLanguage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hold to choose language`
+  String get translationLongPress {
+    return Intl.message(
+      'Hold to choose language',
+      name: 'translationLongPress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unable to load translation languages. Please try again.`
+  String get translationLanguagesFailed {
+    return Intl.message(
+      'Unable to load translation languages. Please try again.',
+      name: 'translationLanguagesFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Apple Translation requires a physical device. It is not available in the iOS simulator.`
+  String get translationSimulator {
+    return Intl.message(
+      'Apple Translation requires a physical device. It is not available in the iOS simulator.',
+      name: 'translationSimulator',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Apple Translation requires iOS 18 or macOS 15 or later.`
+  String get translationUnavailable {
+    return Intl.message(
+      'Apple Translation requires iOS 18 or macOS 15 or later.',
+      name: 'translationUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

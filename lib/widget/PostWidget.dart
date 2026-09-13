@@ -1,3 +1,4 @@
+import 'post_translation_button.dart';
 import '../utility/rating_allowance_cache.dart';
 import '../utility/DashboardPreferences.dart';
 import '../page/PostRatingsPage.dart';
@@ -47,6 +48,9 @@ import 'package:provider/provider.dart';
 import '../utility/NetworkUtils.dart';
 import '../utility/UserPreferencesUtils.dart';
 import 'UserAvatar.dart';
+import 'PostSummaryWidget.dart';
+import '../utility/post_translation_state.dart';
+import '../utility/post_translation_service.dart';
 
 int POST_BLOCKED = 1;
 int POST_WARNED = 2;
@@ -185,6 +189,98 @@ class PostStatefulWidget extends StatefulWidget {
 
 // ignore: must_be_immutable
 class PostState extends State<PostStatefulWidget> {
+  final _translation = PostTranslationState();
+  String? _translationLanguage;
+  String get _targetLanguage =>
+      _translationLanguage ??
+      WidgetsBinding.instance.platformDispatcher.locale.toLanguageTag();
+
+  Future<void> _chooseTranslationLanguage() async {
+    List<(String, String)> languages;
+    try {
+      languages = PostTranslationService.usesAppleTranslation
+          ? await PostTranslationService.languages(
+              displayLocale: Localizations.localeOf(context).toLanguageTag(),
+            )
+          : [
+              ('zh-Hans', '简体中文'),
+              ('en', 'English'),
+              ('ja', '日本語'),
+              ('ko', '한국어'),
+              ('fr', 'Français'),
+              ('de', 'Deutsch'),
+              ('es', 'Español'),
+            ];
+    } catch (_) {
+      if (mounted)
+        EasyLoading.showError(S.of(context).translationLanguagesFailed);
+      return;
+    }
+    if (!mounted) return;
+    final selected = await showPlatformModalSheet<String>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.7,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    S.of(context).translationLanguage,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                for (final option in <(String, String)>[
+                  ('auto', S.of(context).translationAppLanguage),
+                  ...languages,
+                ])
+                  PlatformListTile(
+                    title: Text(option.$2),
+                    trailing: (_translationLanguage ?? 'auto') == option.$1
+                        ? const Icon(Icons.check)
+                        : null,
+                    onTap: () => Navigator.of(sheetContext).pop(option.$1),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    if (!mounted || selected == null) return;
+    setState(() {
+      _translationLanguage = selected == 'auto' ? null : selected;
+      _bindTranslation();
+    });
+    if (!_translation.showingTranslation) await translatePostMessage();
+  }
+
+  void _bindTranslation() {
+    _translation.bind((
+      _discuz.baseURL,
+      _post.pid,
+      _post.message,
+      widget.sessionUid,
+      _targetLanguage,
+      PostTranslationService.usesAppleTranslation
+          ? null
+          : context
+                .read<UserPreferenceNotifierProvider>()
+                .appleIntelligenceGuardrail,
+    ));
+  }
+
+  void _notifyTranslationLayout() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) widget.onContentChanged?.call();
+    });
+  }
+
   Post _post;
   Discuz _discuz;
   User? _user;
@@ -527,51 +623,47 @@ class PostState extends State<PostStatefulWidget> {
   }
 
   Future<void> translatePostMessage() async {
-    final preferences = context.read<UserPreferenceNotifierProvider>();
-    if (!preferences.appleIntelligenceEnabled ||
-        !preferences.appleIntelligenceAvailable) {
+    _bindTranslation();
+    if (_translation.busy) return;
+    if (_translation.translation != null) {
+      setState(_translation.toggle);
+      _notifyTranslationLayout();
       return;
     }
-    EasyLoading.show(status: S.of(context).loading);
+    final preferences = context.read<UserPreferenceNotifierProvider>();
+    if (!PostTranslationService.usesAppleTranslation &&
+        (!preferences.appleIntelligenceEnabled ||
+            !preferences.appleIntelligenceAvailable))
+      return;
+    final revision = _translation.begin();
+    setState(() {});
+    bool isCurrent() {
+      if (!mounted) return false;
+      _bindTranslation();
+      return _translation.isCurrent(revision);
+    }
+
     try {
-      final translatedText = await OnDeviceAiService.translate(
+      final translatedText = await PostTranslationService.translate(
         _post.message,
+        language: _targetLanguage,
+        shouldContinue: isCurrent,
         guardrailLevel: FoundationModelFrameworkUtils.guardrailLevelFromName(
           preferences.appleIntelligenceGuardrail,
         ),
       );
-      await EasyLoading.dismiss();
-      if (!mounted || translatedText.isEmpty) return;
-      await showPlatformModalSheet<void>(
-        context: context,
-        material: const MaterialModalSheetData(isScrollControlled: true),
-        builder: (sheetContext) => SafeArea(
-          top: false,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.82,
-            ),
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(16, 18, 16, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    S.of(sheetContext).appleIntelligenceTranslate,
-                    style: Theme.of(sheetContext).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 12),
-                  DiscuzHtmlWidget(_discuz, translatedText),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
+      if (!isCurrent() || translatedText.isEmpty) return;
+      setState(() => _translation.complete(revision, translatedText));
+      _notifyTranslationLayout();
     } on OnDeviceAiException catch (error) {
-      await EasyLoading.dismiss();
-      if (!mounted) return;
+      if (!isCurrent()) return;
+      if (error.code == 'translation_unchanged') {
+        EasyLoading.showInfo(S.of(context).translationUnchanged);
+        return;
+      }
       final message = switch (error.code) {
+        'translation_simulator' => S.of(context).translationSimulator,
+        'translation_unavailable' => S.of(context).translationUnavailable,
         'request_too_large' => S.of(context).onDeviceAiRequestTooLarge,
         'model_downloadable' || 'model_downloading' =>
           S.of(context).appleIntelligenceUnavailableModelNotReady,
@@ -579,10 +671,10 @@ class PostState extends State<PostStatefulWidget> {
       };
       EasyLoading.showError(message);
     } catch (_) {
-      await EasyLoading.dismiss();
-      if (mounted) {
+      if (isCurrent())
         EasyLoading.showError(S.of(context).onDeviceAiRequestFailed);
-      }
+    } finally {
+      if (isCurrent()) setState(() => _translation.finish(revision));
     }
   }
 
@@ -600,7 +692,10 @@ class PostState extends State<PostStatefulWidget> {
         'sliver': asSliver,
       });
     }
-    String _html = _post.message;
+    _bindTranslation();
+    String _html = _translation.showingTranslation
+        ? _translation.translation!
+        : _post.message;
     log("Original HTML ${_html}");
 
     if (Provider.of<TypeSettingNotifierProvider>(
@@ -653,7 +748,20 @@ class PostState extends State<PostStatefulWidget> {
         isBestAnswer: widget.isBestAnswer,
         onSelectPost: jumpToPidCallback,
       ),
+      if (_post.first)
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: getPostFunctionWidget(context),
+          ),
+        ),
       const SizedBox(height: 8),
+      PostSummaryWidget(
+        key: ValueKey((_discuz.baseURL, _post.pid, widget.sessionUid)),
+        html: _post.message,
+        onContentChanged: widget.onContentChanged,
+      ),
     ];
     final body = DiscuzHtmlWidget(
       _discuz,
@@ -1002,19 +1110,24 @@ class PostState extends State<PostStatefulWidget> {
           onPressed: widget.onAddComment,
         ),
     ];
-    if (intelligence.appleIntelligenceEnabled &&
-        intelligence.appleIntelligenceAvailable) {
+    _bindTranslation();
+    if (PostTranslationService.usesAppleTranslation ||
+        (intelligence.appleIntelligenceEnabled &&
+            intelligence.appleIntelligenceAvailable) ||
+        _translation.translation != null) {
+      final label = _translation.busy
+          ? S.of(context).postTranslating
+          : _translation.showingTranslation
+          ? S.of(context).postShowOriginal
+          : S.of(context).appleIntelligenceTranslate;
       actions.add(
-        PlatformIconButton(
-          liquidGlassSymbol: 'character.bubble',
-          liquidGlassIconSize: 18,
-          icon: Icon(
-            PlatformIcons(context).translate,
-            size: 18,
-            color: actionColor,
-            semanticLabel: S.of(context).appleIntelligenceTranslate,
-          ),
+        PostTranslationButton(
+          label: label,
+          hint: S.of(context).translationLongPress,
+          busy: _translation.busy,
+          translated: _translation.showingTranslation,
           onPressed: translatePostMessage,
+          onChooseLanguage: _chooseTranslationLanguage,
         ),
       );
     }
@@ -1024,7 +1137,7 @@ class PostState extends State<PostStatefulWidget> {
     }
 
     actions.add(getPostPopupMenu(context));
-    return PlatformLiquidGlassToolbarGroup(children: actions);
+    return PlatformLiquidGlassToolbarGroup(wrap: true, children: actions);
   }
 
   WidgetSpan getGroupWidgetSpan(BuildContext context) {
@@ -1152,7 +1265,6 @@ class PostState extends State<PostStatefulWidget> {
               ],
             ),
           ),
-          getPostFunctionWidget(context),
         ],
       );
     } else {
@@ -1211,48 +1323,50 @@ class PostState extends State<PostStatefulWidget> {
     } else {
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 8.0),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(
-              child: RichText(
-                overflow: TextOverflow.ellipsis,
-                text: TextSpan(
-                  text: "",
-                  children: [
+            RichText(
+              overflow: TextOverflow.ellipsis,
+              text: TextSpan(
+                text: "",
+                children: [
+                  TextSpan(
+                    text: TimeDisplayUtils.getLocaledTimeDisplay(
+                      context,
+                      _post.publishAt,
+                    ),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
+                      color: Theme.of(context).disabledColor,
+                    ),
+                  ),
+                  if (_post.status & POST_REVISED != 0)
                     TextSpan(
-                      text: TimeDisplayUtils.getLocaledTimeDisplay(
-                        context,
-                        _post.publishAt,
-                      ),
+                      text: ' · ' + S.of(context).editedPost,
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
                         color: Theme.of(context).disabledColor,
                       ),
                     ),
-                    if (_post.status & POST_REVISED != 0)
-                      TextSpan(
-                        text: ' · ' + S.of(context).editedPost,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14,
-                          color: Theme.of(context).disabledColor,
-                        ),
+                  if (_post.ipLocation != "")
+                    TextSpan(
+                      text: ' ' + _post.ipLocation,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).disabledColor,
                       ),
-                    if (_post.ipLocation != "")
-                      TextSpan(
-                        text: ' ' + _post.ipLocation,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Theme.of(context).disabledColor,
-                        ),
-                      ),
-                  ],
-                ),
+                    ),
+                ],
               ),
             ),
-            // reports etcs
-            getPostFunctionWidget(context),
+            const SizedBox(height: 8),
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: getPostFunctionWidget(context),
+            ),
           ],
         ),
       );
