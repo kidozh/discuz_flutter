@@ -1,3 +1,5 @@
+import '../utility/DashboardPreferences.dart';
+import '../page/PostRatingsPage.dart';
 import 'dart:developer';
 import 'dart:io';
 
@@ -49,42 +51,104 @@ class URLUtils {
 
   static Future<void> launchURL(String url) async =>
       await canLaunchUrl(Uri.parse(url))
-          ? await launchUrl(Uri.parse(url),
-              mode: Platform.isIOS
-                  ? LaunchMode.inAppWebView
-                  : LaunchMode.externalApplication)
-          : throw 'Could not launch $url';
+      ? await launchUrl(
+          Uri.parse(url),
+          mode: Platform.isIOS
+              ? LaunchMode.inAppWebView
+              : LaunchMode.externalApplication,
+        )
+      : throw 'Could not launch $url';
 
   static String getPublicMessageURL(Discuz discuz, int pmid) {
     return "${discuz.baseURL}/home.php?mod=space&do=pm&subop=viewg&pmid=${pmid}";
   }
 
   static Future<void> openURL(
-      BuildContext context,
-      ValueChanged<int>? onSelectTid,
-      String? urlString,
-      JumpToPidCallback? callback,
-      int? originalTid) async {
+    BuildContext context,
+    ValueChanged<int>? onSelectTid,
+    String? urlString,
+    JumpToPidCallback? callback,
+    int? originalTid,
+  ) async {
     VibrationUtils.vibrateWithClickIfPossible();
-    Discuz? discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).discuz;
     if (discuz == null) {
       return;
     }
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    User? user = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).user;
     if (urlString != null) {
       urlString = urlString.replaceAll("&amp;", "&");
       if (urlString.startsWith('#') && callback != null) {
         final match = RegExp(r'^#(?:pid|post_)(\d+)$').firstMatch(urlString);
         final pid = int.tryParse(match?.group(1) ?? '');
-        if (pid != null && pid > 0) { callback(pid); return; }
+        if (pid != null && pid > 0) {
+          callback(pid);
+          return;
+        }
       }
+      final siteBase = Uri.parse(
+        '${discuz.baseURL.replaceAll(RegExp(r'/+$'), '')}/',
+      );
+      final resolved = siteBase.resolve(urlString);
+      if (DashboardPreferences.isKeylol(discuz.baseURL) &&
+          resolved.origin == siteBase.origin &&
+          resolved.queryParameters['mod'] == 'misc' &&
+          resolved.queryParameters['action'] == 'viewratings') {
+        final ratingTid = int.tryParse(resolved.queryParameters['tid'] ?? '');
+        final ratingPid = int.tryParse(resolved.queryParameters['pid'] ?? '');
+        if (ratingTid != null &&
+            ratingTid > 0 &&
+            ratingPid != null &&
+            ratingPid > 0) {
+          await Navigator.push(
+            context,
+            platformPageRoute(
+              context: context,
+              builder: (_) => PostRatingsPage(
+                discuz: discuz,
+                user: user,
+                tid: ratingTid,
+                pid: ratingPid,
+              ),
+            ),
+          );
+          return;
+        }
+      }
+      final internalTarget = PostLinkTarget.parse(resolved);
+      if (resolved.origin == siteBase.origin && internalTarget?.pid != null) {
+        if (internalTarget!.tid == originalTid && callback != null) {
+          callback(internalTarget.pid!);
+        } else {
+          await Navigator.push(
+            context,
+            platformPageRoute(
+              context: context,
+              builder: (_) => ViewThreadSliverPage(
+                discuz,
+                user,
+                internalTarget!.tid,
+                initialPid: internalTarget.pid,
+              ),
+            ),
+          );
+        }
+        return;
+      }
+      urlString = resolved.toString();
       bool urlLauchable = await canLaunchUrl(Uri.parse(urlString));
 
       // judge if it is a path
       Uri? tryUri = Uri.tryParse(urlString);
-      log("${Uri.parse(urlString).isAbsolute} can launch $urlLauchable $urlString");
+      log(
+        "${Uri.parse(urlString).isAbsolute} can launch $urlLauchable $urlString",
+      );
       if (!Uri.parse(urlString).isAbsolute) {
         // add a prefix to test if it's a url
         urlString = discuz.baseURL + "/" + urlString;
@@ -110,9 +174,18 @@ class URLUtils {
           } else {
             // The old two-pane callback carries only a TID. Push a route here
             // so notification targets do not silently lose their PID.
-            await Navigator.push(context, platformPageRoute(context: context,
-              builder: (_) => ViewThreadSliverPage(discuz, user, target!.tid,
-                initialPid: target.pid)));
+            await Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                builder: (_) => ViewThreadSliverPage(
+                  discuz,
+                  user,
+                  target!.tid,
+                  initialPid: target.pid,
+                ),
+              ),
+            );
           }
           return;
         }
@@ -147,12 +220,14 @@ class URLUtils {
                     int tid = int.tryParse(tidString)!;
                     if (onSelectTid == null) {
                       await Navigator.push(
-                          context,
-                          platformPageRoute(
-                              context: context,
-                              iosTitle: S.of(context).viewThreadTitle,
-                              builder: (context) =>
-                                  ViewThreadSliverPage(discuz, user, tid)));
+                        context,
+                        platformPageRoute(
+                          context: context,
+                          iosTitle: S.of(context).viewThreadTitle,
+                          builder: (context) =>
+                              ViewThreadSliverPage(discuz, user, tid),
+                        ),
+                      );
                     } else {
                       onSelectTid(tid);
                     }
@@ -172,12 +247,14 @@ class URLUtils {
                     int tid = int.tryParse(tidString)!;
                     if (onSelectTid == null) {
                       await Navigator.push(
-                          context,
-                          platformPageRoute(
-                              context: context,
-                              iosTitle: S.of(context).viewThreadTitle,
-                              builder: (context) =>
-                                  ViewThreadSliverPage(discuz, user, tid)));
+                        context,
+                        platformPageRoute(
+                          context: context,
+                          iosTitle: S.of(context).viewThreadTitle,
+                          builder: (context) =>
+                              ViewThreadSliverPage(discuz, user, tid),
+                        ),
+                      );
                     } else {
                       onSelectTid(tid);
                     }
@@ -195,12 +272,14 @@ class URLUtils {
                   if (int.tryParse(fidString) != null) {
                     int fid = int.tryParse(fidString)!;
                     await Navigator.push(
-                        context,
-                        platformPageRoute(
-                            context: context,
-                            iosTitle: S.of(context).forumDisplayTitle,
-                            builder: (context) =>
-                                DisplayForumTwoPanePage(discuz, user, fid)));
+                      context,
+                      platformPageRoute(
+                        context: context,
+                        iosTitle: S.of(context).forumDisplayTitle,
+                        builder: (context) =>
+                            DisplayForumTwoPanePage(discuz, user, fid),
+                      ),
+                    );
                     return;
                   }
                 }
@@ -215,12 +294,14 @@ class URLUtils {
                   if (int.tryParse(uidString) != null) {
                     int uid = int.tryParse(uidString)!;
                     await Navigator.push(
-                        context,
-                        platformPageRoute(
-                            context: context,
-                            iosTitle: S.of(context).userProfile,
-                            builder: (context) =>
-                                UserProfilePage(discuz, user, uid)));
+                      context,
+                      platformPageRoute(
+                        context: context,
+                        iosTitle: S.of(context).userProfile,
+                        builder: (context) =>
+                            UserProfilePage(discuz, user, uid),
+                      ),
+                    );
                     return;
                   }
                 }
@@ -232,12 +313,14 @@ class URLUtils {
         String? fid = await RewriteRuleUtils.findFidInURL(discuz, urlString);
         if (fid != null && int.tryParse(fid) != null) {
           await Navigator.push(
-              context,
-              platformPageRoute(
-                  context: context,
-                  iosTitle: S.of(context).forumDisplayTitle,
-                  builder: (context) => DisplayForumTwoPanePage(
-                      discuz, user, int.tryParse(fid)!)));
+            context,
+            platformPageRoute(
+              context: context,
+              iosTitle: S.of(context).forumDisplayTitle,
+              builder: (context) =>
+                  DisplayForumTwoPanePage(discuz, user, int.tryParse(fid)!),
+            ),
+          );
           return;
         }
 
@@ -246,12 +329,14 @@ class URLUtils {
         if (tid != null && int.tryParse(tid) != null) {
           if (onSelectTid == null) {
             await Navigator.push(
-                context,
-                platformPageRoute(
-                    context: context,
-                    iosTitle: S.of(context).viewThreadTitle,
-                    builder: (context) => ViewThreadSliverPage(
-                        discuz, user, int.tryParse(tid)!)));
+              context,
+              platformPageRoute(
+                context: context,
+                iosTitle: S.of(context).viewThreadTitle,
+                builder: (context) =>
+                    ViewThreadSliverPage(discuz, user, int.tryParse(tid)!),
+              ),
+            );
           } else {
             onSelectTid(int.tryParse(tid)!);
           }
@@ -262,12 +347,14 @@ class URLUtils {
         String? uid = await RewriteRuleUtils.findUidInURL(discuz, urlString);
         if (uid != null && int.tryParse(uid) != null) {
           await Navigator.push(
-              context,
-              platformPageRoute(
-                  context: context,
-                  iosTitle: S.of(context).userProfile,
-                  builder: (context) =>
-                      UserProfilePage(discuz, user, int.tryParse(uid)!)));
+            context,
+            platformPageRoute(
+              context: context,
+              iosTitle: S.of(context).userProfile,
+              builder: (context) =>
+                  UserProfilePage(discuz, user, int.tryParse(uid)!),
+            ),
+          );
           return;
         }
 
@@ -280,10 +367,14 @@ class URLUtils {
   }
 
   static Future<void> checkWithDbAndOpenURL(
-      BuildContext context, String urlString) async {
+    BuildContext context,
+    String urlString,
+  ) async {
     Uri uri = Uri.parse(urlString);
-    Discuz? discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).discuz;
     if (discuz == null) {
       return;
     }
@@ -292,8 +383,9 @@ class URLUtils {
       // check if database exists
 
       TrustHostDao trustHostDao = await AppDatabase.getTrustHostDao();
-      TrustHost? trustHostInDb =
-          await trustHostDao.findTrustHostByName(uri.host);
+      TrustHost? trustHostInDb = await trustHostDao.findTrustHostByName(
+        uri.host,
+      );
       if (trustHostInDb == null) {
         await showPlatformAlert(
           context: context,

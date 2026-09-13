@@ -1830,6 +1830,16 @@ class S {
     );
   }
 
+  /// `Follow the system using Material Design.`
+  String get systemStyleAndroidDescription {
+    return Intl.message(
+      'Follow the system using Material Design.',
+      name: 'systemStyleAndroidDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Liquid Glass on iOS 26 or later, Cupertino on earlier iOS, and Material Design on other platforms.`
   String get systemStyleDescription {
     return Intl.message(
@@ -7605,6 +7615,116 @@ class S {
     return Intl.message(
       'Drag the handles to reorder. Changes save automatically.',
       name: 'dashboardOrderHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Support`
+  String get postSupport {
+    return Intl.message('Support', name: 'postSupport', desc: '', args: []);
+  }
+
+  /// `Supported`
+  String get postSupported {
+    return Intl.message('Supported', name: 'postSupported', desc: '', args: []);
+  }
+
+  /// `Oppose`
+  String get postAgainst {
+    return Intl.message('Oppose', name: 'postAgainst', desc: '', args: []);
+  }
+
+  /// `Opposed`
+  String get postOpposed {
+    return Intl.message('Opposed', name: 'postOpposed', desc: '', args: []);
+  }
+
+  /// `Already voted`
+  String get postAlreadyReviewed {
+    return Intl.message(
+      'Already voted',
+      name: 'postAlreadyReviewed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rate`
+  String get postRate {
+    return Intl.message('Rate', name: 'postRate', desc: '', args: []);
+  }
+
+  /// `Rating options are unavailable. You may lack permission or the site may use a different rating form.`
+  String get postRatingUnavailable {
+    return Intl.message(
+      'Rating options are unavailable. You may lack permission or the site may use a different rating form.',
+      name: 'postRatingUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose a nonzero score within the allowed range and remaining allowance.`
+  String get postRatingInvalid {
+    return Intl.message(
+      'Choose a nonzero score within the allowed range and remaining allowance.',
+      name: 'postRatingInvalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rating limits or terms changed. Review them and confirm again.`
+  String get postRatingChanged {
+    return Intl.message(
+      'Rating limits or terms changed. Review them and confirm again.',
+      name: 'postRatingChanged',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remaining today`
+  String get postRatingRemaining {
+    return Intl.message(
+      'Remaining today',
+      name: 'postRatingRemaining',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reason`
+  String get postRatingReason {
+    return Intl.message('Reason', name: 'postRatingReason', desc: '', args: []);
+  }
+
+  /// `Notify author`
+  String get postRatingNotify {
+    return Intl.message(
+      'Notify author',
+      name: 'postRatingNotify',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View ratings`
+  String get postViewRatings {
+    return Intl.message(
+      'View ratings',
+      name: 'postViewRatings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No rating records could be displayed, or this site uses an unsupported format. Use the browser button to view them on the website.`
+  String get postRatingsUnavailable {
+    return Intl.message(
+      'No rating records could be displayed, or this site uses an unsupported format. Use the browser button to view them on the website.',
+      name: 'postRatingsUnavailable',
       desc: '',
       args: [],
     );

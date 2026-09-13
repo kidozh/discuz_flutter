@@ -11,6 +11,8 @@ void main() {
         'https://forum.test/forum.php?mod=viewthread&tid=20#pid31',
         'https://forum.test/forum.php?mod=viewthread&tid=20#post_31',
         'https://forum.test/forum.php?mod=viewthread&tid=20&viewpid=31',
+        'https://forum.test/thread-20-1-1.html#pid31',
+        'https://forum.test/thread-20-2-1.html#post_31',
       ]) {
         final target = PostLinkTarget.parse(Uri.parse(url))!;
         expect(target.tid, 20);

@@ -8,6 +8,7 @@ import '../utility/PlatformAdaptiveWidgets.dart';
 class CupertinoSeparatedItem extends StatelessWidget {
   final Widget child;
   final bool sliver;
+  final bool enabled;
 
   /// Reading rows use separators in both Apple appearances, only in light mode.
   final bool reading;
@@ -16,6 +17,7 @@ class CupertinoSeparatedItem extends StatelessWidget {
   const CupertinoSeparatedItem({
     required this.child,
     this.sliver = false,
+    this.enabled = true,
     this.reading = false,
     this.includeLiquidGlass = true,
     super.key,
@@ -29,7 +31,7 @@ class CupertinoSeparatedItem extends StatelessWidget {
                   visualStyle(context) == AppVisualStyle.cupertino) &&
               Theme.of(context).brightness == Brightness.light
         : visualStyle(context) == AppVisualStyle.cupertino;
-    if (!showSeparator) return child;
+    if (!enabled || !showSeparator) return child;
 
     const separator = CupertinoListSeparator();
     return sliver

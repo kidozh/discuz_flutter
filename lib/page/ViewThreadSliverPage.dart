@@ -1,3 +1,5 @@
+import '../widget/cupertino_separated_item.dart';
+import '../widget/PostRatingsInline.dart';
 import 'PostCommentDialog.dart';
 import 'ActivityRegistrationPage.dart';
 import 'ModerateThreadPage.dart';
@@ -1116,6 +1118,11 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
       _viewThreadResult.threadVariables.threadInfo.authorId,
       _viewThreadResult.threadVariables.formHash,
       key: ValueKey('reading-post-${post.pid}'),
+      showSeparator: !post.first,
+      sessionUid: _isFirstLoading || _error?.errorType == ErrorType.userExpired
+          ? 0
+          : variables.member_uid,
+      isBestAnswer: variables.reward?.bestPid == post.pid && post.pid > 0,
       reward: post.first ? _viewThreadResult.threadVariables.reward : null,
       onAddComment: !canComment
           ? null
@@ -1189,14 +1196,39 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
         _controller.callRefresh();
       },
     );
-    return asSliver
-        ? SliverMainAxisGroup(
-            slivers: [
-              content,
-              SliverToBoxAdapter(child: feedback),
-            ],
+    final ratings =
+        shouldLoadFirstPostRatings(
+          discuz.baseURL,
+          variables.threadInfo.views,
+          post.first,
+        )
+        ? PostRatingsInline(
+            key: ValueKey(
+              'ratings-${discuz.baseURL}-${post.pid}-${user?.uid}-${user?.auth}-$_contentGeneration',
+            ),
+            discuz: discuz,
+            user: user,
+            tid: tid,
+            pid: post.pid,
+            asSliver: asSliver,
           )
-        : Column(mainAxisSize: MainAxisSize.min, children: [content, feedback]);
+        : null;
+    return CupertinoSeparatedItem(
+      reading: true,
+      sliver: asSliver,
+      child: asSliver
+          ? SliverMainAxisGroup(
+              slivers: [
+                content,
+                if (ratings != null) ratings,
+                SliverToBoxAdapter(child: feedback),
+              ],
+            )
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [content, if (ratings != null) ratings, feedback],
+            ),
+    );
   }
 
   Widget _buildReplyTargetBanner(BuildContext context) {

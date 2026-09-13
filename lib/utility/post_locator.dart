@@ -92,8 +92,14 @@ class PostLinkTarget {
   PostLinkTarget(this.tid, this.pid);
   static PostLinkTarget? parse(Uri uri) {
     final q = uri.queryParameters;
-    if (q['mod'] != 'redirect' && q['mod'] != 'viewthread') return null;
-    final tid = int.tryParse(q['tid'] ?? q['ptid'] ?? '');
+    final rewrittenTid = RegExp(
+      r'(?:^|/)thread-(\d+)-\d+-\d+\.html$',
+    ).firstMatch(uri.path)?.group(1);
+    if (q['mod'] != 'redirect' &&
+        q['mod'] != 'viewthread' &&
+        rewrittenTid == null)
+      return null;
+    final tid = int.tryParse(q['tid'] ?? q['ptid'] ?? rewrittenTid ?? '');
     if (tid == null || tid <= 0) return null;
     final fragment = RegExp(
       r'^(?:pid|post_)(\d+)$',
