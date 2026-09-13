@@ -245,6 +245,7 @@ class _ThreadFeedbackBarState extends State<ThreadFeedbackBar> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
+            spacing: 10,
             children: [
               for (final positive
                   in acceptedDirection == null

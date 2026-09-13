@@ -566,7 +566,9 @@ class PostState extends State<PostStatefulWidget> {
                         context,
                       ).colorScheme.onPrimaryContainer,
                     ),
-                    if (index != getCommentList().length - 1)
+                    if (index != getCommentList().length - 1 &&
+                        (!isCupertino(context) ||
+                            Theme.of(context).brightness == Brightness.light))
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 8.0),
                         child: Divider(),

@@ -171,6 +171,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
         );
         return CupertinoSeparatedItem(
           reading: true,
+          includeLiquidGlass: false,
           child: InkWell(
             child: PlatformWidgetBuilder(
               material: (context, child, platform) => PlatformCard(
@@ -753,6 +754,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
     if (isUserBlocked) {
       return CupertinoSeparatedItem(
         reading: true,
+        includeLiquidGlass: false,
         child: PlatformCard(
           elevation: 4.0,
           color: Theme.of(context).brightness == Brightness.light
