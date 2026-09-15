@@ -1,8 +1,8 @@
 import '../utility/rating_allowance_cache.dart';
+import '../utility/rating_failure.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../client/PostReviewClient.dart';
-import '../client/ForumInteractionClient.dart';
 import '../generated/l10n.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
 
@@ -37,6 +37,7 @@ class _PostRatingDialogState extends State<PostRatingDialog> {
   }
 
   Future<void> load() async {
+    var stage = 'validate';
     try {
       await widget.client.validate(
         widget.tid,
@@ -44,6 +45,7 @@ class _PostRatingDialogState extends State<PostRatingDialog> {
         widget.uid,
         widget.sameAccount,
       );
+      stage = 'load_form';
       final result = await widget.client.ratingForm(widget.tid, widget.pid);
       if (!mounted || !widget.sameAccount()) return;
       form = result;
@@ -52,8 +54,11 @@ class _PostRatingDialogState extends State<PostRatingDialog> {
       for (final credit in result.credits) {
         controllers[credit.field] = TextEditingController(text: '0');
       }
-    } catch (_) {
-      if (mounted) error = S.of(context).postRatingUnavailable;
+    } catch (e) {
+      debugPrint('[PostRating] $stage: ${ratingFailureCode(e)}');
+      if (mounted) {
+        error = ratingFailureMessage(e, S.of(context).postRatingUnavailable);
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -80,6 +85,7 @@ class _PostRatingDialogState extends State<PostRatingDialog> {
       busy = true;
       error = null;
     });
+    var stage = 'validate';
     try {
       await widget.client.validate(
         widget.tid,
@@ -87,6 +93,7 @@ class _PostRatingDialogState extends State<PostRatingDialog> {
         widget.uid,
         widget.sameAccount,
       );
+      stage = 'refresh_form';
       final fresh = await widget.client.ratingForm(widget.tid, widget.pid);
       if (!mounted || !widget.sameAccount()) return;
       if (widget.quotaKey != null)
@@ -104,6 +111,7 @@ class _PostRatingDialogState extends State<PostRatingDialog> {
         });
         return;
       }
+      stage = 'submit';
       await widget.client.rate(
         widget.tid,
         widget.pid,
@@ -118,12 +126,17 @@ class _PostRatingDialogState extends State<PostRatingDialog> {
         Navigator.pop(context, true);
       }
     } catch (e) {
-      if (mounted)
-        setState(
-          () => error = e is ForumApiException && e.message.isNotEmpty
-              ? e.message
-              : S.of(context).forumSubmissionUnknown,
-        );
+      debugPrint('[PostRating] $stage: ${ratingFailureCode(e)}');
+      if (mounted) {
+        setState(() {
+          error = ratingFailureMessage(
+            e,
+            stage == 'submit'
+                ? S.of(context).forumSubmissionUnknown
+                : S.of(context).postRatingUnavailable,
+          );
+        });
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }

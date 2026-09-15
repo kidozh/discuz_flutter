@@ -1206,5 +1206,21 @@
   "postRatingReason": "评分理由",
   "postRatingNotify": "通知作者",
   "postViewRatings": "查看评分",
-  "postRatingsUnavailable": "暂无可显示的评分记录，或论坛返回的格式暂不支持。可点右上角在网页查看。"
+  "postRatingsUnavailable": "暂无可显示的评分记录，或论坛返回的格式暂不支持。可点右上角在网页查看。",
+  "autoSummarizeTitle": "长帖自动总结",
+  "autoSummarizeDescription": "启用 Apple Intelligence 后，自动总结超过 1500 字的帖子，保留原文。",
+  "postSummaryTitle": "AI 总结",
+  "postSummaryLoading": "正在总结…",
+  "postSummaryFailed": "总结失败，点击重试。",
+  "translationUnchanged": "正文已是目标语言，或未生成不同的译文。",
+  "postTranslating": "翻译中…",
+  "postShowOriginal": "查看原文",
+  "translationLanguage": "翻译为",
+  "translationAppLanguage": "跟随设备语言",
+  "translationLongPress": "长按选择语言",
+  "translationLanguagesFailed": "无法读取系统翻译语言，请重试。",
+  "translationSimulator": "Apple 专用翻译需要真机，iOS 模拟器不支持。",
+  "translationUnavailable": "Apple 翻译需要 iOS 18 或 macOS 15 及以上系统。",
+  "translationSourceUndetected": "可识别的正文太少，暂时无法判断源语言。",
+  "autoTranslateTitle": "自动翻译"
 }

@@ -1,5 +1,6 @@
 import 'package:discuz_flutter/utility/app_motion.dart';
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'dart:math' as math;
 
 import 'package:adaptive_platform_ui/adaptive_platform_ui.dart' as liquid;
@@ -50,13 +51,15 @@ bool isMaterial(BuildContext context) => !isCupertino(context);
 /// platform. A forced Material UI on iOS must remain Material, while a forced
 /// Cupertino UI on Android cannot host native UIKit views.
 bool usesLiquidGlass(BuildContext context) =>
+    Platform.isIOS &&
     visualStyle(context) == AppVisualStyle.liquidGlass &&
     AppVisualStyle.supportsLiquidGlass;
 
 /// Custom frosted cards belong only to the Liquid Glass appearance. Classic
 /// Cupertino retains its standard controls and opaque grouped surfaces.
 bool usesAppleTranslucentSurface(BuildContext context) =>
-    usesLiquidGlass(context);
+    visualStyle(context) == AppVisualStyle.liquidGlass &&
+    AppVisualStyle.supportsLiquidGlass;
 
 /// Whether the current subtree is already hosted by a Flutter-rendered glass
 /// surface. Descendants can use lightweight tints instead of stacking another
@@ -1176,18 +1179,30 @@ class _PlatformLiquidGlassToolbarGroupScope extends InheritedWidget {
 /// Combines adjacent toolbar actions into one Apple-style Liquid Glass capsule.
 class PlatformLiquidGlassToolbarGroup extends StatelessWidget {
   final List<Widget> children;
+  final bool wrap;
 
-  const PlatformLiquidGlassToolbarGroup({required this.children, super.key});
+  const PlatformLiquidGlassToolbarGroup({
+    required this.children,
+    this.wrap = false,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     if (!usesAppleTranslucentSurface(context) || children.length < 2) {
-      return Row(mainAxisSize: MainAxisSize.min, children: children);
+      return wrap
+          ? Wrap(
+              spacing: 4,
+              runSpacing: 4,
+              alignment: WrapAlignment.end,
+              children: children,
+            )
+          : Row(mainAxisSize: MainAxisSize.min, children: children);
     }
     final light = Theme.of(context).brightness == Brightness.light;
     const radius = BorderRadius.all(Radius.circular(22));
     return Container(
-      height: 44,
+      constraints: const BoxConstraints(minHeight: 48),
       padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
         borderRadius: radius,
@@ -1219,22 +1234,33 @@ class PlatformLiquidGlassToolbarGroup extends StatelessWidget {
               ),
             ),
             child: _PlatformLiquidGlassToolbarGroupScope(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  for (var index = 0; index < children.length; index++) ...[
-                    if (index > 0)
-                      Container(
-                        width: 0.5,
-                        height: 18,
-                        color: CupertinoColors.separator
-                            .resolveFrom(context)
-                            .withValues(alpha: 0.34),
-                      ),
-                    children[index],
-                  ],
-                ],
-              ),
+              child: wrap
+                  ? Wrap(
+                      spacing: 4,
+                      runSpacing: 4,
+                      alignment: WrapAlignment.end,
+                      children: children,
+                    )
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        for (
+                          var index = 0;
+                          index < children.length;
+                          index++
+                        ) ...[
+                          if (index > 0)
+                            Container(
+                              width: 0.5,
+                              height: 18,
+                              color: CupertinoColors.separator
+                                  .resolveFrom(context)
+                                  .withValues(alpha: 0.34),
+                            ),
+                          children[index],
+                        ],
+                      ],
+                    ),
             ),
           ),
         ),
@@ -1594,6 +1620,12 @@ class PlatformLiquidGlassSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (usesAppleTranslucentSurface(context) && !usesLiquidGlass(context)) {
+      return ClipRRect(
+        borderRadius: borderRadius ?? BorderRadius.zero,
+        child: PlatformGlassBackdrop(child: child),
+      );
+    }
     final blur =
         usesLiquidGlass(context) &&
         PlatformGlassScope.shouldBlur(context, PlatformGlassEffect.automatic);
@@ -2938,7 +2970,7 @@ class PlatformAlertDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (usesLiquidGlass(context)) {
+    if (usesAppleTranslucentSurface(context)) {
       final dialogActions = actions ?? const <Widget>[];
       final actionContent = dialogActions.length <= 2
           ? Row(
@@ -3024,7 +3056,7 @@ class PlatformDialogAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (usesLiquidGlass(context)) {
+    if (usesAppleTranslucentSurface(context)) {
       final foreground = isDestructiveAction
           ? CupertinoColors.systemRed.resolveFrom(context)
           : Theme.of(context).colorScheme.primary;

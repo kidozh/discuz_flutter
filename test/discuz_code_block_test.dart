@@ -33,8 +33,9 @@ void main() {
     expect(DiscuzCodeBlock.extractLanguage(block), isNull);
   });
 
-  testWidgets('renders long code as a selectable horizontal code card',
-      (tester) async {
+  testWidgets('renders long code as a selectable horizontal code card', (
+    tester,
+  ) async {
     const longLine =
         'final message = "This deliberately long line should scroll horizontally instead of wrapping inside the post body";';
 
@@ -61,21 +62,27 @@ void main() {
     expect(find.byKey(const ValueKey('discuz-code-block')), findsOneWidget);
     expect(find.byKey(const ValueKey('discuz-code-text')), findsOneWidget);
     expect(find.text('DART'), findsOneWidget);
-    expect(find.byType(Scrollbar), findsOneWidget);
+    expect(
+      find.byWidgetPredicate((widget) => widget is RawScrollbar),
+      findsOneWidget,
+    );
     final codeText = tester.widget<SelectableText>(
       find.byKey(const ValueKey('discuz-code-text')),
     );
-    expect(codeText.style?.fontFamily, 'monospace');
+    expect(codeText.style?.fontFamily, anyOf('monospace', 'Menlo'));
     final horizontalScroller = tester.widget<SingleChildScrollView>(
       find.byType(SingleChildScrollView),
     );
-    expect(horizontalScroller.controller?.position.maxScrollExtent,
-        greaterThan(0));
+    expect(
+      horizontalScroller.controller?.position.maxScrollExtent,
+      greaterThan(0),
+    );
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Discuz HTML replaces pre with the adaptive code card',
-      (tester) async {
+  testWidgets('Discuz HTML replaces pre with the adaptive code card', (
+    tester,
+  ) async {
     final discuz = Discuz(
       'https://example.com',
       'X3.5',

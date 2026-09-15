@@ -152,6 +152,7 @@ void main() {
         'sendreasonpm': 'on',
       });
       expect(calls.last.uri.queryParameters['ratesubmit'], 'yes');
+      expect(calls.last.uri.queryParameters['t'], 'output');
       dio.close();
     },
   );

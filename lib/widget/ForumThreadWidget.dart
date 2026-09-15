@@ -1,4 +1,6 @@
 import 'dart:developer';
+import '../utility/thread_selection_colors.dart';
+import 'thread_list_surface.dart';
 import 'dart:math' as Math;
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -165,6 +167,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
     return Consumer<SelectedTidNotifierProvider>(
       builder: (context, selectedTid, child) {
         bool selected = selectedTid.tid == _forumThread.getTid();
+        final selection = ThreadSelectionColors(Theme.of(context).colorScheme);
         bool lastSelected = selectedTid.tid == afterTid;
         log(
           "Select changed ${_forumThread.tid} ${selected} ${afterTid} ${lastSelected}",
@@ -177,20 +180,19 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
               material: (context, child, platform) => PlatformCard(
                 elevation: selected ? 0.0 : 4.0,
                 color: selected
-                    ? Theme.of(context).colorScheme.primaryContainer
+                    ? selection.background
                     : Theme.of(context).brightness == Brightness.light
                     ? Colors.white
                     : Colors.white10,
                 surfaceTintColor: selected
-                    ? Theme.of(context).colorScheme.primaryContainer
+                    ? selection.background
                     : Theme.of(context).brightness == Brightness.light
                     ? Colors.white
                     : Colors.white10,
                 // color: Theme.of(context).colorScheme.background,
                 child: child,
               ),
-              cupertino: (_, child, __) => PlatformLiquidGlassCard(
-                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+              cupertino: (_, child, __) => ThreadListSurface(
                 selected: selected,
                 child: child ?? const SizedBox.shrink(),
               ),
@@ -252,7 +254,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
       textStyle = TextStyle(
         fontWeight: FontWeight.w300,
         color: selected
-            ? Theme.of(context).colorScheme.onPrimaryContainer
+            ? Theme.of(context).colorScheme.onSurface
             : Theme.of(context).unselectedWidgetColor,
       );
     } else {
@@ -308,9 +310,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
                                 ? FontWeight.w300
                                 : FontWeight.normal,
                             color: selected
-                                ? Theme.of(
-                                    context,
-                                  ).colorScheme.onPrimaryContainer
+                                ? Theme.of(context).colorScheme.onSurface
                                 : viewed
                                 ? Theme.of(context).unselectedWidgetColor
                                 : Theme.of(context).textTheme.bodySmall?.color,
@@ -321,9 +321,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
                               style: TextStyle(
                                 fontWeight: FontWeight.normal,
                                 color: selected
-                                    ? Theme.of(
-                                        context,
-                                      ).colorScheme.onPrimaryContainer
+                                    ? Theme.of(context).colorScheme.onSurface
                                     : viewed
                                     ? Theme.of(context).unselectedWidgetColor
                                     : Theme.of(
@@ -340,9 +338,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
                               style: TextStyle(
                                 fontWeight: FontWeight.normal,
                                 color: selected
-                                    ? Theme.of(
-                                        context,
-                                      ).colorScheme.onPrimaryContainer
+                                    ? Theme.of(context).colorScheme.onSurface
                                     : viewed
                                     ? Theme.of(context).unselectedWidgetColor
                                     : Theme.of(
@@ -391,7 +387,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
                     height: 1.22,
                     fontWeight: viewed ? FontWeight.normal : FontWeight.bold,
                     color: selected
-                        ? Theme.of(context).colorScheme.onPrimaryContainer
+                        ? Theme.of(context).colorScheme.onSurface
                         : viewed
                         ? Theme.of(context).unselectedWidgetColor
                         : null,
@@ -414,7 +410,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
                             context,
                           ).textTheme.bodyMedium?.fontSize,
                           color: selected
-                              ? Theme.of(context).colorScheme.onPrimaryContainer
+                              ? Theme.of(context).colorScheme.onSurface
                               : viewed
                               ? Theme.of(context).unselectedWidgetColor
                               : null,
@@ -455,7 +451,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
             if (_forumThread.getDisplayOrder() > 0)
               getStickyThreadHead(viewed, selected),
             PlatformListTile(
-              selected: selected,
+              selected: false,
               isThreeLine: false,
               contentPadding: const EdgeInsets.fromLTRB(12, 9, 12, 6),
               leading: UserAvatar(
@@ -472,7 +468,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: selected
-                      ? Theme.of(context).colorScheme.primary
+                      ? Theme.of(context).colorScheme.onSurface
                       : viewed
                       ? Theme.of(context).disabledColor
                       : null,
@@ -490,7 +486,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
                   text: "",
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: selected
-                        ? Theme.of(context).colorScheme.primary
+                        ? Theme.of(context).colorScheme.onSurfaceVariant
                         : Theme.of(context).disabledColor,
                     fontWeight: selected
                         ? FontWeight.normal

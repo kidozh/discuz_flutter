@@ -320,7 +320,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField), 'reason');
+      await tester.enterText(find.byType(EditableText), 'reason');
       await tester.tap(find.text(S.current.forumConfirm));
       await tester.pumpAndSettle();
       await tester.tap(find.text(S.current.cancel));
@@ -414,7 +414,7 @@ void main() {
       );
       await tester.tap(find.text('open'));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField), 'reason');
+      await tester.enterText(find.byType(EditableText), 'reason');
       await tester.tap(find.text(S.current.forumConfirm));
       await tester.pumpAndSettle();
       await tester.tap(find.text(S.current.forumConfirm).last);

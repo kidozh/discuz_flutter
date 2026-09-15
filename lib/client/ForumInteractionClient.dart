@@ -19,9 +19,38 @@ class ForumApiException implements Exception {
 class ForumReply {
   final Map<String, dynamic> variables;
   final String code, message;
+  static ForumReply decode(Object? data) {
+    if (data is String) {
+      var source = data.trim().replaceFirst(RegExp(r'^\uFEFF'), '').trim();
+      // Some installations wrap the mobile result in Discuz's AJAX envelope.
+      final envelope = RegExp(
+        r'^(?:<\?xml[^>]*>\s*)?<root>\s*<!\[CDATA\[([\s\S]*?)\]\]>\s*</root>$',
+      ).firstMatch(source);
+      if (envelope != null) source = envelope[1]!.trim();
+      try {
+        data = jsonDecode(source);
+      } on FormatException {
+        // Never infer success from HTML text or repeat a write after a bad reply.
+        throw ForumApiException(
+          source.isEmpty
+              ? 'empty_response'
+              : source.startsWith('<')
+              ? 'unexpected_markup_response'
+              : 'invalid_response_format',
+          '',
+        );
+      }
+    }
+    if (data is! Map) throw const ForumApiException('invalid_response', '');
+    return ForumReply(data);
+  }
+
   ForumReply(Object? data)
     : variables = discuzMap(discuzMap(data)['Variables']),
-      code = discuzString(discuzMap(discuzMap(data)['Message'])['messageval']),
+      code = discuzString(
+        discuzMap(discuzMap(data)['Message'])['messageval'] ??
+            discuzMap(data)['error'],
+      ),
       message = discuzString(
         discuzMap(discuzMap(data)['Message'])['messagestr'],
       );
@@ -110,14 +139,12 @@ class ForumInteractionClient {
         contentType: body is FormData
             ? Headers.multipartFormDataContentType
             : Headers.formUrlEncodedContentType,
-        responseType: ResponseType.json,
+        // Decode here so malformed replies don't fail inside Dio before we
+        // can distinguish an empty response, an AJAX envelope and JSON.
+        responseType: ResponseType.plain,
       ),
     );
-    final data = response.data is String
-        ? jsonDecode(response.data as String)
-        : response.data;
-    if (data is! Map) throw const ForumApiException('invalid_response', '');
-    return ForumReply(data);
+    return ForumReply.decode(response.data);
   }
 
   Future<void> addPostComment({

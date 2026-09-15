@@ -43,28 +43,44 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
         await UserPreferencesUtils.getAppleIntelligenceGuardrail();
     OnDeviceAiAvailability intelligenceAvailability =
         const OnDeviceAiAvailability(
-      status: OnDeviceAiAvailabilityStatus.unsupportedPlatform,
-      reasonCode: 'unsupported_platform',
-    );
+          status: OnDeviceAiAvailabilityStatus.unsupportedPlatform,
+          reasonCode: 'unsupported_platform',
+        );
     if (OnDeviceAiService.isSupportedPlatform) {
       intelligenceAvailability = await OnDeviceAiService.checkAvailability();
     }
     if (!context.mounted) return;
 
-    Provider.of<ThemeNotifierProvider>(context, listen: false)
-        .setTheme(colorScheme);
+    Provider.of<ThemeNotifierProvider>(
+      context,
+      listen: false,
+    ).setTheme(colorScheme);
     if (customThemeColor != null) {
-      Provider.of<ThemeNotifierProvider>(context, listen: false)
-          .setCustomThemeColor(customThemeColor);
+      Provider.of<ThemeNotifierProvider>(
+        context,
+        listen: false,
+      ).setCustomThemeColor(customThemeColor);
     }
     // Appearance is initialized before runApp, independently of these slower
     // preferences, so a new user selection cannot be reset by this callback.
-    Provider.of<TypeSettingNotifierProvider>(context, listen: false)
-        .setScalingParameter(scale);
-    Provider.of<ThemeNotifierProvider>(context, listen: false)
-        .setBrightness(brightness);
-    final preferences =
-        Provider.of<UserPreferenceNotifierProvider>(context, listen: false);
+    Provider.of<TypeSettingNotifierProvider>(
+      context,
+      listen: false,
+    ).setScalingParameter(scale);
+    Provider.of<ThemeNotifierProvider>(
+      context,
+      listen: false,
+    ).setBrightness(brightness);
+    final preferences = Provider.of<UserPreferenceNotifierProvider>(
+      context,
+      listen: false,
+    );
+    preferences.setAutoTranslateEnabled(
+      await UserPreferencesUtils.getAutoTranslateEnabled(),
+    );
+    preferences.setAutoSummarizeEnabled(
+      await UserPreferencesUtils.getAutoSummarizeEnabled(),
+    );
     preferences.setAppleIntelligenceGuardrail(intelligenceGuardrail);
     preferences.setOnDeviceAiAvailability(intelligenceAvailability);
     preferences.setAppleIntelligenceEnabled(
@@ -105,8 +121,9 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
                 ),
           useMaterial3: themeColorEntity.useMaterial3,
         );
-        const darkDefaultCupertinoTheme =
-            CupertinoThemeData(brightness: Brightness.dark);
+        const darkDefaultCupertinoTheme = CupertinoThemeData(
+          brightness: Brightness.dark,
+        );
         final cupertinoDarkTheme = MaterialBasedCupertinoThemeData(
           materialTheme: materialThemeDataDark.copyWith(
             cupertinoOverrideTheme: CupertinoThemeData(
@@ -115,19 +132,20 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
               textTheme: CupertinoTextThemeData(
                 primaryColor: Colors.white,
                 navActionTextStyle: darkDefaultCupertinoTheme
-                    .textTheme.navActionTextStyle
-                    .copyWith(
-                  color: const Color(0xF0F9F9F9),
-                ),
+                    .textTheme
+                    .navActionTextStyle
+                    .copyWith(color: const Color(0xF0F9F9F9)),
                 navLargeTitleTextStyle: darkDefaultCupertinoTheme
-                    .textTheme.navLargeTitleTextStyle
+                    .textTheme
+                    .navLargeTitleTextStyle
                     .copyWith(color: const Color(0xF0F9F9F9)),
               ),
             ),
           ),
         );
         final cupertinoLightTheme = MaterialBasedCupertinoThemeData(
-            materialTheme: materialThemeDataLight);
+          materialTheme: materialThemeDataLight,
+        );
         // check the system setting
         if (themeColorEntity.brightness == null) {
           this.themeMode = ThemeMode.system;
@@ -145,36 +163,38 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
           builder: (context) {
             // here insert the app
             return PlatformTheme(
-                themeMode: this.themeMode,
-                materialLightTheme: materialThemeDataLight,
-                materialDarkTheme: materialThemeDataDark,
-                cupertinoLightTheme: cupertinoLightTheme,
-                cupertinoDarkTheme: cupertinoDarkTheme,
-                onThemeModeChanged: (themeMode) {
-                  this.themeMode = themeMode;
+              themeMode: this.themeMode,
+              materialLightTheme: materialThemeDataLight,
+              materialDarkTheme: materialThemeDataDark,
+              cupertinoLightTheme: cupertinoLightTheme,
+              cupertinoDarkTheme: cupertinoDarkTheme,
+              onThemeModeChanged: (themeMode) {
+                this.themeMode = themeMode;
+              },
+              builder: (context) => PlatformApp(
+                navigatorKey: _navigatorKey,
+                debugShowCheckedModeBanner: false,
+                //title: S.of(context).appName,
+                // localization
+                localizationsDelegates: [
+                  S.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                ],
+                supportedLocales: S.delegate.supportedLocales,
+                localeResolutionCallback: (locale, _) {
+                  if (locale != null) {
+                    print(
+                      "Locale ${locale.languageCode},${locale.scriptCode}, ${locale.countryCode}",
+                    );
+                  }
+                  return null;
                 },
-                builder: (context) => PlatformApp(
-                      navigatorKey: _navigatorKey,
-                      debugShowCheckedModeBanner: false,
-                      //title: S.of(context).appName,
-                      // localization
-                      localizationsDelegates: [
-                        S.delegate,
-                        GlobalCupertinoLocalizations.delegate,
-                        GlobalMaterialLocalizations.delegate,
-                        GlobalWidgetsLocalizations.delegate
-                      ],
-                      supportedLocales: S.delegate.supportedLocales,
-                      localeResolutionCallback: (locale, _) {
-                        if (locale != null) {
-                          print(
-                              "Locale ${locale.languageCode},${locale.scriptCode}, ${locale.countryCode}");
-                        }
-                        return null;
-                      },
-                      builder: ToastUtils.easyLoadingBuilder(),
-                      home: ExclusiveDiscuzPortalPage(widget.discuz),
-                    ));
+                builder: ToastUtils.easyLoadingBuilder(),
+                home: ExclusiveDiscuzPortalPage(widget.discuz),
+              ),
+            );
           },
         );
       },

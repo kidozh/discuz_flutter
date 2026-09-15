@@ -246,16 +246,25 @@ void main() {
     }
 
     await pumpAtWidth(390, table);
-    expect(find.byType(Scrollbar), findsOneWidget);
+    expect(
+      find.byWidgetPredicate((widget) => widget is RawScrollbar),
+      findsOneWidget,
+    );
     await pumpAtWidth(820, table);
-    expect(find.byType(Scrollbar), findsNothing);
+    expect(
+      find.byWidgetPredicate((widget) => widget is RawScrollbar),
+      findsNothing,
+    );
 
     final twoColumnTable = parseFragment(
       '<table><tr><th>Name</th><th>Value</th></tr>'
       '<tr><td>Region</td><td>China</td></tr></table>',
     ).querySelector('table')!;
     await pumpAtWidth(390, twoColumnTable);
-    expect(find.byType(Scrollbar), findsNothing);
+    expect(
+      find.byWidgetPredicate((widget) => widget is RawScrollbar),
+      findsNothing,
+    );
 
     final spanningTable = parseFragment(
       '<table><tr><th colspan="2">Header</th></tr>'

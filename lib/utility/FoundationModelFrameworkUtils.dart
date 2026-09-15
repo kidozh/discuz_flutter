@@ -45,10 +45,17 @@ class FoundationModelFrameworkUtils {
       instructions: instructions,
       guardrailLevel: guardrailLevel,
     );
-    final response = await session.respond(prompt: prompt);
-    if (response.errorMessage != null) {
-      throw StateError(response.errorMessage!);
+    try {
+      final response = await session.respond(prompt: prompt);
+      if (response.errorMessage != null) {
+        throw StateError(response.errorMessage!);
+      }
+      if (response.content.trim().isEmpty) {
+        throw StateError('The model returned an empty response.');
+      }
+      return response.content.trim();
+    } finally {
+      await session.dispose();
     }
-    return response.content.trim();
   }
 }

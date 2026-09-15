@@ -1192,9 +1192,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
           _viewThreadResult.threadVariables.threadInfo.recommendCount,
       negativeCount:
           _viewThreadResult.threadVariables.threadInfo.disrecommendCount,
-      onChanged: () {
-        _controller.callRefresh();
-      },
     );
     final ratings =
         shouldLoadFirstPostRatings(

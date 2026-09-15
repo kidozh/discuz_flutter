@@ -58,12 +58,11 @@ class ChoosePlatformPage extends StatelessWidget {
                   strings.liquidGlassStyle,
                   strings.liquidGlassStyleDescription,
                 ),
-              if (!isAndroidDevice)
-                styleTile(
-                  AppVisualStyle.cupertino,
-                  strings.cupertinoStyle,
-                  strings.cupertinoStyleDescription,
-                ),
+              styleTile(
+                AppVisualStyle.cupertino,
+                strings.cupertinoStyle,
+                strings.cupertinoStyleDescription,
+              ),
               styleTile(
                 AppVisualStyle.material,
                 strings.materialDesign,

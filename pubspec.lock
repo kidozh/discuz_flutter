@@ -41,6 +41,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.3"
+  apple_post_translation:
+    dependency: "direct main"
+    description:
+      path: "third_party/apple_post_translation"
+      relative: true
+    source: path
+    version: "0.1.0"
   archive:
     dependency: transitive
     description:

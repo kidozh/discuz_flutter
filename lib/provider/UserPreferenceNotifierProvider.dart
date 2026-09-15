@@ -28,6 +28,21 @@ class UserPreferenceNotifierProvider with ChangeNotifier {
 
   String _adExemptHost = "";
 
+  bool autoTranslateEnabled = true;
+  void setAutoTranslateEnabled(bool value) {
+    if (autoTranslateEnabled == value) return;
+    autoTranslateEnabled = value;
+    notifyListeners();
+  }
+
+  bool autoSummarizeEnabled = true;
+
+  void setAutoSummarizeEnabled(bool value) {
+    if (autoSummarizeEnabled == value) return;
+    autoSummarizeEnabled = value;
+    notifyListeners();
+  }
+
   bool _appleIntelligenceEnabled = false;
   bool _appleIntelligenceAvailable = false;
   bool _appleIntelligenceAvailabilityChecked = false;
