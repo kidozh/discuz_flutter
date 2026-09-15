@@ -25,7 +25,7 @@ void main() {
       final languages = await PostTranslationService.languages();
       expect(languages, isNotEmpty);
       const source =
-          '<p>The weather is beautiful today. Let us go for a walk in the park.</p><img src="test.jpg">';
+          '<p>The weather is beautiful today. Let us go for a walk in the park.</p><a href="https://example.com">Read more</a><span>OK</span><img src="test.jpg">';
       final translated = await PostTranslationService.translate(
         source,
         language: 'zh-Hans',

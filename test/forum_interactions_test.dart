@@ -428,7 +428,6 @@ void main() {
                 sessionUid: user.uid,
                 positiveCount: 3,
                 negativeCount: 2,
-                onChanged: () {},
               ),
             ),
           ),
@@ -461,7 +460,6 @@ void main() {
                   sessionUid: serverUid,
                   positiveCount: 3,
                   negativeCount: 2,
-                  onChanged: () {},
                 ),
               ),
             ),
@@ -473,54 +471,56 @@ void main() {
     },
   );
   for (final positive in [true, false]) {
-    testWidgets('accepted feedback shows only its direction: $positive', (
-      tester,
-    ) async {
-      final account = DiscuzAndUserNotifier()
-        ..discuz = discuz
-        ..user = user;
-      await tester.pumpWidget(
-        ChangeNotifierProvider.value(
-          value: account,
-          child: MaterialApp(
-            localizationsDelegates: const [S.delegate],
-            home: Scaffold(
-              body: ThreadFeedbackBar(
-                discuz: discuz,
-                tid: 10,
-                formhash: 'hash',
-                voted: false,
-                sessionUid: user.uid,
-                positiveCount: 3,
-                negativeCount: 2,
-                onChanged: () {},
+    testWidgets(
+      'feedback updates locally without a reader refresh: $positive',
+      (tester) async {
+        final account = DiscuzAndUserNotifier()
+          ..discuz = discuz
+          ..user = user;
+        await tester.pumpWidget(
+          ChangeNotifierProvider.value(
+            value: account,
+            child: MaterialApp(
+              localizationsDelegates: const [S.delegate],
+              home: Scaffold(
+                body: ThreadFeedbackBar(
+                  discuz: discuz,
+                  tid: 10,
+                  formhash: 'hash',
+                  voted: false,
+                  sessionUid: user.uid,
+                  positiveCount: 3,
+                  negativeCount: 2,
+                ),
               ),
             ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      final action = tester
-          .widgetList<ForumActionButton>(find.byType(ForumActionButton))
-          .firstWhere((button) => button.positive == positive);
-      action.onFeedbackAccepted!(positive);
-      action.onChanged();
-      await tester.pumpAndSettle();
-      expect(find.byType(ForumActionButton), findsOneWidget);
-      expect(
-        find.text(
-          positive ? S.current.forumRecommended : S.current.forumNotRecommended,
-        ),
-        findsOneWidget,
-      );
-      expect(find.text(S.current.forumFeedbackSent), findsNothing);
-      expect(
-        tester
-            .widget<ForumActionButton>(find.byType(ForumActionButton))
-            .enabled,
-        isFalse,
-      );
-    });
+        );
+        await tester.pumpAndSettle();
+        final action = tester
+            .widgetList<ForumActionButton>(find.byType(ForumActionButton))
+            .firstWhere((button) => button.positive == positive);
+        action.onFeedbackAccepted!(positive);
+        action.onChanged();
+        await tester.pumpAndSettle();
+        expect(find.byType(ForumActionButton), findsOneWidget);
+        expect(
+          find.text(
+            positive
+                ? S.current.forumRecommended
+                : S.current.forumNotRecommended,
+          ),
+          findsOneWidget,
+        );
+        expect(find.text(S.current.forumFeedbackSent), findsNothing);
+        expect(
+          tester
+              .widget<ForumActionButton>(find.byType(ForumActionButton))
+              .enabled,
+          isFalse,
+        );
+      },
+    );
   }
   test(
     'preview and full comments share tolerant models and cache round trips',

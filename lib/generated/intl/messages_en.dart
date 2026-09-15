@@ -1778,6 +1778,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "translationSimulator": MessageLookupByLibrary.simpleMessage(
       "Apple Translation requires a physical device. It is not available in the iOS simulator.",
     ),
+    "translationSourceUndetected": MessageLookupByLibrary.simpleMessage(
+      "There is not enough readable text to identify the source language.",
+    ),
     "translationUnavailable": MessageLookupByLibrary.simpleMessage(
       "Apple Translation requires iOS 18 or macOS 15 or later.",
     ),

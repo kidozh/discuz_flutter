@@ -2970,7 +2970,7 @@ class PlatformAlertDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (usesLiquidGlass(context)) {
+    if (usesAppleTranslucentSurface(context)) {
       final dialogActions = actions ?? const <Widget>[];
       final actionContent = dialogActions.length <= 2
           ? Row(
@@ -3056,7 +3056,7 @@ class PlatformDialogAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (usesLiquidGlass(context)) {
+    if (usesAppleTranslucentSurface(context)) {
       final foreground = isDestructiveAction
           ? CupertinoColors.systemRed.resolveFrom(context)
           : Theme.of(context).colorScheme.primary;

@@ -176,6 +176,9 @@ class PostReviewClient {
       'forummisc',
       {
         'action': 'rate',
+        // forummisc emits its JSON result from the output hook only when
+        // t=output is requested; otherwise Discuz renders a message page.
+        't': 'output',
         'tid': tid,
         'pid': pid,
         'inajax': 1,

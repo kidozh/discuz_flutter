@@ -4,11 +4,14 @@ import 'AiPostText.dart';
 
 /// Translates text nodes only. Markup and all attributes stay outside the model.
 class PostHtmlTranslation {
-  static Future<String> translate(
-    String source,
-    Future<String> Function(String text) translateText,
-  ) async {
-    final document = parseFragment(source);
+  static String detectionText(String source) =>
+      _textNodes(parseFragment(source))
+          .map((node) => node.data)
+          .join('\n')
+          .replaceAll(RegExp(r'(?:https?://|www\.)[^\s<>]+'), '')
+          .trim();
+
+  static List<Text> _textNodes(Node document) {
     final nodes = <Text>[];
     void visit(Node node) {
       if (node is Element) {
@@ -38,6 +41,15 @@ class PostHtmlTranslation {
     }
 
     visit(document);
+    return nodes;
+  }
+
+  static Future<String> translate(
+    String source,
+    Future<String> Function(String text) translateText,
+  ) async {
+    final document = parseFragment(source);
+    final nodes = _textNodes(document);
     var changed = false;
     final cache = <String, String>{};
     final urls = RegExp(r'(?:https?://|www\.)[^\s<>]+');

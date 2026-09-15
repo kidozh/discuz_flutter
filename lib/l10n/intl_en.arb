@@ -1219,5 +1219,6 @@
   "translationLongPress": "Hold to choose language",
   "translationLanguagesFailed": "Unable to load translation languages. Please try again.",
   "translationSimulator": "Apple Translation requires a physical device. It is not available in the iOS simulator.",
-  "translationUnavailable": "Apple Translation requires iOS 18 or macOS 15 or later."
+  "translationUnavailable": "Apple Translation requires iOS 18 or macOS 15 or later.",
+  "translationSourceUndetected": "There is not enough readable text to identify the source language."
 }

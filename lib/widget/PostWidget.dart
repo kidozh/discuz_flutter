@@ -1,3 +1,4 @@
+import 'post_header_layout.dart';
 import 'post_translation_button.dart';
 import '../utility/rating_allowance_cache.dart';
 import '../utility/DashboardPreferences.dart';
@@ -662,6 +663,8 @@ class PostState extends State<PostStatefulWidget> {
         return;
       }
       final message = switch (error.code) {
+        'translation_source_undetected' =>
+          S.of(context).translationSourceUndetected,
         'translation_simulator' => S.of(context).translationSimulator,
         'translation_unavailable' => S.of(context).translationUnavailable,
         'request_too_large' => S.of(context).onDeviceAiRequestTooLarge,
@@ -739,7 +742,13 @@ class PostState extends State<PostStatefulWidget> {
 
     final header = <Widget>[
       // post header
-      getPostHeader(context),
+      if (_post.first)
+        PostHeaderLayout(
+          author: getPostHeader(context),
+          actions: getPostFunctionWidget(context),
+        )
+      else
+        getPostHeader(context),
       PostStatusBadges(
         blocked: _post.blocked,
         warned: _post.warned,
@@ -748,14 +757,6 @@ class PostState extends State<PostStatefulWidget> {
         isBestAnswer: widget.isBestAnswer,
         onSelectPost: jumpToPidCallback,
       ),
-      if (_post.first)
-        Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: getPostFunctionWidget(context),
-          ),
-        ),
       const SizedBox(height: 8),
       PostSummaryWidget(
         key: ValueKey((_discuz.baseURL, _post.pid, widget.sessionUid)),
@@ -1033,7 +1034,7 @@ class PostState extends State<PostStatefulWidget> {
     );
   }
 
-  Widget getPostFunctionWidget(BuildContext context) {
+  PlatformLiquidGlassToolbarGroup getPostFunctionWidget(BuildContext context) {
     final notification = Provider.of<DiscuzNotificationProvider>(context);
     final intelligence = Provider.of<UserPreferenceNotifierProvider>(context);
     final actionColor = Theme.of(context).colorScheme.onSurfaceVariant;
@@ -1200,67 +1201,73 @@ class PostState extends State<PostStatefulWidget> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(width: 4.0),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // username and OP come first
-                    RichText(
-                      overflow: TextOverflow.ellipsis,
-                      text: TextSpan(
-                        text: "",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: _post.author,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          if (_authorId == _post.authorId)
-                            TextSpan(
-                              text: ' ' + S.of(context).postAuthorLabel,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                color: Theme.of(context).colorScheme.primary,
-                                fontSize: 14,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // username and OP come first
+                      RichText(
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        text: TextSpan(
+                          text: "",
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
-                            ),
-                        ],
-                      ),
-                    ),
-
-                    RichText(
-                      overflow: TextOverflow.ellipsis,
-                      text: TextSpan(
-                        text: TimeDisplayUtils.getLocaledTimeDisplay(
-                          context,
-                          _post.publishAt,
-                        ),
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                        children: [
-                          if (_post.status & POST_REVISED != 0)
+                          children: [
                             TextSpan(
-                              text: ' · ' + S.of(context).editedPost,
+                              text: _post.author,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                                fontSize: 16,
                               ),
                             ),
-                          if (_post.ipLocation != "")
-                            TextSpan(
-                              text: ' ' + _post.ipLocation,
-                              style: TextStyle(fontSize: 14),
-                            ),
-                          if (groupTitle != "") getGroupWidgetSpan(context),
-                        ],
+                            if (_authorId == _post.authorId)
+                              TextSpan(
+                                text: ' ' + S.of(context).postAuthorLabel,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontSize: 14,
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+
+                      RichText(
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        text: TextSpan(
+                          text: TimeDisplayUtils.getLocaledTimeDisplay(
+                            context,
+                            _post.publishAt,
+                          ),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                          children: [
+                            if (_post.status & POST_REVISED != 0)
+                              TextSpan(
+                                text: ' · ' + S.of(context).editedPost,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            if (_post.ipLocation != "")
+                              TextSpan(
+                                text: ' ' + _post.ipLocation,
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            if (groupTitle != "") getGroupWidgetSpan(context),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

@@ -200,7 +200,6 @@ class ThreadFeedbackBar extends StatefulWidget {
   final int sessionUid;
   final String formhash;
   final bool voted;
-  final VoidCallback onChanged;
   const ThreadFeedbackBar({
     super.key,
     required this.discuz,
@@ -210,7 +209,6 @@ class ThreadFeedbackBar extends StatefulWidget {
     required this.sessionUid,
     required this.positiveCount,
     required this.negativeCount,
-    required this.onChanged,
   });
   @override
   State<ThreadFeedbackBar> createState() => _ThreadFeedbackBarState();
@@ -286,7 +284,6 @@ class _ThreadFeedbackBarState extends State<ThreadFeedbackBar> {
                     },
                     onChanged: () {
                       setState(() => sent = true);
-                      widget.onChanged();
                     },
                   ),
                 ),

@@ -75,3 +75,8 @@ A matching Mac App Development provisioning profile for
 `com.kidozh.discuzFlutter` is required. With explicit user approval, Xcode configured the matching Mac Team Provisioning
 Profile. The signed build passed codesign verification and launched to the normal
 welcome screen; the previous secure-storage entitlement error is resolved.
+
+Source-language detection uses NaturalLanguage on the full visible post before
+translating HTML fragments. Every TranslationSession receives an explicit source.
+Short labels inherit the post language; only passages with at least 40 letters
+and a hypothesis confidence of 0.85 override it for mixed-language content.

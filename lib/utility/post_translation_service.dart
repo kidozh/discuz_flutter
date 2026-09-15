@@ -26,6 +26,9 @@ class PostTranslationService {
       );
     }
     try {
+      final detectionText = PostHtmlTranslation.detectionText(html);
+      if (detectionText.isEmpty) throw const UnchangedPostTranslation();
+      final source = await ApplePostTranslation.detectLanguage(detectionText);
       return await PostHtmlTranslation.translate(html, (text) async {
         final request = _queue.then((_) {
           if (shouldContinue != null && !shouldContinue()) {
@@ -34,7 +37,7 @@ class PostTranslationService {
               'Translation cancelled.',
             );
           }
-          return ApplePostTranslation.translate(text, language);
+          return ApplePostTranslation.translate(text, language, source: source);
         });
         _queue = request.then<void>(
           (_) {},

@@ -52,6 +52,19 @@ public class ApplePostTranslationPlugin: NSObject, FlutterPlugin {
                 }.sorted { $0["name"]! < $1["name"]! })
                 return
             }
+            if call.method == "detectLanguage" {
+                guard let args = call.arguments as? [String: Any], let text = args["text"] as? String else {
+                    result(FlutterError(code: "invalid_arguments", message: nil, details: nil)); return
+                }
+                let recognizer = NLLanguageRecognizer()
+                recognizer.processString(text)
+                guard let source = recognizer.dominantLanguage else {
+                    result(FlutterError(code: "translation_source_undetected",
+                        message: "There is not enough text to identify the source language.", details: nil)); return
+                }
+                result(source.rawValue)
+                return
+            }
             guard call.method == "translate" else { result(FlutterMethodNotImplemented); return }
             #if targetEnvironment(simulator)
             result(FlutterError(code: "translation_simulator", message: "Apple Translation requires a physical device.", details: nil))
@@ -59,26 +72,32 @@ public class ApplePostTranslationPlugin: NSObject, FlutterPlugin {
             #else
             guard let args = call.arguments as? [String: Any],
                   let text = args["text"] as? String,
-                  let target = args["target"] as? String else {
+                  let target = args["target"] as? String,
+                  let sourceIdentifier = args["source"] as? String else {
                 result(FlutterError(code: "invalid_arguments", message: nil, details: nil)); return
             }
             guard cleanup == nil else {
                 result(FlutterError(code: "translation_busy", message: nil, details: nil)); return
             }
             let language = Locale.Language(identifier: target)
-            let recognizer = NLLanguageRecognizer()
-            recognizer.processString(text)
-            // Same-language fragments are common in mixed-language forum posts.
-            guard let detected = recognizer.dominantLanguage else {
-                result(text); return
-            }
-            do {
-                let source = Locale.Language(identifier: detected.rawValue)
-                if source.languageCode == language.languageCode && source.script == language.script {
-                    result(text); return
+            // Detect once from the post, rather than asking Translation to identify
+            // each short HTML node. Only a substantial, confident mixed-language
+            // passage overrides that document source.
+            let letterCount = text.unicodeScalars.filter { CharacterSet.letters.contains($0) }.count
+            guard letterCount > 0 else { result(text); return }
+            var source = Locale.Language(identifier: sourceIdentifier)
+            if letterCount >= 40 {
+                let recognizer = NLLanguageRecognizer()
+                recognizer.processString(text)
+                if let candidate = recognizer.languageHypotheses(withMaximum: 1).first,
+                   candidate.value >= 0.85 {
+                    source = Locale.Language(identifier: candidate.key.rawValue)
                 }
             }
-            let view = PostTranslationTask(text: text, target: language) { [weak self] response in
+            if source.languageCode == language.languageCode && source.script == language.script {
+                result(text); return
+            }
+            let view = PostTranslationTask(text: text, source: source, target: language) { [weak self] response in
                 self?.cleanup?()
                 self?.cleanup = nil
                 switch response {
@@ -128,12 +147,13 @@ public class ApplePostTranslationPlugin: NSObject, FlutterPlugin {
 @available(iOS 18.0, macOS 15.0, *)
 private struct PostTranslationTask: View {
     let text: String
+    let source: Locale.Language
     let target: Locale.Language
     let completion: (Result<String, Error>) -> Void
     @State private var completed = false
 
     private var configuration: TranslationSession.Configuration {
-        var config = TranslationSession.Configuration(source: nil, target: target)
+        var config = TranslationSession.Configuration(source: source, target: target)
         if #available(iOS 26.4, macOS 26.4, *) { config.preferredStrategy = .lowLatency }
         return config
     }

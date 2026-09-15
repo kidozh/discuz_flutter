@@ -7869,6 +7869,16 @@ class S {
       args: [],
     );
   }
+
+  /// `There is not enough readable text to identify the source language.`
+  String get translationSourceUndetected {
+    return Intl.message(
+      'There is not enough readable text to identify the source language.',
+      name: 'translationSourceUndetected',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

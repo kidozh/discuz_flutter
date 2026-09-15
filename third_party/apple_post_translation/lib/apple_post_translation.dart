@@ -13,10 +13,21 @@ class ApplePostTranslation {
         .toList();
   }
 
-  static Future<String> translate(String text, String target) async {
+  static Future<String> detectLanguage(String text) async {
+    final source =
+        await channel.invokeMethod<String>('detectLanguage', {'text': text});
+    if (source == null || source.isEmpty) {
+      throw PlatformException(code: 'translation_source_undetected');
+    }
+    return source;
+  }
+
+  static Future<String> translate(String text, String target,
+      {required String source}) async {
     final result = await channel.invokeMethod<String>('translate', {
       'text': text,
       'target': target,
+      'source': source,
     });
     if (result == null || result.trim().isEmpty) {
       throw PlatformException(code: 'empty_translation');
