@@ -9,13 +9,8 @@ import '../utility/PlatformAdaptiveWidgets.dart';
 import 'summary_sweep.dart';
 
 class PostSummaryWidget extends StatefulWidget {
-  const PostSummaryWidget({
-    super.key,
-    required this.html,
-    this.onContentChanged,
-  });
+  const PostSummaryWidget({super.key, required this.html});
   final String html;
-  final VoidCallback? onContentChanged;
 
   @override
   State<PostSummaryWidget> createState() => _PostSummaryWidgetState();
@@ -26,7 +21,6 @@ class _PostSummaryWidgetState extends State<PostSummaryWidget> {
   Future<String>? _summary;
   String? _source;
   String _text = '';
-  AsyncSnapshot<String>? _lastSnapshot;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +29,7 @@ class _PostSummaryWidgetState extends State<PostSummaryWidget> {
       _source = widget.html;
       _text = AiPostText.plainText(widget.html);
     }
-    if (!OnDeviceAiService.isApplePlatform ||
+    if (!OnDeviceAiService.isSupportedPlatform ||
         !preferences.appleIntelligenceEnabled ||
         !preferences.appleIntelligenceAvailable ||
         !preferences.autoSummarizeEnabled ||
@@ -64,12 +58,6 @@ class _PostSummaryWidgetState extends State<PostSummaryWidget> {
     return FutureBuilder<String>(
       future: _summary,
       builder: (context, snapshot) {
-        if (_lastSnapshot != snapshot) {
-          _lastSnapshot = snapshot;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) widget.onContentChanged?.call();
-          });
-        }
         final loading = snapshot.connectionState != ConnectionState.done;
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),

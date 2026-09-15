@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart' show PointerDeviceKind;
 import 'post_header_layout.dart';
 import 'post_translation_button.dart';
 import '../utility/rating_allowance_cache.dart';
@@ -192,6 +193,45 @@ class PostStatefulWidget extends StatefulWidget {
 class PostState extends State<PostStatefulWidget> {
   final _translation = PostTranslationState();
   String? _translationLanguage;
+  Object? _autoTranslationKey;
+
+  void _scheduleAutoTranslation() {
+    final preferences = context.watch<UserPreferenceNotifierProvider>();
+    if (!preferences.autoTranslateEnabled ||
+        !PostTranslationService.usesNativeTranslation) {
+      _autoTranslationKey = null;
+      return;
+    }
+    final key = (
+      _discuz.baseURL,
+      _post.pid,
+      _post.message,
+      widget.sessionUid,
+      _targetLanguage,
+    );
+    if (_autoTranslationKey == key) return;
+    _autoTranslationKey = key;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      bool current() =>
+          mounted &&
+          _autoTranslationKey == key &&
+          preferences.autoTranslateEnabled &&
+          !_translation.busy &&
+          _translation.translation == null;
+      if (!current()) return;
+      try {
+        final foreign = await PostTranslationService.isForeignPost(
+          _post.message,
+          language: _targetLanguage,
+          shouldContinue: current,
+        );
+        if (foreign && current()) await translatePostMessage(automatic: true);
+      } catch (_) {
+        // Automatic detection is best-effort; manual translation stays available.
+      }
+    });
+  }
+
   String get _targetLanguage =>
       _translationLanguage ??
       WidgetsBinding.instance.platformDispatcher.locale.toLanguageTag();
@@ -199,7 +239,7 @@ class PostState extends State<PostStatefulWidget> {
   Future<void> _chooseTranslationLanguage() async {
     List<(String, String)> languages;
     try {
-      languages = PostTranslationService.usesAppleTranslation
+      languages = PostTranslationService.usesNativeTranslation
           ? await PostTranslationService.languages(
               displayLocale: Localizations.localeOf(context).toLanguageTag(),
             )
@@ -225,29 +265,35 @@ class PostState extends State<PostStatefulWidget> {
           constraints: BoxConstraints(
             maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.7,
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    S.of(context).translationLanguage,
-                    style: Theme.of(context).textTheme.titleMedium,
+          child: Material(
+            type: MaterialType.transparency,
+            child: ScrollConfiguration(
+              behavior: ScrollConfiguration.of(sheetContext).copyWith(
+                dragDevices: {
+                  ...ScrollConfiguration.of(sheetContext).dragDevices,
+                  PointerDeviceKind.mouse,
+                },
+              ),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(S.of(context).translationLanguage),
                   ),
-                ),
-                for (final option in <(String, String)>[
-                  ('auto', S.of(context).translationAppLanguage),
-                  ...languages,
-                ])
-                  PlatformListTile(
-                    title: Text(option.$2),
-                    trailing: (_translationLanguage ?? 'auto') == option.$1
-                        ? const Icon(Icons.check)
-                        : null,
-                    onTap: () => Navigator.of(sheetContext).pop(option.$1),
-                  ),
-              ],
+                  for (final option in <(String, String)>[
+                    ('auto', S.of(context).translationAppLanguage),
+                    ...languages,
+                  ])
+                    ListTile(
+                      title: Text(option.$2),
+                      trailing: (_translationLanguage ?? 'auto') == option.$1
+                          ? const Icon(Icons.check)
+                          : null,
+                      onTap: () => Navigator.of(sheetContext).pop(option.$1),
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -268,18 +314,12 @@ class PostState extends State<PostStatefulWidget> {
       _post.message,
       widget.sessionUid,
       _targetLanguage,
-      PostTranslationService.usesAppleTranslation
+      PostTranslationService.usesNativeTranslation
           ? null
           : context
                 .read<UserPreferenceNotifierProvider>()
                 .appleIntelligenceGuardrail,
     ));
-  }
-
-  void _notifyTranslationLayout() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) widget.onContentChanged?.call();
-    });
   }
 
   Post _post;
@@ -623,23 +663,23 @@ class PostState extends State<PostStatefulWidget> {
     );
   }
 
-  Future<void> translatePostMessage() async {
+  Future<void> translatePostMessage({bool automatic = false}) async {
     _bindTranslation();
     if (_translation.busy) return;
     if (_translation.translation != null) {
       setState(_translation.toggle);
-      _notifyTranslationLayout();
       return;
     }
     final preferences = context.read<UserPreferenceNotifierProvider>();
-    if (!PostTranslationService.usesAppleTranslation &&
+    if (!PostTranslationService.usesNativeTranslation &&
         (!preferences.appleIntelligenceEnabled ||
             !preferences.appleIntelligenceAvailable))
       return;
     final revision = _translation.begin();
     setState(() {});
     bool isCurrent() {
-      if (!mounted) return false;
+      if (!mounted || (automatic && !preferences.autoTranslateEnabled))
+        return false;
       _bindTranslation();
       return _translation.isCurrent(revision);
     }
@@ -655,9 +695,8 @@ class PostState extends State<PostStatefulWidget> {
       );
       if (!isCurrent() || translatedText.isEmpty) return;
       setState(() => _translation.complete(revision, translatedText));
-      _notifyTranslationLayout();
     } on OnDeviceAiException catch (error) {
-      if (!isCurrent()) return;
+      if (!isCurrent() || automatic) return;
       if (error.code == 'translation_unchanged') {
         EasyLoading.showInfo(S.of(context).translationUnchanged);
         return;
@@ -746,6 +785,10 @@ class PostState extends State<PostStatefulWidget> {
         PostHeaderLayout(
           author: getPostHeader(context),
           actions: getPostFunctionWidget(context),
+          overflowBuilder: (hidden) => getPostPopupMenu(
+            context,
+            extraOptions: hidden.expand(_overflowOptions).toList(),
+          ),
         )
       else
         getPostHeader(context),
@@ -761,7 +804,6 @@ class PostState extends State<PostStatefulWidget> {
       PostSummaryWidget(
         key: ValueKey((_discuz.baseURL, _post.pid, widget.sessionUid)),
         html: _post.message,
-        onContentChanged: widget.onContentChanged,
       ),
     ];
     final body = DiscuzHtmlWidget(
@@ -871,7 +913,39 @@ class PostState extends State<PostStatefulWidget> {
     );
   }
 
-  Widget getPostPopupMenu(BuildContext context) {
+  List<PopupMenuOption> _overflowOptions(Widget action) {
+    if (action is Tooltip) return _overflowOptions(action.child!);
+    if (action is PlatformPopupMenu) return action.options;
+    if (action is PostTranslationButton) {
+      return [
+        PopupMenuOption(
+          label: action.label,
+          onTap: (_) {
+            if (!action.busy) action.onPressed();
+          },
+        ),
+        PopupMenuOption(
+          label: S.of(context).translationLanguage,
+          onTap: (_) => action.onChooseLanguage(),
+        ),
+      ];
+    }
+    if (action is PlatformIconButton) {
+      final icon = action.icon;
+      return [
+        PopupMenuOption(
+          label: icon is Icon ? (icon.semanticLabel ?? '') : '',
+          onTap: (_) => action.onPressed?.call(),
+        ),
+      ];
+    }
+    return [];
+  }
+
+  Widget getPostPopupMenu(
+    BuildContext context, {
+    List<PopupMenuOption> extraOptions = const [],
+  }) {
     return PlatformPopupMenu(
       icon: Icon(
         PlatformIcons(context).ellipsis,
@@ -879,6 +953,7 @@ class PostState extends State<PostStatefulWidget> {
         color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
       options: [
+        ...extraOptions,
         if (DashboardPreferences.isKeylol(_discuz.baseURL))
           PopupMenuOption(
             label: S.of(context).postViewRatings,
@@ -1112,7 +1187,8 @@ class PostState extends State<PostStatefulWidget> {
         ),
     ];
     _bindTranslation();
-    if (PostTranslationService.usesAppleTranslation ||
+    _scheduleAutoTranslation();
+    if (PostTranslationService.usesNativeTranslation ||
         (intelligence.appleIntelligenceEnabled &&
             intelligence.appleIntelligenceAvailable) ||
         _translation.translation != null) {

@@ -7879,6 +7879,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Auto-translate`
+  String get autoTranslateTitle {
+    return Intl.message(
+      'Auto-translate',
+      name: 'autoTranslateTitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

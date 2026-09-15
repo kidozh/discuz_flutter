@@ -10,8 +10,11 @@ class KeylolTopicTabs extends StatefulWidget {
   final List<String> titles;
   final IndexedWidgetBuilder topicBuilder;
 
-  const KeylolTopicTabs(
-      {required this.titles, required this.topicBuilder, super.key});
+  const KeylolTopicTabs({
+    required this.titles,
+    required this.topicBuilder,
+    super.key,
+  });
 
   @override
   State<KeylolTopicTabs> createState() => _KeylolTopicTabsState();
@@ -73,9 +76,11 @@ class _KeylolTopicTabsState extends State<KeylolTopicTabs> {
       final target = (center - position.viewportDimension / 2)
           .clamp(0.0, position.maxScrollExtent)
           .toDouble();
-      _tabScrollController.animateTo(target,
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOutCubic);
+      _tabScrollController.animateTo(
+        target,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+      );
     });
   }
 
@@ -94,10 +99,9 @@ class _KeylolTopicTabsState extends State<KeylolTopicTabs> {
   }
 
   Widget _topic(int index) => KeyedSubtree(
-        key: PageStorageKey('keylol-topic-$index'),
-        child:
-            Builder(builder: (context) => widget.topicBuilder(context, index)),
-      );
+    key: PageStorageKey('keylol-topic-$index'),
+    child: Builder(builder: (context) => widget.topicBuilder(context, index)),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -108,41 +112,43 @@ class _KeylolTopicTabsState extends State<KeylolTopicTabs> {
         child: Column(
           children: [
             ValueListenableBuilder<int>(
-                valueListenable: _selection,
-                builder: (context, index, _) =>
-                    LayoutBuilder(builder: (context, constraints) {
-                      final control = PlatformSegmentedControl(
-                        key: _tabsKey,
+              valueListenable: _selection,
+              builder: (context, index, _) => LayoutBuilder(
+                builder: (context, constraints) {
+                  final control = PlatformSegmentedControl(
+                    key: _tabsKey,
+                    labels: widget.titles,
+                    selectedIndex: index,
+                    color: Theme.of(context).colorScheme.primary,
+                    onValueChanged: _selectTopic,
+                  );
+                  return SingleChildScrollView(
+                    controller: _tabScrollController,
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.fromLTRB(8, 4, 8, 6),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minWidth: math.max(0, constraints.maxWidth - 16),
+                      ),
+                      child: KeylolScrollableTabHitRegion(
                         labels: widget.titles,
                         selectedIndex: index,
-                        color: Theme.of(context).colorScheme.primary,
-                        onValueChanged: _selectTopic,
-                      );
-                      return SingleChildScrollView(
-                        controller: _tabScrollController,
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.fromLTRB(8, 4, 8, 6),
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                              minWidth: math.max(0, constraints.maxWidth - 16)),
-                          child: usesLiquidGlass(context)
-                              ? KeylolScrollableTabHitRegion(
-                                  labels: widget.titles,
-                                  selectedIndex: index,
-                                  onSelected: _selectTopic,
-                                  child: control,
-                                )
-                              : control,
-                        ),
-                      );
-                    })),
+                        onSelected: _selectTopic,
+                        child: control,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
             Expanded(
-                child: PageView.builder(
-              controller: _pageController,
-              itemCount: widget.titles.length,
-              onPageChanged: _onPageChanged,
-              itemBuilder: (_, index) => _topic(index),
-            )),
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: widget.titles.length,
+                onPageChanged: _onPageChanged,
+                itemBuilder: (_, index) => _topic(index),
+              ),
+            ),
           ],
         ),
       );
@@ -158,16 +164,18 @@ class _KeylolTopicTabsState extends State<KeylolTopicTabs> {
             indicatorColor: Theme.of(context).colorScheme.primary,
             unselectedLabelColor:
                 Theme.of(context).brightness == Brightness.light
-                    ? Colors.black54
-                    : Colors.white54,
+                ? Colors.black54
+                : Colors.white54,
             unselectedLabelStyle:
                 Theme.of(context).brightness == Brightness.light
-                    ? Theme.of(context).textTheme.bodyMedium
-                    : Theme.of(context).textTheme.titleMedium,
+                ? Theme.of(context).textTheme.bodyMedium
+                : Theme.of(context).textTheme.titleMedium,
           ),
           Expanded(
-              child: TabBarView(
-                  children: List.generate(widget.titles.length, _topic))),
+            child: TabBarView(
+              children: List.generate(widget.titles.length, _topic),
+            ),
+          ),
         ],
       ),
     );
@@ -182,32 +190,37 @@ class KeylolScrollableTabHitRegion extends StatelessWidget {
   final ValueChanged<int> onSelected;
   final Widget child;
 
-  const KeylolScrollableTabHitRegion(
-      {required this.labels,
-      required this.selectedIndex,
-      required this.onSelected,
-      required this.child,
-      super.key});
+  const KeylolScrollableTabHitRegion({
+    required this.labels,
+    required this.selectedIndex,
+    required this.onSelected,
+    required this.child,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) => Stack(
-        children: [
-          ExcludeSemantics(child: IgnorePointer(child: child)),
-          Positioned.fill(
-              child: Row(children: [
+    children: [
+      ExcludeSemantics(child: IgnorePointer(child: child)),
+      Positioned.fill(
+        child: Row(
+          children: [
             for (var index = 0; index < labels.length; index++)
               Expanded(
-                  child: Semantics(
-                button: true,
-                selected: index == selectedIndex,
-                label: labels[index],
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => onSelected(index),
-                  child: const SizedBox.expand(),
+                child: Semantics(
+                  button: true,
+                  selected: index == selectedIndex,
+                  label: labels[index],
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => onSelected(index),
+                    child: const SizedBox.expand(),
+                  ),
                 ),
-              )),
-          ])),
-        ],
-      );
+              ),
+          ],
+        ),
+      ),
+    ],
+  );
 }

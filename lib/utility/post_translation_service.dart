@@ -7,6 +7,29 @@ import 'post_html_translation.dart';
 
 class PostTranslationService {
   static bool get usesAppleTranslation => Platform.isIOS || Platform.isMacOS;
+  static bool get usesNativeTranslation =>
+      usesAppleTranslation || Platform.isAndroid;
+  static Future<bool> isForeignPost(
+    String html, {
+    required String language,
+    bool Function()? shouldContinue,
+  }) async {
+    final text = PostHtmlTranslation.detectionText(html);
+    final parts = text
+        .split('\n')
+        .where((part) => RegExp(r'\p{L}', unicode: true).hasMatch(part))
+        .toList();
+    if (parts.isEmpty) return false;
+    final local = language.replaceAll('_', '-').split('-').first.toLowerCase();
+    for (final part in parts) {
+      if (shouldContinue != null && !shouldContinue()) return false;
+      final detected = await ApplePostTranslation.detectLanguage(part);
+      if (detected == 'und' || detected.split('-').first.toLowerCase() == local)
+        return false;
+    }
+    return true;
+  }
+
   static Future<void> _queue = Future.value();
 
   static Future<List<(String, String)>> languages({String? displayLocale}) =>
@@ -18,7 +41,7 @@ class PostTranslationService {
     GuardrailLevel guardrailLevel = GuardrailLevel.standard,
     bool Function()? shouldContinue,
   }) async {
-    if (!usesAppleTranslation) {
+    if (!usesNativeTranslation) {
       return OnDeviceAiService.translate(
         html,
         language: language,

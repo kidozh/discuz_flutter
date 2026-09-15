@@ -190,6 +190,15 @@ class _SettingPageState extends State<SettingPage> {
                 const DashboardOrderPage(),
               ),
             ),
+            _GlassSwitchTile(
+              title: S.of(context).autoTranslateTitle,
+              leading: const Icon(Icons.translate),
+              value: preference.autoTranslateEnabled,
+              onChanged: (value) {
+                preference.setAutoTranslateEnabled(value);
+                UserPreferencesUtils.putAutoTranslateEnabled(value);
+              },
+            ),
           ],
         ),
         _GlassSettingsSection(

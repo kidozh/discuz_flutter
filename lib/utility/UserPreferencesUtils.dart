@@ -33,7 +33,9 @@ class UserPreferencesUtils {
   }
 
   static Future<void> putForumDisplayRule(
-      Discuz discuz, String rewriteRule) async {
+    Discuz discuz,
+    String rewriteRule,
+  ) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(getForumDisplayRewriteRuleName(discuz), rewriteRule);
   }
@@ -46,7 +48,9 @@ class UserPreferencesUtils {
   }
 
   static Future<void> putViewThreadRule(
-      Discuz discuz, String rewriteRule) async {
+    Discuz discuz,
+    String rewriteRule,
+  ) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(getViewThreadRewriteRuleName(discuz), rewriteRule);
   }
@@ -161,6 +165,16 @@ class UserPreferencesUtils {
     return FlexScheme.blueWhale;
   }
 
+  static Future<void> putAutoTranslateEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('autoTranslateEnabledV1', enabled);
+  }
+
+  static Future<bool> getAutoTranslateEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('autoTranslateEnabledV1') ?? true;
+  }
+
   static Future<void> putAutoSummarizeEnabled(bool enabled) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('autoSummarizeEnabledV1', enabled);
@@ -227,7 +241,8 @@ class UserPreferencesUtils {
       "interfaceBrightnessPreferenceKey";
 
   static Future<void> putInterfaceBrightnessPreference(
-      String brightness) async {
+    String brightness,
+  ) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(interfaceBrightnessPreferenceKey, brightness);
   }
@@ -368,7 +383,9 @@ class UserPreferencesUtils {
   }
 
   static Future<String> getDiscuzGroupNameById(
-      Discuz discuz, int groupId) async {
+    Discuz discuz,
+    int groupId,
+  ) async {
     String discuzForumFidsKey = "discuz_groupName_${discuz.baseURL}_${groupId}";
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var signaturePreference = prefs.getString(discuzForumFidsKey);
@@ -376,7 +393,10 @@ class UserPreferencesUtils {
   }
 
   static Future<void> putDiscuzGroupNameById(
-      Discuz discuz, int groupId, String value) async {
+    Discuz discuz,
+    int groupId,
+    String value,
+  ) async {
     String discuzForumFidsKey = "discuz_groupName_${discuz.baseURL}_${groupId}";
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(discuzForumFidsKey, value);
@@ -390,7 +410,10 @@ class UserPreferencesUtils {
   }
 
   static Future<void> putDiscuzGroupStarById(
-      Discuz discuz, int groupId, int value) async {
+    Discuz discuz,
+    int groupId,
+    int value,
+  ) async {
     String discuzForumFidsKey = "discuz_groupStar_${discuz.baseURL}_${groupId}";
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt(discuzForumFidsKey, value);
@@ -405,7 +428,10 @@ class UserPreferencesUtils {
   }
 
   static Future<void> _putLastMobileSign(
-      Discuz discuz, int uid, int value) async {
+    Discuz discuz,
+    int uid,
+    int value,
+  ) async {
     String discuzForumFidsKey =
         "discuz_last_signed_in_${discuz.baseURL}_${uid}";
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -422,7 +448,8 @@ class UserPreferencesUtils {
   static Future<bool> shouldMobileSign(Discuz discuz, int uid) async {
     int lastMobileSignTimestampSecond = await getLastMobileSign(discuz, uid);
     DateTime lastSignDate = DateTime.fromMillisecondsSinceEpoch(
-        lastMobileSignTimestampSecond * 1000);
+      lastMobileSignTimestampSecond * 1000,
+    );
     DateTime now = DateTime.now();
 
     if (!isTheSameDay(lastSignDate, now)) {
@@ -462,10 +489,13 @@ class UserPreferencesUtils {
   }
 
   static Future<void> putSubscribedChannelList(
-      List<String> subscribedChannelList) async {
+    List<String> subscribedChannelList,
+  ) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
-        subscribedChannelPreferenceKey, subscribedChannelList);
+      subscribedChannelPreferenceKey,
+      subscribedChannelList,
+    );
   }
 
   static final String lastSubscribedTimestampPreferenceKey =
@@ -473,8 +503,9 @@ class UserPreferencesUtils {
 
   static Future<int> getLastPushSecond() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var signaturePreference =
-        prefs.getInt(lastSubscribedTimestampPreferenceKey);
+    var signaturePreference = prefs.getInt(
+      lastSubscribedTimestampPreferenceKey,
+    );
     return signaturePreference == null ? 0 : signaturePreference;
   }
 
@@ -486,7 +517,8 @@ class UserPreferencesUtils {
   static Future<bool> shouldSendTokenToDHPushServer() async {
     int lastMobileSignTimestampSecond = await getLastPushSecond();
     DateTime lastPushDate = DateTime.fromMillisecondsSinceEpoch(
-        lastMobileSignTimestampSecond * 1000);
+      lastMobileSignTimestampSecond * 1000,
+    );
     DateTime now = DateTime.now();
     // since last two days?
     if (now.difference(lastPushDate).inHours > 12) {
@@ -510,7 +542,9 @@ class UserPreferencesUtils {
   }
 
   static Future<void> putShouldRememberDiscuzPassword(
-      Discuz discuz, bool value) async {
+    Discuz discuz,
+    bool value,
+  ) async {
     String discuzForumFidsKey = "discuz_password_remember_${discuz.baseURL}";
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool(discuzForumFidsKey, value);
@@ -565,7 +599,9 @@ class UserPreferencesUtils {
   }
 
   static Future<void> putDiscuzSmileyCacheJson(
-      Discuz discuz, String value) async {
+    Discuz discuz,
+    String value,
+  ) async {
     String discuzSmileyCacheJsonKey = "discuz_simley_caches_${discuz.baseURL}";
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(discuzSmileyCacheJsonKey, value);
@@ -574,7 +610,8 @@ class UserPreferencesUtils {
   static final String interfaceDynamicSchemeVariantPreferenceKey =
       "interfaceDynamicSchemeVariantPreferenceKey";
   static Future<void> putInterfaceDynamicSchemeVariantPreference(
-      DynamicSchemeVariant dynamicVariant) async {
+    DynamicSchemeVariant dynamicVariant,
+  ) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String dynamicVariantString = "totalSpot";
     switch (dynamicVariant) {
@@ -626,19 +663,22 @@ class UserPreferencesUtils {
         }
     }
     await prefs.setString(
-        interfaceDynamicSchemeVariantPreferenceKey, dynamicVariantString);
+      interfaceDynamicSchemeVariantPreferenceKey,
+      dynamicVariantString,
+    );
   }
 
   static Future<String?>
-      getInterfaceDynamicSchemeVariantStringPreference() async {
+  getInterfaceDynamicSchemeVariantStringPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var brightness =
-        prefs.getString(interfaceDynamicSchemeVariantPreferenceKey);
+    var brightness = prefs.getString(
+      interfaceDynamicSchemeVariantPreferenceKey,
+    );
     return brightness;
   }
 
   static Future<DynamicSchemeVariant>
-      getInterfaceDynamicSchemeVariantPreference() async {
+  getInterfaceDynamicSchemeVariantPreference() async {
     String? dynamicVariantString =
         await getInterfaceDynamicSchemeVariantStringPreference();
     switch (dynamicVariantString) {
@@ -673,7 +713,9 @@ class UserPreferencesUtils {
   }
 
   static Future<void> putDiscuzPortalResultCacheJson(
-      Discuz discuz, String value) async {
+    Discuz discuz,
+    String value,
+  ) async {
     String discuzSmileyCacheJsonKey = "discuz_portal_caches_${discuz.baseURL}";
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(discuzSmileyCacheJsonKey, value);
@@ -700,7 +742,8 @@ class UserPreferencesUtils {
   static Future<bool> shouldReportAnalytics() async {
     int lastMobileSignTimestampSecond = await getLastReportAnalyticsTime();
     DateTime lastSignDate = DateTime.fromMillisecondsSinceEpoch(
-        lastMobileSignTimestampSecond * 1000);
+      lastMobileSignTimestampSecond * 1000,
+    );
     DateTime now = DateTime.now();
 
     if (!isTheSameDay(lastSignDate, now)) {
@@ -725,7 +768,9 @@ class UserPreferencesUtils {
   }
 
   static Future<String> getDiscuzPrivateMessageResultCacheJson(
-      Discuz discuz, User user) async {
+    Discuz discuz,
+    User user,
+  ) async {
     String discuzSmileyCacheJsonKey =
         "discuz_private_message_caches_${discuz.baseURL}_${user.uid}";
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -734,7 +779,10 @@ class UserPreferencesUtils {
   }
 
   static Future<void> putDiscuzPrivateMessageResultCacheJson(
-      Discuz discuz, User user, String value) async {
+    Discuz discuz,
+    User user,
+    String value,
+  ) async {
     String discuzSmileyCacheJsonKey =
         "discuz_private_message_caches_${discuz.baseURL}_${user.uid}";
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -776,7 +824,8 @@ class UserPreferencesUtils {
   static Future<bool> shouldRegisterSubscription() async {
     int lastMobileSignTimestampSecond = await getLastRegisterSubscriptionTime();
     DateTime lastSignDate = DateTime.fromMillisecondsSinceEpoch(
-        lastMobileSignTimestampSecond * 1000);
+      lastMobileSignTimestampSecond * 1000,
+    );
     DateTime now = DateTime.now();
 
     if (!isTheSameDay(lastSignDate, now)) {
@@ -808,7 +857,8 @@ class UserPreferencesUtils {
   static Future<bool> shouldRegisterBilibiliWbi() async {
     int lastMobileSignTimestampSecond = await getLastBilibiliWbiUpdateTime();
     DateTime lastSignDate = DateTime.fromMillisecondsSinceEpoch(
-        lastMobileSignTimestampSecond * 1000);
+      lastMobileSignTimestampSecond * 1000,
+    );
     DateTime now = DateTime.now();
 
     if (!isTheSameDay(lastSignDate, now)) {

@@ -98,10 +98,10 @@ void main() {
           Offset(direction == TextDirection.ltr ? -280 : 280, 0));
       await tester.pumpAndSettle();
       expect(tester.widget<PlatformSegmentedControl>(control).selectedIndex, 7);
-      expect(find.text('Topic 7').hitTestable(), findsOneWidget);
+      expect(find.byWidgetPredicate((widget) => widget is Semantics && widget.properties.label == 'Topic 7').hitTestable(), findsOneWidget);
       await tester.pumpWidget(topics(scale: 2));
       await tester.pumpAndSettle();
-      expect(find.text('Topic 7').hitTestable(), findsOneWidget);
+      expect(find.byWidgetPredicate((widget) => widget is Semantics && widget.properties.label == 'Topic 7').hitTestable(), findsOneWidget);
       // A refresh that reduces the category count must not leave an empty page.
       await tester.pumpWidget(topics(count: 2));
       await tester.pumpAndSettle();

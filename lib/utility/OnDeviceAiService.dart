@@ -308,7 +308,7 @@ class OnDeviceAiService {
     bool Function()? shouldContinue,
   }) async {
     var summary = '';
-    for (final chunk in AiPostText.chunks(text)) {
+    for (final chunk in AiPostText.chunks(text, limit: 1200)) {
       summary = await _serial(() {
         if (shouldContinue != null && !shouldContinue()) {
           throw StateError('Summary cancelled');

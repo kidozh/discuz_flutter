@@ -125,36 +125,65 @@ class _MyAppState extends State<MyApp> {
 
     if (!context.mounted) return;
 
-    Provider.of<ThemeNotifierProvider>(context, listen: false)
-        .setTheme(colorName);
+    Provider.of<ThemeNotifierProvider>(
+      context,
+      listen: false,
+    ).setTheme(colorName);
     if (customThemeColor != null) {
-      Provider.of<ThemeNotifierProvider>(context, listen: false)
-          .setCustomThemeColor(customThemeColor);
+      Provider.of<ThemeNotifierProvider>(
+        context,
+        listen: false,
+      ).setCustomThemeColor(customThemeColor);
     }
     // Appearance is already seeded before runApp. Do not overwrite a choice
     // made while the deferred preferences / AI availability checks were running.
-    Provider.of<ThemeNotifierProvider>(context, listen: false)
-        .setDynamicSchemeVariant(dynamicSchemeVariant);
-    Provider.of<TypeSettingNotifierProvider>(context, listen: false)
-        .setScalingParameter(scale);
-    Provider.of<TypeSettingNotifierProvider>(context, listen: false)
-        .ignoreCustomFontStyle = ignoreCustomFontStyle;
-    Provider.of<ThemeNotifierProvider>(context, listen: false)
-        .setBrightness(brightness);
-    Provider.of<ThemeNotifierProvider>(context, listen: false)
-        .setMaterial3(useMaterial3);
-    Provider.of<UserPreferenceNotifierProvider>(context, listen: false)
-        .allowPush = allowPush;
-    Provider.of<UserPreferenceNotifierProvider>(context, listen: false)
-        .signature = signature;
-    Provider.of<DiscuzNotificationProvider>(context, listen: false)
-        .setNotificationCount(NoticeCount());
+    Provider.of<ThemeNotifierProvider>(
+      context,
+      listen: false,
+    ).setDynamicSchemeVariant(dynamicSchemeVariant);
+    Provider.of<TypeSettingNotifierProvider>(
+      context,
+      listen: false,
+    ).setScalingParameter(scale);
+    Provider.of<TypeSettingNotifierProvider>(
+      context,
+      listen: false,
+    ).ignoreCustomFontStyle = ignoreCustomFontStyle;
+    Provider.of<ThemeNotifierProvider>(
+      context,
+      listen: false,
+    ).setBrightness(brightness);
+    Provider.of<ThemeNotifierProvider>(
+      context,
+      listen: false,
+    ).setMaterial3(useMaterial3);
+    Provider.of<UserPreferenceNotifierProvider>(
+      context,
+      listen: false,
+    ).allowPush = allowPush;
+    Provider.of<UserPreferenceNotifierProvider>(
+      context,
+      listen: false,
+    ).signature = signature;
+    Provider.of<DiscuzNotificationProvider>(
+      context,
+      listen: false,
+    ).setNotificationCount(NoticeCount());
 
-    Provider.of<UserPreferenceNotifierProvider>(context, listen: false)
-        .adExemptHost = adExemptHost;
-    final userPreferences =
-        Provider.of<UserPreferenceNotifierProvider>(context, listen: false);
-    userPreferences.setAutoSummarizeEnabled(await UserPreferencesUtils.getAutoSummarizeEnabled());
+    Provider.of<UserPreferenceNotifierProvider>(
+      context,
+      listen: false,
+    ).adExemptHost = adExemptHost;
+    final userPreferences = Provider.of<UserPreferenceNotifierProvider>(
+      context,
+      listen: false,
+    );
+    userPreferences.setAutoTranslateEnabled(
+      await UserPreferencesUtils.getAutoTranslateEnabled(),
+    );
+    userPreferences.setAutoSummarizeEnabled(
+      await UserPreferencesUtils.getAutoSummarizeEnabled(),
+    );
     userPreferences.setAppleIntelligenceGuardrail(appleIntelligenceGuardrail);
     userPreferences.setOnDeviceAiAvailability(onDeviceAiAvailability);
     userPreferences.setAppleIntelligenceEnabled(
@@ -162,14 +191,20 @@ class _MyAppState extends State<MyApp> {
     );
 
     if (typography != null) {
-      Provider.of<TypeSettingNotifierProvider>(context, listen: false)
-          .typographyTheme = typography;
+      Provider.of<TypeSettingNotifierProvider>(
+        context,
+        listen: false,
+      ).typographyTheme = typography;
     }
 
-    Provider.of<TypeSettingNotifierProvider>(context, listen: false)
-        .useThinFontWeight = useThinFont;
-    Provider.of<TypeSettingNotifierProvider>(context, listen: false)
-        .useCompactParagraph = useCompactParagraph;
+    Provider.of<TypeSettingNotifierProvider>(
+      context,
+      listen: false,
+    ).useThinFontWeight = useThinFont;
+    Provider.of<TypeSettingNotifierProvider>(
+      context,
+      listen: false,
+    ).useCompactParagraph = useCompactParagraph;
   }
 
   @override
@@ -241,10 +276,12 @@ class _MyAppState extends State<MyApp> {
           scheme: customThemeColor == null ? themeColorEntity.themeColor : null,
           colorScheme: lightColorScheme,
           pageTransitionsTheme: Platform.isIOS
-              ? PageTransitionsTheme(builders: {
-                  TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-                  TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-                })
+              ? PageTransitionsTheme(
+                  builders: {
+                    TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+                    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+                  },
+                )
               : null,
           useMaterial3: themeColorEntity.useMaterial3,
           textTheme: typography.black.useSystemChineseFont(Brightness.light),
@@ -254,10 +291,12 @@ class _MyAppState extends State<MyApp> {
           scheme: customThemeColor == null ? themeColorEntity.themeColor : null,
           colorScheme: darkColorScheme,
           pageTransitionsTheme: Platform.isIOS
-              ? PageTransitionsTheme(builders: {
-                  TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-                  TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-                })
+              ? PageTransitionsTheme(
+                  builders: {
+                    TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+                    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+                  },
+                )
               : null,
           useMaterial3: themeColorEntity.useMaterial3,
           textTheme: typography.white.useSystemChineseFont(Brightness.dark),
@@ -279,8 +318,9 @@ class _MyAppState extends State<MyApp> {
         //         }
         //     ): null
         // );
-        const darkDefaultCupertinoTheme =
-            CupertinoThemeData(brightness: Brightness.dark);
+        const darkDefaultCupertinoTheme = CupertinoThemeData(
+          brightness: Brightness.dark,
+        );
         final cupertinoDarkTheme = MaterialBasedCupertinoThemeData(
           materialTheme: materialThemeDataDark.copyWith(
             cupertinoOverrideTheme: CupertinoThemeData(
@@ -290,30 +330,37 @@ class _MyAppState extends State<MyApp> {
                 primaryColor: materialThemeDataDark.colorScheme.primary,
                 textStyle: darkDefaultCupertinoTheme.textTheme.textStyle
                     .copyWith(
-                        color: materialThemeDataDark.colorScheme.onSurface),
+                      color: materialThemeDataDark.colorScheme.onSurface,
+                    ),
                 tabLabelTextStyle: darkDefaultCupertinoTheme
-                    .textTheme.tabLabelTextStyle
+                    .textTheme
+                    .tabLabelTextStyle
                     .copyWith(
-                        color: materialThemeDataDark.colorScheme.onSurface),
+                      color: materialThemeDataDark.colorScheme.onSurface,
+                    ),
                 navTitleTextStyle: darkDefaultCupertinoTheme
-                    .textTheme.navTitleTextStyle
+                    .textTheme
+                    .navTitleTextStyle
                     .copyWith(
-                        color: materialThemeDataDark.colorScheme.onSurface),
+                      color: materialThemeDataDark.colorScheme.onSurface,
+                    ),
                 navActionTextStyle: darkDefaultCupertinoTheme
-                    .textTheme.navActionTextStyle
-                    .copyWith(
-                  color: materialThemeDataDark.colorScheme.primary,
-                ),
+                    .textTheme
+                    .navActionTextStyle
+                    .copyWith(color: materialThemeDataDark.colorScheme.primary),
                 navLargeTitleTextStyle: darkDefaultCupertinoTheme
-                    .textTheme.navLargeTitleTextStyle
+                    .textTheme
+                    .navLargeTitleTextStyle
                     .copyWith(
-                        color: materialThemeDataDark.colorScheme.onSurface),
+                      color: materialThemeDataDark.colorScheme.onSurface,
+                    ),
               ),
             ),
           ),
         );
         final cupertinoLightTheme = MaterialBasedCupertinoThemeData(
-            materialTheme: materialThemeDataLight);
+          materialTheme: materialThemeDataLight,
+        );
         // check the system setting
 
         if (themeColorEntity.brightness == null) {
@@ -340,25 +387,25 @@ class _MyAppState extends State<MyApp> {
                 themeMode = themeMode;
               },
               builder: (context) => UpgradeAlert(
-                  child: PlatformApp(
-                navigatorKey: navigatorKey,
-                debugShowCheckedModeBanner: false,
-                navigatorObservers: [
-                  FirebaseAnalyticsObserver(
-                      analytics: FirebaseAnalytics.instance),
-                ],
-                localizationsDelegates: [
-                  S.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate
-                ],
-                supportedLocales: S.delegate.supportedLocales,
-                builder: ToastUtils.easyLoadingBuilder(),
-                home: MainTwoPanePage(
-                  navigatorKey: this.navigatorKey,
+                child: PlatformApp(
+                  navigatorKey: navigatorKey,
+                  debugShowCheckedModeBanner: false,
+                  navigatorObservers: [
+                    FirebaseAnalyticsObserver(
+                      analytics: FirebaseAnalytics.instance,
+                    ),
+                  ],
+                  localizationsDelegates: [
+                    S.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                  ],
+                  supportedLocales: S.delegate.supportedLocales,
+                  builder: ToastUtils.easyLoadingBuilder(),
+                  home: MainTwoPanePage(navigatorKey: this.navigatorKey),
                 ),
-              )),
+              ),
             );
           },
         );
@@ -369,12 +416,12 @@ class _MyAppState extends State<MyApp> {
 
 class MyHomePage extends StatefulWidget {
   GlobalKey<NavigatorState> navigatorKey;
-  MyHomePage(
-      {Key? key,
-      required this.title,
-      this.onSelectTid,
-      required this.navigatorKey})
-      : super(key: key);
+  MyHomePage({
+    Key? key,
+    required this.title,
+    this.onSelectTid,
+    required this.navigatorKey,
+  }) : super(key: key);
 
   final ValueChanged<int>? onSelectTid;
 
@@ -382,7 +429,9 @@ class MyHomePage extends StatefulWidget {
 
   @override
   _MyHomePageState createState() => _MyHomePageState(
-      onSelectTid: this.onSelectTid, navigatorKey: this.navigatorKey);
+    onSelectTid: this.onSelectTid,
+    navigatorKey: this.navigatorKey,
+  );
 }
 
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
@@ -405,9 +454,12 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     super.didChangePlatformBrightness();
     // change now
     final MediaQueryData data = MediaQueryData.fromView(
-        WidgetsBinding.instance.platformDispatcher.views.single);
-    Provider.of<ThemeNotifierProvider>(context, listen: false)
-        .setBrightness(data.platformBrightness);
+      WidgetsBinding.instance.platformDispatcher.views.single,
+    );
+    Provider.of<ThemeNotifierProvider>(
+      context,
+      listen: false,
+    ).setBrightness(data.platformBrightness);
     //Theme.of(context).brightness = window.platformBrightness;
   }
 
@@ -469,10 +521,12 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     if (flag != version) {
       // shown
       Navigator.push(
-          context,
-          platformPageRoute(
-              context: context,
-              builder: (context) => TestFlightBannerPage(version: version)));
+        context,
+        platformPageRoute(
+          context: context,
+          builder: (context) => TestFlightBannerPage(version: version),
+        ),
+      );
     }
   }
 
@@ -490,7 +544,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           parameters: {
             "url": discuz.host,
             "sitename": discuz.siteName,
-            "full_result": discuz.toString()
+            "full_result": discuz.toString(),
           },
         );
       });
@@ -514,8 +568,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   void _setFirstUserInDiscuz(Discuz discuz) async {
     List<User> userList = await _userDao.findAllUsersByDiscuz(discuz);
     if (userList.isNotEmpty && userList.length > 0) {
-      Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-          .setUser(userList.first);
+      Provider.of<DiscuzAndUserNotifier>(
+        context,
+        listen: false,
+      ).setUser(userList.first);
     }
   }
 
@@ -525,112 +581,128 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     List<Widget> widgetList = [];
     for (int i = 0; i < _allDiscuzs.length; i++) {
       Discuz discuz = _allDiscuzs[i];
-      Discuz? _selecteddiscuz =
-          Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+      Discuz? _selecteddiscuz = Provider.of<DiscuzAndUserNotifier>(
+        context,
+        listen: false,
+      ).discuz;
 
-      widgetList.add(SimpleDialogItem(
-        key: UniqueKey(),
-        icon: (_selecteddiscuz != null && _selecteddiscuz == discuz)
-            ? PlatformIcons(context).checkMarkCircledSolid
-            : AppPlatformIcons(context).discuzSolid,
-        color: (_selecteddiscuz != null && _selecteddiscuz == discuz)
-            ? Theme.of(context).colorScheme.primary
-            : Theme.of(context).unselectedWidgetColor,
-        text: discuz.siteName,
-        onPressed: () async {
-          await UserPreferencesUtils.putFirstShowDiscuzPreference(
-              discuz.key.toString());
-          setState(() {
-            VibrationUtils.vibrateWithClickIfPossible();
-            Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-                .initDiscuz(discuz);
-            // save to user preference
-
-            _setFirstUserInDiscuz(discuz);
-            if (onSelectTid != null) {
-              onSelectTid!(0);
-            }
-            Navigator.of(context).pop();
-          });
-        },
-      ));
-    }
-
-    widgetList.add(Padding(
-      padding: const EdgeInsets.fromLTRB(8, 12, 8, 8),
-      child: SizedBox(
-        width: double.infinity,
-        child: PlatformElevatedButton(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-          child: Text(
-            S.of(context).addNewDiscuz,
-            maxLines: 1,
-            style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimaryContainer),
-          ),
-          //color: Theme.of(context).colorScheme.onPrimaryContainer,
-          onPressed: () {
-            VibrationUtils.vibrateWithClickIfPossible();
-            Navigator.of(context).pop();
-            Navigator.push(
+      widgetList.add(
+        SimpleDialogItem(
+          key: UniqueKey(),
+          icon: (_selecteddiscuz != null && _selecteddiscuz == discuz)
+              ? PlatformIcons(context).checkMarkCircledSolid
+              : AppPlatformIcons(context).discuzSolid,
+          color: (_selecteddiscuz != null && _selecteddiscuz == discuz)
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).unselectedWidgetColor,
+          text: discuz.siteName,
+          onPressed: () async {
+            await UserPreferencesUtils.putFirstShowDiscuzPreference(
+              discuz.key.toString(),
+            );
+            setState(() {
+              VibrationUtils.vibrateWithClickIfPossible();
+              Provider.of<DiscuzAndUserNotifier>(
                 context,
-                platformPageRoute(
-                    context: context, builder: (context) => AddDiscuzPage()));
+                listen: false,
+              ).initDiscuz(discuz);
+              // save to user preference
+
+              _setFirstUserInDiscuz(discuz);
+              if (onSelectTid != null) {
+                onSelectTid!(0);
+              }
+              Navigator.of(context).pop();
+            });
           },
         ),
+      );
+    }
+
+    widgetList.add(
+      Padding(
+        padding: const EdgeInsets.fromLTRB(8, 12, 8, 8),
+        child: SizedBox(
+          width: double.infinity,
+          child: PlatformElevatedButton(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            child: Text(
+              S.of(context).addNewDiscuz,
+              maxLines: 1,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
+            ),
+            //color: Theme.of(context).colorScheme.onPrimaryContainer,
+            onPressed: () {
+              VibrationUtils.vibrateWithClickIfPossible();
+              Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                platformPageRoute(
+                  context: context,
+                  builder: (context) => AddDiscuzPage(),
+                ),
+              );
+            },
+          ),
+        ),
       ),
-    ));
+    );
 
     if (isCupertino(context)) {
       await showPlatformModalSheet(
-          context: context, //BuildContext对象
-          builder: (BuildContext context) {
-            final sheetContent = Padding(
-              padding: const EdgeInsets.fromLTRB(8, 18, 8, 8),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.sizeOf(context).height * 0.72,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      S.of(context).chooseDiscuz,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 10),
-                    Flexible(
-                      child: SingleChildScrollView(
-                        child: Column(children: widgetList),
-                      ),
-                    ),
-                  ],
-                ),
+        context: context, //BuildContext对象
+        builder: (BuildContext context) {
+          final sheetContent = Padding(
+            padding: const EdgeInsets.fromLTRB(8, 18, 8, 8),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.sizeOf(context).height * 0.72,
               ),
-            );
-            if (usesLiquidGlass(context)) return sheetContent;
-            return SafeArea(
-              top: false,
-              child: PlatformLiquidGlassCard(
-                margin: const EdgeInsets.all(8),
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(28),
-                  bottom: Radius.circular(20),
-                ),
-                child: sheetContent,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    S.of(context).chooseDiscuz,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 10),
+                  Flexible(
+                    child: SingleChildScrollView(
+                      child: Column(children: widgetList),
+                    ),
+                  ),
+                ],
               ),
-            );
-          });
+            ),
+          );
+          if (usesLiquidGlass(context)) return sheetContent;
+          return SafeArea(
+            top: false,
+            child: PlatformLiquidGlassCard(
+              margin: const EdgeInsets.all(8),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
+                bottom: Radius.circular(20),
+              ),
+              child: sheetContent,
+            ),
+          );
+        },
+      );
     } else {
       await showPlatformDialog(
-          context: context, //BuildContext对象
-          builder: (BuildContext context) {
-            return SimpleDialog(
-                backgroundColor: Theme.of(context).colorScheme.surface,
-                title: Text(S.of(context).chooseDiscuz),
-                children: widgetList);
-          });
+        context: context, //BuildContext对象
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            title: Text(S.of(context).chooseDiscuz),
+            children: widgetList,
+          );
+        },
+      );
     }
   }
 
@@ -648,7 +720,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // query data
     String? discuzKey =
         await UserPreferencesUtils.getFirstShowDiscuzPreference();
-    log("recv discuz list ${_allDiscuzs.length} -> selected discuz key ${discuzKey}");
+    log(
+      "recv discuz list ${_allDiscuzs.length} -> selected discuz key ${discuzKey}",
+    );
     if (_allDiscuzs.isNotEmpty) {
       Discuz selectedDiscuz = _allDiscuzs.first;
       if (discuzKey != null) {
@@ -661,8 +735,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       }
       setState(() {
         // set
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-            .initDiscuz(selectedDiscuz);
+        Provider.of<DiscuzAndUserNotifier>(
+          context,
+          listen: false,
+        ).initDiscuz(selectedDiscuz);
         _setFirstUserInDiscuz(selectedDiscuz);
       });
     }
@@ -676,209 +752,215 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     CustomizeColor.updateAndroidNavigationbarColorWithDashboard(context);
     return Consumer<DiscuzAndUserNotifier>(
-        builder: (context, discuzAndUser, child) {
-      final user = discuzAndUser.user;
-      final selectedDiscuz = discuzAndUser.discuz;
-      final appBarTitle = selectedDiscuz?.siteName ?? S.of(context).appName;
-      final appBarSubtitle = selectedDiscuz == null
-          ? null
-          : user == null
-              ? S.of(context).incognitoTitle
-              : "${user.username} (${user.uid})";
-      if (user == null && _bottomNavigationbarIndex >= 2) {
-        _bottomNavigationbarIndex = 0;
-      }
-      final bottomNavigationItems = <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
+      builder: (context, discuzAndUser, child) {
+        final user = discuzAndUser.user;
+        final selectedDiscuz = discuzAndUser.discuz;
+        final appBarTitle = selectedDiscuz?.siteName ?? S.of(context).appName;
+        final appBarSubtitle = selectedDiscuz == null
+            ? null
+            : user == null
+            ? S.of(context).incognitoTitle
+            : "${user.username} (${user.uid})";
+        if (user == null && _bottomNavigationbarIndex >= 2) {
+          _bottomNavigationbarIndex = 0;
+        }
+        final bottomNavigationItems = <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
             icon: Icon(AppPlatformIcons(context).discuzSiteOutlined),
             activeIcon: Icon(AppPlatformIcons(context).discuzSiteSolid),
-            label: S.of(context).dashboard),
-        BottomNavigationBarItem(
+            label: S.of(context).dashboard,
+          ),
+          BottomNavigationBarItem(
             icon: Icon(AppPlatformIcons(context).discuzPortalOutlined),
             activeIcon: Icon(AppPlatformIcons(context).discuzPortalSolid),
-            label: S.of(context).index),
-        if (user != null)
-          BottomNavigationBarItem(
+            label: S.of(context).index,
+          ),
+          if (user != null)
+            BottomNavigationBarItem(
               icon: Icon(AppPlatformIcons(context).discuzNotificationOutlined),
-              activeIcon:
-                  Icon(AppPlatformIcons(context).discuzNotificationSolid),
-              label: S.of(context).notification),
-        if (user != null)
-          BottomNavigationBarItem(
+              activeIcon: Icon(
+                AppPlatformIcons(context).discuzNotificationSolid,
+              ),
+              label: S.of(context).notification,
+            ),
+          if (user != null)
+            BottomNavigationBarItem(
               icon: Icon(AppPlatformIcons(context).discuzMessageOutlined),
               activeIcon: Icon(AppPlatformIcons(context).discuzMessageSolid),
-              label: S.of(context).chatMessage),
-      ];
+              label: S.of(context).chatMessage,
+            ),
+        ];
 
-      void selectBottomDestination(int index) {
-        if (index == _bottomNavigationbarIndex) return;
-        VibrationUtils.vibrateWithClickIfPossible();
-        setState(() {
-          _bottomNavigationbarIndex = index;
-        });
-      }
+        void selectBottomDestination(int index) {
+          if (index == _bottomNavigationbarIndex) return;
+          VibrationUtils.vibrateWithClickIfPossible();
+          setState(() {
+            _bottomNavigationbarIndex = index;
+          });
+        }
 
-      final liquidGlass = usesLiquidGlass(context);
-      final mainMenuButton = selectedDiscuz == null
-          ? null
-          : PlatformIconButton(
-              widgetKey: const ValueKey('main_menu_button'),
-              padding: EdgeInsets.zero,
-              liquidGlassSymbol: 'line.3.horizontal',
-              liquidGlassFlexibleSpaceAfter: true,
-              onPressed: () async {
-                VibrationUtils.vibrateWithClickIfPossible();
-                await Navigator.push(
-                  context,
-                  platformPageRoute(
-                    iosTitle: S.of(context).menuDrawerTitle,
-                    context: context,
-                    builder: (context) => DrawerPage(),
-                  ),
-                );
-              },
-              icon: Icon(
-                AppPlatformIcons(context).menuSolid,
-                semanticLabel: S.of(context).menuIconTooltip,
-                color: Theme.of(context).textTheme.titleSmall?.color,
-                size: 24,
-              ),
-            );
+        final liquidGlass = usesLiquidGlass(context);
+        final mainMenuButton = selectedDiscuz == null
+            ? null
+            : PlatformIconButton(
+                widgetKey: const ValueKey('main_menu_button'),
+                padding: EdgeInsets.zero,
+                liquidGlassSymbol: 'line.3.horizontal',
+                liquidGlassFlexibleSpaceAfter: true,
+                onPressed: () async {
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  await Navigator.push(
+                    context,
+                    platformPageRoute(
+                      iosTitle: S.of(context).menuDrawerTitle,
+                      context: context,
+                      builder: (context) => DrawerPage(),
+                    ),
+                  );
+                },
+                icon: Icon(
+                  AppPlatformIcons(context).menuSolid,
+                  semanticLabel: S.of(context).menuIconTooltip,
+                  color: Theme.of(context).textTheme.titleSmall?.color,
+                  size: 24,
+                ),
+              );
 
-      return PlatformScaffold(
-        bottomNavigationBar: PlatformBottomNavigationBar(
-          items: bottomNavigationItems,
-          liquidGlassSymbols: [
-            'house',
-            'bubble.left.and.bubble.right',
-            if (user != null) 'bell',
-            if (user != null) 'message',
-          ],
-          liquidGlassSelectedSymbols: [
-            'house.fill',
-            'bubble.left.and.bubble.right.fill',
-            if (user != null) 'bell.fill',
-            if (user != null) 'message.fill',
-          ],
-          selectedIndex: _bottomNavigationbarIndex,
-          selectedItemColor: Theme.of(context).colorScheme.primary,
-          unselectedItemColor: Theme.of(context).disabledColor,
-          liquidGlassSelectedItemColor: Theme.of(context).colorScheme.primary,
-          liquidGlassUnselectedItemColor: CupertinoColors.label
-              .resolveFrom(context)
-              .withValues(alpha: 0.62),
-          liquidGlassMinimizeOnScroll: false,
-          onTap: selectBottomDestination,
-        ),
-        appBar: PlatformAppBar(
-          liquidGlassTintColor: Theme.of(context).textTheme.titleSmall?.color ??
-              CupertinoColors.label.resolveFrom(context),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                appBarTitle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-              if (appBarSubtitle != null)
+        return PlatformScaffold(
+          bottomNavigationBar: PlatformBottomNavigationBar(
+            items: bottomNavigationItems,
+            liquidGlassSymbols: [
+              'house',
+              'bubble.left.and.bubble.right',
+              if (user != null) 'bell',
+              if (user != null) 'message',
+            ],
+            liquidGlassSelectedSymbols: [
+              'house.fill',
+              'bubble.left.and.bubble.right.fill',
+              if (user != null) 'bell.fill',
+              if (user != null) 'message.fill',
+            ],
+            selectedIndex: _bottomNavigationbarIndex,
+            selectedItemColor: Theme.of(context).colorScheme.primary,
+            unselectedItemColor: Theme.of(context).disabledColor,
+            liquidGlassSelectedItemColor: Theme.of(context).colorScheme.primary,
+            liquidGlassUnselectedItemColor: CupertinoColors.label
+                .resolveFrom(context)
+                .withValues(alpha: 0.62),
+            liquidGlassMinimizeOnScroll: false,
+            onTap: selectBottomDestination,
+          ),
+          appBar: PlatformAppBar(
+            liquidGlassTintColor:
+                Theme.of(context).textTheme.titleSmall?.color ??
+                CupertinoColors.label.resolveFrom(context),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 Text(
-                  appBarSubtitle,
-                  style: TextStyle(fontSize: 12),
+                  appBarTitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
+                ),
+                if (appBarSubtitle != null)
+                  Text(
+                    appBarSubtitle,
+                    style: TextStyle(fontSize: 12),
+                    textAlign: TextAlign.center,
+                  ),
+              ],
+            ),
+            trailingActions: [
+              if (liquidGlass && mainMenuButton != null) mainMenuButton,
+              if (hasDiscuzNotification(context))
+                buildDiscuzNotificationAppbarIcon(context),
+              PlatformIconButton(
+                widgetKey: const ValueKey('main_switch_discuz_button'),
+                padding: EdgeInsets.zero,
+                liquidGlassSymbol: 'arrow.left.arrow.right',
+                onPressed: _triggerSwitchDiscuzDialog,
+                icon: Icon(
+                  AppPlatformIcons(context).manageDiscuzSolid,
+                  size: 24,
+                  color: Theme.of(context).textTheme.titleSmall?.color,
+                  semanticLabel: S.of(context).selectDiscuzIconTooltip,
+                ),
+              ),
+            ],
+            // This is the root tab shell. During a child route's pop animation
+            // Navigator.canPop can still be true for one frame, so never let the
+            // native toolbar synthesize a back button beside the menu action.
+            automaticallyImplyLeading: false,
+            leading: liquidGlass ? null : mainMenuButton,
+          ),
+          body: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Expanded(
+                child: Consumer<DiscuzAndUserNotifier>(
+                  builder: (context, value, child) {
+                    final bodyWidgetList = <Widget>[
+                      KeyedSubtree(
+                        key: ValueKey('dashboard_${value.discuz?.baseURL}'),
+                        child: DashboardScreen(onSelectTid: onSelectTid),
+                      ),
+
+                      // should not exist any
+                      DiscuzPortalScreen(
+                        key: ValueKey(
+                          'portal_${value.discuz?.baseURL}_${value.user?.uid ?? 0}',
+                        ),
+                      ),
+                      if (value.user != null)
+                        NotificationScreen(
+                          //key: ValueKey(3),
+                          onSelectTid: this.onSelectTid,
+                        ),
+                      // FavoriteThreadScreen(),
+                      if (value.user != null)
+                        DiscuzMessageScreen(key: ValueKey(4)),
+                    ];
+                    final safeIndex = _bottomNavigationbarIndex.clamp(
+                      0,
+                      bodyWidgetList.length - 1,
+                    );
+                    return IndexedStack(
+                      index: safeIndex,
+                      children: bodyWidgetList,
+                    );
+                  },
+                ),
+              ),
+              if (!usesLiquidGlass(context))
+                PlatformWidget(
+                  material: (_, __) => BottomNavigationBar(
+                    elevation: 0,
+                    selectedItemColor: Theme.of(context).colorScheme.primary,
+                    unselectedItemColor: Theme.of(context).disabledColor,
+                    currentIndex: _bottomNavigationbarIndex,
+                    items: bottomNavigationItems,
+                    onTap: selectBottomDestination,
+                  ),
+                  cupertino: (_, __) => CupertinoTabBar(
+                    currentIndex: _bottomNavigationbarIndex,
+                    activeColor: Theme.of(context).colorScheme.primary,
+                    inactiveColor: CupertinoColors.secondaryLabel.resolveFrom(
+                      context,
+                    ),
+                    backgroundColor: CupertinoColors.systemBackground
+                        .resolveFrom(context),
+                    items: bottomNavigationItems,
+                    onTap: selectBottomDestination,
+                  ),
                 ),
             ],
           ),
-          trailingActions: [
-            if (liquidGlass && mainMenuButton != null) mainMenuButton,
-            if (hasDiscuzNotification(context))
-              buildDiscuzNotificationAppbarIcon(context),
-            PlatformIconButton(
-              widgetKey: const ValueKey('main_switch_discuz_button'),
-              padding: EdgeInsets.zero,
-              liquidGlassSymbol: 'arrow.left.arrow.right',
-              onPressed: _triggerSwitchDiscuzDialog,
-              icon: Icon(
-                AppPlatformIcons(context).manageDiscuzSolid,
-                size: 24,
-                color: Theme.of(context).textTheme.titleSmall?.color,
-                semanticLabel: S.of(context).selectDiscuzIconTooltip,
-              ),
-            )
-          ],
-          // This is the root tab shell. During a child route's pop animation
-          // Navigator.canPop can still be true for one frame, so never let the
-          // native toolbar synthesize a back button beside the menu action.
-          automaticallyImplyLeading: false,
-          leading: liquidGlass ? null : mainMenuButton,
-        ),
-        body: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Expanded(child: Consumer<DiscuzAndUserNotifier>(
-              builder: (context, value, child) {
-                final bodyWidgetList = <Widget>[
-                  KeyedSubtree(
-                    key: ValueKey(
-                      'dashboard_${value.discuz?.baseURL}',
-                    ),
-                    child: DashboardScreen(
-                      onSelectTid: onSelectTid,
-                    ),
-                  ),
-
-                  // should not exist any
-                  DiscuzPortalScreen(
-                    key: ValueKey(
-                      'portal_${value.discuz?.baseURL}_${value.user?.uid ?? 0}',
-                    ),
-                  ),
-                  if (value.user != null)
-                    NotificationScreen(
-                      //key: ValueKey(3),
-                      onSelectTid: this.onSelectTid,
-                    ),
-                  // FavoriteThreadScreen(),
-                  if (value.user != null)
-                    DiscuzMessageScreen(
-                      key: ValueKey(4),
-                    )
-                ];
-                final safeIndex = _bottomNavigationbarIndex.clamp(
-                    0, bodyWidgetList.length - 1);
-                return IndexedStack(
-                  index: safeIndex,
-                  children: bodyWidgetList,
-                );
-              },
-            )),
-            if (!usesLiquidGlass(context))
-              PlatformWidget(
-                material: (_, __) => BottomNavigationBar(
-                  elevation: 0,
-                  selectedItemColor: Theme.of(context).colorScheme.primary,
-                  unselectedItemColor: Theme.of(context).disabledColor,
-                  currentIndex: _bottomNavigationbarIndex,
-                  items: bottomNavigationItems,
-                  onTap: selectBottomDestination,
-                ),
-                cupertino: (_, __) => CupertinoTabBar(
-                  currentIndex: _bottomNavigationbarIndex,
-                  activeColor: Theme.of(context).colorScheme.primary,
-                  inactiveColor:
-                      CupertinoColors.secondaryLabel.resolveFrom(context),
-                  backgroundColor:
-                      CupertinoColors.systemBackground.resolveFrom(context),
-                  items: bottomNavigationItems,
-                  onTap: selectBottomDestination,
-                ),
-              )
-          ],
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 }
 
@@ -889,11 +971,14 @@ class MainTwoPanePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return MainTwoPaneStatefulWidget(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return MainTwoPaneStatefulWidget(
           navigatorKey: this.navigatorKey,
-          type: TwoPaneUtils.getTwoPaneType(constraints));
-    });
+          type: TwoPaneUtils.getTwoPaneType(constraints),
+        );
+      },
+    );
   }
 }
 
@@ -902,8 +987,11 @@ class MainTwoPaneStatefulWidget extends StatefulWidget {
   final TwoPaneType type;
   GlobalKey<NavigatorState> navigatorKey;
 
-  MainTwoPaneStatefulWidget(
-      {super.key, required this.type, required this.navigatorKey});
+  MainTwoPaneStatefulWidget({
+    super.key,
+    required this.type,
+    required this.navigatorKey,
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -941,53 +1029,53 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
   Widget build(BuildContext context) {
     var panePriority = TwoPanePriority.both;
     if (widget.type == TwoPaneType.smallScreen) {
-      panePriority =
-          _currentTid.value == 0 ? TwoPanePriority.start : TwoPanePriority.end;
-      return MyHomePage(
-        title: "",
-        navigatorKey: this.navigatorKey,
-      );
+      panePriority = _currentTid.value == 0
+          ? TwoPanePriority.start
+          : TwoPanePriority.end;
+      return MyHomePage(title: "", navigatorKey: this.navigatorKey);
     }
 
     double paneProportion = 0.35;
     // directly give
-    return OrientationBuilder(builder: (context, orientation) {
-      if (widget.type != TwoPaneType.smallScreen &&
-          orientation == Orientation.portrait) {
-        paneProportion = 0.5;
-      }
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        if (widget.type != TwoPaneType.smallScreen &&
+            orientation == Orientation.portrait) {
+          paneProportion = 0.5;
+        }
 
-      return TwoPaneScaffold(
+        return TwoPaneScaffold(
           type: widget.type,
           child: TwoPane(
-              padding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-              paneProportion: paneProportion,
-              panePriority: panePriority,
-              startPane: MyHomePage(
-                navigatorKey: this.navigatorKey,
-                title: "",
-                onSelectTid: (tid) async {
-                  Provider.of<SelectedTidNotifierProvider>(context,
-                          listen: false)
-                      .setTid(tid);
-                  if (tid != _currentTid) {
-                    setState(() {
-                      _currentTid.value = 0;
-                    });
-                    // I don't know why it takes time to refresh
-                    await Future.delayed(const Duration(milliseconds: 100));
-                    setState(() {
-                      _currentTid.value = tid;
-                      _currentTid.didUpdateValue(tid);
-                    });
-                    log("Two Pane Changed current tid ${_currentTid.value}");
-                  }
-                },
-              ),
-              endPane: _currentTid.value == 0
-                  ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText)
-                  : Consumer<DiscuzAndUserNotifier>(
-                      builder: (context, discuzAndUser, child) {
+            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+            paneProportion: paneProportion,
+            panePriority: panePriority,
+            startPane: MyHomePage(
+              navigatorKey: this.navigatorKey,
+              title: "",
+              onSelectTid: (tid) async {
+                Provider.of<SelectedTidNotifierProvider>(
+                  context,
+                  listen: false,
+                ).setTid(tid);
+                if (tid != _currentTid) {
+                  setState(() {
+                    _currentTid.value = 0;
+                  });
+                  // I don't know why it takes time to refresh
+                  await Future.delayed(const Duration(milliseconds: 100));
+                  setState(() {
+                    _currentTid.value = tid;
+                    _currentTid.didUpdateValue(tid);
+                  });
+                  log("Two Pane Changed current tid ${_currentTid.value}");
+                }
+              },
+            ),
+            endPane: _currentTid.value == 0
+                ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText)
+                : Consumer<DiscuzAndUserNotifier>(
+                    builder: (context, discuzAndUser, child) {
                       if (discuzAndUser.discuz != null) {
                         Discuz discuz = discuzAndUser.discuz!;
                         User? user = discuzAndUser.user;
@@ -996,9 +1084,10 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
                           user,
                           _currentTid.value,
                           onClosed: () {
-                            Provider.of<SelectedTidNotifierProvider>(context,
-                                    listen: false)
-                                .setTid(0);
+                            Provider.of<SelectedTidNotifierProvider>(
+                              context,
+                              listen: false,
+                            ).setTid(0);
                             setState(() {
                               _currentTid.value = 0;
                             });
@@ -1007,7 +1096,11 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
                       } else {
                         return Container();
                       }
-                    })));
-    });
+                    },
+                  ),
+          ),
+        );
+      },
+    );
   }
 }

@@ -353,6 +353,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "启用 Apple Intelligence 后，自动总结超过 1500 字的帖子，保留原文。",
     ),
     "autoSummarizeTitle": MessageLookupByLibrary.simpleMessage("长帖自动总结"),
+    "autoTranslateTitle": MessageLookupByLibrary.simpleMessage("自动翻译"),
     "autofillDialogSubtitle": MessageLookupByLibrary.simpleMessage(
       "选择用户名以自动填充登陆表格",
     ),

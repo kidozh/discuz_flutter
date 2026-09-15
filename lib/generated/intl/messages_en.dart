@@ -413,6 +413,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "autoSummarizeTitle": MessageLookupByLibrary.simpleMessage(
       "Automatically summarize long posts",
     ),
+    "autoTranslateTitle": MessageLookupByLibrary.simpleMessage(
+      "Auto-translate",
+    ),
     "autofillDialogSubtitle": MessageLookupByLibrary.simpleMessage(
       "Select the username to fill the login form",
     ),
