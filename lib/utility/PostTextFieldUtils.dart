@@ -13,8 +13,10 @@ class PostTextFieldUtils {
   static String getPostMessage(String message) {
     // filter smiley tag first [smiley].*?[/smiley]
     //String replaceRegexString = SmileyText.smileyStartFlag.replaceAll("", replace)+"(.*?)"+SmileyText.smileyEndFlag;
-    RegExp replaceRegex =
-        RegExp(r"\[smiley\](.*?)\[/smiley\]", multiLine: true);
+    RegExp replaceRegex = RegExp(
+      r"\[smiley\](.*?)\[/smiley\]",
+      multiLine: true,
+    );
     if (replaceRegex.hasMatch(message)) {
       // contain
       log("contains regex ${message}");
@@ -25,10 +27,13 @@ class PostTextFieldUtils {
           String smileyJsonString = matchCase.group(1)!;
           // parse json to obj
           Smiley smiley = Smiley.fromJson(jsonDecode(smileyJsonString));
-          String smileyCode =
-              smiley.code.replaceAll(r"\", "").replaceAll("/", "");
-          replacementString =
-              replacementString.replaceAll(actualString, smileyCode);
+          String smileyCode = smiley.code
+              .replaceAll(r"\", "")
+              .replaceAll("/", "");
+          replacementString = replacementString.replaceAll(
+            actualString,
+            smileyCode,
+          );
         }
       }
       message = replacementString;
@@ -38,8 +43,10 @@ class PostTextFieldUtils {
 
   static List<String> getAttachmentAidList(String message) {
     List<String> aidList = [];
-    RegExp replaceRegex =
-        RegExp(r"\[attachimg\](\d*?)\[/attachimg\]", multiLine: true);
+    RegExp replaceRegex = RegExp(
+      r"\[attachimg\](\d*?)\[/attachimg\]",
+      multiLine: true,
+    );
     if (replaceRegex.hasMatch(message)) {
       // contain
       log("contains attach aid regex ${message}");
@@ -57,6 +64,7 @@ class PostTextFieldUtils {
   }
 
   static Future<String> getDeviceName(BuildContext context) async {
+    final strings = S.of(context);
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     if (Platform.isAndroid) {
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
@@ -66,10 +74,10 @@ class PostTextFieldUtils {
       return iosInfo.utsname.machine.iOSProductName;
     } else if (Platform.isWindows) {
       WindowsDeviceInfo windowsDeviceInfo = await deviceInfo.windowsInfo;
-      return S.of(context).windowsDeviceName(windowsDeviceInfo.computerName);
+      return strings.windowsDeviceName(windowsDeviceInfo.computerName);
     } else if (Platform.isLinux) {
       LinuxDeviceInfo linuxDeviceInfo = await deviceInfo.linuxInfo;
-      return S.of(context).linuxDeviceName(linuxDeviceInfo.name);
+      return strings.linuxDeviceName(linuxDeviceInfo.name);
     } else if (Platform.isMacOS) {
       MacOsDeviceInfo macOsDeviceInfo = await deviceInfo.macOsInfo;
       return macOsDeviceInfo.model;

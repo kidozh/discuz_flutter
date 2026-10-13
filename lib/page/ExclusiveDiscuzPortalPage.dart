@@ -1,3 +1,6 @@
+import '../widget/forum_home_title.dart';
+import '../provider/UserPreferenceNotifierProvider.dart';
+
 import 'package:discuz_flutter/dao/UserDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -47,8 +50,10 @@ class ExclusiveDiscuzPortalState
   late UserDao _userDao;
 
   void _initDb() async {
-    Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-        .setDiscuz(_discuz);
+    Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).setDiscuz(_discuz);
     _userDao = await AppDatabase.getUserDao();
     await _setFirstUserInDiscuz(_discuz);
   }
@@ -57,8 +62,10 @@ class ExclusiveDiscuzPortalState
     List<User> userList = await _userDao.findAllUsersByDiscuz(discuz);
     if (userList.isNotEmpty && userList.length > 0) {
       print("find a user in the database ${userList.length}");
-      Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-          .setUser(userList.last);
+      Provider.of<DiscuzAndUserNotifier>(
+        context,
+        listen: false,
+      ).setUser(userList.last);
       // might need to refresh the layout
     }
   }
@@ -70,11 +77,13 @@ class ExclusiveDiscuzPortalState
     if (flag != version) {
       // shown
       Navigator.push(
-          context,
-          platformPageRoute(
-              //iosTitle: S.of(context).testVersion,
-              context: context,
-              builder: (context) => TestFlightBannerPage(version: version)));
+        context,
+        platformPageRoute(
+          //iosTitle: S.of(context).testVersion,
+          context: context,
+          builder: (context) => TestFlightBannerPage(version: version),
+        ),
+      );
     }
   }
 
@@ -121,12 +130,19 @@ class ExclusiveDiscuzPortalState
   }
 
   Widget _buildTab(Widget body) => PlatformScaffold(
-        appBar: PlatformAppBar(
-          title: Text(_discuz.siteName),
-          automaticallyImplyLeading: false,
-        ),
-        body: body,
-      );
+    appBar: PlatformAppBar(
+      title: ForumHomeTitle(
+        discuz: _discuz,
+        user: context.watch<DiscuzAndUserNotifier>().user,
+        preferences: context
+            .watch<UserPreferenceNotifierProvider>()
+            .forumDisplay,
+        dashboard: false,
+      ),
+      automaticallyImplyLeading: false,
+    ),
+    body: body,
+  );
 
   @override
   void setState(fn) {

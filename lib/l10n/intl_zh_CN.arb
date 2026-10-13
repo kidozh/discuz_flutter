@@ -1222,5 +1222,20 @@
   "translationSimulator": "Apple 专用翻译需要真机，iOS 模拟器不支持。",
   "translationUnavailable": "Apple 翻译需要 iOS 18 或 macOS 15 及以上系统。",
   "translationSourceUndetected": "可识别的正文太少，暂时无法判断源语言。",
-  "autoTranslateTitle": "自动翻译"
+  "autoTranslateTitle": "自动翻译",
+  "signatureAppAndDevice": "应用名称和设备型号",
+  "signatureDevicePrivacy": "设备签名会随帖子公开设备型号或电脑名称。",
+  "fromAppOnlySignature": "--- 消息由 [url=https://discuzhub.kidozh.com/]谈坛（v{version}）[/url]发出。",
+  "compactForumHeader": "合并首页导航和分类栏",
+  "showForumName": "在导航栏显示论坛名称",
+  "showAccountInfo": "在导航栏显示账户名称和 UID",
+  "showThreadStats": "显示帖子浏览和回复数",
+  "showForumCarousel": "显示推广帖子轮播",
+  "@fromAppOnlySignature": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  }
 }

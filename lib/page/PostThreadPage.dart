@@ -1,3 +1,4 @@
+import '../utility/post_signature_service.dart';
 import 'PollComposerPage.dart';
 import '../entity/PollDraft.dart';
 import '../client/ForumInteractionClient.dart';
@@ -731,7 +732,11 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     }
     if (!mounted || context.read<DiscuzAndUserNotifier>().user != user) return;
     String title = _titleEditingController.text;
-    String content = PostTextFieldUtils.getPostMessage(_controller.text);
+    final content = await PostSignatureService.append(
+      context,
+      PostTextFieldUtils.getPostMessage(_controller.text),
+    );
+    if (!mounted || context.read<DiscuzAndUserNotifier>().user != user) return;
     // need to process aid
     List<String> aidList = PostTextFieldUtils.getAttachmentAidList(
       _controller.text,

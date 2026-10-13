@@ -1,3 +1,5 @@
+import '../widget/forum_home_title.dart';
+
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
@@ -90,7 +92,12 @@ class _MyAppState extends State<MyApp> {
     bool useMaterial3 =
         await UserPreferencesUtils.getMaterial3PropertyPreference();
     bool allowPush = await UserPreferencesUtils.getPushPreference();
-    String signature = await UserPreferencesUtils.getSignaturePreference();
+    final signature = await UserPreferencesUtils.getSignaturePreference();
+    final forumDisplay = await UserPreferencesUtils.getForumDisplayPreference();
+    if (!context.mounted) return;
+    final startupPreferences = context.read<UserPreferenceNotifierProvider>();
+    startupPreferences.signature = signature;
+    startupPreferences.setForumDisplay(forumDisplay);
     String? typography =
         await UserPreferencesUtils.getTypographyThemePreference();
     bool useThinFont = await UserPreferencesUtils.getUseThinFontPreference();
@@ -161,10 +168,6 @@ class _MyAppState extends State<MyApp> {
       context,
       listen: false,
     ).allowPush = allowPush;
-    Provider.of<UserPreferenceNotifierProvider>(
-      context,
-      listen: false,
-    ).signature = signature;
     Provider.of<DiscuzNotificationProvider>(
       context,
       listen: false,
@@ -755,12 +758,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       builder: (context, discuzAndUser, child) {
         final user = discuzAndUser.user;
         final selectedDiscuz = discuzAndUser.discuz;
-        final appBarTitle = selectedDiscuz?.siteName ?? S.of(context).appName;
-        final appBarSubtitle = selectedDiscuz == null
-            ? null
-            : user == null
-            ? S.of(context).incognitoTitle
-            : "${user.username} (${user.uid})";
+        final display = context
+            .watch<UserPreferenceNotifierProvider>()
+            .forumDisplay;
         if (user == null && _bottomNavigationbarIndex >= 2) {
           _bottomNavigationbarIndex = 0;
         }
@@ -855,23 +855,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             liquidGlassTintColor:
                 Theme.of(context).textTheme.titleSmall?.color ??
                 CupertinoColors.label.resolveFrom(context),
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  appBarTitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                ),
-                if (appBarSubtitle != null)
-                  Text(
-                    appBarSubtitle,
-                    style: TextStyle(fontSize: 12),
-                    textAlign: TextAlign.center,
-                  ),
-              ],
+            title: ForumHomeTitle(
+              discuz: selectedDiscuz,
+              user: user,
+              preferences: display,
+              dashboard: _bottomNavigationbarIndex == 0,
             ),
             trailingActions: [
               if (liquidGlass && mainMenuButton != null) mainMenuButton,

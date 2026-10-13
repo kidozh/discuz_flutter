@@ -1,6 +1,7 @@
 import 'DashboardOrderPage.dart';
 import 'ForumFeedSettingsPage.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
+
 import 'package:discuz_flutter/utility/on_device_ai_labels.dart';
 import 'package:discuz_flutter/utility/BugReportUtils.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
@@ -16,7 +17,10 @@ import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/OnDeviceAiService.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
-import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
+
+import '../entity/post_signature.dart';
+import '../entity/forum_display_preferences.dart';
+
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
@@ -204,6 +208,46 @@ class _SettingPageState extends State<SettingPage> {
         _GlassSettingsSection(
           title: S.of(context).displaySettingTitle,
           children: [
+            _GlassSwitchTile(
+              title: S.of(context).compactForumHeader,
+              leading: const Icon(Icons.view_compact_outlined),
+              value: preference.forumDisplay.compactHeader,
+              onChanged: (value) => _setForumDisplay(
+                preference.forumDisplay.copyWith(compactHeader: value),
+              ),
+            ),
+            _GlassSwitchTile(
+              title: S.of(context).showForumName,
+              leading: const Icon(Icons.public),
+              value: preference.forumDisplay.showForumName,
+              onChanged: (value) => _setForumDisplay(
+                preference.forumDisplay.copyWith(showForumName: value),
+              ),
+            ),
+            _GlassSwitchTile(
+              title: S.of(context).showAccountInfo,
+              leading: const Icon(Icons.person_outline),
+              value: preference.forumDisplay.showAccountInfo,
+              onChanged: (value) => _setForumDisplay(
+                preference.forumDisplay.copyWith(showAccountInfo: value),
+              ),
+            ),
+            _GlassSwitchTile(
+              title: S.of(context).showThreadStats,
+              leading: const Icon(Icons.bar_chart),
+              value: preference.forumDisplay.showThreadStats,
+              onChanged: (value) => _setForumDisplay(
+                preference.forumDisplay.copyWith(showThreadStats: value),
+              ),
+            ),
+            _GlassSwitchTile(
+              title: S.of(context).showForumCarousel,
+              leading: const Icon(Icons.view_carousel_outlined),
+              value: preference.forumDisplay.showCarousel,
+              onChanged: (value) => _setForumDisplay(
+                preference.forumDisplay.copyWith(showCarousel: value),
+              ),
+            ),
             _GlassNavigationTile(
               title: S.of(context).chooseThemeTitle,
               value: Text(_themeColorLabel(context, theme)),
@@ -255,7 +299,7 @@ class _SettingPageState extends State<SettingPage> {
                 SelectSignatureStylePage(),
               ),
             ),
-            if (preference.signature == PostTextFieldUtils.USE_APP_SIGNATURE)
+            if (preference.signature.includesApp)
               _GlassNavigationTile(
                 title: S.of(context).adExemptTitle,
                 leading: Icon(
@@ -365,17 +409,18 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
-  String _signatureLabel(BuildContext context, String signature) {
-    if (signature == PostTextFieldUtils.NO_SIGNATURE) {
-      return S.of(context).noSignature;
-    }
-    if (signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE) {
-      return S.of(context).deviceNameSignature;
-    }
-    if (signature == PostTextFieldUtils.USE_APP_SIGNATURE) {
-      return S.of(context).signatureWithDisFly;
-    }
-    return S.of(context).customSignature;
+  String _signatureLabel(BuildContext context, PostSignature signature) =>
+      switch (signature.style) {
+        PostSignatureStyle.none => S.of(context).noSignature,
+        PostSignatureStyle.app => S.of(context).signatureWithDisFly,
+        PostSignatureStyle.appAndDevice => S.of(context).signatureAppAndDevice,
+        PostSignatureStyle.device => S.of(context).deviceNameSignature,
+        PostSignatureStyle.custom => S.of(context).customSignature,
+      };
+
+  void _setForumDisplay(ForumDisplayPreferences value) {
+    context.read<UserPreferenceNotifierProvider>().setForumDisplay(value);
+    UserPreferencesUtils.putForumDisplayPreference(value);
   }
 
   String _themeColorLabel(BuildContext context, ThemeNotifierProvider theme) {
@@ -432,9 +477,8 @@ class _GlassSettingsSection extends StatelessWidget {
                   Divider(
                     height: 1,
                     indent: 54,
-                    color: Theme.of(
-                      context,
-                    ).dividerColor.withValues(alpha: 0.35),
+                    color: Theme.of(context).dividerColor
+                        .withValues(alpha: 0.35),
                   ),
               ],
             ],

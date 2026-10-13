@@ -7889,6 +7889,86 @@ class S {
       args: [],
     );
   }
+
+  /// `App and device name`
+  String get signatureAppAndDevice {
+    return Intl.message(
+      'App and device name',
+      name: 'signatureAppAndDevice',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Device signatures publish your device model or computer name with every post.`
+  String get signatureDevicePrivacy {
+    return Intl.message(
+      'Device signatures publish your device model or computer name with every post.',
+      name: 'signatureDevicePrivacy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `- Sent via [url=https://discuzhub.kidozh.com/]DisFly[/url] v{version}.`
+  String fromAppOnlySignature(String version) {
+    return Intl.message(
+      '- Sent via [url=https://discuzhub.kidozh.com/]DisFly[/url] v$version.',
+      name: 'fromAppOnlySignature',
+      desc: '',
+      args: [version],
+    );
+  }
+
+  /// `Combine homepage navigation and categories`
+  String get compactForumHeader {
+    return Intl.message(
+      'Combine homepage navigation and categories',
+      name: 'compactForumHeader',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show forum name in navigation`
+  String get showForumName {
+    return Intl.message(
+      'Show forum name in navigation',
+      name: 'showForumName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show account name and UID in navigation`
+  String get showAccountInfo {
+    return Intl.message(
+      'Show account name and UID in navigation',
+      name: 'showAccountInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show thread views and replies`
+  String get showThreadStats {
+    return Intl.message(
+      'Show thread views and replies',
+      name: 'showThreadStats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show promoted thread carousel`
+  String get showForumCarousel {
+    return Intl.message(
+      'Show promoted thread carousel',
+      name: 'showForumCarousel',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

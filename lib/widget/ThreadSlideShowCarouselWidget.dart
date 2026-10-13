@@ -1,4 +1,4 @@
-
+import '../provider/UserPreferenceNotifierProvider.dart';
 
 import 'dart:ui';
 
@@ -16,19 +16,18 @@ import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../utility/NetworkUtils.dart';
 
-class ThreadSlideShowCarouselWidget extends StatelessWidget{
+class ThreadSlideShowCarouselWidget extends StatelessWidget {
   final ValueChanged<int>? onSelectTid;
 
   ThreadSlideShowCarouselWidget({super.key, this.onSelectTid});
 
   @override
   Widget build(BuildContext context) {
-    return ThreadSlideShowCarouselStatefulWidget(onSelectTid: this.onSelectTid,);
+    return ThreadSlideShowCarouselStatefulWidget(onSelectTid: this.onSelectTid);
   }
 }
 
-
-class ThreadSlideShowCarouselStatefulWidget extends StatefulWidget{
+class ThreadSlideShowCarouselStatefulWidget extends StatefulWidget {
   final ValueChanged<int>? onSelectTid;
 
   ThreadSlideShowCarouselStatefulWidget({super.key, this.onSelectTid});
@@ -37,12 +36,10 @@ class ThreadSlideShowCarouselStatefulWidget extends StatefulWidget{
   State<StatefulWidget> createState() {
     return ThreadSlideShowCarouselState(onSelectTid: this.onSelectTid);
   }
-
 }
 
-
-class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStatefulWidget>{
-
+class ThreadSlideShowCarouselState
+    extends State<ThreadSlideShowCarouselStatefulWidget> {
   final ValueChanged<int>? onSelectTid;
 
   ThreadSlideShowCarouselState({this.onSelectTid});
@@ -52,7 +49,7 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
 
   CarouselOptions carouselOptions = CarouselOptions(
     height: 200,
-    aspectRatio: 16/9,
+    aspectRatio: 16 / 9,
     viewportFraction: 0.8,
     initialPage: 0,
     enableInfiniteScroll: true,
@@ -68,20 +65,15 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
     scrollDirection: Axis.horizontal,
   );
 
-
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     //  start to fetch it
     _loadThreadSlideShow();
-
-
   }
 
   String keylolBaseUrl = "https://keylol.com";
-
 
   Future<void> _loadThreadSlideShow() async {
     try {
@@ -115,15 +107,17 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
           final titleParts = imageTitle.split("\n");
           if (titleParts.length < 3) continue;
 
-          carouselItems.add(KeylolCarouselItem(
-            imageSource,
-            titleElements.first.innerHtml,
-            titleParts[0].split(":").last,
-            titleParts[1].split(":").last,
-            titleParts[2].split(":").last,
-            0,
-            link,
-          ));
+          carouselItems.add(
+            KeylolCarouselItem(
+              imageSource,
+              titleElements.first.innerHtml,
+              titleParts[0].split(":").last,
+              titleParts[1].split(":").last,
+              titleParts[2].split(":").last,
+              0,
+              link,
+            ),
+          );
         }
       }
 
@@ -143,82 +137,81 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
 
   @override
   Widget build(BuildContext context) {
-
     return Consumer<DiscuzAndUserNotifier>(
-        builder: (context, value, child) {
-          if(value.discuz == null){
+      builder: (context, value, child) {
+        if (value.discuz == null) {
+          return Container();
+        } else {
+          Uri uri = Uri.parse(value.discuz!.baseURL);
+          if (uri.host != "keylol.com") {
+            // server doesn't have another site support
             return Container();
-          }
-          else{
-            Uri uri = Uri.parse(value.discuz!.baseURL);
-            if(uri.host != "keylol.com"){
-              // server doesn't have another site support
-              return Container();
-            }
-            else{
-              if(keylolCarouselItemList.isEmpty){
-                return isLoading
-                    ? subscriptionSlide
-                    : const SizedBox.shrink();
-              }
-              else{
-                return Padding(
-                  padding: EdgeInsets.only(top: 8),
-                  child: CarouselSlider.builder(
-                    itemCount: keylolCarouselItemList.length,
-                    itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex){
-                      return getSlideShowItemWidget(itemIndex);
-                    },
-                    options: carouselOptions,
-
+          } else {
+            if (keylolCarouselItemList.isEmpty) {
+              return isLoading ? subscriptionSlide : const SizedBox.shrink();
+            } else {
+              return Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: CarouselSlider.builder(
+                  itemCount: keylolCarouselItemList.length,
+                  itemBuilder:
+                      (BuildContext context, int itemIndex, int pageViewIndex) {
+                        return getSlideShowItemWidget(itemIndex);
+                      },
+                  options: carouselOptions.copyWith(
+                    height: (compact ? 120 : 200) * textScale,
                   ),
-                );
-              }
-
-
+                ),
+              );
             }
           }
-        });
+        }
+      },
+    );
   }
 
-  double slideHeight = 180;
+  bool get compact => context
+      .watch<UserPreferenceNotifierProvider>()
+      .forumDisplay
+      .compactHeader;
+  double get textScale => (MediaQuery.textScalerOf(context).scale(14) / 14)
+      .clamp(1.0, double.infinity);
+  double get slideHeight => (compact ? 112 : 180) * textScale;
 
   Widget get subscriptionSlide => Semantics(
-        label: S.of(context).loading,
-        child: PlatformLiquidGlassCard(
-          margin: const EdgeInsets.all(8),
-          tintColor: Theme.of(context).colorScheme.primary,
-          borderRadius: BorderRadius.circular(22),
-          child: SizedBox(
-            height: slideHeight,
-            width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                PlatformCircularProgressIndicator(
-                  material: (context, platform) =>
-                      MaterialProgressIndicatorData(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  cupertino: (context, platform) =>
-                      CupertinoProgressIndicatorData(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  S.of(context).loading,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
+    label: S.of(context).loading,
+    child: PlatformLiquidGlassCard(
+      margin: const EdgeInsets.all(8),
+      tintColor: Theme.of(context).colorScheme.primary,
+      borderRadius: BorderRadius.circular(22),
+      child: SizedBox(
+        height: slideHeight,
+        width: double.infinity,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            PlatformCircularProgressIndicator(
+              material: (context, platform) => MaterialProgressIndicatorData(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              cupertino: (context, platform) => CupertinoProgressIndicatorData(
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
-          ),
+            const SizedBox(height: 16),
+            Text(
+              S.of(context).loading,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontSize: compact ? 12 : 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 
   Widget getSlideShowItemWidget(int itemIndex) {
     KeylolCarouselItem slideShow = keylolCarouselItemList[itemIndex];
@@ -233,15 +226,22 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
         behavior: HitTestBehavior.opaque,
         onTap: () async {
           VibrationUtils.vibrateWithClickIfPossible();
-          Discuz? discuz =
-              Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+          Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
+            context,
+            listen: false,
+          ).discuz;
           if (slideShow.tid != 0 && onSelectTid != null) {
             return onSelectTid!(slideShow.tid);
           }
 
           if (discuz != null) {
             await URLUtils.openURL(
-                context, onSelectTid, slideShow.link, (pid) {}, null);
+              context,
+              onSelectTid,
+              slideShow.link,
+              (pid) {},
+              null,
+            );
 
             // await Navigator.push(
             //     context,
@@ -262,14 +262,15 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
               children: [
                 ImageFiltered(
                   imageFilter: ImageFilter.blur(
-                    sigmaX: 5, sigmaY: 5, tileMode: TileMode.clamp,
+                    sigmaX: 5,
+                    sigmaY: 5,
+                    tileMode: TileMode.clamp,
                   ),
                   child: Image(
                     image: CachedNetworkImageProvider(slideShow.image_src),
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => ColoredBox(
-                      color: colors.surfaceContainerHighest,
-                    ),
+                    errorBuilder: (context, error, stackTrace) =>
+                        ColoredBox(color: colors.surfaceContainerHighest),
                   ),
                 ),
                 DecoratedBox(
@@ -290,7 +291,12 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    compact ? 8 : 14,
+                    16,
+                    compact ? 8 : 14,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -300,7 +306,7 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: colors.primary,
-                          fontSize: 30,
+                          fontSize: compact ? 20 : 30,
                           fontWeight: FontWeight.w700,
                           letterSpacing: -0.5,
                         ),
@@ -312,7 +318,7 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: colors.onSurface.withValues(alpha: 0.68),
-                          fontSize: 16,
+                          fontSize: compact ? 12 : 16,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -323,7 +329,7 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: colors.onSurface,
-                          fontSize: 18,
+                          fontSize: compact ? 14 : 18,
                           height: 1.16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -351,10 +357,9 @@ class ThreadSlideShowCarouselState extends State<ThreadSlideShowCarouselStateful
       ),
     );
   }
-
 }
 
-class KeylolCarouselItem{
+class KeylolCarouselItem {
   String image_src = "";
   String title = "";
   String forum = "";
@@ -364,6 +369,13 @@ class KeylolCarouselItem{
   //String date = "";
   String link = "";
 
-  KeylolCarouselItem(this.image_src, this.title, this.forum, this.category,
-      this.author, this.tid, this.link);
+  KeylolCarouselItem(
+    this.image_src,
+    this.title,
+    this.forum,
+    this.category,
+    this.author,
+    this.tid,
+    this.link,
+  );
 }

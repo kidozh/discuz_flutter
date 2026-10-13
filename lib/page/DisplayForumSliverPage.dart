@@ -1,4 +1,5 @@
 import 'ForumListsPage.dart';
+
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -48,7 +49,6 @@ import '../provider/UserPreferenceNotifierProvider.dart';
 import '../screen/TwoPaneEmptyScreen.dart';
 import '../utility/CustomizeColor.dart';
 import '../utility/EasyRefreshUtils.dart';
-import '../utility/PostTextFieldUtils.dart';
 import 'SettingPage.dart';
 
 class DisplayForumSliverPage extends StatelessWidget {
@@ -623,17 +623,26 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         ),
       ],
       title: Text(
-        _displayForumResult.discuzIndexVariables.forum.name,
+        context
+                .watch<UserPreferenceNotifierProvider>()
+                .forumDisplay
+                .showForumName
+            ? _displayForumResult.discuzIndexVariables.forum.name
+            : S.of(context).forumDisplayTitle,
         overflow: TextOverflow.ellipsis,
       ),
-      backgroundColor: Theme.of(
-        context,
-      ).navigationBarTheme.backgroundColor?.withOpacity(0.5),
+      backgroundColor: Theme.of(context).navigationBarTheme.backgroundColor
+          ?.withOpacity(0.5),
       cupertino: (context, platform) => CupertinoNavigationBarData(
         previousPageTitle:
-            (route != null &&
-                route is CupertinoPageRoute<dynamic> &&
-                route.previousTitle.value != null)
+            !context
+                .watch<UserPreferenceNotifierProvider>()
+                .forumDisplay
+                .showForumName
+            ? ''
+            : (route != null &&
+                  route is CupertinoPageRoute<dynamic> &&
+                  route.previousTitle.value != null)
             ? route.previousTitle.value
             : Provider.of<DiscuzAndUserNotifier>(
                 context,
@@ -697,22 +706,22 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                         title: Text(
                           subForum.name,
                           style: TextStyle(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSecondaryContainer,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer,
                           ),
                         ),
                         leading: Icon(
                           AppPlatformIcons(context).forumOutlined,
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSecondaryContainer,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSecondaryContainer,
                         ),
                         trailing: Icon(
                           AppPlatformIcons(context).goToSolid,
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSecondaryContainer,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSecondaryContainer,
                         ),
                         onTap: () async {
                           VibrationUtils.vibrateWithClickIfPossible();
@@ -766,9 +775,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                     if (index % 15 == 0 && index != 0)
                       Consumer<UserPreferenceNotifierProvider>(
                         builder: (context, value, child) {
-                          if (value.signature ==
-                                  PostTextFieldUtils.USE_APP_SIGNATURE &&
-                              index > 10) {
+                          if (value.signature.includesApp && index > 10) {
                             return Container();
                           } else {
                             return const AppBannerAdWidget();

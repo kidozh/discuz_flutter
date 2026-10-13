@@ -2,6 +2,7 @@ import '../widget/ForumFeedEmptyState.dart';
 import '../utility/MobileSignUtils.dart';
 import '../utility/ForumFeedPreferences.dart';
 import '../client/ForumInteractionClient.dart';
+
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -22,7 +23,6 @@ import '../provider/DiscuzNotificationProvider.dart';
 import '../provider/UserPreferenceNotifierProvider.dart';
 import '../utility/EasyRefreshUtils.dart';
 import '../utility/NetworkUtils.dart';
-import '../utility/PostTextFieldUtils.dart';
 import '../widget/AppBannerAdWidget.dart';
 import '../widget/ErrorCard.dart';
 import '../widget/LoadingStateWidget.dart';
@@ -278,7 +278,11 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
             delegate: SliverChildBuilderDelegate(
               (context, index) => Column(
                 children: [
-                  if (index == 0)
+                  if (index == 0 &&
+                      context
+                          .watch<UserPreferenceNotifierProvider>()
+                          .forumDisplay
+                          .showCarousel)
                     ThreadSlideShowCarouselWidget(onSelectTid: onSelectTid),
                   NewThreadWidget(
                     discuz,
@@ -292,9 +296,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
                   if (index % 15 == 0 && index != 0)
                     Consumer<UserPreferenceNotifierProvider>(
                       builder: (context, value, child) {
-                        if (value.signature ==
-                                PostTextFieldUtils.USE_APP_SIGNATURE &&
-                            index > 20) {
+                        if (value.signature.includesApp && index > 20) {
                           return Container();
                         } else {
                           return const AppBannerAdWidget();

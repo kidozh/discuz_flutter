@@ -1,6 +1,11 @@
+import '../provider/UserPreferenceNotifierProvider.dart';
+import 'compact_thread_list_tile.dart';
+
 import 'dart:developer';
+
 import '../utility/thread_selection_colors.dart';
 import 'thread_list_surface.dart';
+
 import 'dart:math' as Math;
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -249,365 +254,112 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
   }
 
   Widget getForumThreadListTile(bool viewed, bool selected) {
-    TextStyle? textStyle;
-    if (viewed) {
-      textStyle = TextStyle(
-        fontWeight: FontWeight.w300,
-        color: selected
-            ? Theme.of(context).colorScheme.onSurface
-            : Theme.of(context).unselectedWidgetColor,
-      );
-    } else {
-      textStyle = TextStyle(fontWeight: FontWeight.normal);
-    }
-    String threadCategory = "";
-    // set for popular terms
-    threadCategory = _forumThread.typeName;
-    if (threadType != null &&
-        threadType!.idNameMap.isNotEmpty &&
-        threadType!.idNameMap.containsKey(_forumThread.typeId)) {
-      threadCategory = threadType!.idNameMap[_forumThread.typeId]!;
-    }
-
-    if (_forumThread.message.isNotEmpty) {
-      // special card design
-      String message = _forumThread.message
-          .replaceAll("\n", "")
-          .replaceAll(RegExp("本帖最后由.*?编辑"), "");
-
-      return Column(
-        children: [
-          if (_forumThread.getDisplayOrder() > 0)
-            getStickyThreadHead(viewed, selected),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-            child: Column(
-              // like zhihu layout
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    UserAvatar(
-                      _discuz,
-                      _forumThread.getAuthorId(),
-                      _forumThread.author,
-                      size: Theme.of(context).textTheme.bodySmall?.fontSize,
-                    ),
-                    SizedBox(width: 2),
-                    Expanded(
-                      child: RichText(
-                        text: TextSpan(
-                          text: " ",
-                          style: TextStyle(
-                            fontSize: Theme.of(
-                              context,
-                            ).textTheme.bodySmall?.fontSize,
-                            fontWeight: viewed
-                                ? FontWeight.w300
-                                : FontWeight.normal,
-                            color: selected
-                                ? Theme.of(context).colorScheme.onSurface
-                                : viewed
-                                ? Theme.of(context).unselectedWidgetColor
-                                : Theme.of(context).textTheme.bodySmall?.color,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: _forumThread.author,
-                              style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                color: selected
-                                    ? Theme.of(context).colorScheme.onSurface
-                                    : viewed
-                                    ? Theme.of(context).unselectedWidgetColor
-                                    : Theme.of(
-                                        context,
-                                      ).textTheme.bodySmall?.color,
-                              ),
-                            ),
-                            TextSpan(text: " · ", style: textStyle),
-                            TextSpan(
-                              text: TimeDisplayUtils.getLocaledTimeDisplay(
-                                context,
-                                _forumThread.dbdatelineMinutes,
-                              ),
-                              style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                color: selected
-                                    ? Theme.of(context).colorScheme.onSurface
-                                    : viewed
-                                    ? Theme.of(context).unselectedWidgetColor
-                                    : Theme.of(
-                                        context,
-                                      ).textTheme.bodySmall?.color,
-                              ),
-                            ),
-                            if (threadCategory.isNotEmpty)
-                              TextSpan(text: " / ", style: textStyle),
-                            if (threadCategory.isNotEmpty)
-                              TextSpan(text: threadCategory, style: textStyle),
-                            if ((_user == null && _forumThread.readPerm > 0) ||
-                                (_user != null &&
-                                    _forumThread.readPerm > _user!.readPerm))
-                              TextSpan(
-                                text:
-                                    " / " +
-                                    S
-                                        .of(context)
-                                        .threadReadAccess(
-                                          _forumThread.readPerm,
-                                        ),
-                                style: viewed
-                                    ? textStyle
-                                    : textStyle.copyWith(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.error,
-                                      ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 4),
-
-                Text(
-                  _forumThread.decodedSubject,
-                  maxLines: 4,
-                  softWrap: true,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
-                    height: 1.22,
-                    fontWeight: viewed ? FontWeight.normal : FontWeight.bold,
-                    color: selected
-                        ? Theme.of(context).colorScheme.onSurface
-                        : viewed
-                        ? Theme.of(context).unselectedWidgetColor
-                        : null,
-                  ),
-                ),
-                // then user interface
-                SizedBox(height: 8),
-                // message
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        message,
-                        style: TextStyle(
-                          fontWeight: viewed
-                              ? FontWeight.w300
-                              : FontWeight.normal,
-                          fontSize: Theme.of(
-                            context,
-                          ).textTheme.bodyMedium?.fontSize,
-                          color: selected
-                              ? Theme.of(context).colorScheme.onSurface
-                              : viewed
-                              ? Theme.of(context).unselectedWidgetColor
-                              : null,
-                        ),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (_forumThread.attachmentImagePreviewList.length > 0 &&
-                        _forumThread.attachmentImagePreviewList.length < 2)
-                      Container(
-                        width: 64 / 0.618,
-                        height: 64,
-                        child: getAttachmentPreviewWidget(
-                          _forumThread.attachmentImagePreviewList[0],
-                        ),
-                      ),
-                  ],
-                ),
-                // start image
-                getAttachmentGridLayout(),
-                // get reply layout
-                replyWidget,
-              ],
+    final colors = Theme.of(context).colorScheme;
+    final textColor = selected
+        ? colors.onSurface
+        : viewed
+        ? Theme.of(context).disabledColor
+        : colors.onSurface;
+    final metadataColor = selected
+        ? colors.onSurfaceVariant
+        : Theme.of(context).disabledColor;
+    final category =
+        threadType?.idNameMap[_forumThread.typeId] ?? _forumThread.typeName;
+    final restricted = _forumThread.readPerm > (_user?.readPerm ?? 0);
+    final showStats = context
+        .watch<UserPreferenceNotifierProvider>()
+        .forumDisplay
+        .showThreadStats;
+    final message = _forumThread.message
+        .replaceAll('\n', '')
+        .replaceAll(RegExp('本帖最后由.*?编辑'), '');
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (_forumThread.getDisplayOrder() > 0)
+          getStickyThreadHead(viewed, selected),
+        CompactThreadListTile(
+          leading: UserAvatar(
+            _discuz,
+            _forumThread.getAuthorId(),
+            _forumThread.author,
+            size: 32,
+            disableTap: true,
+          ),
+          title: Text(
+            _forumThread.decodedSubject,
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              height: 1.22,
+              color: textColor,
+              fontWeight: selected
+                  ? FontWeight.bold
+                  : viewed
+                  ? FontWeight.w400
+                  : FontWeight.normal,
             ),
           ),
-        ],
-      );
-    }
-
-    // normal without message
-    return Consumer<SelectedTidNotifierProvider>(
-      builder: (context, selectedTid, child) {
-        //log("Changed tid ${selectedTid.tid} ${_forumThread.getTid()}");
-        bool selected = selectedTid.tid == _forumThread.getTid();
-        return Column(
-          children: [
-            if (_forumThread.getDisplayOrder() > 0)
-              getStickyThreadHead(viewed, selected),
-            PlatformListTile(
-              selected: false,
-              isThreeLine: false,
-              contentPadding: const EdgeInsets.fromLTRB(12, 9, 12, 6),
-              leading: UserAvatar(
-                _discuz,
-                _forumThread.getAuthorId(),
-                _forumThread.author,
-                size: 40,
-                disableTap: true,
+          metadata: Text(
+            '${_forumThread.author} · ${TimeDisplayUtils.getLocaledTimeDisplay(context, _forumThread.dbdatelineMinutes)}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: metadataColor),
+          ),
+          statistics: showStats
+              ? '${S.of(context).threadView(_forumThread.views)} · ${S.of(context).threadReply(_forumThread.replies)}'
+              : null,
+          badges: [
+            if (category.isNotEmpty)
+              Text(
+                category,
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: metadataColor),
               ),
-              title: Text(
-                _forumThread.decodedSubject,
-                maxLines: 4,
-                softWrap: true,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: selected
-                      ? Theme.of(context).colorScheme.onSurface
-                      : viewed
-                      ? Theme.of(context).disabledColor
-                      : null,
-                  fontWeight: selected
-                      ? FontWeight.bold
-                      : viewed
-                      ? FontWeight.w400
-                      : FontWeight.normal,
-                  height: 1.22,
-                  fontSize: Theme.of(context).textTheme.titleMedium?.fontSize,
-                ),
-              ),
-              subtitle: RichText(
-                text: TextSpan(
-                  text: "",
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: selected
-                        ? Theme.of(context).colorScheme.onSurfaceVariant
-                        : Theme.of(context).disabledColor,
-                    fontWeight: selected
-                        ? FontWeight.normal
-                        : viewed
-                        ? FontWeight.w300
-                        : null,
-                    fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-                    //fontSize: 12
-                  ),
-                  //style: ..copyWith(color: selected? Theme.of(context).colorScheme.onPrimary: null),
-                  children: <TextSpan>[
-                    TextSpan(text: _forumThread.author),
-                    TextSpan(text: " · "),
-                    TextSpan(
-                      text: TimeDisplayUtils.getLocaledTimeDisplay(
-                        context,
-                        _forumThread.dbdatelineMinutes,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // trailing: selected? Icon(AppPlatformIcons(context).selectedThreadSolid, color: Theme.of(context).colorScheme.primary,):
-              // _forumThread.replies!=0 ? getTailingWidget(): null,
-            ),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-              child: Row(
-                children: [
-                  if (threadCategory.isNotEmpty)
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 2.0,
-                        horizontal: 8.0,
-                      ),
-                      decoration: BoxDecoration(
-                        color: viewed
-                            ? Theme.of(context).disabledColor.withOpacity(0.1)
-                            : Theme.of(context).colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                      ),
-                      child: Text(
-                        threadCategory,
-                        style: TextStyle(
-                          color: viewed
-                              ? Theme.of(context).disabledColor
-                              : Theme.of(
-                                  context,
-                                ).colorScheme.onPrimaryContainer,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  RichText(
-                    text: TextSpan(
-                      text: "",
-                      style: TextStyle(fontSize: 12),
-                      children: <TextSpan>[
-                        if (threadCategory.isNotEmpty)
-                          TextSpan(
-                            text: "   ",
-                            style: viewed
-                                ? TextStyle(
-                                    color: Theme.of(context).disabledColor,
-                                  )
-                                : TextStyle(
-                                    color: Theme.of(context).disabledColor,
-                                  ),
-                          ),
-                        TextSpan(
-                          text: S.of(context).threadView(_forumThread.views),
-                          style: TextStyle(
-                            color: Theme.of(context).disabledColor,
-                          ),
-                        ),
-                        TextSpan(
-                          text:
-                              " · " +
-                              S.of(context).threadReply(_forumThread.replies),
-                          style: TextStyle(
-                            color: Theme.of(context).disabledColor,
-                          ),
-                        ),
-                        if ((_user == null && _forumThread.readPerm > 0) ||
-                            (_user != null &&
-                                _forumThread.readPerm > _user!.readPerm))
-                          TextSpan(
-                            text: " · ",
-                            style: TextStyle(
-                              color: Theme.of(context).disabledColor,
-                            ),
-                          ),
-                        if ((_user == null && _forumThread.readPerm > 0) ||
-                            (_user != null &&
-                                _forumThread.readPerm > _user!.readPerm))
-                          TextSpan(
-                            text: S
-                                .of(context)
-                                .threadReadAccess(_forumThread.readPerm),
-                            style: viewed
-                                ? textStyle
-                                : textStyle?.copyWith(
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (_forumThread.reply.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-                child: replyWidget,
+            if (restricted)
+              Text(
+                S.of(context).threadReadAccess(_forumThread.readPerm),
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: colors.error),
               ),
           ],
-        );
-      },
+          preview: message.isEmpty && _forumThread.reply.isEmpty
+              ? null
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (message.isNotEmpty) ...[
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              message,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: textColor),
+                            ),
+                          ),
+                          if (_forumThread.attachmentImagePreviewList.length ==
+                              1)
+                            SizedBox(
+                              width: 64 / 0.618,
+                              height: 64,
+                              child: getAttachmentPreviewWidget(
+                                _forumThread.attachmentImagePreviewList.first,
+                              ),
+                            ),
+                        ],
+                      ),
+                      getAttachmentGridLayout(),
+                    ],
+                    if (_forumThread.reply.isNotEmpty) replyWidget,
+                  ],
+                ),
+        ),
+      ],
     );
   }
 
@@ -638,12 +390,13 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
                     text: TextSpan(
                       text: "",
                       style: TextStyle(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSecondaryContainer,
-                        fontSize: Theme.of(
-                          context,
-                        ).textTheme.bodySmall?.fontSize,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSecondaryContainer,
+                        fontSize: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.fontSize,
                       ),
                       children: [
                         // WidgetSpan(
@@ -654,9 +407,9 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
                           text: shortReply.author,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSecondaryContainer,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer,
                           ),
                         ),
                         TextSpan(text: ': '),

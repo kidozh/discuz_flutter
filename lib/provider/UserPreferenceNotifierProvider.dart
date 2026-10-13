@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 
 import '../utility/OnDeviceAiService.dart';
+import '../entity/post_signature.dart';
+import '../entity/forum_display_preferences.dart';
 
 class UserPreferenceNotifierProvider with ChangeNotifier {
   bool _allowPush = false;
@@ -17,12 +19,19 @@ class UserPreferenceNotifierProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  String _signature = "";
+  PostSignature _signature = const PostSignature();
 
-  String get signature => _signature;
+  PostSignature get signature => _signature;
 
-  set signature(String value) {
+  set signature(PostSignature value) {
     _signature = value;
+    notifyListeners();
+  }
+
+  ForumDisplayPreferences _forumDisplay = const ForumDisplayPreferences();
+  ForumDisplayPreferences get forumDisplay => _forumDisplay;
+  void setForumDisplay(ForumDisplayPreferences value) {
+    _forumDisplay = value;
     notifyListeners();
   }
 

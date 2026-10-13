@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -7,7 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../entity/User.dart';
-import 'PostTextFieldUtils.dart';
+import '../entity/post_signature.dart';
+import '../entity/forum_display_preferences.dart';
 
 class UserPreferencesUtils {
   static final String recordHistoryKey = "recordHistoryKey";
@@ -323,18 +325,66 @@ class UserPreferencesUtils {
   }
 
   static final String signaturePreferenceKey = "signaturePreferenceKey";
+  static const postSignaturePreferenceKey = 'post_signature_v2';
+  static const forumDisplayPreferenceKey = 'forum_display_v1';
 
-  static Future<String> getSignaturePreference() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var signaturePreference = prefs.getString(signaturePreferenceKey);
-    return signaturePreference == null
-        ? PostTextFieldUtils.USE_APP_SIGNATURE
-        : signaturePreference;
+  static Future<PostSignature> getSignaturePreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    final stored = prefs.get(postSignaturePreferenceKey);
+    if (stored != null) {
+      if (stored is! String)
+        return const PostSignature(style: PostSignatureStyle.none);
+      try {
+        return PostSignature.fromJson(
+          jsonDecode(stored) as Map<String, dynamic>,
+        );
+      } catch (_) {
+        return const PostSignature(style: PostSignatureStyle.none);
+      }
+    }
+    final signature = PostSignature.fromLegacy(
+      prefs.get(signaturePreferenceKey) is String
+          ? prefs.getString(signaturePreferenceKey)
+          : null,
+    );
+    await prefs.setString(
+      postSignaturePreferenceKey,
+      jsonEncode(signature.toJson()),
+    );
+    return signature;
   }
 
-  static Future<void> putSignaturePreference(String value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(signaturePreferenceKey, value);
+  static Future<void> putSignaturePreference(PostSignature value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      postSignaturePreferenceKey,
+      jsonEncode(value.toJson()),
+    );
+  }
+
+  static Future<ForumDisplayPreferences> getForumDisplayPreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    final stored = prefs.get(forumDisplayPreferenceKey);
+    if (stored is String) {
+      try {
+        return ForumDisplayPreferences.fromJson(
+          jsonDecode(stored) as Map<String, dynamic>,
+        );
+      } catch (_) {
+        // Use privacy-preserving defaults for malformed settings.
+      }
+    }
+    return const ForumDisplayPreferences();
+  }
+
+  static Future<void> putForumDisplayPreference(
+    ForumDisplayPreferences value,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      forumDisplayPreferenceKey,
+      jsonEncode(value.toJson()),
+    );
   }
 
   static Future<String> getDiscuzForumFids(Discuz discuz) async {

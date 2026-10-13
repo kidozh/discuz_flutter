@@ -1,7 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../provider/DiscuzAndUserNotifier.dart';
+import '../provider/UserPreferenceNotifierProvider.dart';
 import '../utility/DashboardPreferences.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
 import '../generated/l10n.dart';
@@ -18,7 +19,6 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  String? selected;
   @override
   void initState() {
     super.initState();
@@ -48,57 +48,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
             : id == 'hot'
             ? s.hotThread
             : s.keylolPortal;
-        if (isMaterial(context))
-          return DefaultTabController(
-            key: ValueKey('${account.discuz!.baseURL}:${ids.join(',')}'),
-            length: ids.length,
-            child: Column(
-              children: [
-                TabBar(
-                  tabs: [
-                    for (final id in ids)
-                      Tab(
-                        icon: Icon(
-                          id == 'new'
-                              ? CupertinoIcons.today_fill
-                              : id == 'hot'
-                              ? Icons.whatshot
-                              : Icons.today,
-                          semanticLabel: label(id),
-                        ),
+        final compact = context
+            .watch<UserPreferenceNotifierProvider>()
+            .forumDisplay
+            .compactHeader;
+        return ValueListenableBuilder<String?>(
+          valueListenable: DashboardPreferences.selectedSection,
+          builder: (context, _, _) {
+            final active = DashboardPreferences.activeSection(ids);
+            return SafeArea(
+              top: isCupertino(context),
+              bottom: false,
+              child: Column(
+                children: [
+                  if (!compact)
+                    SizedBox(
+                      width: double.infinity,
+                      child: PlatformSegmentedControl(
+                        labels: ids.map(label).toList(),
+                        selectedIndex: ids.indexOf(active),
+                        onValueChanged: (index) =>
+                            DashboardPreferences.selectedSection.value =
+                                ids[index],
                       ),
-                  ],
-                ),
-                Expanded(
-                  child: TabBarView(
-                    children: [for (final id in ids) section(id)],
+                    ),
+                  Expanded(
+                    child: KeyedSubtree(
+                      key: ValueKey('${account.discuz!.baseURL}:$active'),
+                      child: section(active),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
-        final active = ids.contains(selected) ? selected! : ids.first;
-        return SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              SizedBox(
-                width: double.infinity,
-                child: PlatformSegmentedControl(
-                  labels: ids.map(label).toList(),
-                  selectedIndex: ids.indexOf(active),
-                  onValueChanged: (index) =>
-                      setState(() => selected = ids[index]),
-                ),
+                ],
               ),
-              Expanded(
-                child: KeyedSubtree(
-                  key: ValueKey('${account.discuz!.baseURL}:$active'),
-                  child: section(active),
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         );
       },
     );

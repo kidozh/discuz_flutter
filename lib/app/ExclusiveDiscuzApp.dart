@@ -37,6 +37,12 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
     double scale = await UserPreferencesUtils.getTypesettingScalePreference();
     Brightness? brightness =
         await UserPreferencesUtils.getInterfaceBrightnessPreference();
+    final signature = await UserPreferencesUtils.getSignaturePreference();
+    final forumDisplay = await UserPreferencesUtils.getForumDisplayPreference();
+    if (!context.mounted) return;
+    final startupPreferences = context.read<UserPreferenceNotifierProvider>();
+    startupPreferences.signature = signature;
+    startupPreferences.setForumDisplay(forumDisplay);
     final intelligenceEnabled =
         await UserPreferencesUtils.getAppleIntelligenceEnabled();
     final intelligenceGuardrail =

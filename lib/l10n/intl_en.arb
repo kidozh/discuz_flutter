@@ -1221,5 +1221,20 @@
   "translationSimulator": "Apple Translation requires a physical device. It is not available in the iOS simulator.",
   "translationUnavailable": "Apple Translation requires iOS 18 or macOS 15 or later.",
   "translationSourceUndetected": "There is not enough readable text to identify the source language.",
-  "autoTranslateTitle": "Auto-translate"
+  "autoTranslateTitle": "Auto-translate",
+  "signatureAppAndDevice": "App and device name",
+  "signatureDevicePrivacy": "Device signatures publish your device model or computer name with every post.",
+  "fromAppOnlySignature": "- Sent via [url=https://discuzhub.kidozh.com/]DisFly[/url] v{version}.",
+  "compactForumHeader": "Combine homepage navigation and categories",
+  "showForumName": "Show forum name in navigation",
+  "showAccountInfo": "Show account name and UID in navigation",
+  "showThreadStats": "Show thread views and replies",
+  "showForumCarousel": "Show promoted thread carousel",
+  "@fromAppOnlySignature": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -1,3 +1,4 @@
+import '../utility/post_signature_service.dart';
 import '../widget/cupertino_separated_item.dart';
 import '../widget/PostRatingsInline.dart';
 import 'PostCommentDialog.dart';
@@ -66,7 +67,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:share_plus/share_plus.dart';
@@ -654,26 +654,11 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                       : strings.postPermissionUnknown),
             );
           }
-          var message = PostTextFieldUtils.getPostMessage(draft.text);
-          final signature = await UserPreferencesUtils.getSignaturePreference();
+          final message = await PostSignatureService.append(
+            context,
+            PostTextFieldUtils.getPostMessage(draft.text),
+          );
           if (!mounted) return null;
-          if (signature == PostTextFieldUtils.USE_DEVICE_SIGNATURE ||
-              signature == PostTextFieldUtils.USE_APP_SIGNATURE) {
-            final deviceName = await PostTextFieldUtils.getDeviceName(context);
-            if (!mounted) return null;
-            if (deviceName.isNotEmpty) {
-              if (signature == PostTextFieldUtils.USE_APP_SIGNATURE) {
-                final packageInfo = await PackageInfo.fromPlatform();
-                if (!mounted) return null;
-                message +=
-                    "\n\n${strings.fromAppSignature(deviceName, packageInfo.version)}";
-              } else {
-                message += "\n\n${strings.fromDeviceSignature(deviceName)}";
-              }
-            }
-          } else if (signature.isNotEmpty) {
-            message += "\n\n$signature";
-          }
           final attachImgMap = HashMap<String, String>.from({
             for (final aid in draft.attachmentIds)
               'attachnew[$aid][description]': aid,
@@ -1288,9 +1273,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
         heroTag: this.onClosed == null ? null : "viewthread_${tid}",
         transitionBetweenRoutes: false,
         previousPageTitle:
-            (route != null &&
-                route is CupertinoPageRoute<dynamic> &&
-                route.previousTitle.value != null)
+            !context
+                .watch<UserPreferenceNotifierProvider>()
+                .forumDisplay
+                .showForumName
+            ? ''
+            : (route != null &&
+                  route is CupertinoPageRoute<dynamic> &&
+                  route.previousTitle.value != null)
             ? route.previousTitle.value
             : Provider.of<DiscuzAndUserNotifier>(
                 context,
@@ -1639,9 +1629,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                 if (index % 10 == 0 && index != 0)
                                   Consumer<UserPreferenceNotifierProvider>(
                                     builder: (context, value, child) {
-                                      if (value.signature ==
-                                              PostTextFieldUtils
-                                                  .USE_APP_SIGNATURE &&
+                                      if (value.signature.includesApp &&
                                           index > 15) {
                                         return Container();
                                       } else {

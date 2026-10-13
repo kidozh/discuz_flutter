@@ -4,6 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 class DashboardPreferences {
   static const defaults = ['new', 'hot', 'keylol'];
   static final order = ValueNotifier<List<String>>(List.of(defaults));
+  static final selectedSection = ValueNotifier<String?>(null);
+  static String activeSection(List<String> ids) =>
+      ids.contains(selectedSection.value) ? selectedSection.value! : ids.first;
   static Future<void>? _loading;
   static bool _loaded = false;
   static bool isKeylol(String url) {
