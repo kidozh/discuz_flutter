@@ -41,122 +41,132 @@ class PrivateMessageDetailWidget extends StatelessWidget {
         ? Duration.zero
         : const Duration(milliseconds: 280);
 
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: animateEntrance ? 0 : 1, end: 1),
-      duration: duration,
-      curve: Curves.easeOutBack,
-      builder: (context, value, child) {
-        return Opacity(
-          opacity: value.clamp(0, 1),
-          child: Transform.translate(
-            offset: Offset((isMine ? 18 : -18) * (1 - value), 5 * (1 - value)),
-            child: Transform.scale(
-              scale: 0.86 + (0.14 * value),
-              alignment: isMine ? Alignment.bottomRight : Alignment.bottomLeft,
-              child: child,
-            ),
-          ),
-        );
-      },
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          10,
-          groupedWithOlder ? 2 : 8,
-          10,
-          groupedWithNewer ? 1 : 3,
-        ),
-        child: Column(
-          children: [
-            if (showTimestamp)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8, top: 2),
-                child: Text(
-                  message.readableString,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurfaceVariant
-                            .withValues(alpha: 0.72),
-                        fontWeight: FontWeight.w500,
-                      ),
-                ),
+    return LayoutBuilder(
+      builder: (context, constraints) => TweenAnimationBuilder<double>(
+        tween: Tween(begin: animateEntrance ? 0 : 1, end: 1),
+        duration: duration,
+        curve: Curves.easeOutBack,
+        builder: (context, value, child) {
+          return Opacity(
+            opacity: value.clamp(0, 1),
+            child: Transform.translate(
+              offset: Offset(
+                (isMine ? 18 : -18) * (1 - value),
+                5 * (1 - value),
               ),
-            Row(
-              mainAxisAlignment:
-                  isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                if (!isMine) ...[
-                  SizedBox(
-                    width: 30,
-                    height: 30,
-                    child: groupedWithNewer
-                        ? const SizedBox.shrink()
-                        : UserAvatar(
-                            discuz,
-                            message.msgFromId,
-                            message.msgFromName,
-                            size: 30,
-                          ),
-                  ),
-                  const SizedBox(width: 7),
-                ],
-                Flexible(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: MediaQuery.sizeOf(context).width * 0.76,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: isMine
-                          ? CrossAxisAlignment.end
-                          : CrossAxisAlignment.start,
-                      children: [
-                        _MessageBubble(
-                          discuz: discuz,
-                          message: message.message,
-                          isMine: isMine,
-                          hasTail: !groupedWithNewer,
-                        ),
-                        if (isPending)
-                          const Padding(
-                            padding: EdgeInsets.only(top: 4, right: 5),
-                            child: SizedBox.square(
-                              dimension: 11,
-                              child: PlatformCircularProgressIndicator(),
-                            ),
-                          ),
-                        if (sendFailed)
-                          PlatformTextButton(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            onPressed: onRetry,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  PlatformIcons(context).error,
-                                  size: 15,
-                                  color: Theme.of(context).colorScheme.error,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  S.of(context).retry,
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.error,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                      ],
+              child: Transform.scale(
+                scale: 0.86 + (0.14 * value),
+                alignment: isMine
+                    ? Alignment.bottomRight
+                    : Alignment.bottomLeft,
+                child: child,
+              ),
+            ),
+          );
+        },
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            10,
+            groupedWithOlder ? 2 : 8,
+            10,
+            groupedWithNewer ? 1 : 3,
+          ),
+          child: Column(
+            children: [
+              if (showTimestamp)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8, top: 2),
+                  child: Text(
+                    message.readableString,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant
+                          .withValues(alpha: 0.72),
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
-                if (isMine) const SizedBox(width: 2),
-              ],
-            ),
-          ],
+              Row(
+                mainAxisAlignment: isMine
+                    ? MainAxisAlignment.end
+                    : MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  if (!isMine) ...[
+                    SizedBox(
+                      width: 30,
+                      height: 30,
+                      child: groupedWithNewer
+                          ? const SizedBox.shrink()
+                          : UserAvatar(
+                              discuz,
+                              message.msgFromId,
+                              message.msgFromName,
+                              size: 30,
+                            ),
+                    ),
+                    const SizedBox(width: 7),
+                  ],
+                  Flexible(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: constraints.maxWidth * 0.76,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: isMine
+                            ? CrossAxisAlignment.end
+                            : CrossAxisAlignment.start,
+                        children: [
+                          _MessageBubble(
+                            discuz: discuz,
+                            message: message.message,
+                            isMine: isMine,
+                            hasTail: !groupedWithNewer,
+                          ),
+                          if (isPending)
+                            const Padding(
+                              padding: EdgeInsets.only(top: 4, right: 5),
+                              child: SizedBox.square(
+                                dimension: 11,
+                                child: PlatformCircularProgressIndicator(),
+                              ),
+                            ),
+                          if (sendFailed)
+                            PlatformTextButton(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              onPressed: onRetry,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    PlatformIcons(context).error,
+                                    size: 15,
+                                    color: Theme.of(context).colorScheme.error,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    S.of(context).retry,
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .error,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (isMine) const SizedBox(width: 2),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -177,11 +187,11 @@ class _MessageBubble extends StatelessWidget {
   });
 
   BorderRadius get _borderRadius => BorderRadius.only(
-        topLeft: const Radius.circular(20),
-        topRight: const Radius.circular(20),
-        bottomLeft: Radius.circular(!isMine && hasTail ? 6 : 20),
-        bottomRight: Radius.circular(isMine && hasTail ? 6 : 20),
-      );
+    topLeft: const Radius.circular(20),
+    topRight: const Radius.circular(20),
+    bottomLeft: Radius.circular(!isMine && hasTail ? 6 : 20),
+    bottomRight: Radius.circular(isMine && hasTail ? 6 : 20),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -193,14 +203,8 @@ class _MessageBubble extends StatelessWidget {
     final content = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       child: DefaultTextStyle.merge(
-        style: TextStyle(
-          color: foreground,
-        ),
-        child: DiscuzHtmlWidget(
-          discuz,
-          message,
-          textColor: foreground,
-        ),
+        style: TextStyle(color: foreground),
+        child: DiscuzHtmlWidget(discuz, message, textColor: foreground),
       ),
     );
 

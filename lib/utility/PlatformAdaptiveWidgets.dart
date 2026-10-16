@@ -1,4 +1,5 @@
 import 'package:discuz_flutter/utility/app_motion.dart';
+
 import 'dart:async';
 import 'dart:io' show Platform;
 import 'dart:math' as math;
@@ -12,9 +13,12 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart'
 import 'package:settings_ui/settings_ui.dart' as settings;
 
 import 'PlatformGlass.dart';
+import 'app_foldable_provider.dart';
+import 'TwoPaneUtils.dart' show mediaQueryForPane;
 import 'app_visual_style.dart';
 export 'PlatformGlass.dart' show PlatformGlassEffect;
 export 'app_visual_style.dart' show AppVisualStyle;
+export 'pane_navigation.dart' show pushDetailPage;
 
 export 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart'
     hide
@@ -29,8 +33,10 @@ export 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart'
         PlatformWidget,
         PlatformWidgetBuilder;
 
-typedef PlatformBuilder<T> =
-    T Function(BuildContext context, TargetPlatform platform);
+typedef PlatformBuilder<T> = T Function(
+  BuildContext context,
+  TargetPlatform platform,
+);
 
 TargetPlatform platform(BuildContext context) =>
     PlatformProvider.of(context)?.platform ??
@@ -443,7 +449,7 @@ class PlatformApp extends StatelessWidget {
             data: MediaQuery.of(context).copyWith(
               platformBrightness: useDark ? Brightness.dark : Brightness.light,
             ),
-            child: themedChild,
+            child: AppFoldableProvider(child: themedChild),
           );
         },
         title: title,
@@ -473,7 +479,12 @@ class PlatformApp extends StatelessWidget {
       onGenerateRoute: onGenerateRoute,
       onUnknownRoute: onUnknownRoute,
       navigatorObservers: navigatorObservers,
-      builder: builder,
+      builder: (context, child) => AppFoldableProvider(
+        child: Builder(
+          builder: (context) =>
+              builder?.call(context, child) ?? child ?? const SizedBox.shrink(),
+        ),
+      ),
       title: title,
       onGenerateTitle: onGenerateTitle,
       color: color,
@@ -762,7 +773,11 @@ class PlatformScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget content = body ?? const SizedBox.shrink();
+    Widget content = SafeArea(
+      top: false,
+      bottom: false,
+      child: body ?? const SizedBox.shrink(),
+    );
     if (isCupertino(context) &&
         (iosContentPadding || iosContentBottomPadding)) {
       content = SafeArea(
@@ -814,9 +829,8 @@ class PlatformScaffold extends StatelessWidget {
         return tabTint == null
             ? scaffold
             : CupertinoTheme(
-                data: CupertinoTheme.of(
-                  context,
-                ).copyWith(primaryColor: tabTint),
+                data: CupertinoTheme.of(context)
+                    .copyWith(primaryColor: tabTint),
                 child: scaffold,
               );
       }
@@ -1381,9 +1395,8 @@ class PlatformIconButton extends StatelessWidget {
         onLongPress: onLongPress,
         child: cupertinoIcon ?? icon ?? const SizedBox.shrink(),
       );
-      final semanticLabel = _iconForWidget(
-        cupertinoIcon ?? icon,
-      )?.semanticLabel;
+      final semanticLabel = _iconForWidget(cupertinoIcon ?? icon)
+          ?.semanticLabel;
       if (semanticLabel != null) {
         button = Semantics(
           label: semanticLabel,
@@ -1730,6 +1743,9 @@ class PlatformLiquidGlassCard extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final BorderRadius borderRadius;
   final bool selected;
+
+  /// Keep an explicit fill solid instead of applying glass highlights.
+  final bool opaque;
   final Color? tintColor;
 
   /// Solid fill used when translucent surfaces are disabled.
@@ -1745,6 +1761,7 @@ class PlatformLiquidGlassCard extends StatelessWidget {
     this.padding,
     this.borderRadius = const BorderRadius.all(Radius.circular(18)),
     this.selected = false,
+    this.opaque = false,
     this.tintColor,
     this.backgroundColor,
     this.glassBackgroundColor,
@@ -1777,7 +1794,7 @@ class PlatformLiquidGlassCard extends StatelessWidget {
         : Colors.white.withValues(alpha: 0.20);
 
     final content = Padding(padding: padding ?? EdgeInsets.zero, child: child);
-    if (!usesAppleTranslucentSurface(context)) {
+    if (opaque || !usesAppleTranslucentSurface(context)) {
       return Container(
         margin: margin,
         decoration: BoxDecoration(
@@ -2990,7 +3007,10 @@ class PlatformAlertDialog extends StatelessWidget {
           type: MaterialType.transparency,
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minWidth: 280,
+              minWidth: math.max(
+                0,
+                math.min(280, MediaQuery.sizeOf(context).width - 32),
+              ),
               maxWidth: math.min(MediaQuery.sizeOf(context).width - 32, 390.0),
               maxHeight: MediaQuery.sizeOf(context).height * 0.82,
             ),
@@ -3169,26 +3189,195 @@ Future<void> showPlatformAlert({
   );
 }
 
+Offset _platformPresentationAnchor(BuildContext context) {
+  if (!context.mounted) return Offset.zero;
+  final box = context.findRenderObject();
+  return box is RenderBox && box.attached && box.hasSize
+      ? box.localToGlobal(box.size.center(Offset.zero))
+      : Offset.zero;
+}
+
+/// Read the source again after layout: rotating a horizontal fold into a
+/// vertical fold changes which display region contains the presenting pane.
+class _PresentationAnchor with WidgetsBindingObserver {
+  final BuildContext source;
+  final Offset? explicitPoint;
+  Offset point;
+  VoidCallback? onChanged;
+  bool _scheduled = false;
+  bool _disposed = false;
+
+  _PresentationAnchor(this.source, this.explicitPoint)
+    : point = explicitPoint ?? _platformPresentationAnchor(source) {
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeMetrics() => refreshAfterLayout();
+
+  void refreshAfterLayout() {
+    if (_disposed || _scheduled || explicitPoint != null) return;
+    _scheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scheduled = false;
+      if (_disposed || !source.mounted) return;
+      final next = _platformPresentationAnchor(source);
+      if (next == point) return;
+      point = next;
+      onChanged?.call();
+    });
+  }
+
+  void dispose() {
+    _disposed = true;
+    onChanged = null;
+    WidgetsBinding.instance.removeObserver(this);
+  }
+}
+
+class _AnchoredCupertinoDialogRoute<T> extends CupertinoDialogRoute<T> {
+  final _PresentationAnchor anchor;
+  _AnchoredCupertinoDialogRoute({
+    required this.anchor,
+    required super.context,
+    required super.builder,
+    required super.barrierDismissible,
+  });
+  @override
+  Offset get anchorPoint => anchor.point;
+}
+
+class _AnchoredDialogRoute<T> extends DialogRoute<T> {
+  final _PresentationAnchor anchor;
+  _AnchoredDialogRoute({
+    required this.anchor,
+    required super.context,
+    required super.builder,
+    required super.barrierDismissible,
+    required super.barrierColor,
+    required super.themes,
+  }) : super(traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop);
+  @override
+  Offset get anchorPoint => anchor.point;
+}
+
+class _AnchoredCupertinoPopupRoute<T> extends CupertinoModalPopupRoute<T> {
+  final _PresentationAnchor anchor;
+  _AnchoredCupertinoPopupRoute({
+    required this.anchor,
+    required super.builder,
+    required super.barrierColor,
+  });
+  @override
+  Offset get anchorPoint => anchor.point;
+}
+
+class _AnchoredBottomSheetRoute<T> extends ModalBottomSheetRoute<T> {
+  final _PresentationAnchor anchor;
+  _AnchoredBottomSheetRoute({
+    required this.anchor,
+    required super.builder,
+    required super.capturedThemes,
+    required super.barrierLabel,
+    required super.barrierOnTapHint,
+    required super.modalBarrierColor,
+    required super.isScrollControlled,
+  }) : super(constraints: const BoxConstraints(maxWidth: 640));
+  @override
+  Offset get anchorPoint => anchor.point;
+}
+
+Future<T?> _pushAnchoredPresentation<T>(
+  NavigatorState navigator,
+  ModalRoute<T> route,
+  _PresentationAnchor anchor,
+) async {
+  anchor.onChanged = route.changedExternalState;
+  try {
+    return await navigator.push<T>(route);
+  } finally {
+    anchor.dispose();
+  }
+}
+
+/// Flutter confines a route to a display region but retains the whole-window
+/// MediaQuery size. Publish local geometry to its contents too.
+class _PlatformPresentationRegion extends StatelessWidget {
+  final NavigatorState navigator;
+  final _PresentationAnchor anchor;
+  final WidgetBuilder builder;
+  const _PlatformPresentationRegion({
+    required this.navigator,
+    required this.anchor,
+    required this.builder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    anchor.refreshAfterLayout();
+    final ancestor = navigator.context
+        .getElementForInheritedWidgetOfExactType<MediaQuery>();
+    final media = ancestor == null
+        ? MediaQuery.of(context)
+        : (context.dependOnInheritedElement(ancestor) as MediaQuery).data;
+    final point = Offset(
+      anchor.point.dx.clamp(0, media.size.width).toDouble(),
+      anchor.point.dy.clamp(0, media.size.height).toDouble(),
+    );
+    final regions = DisplayFeatureSubScreen.subScreensInBounds(
+      Offset.zero & media.size,
+      DisplayFeatureSubScreen.avoidBounds(media),
+    );
+    double distance(Rect region) {
+      final x = point.dx.clamp(region.left, region.right).toDouble();
+      final y = point.dy.clamp(region.top, region.bottom).toDouble();
+      return (point - Offset(x, y)).distanceSquared;
+    }
+
+    final region = regions.isEmpty
+        ? Offset.zero & media.size
+        : regions.reduce((a, b) => distance(a) <= distance(b) ? a : b);
+    return MediaQuery(
+      data: mediaQueryForPane(media, region),
+      child: Builder(builder: builder),
+    );
+  }
+}
+
 Future<T?> showPlatformDialog<T>({
   required BuildContext context,
   required WidgetBuilder builder,
   bool barrierDismissible = true,
+  Offset? anchorPoint,
 }) {
-  // Dialog routes may sit above a page-local appearance provider.
   final style = visualStyle(context);
+  final anchor = _PresentationAnchor(context, anchorPoint);
+  final navigator = Navigator.of(context, rootNavigator: true);
   Widget dialogBuilder(BuildContext dialogContext) =>
-      PlatformProvider(style: style, builder: (context) => builder(context));
-  return isCupertino(context)
-      ? showCupertinoDialog<T>(
+      _PlatformPresentationRegion(
+        navigator: navigator,
+        anchor: anchor,
+        builder: (context) => PlatformProvider(style: style, builder: builder),
+      );
+  final route = isCupertino(context)
+      ? _AnchoredCupertinoDialogRoute<T>(
+          anchor: anchor,
           context: context,
           builder: dialogBuilder,
           barrierDismissible: barrierDismissible,
         )
-      : showDialog<T>(
+      : _AnchoredDialogRoute<T>(
+          anchor: anchor,
           context: context,
           builder: dialogBuilder,
           barrierDismissible: barrierDismissible,
+          barrierColor:
+              DialogTheme.of(context).barrierColor ??
+              Theme.of(context).dialogTheme.barrierColor ??
+              Colors.black54,
+          themes: InheritedTheme.capture(from: context, to: navigator.context),
         );
+  return _pushAnchoredPresentation(navigator, route, anchor);
 }
 
 class MaterialModalSheetData {
@@ -3197,87 +3386,155 @@ class MaterialModalSheetData {
   const MaterialModalSheetData({this.isScrollControlled = false});
 }
 
+/// Bounds a sheet to its presentation region and consumes keyboard insets once.
+class _PlatformSheetViewport extends StatelessWidget {
+  final WidgetBuilder builder;
+  const _PlatformSheetViewport({required this.builder});
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    return AnimatedPadding(
+      duration: AppMotion.duration(context, 200),
+      padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
+      child: MediaQuery.removeViewInsets(
+        context: context,
+        removeBottom: true,
+        child: SafeArea(
+          top: false,
+          child: LayoutBuilder(
+            builder: (context, constraints) => Align(
+              alignment: Alignment.bottomCenter,
+              heightFactor: 1,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: math.min(640, constraints.maxWidth),
+                  maxHeight: math.max(
+                    0,
+                    math.min(
+                      constraints.maxHeight,
+                      media.size.height * 0.90 - media.viewInsets.bottom,
+                    ),
+                  ),
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: LayoutBuilder(
+                    builder: (context, localConstraints) {
+                      final localMedia = MediaQuery.of(context);
+                      final width = localConstraints.maxWidth;
+                      final left =
+                          media.padding.left +
+                          (media.size.width -
+                                  media.padding.horizontal -
+                                  width) /
+                              2;
+                      return MediaQuery(
+                        data: mediaQueryForPane(
+                          localMedia,
+                          Rect.fromLTWH(left, 0, width, localMedia.size.height),
+                        ),
+                        child: Builder(builder: builder),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 Future<T?> showPlatformModalSheet<T>({
   required BuildContext context,
   required WidgetBuilder builder,
   MaterialModalSheetData? material,
-}) => isCupertino(context)
-    ? showCupertinoModalPopup<T>(
-        context: context,
-        builder: (sheetContext) {
-          final colors = Theme.of(sheetContext).colorScheme;
-          final sheetContent = CupertinoUserInterfaceLevel(
-            data: CupertinoUserInterfaceLevelData.elevated,
-            child: DefaultTextStyle.merge(
-              style: TextStyle(color: colors.onSurface),
-              child: IconTheme.merge(
-                data: IconThemeData(color: colors.onSurfaceVariant),
-                child: builder(sheetContext),
-              ),
-            ),
-          );
-          if (!usesLiquidGlass(sheetContext)) {
-            return Align(
-              alignment: Alignment.bottomCenter,
-              child: CupertinoPopupSurface(
-                isSurfacePainted: true,
-                child: SafeArea(
-                  top: false,
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxHeight:
-                            MediaQuery.sizeOf(sheetContext).height * 0.90,
-                      ),
-                      child: PlatformGlassScope(child: sheetContent),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }
-          return SafeArea(
-            top: false,
-            minimum: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: SizedBox(
-                width: double.infinity,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.90,
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(28),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.18),
-                          blurRadius: 24,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Material(
-                      type: MaterialType.transparency,
-                      child: PlatformLiquidGlassSurface(
-                        borderRadius: BorderRadius.circular(28),
-                        child: sheetContent,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      )
-    : showModalBottomSheet<T>(
-        context: context,
-        builder: builder,
+  Offset? anchorPoint,
+}) {
+  final anchor = _PresentationAnchor(context, anchorPoint);
+  final style = visualStyle(context);
+  final navigator = Navigator.of(context, rootNavigator: true);
+  if (!isCupertino(context)) {
+    final localizations = MaterialLocalizations.of(context);
+    return _pushAnchoredPresentation(
+      navigator,
+      _AnchoredBottomSheetRoute<T>(
+        anchor: anchor,
+        capturedThemes: InheritedTheme.capture(
+          from: context,
+          to: navigator.context,
+        ),
+        barrierLabel: localizations.scrimLabel,
+        barrierOnTapHint: localizations.scrimOnTapHint(
+          localizations.bottomSheetLabel,
+        ),
+        modalBarrierColor: Theme.of(context).bottomSheetTheme.modalBarrierColor,
+        builder: (context) => _PlatformPresentationRegion(
+          navigator: navigator,
+          anchor: anchor,
+          builder: (context) => _PlatformSheetViewport(
+            builder: (context) =>
+                PlatformProvider(style: style, builder: builder),
+          ),
+        ),
         isScrollControlled: material?.isScrollControlled ?? false,
-      );
+      ),
+      anchor,
+    );
+  }
+  return _pushAnchoredPresentation(
+    navigator,
+    _AnchoredCupertinoPopupRoute<T>(
+      anchor: anchor,
+      barrierColor: CupertinoDynamicColor.resolve(
+        kCupertinoModalBarrierColor,
+        context,
+      ),
+      builder: (context) => _PlatformPresentationRegion(
+        navigator: navigator,
+        anchor: anchor,
+        builder: (context) => _PlatformSheetViewport(
+          builder: (context) => PlatformProvider(
+            style: style,
+            builder: (context) {
+              final colors = Theme.of(context).colorScheme;
+              final content = CupertinoUserInterfaceLevel(
+                data: CupertinoUserInterfaceLevelData.elevated,
+                child: DefaultTextStyle.merge(
+                  style: TextStyle(color: colors.onSurface),
+                  child: IconTheme.merge(
+                    data: IconThemeData(color: colors.onSurfaceVariant),
+                    child: Builder(builder: builder),
+                  ),
+                ),
+              );
+              if (!usesLiquidGlass(context)) {
+                return CupertinoPopupSurface(
+                  isSurfacePainted: true,
+                  child: PlatformGlassScope(child: content),
+                );
+              }
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: PlatformLiquidGlassSurface(
+                    borderRadius: BorderRadius.circular(28),
+                    child: content,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    ),
+    anchor,
+  );
+}
 
 PageRoute<T> platformPageRoute<T>({
   required BuildContext context,
@@ -3577,6 +3834,8 @@ class PlatformIcons {
       pick(Icons.image_not_supported, CupertinoIcons.photo_on_rectangle);
   IconData get verified =>
       pick(Icons.check_circle_outline, CupertinoIcons.checkmark_seal);
+  IconData get bestAnswerSeal =>
+      pick(Icons.verified_rounded, CupertinoIcons.checkmark_seal_fill);
   IconData get verifiedUser =>
       pick(Icons.verified_user_rounded, CupertinoIcons.checkmark_shield_fill);
   IconData get warning => pick(

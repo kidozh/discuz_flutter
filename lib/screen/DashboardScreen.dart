@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/DiscuzAndUserNotifier.dart';
-import '../provider/UserPreferenceNotifierProvider.dart';
 import '../utility/DashboardPreferences.dart';
-import '../utility/PlatformAdaptiveWidgets.dart';
 import '../generated/l10n.dart';
 import '../widget/KeylolMobileTopicWidget.dart';
+import '../widget/dashboard_tabs.dart';
 import 'NewThreadScreen.dart';
 import 'HotThreadScreen.dart';
 import 'NullDiscuzScreen.dart';
@@ -48,40 +47,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
             : id == 'hot'
             ? s.hotThread
             : s.keylolPortal;
-        final compact = context
-            .watch<UserPreferenceNotifierProvider>()
-            .forumDisplay
-            .compactHeader;
         return ValueListenableBuilder<String?>(
           valueListenable: DashboardPreferences.selectedSection,
-          builder: (context, _, _) {
-            final active = DashboardPreferences.activeSection(ids);
-            return SafeArea(
-              top: isCupertino(context),
-              bottom: false,
-              child: Column(
-                children: [
-                  if (!compact)
-                    SizedBox(
-                      width: double.infinity,
-                      child: PlatformSegmentedControl(
-                        labels: ids.map(label).toList(),
-                        selectedIndex: ids.indexOf(active),
-                        onValueChanged: (index) =>
-                            DashboardPreferences.selectedSection.value =
-                                ids[index],
-                      ),
-                    ),
-                  Expanded(
-                    child: KeyedSubtree(
-                      key: ValueKey('${account.discuz!.baseURL}:$active'),
-                      child: section(active),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
+          builder: (context, _, _) => DashboardTabs(
+            key: ValueKey(account.discuz!.baseURL),
+            ids: ids,
+            labels: ids.map(label).toList(),
+            selectedId: DashboardPreferences.activeSection(ids),
+            onSelected: (id) => DashboardPreferences.selectedSection.value = id,
+            sectionBuilder: section,
+          ),
         );
       },
     );

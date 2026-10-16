@@ -20,11 +20,27 @@ can present language identification/download UI. iOS Simulator returns an explic
 unsupported error; do not use simulator results as translation quality evidence.
 A full app rebuild is required after adding the native plugin.
 
-Summaries still use Foundation Models and the existing availability/consent
-settings. Automatic summarization defaults on for bodies longer than 1,500
+Summaries use the local Foundation Models runtime. When Apple Intelligence is
+available, the app enables it by default unless the user has explicitly disabled
+it. An unavailable model never enables inference. Automatic summarization defaults
+on for bodies longer than 500
 characters, including replies. The summary appears below the post author/status,
 uses the shared glass surface, and sweeps only while generating. Reduce Motion
 and offscreen TickerMode suspend the effect.
+
+Apple summaries stream partial text immediately instead of waiting for every
+passage to finish. A memory-only LRU stores 32 completed summaries by content,
+language and guardrail policy, and duplicate in-flight requests share inference.
+Hidden/unmounted readers stop contributing model work. Input passages use a
+conservative token estimate that accounts for the carried summary, leaving room
+for instructions and a 512-token response; a native context overflow retries
+smaller passages without dropping text. Estimates are not an exact tokenizer.
+For example, a 6,000-character Latin test passage now takes one request, compared
+with the previous fixed 1,200-character splitting. This is a call-count regression
+check, not a device latency benchmark.
+
+Foundation Models API guidance: [context windows](https://developer.apple.com/documentation/foundationmodels/managing-the-context-window),
+[generation options](https://developer.apple.com/documentation/foundationmodels/generationoptions).
 
 ## Validation
 

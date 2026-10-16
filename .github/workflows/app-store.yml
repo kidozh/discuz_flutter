@@ -6,6 +6,21 @@ on:
       - release
   workflow_dispatch:
     inputs:
+      xcode_version:
+        description: Xcode selection; Duo requires 27.1 or newer on the runner
+        required: true
+        default: latest-stable
+        type: string
+      runner:
+        description: macOS runner label with the requested Xcode installed
+        required: true
+        default: macos-26
+        type: string
+      require_duo:
+        description: Require full-display iPhone Duo support before uploading
+        required: true
+        default: true
+        type: boolean
       build_number:
         description: Optional CFBundleVersion; defaults to the pubspec.yaml build number
         required: false
@@ -23,8 +38,7 @@ permissions:
   contents: read
 
 env:
-  FLUTTER_VERSION: 3.47.2
-  XCODE_VERSION: 26.6
+  FLUTTER_VERSION: 3.47.5
   IOS_BUNDLE_ID: com.kidozh.discuz-flutter
   PUB_HOSTED_URL: https://pub.flutter-io.cn
   FLUTTER_STORAGE_BASE_URL: https://storage.flutter-io.cn
@@ -32,8 +46,10 @@ env:
 jobs:
   upload:
     name: Build, sign, and upload iOS
-    runs-on: macos-26
+    runs-on: ${{ inputs.runner || 'macos-26' }}
     timeout-minutes: 90
+    env:
+      REQUIRE_IPHONE_DUO: ${{ github.event_name != 'workflow_dispatch' || inputs.require_duo }}
 
     steps:
       - name: Checkout repository
@@ -42,17 +58,17 @@ jobs:
       - name: Select stable Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "~26.6.0"
+          xcode-version: ${{ inputs.xcode_version || 'latest-stable' }}
 
       - name: Verify Xcode and iOS SDK
         shell: bash
         run: |
           xcodebuild -version
           xcodebuild -version -sdk iphoneos
-          actual_version=$(xcodebuild -version | awk 'NR == 1 { print $2 }')
-          if [[ "$actual_version" != "$XCODE_VERSION" ]]; then
-            echo "::error::Expected Xcode $XCODE_VERSION, selected $actual_version."
-            exit 1
+          if [[ "${{ github.event_name != 'workflow_dispatch' || inputs.require_duo }}" == "true" ]]; then
+            python3 scripts/check_iphone_duo.py --require-duo
+          else
+            python3 scripts/check_iphone_duo.py
           fi
 
       - name: Set up Flutter
@@ -143,6 +159,13 @@ jobs:
           --build-name=${{ steps.version.outputs.build_name }}
           --build-number=${{ steps.version.outputs.build_number }}
           --export-options-plist=ios/ExportOptions.plist
+
+      - name: Verify archived SDK for iPhone Duo
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name != 'workflow_dispatch' || inputs.require_duo }}" == "true" ]]; then
+            python3 scripts/check_iphone_duo.py --require-duo --app build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app
+          fi
 
       - name: Verify archived iOS version
         env:

@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 env:
-  FLUTTER_VERSION: 3.47.2
+  FLUTTER_VERSION: 3.47.5
   # pubspec.lock is generated against the Flutter China mirrors. Keep the
   # hosted source stable so --enforce-lockfile does not re-resolve packages.
   PUB_HOSTED_URL: https://pub.flutter-io.cn
@@ -184,10 +184,18 @@ jobs:
     name: iOS
     runs-on: macos-26
     timeout-minutes: 60
+    env:
+      # This job deliberately validates compatibility with the runner's SDK.
+      REQUIRE_IPHONE_DUO: '0'
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+
+      - name: Check iPhone Duo project and SDK
+        run: |
+          python3 -m unittest discover -s test -p 'test_iphone_duo_preflight.py'
+          python3 scripts/check_iphone_duo.py
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -288,6 +296,12 @@ jobs:
             tag="${tag}-build-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT}"
           fi
           echo "RELEASE_TAG=$tag" >> "$GITHUB_ENV"
+          notes="docs/releases/${version%%+*}.md"
+          if [ ! -f "$notes" ]; then
+            echo "::error::Missing release notes: $notes"
+            exit 1
+          fi
+          echo "RELEASE_NOTES=$notes" >> "$GITHUB_ENV"
 
       - name: Create GitHub release
         env:
@@ -304,4 +318,5 @@ jobs:
             dist/Runner-ios.tar.gz \
             --target "$GITHUB_SHA" \
             --title "$RELEASE_TAG" \
+            --notes-file "$RELEASE_NOTES" \
             --generate-notes

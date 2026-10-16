@@ -26,13 +26,26 @@ class SecureStorageUtils {
       "private_message_cache_storage_key";
 
   static FlutterSecureStorage getFlutterSecureStorage() {
-    AndroidOptions _getAndroidOptions() => const AndroidOptions(
-          encryptedSharedPreferences: true,
-          resetOnError: false,
-        );
-    final storage = FlutterSecureStorage(aOptions: _getAndroidOptions());
+    final storage = FlutterSecureStorage(
+      aOptions: migrationAndroidOptions(null),
+    );
     return storage;
   }
+
+  static AndroidOptions migrationAndroidOptions(String? store) =>
+      AndroidOptions(
+        // v9 used both plain and encrypted preferences in the default file.
+        // v10 shares one native instance per file, so use identical options
+        // for the password key and private-message cache key.
+        // ignore: deprecated_member_use
+        encryptedSharedPreferences: true,
+        // ignore: deprecated_member_use
+        sharedPreferencesName: store,
+        migrateOnAlgorithmChange: true,
+        // The v10 backup path skips ESP-only stores; keep the ESP fallback.
+        migrateWithBackup: false,
+        resetOnError: false,
+      );
 
   static Future<bool> canAuthenticated() async {
     final LocalAuthentication auth = LocalAuthentication();
@@ -104,11 +117,7 @@ class SecureStorageUtils {
   static Future<Box<DiscuzAuthentication>> _openPasswordStore(
       String? store) async {
     final secureStorage = FlutterSecureStorage(
-      aOptions: AndroidOptions(
-        resetOnError: false,
-        encryptedSharedPreferences: store != null,
-        sharedPreferencesName: store,
-      ),
+      aOptions: migrationAndroidOptions(store),
     );
     final keyName = store == null
         ? discuz_password_storage_key

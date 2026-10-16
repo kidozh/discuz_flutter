@@ -3,6 +3,15 @@ import 'package:html/parser.dart';
 import 'package:discuz_flutter/utility/post_html_translation.dart';
 
 void main() {
+  test('detection keeps inline spaces, line breaks and nested block order', () {
+    expect(
+      PostHtmlTranslation.detectionText(
+        '<div><b>Hello</b> <i>world</i><br>Next line'
+        '<p>Nested paragraph</p>After paragraph</div>',
+      ),
+      'Hello world\nNext line\nNested paragraph\nAfter paragraph',
+    );
+  });
   test(
     'translates link labels while preserving image, URL, structure and code',
     () async {

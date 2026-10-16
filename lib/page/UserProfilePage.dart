@@ -1,5 +1,6 @@
 import 'UploadAvatarPage.dart';
 import 'ForumListsPage.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/UserProfileResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
@@ -221,7 +222,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
             onPressed: () {
               if (_userProfileResult != null &&
                   _userProfileResult!.variables.space != null) {
-                Navigator.push(
+                pushDetailPage(
                   context,
                   platformPageRoute(
                     iosTitle: S.of(context).privateMessage,
@@ -255,10 +256,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                           color: Colors.transparent,
                         ),
                         ClipPath(
-                          clipper: TopBarClipper(
-                            MediaQuery.of(context).size.width,
-                            200,
-                          ),
+                          clipper: TopBarClipper(),
                           child: SizedBox(
                             width: double.infinity,
                             height: 200,
@@ -287,9 +285,9 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 30,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onPrimaryContainer,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer,
                                   ),
                                 ),
                                 const SizedBox(height: 18),
@@ -899,9 +897,9 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                                       '/static/image/common/${medal.image}',
                                 ),
                                 title: medal.name,
-                                titleColor: Theme.of(
-                                  context,
-                                ).colorScheme.primary,
+                                titleColor: Theme.of(context)
+                                    .colorScheme
+                                    .primary,
                                 describe: medal.description,
                                 describeColor: Theme.of(context).disabledColor,
                               ),
@@ -1102,19 +1100,15 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
 
 // 顶部栏裁剪
 class TopBarClipper extends CustomClipper<Path> {
-  // 宽高
-  double width;
-  double height;
-
-  TopBarClipper(this.width, this.height);
+  TopBarClipper();
 
   @override
   Path getClip(Size size) {
     Path path = new Path();
     path.moveTo(0.0, 0.0);
-    path.lineTo(width, 0.0);
-    path.lineTo(width, height / 2);
-    path.lineTo(0.0, height);
+    path.lineTo(size.width, 0.0);
+    path.lineTo(size.width, size.height / 2);
+    path.lineTo(0.0, size.height);
     return path;
   }
 

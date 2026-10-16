@@ -70,7 +70,7 @@ class ConfigurationScreen extends StatelessWidget {
                   Provider.of<DiscuzAndUserNotifier>(context, listen: false)
                       .discuz;
               if (discuz != null) {
-                Navigator.push(
+                pushDetailPage(
                     context,
                     platformPageRoute(
                         context: context, builder: (context) => SettingPage()));

@@ -117,7 +117,7 @@ class ShortcutState extends State<ShortcutStatefulWidget> {
                             //child: Text(S.of(context).shortcutGo),
                             onPressed: () async {
                               int tid = int.parse(value.text);
-                              await Navigator.push(
+                              await pushDetailPage(
                                   context,
                                   platformPageRoute(
                                       context: context,
@@ -159,7 +159,7 @@ class ShortcutState extends State<ShortcutStatefulWidget> {
                             icon: Icon(AppPlatformIcons(context).goToSolid),
                             onPressed: () async {
                               int uid = int.parse(value.text);
-                              await Navigator.push(
+                              await pushDetailPage(
                                   context,
                                   platformPageRoute(
                                       context: context,

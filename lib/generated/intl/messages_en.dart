@@ -281,6 +281,33 @@ class MessageLookup extends MessageLookupByLibrary {
     "adminUnblockPost": MessageLookupByLibrary.simpleMessage("Unblock"),
     "adminUnwarnPost": MessageLookupByLibrary.simpleMessage("Redo warn"),
     "adminWarnPost": MessageLookupByLibrary.simpleMessage("Warn"),
+    "aiChatDelete": MessageLookupByLibrary.simpleMessage("Delete conversation"),
+    "aiChatDeleteConfirmation": MessageLookupByLibrary.simpleMessage(
+      "Delete this conversation and all its messages?",
+    ),
+    "aiChatHistoryEmpty": MessageLookupByLibrary.simpleMessage(
+      "No conversations yet. Tap + to start a conversation.",
+    ),
+    "aiChatHistoryLoadFailed": MessageLookupByLibrary.simpleMessage(
+      "Unable to load chat history. Please try again.",
+    ),
+    "aiChatInput": MessageLookupByLibrary.simpleMessage("Enter a message"),
+    "aiChatNew": MessageLookupByLibrary.simpleMessage("New conversation"),
+    "aiChatRequestFailed": MessageLookupByLibrary.simpleMessage(
+      "Unable to get a reply. Your message is kept; tap Send to retry.",
+    ),
+    "aiChatSaveFailed": MessageLookupByLibrary.simpleMessage(
+      "Unable to save the reply. Tap Send to retry saving.",
+    ),
+    "aiChatSend": MessageLookupByLibrary.simpleMessage("Send"),
+    "aiChatStart": MessageLookupByLibrary.simpleMessage(
+      "Start a conversation. Replies are generated on your device and history is saved locally.",
+    ),
+    "aiChatTitle": MessageLookupByLibrary.simpleMessage("Chat with AI"),
+    "aiChatUnavailable": MessageLookupByLibrary.simpleMessage(
+      "Enable Intelligence with an available model to continue chatting. Saved messages are still available.",
+    ),
+    "aiChatYou": MessageLookupByLibrary.simpleMessage("You"),
     "animateToLastReadingPosition": MessageLookupByLibrary.simpleMessage(
       "Scroll to last read position.",
     ),
@@ -411,7 +438,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "authorizedSite": MessageLookupByLibrary.simpleMessage("Authorized site"),
     "autoFillUsername": m8,
     "autoSummarizeDescription": MessageLookupByLibrary.simpleMessage(
-      "Summarize posts over 1,500 characters when Apple Intelligence is enabled. The original remains available.",
+      "Summarize posts over 500 characters when Apple Intelligence is enabled. The original remains available.",
     ),
     "autoSummarizeTitle": MessageLookupByLibrary.simpleMessage(
       "Automatically summarize long posts",
@@ -545,8 +572,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "colorTeal": MessageLookupByLibrary.simpleMessage("Teal"),
     "colorYellow": MessageLookupByLibrary.simpleMessage("Yellow"),
     "common": MessageLookupByLibrary.simpleMessage("Common"),
-    "compactForumHeader": MessageLookupByLibrary.simpleMessage(
-      "Combine homepage navigation and categories",
+    "compactForumCarousel": MessageLookupByLibrary.simpleMessage(
+      "Compact promoted thread carousel",
     ),
     "compactTypography": MessageLookupByLibrary.simpleMessage(
       "Compact paragraph",
@@ -959,6 +986,21 @@ class MessageLookup extends MessageLookupByLibrary {
       "Advertisement provided by Google",
     ),
     "googleAdTitle": MessageLookupByLibrary.simpleMessage("AD"),
+    "googleTranslationAction": MessageLookupByLibrary.simpleMessage(
+      "Translate with Google",
+    ),
+    "googleTranslationAttribution": MessageLookupByLibrary.simpleMessage(
+      "Automatic translation powered by Google Translate",
+    ),
+    "googleTranslationInfoBody": MessageLookupByLibrary.simpleMessage(
+      "Android posts are automatically translated by Google Translate on your device. Language packs may need downloading before first use. You can always view the original post.",
+    ),
+    "googleTranslationInfoTitle": MessageLookupByLibrary.simpleMessage(
+      "About Google Translate",
+    ),
+    "googleTranslationPolicy": MessageLookupByLibrary.simpleMessage(
+      "Google Translate attribution guidelines",
+    ),
     "groupInfoDescription": m33,
     "habit": MessageLookupByLibrary.simpleMessage("Habits"),
     "hapticFeedbackTitle": MessageLookupByLibrary.simpleMessage(

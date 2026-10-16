@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../utility/PlatformAdaptiveWidgets.dart';
 import '../utility/thread_selection_colors.dart';
 
@@ -16,8 +17,9 @@ class ThreadListSurface extends StatelessWidget {
   Widget build(BuildContext context) {
     final selection = ThreadSelectionColors(Theme.of(context).colorScheme);
     return PlatformLiquidGlassCard(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       selected: selected,
+      opaque: selected,
       tintColor: selected ? selection.background : null,
       backgroundColor: selected ? selection.background : null,
       glassBackgroundColor: selected ? selection.background : null,

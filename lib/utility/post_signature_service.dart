@@ -35,7 +35,7 @@ class PostSignatureService {
     final suffix = await render(
       signature: signature,
       strings: strings,
-      loadDeviceName: () => PostTextFieldUtils.getDeviceName(context),
+      loadDeviceName: () => PostTextFieldUtils.getDeviceName(context: context),
       loadVersion: () async => (await PackageInfo.fromPlatform()).version,
     );
     return suffix.trim().isEmpty ? message : '$message\n\n$suffix';

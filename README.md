@@ -21,8 +21,11 @@ Follow Discuz Hub [https://discuzhub.kidozh.com/zh/term_of_use/](https://discuzh
 
 Follow Discuz Hub [https://discuzhub.kidozh.com/zh/privacy_policy/](https://discuzhub.kidozh.com/zh/privacy_policy/)
 
+# Android translation
+
+Android post translation is powered by Google Translate using ML Kit on-device models. Downloaded language packs work offline, and the original post remains available. [Google Cloud Translation](https://cloud.google.com/translate) · [Translation help](docs/android_post_translation.md)
+
 # Screenshot
 
 See our distribution
-
 

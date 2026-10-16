@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
-/// A restrained selection fill with readable text in both appearance modes.
+/// A dark, theme-tinted selection fill with readable light text.
 class ThreadSelectionColors {
   ThreadSelectionColors(ColorScheme scheme)
     : background = Color.alphaBlend(
         scheme.primary.withValues(
-          alpha: scheme.brightness == Brightness.dark ? 0.16 : 0.09,
+          alpha: scheme.brightness == Brightness.dark ? 0.32 : 0.72,
         ),
-        scheme.surface,
+        const Color(0xFF101820),
       ),
-      foreground = scheme.onSurface,
-      secondary = scheme.onSurfaceVariant;
+      foreground = Colors.white;
 
   final Color background;
   final Color foreground;
-  final Color secondary;
+  Color get secondary =>
+      Color.alphaBlend(Colors.white.withValues(alpha: 0.82), background);
 }

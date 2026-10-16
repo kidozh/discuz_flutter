@@ -254,7 +254,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
           leading: Icon(PlatformIcons(context).settingsSolid),
           onTap: () async {
             VibrationUtils.vibrateWithClickIfPossible();
-            await Navigator.push(
+            await pushDetailPage(
                 context,
                 platformPageRoute(
                     iosTitle: S.of(context).settingTitle,

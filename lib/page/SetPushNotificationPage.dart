@@ -36,9 +36,9 @@ class _SetPushNotificationState extends State<SetPushNotificationPage> {
 
   void _loadDeviceInformation() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    deviceName = await PostTextFieldUtils.getDeviceName(context);
+    deviceName = await PostTextFieldUtils.getDeviceName(context: context);
     PushTokenChannel? _pushTokenChannel =
-        await PushServiceUtils.getPushToken(context);
+        await PushServiceUtils.getPushToken();
     bool _allowPush = await UserPreferencesUtils.getPushPreference();
     if (_pushTokenChannel != null) {
       print("Get Token " + _pushTokenChannel.token);

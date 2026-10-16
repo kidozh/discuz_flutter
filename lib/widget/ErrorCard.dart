@@ -245,7 +245,6 @@ class ErrorCard extends StatelessWidget {
                 ],
               ),
             ),
-            if (_canReportIssue(context)) _reportIssueAction(context),
           ],
         ),
       );

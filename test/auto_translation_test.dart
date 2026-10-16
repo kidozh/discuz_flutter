@@ -75,4 +75,31 @@ void main() {
     expect(chunks.length, 3);
     expect(chunks.join(), text);
   });
+  test('ambiguous short text does not fail automatic translation', () async {
+    messenger.setMockMethodCallHandler(ApplePostTranslation.channel, (_) async {
+      throw PlatformException(code: 'translation_source_undetected');
+    });
+    expect(
+      await PostTranslationService.isForeignPost('<p>OK</p>', language: 'zh'),
+      false,
+    );
+  });
+  test(
+    'inline styles do not break language identification into short words',
+    () async {
+      messenger.setMockMethodCallHandler(ApplePostTranslation.channel, (
+        call,
+      ) async {
+        expect(call.arguments['text'], 'This is a full English sentence.');
+        return 'en';
+      });
+      expect(
+        await PostTranslationService.isForeignPost(
+          '<p><b>This</b> is a <i>full</i> English sentence.</p>',
+          language: 'zh',
+        ),
+        true,
+      );
+    },
+  );
 }

@@ -1,5 +1,7 @@
 import 'DashboardOrderPage.dart';
 import 'ForumFeedSettingsPage.dart';
+import '../utility/post_translation_service.dart';
+import '../widget/google_translation_controls.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 
 import 'package:discuz_flutter/utility/on_device_ai_labels.dart';
@@ -203,17 +205,23 @@ class _SettingPageState extends State<SettingPage> {
                 UserPreferencesUtils.putAutoTranslateEnabled(value);
               },
             ),
+            if (PostTranslationService.usesGoogleTranslation)
+              _GlassNavigationTile(
+                title: S.of(context).googleTranslationInfoTitle,
+                leading: const Icon(Icons.info_outline),
+                onTap: () => showGoogleTranslationInfo(context),
+              ),
           ],
         ),
         _GlassSettingsSection(
           title: S.of(context).displaySettingTitle,
           children: [
             _GlassSwitchTile(
-              title: S.of(context).compactForumHeader,
+              title: S.of(context).compactForumCarousel,
               leading: const Icon(Icons.view_compact_outlined),
-              value: preference.forumDisplay.compactHeader,
+              value: preference.forumDisplay.compactCarousel,
               onChanged: (value) => _setForumDisplay(
-                preference.forumDisplay.copyWith(compactHeader: value),
+                preference.forumDisplay.copyWith(compactCarousel: value),
               ),
             ),
             _GlassSwitchTile(

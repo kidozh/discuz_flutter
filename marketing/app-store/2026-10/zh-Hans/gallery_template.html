@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>谈坛 · App Store 高清素材</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6f5;color:#12333c;font:16px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}
+main{max-width:1440px;margin:64px auto;padding:0 36px}h1{font-size:42px;letter-spacing:-1px;margin:10px 0 18px}
+.eyebrow{color:#55776f;font-size:13px;font-weight:700;letter-spacing:2px}header>p{max-width:960px;color:#58716f;line-height:1.8}
+.quality{padding:16px 20px;border:1px solid #cce0d7;background:#e9f3ed;border-radius:12px}.quality strong{color:#165a4d}
+h2{font-size:23px;margin:52px 0 22px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:24px}
+.grid.wide{grid-template-columns:repeat(2,minmax(0,1fr))}article{background:white;border:1px solid #e0e8e5;border-radius:20px;overflow:hidden}
+article img{width:100%;height:auto;display:block}article .info{padding:20px}article b{display:block;margin-bottom:9px}
+article span{font-size:13px;color:#72837e}.inspect{display:inline-block;margin-top:15px;font-weight:600}nav{display:flex;flex-wrap:wrap;gap:12px 18px;margin-top:14px}
+a{color:#07645f;text-decoration:none}a:hover{text-decoration:underline}a:focus-visible,button:focus-visible{outline:3px solid #377d70;outline-offset:4px}
+aside{margin-top:45px;background:white;border:1px solid #dce7e2;border-radius:20px;padding:24px 30px;line-height:1.8;color:#526d68}
+code{font:13px ui-monospace,monospace;background:#eff4f1;padding:3px 6px;border-radius:4px}small{display:block;font-size:13px;color:#71827c;margin-top:20px}
+@media(max-width:700px){main{padding:0 18px;margin-top:35px}.grid.wide{grid-template-columns:1fr}h1{font-size:31px}}
+</style>
+<main>
+<header>
+<div class="eyebrow">TANTAN / APP STORE ASSETS / ZH-HANS</div>
+<h1>真实界面，原生高清。</h1>
+<p>共 {{COUNT}} 张真实页面截图及 {{COUNT}} 张带标题的商店展示图。版本 {{VERSION}}。按设备原生分辨率拍摄，保留实际界面与画面比例。</p>
+<p class="quality"><strong>高清预览已开启。</strong>这里直接加载完整分辨率 PNG，不再放大缩略图。点击任意图片，可对照无标题原图，并以 100% 像素检查文字。App 内轮播背景和玻璃效果本身的模糊会如实保留。</p>
+<p><a href="tantan-app-store-zh-Hans.zip" download>下载全部素材 ZIP</a> · <a href="validation.json">尺寸与像素校验清单</a></p>
+</header>
+{{SECTIONS}}
+<aside>
+<strong>导出与上传</strong>
+<p><code>store/</code> 是带标题展示图；<code>upload-originals/</code> 是无标题 RGB 原图。两者均为原生尺寸 PNG。无标题原图只移除透明通道，逐像素校验通过，没有缩放或锐化。<code>raw/</code> 保留模拟器直接捕获，<code>sources/</code> 保留可编辑 SVG。</p>
+<p>按对应的 iPhone、iPad、Duo 内外屏尺寸上传，每个尺寸最多 10 张。文件不含透明通道。全部素材保存在本地，尚未上传或发布。</p>
+<p>论坛帖子、作者名、游戏图片与品牌均来自实际公开页面；未截取私信、账号管理或凭证页面。AI 素材展示功能设置和可用状态，功能需兼容的设备与系统。</p>
+<a href="{{SPECIFICATION}}" target="_blank" rel="noopener">Apple 官方截图尺寸规范</a>
+<small>{{PENDING}}运行 build_assets.cjs 可重新导出。原图 SHA-256、尺寸和像素一致性见 validation.json。</small>
+</aside>
+</main>
+</html>

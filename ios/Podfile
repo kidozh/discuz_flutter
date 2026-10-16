@@ -1,6 +1,10 @@
 # Uncomment this line to define a global platform for your project
 platform :ios, '26.0'
 
+unless system('/bin/sh', File.expand_path('../scripts/check_ios_toolchain.sh', __dir__))
+  raise 'The selected iOS SDK does not meet this project\'s iPhone Duo build requirements.'
+end
+
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
@@ -38,11 +42,21 @@ target 'Runner' do
 end
 
 post_install do |installer|
+  sdk_version = `xcrun --sdk iphoneos --show-sdk-version`.strip
+  duo_sdk = Gem::Version.new(sdk_version) >= Gem::Version.new('27.1')
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
 
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '26.0'
+      if target.name == 'foldable' && duo_sdk
+        flags = Array(config.build_settings['OTHER_SWIFT_FLAGS'] || '$(inherited)')
+        # Scope the define to this SDK so cached Pods also support older Xcodes.
+        ['iphoneos', 'iphonesimulator'].each do |sdk|
+          config.build_settings["OTHER_SWIFT_FLAGS[sdk=#{sdk}#{sdk_version}*]"] =
+            flags | ['-D', 'FOLDABLE_NATIVE_API']
+        end
+      end
 
       # google_mobile_ads 9.1.0 imports GoogleMobileAds_Beta.h from the SDK's
       # private headers. Xcode 26 otherwise rejects that import while compiling
@@ -98,6 +112,35 @@ post_install do |installer|
     if source.include?(unsafe_cast)
       File.write(webkit_generated_source, source.sub(unsafe_cast, safe_cast))
       Pod::UI.puts 'Patched WKWebView authentication challenge NSNull crash.'
+    end
+  end
+
+  # Xcode 27 adds Foundation Models transcript cases that the current plugin
+  # does not handle. Keep unknown entries readable until the plugin updates.
+  foundation_models_source = File.join(
+    __dir__, '.symlinks', 'plugins', 'foundation_models_framework', 'ios',
+    'Classes', 'FoundationModelsFrameworkPlugin.swift'
+  )
+  if File.exist?(foundation_models_source)
+    source = File.read(foundation_models_source)
+    entry_case = /(?<body>            case \.response\(let response\):\n                role = "response"\n                segmentsText = response\.segments\.map\(serializeSegment\)\n                content = segmentsText\.joined\(separator: "\\n"\)\n)(?<end>            \})/
+    segment_case = /(?<body>        case \.structure\(let structuredSegment\):\n            return String\(describing: structuredSegment\.content\)\n)(?<end>        \})/
+    changed = false
+    if source.match?(entry_case)
+      source.sub!(entry_case) do
+        "#{$~[:body]}            @unknown default:\n                role = \"unknown\"\n                let description = String(describing: entry)\n                segmentsText = [description]\n                content = description\n#{$~[:end]}"
+      end
+      changed = true
+    end
+    if source.match?(segment_case)
+      source.sub!(segment_case) do
+        "#{$~[:body]}        @unknown default:\n            return String(describing: segment)\n#{$~[:end]}"
+      end
+      changed = true
+    end
+    if changed
+      File.write(foundation_models_source, source)
+      Pod::UI.puts 'Patched Foundation Models transcript cases for Xcode 27.'
     end
   end
 end

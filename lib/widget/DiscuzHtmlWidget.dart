@@ -2,7 +2,9 @@ import 'NeteaseMusicWidget.dart';
 import '../utility/netease_music_embed.dart';
 import 'ForumInteractionWidgets.dart';
 import '../client/ForumInteractionClient.dart';
+
 import 'package:discuz_flutter/utility/steam_store_link.dart';
+
 import 'dart:developer';
 
 import 'package:chinese_font_library/chinese_font_library.dart';
@@ -579,13 +581,21 @@ class DiscuzHtmlWidget extends StatelessWidget {
             : ReadingPerformanceProbe.layout('html.layout', rendered);
       },
     );
-    return asSliver
-        ? SliverPadding(padding: const EdgeInsets.all(4), sliver: content)
-        : Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(4),
-            child: content,
-          );
+    // Sliver bodies share the thread page's selection region so selection can
+    // span lazily built paragraphs without introducing a nested scroll view.
+    if (asSliver) {
+      return SliverPadding(padding: const EdgeInsets.all(4), sliver: content);
+    }
+    final body = Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(4),
+      child: content,
+    );
+    // Reuse an outer region for quotes and replies; standalone HTML (such as
+    // private messages) also supports selecting just part of its text.
+    return SelectionContainer.maybeOf(context) == null
+        ? SelectionArea(child: body)
+        : body;
   }
 
   void _openImage(BuildContext context, String src) {

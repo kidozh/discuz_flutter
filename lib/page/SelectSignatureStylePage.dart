@@ -57,7 +57,7 @@ class SelectSignatureStyleState extends State<SelectSignatureStylePage> {
       final text = await PostSignatureService.render(
         signature: signature,
         strings: strings,
-        loadDeviceName: () => PostTextFieldUtils.getDeviceName(context),
+        loadDeviceName: () => PostTextFieldUtils.getDeviceName(context: context),
         loadVersion: () async => (await PackageInfo.fromPlatform()).version,
       );
       if (!mounted || request != _previewRequest) return;

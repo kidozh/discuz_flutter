@@ -1,26 +1,26 @@
 class ForumDisplayPreferences {
   const ForumDisplayPreferences({
-    this.compactHeader = true,
+    this.compactCarousel = true,
     this.showForumName = true,
     this.showAccountInfo = false,
     this.showThreadStats = true,
     this.showCarousel = true,
   });
 
-  final bool compactHeader;
+  final bool compactCarousel;
   final bool showForumName;
   final bool showAccountInfo;
   final bool showThreadStats;
   final bool showCarousel;
 
   ForumDisplayPreferences copyWith({
-    bool? compactHeader,
+    bool? compactCarousel,
     bool? showForumName,
     bool? showAccountInfo,
     bool? showThreadStats,
     bool? showCarousel,
   }) => ForumDisplayPreferences(
-    compactHeader: compactHeader ?? this.compactHeader,
+    compactCarousel: compactCarousel ?? this.compactCarousel,
     showForumName: showForumName ?? this.showForumName,
     showAccountInfo: showAccountInfo ?? this.showAccountInfo,
     showThreadStats: showThreadStats ?? this.showThreadStats,
@@ -31,7 +31,7 @@ class ForumDisplayPreferences {
     bool read(String key, bool fallback) =>
         json[key] is bool ? json[key] as bool : fallback;
     return ForumDisplayPreferences(
-      compactHeader: read('compactHeader', true),
+      compactCarousel: read('compactCarousel', read('compactHeader', true)),
       showForumName: read('showForumName', true),
       showAccountInfo: read('showAccountInfo', false),
       showThreadStats: read('showThreadStats', true),
@@ -40,7 +40,7 @@ class ForumDisplayPreferences {
   }
 
   Map<String, dynamic> toJson() => {
-    'compactHeader': compactHeader,
+    'compactCarousel': compactCarousel,
     'showForumName': showForumName,
     'showAccountInfo': showAccountInfo,
     'showThreadStats': showThreadStats,

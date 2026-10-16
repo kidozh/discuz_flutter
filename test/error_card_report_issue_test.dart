@@ -36,13 +36,16 @@ void main() {
   for (final style in [AppVisualStyle.material, AppVisualStyle.cupertino]) {
     for (final large in [false, true]) {
       testWidgets(
-          'report action is shown for parsing errors: $style large=$large',
+          'report action follows card size for parsing errors: $style large=$large',
           (tester) async {
         await tester.pumpWidget(host(
             DiscuzError('FormatException', 'Invalid response'), large, style));
         await tester.pumpAndSettle();
         expect(
-            find.byKey(const ValueKey('error-report-issue')), findsOneWidget);
+            find.byKey(const ValueKey('error-report-issue')),
+            large ? findsOneWidget : findsNothing);
+        expect(find.text(S.current.reportIssueHint),
+            large ? findsOneWidget : findsNothing);
         expect(tester.takeException(), isNull);
       });
       testWidgets(

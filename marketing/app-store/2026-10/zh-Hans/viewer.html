@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>谈坛 · 原生像素查看</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#202927;color:#f0f6f2;font:15px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}
+header{padding:18px 24px;background:#111c19;position:sticky;top:0;z-index:1}h1{font-size:19px;margin:0 0 10px}a{color:#b8e3d2}nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border:1px solid #58746a;color:#d1e4dc;background:#283f35;border-radius:7px;padding:8px 12px}button[aria-pressed=true]{background:#dcf6e7;color:#193a2a;border-color:#dcf6e7}
+.gap{width:12px}#details{color:#bdd2c7;font-size:13px;margin:12px 0 0}#canvas{padding:24px;overflow:auto;min-height:calc(100vh - 160px)}img{display:block;margin:auto;height:auto;background:white;box-shadow:0 8px 32px #0005}#status{padding:24px}
+button:focus-visible,a:focus-visible{outline:3px solid #94cbb0;outline-offset:3px}
+</style>
+<header>
+<h1 id="title">原生像素查看</h1>
+<nav aria-label="图片类型和缩放">
+<a href="./">← 素材画廊</a><span class="gap"></span>
+<button id="store" aria-pressed="true">带标题展示图</button><button id="original" aria-pressed="false">无标题原图</button>
+<span class="gap"></span><button id="fit" aria-pressed="true">适应窗口</button><button id="actual" aria-pressed="false">100% 像素</button><button id="double" aria-pressed="false">200%</button>
+<span class="gap"></span><a id="download" download>下载完整 PNG</a>
+</nav>
+<p id="details">加载原生分辨率文件…</p>
+</header>
+<div id="status" role="status"></div>
+<main id="canvas"><img id="image" alt="实际 App 界面截图"></main>
+<script>
+let shot, variant='store', zoom='fit';
+const image=document.getElementById('image');
+const title=document.getElementById('title');
+const details=document.getElementById('details');
+function resize(){
+  if(!shot || !image.complete || !image.naturalWidth) return;
+  const dpr=window.devicePixelRatio || 1;
+  const width=zoom==='fit' ? Math.min(innerWidth-48, (innerHeight-document.querySelector('header').offsetHeight-48)*shot.width/shot.height, shot.width/dpr) : shot.width/dpr*(zoom==='double'?2:1);
+  image.style.width=Math.max(1,width)+'px';
+  details.textContent=shot.width+' × '+shot.height+' · 原生 RGB PNG · '+(variant==='store'?'带标题展示图':'无标题原图，源图像素一致')+' · '+(zoom==='fit'?'适应窗口':zoom==='actual'?'100%：1 图像像素 = 1 屏幕像素':'200%：放大检查');
+  for(const id of ['fit','actual','double']) document.getElementById(id).setAttribute('aria-pressed',String(id===zoom));
+}
+function show(){
+  if(!shot) return;
+  image.src=shot[variant];
+  image.alt=shot.title.join('')+' · '+(variant==='store'?'展示图':'原图');
+  document.getElementById('download').href=shot[variant];
+  for(const id of ['store','original']) document.getElementById(id).setAttribute('aria-pressed',String(id===variant));
+  resize();
+}
+image.addEventListener('load',resize);
+image.addEventListener('error',()=>document.getElementById('status').textContent='图片加载失败，请回到画廊重新打开。');
+window.addEventListener('resize',resize);
+for(const id of ['store','original']) document.getElementById(id).addEventListener('click',()=>{variant=id;show()});
+for(const id of ['fit','actual','double']) document.getElementById(id).addEventListener('click',()=>{zoom=id;resize()});
+fetch('validation.json').then(r=>{if(!r.ok) throw Error();return r.json()}).then(data=>{
+  const params=new URLSearchParams(location.search);
+  shot=data.shots.find(s=>s.id===params.get('id'));
+  if(!shot) throw Error();
+  variant=params.get('variant')==='original'?'original':'store';
+  zoom=params.get('zoom')==='actual'?'actual':'fit';
+  title.textContent=shot.title.join('');document.title=title.textContent+' · 谈坛';show();
+}).catch(()=>document.getElementById('status').textContent='未找到素材，请回到画廊选择。');
+</script>
+</html>

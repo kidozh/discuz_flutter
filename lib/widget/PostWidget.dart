@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart' show PointerDeviceKind;
 import 'post_header_layout.dart';
 import 'post_translation_button.dart';
+import 'google_translation_controls.dart';
 import '../utility/rating_allowance_cache.dart';
 import '../utility/DashboardPreferences.dart';
 import '../page/PostRatingsPage.dart';
@@ -805,6 +806,13 @@ class PostState extends State<PostStatefulWidget> {
         key: ValueKey((_discuz.baseURL, _post.pid, widget.sessionUid)),
         html: _post.message,
       ),
+      if (PostTranslationService.usesGoogleTranslation)
+        GoogleTranslationControls(
+          translated: _translation.showingTranslation,
+          busy: _translation.busy,
+          onTranslate: translatePostMessage,
+          onChooseLanguage: _chooseTranslationLanguage,
+        ),
     ];
     final body = DiscuzHtmlWidget(
       _discuz,
@@ -996,7 +1004,7 @@ class PostState extends State<PostStatefulWidget> {
               context,
               listen: false,
             ).user;
-            Navigator.push(
+            pushDetailPage(
               context,
               platformPageRoute(
                 context: context,
@@ -1188,10 +1196,11 @@ class PostState extends State<PostStatefulWidget> {
     ];
     _bindTranslation();
     _scheduleAutoTranslation();
-    if (PostTranslationService.usesNativeTranslation ||
-        (intelligence.appleIntelligenceEnabled &&
-            intelligence.appleIntelligenceAvailable) ||
-        _translation.translation != null) {
+    if (!PostTranslationService.usesGoogleTranslation &&
+        (PostTranslationService.usesNativeTranslation ||
+            (intelligence.appleIntelligenceEnabled &&
+                intelligence.appleIntelligenceAvailable) ||
+            _translation.translation != null)) {
       final label = _translation.busy
           ? S.of(context).postTranslating
           : _translation.showingTranslation

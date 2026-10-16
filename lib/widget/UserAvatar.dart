@@ -102,7 +102,7 @@ class UserAvatar extends StatelessWidget {
                       .discuz;
               if (discuz != null) {
                 VibrationUtils.vibrateWithClickIfPossible();
-                await Navigator.push(
+                await pushDetailPage(
                     context,
                     platformPageRoute(
                         context: context,

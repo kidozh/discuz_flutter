@@ -255,7 +255,7 @@ class _ForumListsPageState extends State<ForumListsPage> {
                       if (widget.directory == ForumDirectory.friends)
                         return PlatformListTile(
                           title: Text(plain(row['username'])),
-                          onTap: () => Navigator.push(
+                          onTap: () => pushDetailPage(
                             context,
                             platformPageRoute(
                               context: context,
@@ -302,7 +302,7 @@ class _ForumListsPageState extends State<ForumListsPage> {
                         ),
                         onTap: comments
                             ? null
-                            : () => Navigator.push(
+                            : () => pushDetailPage(
                                 context,
                                 platformPageRoute(
                                   context: context,

@@ -250,6 +250,33 @@ class MessageLookup extends MessageLookupByLibrary {
     "adminUnblockPost": MessageLookupByLibrary.simpleMessage("解除屏蔽"),
     "adminUnwarnPost": MessageLookupByLibrary.simpleMessage("解除警告"),
     "adminWarnPost": MessageLookupByLibrary.simpleMessage("警告"),
+    "aiChatDelete": MessageLookupByLibrary.simpleMessage("删除对话"),
+    "aiChatDeleteConfirmation": MessageLookupByLibrary.simpleMessage(
+      "删除这段对话及其中的所有消息？",
+    ),
+    "aiChatHistoryEmpty": MessageLookupByLibrary.simpleMessage(
+      "暂无对话记录，点击右上角 + 开始对话。",
+    ),
+    "aiChatHistoryLoadFailed": MessageLookupByLibrary.simpleMessage(
+      "无法读取对话记录，请重试。",
+    ),
+    "aiChatInput": MessageLookupByLibrary.simpleMessage("输入消息"),
+    "aiChatNew": MessageLookupByLibrary.simpleMessage("新建对话"),
+    "aiChatRequestFailed": MessageLookupByLibrary.simpleMessage(
+      "暂时无法获取回复。已保留输入，可点击发送重试。",
+    ),
+    "aiChatSaveFailed": MessageLookupByLibrary.simpleMessage(
+      "回复保存失败，点击发送重试保存。",
+    ),
+    "aiChatSend": MessageLookupByLibrary.simpleMessage("发送"),
+    "aiChatStart": MessageLookupByLibrary.simpleMessage(
+      "开始一段对话。回复由设备端模型生成，历史记录保存在本机。",
+    ),
+    "aiChatTitle": MessageLookupByLibrary.simpleMessage("与 AI 对话"),
+    "aiChatUnavailable": MessageLookupByLibrary.simpleMessage(
+      "启用智能化并确保模型可用后即可继续对话，已有记录仍可查看。",
+    ),
+    "aiChatYou": MessageLookupByLibrary.simpleMessage("你"),
     "animateToLastReadingPosition": MessageLookupByLibrary.simpleMessage(
       "已为你跳转到上次阅读的进度.",
     ),
@@ -315,7 +342,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "appleIntelligenceUnavailableUnknown": MessageLookupByLibrary.simpleMessage(
       "暂时无法使用设备端智能化服务，请稍后再试。",
     ),
-    "appleIntelligenceUseHistory": MessageLookupByLibrary.simpleMessage("使用历史"),
+    "appleIntelligenceUseHistory": MessageLookupByLibrary.simpleMessage(
+      "AI 对话历史",
+    ),
     "appleIntelligenceUseNotice": MessageLookupByLibrary.simpleMessage(
       "在帖子中使用翻译，或通过自定义场景让设备端模型处理文本。内容在本机处理，不会为此发送到云端模型；模型首次准备可能需要联网下载。生成结果可能有误，请核对重要信息。",
     ),
@@ -353,7 +382,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "authorizedSite": MessageLookupByLibrary.simpleMessage("已验证站点"),
     "autoFillUsername": m8,
     "autoSummarizeDescription": MessageLookupByLibrary.simpleMessage(
-      "启用 Apple Intelligence 后，自动总结超过 1500 字的帖子，保留原文。",
+      "启用 Apple Intelligence 后，自动总结超过 500 字的帖子，保留原文。",
     ),
     "autoSummarizeTitle": MessageLookupByLibrary.simpleMessage("长帖自动总结"),
     "autoTranslateTitle": MessageLookupByLibrary.simpleMessage("自动翻译"),
@@ -457,7 +486,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "colorTeal": MessageLookupByLibrary.simpleMessage("蓝绿色"),
     "colorYellow": MessageLookupByLibrary.simpleMessage("黄色"),
     "common": MessageLookupByLibrary.simpleMessage("常规"),
-    "compactForumHeader": MessageLookupByLibrary.simpleMessage("合并首页导航和分类栏"),
+    "compactForumCarousel": MessageLookupByLibrary.simpleMessage("紧凑推广帖子轮播"),
     "compactTypography": MessageLookupByLibrary.simpleMessage("紧凑文本段落"),
     "completeLoad": MessageLookupByLibrary.simpleMessage("完成加载"),
     "completeRefresh": MessageLookupByLibrary.simpleMessage("完成刷新"),
@@ -753,6 +782,21 @@ class MessageLookup extends MessageLookupByLibrary {
     "goToPushSetting": MessageLookupByLibrary.simpleMessage("开启推送"),
     "googleAdSubTitle": MessageLookupByLibrary.simpleMessage("由Google提供的广告"),
     "googleAdTitle": MessageLookupByLibrary.simpleMessage("广告"),
+    "googleTranslationAction": MessageLookupByLibrary.simpleMessage(
+      "使用 Google 翻译",
+    ),
+    "googleTranslationAttribution": MessageLookupByLibrary.simpleMessage(
+      "由 Google 翻译提供的自动翻译",
+    ),
+    "googleTranslationInfoBody": MessageLookupByLibrary.simpleMessage(
+      "Android 正文由 Google 翻译在设备上自动翻译。首次使用可能需要下载语言包，你可以随时查看原文。",
+    ),
+    "googleTranslationInfoTitle": MessageLookupByLibrary.simpleMessage(
+      "Google 翻译说明",
+    ),
+    "googleTranslationPolicy": MessageLookupByLibrary.simpleMessage(
+      "Google 翻译归属规范",
+    ),
     "groupInfoDescription": m33,
     "habit": MessageLookupByLibrary.simpleMessage("爱好"),
     "hapticFeedbackTitle": MessageLookupByLibrary.simpleMessage("振动反馈"),

@@ -276,7 +276,7 @@ class ViewHistoryState extends State<ViewHistoryPage> {
     final user =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
     if (viewHistory.type == 'thread') {
-      await Navigator.push(
+      await pushDetailPage(
         context,
         platformPageRoute(
           context: context,

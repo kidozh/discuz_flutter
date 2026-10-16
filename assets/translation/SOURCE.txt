@@ -1,0 +1,6 @@
+Google Translate official attribution graphic, unmodified.
+Source: https://docs.cloud.google.com/static/translate/images/google-translate-attribution.zip
+Usage requirements: https://docs.cloud.google.com/translate/attribution
+ML Kit applicability: https://developers.google.com/ml-kit/language/translation/translation-terms
+Downloaded: 2026-10-17
+The Google marks remain the property of Google and are used under the linked branding requirements.

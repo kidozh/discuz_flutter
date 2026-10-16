@@ -17,35 +17,52 @@ import 'package:shared_preferences/shared_preferences.dart';
 final _discuz = Discuz('https://example.com', 'X3.5', 'utf-8', 4, '', '', false,
     '0', '0', 'Example', '1', '', '0');
 
-Widget _host(String html, ScrollController controller,
-    {bool sliver = true,
-    bool dark = false,
-    double fontScale = 1,
-    VoidCallback? onBodyReady}) {
-  final body = DiscuzHtmlWidget(_discuz, html,
-      asSliver: sliver, onBodyReady: onBodyReady);
+Widget _host(
+  String html,
+  ScrollController controller, {
+  bool sliver = true,
+  bool dark = false,
+  double fontScale = 1,
+  VoidCallback? onBodyReady,
+}) {
+  final body = DiscuzHtmlWidget(
+    _discuz,
+    html,
+    asSliver: sliver,
+    onBodyReady: onBodyReady,
+  );
   return MultiProvider(
     providers: [
       ChangeNotifierProvider(
-          create: (_) =>
-              TypeSettingNotifierProvider()..setScalingParameter(fontScale)),
+        create: (_) =>
+            TypeSettingNotifierProvider()..setScalingParameter(fontScale),
+      ),
       ChangeNotifierProvider(create: (_) => ThemeNotifierProvider()),
     ],
     child: MaterialApp(
       localizationsDelegates: const [S.delegate],
       theme: ThemeData(brightness: dark ? Brightness.dark : Brightness.light),
       home: Scaffold(
-          body: CustomScrollView(controller: controller, slivers: [
-        if (sliver)
-          ReadingGlassSliverCard(
-              sliver: SliverMainAxisGroup(slivers: [
-            const SliverToBoxAdapter(child: Text('header')),
-            body,
-            const SliverToBoxAdapter(child: Text('footer')),
-          ]))
-        else
-          SliverToBoxAdapter(child: body),
-      ])),
+        body: SelectionArea(
+          child: CustomScrollView(
+            controller: controller,
+            slivers: [
+              if (sliver)
+                ReadingGlassSliverCard(
+                  sliver: SliverMainAxisGroup(
+                    slivers: [
+                      const SliverToBoxAdapter(child: Text('header')),
+                      body,
+                      const SliverToBoxAdapter(child: Text('footer')),
+                    ],
+                  ),
+                )
+              else
+                SliverToBoxAdapter(child: body),
+            ],
+          ),
+        ),
+      ),
     ),
   );
 }

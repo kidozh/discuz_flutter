@@ -65,39 +65,21 @@ class PushTokenChannel{
 
 class PushServiceUtils{
 
-  static Future<PushTokenChannel?> getPushToken(BuildContext context) async{
-    String deviceName = await PostTextFieldUtils.getDeviceName(context);
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    String packageId = packageInfo.packageName;
-
-    try{
-      FCM.FirebaseMessaging messaging = FCM.FirebaseMessaging.instance;
-      // try to get APNs before
-      String? fetchedToken = null;
-      if(Platform.isIOS){
-
-        String? apnsToken = await messaging.getAPNSToken();
-        print("Get APNS token ${apnsToken}");
-        if(apnsToken == null){
-          return null;
-        }
-        else{
-          return PushTokenChannel(apnsToken, PushChannel.apn, deviceName, packageId);
-        }
-
-      }
-      else{
-        fetchedToken = await messaging.getToken();
-        if(fetchedToken == null){
-          return null;
-        }
-        else{
-          return PushTokenChannel(fetchedToken, PushChannel.fcm, deviceName, packageId);
-        }
-      }
-
-    }
-    catch (e){
+  static Future<PushTokenChannel?> getPushToken() async {
+    try {
+      final deviceName = await PostTextFieldUtils.getDeviceName();
+      final packageInfo = await PackageInfo.fromPlatform();
+      final messaging = FCM.FirebaseMessaging.instance;
+      final channel = Platform.isIOS ? PushChannel.apn : PushChannel.fcm;
+      final token = Platform.isIOS
+          ? await messaging.getAPNSToken()
+          : await messaging.getToken();
+      return token == null
+          ? null
+          : PushTokenChannel(token, channel, deviceName, packageInfo.packageName);
+    } catch (error, stackTrace) {
+      log('Unable to read push registration metadata or token',
+          error: error, stackTrace: stackTrace);
       return null;
     }
   }
@@ -106,7 +88,7 @@ class PushServiceUtils{
     final discuzDao = await AppDatabase.getDiscuzDao();
     final userDao = await AppDatabase.getUserDao();
     List<Discuz> allDiscuzList = await discuzDao.findAllDiscuzs();
-    PushTokenChannel? pushTokenChannel = await getPushToken(context);
+    PushTokenChannel? pushTokenChannel = await getPushToken();
     if(pushTokenChannel != null){
       // traverse it one by one
       for(var discuz in allDiscuzList){
@@ -153,7 +135,7 @@ class PushServiceUtils{
 
     final dio = await NetworkUtils.getDioWithPersistCookieJar(null);
     final client = PushServiceClient(dio, baseUrl: pushServerBaseUrl);
-    PushTokenChannel? pushTokenChannel = await PushServiceUtils.getPushToken(context);
+    PushTokenChannel? pushTokenChannel = await PushServiceUtils.getPushToken();
     if(pushTokenChannel != null){
       String token = pushTokenChannel.token;
       String pushPlatform = pushTokenChannel.channelName;
@@ -229,7 +211,7 @@ class PushServiceUtils{
 
     });
     // register context here
-    registerSubscriptionToDhPushServer(context);
+    await registerSubscriptionToDhPushServer(context);
 
   }
 
@@ -441,7 +423,9 @@ class PushServiceUtils{
         android: initializationSettingsAndroid,
         iOS: initializationSettingsIOS,
         macOS: initializationSettingsIOS);
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    await flutterLocalNotificationsPlugin.initialize(
+      settings: initializationSettings,
+    );
     return flutterLocalNotificationsPlugin;
   }
 
@@ -470,10 +454,10 @@ class PushServiceUtils{
     NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = await initFirebaseLocalNotification();
     await flutterLocalNotificationsPlugin.show(
-      1,
-      data["title"],
-      data["message"],
-      platformChannelSpecifics,
+      id: 1,
+      title: data["title"],
+      body: data["message"],
+      notificationDetails: platformChannelSpecifics,
       payload: jsonEncode(data)
     );
 
@@ -504,10 +488,10 @@ class PushServiceUtils{
     int? tid = int.tryParse(data["tid"]);
 
     await flutterLocalNotificationsPlugin.show(
-        tid ?? 0,
-        data["title"],
-        data["message"],
-        platformChannelSpecifics,
+        id: tid ?? 0,
+        title: data["title"],
+        body: data["message"],
+        notificationDetails: platformChannelSpecifics,
         payload: jsonEncode(data)
     );
 
@@ -544,7 +528,7 @@ class PushServiceUtils{
     List<Discuz> allDiscuzList = await discuzDao.findAllDiscuzs();
     List<String> discuzHostList = allDiscuzList.map((e) => e.host).toList();
     // get token first
-    PushTokenChannel? pushTokenChannel = await PushServiceUtils.getPushToken(context);
+    PushTokenChannel? pushTokenChannel = await PushServiceUtils.getPushToken();
     if(pushTokenChannel != null) {
       String token = pushTokenChannel.token;
       String pushPlatform = pushTokenChannel.channelName;

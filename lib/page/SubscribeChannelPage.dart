@@ -62,7 +62,7 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
     Discuz? discuz =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
     PushTokenChannel? pushTokenChannel =
-        await PushServiceUtils.getPushToken(context);
+        await PushServiceUtils.getPushToken();
 
     if (discuz != null && pushTokenChannel != null) {
       String baseUrl = discuz.baseURL;
@@ -103,7 +103,7 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
     Discuz? discuz =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
     PushTokenChannel? pushTokenChannel =
-        await PushServiceUtils.getPushToken(context);
+        await PushServiceUtils.getPushToken();
     String? baseUrl = discuz?.baseURL;
     String? host = Uri.tryParse(baseUrl == null ? "" : baseUrl)?.host;
     final dio = await NetworkUtils.getDioWithPersistCookieJar(null);

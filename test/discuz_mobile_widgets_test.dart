@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:discuz_flutter/JsonResult/CheckPostResult.dart';
 import 'package:discuz_flutter/entity/SpecialThread.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/widget/PostPermissionGate.dart';
 import 'package:discuz_flutter/widget/SpecialThreadCard.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 
 Widget host(Widget child) => MaterialApp(
   localizationsDelegates: const [S.delegate],
@@ -91,30 +93,40 @@ void main() {
       expect(find.text(S.current.activityClosed), findsOneWidget);
     },
   );
-  testWidgets('reward pill wraps long amounts and opens the best answer', (
-    tester,
-  ) async {
-    int? selected;
-    await tester.pumpWidget(
-      host(
-        Center(
-          child: SizedBox(
-            width: 230,
-            child: ThreadRewardPill(
-              reward: RewardInfo(
-                '<b>100</b> forum reward credits with a long unit',
-                99,
+  for (final (style, icon) in [
+    (AppVisualStyle.material, Icons.verified_rounded),
+    (AppVisualStyle.cupertino, CupertinoIcons.checkmark_seal_fill),
+  ]) {
+    testWidgets(
+      'reward pill wraps long amounts and opens the best answer ($style)',
+      (tester) async {
+        int? selected;
+        await tester.pumpWidget(
+          PlatformProvider(
+            style: style,
+            builder: (_) => host(
+              Center(
+                child: SizedBox(
+                  width: 230,
+                  child: ThreadRewardPill(
+                    reward: RewardInfo(
+                      '<b>100</b> forum reward credits with a long unit',
+                      99,
+                    ),
+                    onSelectPost: (pid) => selected = pid,
+                  ),
+                ),
               ),
-              onSelectPost: (pid) => selected = pid,
             ),
           ),
-        ),
-      ),
+        );
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        expect(find.textContaining('100 forum reward credits'), findsOneWidget);
+        expect(find.byIcon(icon), findsOneWidget);
+        await tester.tap(find.text(S.current.specialBestAnswer));
+        expect(selected, 99);
+      },
     );
-    await tester.pumpAndSettle();
-    expect(tester.takeException(), isNull);
-    expect(find.textContaining('100 forum reward credits'), findsOneWidget);
-    await tester.tap(find.text(S.current.specialBestAnswer));
-    expect(selected, 99);
-  });
+  }
 }

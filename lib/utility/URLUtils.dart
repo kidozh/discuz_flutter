@@ -126,7 +126,7 @@ class URLUtils {
         if (internalTarget!.tid == originalTid && callback != null) {
           callback(internalTarget.pid!);
         } else {
-          await Navigator.push(
+          await pushDetailPage(
             context,
             platformPageRoute(
               context: context,
@@ -174,7 +174,7 @@ class URLUtils {
           } else {
             // The old two-pane callback carries only a TID. Push a route here
             // so notification targets do not silently lose their PID.
-            await Navigator.push(
+            await pushDetailPage(
               context,
               platformPageRoute(
                 context: context,
@@ -219,7 +219,7 @@ class URLUtils {
                   if (int.tryParse(tidString) != null) {
                     int tid = int.tryParse(tidString)!;
                     if (onSelectTid == null) {
-                      await Navigator.push(
+                      await pushDetailPage(
                         context,
                         platformPageRoute(
                           context: context,
@@ -246,7 +246,7 @@ class URLUtils {
                   if (int.tryParse(tidString) != null) {
                     int tid = int.tryParse(tidString)!;
                     if (onSelectTid == null) {
-                      await Navigator.push(
+                      await pushDetailPage(
                         context,
                         platformPageRoute(
                           context: context,
@@ -293,7 +293,7 @@ class URLUtils {
                   // trigger tid
                   if (int.tryParse(uidString) != null) {
                     int uid = int.tryParse(uidString)!;
-                    await Navigator.push(
+                    await pushDetailPage(
                       context,
                       platformPageRoute(
                         context: context,
@@ -328,7 +328,7 @@ class URLUtils {
         String? tid = await RewriteRuleUtils.findTidInURL(discuz, urlString);
         if (tid != null && int.tryParse(tid) != null) {
           if (onSelectTid == null) {
-            await Navigator.push(
+            await pushDetailPage(
               context,
               platformPageRoute(
                 context: context,
@@ -346,7 +346,7 @@ class URLUtils {
 
         String? uid = await RewriteRuleUtils.findUidInURL(discuz, urlString);
         if (uid != null && int.tryParse(uid) != null) {
-          await Navigator.push(
+          await pushDetailPage(
             context,
             platformPageRoute(
               context: context,

@@ -1,6 +1,5 @@
 import "dart:convert";
 import "dart:developer";
-import "dart:io" show Platform;
 
 import "package:device_info_plus/device_info_plus.dart";
 import "package:discuz_flutter/entity/Smiley.dart";
@@ -63,28 +62,26 @@ class PostTextFieldUtils {
     return aidList;
   }
 
-  static Future<String> getDeviceName(BuildContext context) async {
-    final strings = S.of(context);
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    if (Platform.isAndroid) {
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      return androidInfo.model;
-    } else if (Platform.isIOS) {
-      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-      return iosInfo.utsname.machine.iOSProductName;
-    } else if (Platform.isWindows) {
-      WindowsDeviceInfo windowsDeviceInfo = await deviceInfo.windowsInfo;
-      return strings.windowsDeviceName(windowsDeviceInfo.computerName);
-    } else if (Platform.isLinux) {
-      LinuxDeviceInfo linuxDeviceInfo = await deviceInfo.linuxInfo;
-      return strings.linuxDeviceName(linuxDeviceInfo.name);
-    } else if (Platform.isMacOS) {
-      MacOsDeviceInfo macOsDeviceInfo = await deviceInfo.macOsInfo;
-      return macOsDeviceInfo.model;
-    }
-    WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
-
-    return webBrowserInfo.userAgent == null ? "" : webBrowserInfo.userAgent!;
+  /// Background registration can read device metadata without a widget tree.
+  /// Capture optional UI labels before awaiting the native device query.
+  static Future<String> getDeviceName({
+    BuildContext? context,
+    DeviceInfoPlugin? deviceInfo,
+  }) async {
+    final strings = context != null && context.mounted
+        ? S.maybeOf(context)
+        : null;
+    final info = await (deviceInfo ?? DeviceInfoPlugin()).deviceInfo;
+    return switch (info) {
+      AndroidDeviceInfo() => info.model,
+      IosDeviceInfo() => info.utsname.machine.iOSProductName,
+      WindowsDeviceInfo() =>
+        strings?.windowsDeviceName(info.computerName) ?? info.computerName,
+      LinuxDeviceInfo() => strings?.linuxDeviceName(info.name) ?? info.name,
+      MacOsDeviceInfo() => info.model,
+      WebBrowserInfo() => info.userAgent ?? '',
+      _ => '',
+    };
   }
 
   static const String USE_DEVICE_SIGNATURE = "USE_DEVICE_SIGNATURE";

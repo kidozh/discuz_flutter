@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../generated/l10n.dart';
 import '../provider/UserPreferenceNotifierProvider.dart';
 import '../utility/AiPostText.dart';
@@ -21,37 +22,48 @@ class _PostSummaryWidgetState extends State<PostSummaryWidget> {
   Future<String>? _summary;
   String? _source;
   String _text = '';
+  String _partial = '';
+  bool _visible = true;
 
   @override
   Widget build(BuildContext context) {
     final preferences = context.watch<UserPreferenceNotifierProvider>();
+    _visible = TickerMode.valuesOf(context).enabled;
     if (_source != widget.html) {
       _source = widget.html;
       _text = AiPostText.plainText(widget.html);
     }
-    if (!OnDeviceAiService.isSupportedPlatform ||
+    if (!_visible ||
+        !OnDeviceAiService.isSupportedPlatform ||
         !preferences.appleIntelligenceEnabled ||
         !preferences.appleIntelligenceAvailable ||
         !preferences.autoSummarizeEnabled ||
         _text.runes.length <= AiPostText.summaryThreshold) {
       _requestKey = null;
       _summary = null;
+      _partial = '';
       return const SizedBox.shrink();
     }
     final language = Localizations.localeOf(context).toLanguageTag();
     final key = '$language|${preferences.appleIntelligenceGuardrail}|$_text';
     if (_requestKey != key) {
       _requestKey = key;
+      _partial = '';
       _summary = OnDeviceAiService.summarize(
         _text,
         language: language,
         guardrailLevel: FoundationModelFrameworkUtils.guardrailLevelFromName(
           preferences.appleIntelligenceGuardrail,
         ),
+        onPartial: (text) {
+          if (mounted && _requestKey == key) setState(() => _partial = text);
+        },
         shouldContinue: () =>
             mounted &&
+            _visible &&
             _requestKey == key &&
             preferences.autoSummarizeEnabled &&
+            preferences.appleIntelligenceAvailable &&
             preferences.appleIntelligenceEnabled,
       );
     }
@@ -93,10 +105,12 @@ class _PostSummaryWidgetState extends State<PostSummaryWidget> {
                   )
                 else
                   SummarySweep(
-                    active: loading,
+                    active: loading && _partial.isEmpty,
                     child: Text(
                       loading
-                          ? S.of(context).postSummaryLoading
+                          ? (_partial.isEmpty
+                                ? S.of(context).postSummaryLoading
+                                : _partial)
                           : snapshot.data ?? '',
                     ),
                   ),

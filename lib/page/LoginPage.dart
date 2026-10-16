@@ -381,56 +381,71 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        height: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-        child: Form(
-          key: _formKey,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          child: AutofillGroup(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                // title and page
-                Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 32.0, vertical: 64.0),
+    return Center(
+      child: SizedBox(
+        width: 480,
+        child: SingleChildScrollView(
+          key: const ValueKey('login-form-scroll'),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+          child: Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            child: AutofillGroup(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // title and page
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 24.0,
+                    ),
                     child: Center(
-                        child: CachedNetworkImage(
-                            imageUrl: discuz.getDiscuzAvatarURL(),
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) =>
-                                    CircularProgressIndicator(
-                                        value: downloadProgress.progress),
-                            errorWidget: (context, url, error) =>
-                                PlatformListTile(
-                                  title: Text(discuz.siteName),
-                                  subtitle: Text(discuz.baseURL),
-                                  leading: CircleAvatar(
-                                    backgroundColor:
-                                        Theme.of(context).colorScheme.primary,
-                                    child: Text(
-                                      discuz.siteName.length != 0
-                                          ? discuz.siteName[0].toUpperCase()
-                                          : S.of(context).anonymous,
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 18),
-                                    ),
-                                  ),
-                                )))),
-                // input fields
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  decoration: isCupertino(context)
-                      ? BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color:
-                              Theme.of(context).disabledColor.withOpacity(0.1))
-                      : null,
-                  child: Column(
-                    children: [
-                      PlatformTextFormField(
+                      child: CachedNetworkImage(
+                        height: 96,
+                        fit: BoxFit.contain,
+                        imageUrl: discuz.getDiscuzAvatarURL(),
+                        progressIndicatorBuilder:
+                            (context, url, downloadProgress) =>
+                                CircularProgressIndicator(
+                                  value: downloadProgress.progress,
+                                ),
+                        errorWidget: (context, url, error) => PlatformListTile(
+                          title: Text(discuz.siteName),
+                          subtitle: Text(discuz.baseURL),
+                          leading: CircleAvatar(
+                            backgroundColor: Theme.of(context)
+                                .colorScheme
+                                .primary,
+                            child: Text(
+                              discuz.siteName.length != 0
+                                  ? discuz.siteName[0].toUpperCase()
+                                  : S.of(context).anonymous,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // input fields
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    decoration: isCupertino(context)
+                        ? BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Theme.of(context).disabledColor
+                                .withOpacity(0.1),
+                          )
+                        : null,
+                    child: Column(
+                      children: [
+                        PlatformTextFormField(
                           autofillHints: [AutofillHints.username],
                           controller: _accountController,
                           hintText: S.of(context).account,
@@ -445,12 +460,14 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                           },
                           cupertino: (context, platform) {
                             return CupertinoTextFormFieldData(
-                                prefix: Text(S.of(context).account),
-                                decoration: BoxDecoration());
+                              prefix: Text(S.of(context).account),
+                              decoration: BoxDecoration(),
+                            );
                           },
-                          validator: ValidationBuilder().required().build()),
-                      if (isCupertino(context)) Divider(),
-                      PlatformTextFormField(
+                          validator: ValidationBuilder().required().build(),
+                        ),
+                        if (isCupertino(context)) Divider(),
+                        PlatformTextFormField(
                           autofillHints: [AutofillHints.password],
                           controller: _passwdController,
                           hintText: S.of(context).password,
@@ -464,67 +481,70 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                           },
                           cupertino: (context, platform) {
                             return CupertinoTextFormFieldData(
-                                prefix: Text(S.of(context).password),
-                                decoration: BoxDecoration());
+                              prefix: Text(S.of(context).password),
+                              decoration: BoxDecoration(),
+                            );
                           },
                           obscureText: true,
-                          validator: ValidationBuilder().required().build()),
-                    ],
+                          validator: ValidationBuilder().required().build(),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
 
-                CaptchaWidget(
-                  _dio,
-                  discuz,
-                  null,
-                  "login",
-                  captchaController: _captchaController,
-                ),
-                if (error != null)
-                  Column(
-                    children: [
-                      ErrorCard(
-                        error!,
-                        () {
-                          _verifyAccountAndPassword();
-                        },
-                        largeSize: false,
-                      ),
-                    ],
+                  CaptchaWidget(
+                    _dio,
+                    discuz,
+                    null,
+                    "login",
+                    captchaController: _captchaController,
                   ),
-                // remember part
-                if (canAuthenticate)
-                  Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-                      child: Row(children: [
-                        Expanded(
+                  if (error != null)
+                    Column(
+                      children: [
+                        ErrorCard(error!, () {
+                          _verifyAccountAndPassword();
+                        }, largeSize: false),
+                      ],
+                    ),
+                  // remember part
+                  if (canAuthenticate)
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 8.0,
+                        horizontal: 4.0,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
                             child: RichText(
-                          text: TextSpan(
-                              style: Theme.of(context).textTheme.bodyMedium,
-                              text: S.of(context).rememeberPasswordInApp,
-                              children: [
-                                TextSpan(
-                                    text: " " +
+                              text: TextSpan(
+                                style: Theme.of(context).textTheme.bodyMedium,
+                                text: S.of(context).rememeberPasswordInApp,
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        " " +
                                         S
                                             .of(context)
                                             .rememberPasswordInAppDetail,
                                     style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary,
+                                    ),
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
-                                        VibrationUtils
-                                            .vibrateWithClickIfPossible();
+                                        VibrationUtils.vibrateWithClickIfPossible();
                                         _showAuthenticationDialog();
-                                      })
-                              ]),
-                        )),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        PlatformSwitch(
+                                      },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          PlatformSwitch(
                             value: _rememberPassword,
                             activeColor: Theme.of(context).colorScheme.primary,
                             onChanged: (value) {
@@ -532,156 +552,183 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                               setState(() {
                                 _rememberPassword = value;
                               });
-                            })
-                      ])),
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
 
-                Center(
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 24.0, horizontal: 4.0),
-                    width: double.infinity,
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: PlatformElevatedButton(
-                            color: Theme.of(context).colorScheme.primary,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                _loginState == LoginResultStatus.idle
-                                    ? Icon(
-                                        AppPlatformIcons(context)
-                                            .loginUserSolid,
+                  Center(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 24.0,
+                        horizontal: 4.0,
+                      ),
+                      width: double.infinity,
+                      child: Column(
+                        children: [
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              minWidth: double.infinity,
+                              minHeight: 52,
+                            ),
+                            child: PlatformElevatedButton(
+                              color: Theme.of(context).colorScheme.primary,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _loginState == LoginResultStatus.idle
+                                      ? Icon(
+                                          AppPlatformIcons(context)
+                                              .loginUserSolid,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary,
+                                        )
+                                      : PlatformCircularProgressIndicator(
+                                          material: (context, platform) =>
+                                              MaterialProgressIndicatorData(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimary,
+                                              ),
+                                          cupertino: (context, platform) =>
+                                              CupertinoProgressIndicatorData(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimary,
+                                              ),
+                                        ),
+                                  SizedBox(width: 8),
+                                  Flexible(
+                                    child: Text(
+                                      S.of(context).loginTitle,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
                                         color: Theme.of(context)
                                             .colorScheme
                                             .onPrimary,
-                                      )
-                                    : PlatformCircularProgressIndicator(
-                                        material: (context, platform) =>
-                                            MaterialProgressIndicatorData(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onPrimary),
-                                        cupertino: (context, platform) =>
-                                            CupertinoProgressIndicatorData(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onPrimary),
                                       ),
-                                SizedBox(
-                                  width: 8,
-                                ),
-                                Text(S.of(context).loginTitle,
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary))
-                              ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              onPressed: _loginState == LoginResultStatus.idle
+                                  ? () {
+                                      VibrationUtils.vibrateWithClickIfPossible();
+                                      _verifyAccountAndPassword();
+                                    }
+                                  : null,
                             ),
-                            onPressed: _loginState == LoginResultStatus.idle
-                                ? () {
-                                    VibrationUtils.vibrateWithClickIfPossible();
-                                    _verifyAccountAndPassword();
-                                  }
-                                : null,
                           ),
-                        ),
-                        SizedBox(
-                          height: 24,
-                        ),
-                        //if (!Platform.isIOS)
-                        SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: PlatformElevatedButton(
-                            color:
-                                Theme.of(context).colorScheme.primaryContainer,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                _loginState == LoginResultStatus.idle
-                                    ? Icon(
-                                        AppPlatformIcons(context)
-                                            .loginUserInWebSolid,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimaryContainer,
-                                      )
-                                    : PlatformCircularProgressIndicator(
-                                        material: (context, platform) =>
-                                            MaterialProgressIndicatorData(
+                          SizedBox(height: 24),
+                          //if (!Platform.isIOS)
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              minWidth: double.infinity,
+                              minHeight: 52,
+                            ),
+                            child: PlatformElevatedButton(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _loginState == LoginResultStatus.idle
+                                      ? Icon(
+                                          AppPlatformIcons(context)
+                                              .loginUserInWebSolid,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimaryContainer,
+                                        )
+                                      : PlatformCircularProgressIndicator(
+                                          material: (context, platform) =>
+                                              MaterialProgressIndicatorData(
                                                 color: Theme.of(context)
                                                     .colorScheme
-                                                    .onPrimaryContainer),
-                                        cupertino: (context, platform) =>
-                                            CupertinoProgressIndicatorData(
+                                                    .onPrimaryContainer,
+                                              ),
+                                          cupertino: (context, platform) =>
+                                              CupertinoProgressIndicatorData(
                                                 color: Theme.of(context)
                                                     .colorScheme
-                                                    .onPrimaryContainer),
-                                      ),
-                                SizedBox(
-                                  width: 8,
-                                ),
-                                Text(S.of(context).signInViaBrowser,
-                                    style: TextStyle(
-                                        color: _loginState ==
+                                                    .onPrimaryContainer,
+                                              ),
+                                        ),
+                                  SizedBox(width: 8),
+                                  Flexible(
+                                    child: Text(
+                                      S.of(context).signInViaBrowser,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color:
+                                            _loginState ==
                                                 LoginResultStatus.idle
                                             ? Theme.of(context)
-                                                .colorScheme
-                                                .onPrimaryContainer
+                                                  .colorScheme
+                                                  .onPrimaryContainer
                                             : Theme.of(context)
-                                                .colorScheme
-                                                .primary))
-                              ],
-                            ),
-                            onPressed: _loginState == LoginResultStatus.idle
-                                ? () {
-                                    VibrationUtils.vibrateWithClickIfPossible();
-                                    Navigator.push(
+                                                  .colorScheme
+                                                  .primary,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              onPressed: _loginState == LoginResultStatus.idle
+                                  ? () {
+                                      VibrationUtils.vibrateWithClickIfPossible();
+                                      Navigator.push(
                                         context,
                                         platformPageRoute(
-                                            iosTitle:
-                                                S.of(context).signInViaBrowser,
-                                            context: context,
-                                            builder: (context) =>
-                                                LoginByWebviewPage(discuz)));
-                                  }
-                                : null,
+                                          iosTitle: S
+                                              .of(context)
+                                              .signInViaBrowser,
+                                          context: context,
+                                          builder: (context) =>
+                                              LoginByWebviewPage(discuz),
+                                        ),
+                                      );
+                                    }
+                                  : null,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                    child: Container(
-                  height: 6,
-                )),
-                if (canAuthenticate)
-                  Center(
+                  const SizedBox(height: 16),
+                  if (canAuthenticate)
+                    Center(
                       child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 32.0, horizontal: 8.0),
-                    child: InkWell(
-                      child: Icon(
-                        AppPlatformIcons(context).authenticationSecureSolid,
-                        semanticLabel: S.of(context).autofillDialogTitle,
-                        size: 36,
+                        padding: EdgeInsets.symmetric(
+                          vertical: 32.0,
+                          horizontal: 8.0,
+                        ),
+                        child: InkWell(
+                          child: Icon(
+                            AppPlatformIcons(context).authenticationSecureSolid,
+                            semanticLabel: S.of(context).autofillDialogTitle,
+                            size: 36,
+                          ),
+                          onTap: () async {
+                            VibrationUtils.vibrateWithClickIfPossible();
+                            await _authWithSystemAndAutoFill();
+                          },
+                        ),
                       ),
-                      onTap: () async {
-                        VibrationUtils.vibrateWithClickIfPossible();
-                        await _authWithSystemAndAutoFill();
-                      },
                     ),
-                  ))
-              ],
+                ],
+              ),
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   Future<void> _showAuthenticationDialog() async {

@@ -299,7 +299,7 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
                 if (int.tryParse(tidString) != null) {
                   int tid = int.tryParse(tidString)!;
                   if (onSelectTid == null) {
-                    await Navigator.push(
+                    await pushDetailPage(
                         context,
                         platformPageRoute(
                             context: context,
@@ -324,7 +324,7 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
                 if (int.tryParse(tidString) != null) {
                   int tid = int.tryParse(tidString)!;
                   if (onSelectTid == null) {
-                    await Navigator.push(
+                    await pushDetailPage(
                         context,
                         platformPageRoute(
                             context: context,
@@ -368,7 +368,7 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
                 // trigger tid
                 if (int.tryParse(uidString) != null) {
                   int uid = int.tryParse(uidString)!;
-                  await Navigator.push(
+                  await pushDetailPage(
                       context,
                       platformPageRoute(
                           context: context,
@@ -401,7 +401,7 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
       log("read tid: ${fid} from url");
       if (tid != null && int.tryParse(tid) != null) {
         if (onSelectTid == null) {
-          await Navigator.push(
+          await pushDetailPage(
               context,
               platformPageRoute(
                   context: context,
@@ -417,7 +417,7 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
 
       String? uid = await RewriteRuleUtils.findUidInURL(discuz, urlString);
       if (uid != null && int.tryParse(uid) != null) {
-        await Navigator.push(
+        await pushDetailPage(
             context,
             platformPageRoute(
                 context: context,

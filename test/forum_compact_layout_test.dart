@@ -2,7 +2,6 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/forum_display_preferences.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
-import 'package:discuz_flutter/utility/DashboardPreferences.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/widget/compact_thread_list_tile.dart';
 import 'package:discuz_flutter/widget/forum_home_title.dart';
@@ -14,6 +13,7 @@ Widget host(Widget child, AppVisualStyle style, {double scale = 1}) =>
     PlatformProvider(
       style: style,
       builder: (_) => MaterialApp(
+        locale: const Locale('en'),
         localizationsDelegates: const [
           S.delegate,
           ...GlobalMaterialLocalizations.delegates,
@@ -30,6 +30,25 @@ Widget host(Widget child, AppVisualStyle style, {double scale = 1}) =>
         ),
       ),
     );
+
+CompactThreadListTile tile({
+  String message = '',
+  bool stats = true,
+  Widget? thumbnail,
+}) => CompactThreadListTile(
+  leading: const SizedBox(width: 18, height: 18),
+  title: const Text('A thread title', key: Key('subject'), maxLines: 2),
+  metadata: const Text(
+    'Author · 25 min ago',
+    maxLines: 1,
+    overflow: TextOverflow.ellipsis,
+  ),
+  statistics: stats
+      ? const ThreadListStatistics(views: '208', replies: 3)
+      : null,
+  message: message,
+  thumbnail: thumbnail,
+);
 
 void main() {
   final discuz = Discuz(
@@ -48,18 +67,13 @@ void main() {
     '',
   );
   final user = User('', '', 'PrivateAccount', '', 0, 12345, 0, discuz);
-  setUp(() {
-    DashboardPreferences.order.value = List.of(DashboardPreferences.defaults);
-    DashboardPreferences.selectedSection.value = null;
-  });
-
   for (final style in [
     AppVisualStyle.material,
     AppVisualStyle.cupertino,
     AppVisualStyle.liquidGlass,
   ]) {
     testWidgets(
-      'compact header hides private fields and switches categories: $style',
+      'navigation preserves privacy without replacing the TabBar: $style',
       (tester) async {
         await tester.pumpWidget(
           host(
@@ -67,107 +81,137 @@ void main() {
               discuz: discuz,
               user: user,
               preferences: const ForumDisplayPreferences(showForumName: false),
-              dashboard: true,
             ),
             style,
           ),
         );
         await tester.pumpAndSettle();
+        expect(find.text(S.current.appName), findsOneWidget);
         expect(find.textContaining('Private'), findsNothing);
         expect(find.textContaining('12345'), findsNothing);
-        expect(find.text(S.current.newThread), findsOneWidget);
-        await tester.tap(find.text(S.current.newThread));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(S.current.hotThread));
-        await tester.pumpAndSettle();
-        expect(DashboardPreferences.selectedSection.value, 'hot');
-        expect(find.text(S.current.hotThread), findsOneWidget);
+        expect(find.byIcon(Icons.expand_more), findsNothing);
+        expect(find.byType(GestureDetector), findsNothing);
         expect(tester.takeException(), isNull);
       },
     );
-
-    testWidgets(
-      'compact selector fits inside a narrow platform app bar: $style',
-      (tester) async {
-        tester.view.physicalSize = const Size(320, 700);
-        tester.view.devicePixelRatio = 1;
-        addTearDown(tester.view.resetPhysicalSize);
-        addTearDown(tester.view.resetDevicePixelRatio);
-        await tester.pumpWidget(
-          PlatformProvider(
-            style: style,
-            builder: (_) => MaterialApp(
-              localizationsDelegates: const [
-                S.delegate,
-                ...GlobalMaterialLocalizations.delegates,
-              ],
-              supportedLocales: S.delegate.supportedLocales,
-              home: PlatformScaffold(
-                appBar: PlatformAppBar(
-                  automaticallyImplyLeading: false,
-                  leading: const Icon(Icons.menu),
-                  trailingActions: [
-                    PlatformIconButton(
-                      icon: const Icon(Icons.swap_horiz),
-                      onPressed: () {},
-                    ),
-                  ],
-                  title: ForumHomeTitle(
-                    discuz: discuz,
-                    user: user,
-                    preferences: const ForumDisplayPreferences(),
-                    dashboard: true,
-                  ),
-                ),
-                body: const SizedBox.shrink(),
-              ),
-            ),
-          ),
-        );
-        await tester.pumpAndSettle();
-        expect(find.textContaining(S.current.newThread), findsOneWidget);
-        expect(tester.takeException(), isNull);
-      },
-    );
-
     for (final scale in [1.0, 2.0]) {
-      testWidgets(
-        'metadata and statistics share a row without overflow: $style scale=$scale',
-        (tester) async {
-          await tester.pumpWidget(
-            host(
-              CompactThreadListTile(
-                leading: const SizedBox(width: 32, height: 32),
-                title: const Text(
-                  'A long thread title that wraps across several lines',
-                  maxLines: 4,
-                ),
-                metadata: const Text(
-                  'Author · 25 min ago',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                statistics: '208 views · 3 replies',
-              ),
-              style,
-              scale: scale,
-            ),
-          );
-          await tester.pumpAndSettle();
-          expect(
-            (tester.getTopLeft(find.text('Author · 25 min ago')).dy -
-                    tester.getTopLeft(find.text('208 views · 3 replies')).dy)
-                .abs(),
-            lessThan(6),
-          );
-          expect(tester.takeException(), isNull);
-        },
-      );
+      for (final message in [
+        '',
+        'A short summary that belongs under the title and can wrap across two lines.',
+      ]) {
+        testWidgets(
+          'compact thread layout: $style scale=$scale message=${message.isNotEmpty}',
+          (tester) async {
+            await tester.pumpWidget(
+              host(tile(message: message), style, scale: scale),
+            );
+            await tester.pumpAndSettle();
+            final title = tester.getTopLeft(find.byKey(const Key('subject')));
+            final metadata = tester.getTopLeft(
+              find.text('Author · 25 min ago'),
+            );
+            expect(title.dy, greaterThan(metadata.dy));
+            expect(title.dx, lessThan(metadata.dx));
+            expect(
+              tester.getBottomRight(find.byType(ThreadListStatistics)).dx,
+              tester.getBottomRight(find.byType(CompactThreadListTile)).dx - 12,
+            );
+            expect(
+              find.byKey(const ValueKey('thread-message-preview')),
+              message.isEmpty ? findsNothing : findsOneWidget,
+            );
+            if (message.isNotEmpty) {
+              final summary = tester.widget<Text>(
+                find.byKey(const ValueKey('thread-message-preview')),
+              );
+              expect(summary.maxLines, 2);
+              expect(
+                tester
+                    .getTopLeft(
+                      find.byKey(const ValueKey('thread-message-preview')),
+                    )
+                    .dy,
+                greaterThan(title.dy),
+              );
+            }
+            if (scale == 1 && message.isEmpty) {
+              expect(
+                tester.getSize(find.byType(CompactThreadListTile)).height,
+                lessThan(70),
+              );
+            }
+            expect(tester.takeException(), isNull);
+          },
+        );
+      }
     }
   }
 
   testWidgets(
-    'private fields appear only when enabled; hidden fields stay out of semantics',
+    'preview thumbnail is larger for summaries and compact for title-only rows',
+    (tester) async {
+      for (final message in ['', 'Article summary']) {
+        await tester.pumpWidget(
+          host(
+            tile(
+              message: message,
+              thumbnail: const ColoredBox(
+                key: Key('thumbnail'),
+                color: Colors.blue,
+              ),
+            ),
+            AppVisualStyle.material,
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          tester.getSize(find.byKey(const Key('thumbnail'))),
+          message.isEmpty ? const Size(56, 48) : const Size(76, 72),
+        );
+        expect(tester.takeException(), isNull);
+      }
+    },
+  );
+
+  testWidgets('hiding statistics does not leave an empty footer', (
+    tester,
+  ) async {
+    await tester.pumpWidget(host(tile(), AppVisualStyle.material));
+    await tester.pumpAndSettle();
+    final original = tester.getSize(find.byType(CompactThreadListTile));
+    await tester.pumpWidget(host(tile(stats: false), AppVisualStyle.material));
+    await tester.pumpAndSettle();
+    expect(find.byType(ThreadListStatistics), findsNothing);
+    expect(
+      tester.getSize(find.byType(CompactThreadListTile)).height,
+      original.height,
+    );
+  });
+
+  testWidgets('compact statistics keep complete counts in accessibility', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    await tester.pumpWidget(
+      host(
+        const ThreadListStatistics(views: '1250000', replies: 42000),
+        AppVisualStyle.material,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.textContaining('M'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel(
+        '${S.current.threadView('1250000')} · ${S.current.threadReply(42000)}',
+      ),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+    semantics.dispose();
+  });
+
+  testWidgets(
+    'private fields appear only when enabled and stay out of semantics when hidden',
     (tester) async {
       final semantics = tester.ensureSemantics();
       await tester.pumpWidget(
@@ -176,7 +220,6 @@ void main() {
             discuz: discuz,
             user: user,
             preferences: const ForumDisplayPreferences(showAccountInfo: true),
-            dashboard: false,
           ),
           AppVisualStyle.material,
           scale: 2,
@@ -184,14 +227,12 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.textContaining('PrivateAccount (12345)'), findsOneWidget);
-      expect(tester.takeException(), isNull);
       await tester.pumpWidget(
         host(
           ForumHomeTitle(
             discuz: discuz,
             user: user,
             preferences: const ForumDisplayPreferences(showForumName: false),
-            dashboard: true,
           ),
           AppVisualStyle.material,
         ),
@@ -201,28 +242,8 @@ void main() {
         find.bySemanticsLabel(RegExp('PrivateAccount|12345|Private forum')),
         findsNothing,
       );
+      expect(tester.takeException(), isNull);
       semantics.dispose();
     },
   );
-
-  testWidgets('switching forums falls back from a Keylol-only category', (
-    tester,
-  ) async {
-    DashboardPreferences.selectedSection.value = 'keylol';
-    discuz.baseURL = 'https://forum.test';
-    addTearDown(() => discuz.baseURL = 'https://keylol.com');
-    await tester.pumpWidget(
-      host(
-        ForumHomeTitle(
-          discuz: discuz,
-          user: user,
-          preferences: const ForumDisplayPreferences(showForumName: false),
-          dashboard: true,
-        ),
-        AppVisualStyle.material,
-      ),
-    );
-    await tester.pumpAndSettle();
-    expect(find.text(S.current.newThread), findsOneWidget);
-  });
 }

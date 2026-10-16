@@ -227,7 +227,7 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
                   trailing: Icon(PlatformIcons(context).forward),
                   onTap: () async {
                     VibrationUtils.vibrateWithClickIfPossible();
-                    await Navigator.push(
+                    await pushDetailPage(
                         context,
                         platformPageRoute(
                             context: context,

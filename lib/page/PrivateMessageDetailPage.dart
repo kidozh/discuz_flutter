@@ -488,7 +488,7 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
                   semanticLabel: S.of(context).userProfile,
                 ),
                 onPressed: () {
-                  Navigator.push(
+                  pushDetailPage(
                     context,
                     platformPageRoute(
                       context: context,

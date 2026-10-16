@@ -6,8 +6,10 @@ import 'ActivityRegistrationPage.dart';
 import 'ModerateThreadPage.dart';
 import '../widget/BestAnswerButton.dart';
 import '../widget/ForumInteractionWidgets.dart';
+
 import 'package:discuz_flutter/utility/app_motion.dart';
 import 'package:discuz_flutter/widget/message_composer_surface.dart';
+
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
@@ -101,13 +103,16 @@ class ViewThreadSliverPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ViewThreadStatefulSliverWidget(
-      discuz,
-      user,
-      tid,
-      passedSubject: passedSubject,
-      onClosed: onClosed,
-      initialPid: initialPid,
+    return ThreadReplyScope(
+      threadIdentity: (discuz.baseURL, user?.uid, tid),
+      child: ViewThreadStatefulSliverWidget(
+        discuz,
+        user,
+        tid,
+        passedSubject: passedSubject,
+        onClosed: onClosed,
+        initialPid: initialPid,
+      ),
     );
   }
 }
@@ -259,11 +264,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     //_invalidateContent();
     bindFocusNode();
     _loadDao();
-    // set reply post as null
-    Provider.of<ReplyPostNotifierProvider>(
-      context,
-      listen: false,
-    ).setPost(null);
   }
 
   void _onReplySubmissionChanged() {
@@ -1398,7 +1398,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
               label: S.of(context).settings,
               onTap: (option) async {
                 VibrationUtils.vibrateWithClickIfPossible();
-                await Navigator.push(
+                await pushDetailPage(
                   context,
                   platformPageRoute(
                     iosTitle: S.of(context).settings,
@@ -1446,205 +1446,218 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                     return await _loadForumContent();
                   },
                   // if first load then should display a loading screen
-                  child: CustomScrollView(
-                    controller: _postAutoScrollController,
-                    slivers: [
-                      const HeaderLocator.sliver(),
-                      if (!_isFirstLoading &&
-                          _viewThreadResult.errorResult == null)
-                        SliverToBoxAdapter(
-                          key: _subjectSliverKey,
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-                            child: Semantics(
-                              header: true,
-                              child: Text(
-                                threadSubject,
-                                softWrap: true,
-                                overflow: TextOverflow.visible,
-                                style: Theme.of(context).textTheme.headlineSmall
-                                    ?.copyWith(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurface,
-                                      fontWeight: FontWeight.bold,
-                                      height: 1.3,
-                                    ),
+                  child: SelectionArea(
+                    child: CustomScrollView(
+                      controller: _postAutoScrollController,
+                      slivers: [
+                        const HeaderLocator.sliver(),
+                        if (!_isFirstLoading &&
+                            _viewThreadResult.errorResult == null)
+                          SliverToBoxAdapter(
+                            key: _subjectSliverKey,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                16,
+                                12,
+                                16,
+                                12,
+                              ),
+                              child: Semantics(
+                                header: true,
+                                child: Text(
+                                  threadSubject,
+                                  softWrap: true,
+                                  overflow: TextOverflow.visible,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
+                                        fontWeight: FontWeight.bold,
+                                        height: 1.3,
+                                      ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      if (_error != null)
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate((context, _) {
-                            return ErrorCard(
-                              _error!,
-                              () {
-                                _controller.callRefresh();
-                              },
-                              errorType: _error!.errorType,
-                              largeSize: _postList.isEmpty,
-                              webpageUrl: URLUtils.getViewThreadURL(
-                                discuz,
-                                tid,
-                              ),
-                            );
-                          }, childCount: 1),
-                        ),
-                      if (_postList.isEmpty && _error == null)
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate((
-                            context,
-                            index,
-                          ) {
-                            return _isFirstLoading
-                                ? LoadingStateWidget(hintText: passedSubject)
-                                : EmptyListScreen(EmptyItemType.post);
-                          }, childCount: 1),
-                        ),
-                      if (_viewThreadResult.threadVariables.poll != null)
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              return PollWidget(
-                                _viewThreadResult.threadVariables.poll!,
-                                _viewThreadResult.threadVariables.formHash,
-                                tid,
-                                _viewThreadResult.threadVariables.fid,
-                              );
-                            },
-                            childCount:
-                                _viewThreadResult.threadVariables.poll != null
-                                ? 1
-                                : 0,
-                          ),
-                        ),
-                      SliverToBoxAdapter(
-                        child: Wrap(
-                          alignment: WrapAlignment.center,
-                          children: [
-                            if (_viewThreadResult
-                                .threadVariables
-                                .threadPayRequired)
-                              ForumActionButton(
-                                discuz: discuz,
-                                tid: tid,
-                                purchase: true,
-                                label: S.of(context).forumBuyThread,
-                                onChanged: () {
+                        if (_error != null)
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate((context, _) {
+                              return ErrorCard(
+                                _error!,
+                                () {
                                   _controller.callRefresh();
                                 },
-                              ),
-                          ],
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: SpecialThreadCard(
-                          onActivityRegistration:
-                              context.read<DiscuzAndUserNotifier>().user == null
-                              ? null
-                              : () async {
-                                  final changed = await Navigator.push<bool>(
-                                    context,
-                                    platformPageRoute(
-                                      context: context,
-                                      builder: (_) => ActivityRegistrationPage(
-                                        discuz: discuz,
-                                        user: context
-                                            .read<DiscuzAndUserNotifier>()
-                                            .user!,
-                                        tid: tid,
-                                      ),
-                                    ),
-                                  );
-                                  if (mounted && changed == true)
-                                    _controller.callRefresh();
-                                },
-                          activity: _viewThreadResult.threadVariables.activity,
-                          threadSort:
-                              _viewThreadResult.threadVariables.threadSort,
-                          onSelectPost: (pid) {
-                            scrollToPid(pid);
-                          },
-                          onOpenWebsite: () => Navigator.push(
-                            context,
-                            platformPageRoute(
-                              context: context,
-                              builder: (_) => InternalWebviewBrowserPage(
-                                discuz,
-                                context.read<DiscuzAndUserNotifier>().user,
-                                URLUtils.getViewThreadURL(discuz, tid),
-                              ),
-                            ),
+                                errorType: _error!.errorType,
+                                largeSize: _postList.isEmpty,
+                                webpageUrl: URLUtils.getViewThreadURL(
+                                  discuz,
+                                  tid,
+                                ),
+                              );
+                            }, childCount: 1),
                           ),
-                        ),
-                      ),
-                      if (_locatingPost)
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Text(S.of(context).postLocating),
-                          ),
-                        ),
-                      if (_focusedPage)
-                        SliverToBoxAdapter(
-                          child: PlatformTextButton(
-                            onPressed: () => _controller.callRefresh(),
-                            child: Text(S.of(context).postReturnThread),
-                          ),
-                        ),
-                      if (lazyFirstPost) ...[
-                        SliverToBoxAdapter(
-                          child: AutoScrollTag(
-                            key: const ValueKey('lazy-first-post-anchor'),
-                            controller: _postAutoScrollController,
-                            index: 0,
-                            highlightColor: Theme.of(
+                        if (_postList.isEmpty && _error == null)
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate((
                               context,
-                            ).colorScheme.primaryContainer,
-                            child: SizedBox(
-                              height: _highlightPid == _postList.first.pid
-                                  ? 4
+                              index,
+                            ) {
+                              return _isFirstLoading
+                                  ? LoadingStateWidget(hintText: passedSubject)
+                                  : EmptyListScreen(EmptyItemType.post);
+                            }, childCount: 1),
+                          ),
+                        if (_viewThreadResult.threadVariables.poll != null)
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                                return PollWidget(
+                                  _viewThreadResult.threadVariables.poll!,
+                                  _viewThreadResult.threadVariables.formHash,
+                                  tid,
+                                  _viewThreadResult.threadVariables.fid,
+                                );
+                              },
+                              childCount:
+                                  _viewThreadResult.threadVariables.poll != null
+                                  ? 1
                                   : 0,
                             ),
                           ),
-                        ),
-                        _buildReadingPost(0, asSliver: true),
-                      ],
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, localIndex) {
-                            final index = localIndex + (lazyFirstPost ? 1 : 0);
-                            return Column(
-                              children: [
-                                AutoScrollTag(
-                                  key: ValueKey(index),
-                                  controller: _postAutoScrollController,
-                                  index: index,
-                                  highlightColor: Theme.of(
-                                    context,
-                                  ).colorScheme.primaryContainer,
-                                  child: _buildReadingPost(index),
+                        SliverToBoxAdapter(
+                          child: Wrap(
+                            alignment: WrapAlignment.center,
+                            children: [
+                              if (_viewThreadResult
+                                  .threadVariables
+                                  .threadPayRequired)
+                                ForumActionButton(
+                                  discuz: discuz,
+                                  tid: tid,
+                                  purchase: true,
+                                  label: S.of(context).forumBuyThread,
+                                  onChanged: () {
+                                    _controller.callRefresh();
+                                  },
                                 ),
-                                if (index % 10 == 0 && index != 0)
-                                  Consumer<UserPreferenceNotifierProvider>(
-                                    builder: (context, value, child) {
-                                      if (value.signature.includesApp &&
-                                          index > 15) {
-                                        return Container();
-                                      } else {
-                                        return const AppBannerAdWidget();
-                                      }
-                                    },
-                                  ),
-                              ],
-                            );
-                          },
-                          childCount:
-                              _postList.length - (lazyFirstPost ? 1 : 0),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                        SliverToBoxAdapter(
+                          child: SpecialThreadCard(
+                            onActivityRegistration:
+                                context.read<DiscuzAndUserNotifier>().user ==
+                                    null
+                                ? null
+                                : () async {
+                                    final changed = await Navigator.push<bool>(
+                                      context,
+                                      platformPageRoute(
+                                        context: context,
+                                        builder: (_) =>
+                                            ActivityRegistrationPage(
+                                              discuz: discuz,
+                                              user: context
+                                                  .read<DiscuzAndUserNotifier>()
+                                                  .user!,
+                                              tid: tid,
+                                            ),
+                                      ),
+                                    );
+                                    if (mounted && changed == true)
+                                      _controller.callRefresh();
+                                  },
+                            activity:
+                                _viewThreadResult.threadVariables.activity,
+                            threadSort:
+                                _viewThreadResult.threadVariables.threadSort,
+                            onSelectPost: (pid) {
+                              scrollToPid(pid);
+                            },
+                            onOpenWebsite: () => Navigator.push(
+                              context,
+                              platformPageRoute(
+                                context: context,
+                                builder: (_) => InternalWebviewBrowserPage(
+                                  discuz,
+                                  context.read<DiscuzAndUserNotifier>().user,
+                                  URLUtils.getViewThreadURL(discuz, tid),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (_locatingPost)
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Text(S.of(context).postLocating),
+                            ),
+                          ),
+                        if (_focusedPage)
+                          SliverToBoxAdapter(
+                            child: PlatformTextButton(
+                              onPressed: () => _controller.callRefresh(),
+                              child: Text(S.of(context).postReturnThread),
+                            ),
+                          ),
+                        if (lazyFirstPost) ...[
+                          SliverToBoxAdapter(
+                            child: AutoScrollTag(
+                              key: const ValueKey('lazy-first-post-anchor'),
+                              controller: _postAutoScrollController,
+                              index: 0,
+                              highlightColor: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
+                              child: SizedBox(
+                                height: _highlightPid == _postList.first.pid
+                                    ? 4
+                                    : 0,
+                              ),
+                            ),
+                          ),
+                          _buildReadingPost(0, asSliver: true),
+                        ],
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, localIndex) {
+                              final index =
+                                  localIndex + (lazyFirstPost ? 1 : 0);
+                              return Column(
+                                children: [
+                                  AutoScrollTag(
+                                    key: ValueKey(index),
+                                    controller: _postAutoScrollController,
+                                    index: index,
+                                    highlightColor: Theme.of(context)
+                                        .colorScheme
+                                        .primaryContainer,
+                                    child: _buildReadingPost(index),
+                                  ),
+                                  if (index % 10 == 0 && index != 0)
+                                    Consumer<UserPreferenceNotifierProvider>(
+                                      builder: (context, value, child) {
+                                        if (value.signature.includesApp &&
+                                            index > 15) {
+                                          return Container();
+                                        } else {
+                                          return const AppBannerAdWidget();
+                                        }
+                                      },
+                                    ),
+                                ],
+                              );
+                            },
+                            childCount:
+                                _postList.length - (lazyFirstPost ? 1 : 0),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -1772,19 +1785,17 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                                     VibrationUtils.vibrateWithClickIfPossible();
                                                     if (dialogStatus ==
                                                         SHOW_SMILEY_DIALOG) {
-                                                      FocusScope.of(
-                                                        context,
-                                                      ).requestFocus(
-                                                        _focusNode,
-                                                      );
+                                                      FocusScope.of(context)
+                                                          .requestFocus(
+                                                            _focusNode,
+                                                          );
                                                       setState(
                                                         () => dialogStatus =
                                                             SHOW_NONE_DIALOG,
                                                       );
                                                     } else {
-                                                      FocusScope.of(
-                                                        context,
-                                                      ).unfocus();
+                                                      FocusScope.of(context)
+                                                          .unfocus();
                                                       setState(
                                                         () => dialogStatus =
                                                             SHOW_SMILEY_DIALOG,
@@ -1825,8 +1836,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                                         SendReplyStatus
                                                             .success) {
                                                       return PlatformIconButton(
-                                                        liquidGlassSymbol:
-                                                            'checkmark.circle.fill',
+                                                        liquidGlassSymbol: 'checkmark.circle.fill',
                                                         liquidGlassButtonSize:
                                                             44,
                                                         liquidGlassIconSize: 17,
@@ -1845,8 +1855,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                                     if (_sendReplyStatus ==
                                                         SendReplyStatus.fail) {
                                                       return PlatformIconButton(
-                                                        liquidGlassSymbol:
-                                                            'exclamationmark.triangle',
+                                                        liquidGlassSymbol: 'exclamationmark.triangle',
                                                         liquidGlassButtonSize:
                                                             44,
                                                         liquidGlassIconSize: 17,
@@ -1883,9 +1892,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                                                 .primary
                                                           : null,
                                                       icon: Icon(
-                                                        PlatformIcons(
-                                                          context,
-                                                        ).upArrow,
+                                                        PlatformIcons(context)
+                                                            .upArrow,
                                                         size: 20,
                                                         color: canSend
                                                             ? (usesLiquidGlass(
@@ -1961,11 +1969,17 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                               child: SmileyListScreen(
                                                 (smiley) =>
                                                     insertSmiley(smiley),
+                                                onAttachmentPressed:
+                                                    (aid, path) =>
+                                                        _handleReplyWithImage(
+                                                          discuz,
+                                                          aid,
+                                                          path,
+                                                        ),
                                                 recentActions: [
                                                   SmileyPanelAction(
-                                                    icon: PlatformIcons(
-                                                      context,
-                                                    ).collectionsSolid,
+                                                    icon: PlatformIcons(context)
+                                                        .collectionsSolid,
                                                     label: S
                                                         .of(context)
                                                         .addAPhoto,
@@ -1975,9 +1989,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                                             ?.pickImageFromGallery(),
                                                   ),
                                                   SmileyPanelAction(
-                                                    icon: PlatformIcons(
-                                                      context,
-                                                    ).photoCameraSolid,
+                                                    icon: PlatformIcons(context)
+                                                        .photoCameraSolid,
                                                     label: S
                                                         .of(context)
                                                         .takeAPicture,

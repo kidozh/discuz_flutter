@@ -68,7 +68,11 @@ class _MyAppState extends State<MyApp> {
   GlobalKey<NavigatorState> get navigatorKey => widget.navigatorKey;
 
   Future<void> _initPush(BuildContext context) async {
-    await PushServiceUtils.initPushInformation(navigatorKey, context);
+    try {
+      await PushServiceUtils.initPushInformation(navigatorKey, context);
+    } catch (error, stackTrace) {
+      log('Push initialization failed', error: error, stackTrace: stackTrace);
+    }
   }
 
   Future<void> _loadPreference(BuildContext context) async {
@@ -809,7 +813,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 liquidGlassFlexibleSpaceAfter: true,
                 onPressed: () async {
                   VibrationUtils.vibrateWithClickIfPossible();
-                  await Navigator.push(
+                  await pushDetailPage(
                     context,
                     platformPageRoute(
                       iosTitle: S.of(context).menuDrawerTitle,
@@ -859,7 +863,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               discuz: selectedDiscuz,
               user: user,
               preferences: display,
-              dashboard: _bottomNavigationbarIndex == 0,
             ),
             trailingActions: [
               if (liquidGlass && mainMenuButton != null) mainMenuButton,
@@ -990,6 +993,7 @@ class MainTwoPaneStatefulWidget extends StatefulWidget {
 class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
     with RestorationMixin {
   final RestorableInt _currentTid = RestorableInt(0);
+  int _selectionRevision = 0;
   GlobalKey<NavigatorState> navigatorKey;
 
   MainTwoPaneState({required this.navigatorKey});
@@ -1013,82 +1017,58 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
     super.initState();
   }
 
+  void _selectThread(int tid) {
+    Provider.of<SelectedTidNotifierProvider>(
+      context,
+      listen: false,
+    ).setTid(tid);
+    setState(() {
+      _currentTid.value = tid;
+      _selectionRevision++;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    var panePriority = TwoPanePriority.both;
-    if (widget.type == TwoPaneType.smallScreen) {
-      panePriority = _currentTid.value == 0
-          ? TwoPanePriority.start
-          : TwoPanePriority.end;
-      return MyHomePage(title: "", navigatorKey: this.navigatorKey);
-    }
-
-    double paneProportion = 0.35;
-    // directly give
-    return OrientationBuilder(
-      builder: (context, orientation) {
-        if (widget.type != TwoPaneType.smallScreen &&
-            orientation == Orientation.portrait) {
-          paneProportion = 0.5;
-        }
-
-        return TwoPaneScaffold(
-          type: widget.type,
-          child: TwoPane(
-            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-            paneProportion: paneProportion,
-            panePriority: panePriority,
-            startPane: MyHomePage(
-              navigatorKey: this.navigatorKey,
-              title: "",
-              onSelectTid: (tid) async {
-                Provider.of<SelectedTidNotifierProvider>(
-                  context,
-                  listen: false,
-                ).setTid(tid);
-                if (tid != _currentTid) {
-                  setState(() {
-                    _currentTid.value = 0;
-                  });
-                  // I don't know why it takes time to refresh
-                  await Future.delayed(const Duration(milliseconds: 100));
-                  setState(() {
-                    _currentTid.value = tid;
-                    _currentTid.didUpdateValue(tid);
-                  });
-                  log("Two Pane Changed current tid ${_currentTid.value}");
-                }
-              },
-            ),
-            endPane: _currentTid.value == 0
-                ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText)
-                : Consumer<DiscuzAndUserNotifier>(
-                    builder: (context, discuzAndUser, child) {
-                      if (discuzAndUser.discuz != null) {
-                        Discuz discuz = discuzAndUser.discuz!;
-                        User? user = discuzAndUser.user;
-                        return ViewThreadSliverPage(
-                          discuz,
-                          user,
-                          _currentTid.value,
-                          onClosed: () {
-                            Provider.of<SelectedTidNotifierProvider>(
-                              context,
-                              listen: false,
-                            ).setTid(0);
-                            setState(() {
-                              _currentTid.value = 0;
-                            });
-                          },
-                        );
-                      } else {
-                        return Container();
-                      }
-                    },
-                  ),
-          ),
-        );
-      },
+    return TwoPaneScaffold(
+      type: widget.type,
+      detailIdentity: (
+        context.watch<DiscuzAndUserNotifier>().discuz?.baseURL,
+        context.watch<DiscuzAndUserNotifier>().user?.uid,
+        _currentTid.value,
+        _selectionRevision,
+      ),
+      onCloseDetail: () => _selectThread(0),
+      child: TwoPane(
+        paneProportion: 0.35,
+        panePriority: _currentTid.value == 0
+            ? TwoPanePriority.start
+            : TwoPanePriority.end,
+        startPane: MyHomePage(
+          navigatorKey: navigatorKey,
+          title: '',
+          onSelectTid: _selectThread,
+        ),
+        endPane: _currentTid.value == 0
+            ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText)
+            : Consumer<DiscuzAndUserNotifier>(
+                builder: (context, discuzAndUser, child) {
+                  final discuz = discuzAndUser.discuz;
+                  if (discuz == null) return const SizedBox.shrink();
+                  return KeyedSubtree(
+                    key: ValueKey(
+                      '${discuz.baseURL}:${discuzAndUser.user?.uid}:${_currentTid.value}',
+                    ),
+                    child: ViewThreadSliverPage(
+                      discuz,
+                      discuzAndUser.user,
+                      _currentTid.value,
+                      onClosed: () => _selectThread(0),
+                    ),
+                  );
+                },
+              ),
+      ),
     );
   }
 }

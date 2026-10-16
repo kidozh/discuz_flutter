@@ -1,13 +1,16 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/JsonResult/SmileyResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/dao/SmileyDao.dart';
+import 'package:discuz_flutter/dao/ImageAttachmentDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/Smiley.dart';
+import 'package:discuz_flutter/entity/ImageAttachment.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
@@ -24,6 +27,7 @@ import '../utility/UserPreferencesUtils.dart';
 import 'BlankScreen.dart';
 
 typedef SmileyPressedFunc = void Function(Smiley);
+typedef AttachmentPressedFunc = void Function(String aid, String path);
 
 class SmileyPanelAction {
   final IconData icon;
@@ -39,10 +43,12 @@ class SmileyPanelAction {
 
 class SmileyListScreen extends StatelessWidget {
   final SmileyPressedFunc onSmileyPressed;
+  final AttachmentPressedFunc? onAttachmentPressed;
   final List<SmileyPanelAction> recentActions;
 
   const SmileyListScreen(
     this.onSmileyPressed, {
+    this.onAttachmentPressed,
     this.recentActions = const [],
     super.key,
   });
@@ -51,6 +57,7 @@ class SmileyListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SmileyListStatefulWidget(
       onSmileyPressed,
+      onAttachmentPressed: onAttachmentPressed,
       recentActions: recentActions,
     );
   }
@@ -58,10 +65,12 @@ class SmileyListScreen extends StatelessWidget {
 
 class SmileyListStatefulWidget extends StatefulWidget {
   final SmileyPressedFunc smileyValueGetter;
+  final AttachmentPressedFunc? onAttachmentPressed;
   final List<SmileyPanelAction> recentActions;
 
   const SmileyListStatefulWidget(
     this.smileyValueGetter, {
+    this.onAttachmentPressed,
     this.recentActions = const [],
     super.key,
   });
@@ -70,6 +79,7 @@ class SmileyListStatefulWidget extends StatefulWidget {
   State<SmileyListStatefulWidget> createState() {
     return SmileyListState(
       smileyValueGetter,
+      onAttachmentPressed: onAttachmentPressed,
       recentActions: recentActions,
     );
   }
@@ -80,10 +90,12 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
   static const double _tabGap = 4;
 
   final SmileyPressedFunc smileyValueGetter;
+  final AttachmentPressedFunc? onAttachmentPressed;
   final List<SmileyPanelAction> recentActions;
 
   SmileyListState(
     this.smileyValueGetter, {
+    this.onAttachmentPressed,
     this.recentActions = const [],
   });
 
@@ -93,6 +105,7 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
   final ScrollController _tabScrollController = ScrollController();
   final GlobalKey _cupertinoTabsKey = GlobalKey();
   List<Smiley> _savedSmileyList = [];
+  int _savedAttachmentCount = 0;
   int _selectedTabIndex = 0;
 
   @override
@@ -137,6 +150,12 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
     }
 
     final smileyList = _smileyDao.findAllSmileyByDiscuz(discuz);
+    final attachmentCount = onAttachmentPressed == null
+        ? 0
+        : (await AppDatabase.getImageAttachmentDao())
+            .getFavoriteThreadList(discuz)
+            .where((attachment) => File(attachment.path).existsSync())
+            .length;
     // load cache first
     final smileyJson =
         await UserPreferencesUtils.getDiscuzSmileyCacheJson(discuz);
@@ -154,10 +173,12 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
     final shouldSelectFirstRemote = cachedResult != null &&
         _selectedTabIndex == 0 &&
         smileyList.isEmpty &&
+        attachmentCount == 0 &&
         recentActions.isEmpty &&
         cachedResult.variables.smilies.isNotEmpty;
     setState(() {
       _savedSmileyList = smileyList;
+      _savedAttachmentCount = attachmentCount;
       if (cachedResult != null) {
         result = cachedResult;
         if (shouldSelectFirstRemote) _selectedTabIndex = 1;
@@ -182,6 +203,7 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
 
       final shouldSelectFirstRemote = _selectedTabIndex == 0 &&
           _savedSmileyList.isEmpty &&
+          _savedAttachmentCount == 0 &&
           recentActions.isEmpty &&
           value.variables.smilies.isNotEmpty;
       setState(() {
@@ -362,6 +384,7 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
 
       tabBarViewList.add(SavedSmileyTabView(
         smileyValueGetter,
+        onAttachmentPressed: onAttachmentPressed,
         actions: recentActions,
       ));
       if (result != null) {
@@ -484,10 +507,12 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
 
 class SavedSmileyTabView extends StatelessWidget {
   final SmileyPressedFunc smileyValueGetter;
+  final AttachmentPressedFunc? onAttachmentPressed;
   final List<SmileyPanelAction> actions;
 
   const SavedSmileyTabView(
     this.smileyValueGetter, {
+    this.onAttachmentPressed,
     this.actions = const [],
     super.key,
   });
@@ -496,6 +521,7 @@ class SavedSmileyTabView extends StatelessWidget {
   Widget build(BuildContext context) {
     return SavedSmileyTabViewStatefulWidget(
       smileyValueGetter,
+      onAttachmentPressed: onAttachmentPressed,
       actions: actions,
     );
   }
@@ -503,10 +529,12 @@ class SavedSmileyTabView extends StatelessWidget {
 
 class SavedSmileyTabViewStatefulWidget extends StatefulWidget {
   final SmileyPressedFunc smileyValueGetter;
+  final AttachmentPressedFunc? onAttachmentPressed;
   final List<SmileyPanelAction> actions;
 
   const SavedSmileyTabViewStatefulWidget(
     this.smileyValueGetter, {
+    this.onAttachmentPressed,
     this.actions = const [],
     super.key,
   });
@@ -514,6 +542,7 @@ class SavedSmileyTabViewStatefulWidget extends StatefulWidget {
   SavedSmileyTabViewState createState() {
     return SavedSmileyTabViewState(
       smileyValueGetter,
+      onAttachmentPressed: onAttachmentPressed,
       actions: actions,
     );
   }
@@ -521,10 +550,13 @@ class SavedSmileyTabViewStatefulWidget extends StatefulWidget {
 
 class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
   final SmileyPressedFunc smileyValueGetter;
+  final AttachmentPressedFunc? onAttachmentPressed;
   final List<SmileyPanelAction> actions;
   SmileyDao? _smileyDao;
+  ImageAttachmentDao? _attachmentDao;
   SavedSmileyTabViewState(
     this.smileyValueGetter, {
+    this.onAttachmentPressed,
     this.actions = const [],
   });
 
@@ -536,8 +568,13 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
 
   void _initDB() async {
     SmileyDao smileyDao = await AppDatabase.getSmileyDao();
+    ImageAttachmentDao? attachmentDao = onAttachmentPressed == null
+        ? null
+        : await AppDatabase.getImageAttachmentDao();
+    if (!mounted) return;
     setState(() {
       _smileyDao = smileyDao;
+      _attachmentDao = attachmentDao;
     });
 
     Discuz? discuz =
@@ -551,17 +588,23 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
   Widget build(BuildContext context) {
     Discuz? discuz =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
-    if (_smileyDao == null) {
+    if (_smileyDao == null ||
+        (onAttachmentPressed != null && _attachmentDao == null)) {
       return BlankScreen();
     }
     if (discuz == null) {
       return NullDiscuzScreen();
     } else {
-      return ValueListenableBuilder(
+      Widget savedContent() => ValueListenableBuilder(
         valueListenable: _smileyDao!.smileyBox.listenable(),
         builder: (BuildContext context, Box<Smiley> value, Widget? child) {
           List<Smiley> smileyData = _smileyDao!.findAllSmileyByDiscuz(discuz);
-          if (smileyData.isEmpty && actions.isEmpty) {
+          final attachments = _attachmentDao
+                  ?.getFavoriteThreadList(discuz)
+                  .where((attachment) => File(attachment.path).existsSync())
+                  .toList() ??
+              <ImageAttachment>[];
+          if (smileyData.isEmpty && attachments.isEmpty && actions.isEmpty) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -578,6 +621,23 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
                 for (final action in actions)
                   _SmileyPanelActionTile(action: action),
             ];
+            for (final attachment in attachments) {
+              smileyImageList.add(
+                InkWell(
+                  key: ValueKey('saved-attachment-${attachment.aid}'),
+                  onTap: () {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    onAttachmentPressed?.call(attachment.aid, attachment.path);
+                  },
+                  child: Image.file(
+                    File(attachment.path),
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) =>
+                        Icon(PlatformIcons(context).unavailableImage),
+                  ),
+                ),
+              );
+            }
             for (int j = 0; j < smileyData.length; j++) {
               Smiley smiley = smileyData[j];
               // log("on Database smiley $smiley");
@@ -643,6 +703,11 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
             );
           }
         },
+      );
+      if (_attachmentDao == null) return savedContent();
+      return ValueListenableBuilder(
+        valueListenable: _attachmentDao!.imageAttachmentBox.listenable(),
+        builder: (context, _, __) => savedContent(),
       );
     }
   }

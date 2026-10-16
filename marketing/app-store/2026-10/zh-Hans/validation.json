@@ -1,0 +1,394 @@
+{
+  "generated_at": "2026-10-16T17:26:20.472Z",
+  "app": "谈坛",
+  "version": "2.0.8+164",
+  "specification": "https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications",
+  "shots": [
+    {
+      "id": "01-iphone-home",
+      "group": "iphone",
+      "source": "raw/iphone/01-home.png",
+      "title": [
+        "热门讨论，",
+        "随手掌握"
+      ],
+      "subtitle": "最新讨论与热门话题，一页浏览",
+      "theme": "mint",
+      "recommended": true,
+      "device": "iPhone 18 Pro",
+      "runtime": "iOS / iPadOS 27.0",
+      "captured_at": "2026-10-17",
+      "width": 1206,
+      "height": 2622,
+      "store": "store/iphone/01-iphone-home-1206x2622.png",
+      "original": "upload-originals/iphone/01-iphone-home-1206x2622.png",
+      "sha256": "29acbd242044c762d038749e79d4334df4163f759f2914db435271c8be15bfad",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "02-iphone-reading",
+      "group": "iphone",
+      "source": "raw/iphone/02-reading.png",
+      "title": [
+        "打开帖子，",
+        "专注阅读"
+      ],
+      "subtitle": "图文内容与链接卡片，清楚呈现",
+      "theme": "sand",
+      "recommended": true,
+      "device": "iPhone 18 Pro",
+      "runtime": "iOS / iPadOS 27.0",
+      "captured_at": "2026-10-17",
+      "width": 1206,
+      "height": 2622,
+      "store": "store/iphone/02-iphone-reading-1206x2622.png",
+      "original": "upload-originals/iphone/02-iphone-reading-1206x2622.png",
+      "sha256": "d39a09df0dda688cc2209b1ba873f77c17cad30961b2f05ea883ba7c6c515c14",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "03-iphone-colors",
+      "group": "iphone",
+      "source": "raw/iphone/03-colors.png",
+      "title": [
+        "让论坛，",
+        "拥有你的配色"
+      ],
+      "subtitle": "主题颜色与明暗外观，随你选择",
+      "theme": "lilac",
+      "recommended": true,
+      "device": "iPhone 18 Pro",
+      "runtime": "iOS / iPadOS 27.0",
+      "captured_at": "2026-10-17",
+      "width": 1206,
+      "height": 2622,
+      "store": "store/iphone/03-iphone-colors-1206x2622.png",
+      "original": "upload-originals/iphone/03-iphone-colors-1206x2622.png",
+      "sha256": "5401f918b38ecfc5bb6e78996916fbe4c4c6f2c1beb306a35f15d549991e5ec2",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "01-iphone-large-home",
+      "group": "iphone-large",
+      "source": "raw/iphone-large/01-home.png",
+      "title": [
+        "大一点，",
+        "看得更尽兴"
+      ],
+      "subtitle": "iPhone Pro Max · 清楚呈现讨论层次",
+      "theme": "mint",
+      "recommended": true,
+      "device": "iPhone 18 Pro Max",
+      "runtime": "iOS / iPadOS 27.0",
+      "captured_at": "2026-10-17",
+      "width": 1320,
+      "height": 2868,
+      "store": "store/iphone-large/01-iphone-large-home-1320x2868.png",
+      "original": "upload-originals/iphone-large/01-iphone-large-home-1320x2868.png",
+      "sha256": "772e3faa27ec5d3356be48b328bc725ff442061fbd0d25001e8c4a094de40684",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "02-iphone-large-reading",
+      "group": "iphone-large",
+      "source": "raw/iphone-large/02-reading.png",
+      "title": [
+        "长帖阅读，",
+        "更有空间"
+      ],
+      "subtitle": "iPhone Pro Max · 图文与卡片，自然排布",
+      "theme": "sand",
+      "recommended": true,
+      "device": "iPhone 18 Pro Max",
+      "runtime": "iOS / iPadOS 27.0",
+      "captured_at": "2026-10-17",
+      "width": 1320,
+      "height": 2868,
+      "store": "store/iphone-large/02-iphone-large-reading-1320x2868.png",
+      "original": "upload-originals/iphone-large/02-iphone-large-reading-1320x2868.png",
+      "sha256": "6a88b54388b77a8cc4f3e7c14055fd9fdbe98bf74d213406c75e4977c6ef7844",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "03-iphone-large-colors",
+      "group": "iphone-large",
+      "source": "raw/iphone-large/03-colors.png",
+      "title": [
+        "你的颜色，",
+        "你的谈坛"
+      ],
+      "subtitle": "主题与明暗外观，自由选择",
+      "theme": "lilac",
+      "recommended": true,
+      "device": "iPhone 18 Pro Max",
+      "runtime": "iOS / iPadOS 27.0",
+      "captured_at": "2026-10-17",
+      "width": 1320,
+      "height": 2868,
+      "store": "store/iphone-large/03-iphone-large-colors-1320x2868.png",
+      "original": "upload-originals/iphone-large/03-iphone-large-colors-1320x2868.png",
+      "sha256": "8952816dbe28f15ee1abc5682469489915dc86d85cb9a72352904ad3a124d82d",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "01-ipad-13-reading",
+      "group": "ipad-13",
+      "source": "raw/ipad-13/01-reading.png",
+      "title": [
+        "大屏展开，读得从容"
+      ],
+      "subtitle": "13 英寸 iPad · 列表与正文，同时呈现",
+      "theme": "mint",
+      "recommended": true,
+      "device": "iPad Pro 13-inch (M5)",
+      "runtime": "iOS / iPadOS 27.0",
+      "captured_at": "2026-10-17",
+      "width": 2752,
+      "height": 2064,
+      "store": "store/ipad-13/01-ipad-13-reading-2752x2064.png",
+      "original": "upload-originals/ipad-13/01-ipad-13-reading-2752x2064.png",
+      "sha256": "8a6e482380fe518ea38e8ae760d5955fe46e94af55bdcfb12d7b0fe560d4fe1b",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "02-ipad-13-settings",
+      "group": "ipad-13",
+      "source": "raw/ipad-13/02-settings.png",
+      "title": [
+        "每一种习惯，都有设置"
+      ],
+      "subtitle": "显示、翻译与排版，按你的方式安排",
+      "theme": "sand",
+      "recommended": false,
+      "device": "iPad Pro 13-inch (M5)",
+      "runtime": "iOS / iPadOS 27.0",
+      "captured_at": "2026-10-17",
+      "width": 2752,
+      "height": 2064,
+      "store": "store/ipad-13/02-ipad-13-settings-2752x2064.png",
+      "original": "upload-originals/ipad-13/02-ipad-13-settings-2752x2064.png",
+      "sha256": "cedf02343dc7816101a1be65b345d9e5a6f7c6864d92e3dd5374edf03691de00",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "03-ipad-13-colors",
+      "group": "ipad-13",
+      "source": "raw/ipad-13/03-colors.png",
+      "title": [
+        "为大屏，选一种心情色彩"
+      ],
+      "subtitle": "主题颜色与明暗外观，自由选择",
+      "theme": "lilac",
+      "recommended": true,
+      "device": "iPad Pro 13-inch (M5)",
+      "runtime": "iOS / iPadOS 27.0",
+      "captured_at": "2026-10-17",
+      "width": 2752,
+      "height": 2064,
+      "store": "store/ipad-13/03-ipad-13-colors-2752x2064.png",
+      "original": "upload-originals/ipad-13/03-ipad-13-colors-2752x2064.png",
+      "sha256": "ac5517d083b125e2ac16a07d523a62f4d1767dcfdeeeb5925bae261cbcee0d4c",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "01-ipad-11-reading",
+      "group": "ipad-11",
+      "source": "raw/ipad-11/01-reading.png",
+      "title": [
+        "竖屏，也能双栏阅读"
+      ],
+      "subtitle": "11 英寸 iPad · 在讨论与正文之间轻松切换",
+      "theme": "mint",
+      "recommended": true,
+      "device": "iPad Pro 11-inch (M5)",
+      "runtime": "iOS / iPadOS 27.0",
+      "captured_at": "2026-10-17",
+      "width": 1668,
+      "height": 2420,
+      "store": "store/ipad-11/01-ipad-11-reading-1668x2420.png",
+      "original": "upload-originals/ipad-11/01-ipad-11-reading-1668x2420.png",
+      "sha256": "366ac7a3ffdf773e174d850f4bdfff272e43fa952f9b224b25768fe47a160266",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "02-ipad-11-settings",
+      "group": "ipad-11",
+      "source": "raw/ipad-11/02-settings.png",
+      "title": [
+        "顺手的阅读，从设置开始"
+      ],
+      "subtitle": "显示、翻译与排版，按你的方式安排",
+      "theme": "sand",
+      "recommended": false,
+      "device": "iPad Pro 11-inch (M5)",
+      "runtime": "iOS / iPadOS 27.0",
+      "captured_at": "2026-10-17",
+      "width": 1668,
+      "height": 2420,
+      "store": "store/ipad-11/02-ipad-11-settings-1668x2420.png",
+      "original": "upload-originals/ipad-11/02-ipad-11-settings-1668x2420.png",
+      "sha256": "9c3ee4a2a9cfb8a33dbda94dfe3549ef0964b49cc12a756b9497a8f596aad8f9",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "03-ipad-11-colors",
+      "group": "ipad-11",
+      "source": "raw/ipad-11/03-colors.png",
+      "title": [
+        "色彩，由你定义"
+      ],
+      "subtitle": "主题与明暗模式，搭出喜欢的界面",
+      "theme": "lilac",
+      "recommended": true,
+      "device": "iPad Pro 11-inch (M5)",
+      "runtime": "iOS / iPadOS 27.0",
+      "captured_at": "2026-10-17",
+      "width": 1668,
+      "height": 2420,
+      "store": "store/ipad-11/03-ipad-11-colors-1668x2420.png",
+      "original": "upload-originals/ipad-11/03-ipad-11-colors-1668x2420.png",
+      "sha256": "63aa3e583c9f1ffb5406ced7cb70b0d3055f9555dcb0d4170d24e3999fca99fb",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "01-duo-reading",
+      "group": "duo-inner",
+      "source": "raw/duo-inner/01-reading.png",
+      "title": [
+        "展开，读得更从容"
+      ],
+      "subtitle": "iPhone Duo · 列表与正文，同时呈现",
+      "theme": "mint",
+      "recommended": true,
+      "width": 2853,
+      "height": 2007,
+      "store": "store/duo-inner/01-duo-reading-2853x2007.png",
+      "original": "upload-originals/duo-inner/01-duo-reading-2853x2007.png",
+      "sha256": "cdad106e8e217647b0e986a712769c335ac9d7ebbd04b40e46f6871580b3080b",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "02-duo-settings",
+      "group": "duo-inner",
+      "source": "raw/duo-inner/02-settings.png",
+      "title": [
+        "每一种习惯，都有设置"
+      ],
+      "subtitle": "显示、排版与签名，按你的方式安排",
+      "theme": "sand",
+      "recommended": false,
+      "width": 2853,
+      "height": 2007,
+      "store": "store/duo-inner/02-duo-settings-2853x2007.png",
+      "original": "upload-originals/duo-inner/02-duo-settings-2853x2007.png",
+      "sha256": "b667f5f511713814597442e6c8708da7a62815d64e45ad356107a8ff8fe4e987",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "03-duo-on-device-ai",
+      "group": "duo-inner",
+      "source": "raw/duo-inner/03-on-device-ai.png",
+      "title": [
+        "智能处理，就在本机"
+      ],
+      "subtitle": "Apple Intelligence · 长帖自动总结与文本处理",
+      "footnote": "Apple Intelligence 功能需兼容的设备与系统。",
+      "theme": "night",
+      "recommended": true,
+      "width": 2853,
+      "height": 2007,
+      "store": "store/duo-inner/03-duo-on-device-ai-2853x2007.png",
+      "original": "upload-originals/duo-inner/03-duo-on-device-ai-2853x2007.png",
+      "sha256": "738bee40a82f52f7e98b705c0eb9fa3be123dfa9d36486a58f151b37b515d161",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "04-duo-colors",
+      "group": "duo-inner",
+      "source": "raw/duo-inner/04-colors.png",
+      "title": [
+        "让论坛，拥有你的配色"
+      ],
+      "subtitle": "明暗外观与主题颜色，自由选择",
+      "theme": "lilac",
+      "recommended": true,
+      "width": 2853,
+      "height": 2007,
+      "store": "store/duo-inner/04-duo-colors-2853x2007.png",
+      "original": "upload-originals/duo-inner/04-duo-colors-2853x2007.png",
+      "sha256": "d85071af82adbf9717e45f65dcb742449bbaf65bd78a6731b9905ae736403389",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "01-duo-outer-forums",
+      "group": "duo-outer",
+      "source": "raw/duo-outer/01-forum-list.png",
+      "title": [
+        "热门话题，随手掌握"
+      ],
+      "subtitle": "版块分类与讨论列表，清楚呈现",
+      "theme": "mint",
+      "recommended": true,
+      "width": 1398,
+      "height": 2034,
+      "store": "store/duo-outer/01-duo-outer-forums-1398x2034.png",
+      "original": "upload-originals/duo-outer/01-duo-outer-forums-1398x2034.png",
+      "sha256": "3298ba98991b989446292078d3ac0a55a2bb48c9d3e8b7e641a25a62022814bc",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "02-duo-outer-ai",
+      "group": "duo-outer",
+      "source": "raw/duo-outer/02-on-device-ai.png",
+      "title": [
+        "本机智能，随时就绪"
+      ],
+      "subtitle": "长帖自动总结，保留完整原文",
+      "footnote": "Apple Intelligence 功能需兼容的设备与系统。",
+      "theme": "night",
+      "recommended": false,
+      "width": 1398,
+      "height": 2034,
+      "store": "store/duo-outer/02-duo-outer-ai-1398x2034.png",
+      "original": "upload-originals/duo-outer/02-duo-outer-ai-1398x2034.png",
+      "sha256": "e09a0368f4f9e0940c4dd1b87c843dbfa180c2e45458dc2c5d37f1152ea5339e",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    },
+    {
+      "id": "03-duo-outer-colors",
+      "group": "duo-outer",
+      "source": "raw/duo-outer/03-colors.png",
+      "title": [
+        "色彩，由你定义"
+      ],
+      "subtitle": "主题与明暗模式，搭出喜欢的界面",
+      "theme": "lilac",
+      "recommended": true,
+      "width": 1398,
+      "height": 2034,
+      "store": "store/duo-outer/03-duo-outer-colors-1398x2034.png",
+      "original": "upload-originals/duo-outer/03-duo-outer-colors-1398x2034.png",
+      "sha256": "00c2346e6a49164feacbda74bfc1c0983ef092d5c65294e1fd13e13be51a6ca7",
+      "alpha": false,
+      "originalPixelsMatchSource": true
+    }
+  ]
+}

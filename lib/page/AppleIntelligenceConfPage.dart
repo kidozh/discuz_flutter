@@ -21,6 +21,7 @@ import '../database/AppDatabase.dart';
 import '../entity/AiRule.dart';
 import '../generated/l10n.dart';
 import 'AddAiModelRulePage.dart';
+import 'ai_chat_history_page.dart';
 
 class AppleIntelligenceConfPage extends StatefulWidget {
   const AppleIntelligenceConfPage({super.key});
@@ -227,6 +228,11 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage>
       appBar: PlatformAppBar(
         title: Text(OnDeviceAiLabels.name(S.of(context))),
         trailingActions: [
+          PlatformIconButton(
+            icon: Icon(Icons.history,
+                semanticLabel: S.of(context).appleIntelligenceUseHistory),
+            onPressed: _openChatHistory,
+          ),
           if (appleAiEnabled)
             PlatformIconButton(
               liquidGlassSymbol: 'plus',
@@ -279,6 +285,11 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage>
       sections: [
         SettingsSection(
           tiles: [
+            SettingsTile.navigation(
+              leading: const Icon(Icons.chat_bubble_outline),
+              title: Text(S.of(context).appleIntelligenceUseHistory),
+              onPressed: (_) => _openChatHistory(),
+            ),
             SettingsTile.switchTile(
               initialValue: appleAiEnabled,
               activeSwitchColor: Theme.of(context).colorScheme.primary,
@@ -356,6 +367,13 @@ class AppleIntelligenceConfState extends State<AppleIntelligenceConfPage>
         CustomSettingsSection(child: _buildNoticeCard()),
       ],
     );
+  }
+
+  void _openChatHistory() {
+    Navigator.push(context, platformPageRoute(
+      context: context,
+      builder: (_) => const AiChatHistoryPage(),
+    ));
   }
 
   Widget _buildNoticeCard() {

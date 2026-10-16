@@ -113,7 +113,7 @@ class PrivateMessagePortalWidget extends StatelessWidget {
         // ),
         onTap: () async {
           VibrationUtils.vibrateWithClickIfPossible();
-          await Navigator.push(
+          await pushDetailPage(
               context,
               platformPageRoute(
                   context: context,

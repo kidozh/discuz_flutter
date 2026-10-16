@@ -137,7 +137,6 @@ class ExclusiveDiscuzPortalState
         preferences: context
             .watch<UserPreferenceNotifierProvider>()
             .forumDisplay,
-        dashboard: false,
       ),
       automaticallyImplyLeading: false,
     ),

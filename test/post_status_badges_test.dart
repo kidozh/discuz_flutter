@@ -1,6 +1,7 @@
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/widget/post_status_badges.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,9 +27,8 @@ void main() {
           home: Scaffold(
             body: Builder(
               builder: (context) => MediaQuery(
-                data: MediaQuery.of(
-                  context,
-                ).copyWith(textScaler: TextScaler.linear(scale)),
+                data: MediaQuery.of(context)
+                    .copyWith(textScaler: TextScaler.linear(scale)),
                 child: Align(
                   alignment: Alignment.topLeft,
                   child: SizedBox(
@@ -73,4 +73,49 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  for (final (style, expectedIcon) in [
+    (AppVisualStyle.material, Icons.verified_rounded),
+    (AppVisualStyle.cupertino, CupertinoIcons.checkmark_seal_fill),
+  ]) {
+    for (final dark in [false, true]) {
+      testWidgets(
+        'best answer uses the native verified seal in $style, dark=$dark',
+        (tester) async {
+          await tester.pumpWidget(
+            PlatformProvider(
+              style: style,
+              builder: (_) => MaterialApp(
+                theme: dark ? ThemeData.dark() : ThemeData.light(),
+                locale: const Locale('zh', 'CN'),
+                supportedLocales: S.delegate.supportedLocales,
+                localizationsDelegates: [
+                  S.delegate,
+                  ...GlobalMaterialLocalizations.delegates,
+                ],
+                home: const Scaffold(
+                  body: SizedBox(
+                    width: 160,
+                    child: PostStatusBadges(
+                      blocked: false,
+                      warned: false,
+                      revised: false,
+                      isBestAnswer: true,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+          expect(find.byIcon(expectedIcon), findsOneWidget);
+          expect(
+            tester.widget<Icon>(find.byIcon(expectedIcon)).color,
+            dark ? const Color(0xFF8CCBFF) : const Color(0xFF1769AA),
+          );
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
 }

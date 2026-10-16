@@ -3,7 +3,30 @@ import 'package:html/dom.dart' show Text;
 
 /// Removes markup before sending post content to the on-device model.
 class AiPostText {
-  static const summaryThreshold = 1500;
+  static const summaryThreshold = 500;
+
+  static double _tokenCost(int rune) => rune <= 0x7f
+      ? 1 / 3
+      : rune > 0xffff
+      ? 4
+      : 2;
+
+  static int estimatedTokens(String text) => text.runes
+      .fold<double>(0, (total, rune) => total + _tokenCost(rune))
+      .ceil();
+
+  static int summaryPassageEnd(List<int> runes, int start, int budget) {
+    var end = start;
+    var cost = 0.0;
+    while (end < runes.length && cost + _tokenCost(runes[end]) <= budget) {
+      cost += _tokenCost(runes[end++]);
+    }
+    if (end == runes.length) return end;
+    for (var i = end - 1; i > start + (end - start) ~/ 2; i--) {
+      if ('\n 。！？.!?'.runes.contains(runes[i])) return i + 1;
+    }
+    return end;
+  }
 
   static bool sameText(String source, String result) =>
       source.replaceAll(RegExp(r'\s+'), '') ==

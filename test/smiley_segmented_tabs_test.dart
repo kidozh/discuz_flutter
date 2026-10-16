@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:discuz_flutter/JsonResult/SmileyResult.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/ImageAttachment.dart';
 import 'package:discuz_flutter/entity/Smiley.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
@@ -25,17 +26,24 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late Directory temporaryDirectory;
   late Box<Smiley> box;
+  late Box<ImageAttachment> attachmentBox;
   late DiscuzAndUserNotifier notifier;
 
   setUpAll(() async {
     temporaryDirectory =
         await Directory.systemTemp.createTemp('smiley_tabs_test_');
     Hive.init(temporaryDirectory.path);
+    Hive.registerAdapter(DiscuzAdapter());
+    Hive.registerAdapter(ImageAttachmentAdapter());
     box = await Hive.openBox<Smiley>('smileys');
     AppDatabase.smileyBox = box;
+    attachmentBox = await Hive.openBox<ImageAttachment>('attachments');
+    AppDatabase.imageAttachmentBox = attachmentBox;
   });
   tearDownAll(() async {
     AppDatabase.smileyBox = null;
+    AppDatabase.imageAttachmentBox = null;
+    await attachmentBox.close();
     await box.close();
     await temporaryDirectory.delete(recursive: true);
   });
@@ -61,7 +69,8 @@ void main() {
           {AppVisualStyle style = AppVisualStyle.cupertino,
           double textScale = 1,
           TextDirection direction = TextDirection.ltr,
-          List<SmileyPanelAction> actions = const []}) =>
+          List<SmileyPanelAction> actions = const [],
+          AttachmentPressedFunc? onAttachmentPressed}) =>
       PlatformProvider(
         style: style,
         builder: (_) => MaterialApp(
@@ -84,7 +93,11 @@ void main() {
                   child: Center(
                       child: SizedBox(
                     width: 320,
-                    child: SmileyListScreen((_) {}, recentActions: actions),
+                    child: SmileyListScreen(
+                      (_) {},
+                      recentActions: actions,
+                      onAttachmentPressed: onAttachmentPressed,
+                    ),
                   )),
                 ),
               ),
@@ -92,6 +105,25 @@ void main() {
           ),
         ),
       );
+
+  testWidgets('saved tab shows cached uploaded photos and inserts their aid',
+      (tester) async {
+    final image = File('${temporaryDirectory.path}/saved.jpg')
+      ..writeAsBytesSync([1, 2, 3]);
+    await tester.runAsync(
+      () => attachmentBox.add(ImageAttachment('42', _site, image.path)),
+    );
+    String? insertedAid;
+    await tester.pumpWidget(
+      host(onAttachmentPressed: (aid, path) => insertedAid = aid),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('saved-attachment-42')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('saved-attachment-42')));
+    expect(insertedAid, '42');
+    expect(tester.takeException(), isNull);
+    await tester.runAsync(() => attachmentBox.clear());
+  });
 
   for (final direction in TextDirection.values) {
     testWidgets(

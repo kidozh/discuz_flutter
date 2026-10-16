@@ -1207,7 +1207,7 @@
   "postViewRatings": "View ratings",
   "postRatingsUnavailable": "No rating records could be displayed, or this site uses an unsupported format. Use the browser button to view them on the website.",
   "autoSummarizeTitle": "Automatically summarize long posts",
-  "autoSummarizeDescription": "Summarize posts over 1,500 characters when Apple Intelligence is enabled. The original remains available.",
+  "autoSummarizeDescription": "Summarize posts over 500 characters when Apple Intelligence is enabled. The original remains available.",
   "postSummaryTitle": "AI summary",
   "postSummaryLoading": "Summarizing…",
   "postSummaryFailed": "Summary failed. Tap to retry.",
@@ -1222,10 +1222,22 @@
   "translationUnavailable": "Apple Translation requires iOS 18 or macOS 15 or later.",
   "translationSourceUndetected": "There is not enough readable text to identify the source language.",
   "autoTranslateTitle": "Auto-translate",
+  "aiChatNew": "New conversation",
+  "aiChatDelete": "Delete conversation",
+  "aiChatDeleteConfirmation": "Delete this conversation and all its messages?",
+  "aiChatHistoryEmpty": "No conversations yet. Tap + to start a conversation.",
+  "aiChatHistoryLoadFailed": "Unable to load chat history. Please try again.",
+  "aiChatTitle": "Chat with AI",
+  "aiChatStart": "Start a conversation. Replies are generated on your device and history is saved locally.",
+  "aiChatRequestFailed": "Unable to get a reply. Your message is kept; tap Send to retry.",
+  "aiChatSaveFailed": "Unable to save the reply. Tap Send to retry saving.",
+  "aiChatYou": "You",
+  "aiChatUnavailable": "Enable Intelligence with an available model to continue chatting. Saved messages are still available.",
+  "aiChatInput": "Enter a message",
+  "aiChatSend": "Send",
   "signatureAppAndDevice": "App and device name",
   "signatureDevicePrivacy": "Device signatures publish your device model or computer name with every post.",
   "fromAppOnlySignature": "- Sent via [url=https://discuzhub.kidozh.com/]DisFly[/url] v{version}.",
-  "compactForumHeader": "Combine homepage navigation and categories",
   "showForumName": "Show forum name in navigation",
   "showAccountInfo": "Show account name and UID in navigation",
   "showThreadStats": "Show thread views and replies",
@@ -1236,5 +1248,11 @@
         "type": "String"
       }
     }
-  }
+  },
+  "compactForumCarousel": "Compact promoted thread carousel",
+  "googleTranslationAction": "Translate with Google",
+  "googleTranslationAttribution": "Automatic translation powered by Google Translate",
+  "googleTranslationInfoTitle": "About Google Translate",
+  "googleTranslationInfoBody": "Android posts are automatically translated by Google Translate on your device. Language packs may need downloading before first use. You can always view the original post.",
+  "googleTranslationPolicy": "Google Translate attribution guidelines"
 }

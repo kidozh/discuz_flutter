@@ -21,6 +21,10 @@
 
 遵循Discuz Hub [https://discuzhub.kidozh.com/zh/privacy_policy/](https://discuzhub.kidozh.com/zh/privacy_policy/)
 
+# Android 翻译
+
+Android 正文翻译由 Google 翻译提供，使用 ML Kit 的设备端模型，支持下载语言包后离线使用，并可随时查看原文。[Google Cloud Translation 服务信息](https://cloud.google.com/translate) · [翻译说明](docs/android_post_translation.md)
+
 # 截图
 
 请在我们的发布渠道中查看

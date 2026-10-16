@@ -3,7 +3,6 @@ import '../provider/UserPreferenceNotifierProvider.dart';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +14,7 @@ import '../entity/Discuz.dart';
 import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../utility/NetworkUtils.dart';
+import 'thread_carousel_layout.dart';
 
 class ThreadSlideShowCarouselWidget extends StatelessWidget {
   final ValueChanged<int>? onSelectTid;
@@ -46,24 +46,6 @@ class ThreadSlideShowCarouselState
 
   bool isLoading = true;
   List<KeylolCarouselItem> keylolCarouselItemList = [];
-
-  CarouselOptions carouselOptions = CarouselOptions(
-    height: 200,
-    aspectRatio: 16 / 9,
-    viewportFraction: 0.8,
-    initialPage: 0,
-    enableInfiniteScroll: true,
-    reverse: false,
-    autoPlay: true,
-    autoPlayInterval: Duration(seconds: 3),
-    autoPlayAnimationDuration: Duration(milliseconds: 800),
-    autoPlayCurve: Curves.fastOutSlowIn,
-    enlargeCenterPage: true,
-    enlargeFactor: 0.3,
-    // trigger set none
-    onPageChanged: null,
-    scrollDirection: Axis.horizontal,
-  );
 
   @override
   void initState() {
@@ -148,19 +130,24 @@ class ThreadSlideShowCarouselState
             return Container();
           } else {
             if (keylolCarouselItemList.isEmpty) {
-              return isLoading ? subscriptionSlide : const SizedBox.shrink();
+              return isLoading
+                  ? Align(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: ThreadCarouselLayout.maxCardWidth,
+                        ),
+                        child: subscriptionSlide,
+                      ),
+                    )
+                  : const SizedBox.shrink();
             } else {
               return Padding(
                 padding: EdgeInsets.only(top: 8),
-                child: CarouselSlider.builder(
+                child: ThreadCarouselLayout(
                   itemCount: keylolCarouselItemList.length,
-                  itemBuilder:
-                      (BuildContext context, int itemIndex, int pageViewIndex) {
-                        return getSlideShowItemWidget(itemIndex);
-                      },
-                  options: carouselOptions.copyWith(
-                    height: (compact ? 120 : 200) * textScale,
-                  ),
+                  itemBuilder: (context, index) =>
+                      getSlideShowItemWidget(index),
+                  height: (compact ? 120 : 200) * textScale,
                 ),
               );
             }
@@ -173,7 +160,7 @@ class ThreadSlideShowCarouselState
   bool get compact => context
       .watch<UserPreferenceNotifierProvider>()
       .forumDisplay
-      .compactHeader;
+      .compactCarousel;
   double get textScale => (MediaQuery.textScalerOf(context).scale(14) / 14)
       .clamp(1.0, double.infinity);
   double get slideHeight => (compact ? 112 : 180) * textScale;

@@ -2,6 +2,7 @@
 *.class
 *.log
 *.pyc
+__pycache__/
 *.swp
 .DS_Store
 .atom/
@@ -53,3 +54,13 @@ android/key.properties
 
 # Xcode project backups are local recovery files.
 *.backup
+
+# Full-resolution marketing media is distributed as a GitHub Release asset.
+/marketing/**/raw/
+/marketing/**/upload-originals/
+/marketing/**/store/
+/marketing/**/previews/
+/marketing/**/sources/
+/marketing/**/brand/
+/marketing/**/*.zip
+/marketing/**/.tmp/

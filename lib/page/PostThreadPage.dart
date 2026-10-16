@@ -2,6 +2,7 @@ import '../utility/post_signature_service.dart';
 import 'PollComposerPage.dart';
 import '../entity/PollDraft.dart';
 import '../client/ForumInteractionClient.dart';
+
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/screen/SmileyListScreen.dart';
@@ -17,7 +18,6 @@ import 'package:provider/provider.dart';
 import '../JsonResult/DisplayForumResult.dart';
 import '../widget/PostPermissionGate.dart';
 import '../dao/DraftDao.dart';
-import '../dao/ImageAttachmentDao.dart';
 import '../database/AppDatabase.dart';
 import '../entity/Discuz.dart';
 import '../entity/Draft.dart';
@@ -337,9 +337,10 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                             // popup a smiley dialog
                             showPlatformModalSheet(
                               context: context,
-                              builder: (context) => SmileyListScreen((p0) {
-                                insertSmiley(p0);
-                              }),
+                              builder: (context) => SmileyListScreen(
+                                insertSmiley,
+                                onAttachmentPressed: _handleReplyWithImage,
+                              ),
                             );
                           },
                         ),
@@ -354,50 +355,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                                 discuz,
                                 tid,
                                 fid,
-                                onReplyWithImage: (aid, path) async {
-                                  // fill with text first
-                                  // refresh the layout
-                                  // insertedAidList.clear();
-                                  if (aid.isNotEmpty) {
-                                    String insertedAidString =
-                                        "[attachimg]${aid}[/attachimg]";
-                                    insertString(insertedAidString);
-                                    // add aid to list
-                                    insertedAidList.add(aid);
-                                    // add to historical attachment
-                                    bool savedInDatabase =
-                                        await UserPreferencesUtils.getRecordHistoryEnabled();
-                                    if (savedInDatabase) {
-                                      // save it to database
-                                      ImageAttachmentDao imageAttachmentDao =
-                                          await AppDatabase.getImageAttachmentDao();
-                                      ImageAttachment?
-                                      imageAttachment = imageAttachmentDao
-                                          .findImageAttachmentByDiscuzAndAid(
-                                            discuz,
-                                            aid,
-                                          );
-                                      if (imageAttachment != null) {
-                                        imageAttachment.updateAt =
-                                            DateTime.now();
-                                        imageAttachmentDao
-                                            .insertImageAttachmentWithKey(
-                                              imageAttachment.key,
-                                              imageAttachment,
-                                            );
-                                      } else {
-                                        imageAttachmentDao
-                                            .insertImageAttachment(
-                                              ImageAttachment(
-                                                aid,
-                                                discuz,
-                                                path,
-                                              ),
-                                            );
-                                      }
-                                    }
-                                  } else {}
-                                },
+                                onReplyWithImage: _handleReplyWithImage,
                                 onReplyWithHostedImage: (imageUrl, path) {
                                   if (imageUrl.isNotEmpty) {
                                     insertString("[img]$imageUrl[/img]");
@@ -478,9 +436,8 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                 padding: const EdgeInsets.fromLTRB(18, 16, 18, 8),
                 child: Text(
                   S.of(context).forumFilterTypeIdTitle,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
               Flexible(
@@ -499,9 +456,9 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                         trailing: selectedTypeId == entry.key
                             ? Icon(
                                 PlatformIcons(sheetContext).checkMark,
-                                color: Theme.of(
-                                  sheetContext,
-                                ).colorScheme.primary,
+                                color: Theme.of(sheetContext)
+                                    .colorScheme
+                                    .primary,
                                 size: 18,
                               )
                             : null,
@@ -563,6 +520,22 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
           TextPosition(offset: newText.length),
         ),
       );
+    }
+  }
+
+  Future<void> _handleReplyWithImage(String aid, String path) async {
+    if (aid.isEmpty) return;
+    insertString("[attachimg]$aid[/attachimg]");
+    insertedAidList.add(aid);
+    if (!await UserPreferencesUtils.getRecordHistoryEnabled()) return;
+
+    final dao = await AppDatabase.getImageAttachmentDao();
+    final attachment = dao.findImageAttachmentByDiscuzAndAid(discuz, aid);
+    if (attachment == null) {
+      await dao.insertImageAttachment(ImageAttachment(aid, discuz, path));
+    } else {
+      attachment.updateAt = DateTime.now();
+      await dao.insertImageAttachmentWithKey(attachment.key, attachment);
     }
   }
 

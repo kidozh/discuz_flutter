@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:discuz_flutter/utility/thread_selection_colors.dart';
@@ -22,6 +23,7 @@ void main() {
           brightness: brightness,
         );
         final selected = ThreadSelectionColors(scheme);
+        expect(selected.background.computeLuminance(), lessThan(0.15));
         expect(
           contrast(selected.foreground, selected.background),
           greaterThanOrEqualTo(4.5),

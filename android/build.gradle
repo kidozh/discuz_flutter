@@ -12,6 +12,16 @@ subprojects {
     project.layout.buildDirectory.value(newBuildDir.dir(project.name))
 }
 
+// These plus_plugins releases assume AGP 9's built-in Kotlin is enabled.
+// This project still uses the Kotlin Gradle plugin for older Flutter plugins.
+subprojects { subproject ->
+    if (["device_info_plus", "package_info_plus", "share_plus", "wakelock_plus"].contains(subproject.name)) {
+        subproject.pluginManager.withPlugin("com.android.library") {
+            subproject.pluginManager.apply("org.jetbrains.kotlin.android")
+        }
+    }
+}
+
 subprojects {
     project.evaluationDependsOn(":app")
 }

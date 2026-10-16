@@ -7740,10 +7740,10 @@ class S {
     );
   }
 
-  /// `Summarize posts over 1,500 characters when Apple Intelligence is enabled. The original remains available.`
+  /// `Summarize posts over 500 characters when Apple Intelligence is enabled. The original remains available.`
   String get autoSummarizeDescription {
     return Intl.message(
-      'Summarize posts over 1,500 characters when Apple Intelligence is enabled. The original remains available.',
+      'Summarize posts over 500 characters when Apple Intelligence is enabled. The original remains available.',
       name: 'autoSummarizeDescription',
       desc: '',
       args: [],
@@ -7890,6 +7890,126 @@ class S {
     );
   }
 
+  /// `New conversation`
+  String get aiChatNew {
+    return Intl.message(
+      'New conversation',
+      name: 'aiChatNew',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete conversation`
+  String get aiChatDelete {
+    return Intl.message(
+      'Delete conversation',
+      name: 'aiChatDelete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete this conversation and all its messages?`
+  String get aiChatDeleteConfirmation {
+    return Intl.message(
+      'Delete this conversation and all its messages?',
+      name: 'aiChatDeleteConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No conversations yet. Tap + to start a conversation.`
+  String get aiChatHistoryEmpty {
+    return Intl.message(
+      'No conversations yet. Tap + to start a conversation.',
+      name: 'aiChatHistoryEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unable to load chat history. Please try again.`
+  String get aiChatHistoryLoadFailed {
+    return Intl.message(
+      'Unable to load chat history. Please try again.',
+      name: 'aiChatHistoryLoadFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Chat with AI`
+  String get aiChatTitle {
+    return Intl.message(
+      'Chat with AI',
+      name: 'aiChatTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start a conversation. Replies are generated on your device and history is saved locally.`
+  String get aiChatStart {
+    return Intl.message(
+      'Start a conversation. Replies are generated on your device and history is saved locally.',
+      name: 'aiChatStart',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unable to get a reply. Your message is kept; tap Send to retry.`
+  String get aiChatRequestFailed {
+    return Intl.message(
+      'Unable to get a reply. Your message is kept; tap Send to retry.',
+      name: 'aiChatRequestFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unable to save the reply. Tap Send to retry saving.`
+  String get aiChatSaveFailed {
+    return Intl.message(
+      'Unable to save the reply. Tap Send to retry saving.',
+      name: 'aiChatSaveFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You`
+  String get aiChatYou {
+    return Intl.message('You', name: 'aiChatYou', desc: '', args: []);
+  }
+
+  /// `Enable Intelligence with an available model to continue chatting. Saved messages are still available.`
+  String get aiChatUnavailable {
+    return Intl.message(
+      'Enable Intelligence with an available model to continue chatting. Saved messages are still available.',
+      name: 'aiChatUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a message`
+  String get aiChatInput {
+    return Intl.message(
+      'Enter a message',
+      name: 'aiChatInput',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Send`
+  String get aiChatSend {
+    return Intl.message('Send', name: 'aiChatSend', desc: '', args: []);
+  }
+
   /// `App and device name`
   String get signatureAppAndDevice {
     return Intl.message(
@@ -7917,16 +8037,6 @@ class S {
       name: 'fromAppOnlySignature',
       desc: '',
       args: [version],
-    );
-  }
-
-  /// `Combine homepage navigation and categories`
-  String get compactForumHeader {
-    return Intl.message(
-      'Combine homepage navigation and categories',
-      name: 'compactForumHeader',
-      desc: '',
-      args: [],
     );
   }
 
@@ -7965,6 +8075,66 @@ class S {
     return Intl.message(
       'Show promoted thread carousel',
       name: 'showForumCarousel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Compact promoted thread carousel`
+  String get compactForumCarousel {
+    return Intl.message(
+      'Compact promoted thread carousel',
+      name: 'compactForumCarousel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Translate with Google`
+  String get googleTranslationAction {
+    return Intl.message(
+      'Translate with Google',
+      name: 'googleTranslationAction',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Automatic translation powered by Google Translate`
+  String get googleTranslationAttribution {
+    return Intl.message(
+      'Automatic translation powered by Google Translate',
+      name: 'googleTranslationAttribution',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `About Google Translate`
+  String get googleTranslationInfoTitle {
+    return Intl.message(
+      'About Google Translate',
+      name: 'googleTranslationInfoTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Android posts are automatically translated by Google Translate on your device. Language packs may need downloading before first use. You can always view the original post.`
+  String get googleTranslationInfoBody {
+    return Intl.message(
+      'Android posts are automatically translated by Google Translate on your device. Language packs may need downloading before first use. You can always view the original post.',
+      name: 'googleTranslationInfoBody',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Google Translate attribution guidelines`
+  String get googleTranslationPolicy {
+    return Intl.message(
+      'Google Translate attribution guidelines',
+      name: 'googleTranslationPolicy',
       desc: '',
       args: [],
     );

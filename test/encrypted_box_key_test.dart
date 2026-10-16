@@ -1,10 +1,31 @@
 import 'dart:convert';
+import 'package:discuz_flutter/utility/SecureStorageUtils.dart';
 import 'package:discuz_flutter/utility/encrypted_box_key.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final key = List<int>.generate(32, (index) => index);
+  test('v9 password stores keep their location during the v10 migration', () {
+    final legacy = SecureStorageUtils.migrationAndroidOptions(null).toMap();
+    expect(legacy['encryptedSharedPreferences'], 'true');
+    expect(legacy['sharedPreferencesName'], '');
+    expect(legacy['migrateWithBackup'], 'false');
+
+    final named = SecureStorageUtils.migrationAndroidOptions('passwords_1')
+        .toMap();
+    expect(named['encryptedSharedPreferences'], 'true');
+    expect(named['sharedPreferencesName'], 'passwords_1');
+    expect(named['migrateWithBackup'], 'false');
+
+    for (final options in [legacy, named]) {
+      expect(options['migrateOnAlgorithmChange'], 'true');
+      expect(options['resetOnError'], 'false');
+    }
+    final cache = SecureStorageUtils.getFlutterSecureStorage().aOptions.toMap();
+    expect(cache, legacy);
+  });
+
   test('uses the existing key without overwriting it', () async {
     expect(
         await readEncryptedBoxKey(

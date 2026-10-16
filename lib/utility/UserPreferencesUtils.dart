@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io' show Platform;
 
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
@@ -199,7 +200,8 @@ class UserPreferencesUtils {
 
   static Future<bool> getAppleIntelligenceEnabled() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(appleIntelligenceEnabledKey) ?? false;
+    return prefs.getBool(appleIntelligenceEnabledKey) ??
+        (Platform.isIOS || Platform.isMacOS);
   }
 
   static Future<void> putAppleIntelligenceGuardrail(String level) async {

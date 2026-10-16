@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../entity/SpecialThread.dart';
 import '../generated/l10n.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
+import '../utility/best_answer_style.dart';
 
 /// Only server-returned public fields are shown; forms are handled by the site.
 class SpecialThreadCard extends StatelessWidget {
@@ -61,7 +62,23 @@ class SpecialThreadCard extends StatelessWidget {
           if (reward.bestPid > 0)
             PlatformTextButton(
               onPressed: () => onSelectPost(reward.bestPid),
-              child: Text(s.specialBestAnswer),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    PlatformIcons(context).bestAnswerSeal,
+                    size: 18,
+                    color: bestAnswerForeground(context),
+                  ),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      s.specialBestAnswer,
+                      style: TextStyle(color: bestAnswerForeground(context)),
+                    ),
+                  ),
+                ],
+              ),
             ),
         ]),
       );
@@ -180,20 +197,31 @@ class ThreadRewardPill extends StatelessWidget {
               ),
             ),
             if (reward.bestPid > 0)
-              Material(
-                type: MaterialType.transparency,
-                child: TextButton.icon(
-                  onPressed: () => onSelectPost(reward.bestPid),
-                  icon: const Icon(Icons.check_circle_outline, size: 16),
-                  label: Text(S.of(context).specialBestAnswer),
-                  style: TextButton.styleFrom(
-                    shape: const StadiumBorder(),
-                    visualDensity: VisualDensity.compact,
-                    foregroundColor: colors.primary,
-                    backgroundColor: colors.primaryContainer.withValues(
-                      alpha: 0.45,
+              PlatformTextButton(
+                onPressed: () => onSelectPost(reward.bestPid),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 7,
+                ),
+                color: isMaterial(context)
+                    ? bestAnswerBackground(context)
+                    : null,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      PlatformIcons(context).bestAnswerSeal,
+                      size: 18,
+                      color: bestAnswerForeground(context),
                     ),
-                  ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        S.of(context).specialBestAnswer,
+                        style: TextStyle(color: bestAnswerForeground(context)),
+                      ),
+                    ),
+                  ],
                 ),
               ),
           ],

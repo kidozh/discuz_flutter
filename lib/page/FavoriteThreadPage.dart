@@ -204,7 +204,7 @@ class FavoriteThreadCardWidget extends StatelessWidget {
         trailing: Icon(PlatformIcons(context).forward),
         onTap: () async {
           VibrationUtils.vibrateWithClickIfPossible();
-          await Navigator.push(
+          await pushDetailPage(
             context,
             platformPageRoute(
               context: context,

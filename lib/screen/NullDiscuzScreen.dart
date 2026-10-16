@@ -64,7 +64,7 @@ class NullDiscuzScreen extends StatelessWidget{
                       child: Text(S.of(context).settings + "   ↗️"),
                       onPressed: () async{
                         VibrationUtils.vibrateWithClickIfPossible();
-                        await Navigator.push(
+                        await pushDetailPage(
                             context, platformPageRoute(
                           iosTitle: S.of(context).settings,
                             context: context,builder: (context) => SettingPage()));

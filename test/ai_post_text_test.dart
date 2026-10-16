@@ -2,13 +2,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:discuz_flutter/utility/AiPostText.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
+import 'package:discuz_flutter/utility/OnDeviceAiService.dart';
 
 void main() {
-  test('unchanged translation ignores whitespace but detects translated content', () {
-    expect(AiPostText.sameText('Hello world', 'Hello\nworld'), isTrue);
-    expect(AiPostText.sameText('Hello world', '你好世界'), isFalse);
-    expect(AiPostText.sameText('Hello!', 'Hello?'), isFalse);
-  });
+  test(
+    'unchanged translation ignores whitespace but detects translated content',
+    () {
+      expect(AiPostText.sameText('Hello world', 'Hello\nworld'), isTrue);
+      expect(AiPostText.sameText('Hello world', '你好世界'), isFalse);
+      expect(AiPostText.sameText('Hello!', 'Hello?'), isFalse);
+    },
+  );
   test('HTML attributes and scripts do not enter model input', () {
     expect(
       AiPostText.plainText(
@@ -32,5 +36,19 @@ void main() {
     expect(await UserPreferencesUtils.getAutoSummarizeEnabled(), isTrue);
     await UserPreferencesUtils.putAutoSummarizeEnabled(false);
     expect(await UserPreferencesUtils.getAutoSummarizeEnabled(), isFalse);
+  });
+  test('summary threshold includes medium-length posts', () {
+    expect(AiPostText.summaryThreshold, 500);
+  });
+  test('Apple intelligence defaults on for Apple platforms and respects an explicit opt-out', () async {
+    SharedPreferences.setMockInitialValues({});
+    expect(
+      await UserPreferencesUtils.getAppleIntelligenceEnabled(),
+      OnDeviceAiService.isApplePlatform,
+    );
+    await UserPreferencesUtils.putAppleIntelligenceEnabled(false);
+    expect(await UserPreferencesUtils.getAppleIntelligenceEnabled(), isFalse);
+    await UserPreferencesUtils.putAppleIntelligenceEnabled(true);
+    expect(await UserPreferencesUtils.getAppleIntelligenceEnabled(), isTrue);
   });
 }

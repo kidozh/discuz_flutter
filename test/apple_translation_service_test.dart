@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:apple_post_translation/apple_post_translation.dart';
@@ -14,7 +15,7 @@ void main() {
         messenger.setMockMethodCallHandler(ApplePostTranslation.channel, null),
   );
   test(
-    'detects from full visible body once and reuses source for short nodes',
+    'detects paragraph language and reuses full-body source for short labels',
     () async {
       final calls = <MethodCall>[];
       messenger.setMockMethodCallHandler(ApplePostTranslation.channel, (
@@ -28,7 +29,7 @@ void main() {
         '<a href="https://example.com">OK</a><code>代码不参与检测</code>',
         language: 'zh-Hans',
       );
-      final detection = calls.where((c) => c.method == 'detectLanguage').single;
+      final detection = calls.where((c) => c.method == 'detectLanguage').first;
       expect(detection.arguments['text'], contains('English text.'));
       expect(detection.arguments['text'], contains('OK'));
       expect(detection.arguments['text'], isNot(contains('代码')));
@@ -39,6 +40,32 @@ void main() {
     },
     skip: !Platform.isMacOS && !Platform.isIOS,
   );
+  test('mixed paragraphs keep their own source languages', () async {
+    final calls = <MethodCall>[];
+    messenger.setMockMethodCallHandler(ApplePostTranslation.channel, (
+      call,
+    ) async {
+      calls.add(call);
+      final text = call.arguments['text'] as String;
+      if (call.method == 'detectLanguage') {
+        return text.startsWith('这是') ? 'zh' : 'en';
+      }
+      return call.arguments['source'] == 'zh' ? text : '英文的译文';
+    });
+    final output = await PostTranslationService.translate(
+      '<p>This is an English paragraph.</p><p>这是无需翻译的中文内容。</p>',
+      language: 'zh',
+    );
+    expect(output, contains('英文的译文'));
+    expect(output, contains('这是无需翻译的中文内容。'));
+    expect(
+      calls
+          .where((call) => call.method == 'translate')
+          .last
+          .arguments['source'],
+      'zh',
+    );
+  }, skip: !Platform.isMacOS && !Platform.isIOS);
   test(
     'reads system languages and routes only text to Apple Translation',
     () async {

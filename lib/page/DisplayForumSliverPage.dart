@@ -19,6 +19,7 @@ import 'package:discuz_flutter/page/PostThreadPage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/SelectedTidNotifierProvider.dart';
+import 'package:discuz_flutter/utility/pane_navigation.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
@@ -609,7 +610,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
               label: S.of(context).settings,
               onTap: (option) async {
                 VibrationUtils.vibrateWithClickIfPossible();
-                await Navigator.push(
+                await pushDetailPage(
                   context,
                   platformPageRoute(
                     iosTitle: S.of(context).settings,
@@ -628,7 +629,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 .forumDisplay
                 .showForumName
             ? _displayForumResult.discuzIndexVariables.forum.name
-            : S.of(context).forumDisplayTitle,
+            : S.of(context).appName,
         overflow: TextOverflow.ellipsis,
       ),
       backgroundColor: Theme.of(context).navigationBarTheme.backgroundColor
@@ -1296,10 +1297,19 @@ class DisplayForumTwoPanePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (PaneNavigationScope.maybeOf(context)?.isDetail ?? false) {
+      return DisplayForumAltSliverPage(
+        discuz,
+        user,
+        fid,
+        forumTitle: forumTitle,
+      );
+    }
     return LayoutBuilder(
       builder: (context, constraints) {
         return DisplayForumTwoPaneStatefulWidget(
           discuz: discuz,
+          user: user,
           fid: fid,
           restorationId: "DisplayForumFid",
           type: TwoPaneUtils.getTwoPaneType(constraints),
@@ -1357,6 +1367,7 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget>
   }
 
   final RestorableInt _currentTid = RestorableInt(0);
+  int _selectionRevision = 0;
   late final RestorableInt _currentFid;
 
   @override
@@ -1375,81 +1386,52 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget>
     super.dispose();
   }
 
+  void _selectThread(int tid) {
+    Provider.of<SelectedTidNotifierProvider>(
+      context,
+      listen: false,
+    ).setTid(tid);
+    setState(() {
+      _currentTid.value = tid;
+      _selectionRevision++;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    var panePriority = TwoPanePriority.both;
-    // directly give small Screen layout
-    if (widget.type == TwoPaneType.smallScreen) {
-      panePriority = _currentTid.value == 0
-          ? TwoPanePriority.start
-          : TwoPanePriority.end;
-      return DisplayForumAltSliverPage(
-        discuz,
-        user,
-        fid,
-        forumTitle: forumTitle,
-      );
-    }
-
-    double paneProportion = 0.35;
-
-    return OrientationBuilder(
-      builder: (context, orientation) {
-        if (widget.type != TwoPaneType.smallScreen &&
-            orientation == Orientation.portrait) {
-          paneProportion = 0.5;
-        }
-
-        return TwoPaneScaffold(
-          type: widget.type,
-          child: TwoPane(
-            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-            paneProportion: paneProportion,
-            panePriority: panePriority,
-            startPane: DisplayForumAltSliverPage(
-              discuz,
-              user,
-              fid,
-              onSelectTid: (tid) async {
-                if (tid != _currentTid.value) {
-                  log("Reselected a tid ${tid} ${_currentTid.value}");
-                  Provider.of<SelectedTidNotifierProvider>(
-                    context,
-                    listen: false,
-                  ).setTid(tid);
-                  setState(() {
-                    _currentTid.value = 0;
-                  });
-                  // I don't know why it takes time to refresh
-                  await Future.delayed(const Duration(milliseconds: 100));
-                  setState(() {
-                    _currentTid.value = tid;
-                    _currentTid.didUpdateValue(tid);
-                  });
-                  log("Changed current tid ${_currentTid.value}");
-                }
-              },
-              forumTitle: this.forumTitle,
-            ),
-            endPane: _currentTid.value == 0
-                ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText)
-                : ViewThreadSliverPage(
-                    discuz,
-                    user,
-                    _currentTid.value,
-                    onClosed: () {
-                      Provider.of<SelectedTidNotifierProvider>(
-                        context,
-                        listen: false,
-                      ).setTid(0);
-                      setState(() {
-                        _currentTid.value = 0;
-                      });
-                    },
-                  ),
-          ),
-        );
-      },
+    return TwoPaneScaffold(
+      type: widget.type,
+      detailIdentity: (
+        discuz.baseURL,
+        user?.uid,
+        _currentTid.value,
+        _selectionRevision,
+      ),
+      onCloseDetail: () => _selectThread(0),
+      child: TwoPane(
+        paneProportion: 0.35,
+        panePriority: _currentTid.value == 0
+            ? TwoPanePriority.start
+            : TwoPanePriority.end,
+        startPane: DisplayForumAltSliverPage(
+          discuz,
+          user,
+          fid,
+          onSelectTid: _selectThread,
+          forumTitle: forumTitle,
+        ),
+        endPane: _currentTid.value == 0
+            ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText)
+            : KeyedSubtree(
+                key: ValueKey(_currentTid.value),
+                child: ViewThreadSliverPage(
+                  discuz,
+                  user,
+                  _currentTid.value,
+                  onClosed: () => _selectThread(0),
+                ),
+              ),
+      ),
     );
   }
 }

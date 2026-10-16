@@ -37,13 +37,16 @@ void main() {
             find.byType(PlatformLiquidGlassCard),
           );
           expect(card.selected, selected);
+          expect(card.opaque, selected);
           expect(
             card.glassBackgroundColor,
             selected ? ThreadSelectionColors(scheme).background : null,
           );
           expect(
             find.byType(PlatformGlassBackdrop),
-            AppVisualStyle.supportsLiquidGlass ? findsOneWidget : findsNothing,
+            !selected && AppVisualStyle.supportsLiquidGlass
+                ? findsOneWidget
+                : findsNothing,
           );
           expect(
             find.byType(BackdropFilter).evaluate().length,

@@ -1,5 +1,6 @@
 import 'package:discuz_flutter/utility/steam_store_link.dart';
 import 'package:discuz_flutter/utility/app_motion.dart';
+
 import 'dart:convert';
 
 import 'dart:developer';
@@ -225,22 +226,12 @@ class SteamGameState extends State<SteamGameWidget> {
     ),
   );
 
-  double _steamSheetHorizontalPadding(BuildContext context) {
-    final viewportWidth = MediaQuery.sizeOf(context).width;
-    if (viewportWidth < 650) return 0;
-    final preferredWidth = viewportWidth * 0.72;
-    final dialogWidth = preferredWidth > 760 ? 760.0 : preferredWidth;
-    return (viewportWidth - dialogWidth) / 2;
-  }
-
   void triggerDialog() {
     VibrationUtils.vibrateWithClickIfPossible();
     showPlatformModalSheet(
       context: context,
       builder: (context) => SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          horizontal: _steamSheetHorizontalPadding(context),
-        ),
+        padding: EdgeInsets.zero,
         child: Container(
           //alignment: Alignment.centerRight,
           color: usesLiquidGlass(context)

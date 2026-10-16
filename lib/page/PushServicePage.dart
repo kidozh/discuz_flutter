@@ -66,7 +66,7 @@ class PushServiceState extends State<PushServiceStateWidget> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    pushTokenChannel = await PushServiceUtils.getPushToken(context);
+    pushTokenChannel = await PushServiceUtils.getPushToken();
   }
 
   @override
@@ -202,7 +202,7 @@ class PushServiceState extends State<PushServiceStateWidget> {
       }
       // check with token
       PushTokenChannel? pushTokenChannel =
-          await PushServiceUtils.getPushToken(context);
+          await PushServiceUtils.getPushToken();
       bool refreshToken = true;
       DateTime now = DateTime.now();
       for (var tokenInfo in result.list) {
@@ -232,7 +232,7 @@ class PushServiceState extends State<PushServiceStateWidget> {
     // send it
     // check with token
     PushTokenChannel? _pushTokenChannel =
-        await PushServiceUtils.getPushToken(context);
+        await PushServiceUtils.getPushToken();
     if (_pushTokenChannel != null) {
       // prepare to send token
 

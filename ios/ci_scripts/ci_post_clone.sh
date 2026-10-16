@@ -2,8 +2,8 @@
 
 set -eu
 
-FLUTTER_VERSION="3.47.2"
-EXPECTED_XCODE_VERSION="26.6"
+FLUTTER_VERSION="3.47.5"
+REQUIRE_IPHONE_DUO="${REQUIRE_IPHONE_DUO:-1}"
 FLUTTER_SDK_PATH="$HOME/flutter-$FLUTTER_VERSION"
 
 export PUB_HOSTED_URL="https://pub.flutter-io.cn"
@@ -15,9 +15,10 @@ cd "$CI_PRIMARY_REPOSITORY_PATH"
 
 actual_xcode_version=$(xcodebuild -version | awk 'NR == 1 { print $2 }')
 echo "Xcode Cloud Xcode: $actual_xcode_version"
-if [ "$actual_xcode_version" != "$EXPECTED_XCODE_VERSION" ]; then
-  echo "error: Xcode Cloud must use Xcode $EXPECTED_XCODE_VERSION; selected $actual_xcode_version. Update the workflow Environment in App Store Connect."
-  exit 1
+if [ "$REQUIRE_IPHONE_DUO" = "1" ]; then
+  python3 scripts/check_iphone_duo.py --require-duo
+else
+  python3 scripts/check_iphone_duo.py
 fi
 
 if [ ! -x "$FLUTTER_SDK_PATH/bin/flutter" ]; then

@@ -13,3 +13,23 @@ Android 使用 ML Kit Language Identification（17.0.6）识别正文语言，�
 - https://developers.google.com/ml-kit/language/identification/android
 
 自动翻译位于设置的常规分组末尾，默认开启；保留已保存的关闭选择。
+
+语言识别按段落和换行组织文字，行内加粗、颜色、链接等样式不会把一句话拆成独立短词，空格和正文顺序也会保留。手动翻译为有足够文字的段落分别识别源语言，短标签或无法识别的段落沿用整帖语言，避免混合语言正文全部套用同一源语言。自动翻译遇到无法识别的短文本时保留原文。
+
+ML Kit 离线模型适用于简单翻译，非英语语言之间通过英语中转，译文质量可能受影响。参见 https://developers.google.com/ml-kit/language/translation 。本次修复针对语言识别和分段问题，未更换翻译模型，实际译文质量仍需要在设备上验证。
+
+## Google 翻译归属标注
+
+Android 的翻译操作使用“使用 Google 翻译”（英文为 `Translate with Google`）。原有工具栏的紧凑图标在 Android 上改为正文前的文字操作，避免品牌名称被窄工具栏隐藏或裁切；长按仍可选择目标语言。
+
+仅在 Android 实际显示 ML Kit 译文时，正文上方显示官方 `powered by Google Translate` 图。自动和手动翻译、普通正文及 sliver 正文共用这条路径；原文、请求中尚无译文以及失败状态不显示归属图。Apple 翻译和 AI 总结不会使用该标识。图片由官方归属素材包原样提取，使用 1x/2x/3x 原始文件和白色底板保证深浅主题下清楚可读；点击前往 Google Translate，不发送帖子正文。
+
+帖子旁的信息按钮以及 Android 设置中的“Google 翻译说明”均可离线查看官方完整免责声明，并提供 Google Cloud Translation 链接。原始素材地址与使用规范记录在 `assets/translation/SOURCE.txt`。本次不涉及发布商店描述，下面的文案可在下次更新 Google Play 简介时使用：
+
+> Android 正文翻译由 Google 翻译提供，使用设备上的 ML Kit 离线模型。首次使用可能需要下载语言包，随时可以切回原文。服务信息：https://cloud.google.com/translate
+
+对应英文：
+
+> Android post translation is powered by Google Translate using ML Kit on-device models. Language packs may need downloading before first use. The original post remains available. Service information: https://cloud.google.com/translate
+
+依据：[ML Kit 使用要求](https://developers.google.com/ml-kit/language/translation/translation-terms)、[归属与品牌要求](https://docs.cloud.google.com/translate/attribution)。
