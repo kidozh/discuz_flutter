@@ -1,16 +1,21 @@
 import 'package:flutter/gestures.dart' show PointerDeviceKind;
+
 import 'post_header_layout.dart';
+import 'post_copy_menu_option.dart';
 import 'post_translation_button.dart';
 import 'google_translation_controls.dart';
 import '../utility/rating_allowance_cache.dart';
 import '../utility/DashboardPreferences.dart';
 import '../page/PostRatingsPage.dart';
+
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
+
 import '../client/PostReviewClient.dart';
 import '../client/ForumInteractionClient.dart';
 import '../page/PostRatingDialog.dart';
 import '../entity/SpecialThread.dart';
 import '../page/ForumListsPage.dart';
+
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -552,59 +557,45 @@ class PostState extends State<PostStatefulWidget> {
   Widget build(BuildContext context) {
     if (this.isUserBlocked) {
       // show blocked user interface
-      final blocked = PlatformWidgetBuilder(
-        material: (_, child, __) => PlatformCard(
-          elevation: 2,
-          surfaceTintColor: Theme.of(context).colorScheme.surface,
-          color: Theme.of(context).colorScheme.surface,
-          child: child,
-        ),
-        cupertino: (_, child, __) => ReadingPostCard(
-          padding: const EdgeInsets.all(8),
-          child: child ?? const SizedBox.shrink(),
-        ),
-        child: Padding(
-          padding: isMaterial(context)
-              ? const EdgeInsets.all(8)
-              : EdgeInsets.zero,
-          child: Column(
-            children: [
-              Text(
-                S.of(context).contentPostByBlockUserTitle(_post.author),
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  PlatformTextButton(
-                    child: Text(S.of(context).unblockContent),
-                    onPressed: () async {
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      setState(() {
-                        this.isUserBlocked = false;
-                      });
-                    },
-                  ),
-                  PlatformTextButton(
-                    child: Text(S.of(context).unblockUser),
-                    onPressed: () async {
-                      // unblock user
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      setState(() {
-                        this.isUserBlocked = false;
-                      });
-                      await _blockUserDao.deleteBlockUserByUid(
-                        _post.authorId,
-                        _discuz,
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
+      final blocked = ReadingPostCard(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          children: [
+            Text(
+              S.of(context).contentPostByBlockUserTitle(_post.author),
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                PlatformTextButton(
+                  child: Text(S.of(context).unblockContent),
+                  onPressed: () async {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    setState(() {
+                      this.isUserBlocked = false;
+                    });
+                  },
+                ),
+                PlatformTextButton(
+                  child: Text(S.of(context).unblockUser),
+                  onPressed: () async {
+                    // unblock user
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    setState(() {
+                      this.isUserBlocked = false;
+                    });
+                    await _blockUserDao.deleteBlockUserByUid(
+                      _post.authorId,
+                      _discuz,
+                    );
+                  },
+                ),
+              ],
+            ),
+          ],
         ),
       );
       return CupertinoSeparatedItem(
@@ -635,28 +626,7 @@ class PostState extends State<PostStatefulWidget> {
         return CupertinoSeparatedItem(
           enabled: widget.showSeparator,
           reading: true,
-          child: PlatformWidgetBuilder(
-            material: (_, child, platform) => PlatformCard(
-              //surfaceTintColor: Theme.of(context).colorScheme.background,
-              surfaceTintColor: Theme.of(context).brightness == Brightness.light
-                  ? Colors.white
-                  : Colors.black38,
-              color: Theme.of(context).brightness == Brightness.light
-                  ? Colors.white
-                  : Colors.white24,
-              elevation: _post.first ? 0 : 8.0,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 12,
-                ),
-                child: child,
-              ),
-            ),
-            cupertino: (_, child, platform) => ReadingPostCard(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-              child: child ?? const SizedBox.shrink(),
-            ),
+          child: ReadingPostCard(
             child: getPostContent(context, typesetting.useCompactParagraph),
           ),
         );
@@ -807,11 +777,8 @@ class PostState extends State<PostStatefulWidget> {
         html: _post.message,
       ),
       if (PostTranslationService.usesGoogleTranslation)
-        GoogleTranslationControls(
+        GoogleTranslationAttribution(
           translated: _translation.showingTranslation,
-          busy: _translation.busy,
-          onTranslate: translatePostMessage,
-          onChooseLanguage: _chooseTranslationLanguage,
         ),
     ];
     final body = DiscuzHtmlWidget(
@@ -857,9 +824,9 @@ class PostState extends State<PostStatefulWidget> {
                   children: [
                     PostCommentWidget(
                       comment,
-                      textColor: Theme.of(
-                        context,
-                      ).colorScheme.onPrimaryContainer,
+                      textColor: Theme.of(context)
+                          .colorScheme
+                          .onPrimaryContainer,
                     ),
                     if (index != getCommentList().length - 1 &&
                         (!isCupertino(context) ||
@@ -961,6 +928,12 @@ class PostState extends State<PostStatefulWidget> {
         color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
       options: [
+        postCopyMenuOption(
+          context,
+          html: _translation.showingTranslation
+              ? _translation.translation!
+              : _post.message,
+        ),
         ...extraOptions,
         if (DashboardPreferences.isKeylol(_discuz.baseURL))
           PopupMenuOption(
@@ -1196,11 +1169,10 @@ class PostState extends State<PostStatefulWidget> {
     ];
     _bindTranslation();
     _scheduleAutoTranslation();
-    if (!PostTranslationService.usesGoogleTranslation &&
-        (PostTranslationService.usesNativeTranslation ||
-            (intelligence.appleIntelligenceEnabled &&
-                intelligence.appleIntelligenceAvailable) ||
-            _translation.translation != null)) {
+    if (PostTranslationService.usesNativeTranslation ||
+        (intelligence.appleIntelligenceEnabled &&
+            intelligence.appleIntelligenceAvailable) ||
+        _translation.translation != null) {
       final label = _translation.busy
           ? S.of(context).postTranslating
           : _translation.showingTranslation
@@ -1372,9 +1344,8 @@ class PostState extends State<PostStatefulWidget> {
               overflow: TextOverflow.ellipsis,
               text: TextSpan(
                 text: "",
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium
+                    ?.copyWith(color: Theme.of(context).colorScheme.onSurface),
                 children: [
                   TextSpan(
                     text: _post.author,
@@ -1400,7 +1371,7 @@ class PostState extends State<PostStatefulWidget> {
               _post.position.toString(),
               style: TextStyle(
                 fontSize: 18,
-                color: Theme.of(context).disabledColor,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ),
@@ -1431,7 +1402,7 @@ class PostState extends State<PostStatefulWidget> {
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 14,
-                      color: Theme.of(context).disabledColor,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                   if (_post.status & POST_REVISED != 0)
@@ -1440,7 +1411,7 @@ class PostState extends State<PostStatefulWidget> {
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
-                        color: Theme.of(context).disabledColor,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   if (_post.ipLocation != "")
@@ -1448,7 +1419,7 @@ class PostState extends State<PostStatefulWidget> {
                       text: ' ' + _post.ipLocation,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Theme.of(context).disabledColor,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                 ],

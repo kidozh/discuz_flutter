@@ -3,6 +3,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/widget/DiscuzHtmlWidget.dart';
+import 'package:discuz_flutter/widget/reading_glass_sliver_card.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -38,7 +39,10 @@ Widget _host({required bool sliver}) {
   final scrollView = CustomScrollView(
     slivers: [
       const SliverToBoxAdapter(child: SizedBox(height: 100)),
-      if (sliver) body else SliverToBoxAdapter(child: body),
+      if (sliver)
+        ReadingGlassSliverCard(sliver: body)
+      else
+        SliverToBoxAdapter(child: ReadingPostCard(child: body)),
     ],
   );
   return MultiProvider(

@@ -171,7 +171,6 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
     return Consumer<SelectedTidNotifierProvider>(
       builder: (context, selectedTid, child) {
         bool selected = selectedTid.tid == _forumThread.getTid();
-        final selection = ThreadSelectionColors(Theme.of(context).colorScheme);
         bool lastSelected = selectedTid.tid == afterTid;
         log(
           "Select changed ${_forumThread.tid} ${selected} ${afterTid} ${lastSelected}",
@@ -179,30 +178,9 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
         return CupertinoSeparatedItem(
           reading: true,
           includeLiquidGlass: false,
-          child: InkWell(
-            child: PlatformWidgetBuilder(
-              material: (context, child, platform) => PlatformCard(
-                elevation: 0,
-                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                color: selected
-                    ? selection.background
-                    : Theme.of(context).brightness == Brightness.light
-                    ? Colors.white
-                    : Colors.white10,
-                surfaceTintColor: selected
-                    ? selection.background
-                    : Theme.of(context).brightness == Brightness.light
-                    ? Colors.white
-                    : Colors.white10,
-                // color: Theme.of(context).colorScheme.background,
-                child: child,
-              ),
-              cupertino: (_, child, __) => ThreadListSurface(
-                selected: selected,
-                child: child ?? const SizedBox.shrink(),
-              ),
-              child: getForumThreadListTile(viewed, selected),
-            ),
+          child: ThreadListSurface(
+            selected: selected,
+            child: getForumThreadListTile(viewed, selected),
             onTap: () async {
               triggerTapFunction();
             },
@@ -259,11 +237,11 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
     final textColor = selected
         ? selection.foreground
         : viewed
-        ? Theme.of(context).disabledColor
+        ? colors.onSurfaceVariant
         : colors.onSurface;
     final metadataColor = selected
         ? selection.secondary
-        : Theme.of(context).disabledColor;
+        : colors.onSurfaceVariant;
     final category =
         threadType?.idNameMap[_forumThread.typeId] ?? _forumThread.typeName;
     final restricted = _forumThread.readPerm > (_user?.readPerm ?? 0);
@@ -435,14 +413,8 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
       return CupertinoSeparatedItem(
         reading: true,
         includeLiquidGlass: false,
-        child: PlatformCard(
-          elevation: 4.0,
-          color: Theme.of(context).brightness == Brightness.light
-              ? Colors.white
-              : Colors.white10,
-          surfaceTintColor: Theme.of(context).brightness == Brightness.light
-              ? Colors.white
-              : Colors.white10,
+        child: ThreadListSurface(
+          selected: false,
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
             child: Column(

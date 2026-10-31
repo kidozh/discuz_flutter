@@ -26,6 +26,8 @@ import 'app/MainApp.dart';
 import 'dao/DiscuzDao.dart';
 import 'entity/Discuz.dart';
 import 'firebase_options.dart';
+import 'widget/apple_watch_companion_host.dart';
+import 'widget/background_new_posts_host.dart';
 
 String initialPlatform = "";
 
@@ -161,9 +163,19 @@ Widget _buildRootApp({
       )
     ],
     child: startupError == null
-        ? isExclusiveDiscuz
-            ? ExclusiveDiscuzApp(initialPlatform, discuz)
-            : MyApp(initialPlatform, navigatorKey)
+        ? BackgroundNewPostsHost(
+            navigatorKey: navigatorKey,
+            child: AppleWatchCompanionHost(
+              navigatorKey: navigatorKey,
+              child: isExclusiveDiscuz
+                  ? ExclusiveDiscuzApp(
+                      initialPlatform,
+                      discuz,
+                      navigatorKey: navigatorKey,
+                    )
+                  : MyApp(initialPlatform, navigatorKey),
+            ),
+          )
         : StartupErrorApp(
             error: startupError,
             stackTrace: startupStackTrace,

@@ -40,134 +40,136 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m8(username) => "Auto fill ${username} to the form.";
 
-  static String m9(duration) => "Duration ${duration}";
+  static String m9(time) => "Last successful check: ${time}";
 
-  static String m10(count) => "${count} parts";
+  static String m10(duration) => "Duration ${duration}";
 
-  static String m11(date) => "Published ${date}";
+  static String m11(count) => "${count} parts";
 
-  static String m12(version, number) => "Build ver. ${version}, num ${number}";
+  static String m12(date) => "Published ${date}";
 
-  static String m13(author) =>
+  static String m13(version, number) => "Build ver. ${version}, num ${number}";
+
+  static String m14(author) =>
       "Accept the reply by ${author} as the best answer? This settles the reward and cannot be undone in the app.";
 
-  static String m14(username) =>
+  static String m15(username) =>
       "This content is posted from block user ${username}";
 
-  static String m15(name) => "Custom · ${name}";
+  static String m16(name) => "Custom · ${name}";
 
-  static String m16(day) => "${day} days ago";
+  static String m17(day) => "${day} days ago";
 
-  static String m17(day) => "${day} days later";
+  static String m18(day) => "${day} days later";
 
-  static String m18(account) => "Delete account ${account} successfully.";
+  static String m19(account) => "Delete account ${account} successfully.";
 
-  static String m19(account) => "Delete discuz ${account} successfully.";
+  static String m20(account) => "Delete discuz ${account} successfully.";
 
-  static String m20(sitename) => "${sitename} is in AD exempt list";
+  static String m21(sitename) => "${sitename} is in AD exempt list";
 
-  static String m21(sitename) =>
+  static String m22(sitename) =>
       "The inner AD is invisible when browsing ${sitename}. \nThanks for choosing DisFly.";
 
-  static String m22(key, content) => "${content}(${key})";
+  static String m23(key, content) => "${content}(${key})";
 
-  static String m23(filename) => "Downloading file: ${filename} in background.";
+  static String m24(filename) => "Downloading file: ${filename} in background.";
 
-  static String m24(discuz, discuzUrl) =>
+  static String m25(discuz, discuzUrl) =>
       "I hereby would like to add ${discuz}(${discuzUrl}) to subscription list";
 
-  static String m25(discuz) => "Add ${discuz} to subscription list";
+  static String m26(discuz) => "Add ${discuz} to subscription list";
 
-  static String m26(discuz) => "Notify us ${discuz}";
+  static String m27(discuz) => "Notify us ${discuz}";
 
-  static String m27(size) => "${size} pt";
+  static String m28(size) => "${size} pt";
 
-  static String m28(size) => "x ${size}";
+  static String m29(size) => "x ${size}";
 
-  static String m29(version) =>
+  static String m30(version) =>
       "- Sent via [url=https://discuzhub.kidozh.com/]DisFly[/url] v${version}.";
 
-  static String m30(device, version) =>
+  static String m31(device, version) =>
       "- Sent by ${device}\'s [url=https://discuzhub.kidozh.com/]DisFly[/url] v${version}.";
 
-  static String m31(device) => "Sent by ${device}.";
+  static String m32(device) => "Sent by ${device}.";
 
-  static String m32(language) => "Not support ${language}";
+  static String m33(language) => "Not support ${language}";
 
-  static String m33(readAccess, star) =>
+  static String m34(readAccess, star) =>
       "Read Access: ${readAccess} and Star: ${star}";
 
-  static String m34(hour) => "${hour} hours ago";
+  static String m35(hour) => "${hour} hours ago";
 
-  static String m35(hour) => "${hour} hours later";
+  static String m36(hour) => "${hour} hours later";
 
-  static String m36(uri) => "Unable to open the uri: ${uri}.";
+  static String m37(uri) => "Unable to open the uri: ${uri}.";
 
-  static String m37(name) => "${name}\'s Linux device";
+  static String m38(name) => "${name}\'s Linux device";
 
-  static String m38(name) => "${name}\'s MacOS device";
+  static String m39(name) => "${name}\'s MacOS device";
 
-  static String m39(min) => "${min} minutes ago";
+  static String m40(min) => "${min} minutes ago";
 
-  static String m40(min) => "${min} minutes later";
+  static String m41(min) => "${min} minutes later";
 
-  static String m41(discuz) =>
+  static String m42(discuz) =>
       "No subscription channel exists for ${discuz} now.";
 
-  static String m42(downloaded) => "Downloaded ${downloaded} MB";
+  static String m43(downloaded) => "Downloaded ${downloaded} MB";
 
-  static String m43(hour) => "${hour} hour(s).";
+  static String m44(hour) => "${hour} hour(s).";
 
-  static String m44(pictureBedName) => "Service provided by ${pictureBedName}";
+  static String m45(pictureBedName) => "Service provided by ${pictureBedName}";
 
-  static String m45(time) => "Poll will expire at ${time}.";
+  static String m46(time) => "Poll will expire at ${time}.";
 
-  static String m46(people) => "${people} have voted.";
+  static String m47(people) => "${people} have voted.";
 
-  static String m47(pos) => "# ${pos}";
+  static String m48(pos) => "# ${pos}";
 
-  static String m48(discuz) => "${discuz} may not support push service";
+  static String m49(discuz) => "${discuz} may not support push service";
 
-  static String m49(pid, ptid, author, fullTimeString, trimMessage) =>
+  static String m50(pid, ptid, author, fullTimeString, trimMessage) =>
       "[quote][size=2][url=forum.php?mod=redirect&goto=findpost&pid=${pid}&ptid=${ptid}]${author} posted at ${fullTimeString}[/url][/size]\n${trimMessage}[/quote]";
 
-  static String m50(name) => "Report ${name}";
+  static String m51(name) => "Report ${name}";
 
-  static String m51(discuzName) => "Report to the ${discuzName} Successfully";
+  static String m52(discuzName) => "Report to the ${discuzName} Successfully";
 
-  static String m52(username, discuzName) =>
+  static String m53(username, discuzName) =>
       "User ${username} sign in at ${discuzName} successfully.";
 
-  static String m53(discuzName) => "Sign in at ${discuzName}";
+  static String m54(discuzName) => "Sign in at ${discuzName}";
 
-  static String m54(index) => "Smiley #${index}";
+  static String m55(index) => "Smiley #${index}";
 
-  static String m55(name) => "Related game: ${name}";
+  static String m56(name) => "Related game: ${name}";
 
-  static String m56(checked, allowed) => "Submit (${checked} / ${allowed})";
+  static String m57(checked, allowed) => "Submit (${checked} / ${allowed})";
 
-  static String m57(title) => "Successfully remove view history ${title}.";
+  static String m58(title) => "Successfully remove view history ${title}.";
 
-  static String m58(filename) => "Successfully download file: ${filename}.";
+  static String m59(filename) => "Successfully download file: ${filename}.";
 
-  static String m59(num) =>
+  static String m60(num) =>
       "All ${num} favorite threads are synced from the server.";
 
-  static String m60(num) => "RP ${num}";
+  static String m61(num) => "RP ${num}";
 
-  static String m61(reply) => "${reply} replies";
+  static String m62(reply) => "${reply} replies";
 
-  static String m62(view) => "${view} views";
+  static String m63(view) => "${view} views";
 
-  static String m63(username) => "User ${username} expired";
+  static String m64(username) => "User ${username} expired";
 
-  static String m64(uid) => "UserId ${uid}";
+  static String m65(uid) => "UserId ${uid}";
 
-  static String m65(user) => "View ${user}\'s profile.";
+  static String m66(user) => "View ${user}\'s profile.";
 
-  static String m66(version) => "Welcome to version ${version}";
+  static String m67(version) => "Welcome to version ${version}";
 
-  static String m67(name) => "${name}\'s Windows device";
+  static String m68(name) => "${name}\'s Windows device";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -459,6 +461,41 @@ class MessageLookup extends MessageLookupByLibrary {
     "avatarUploadFailed": MessageLookupByLibrary.simpleMessage(
       "Avatar upload failed. Please try again.",
     ),
+    "backgroundNewPostsCheckFailed": MessageLookupByLibrary.simpleMessage(
+      "Last check failed; waiting for the next eligible run",
+    ),
+    "backgroundNewPostsDescription": MessageLookupByLibrary.simpleMessage(
+      "Checks only when your Android device is idle, battery is not low, and a network is available. The target interval is about one hour; Android may delay checks. Reopen the app after force-stopping it to resume.",
+    ),
+    "backgroundNewPostsLastCheck": m9,
+    "backgroundNewPostsLoadFailed": MessageLookupByLibrary.simpleMessage(
+      "Could not update background alert settings. Try again.",
+    ),
+    "backgroundNewPostsNoSites": MessageLookupByLibrary.simpleMessage(
+      "Add a forum site first.",
+    ),
+    "backgroundNewPostsPermissionRequired":
+        MessageLookupByLibrary.simpleMessage(
+          "Allow new-post notifications in system settings.",
+        ),
+    "backgroundNewPostsPublicOnly": MessageLookupByLibrary.simpleMessage(
+      "Checks public posts on selected sites as a guest. The first successful check records existing posts; later alerts are deduplicated by thread ID.",
+    ),
+    "backgroundNewPostsSelectSites": MessageLookupByLibrary.simpleMessage(
+      "Select at least one forum site.",
+    ),
+    "backgroundNewPostsSites": MessageLookupByLibrary.simpleMessage(
+      "Monitored forum sites",
+    ),
+    "backgroundNewPostsSystemSettings": MessageLookupByLibrary.simpleMessage(
+      "System notification settings",
+    ),
+    "backgroundNewPostsTitle": MessageLookupByLibrary.simpleMessage(
+      "Background new-post alerts",
+    ),
+    "backgroundNewPostsWaiting": MessageLookupByLibrary.simpleMessage(
+      "Waiting for an idle-device check",
+    ),
     "basicUse": MessageLookupByLibrary.simpleMessage("Basic"),
     "basicUseDescribe": MessageLookupByLibrary.simpleMessage(
       "Basic use of EasyRefresh",
@@ -467,9 +504,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "The reward or reply has changed, or you lack permission. Refresh the thread and try again.",
     ),
     "bestAnswerSelected": MessageLookupByLibrary.simpleMessage("Accepted"),
-    "bilibiliDuration": m9,
-    "bilibiliParts": m10,
-    "bilibiliPublishedAt": m11,
+    "bilibiliDuration": m10,
+    "bilibiliParts": m11,
+    "bilibiliPublishedAt": m12,
     "bio": MessageLookupByLibrary.simpleMessage("Bio"),
     "birthPlace": MessageLookupByLibrary.simpleMessage("Birth place"),
     "blackAndWhiteColorPickerType": MessageLookupByLibrary.simpleMessage(
@@ -502,7 +539,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "buildDescription": MessageLookupByLibrary.simpleMessage(
       "Built with flutter, made with ♥, run on multiple platforms.",
     ),
-    "buildVersionDescription": m12,
+    "buildVersionDescription": m13,
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
     "cancelActivity": MessageLookupByLibrary.simpleMessage(
       "Cancel registration",
@@ -580,7 +617,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "completeLoad": MessageLookupByLibrary.simpleMessage("Load done"),
     "completeRefresh": MessageLookupByLibrary.simpleMessage("Refresh done"),
-    "confirmBestAnswer": m13,
+    "confirmBestAnswer": m14,
     "connectServerWhenAdding": MessageLookupByLibrary.simpleMessage(
       "Connect to BBS server for verification.",
     ),
@@ -590,7 +627,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "contactUsViaWeibo": MessageLookupByLibrary.simpleMessage(
       "Contact us (Weibo)",
     ),
-    "contentPostByBlockUserTitle": m14,
+    "contentPostByBlockUserTitle": m15,
     "continueAdding": MessageLookupByLibrary.simpleMessage("Continue"),
     "continueToDo": MessageLookupByLibrary.simpleMessage("Continue"),
     "continueToTest": MessageLookupByLibrary.simpleMessage(
@@ -609,7 +646,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Classic Apple-style controls without custom Liquid Glass effects.",
     ),
     "customColor": MessageLookupByLibrary.simpleMessage("Custom color"),
-    "customColorNamed": m15,
+    "customColorNamed": m16,
     "customSignature": MessageLookupByLibrary.simpleMessage("Custom"),
     "customStatusTitle": MessageLookupByLibrary.simpleMessage("Custom title"),
     "dashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
@@ -624,11 +661,11 @@ class MessageLookup extends MessageLookupByLibrary {
       "Data backup",
     ),
     "day": MessageLookupByLibrary.simpleMessage("D"),
-    "dayAgo": m16,
-    "dayLater": m17,
+    "dayAgo": m17,
+    "dayLater": m18,
     "deleteAccount": MessageLookupByLibrary.simpleMessage("Delete"),
-    "deleteAccountSuccessfully": m18,
-    "deleteDiscuzSuccessfully": m19,
+    "deleteAccountSuccessfully": m19,
+    "deleteDiscuzSuccessfully": m20,
     "deleteViewHistoryWarnContent": MessageLookupByLibrary.simpleMessage(
       "Clearing operation is irrecoverable, please take care.",
     ),
@@ -670,9 +707,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "discuzAuthenticationTitle": MessageLookupByLibrary.simpleMessage(
       "Authentication",
     ),
-    "discuzInAdExemptBuiltInList": m20,
-    "discuzInAdExemptBuiltInListDescription": m21,
-    "discuzOperationMessage": m22,
+    "discuzInAdExemptBuiltInList": m21,
+    "discuzInAdExemptBuiltInListDescription": m22,
+    "discuzOperationMessage": m23,
     "discuzServerAddress": MessageLookupByLibrary.simpleMessage(
       "The Discuz\'s address",
     ),
@@ -684,7 +721,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "displaySettingTitle": MessageLookupByLibrary.simpleMessage("Display"),
     "downloadAttachment": MessageLookupByLibrary.simpleMessage("Download"),
-    "downloadingFiles": m23,
+    "downloadingFiles": m24,
     "duplicatedPost": MessageLookupByLibrary.simpleMessage("Duplicated Posts"),
     "dynamicSchemeVariant": MessageLookupByLibrary.simpleMessage(
       "Scheme variant",
@@ -799,12 +836,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "editPoll": MessageLookupByLibrary.simpleMessage("Edit poll"),
     "editedPost": MessageLookupByLibrary.simpleMessage("Edited"),
-    "emailChannelBody": m24,
+    "emailChannelBody": m25,
     "emailChannelFailed": MessageLookupByLibrary.simpleMessage(
       "Could not find mail app in this device. You could email us (kidozh@gmail.com) to add this site to the subscription list.",
     ),
-    "emailChannelTitle": m25,
-    "emailUsToAddChannel": m26,
+    "emailChannelTitle": m26,
+    "emailUsToAddChannel": m27,
     "emoijButtonTooltip": MessageLookupByLibrary.simpleMessage(
       "Insert smiley emoij",
     ),
@@ -865,11 +902,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "fontSizeInParagraph": MessageLookupByLibrary.simpleMessage(
       "Font size in paragraph",
     ),
-    "fontSizeInParagraphUnit": m27,
+    "fontSizeInParagraphUnit": m28,
     "fontSizeScaleParameter": MessageLookupByLibrary.simpleMessage(
       "Scale parameter in typesetting",
     ),
-    "fontSizeScaleParameterUnit": m28,
+    "fontSizeScaleParameterUnit": m29,
     "forgetPassword": MessageLookupByLibrary.simpleMessage("Forget password?"),
     "forumAccountChanged": MessageLookupByLibrary.simpleMessage(
       "Account changed. Go back and reopen this page.",
@@ -972,13 +1009,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumWorking": MessageLookupByLibrary.simpleMessage("Working…"),
     "friendList": MessageLookupByLibrary.simpleMessage("Friends"),
     "friendNumber": MessageLookupByLibrary.simpleMessage("Friends"),
-    "fromAppOnlySignature": m29,
-    "fromAppSignature": m30,
-    "fromDeviceSignature": m31,
+    "fromAppOnlySignature": m30,
+    "fromAppSignature": m31,
+    "fromDeviceSignature": m32,
     "fuchsia": MessageLookupByLibrary.simpleMessage("Fuchsia"),
     "gameComingSoon": MessageLookupByLibrary.simpleMessage("Coming Soon"),
     "gameFreeOfCharge": MessageLookupByLibrary.simpleMessage("Free"),
-    "gameLanguageNotSupported": m32,
+    "gameLanguageNotSupported": m33,
     "goToPushSetting": MessageLookupByLibrary.simpleMessage(
       "Enable push service",
     ),
@@ -1001,7 +1038,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "googleTranslationPolicy": MessageLookupByLibrary.simpleMessage(
       "Google Translate attribution guidelines",
     ),
-    "groupInfoDescription": m33,
+    "groupInfoDescription": m34,
     "habit": MessageLookupByLibrary.simpleMessage("Habits"),
     "hapticFeedbackTitle": MessageLookupByLibrary.simpleMessage(
       "Vibration feedback",
@@ -1014,8 +1051,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "hotForums": MessageLookupByLibrary.simpleMessage("Popular forums"),
     "hotThread": MessageLookupByLibrary.simpleMessage("Popular"),
     "hour": MessageLookupByLibrary.simpleMessage("H"),
-    "hourAgo": m34,
-    "hourLater": m35,
+    "hourAgo": m35,
+    "hourLater": m36,
     "httpBrowseWarn": MessageLookupByLibrary.simpleMessage(
       "HTTP protocol warning",
     ),
@@ -1065,8 +1102,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "legalInformation": MessageLookupByLibrary.simpleMessage(
       "Legal information",
     ),
-    "linkUnableToOpen": m36,
-    "linuxDeviceName": m37,
+    "linkUnableToOpen": m37,
+    "linuxDeviceName": m38,
     "liquidGlassStyle": MessageLookupByLibrary.simpleMessage("Liquid Glass"),
     "liquidGlassStyleDescription": MessageLookupByLibrary.simpleMessage(
       "Native glass controls on iOS / iPadOS 26 or later.",
@@ -1099,7 +1136,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "loginSubtitle": MessageLookupByLibrary.simpleMessage("Add a new user"),
     "loginTitle": MessageLookupByLibrary.simpleMessage("Login"),
-    "macOSDeviceName": m38,
+    "macOSDeviceName": m39,
     "manageAccount": MessageLookupByLibrary.simpleMessage("Manage account"),
     "manageAccountTitle": MessageLookupByLibrary.simpleMessage(
       "Manage accounts",
@@ -1120,8 +1157,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "menuDrawerTitle": MessageLookupByLibrary.simpleMessage("Menu"),
     "menuIconTooltip": MessageLookupByLibrary.simpleMessage("Menu"),
     "minute": MessageLookupByLibrary.simpleMessage("M"),
-    "minuteAgo": m39,
-    "minuteLater": m40,
+    "minuteAgo": m40,
+    "minuteLater": m41,
     "mobileTemplateNotFound": MessageLookupByLibrary.simpleMessage(
       "This page is optimized for web view.",
     ),
@@ -1181,7 +1218,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "noSmileyFoundInDB": MessageLookupByLibrary.simpleMessage(
       "Try to use the first smiley?",
     ),
-    "noSubscribeChannelProvided": m41,
+    "noSubscribeChannelProvided": m42,
     "notification": MessageLookupByLibrary.simpleMessage("Notification"),
     "nullDiscuzScreenSubtitle": MessageLookupByLibrary.simpleMessage(
       "Add discuz ! now to Disfly to enjoy the app.",
@@ -1226,7 +1263,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "onDeviceAiDownloadModel": MessageLookupByLibrary.simpleMessage(
       "Download model",
     ),
-    "onDeviceAiDownloadProgress": m42,
+    "onDeviceAiDownloadProgress": m43,
     "onDeviceAiDownloadingModel": MessageLookupByLibrary.simpleMessage(
       "Downloading model…",
     ),
@@ -1300,7 +1337,7 @@ class MessageLookup extends MessageLookupByLibrary {
         ),
     "onDeviceAiTemporarilyUnavailableTitle":
         MessageLookupByLibrary.simpleMessage("Temporarily unavailable"),
-    "onlineHours": m43,
+    "onlineHours": m44,
     "onlineHoursTitle": MessageLookupByLibrary.simpleMessage("Online Time"),
     "onlyViewAuthor": MessageLookupByLibrary.simpleMessage(
       "OP mode / View all",
@@ -1364,7 +1401,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "pictureBedTermsSubtitle": MessageLookupByLibrary.simpleMessage(
       "This service is not provided by us but the 3rd party services and we exclude all warranties for it. Using our service does not mean you are granted with 3rd party service as mentioned in our terms. You shall agree to their terms before using 3rd party service.",
     ),
-    "pictureBedTermsTitle": m44,
+    "pictureBedTermsTitle": m45,
     "pictureBedTestAndSave": MessageLookupByLibrary.simpleMessage(
       "Test and save",
     ),
@@ -1387,7 +1424,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "pollDaysHint": MessageLookupByLibrary.simpleMessage(
       "Duration in days (0 for no deadline)",
     ),
-    "pollExpireAt": m45,
+    "pollExpireAt": m46,
     "pollInvalid": MessageLookupByLibrary.simpleMessage(
       "Check the options, duplicates, maximum selections and duration.",
     ),
@@ -1403,7 +1440,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "pollUnavailable": MessageLookupByLibrary.simpleMessage(
       "This forum or account cannot create polls, or the permission check failed.",
     ),
-    "pollVoterNumber": m46,
+    "pollVoterNumber": m47,
     "portalNoHotThreads": MessageLookupByLibrary.simpleMessage(
       "No popular threads yet",
     ),
@@ -1421,6 +1458,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "postCommentUnavailable": MessageLookupByLibrary.simpleMessage(
       "Commenting is unavailable. Refresh and check your login or continue on the website for verification.",
     ),
+    "postCopyEmpty": MessageLookupByLibrary.simpleMessage(
+      "This post has no text to copy.",
+    ),
+    "postCopyText": MessageLookupByLibrary.simpleMessage("Copy post text"),
     "postLocateFailed": MessageLookupByLibrary.simpleMessage(
       "Could not locate this post. It may have been deleted or restricted.",
     ),
@@ -1433,7 +1474,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "postPermissionUnknown": MessageLookupByLibrary.simpleMessage(
       "Could not verify posting permission. Please retry.",
     ),
-    "postPosition": m47,
+    "postPosition": m48,
     "postRate": MessageLookupByLibrary.simpleMessage("Rate"),
     "postRatingChanged": MessageLookupByLibrary.simpleMessage(
       "Rating limits or terms changed. Review them and confirm again.",
@@ -1459,6 +1500,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Edited after review",
     ),
     "postShowOriginal": MessageLookupByLibrary.simpleMessage("Show original"),
+    "postSummaryDisclaimer": MessageLookupByLibrary.simpleMessage(
+      "AI may err. Check the original.",
+    ),
     "postSummaryFailed": MessageLookupByLibrary.simpleMessage(
       "Summary failed. Tap to retry.",
     ),
@@ -1466,6 +1510,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "postSummaryTitle": MessageLookupByLibrary.simpleMessage("AI summary"),
     "postSupport": MessageLookupByLibrary.simpleMessage("Support"),
     "postSupported": MessageLookupByLibrary.simpleMessage("Supported"),
+    "postTextCopied": MessageLookupByLibrary.simpleMessage("Post text copied"),
     "postThread": MessageLookupByLibrary.simpleMessage("Post thread"),
     "postTranslating": MessageLookupByLibrary.simpleMessage("Translating…"),
     "postViewRatings": MessageLookupByLibrary.simpleMessage("View ratings"),
@@ -1577,7 +1622,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "pushServiceOnDescription": MessageLookupByLibrary.simpleMessage(
       "You are now able to get the updated information from supported Discuz.",
     ),
-    "pushServiceSiteNotSupport": m48,
+    "pushServiceSiteNotSupport": m49,
     "pushTermsOfService": MessageLookupByLibrary.simpleMessage(
       "Terms of push services",
     ),
@@ -1623,8 +1668,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "Your account cannot reply to this thread",
     ),
     "replyPost": MessageLookupByLibrary.simpleMessage("Reply"),
-    "replyPostTrimMessage": m49,
-    "reportContentTitle": m50,
+    "replyPostTrimMessage": m50,
+    "reportContentTitle": m51,
     "reportDiscuzApiInformationToAnalytics":
         MessageLookupByLibrary.simpleMessage("Report availability to us"),
     "reportDiscuzApiInformationToAnalyticsDescription":
@@ -1648,7 +1693,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "reportOtherReasonHint": MessageLookupByLibrary.simpleMessage(
       "Type to report other reason",
     ),
-    "reportSuccessfully": m51,
+    "reportSuccessfully": m52,
     "reportThreadTooltip": MessageLookupByLibrary.simpleMessage(
       "Report the post",
     ),
@@ -1728,8 +1773,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "showThreadStats": MessageLookupByLibrary.simpleMessage(
       "Show thread views and replies",
     ),
-    "signInSuccessTitle": m52,
-    "signInTitle": m53,
+    "signInSuccessTitle": m53,
+    "signInTitle": m54,
     "signInViaBrowser": MessageLookupByLibrary.simpleMessage("Sign in by web"),
     "signUp": MessageLookupByLibrary.simpleMessage("Sign up"),
     "signatureAppAndDevice": MessageLookupByLibrary.simpleMessage(
@@ -1754,7 +1799,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "The site may not install DHP Service.",
     ),
     "sitePage": MessageLookupByLibrary.simpleMessage("Homepage"),
-    "smileyLabel": m54,
+    "smileyLabel": m55,
     "sortThreadInAscendOrder": MessageLookupByLibrary.simpleMessage(
       "Sort thread in ascent order",
     ),
@@ -1777,7 +1822,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Reward amount",
     ),
     "steamComingSoon": MessageLookupByLibrary.simpleMessage("Coming soon"),
-    "steamParentApp": m55,
+    "steamParentApp": m56,
     "steamPriceUnavailable": MessageLookupByLibrary.simpleMessage(
       "See Steam for pricing",
     ),
@@ -1792,7 +1837,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "steamTypeVideo": MessageLookupByLibrary.simpleMessage("Video"),
     "stickyThread": MessageLookupByLibrary.simpleMessage("Pinned thread"),
     "style": MessageLookupByLibrary.simpleMessage("Style"),
-    "submitPoll": m56,
+    "submitPoll": m57,
     "subscribe": MessageLookupByLibrary.simpleMessage("Subscribe"),
     "subscribeChannel": MessageLookupByLibrary.simpleMessage(
       "Push subscription",
@@ -1803,9 +1848,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionSuccess": MessageLookupByLibrary.simpleMessage(
       "Subscription change successful.",
     ),
-    "successfullyDeleteViewHistoryContent": m57,
-    "successfullyDownloadFiles": m58,
-    "syncSuccessfullyWithServer": m59,
+    "successfullyDeleteViewHistoryContent": m58,
+    "successfullyDownloadFiles": m59,
+    "syncSuccessfullyWithServer": m60,
     "systemStyleAndroidDescription": MessageLookupByLibrary.simpleMessage(
       "Follow the system using Material Design.",
     ),
@@ -1832,9 +1877,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "thread": MessageLookupByLibrary.simpleMessage("Thread"),
     "threadIsClosed": MessageLookupByLibrary.simpleMessage("Thread is closed."),
-    "threadReadAccess": m60,
-    "threadReply": m61,
-    "threadView": m62,
+    "threadReadAccess": m61,
+    "threadReply": m62,
+    "threadView": m63,
     "translationAppLanguage": MessageLookupByLibrary.simpleMessage(
       "Device language",
     ),
@@ -1999,8 +2044,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "userExpiredSubtitle": MessageLookupByLibrary.simpleMessage(
       "The current user is expired, some function may not work.",
     ),
-    "userExpiredTitle": m63,
-    "userIdTitle": m64,
+    "userExpiredTitle": m64,
+    "userIdTitle": m65,
     "userPost": MessageLookupByLibrary.simpleMessage("Posts"),
     "userProfile": MessageLookupByLibrary.simpleMessage("User Profile"),
     "userProfileTitle": MessageLookupByLibrary.simpleMessage("User Profiles"),
@@ -2023,7 +2068,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "viewThreadTwoPaneText": MessageLookupByLibrary.simpleMessage(
       "Click thread to view posts inside.",
     ),
-    "viewUserInfo": m65,
+    "viewUserInfo": m66,
     "warnedPost": MessageLookupByLibrary.simpleMessage("The post is warned."),
     "watchPictureInFullScreen": MessageLookupByLibrary.simpleMessage(
       "Full display",
@@ -2035,9 +2080,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Welcome to use our Services.",
     ),
     "welcomeTitle": MessageLookupByLibrary.simpleMessage("Welcome"),
-    "welcomeVersionTitle": m66,
+    "welcomeVersionTitle": m67,
     "wheelColorPickerType": MessageLookupByLibrary.simpleMessage("Wheel"),
-    "windowsDeviceName": m67,
+    "windowsDeviceName": m68,
     "workProcedure": MessageLookupByLibrary.simpleMessage(
       "How does push service work?",
     ),

@@ -1,0 +1,79 @@
+{
+  "purpose": "Repository-safe, lightweight README exports of existing marketing artwork and screenshots.",
+  "transform": "Proportional downscale only, without cropping or changing screenshot content. WebP quality 90, effort 6, smartSubsample true.",
+  "content_note": "The community, accounts, posts, notifications, messages, and reply drafts are fictional samples. Lifestyle photos and the banner illustration are AI-generated. The summary is a human-written example of the completed summary UI.",
+  "assets": [
+    {
+      "file": "banner.webp",
+      "source": "marketing/app-store/2026-10/zh-Hans/creative-v1/upload/01-header-3840x1646.png",
+      "source_sha256": "633439f0863768fa728ee963e8d63e901e28d56c78f36593c30dfa13e60356c6",
+      "width": 1600,
+      "height": 686,
+      "bytes": 25226
+    },
+    {
+      "file": "iphone-home.webp",
+      "source": "marketing/app-store/2026-10/zh-Hans/screenshots-life-v3/previews/01-iphone-home.png",
+      "source_sha256": "20bd75fb706e5c3d3d6068e3769a4f38812645317b97198f0864e3f843f2df24",
+      "width": 640,
+      "height": 1391,
+      "bytes": 98712
+    },
+    {
+      "file": "iphone-reading.webp",
+      "source": "marketing/app-store/2026-10/zh-Hans/screenshots-life-v3/previews/02-iphone-reading.png",
+      "source_sha256": "17189334e1404938464f5c35733c964255413ed9a7338fbd49d6db82218043fe",
+      "width": 640,
+      "height": 1391,
+      "bytes": 107716
+    },
+    {
+      "file": "iphone-summary.webp",
+      "source": "marketing/app-store/2026-10/zh-Hans/screenshots-life-v3/previews/03-iphone-ai-summary.png",
+      "source_sha256": "9dbfc56587d2c5b4aac5e602e28ee1065476de73045198115d73e5aeb31f5f2b",
+      "width": 640,
+      "height": 1391,
+      "bytes": 107838
+    },
+    {
+      "file": "ipad-reading.webp",
+      "source": "marketing/app-store/2026-10/zh-Hans/screenshots-life-v3/previews/02-ipad-13-reading.png",
+      "source_sha256": "8df14ab88a430bdf8c46b1eecfdd5b3615b5e9c71e5685ae4ea9fee755c7292e",
+      "width": 960,
+      "height": 720,
+      "bytes": 109458
+    },
+    {
+      "file": "duo-reading.webp",
+      "source": "marketing/app-store/2026-10/zh-Hans/screenshots-life-v3/previews/02-duo-inner-reading.png",
+      "source_sha256": "5866b42e61bad8e425e93a11ba2f969a2b6ccfacf06438ed82e53c37514b747c",
+      "width": 960,
+      "height": 675,
+      "bytes": 99952
+    },
+    {
+      "file": "watch-home.webp",
+      "source": "marketing/app-store/2026-10/zh-Hans/watch-life-v1/previews/01-watch-home.png",
+      "source_sha256": "aa4854baaab9f0e2bf105f688fc949ec0408ad65856f888b40f02d10efbde7f7",
+      "width": 416,
+      "height": 496,
+      "bytes": 13870
+    },
+    {
+      "file": "watch-reading.webp",
+      "source": "marketing/app-store/2026-10/zh-Hans/watch-life-v1/previews/03-watch-reading.png",
+      "source_sha256": "9c7215fc5a8198cbf7f41c25a4b4c09fe561bf0cba88b3714ec308a07f281cc5",
+      "width": 416,
+      "height": 496,
+      "bytes": 25206
+    },
+    {
+      "file": "watch-reply.webp",
+      "source": "marketing/app-store/2026-10/zh-Hans/watch-life-v1/previews/07-watch-reply.png",
+      "source_sha256": "92ebad5002fb468e440ffcfd79ac6dd586c68eeb27c336e573d33601e6caeb9b",
+      "width": 416,
+      "height": 496,
+      "bytes": 18034
+    }
+  ]
+}

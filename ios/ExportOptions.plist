@@ -12,6 +12,8 @@
 	<dict>
 		<key>com.kidozh.discuz-flutter</key>
 		<string>AppStore com.kidozh.discuz-flutter</string>
+		<key>com.kidozh.discuz-flutter.watchkitapp</key>
+		<string>iOS Team Store Provisioning Profile: com.kidozh.discuz-flutter.watchkitapp</string>
 	</dict>
 	<key>signingStyle</key>
 	<string>manual</string>

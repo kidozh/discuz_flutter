@@ -21,17 +21,14 @@ void main() {
       'https://music.163.com/song?id=3348657303',
     );
   });
-  test(
-    'normalizes HTTP and entities and never preserves autoplay or injected attributes',
-    () {
-      final embed = NeteaseMusicEmbed.parse(
-        'http://music.163.com/outchain/player?type=2&amp;id=12&amp;auto=1&extra=%22onload%3Dalert(1)',
-      )!;
-      expect(embed.playerUrl.queryParameters['auto'], '0');
-      expect(embed.songUrl.toString(), isNot(contains('alert(1)')));
-      expect(embed.playerUrl.queryParameters.containsKey('extra'), false);
-    },
-  );
+  test('normalizes HTTP and entities and never preserves autoplay or injected attributes', () {
+    final embed = NeteaseMusicEmbed.parse(
+      'http://music.163.com/outchain/player?type=2&amp;id=12&amp;auto=1&extra=%22onload%3Dalert(1)',
+    )!;
+    expect(embed.playerUrl.queryParameters['auto'], '0');
+    expect(embed.songUrl.toString(), isNot(contains('alert(1)')));
+    expect(embed.playerUrl.queryParameters.containsKey('extra'), false);
+  });
   test(
     'ignores unrelated iframe providers, malformed IDs and unsupported types',
     () {
@@ -71,6 +68,10 @@ void main() {
       expect(find.text(S.current.neteaseOpenSong), findsOneWidget);
       expect(find.text('https://music.163.com/song?id=12'), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(
+        tester.getSize(find.byType(NeteaseMusicWidget)).height,
+        lessThan(180),
+      );
       expect(tester.takeException(), isNull);
     },
   );

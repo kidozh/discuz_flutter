@@ -1,0 +1,7 @@
+NetEase Cloud Music brand icon from Simple Icons, with its original geometry.
+Source: https://github.com/simple-icons/simple-icons/blob/develop/icons/neteasecloudmusic.svg
+Downloaded: 2026-10-17
+The SVG is retained beside the PNG. Rasterized at 144 x 144 using rsvg-convert.
+Flutter applies the red colour at display time.
+Simple Icons license: https://github.com/simple-icons/simple-icons/blob/develop/LICENSE.md
+The NetEase Cloud Music trademark remains the property of its owner.

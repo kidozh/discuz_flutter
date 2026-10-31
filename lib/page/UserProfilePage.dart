@@ -205,7 +205,6 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
     }
     return PlatformScaffold(
       iosContentPadding: true,
-      iosContentBottomPadding: true,
       appBar: PlatformAppBar(
         liquidGlassTitle: _userProfileResult!.variables.getSpace().username,
         title: _userProfileResult == null
@@ -909,6 +908,9 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                     ),
                   ),
               ]),
+            ),
+            const SliverToBoxAdapter(
+              child: SafeArea(top: false, child: SizedBox(height: 8)),
             ),
           ],
         ),

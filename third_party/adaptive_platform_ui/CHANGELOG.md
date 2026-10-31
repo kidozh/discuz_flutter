@@ -1,0 +1,472 @@
+# Changelog
+
+## [1.0.1]
+* **FIX**: 📱 **iPhone Duo: the tab bar now lives in the vertical bar**, at the bottom of it, the way the system lays it out. In 1.0.0 it stayed at the bottom of the screen. The strip now reads, from the top: status cluster, back button, toolbar items, tab bar. Measured against a native UIKit app on the iPhone Duo simulator
+* **FIX**: iPhone Duo: the vertical bar follows the hardware through every rotation. On the cover display in landscape it stays on the side, including the rotation that puts the strip on the left, and it keeps clear of the camera wherever the rotation puts it (top or bottom of the strip). In 1.0.0 rotating fell back to horizontal bars. The inner display in portrait keeps horizontal bars, as it does in UIKit
+* **IMPROVEMENT**: iPhone Duo: toolbar items are grouped into native Liquid Glass capsules, one per group (groups are split by `spacerAfter`), with the back button as a round control on top, matching the system's sizes and spacing. The title moves to the leading edge, and content scrolling under it is blurred and faded like the system's scroll edge effect
+* **NEW**: iPhone Duo: when the strip runs out of room, toolbar items move, from the bottom up, into the system overflow menu while the tab bar stays whole. A group can be split, so its first items stay visible
+* **NEW**: `label` on `AdaptiveAppBarAction`, a short name such as "Undo". It names the action in the iPhone Duo overflow menu, for VoiceOver on iOS, and as the tooltip on Android. Unlike `title`, it never replaces the icon with text. Give every icon action one
+* **FIX**: iPhone Duo: an action with only `icon` or `iconWidget` (no `iosSymbol`) showed up empty in the vertical bar
+* **FIX**: A custom bottom bar (`useNativeBottomBar: false`) is left where it is on iPhone Duo; only the native tab bar moves into the vertical bar
+* **FIX**: Example app: the Profile tab had no route, so Search could not be opened and Profile opened Search
+
+## [1.0.0]
+* **BREAKING**: The minimum iOS deployment target is now 15.0 (was 13.0). Xcode 27 no longer builds below 15.0. Set `platform :ios, '15.0'` in your `ios/Podfile` and `IPHONEOS_DEPLOYMENT_TARGET = 15.0` in the Runner project
+* **BREAKING**: On iOS 26+ the native toolbar is no longer part of a page. With `AdaptiveApp`, every `AdaptiveScaffold` with `AdaptiveAppBar(useNativeToolbar: true)` hands its app bar to one fixed toolbar above the navigator. No code change is needed for ordinary pages. `AdaptiveAppBar.leading`, `titleWidget` and `AdaptiveAppBarAction.iconWidget` are now built above the navigator, so they must not look up `Navigator.of(context)` or page-level inherited widgets from their own `context`; capture the page's context in the callback instead. `useHeroBackButton` has no effect while the fixed toolbar is in use, because the back button already stays in place. See "Migrating to 1.0.0" in the README
+* **NEW**: 📱 **iPhone Duo support.** Apple's foldable iPhone works out of the box, open and folded. On the inner display, and on the cover display while folded, toolbar controls move into a fixed vertical bar in the trailing strip the system reserves, clear of the camera and status cluster, while the title stays on top. Nothing to set up
+* **NEW**: On iPhone Duo the scaffold keeps the page body out of the trailing strip, the way UIKit does, so a page that does not use `SafeArea` no longer runs underneath the status cluster and the vertical bar
+* **NEW**: Fixed Liquid Glass toolbar on iOS 26+. One toolbar stays in place while pages slide underneath it, and only its items change. The outgoing page's items fade out and the incoming page's fade in, driven by the route's own animation, so the change lasts exactly as long as the page transition, follows a back swipe under the finger and reverses when the swipe is cancelled. A back button that both pages show stays put. Dialogs and sheets leave the toolbar in place, dimmed and not tappable
+* **NEW**: `AdaptiveToolbarHost`, for apps that do not use `AdaptiveApp`. Install it in the app `builder`. It is router-agnostic: it relies on the widget tree only, not on a `NavigatorObserver`, so it works with `Navigator`, GoRouter (including `StatefulShellRoute`), auto_route, nested navigators and tabs
+* **NEW**: `useFixedToolbar` on `AdaptiveScaffold` (default `true`). Set it to `false` for a scaffold that does not fill the screen from the top, such as one pane of a side by side layout, so it keeps its own toolbar. Scaffolds shown in a sheet, dialog or popup do this automatically
+* **NEW**: Depends on `foldable` ^1.0.3 for the iPhone Duo reserved regions
+* **FIX**: Builds with Xcode 27: `Package.swift` now declares its `FlutterFramework` dependency
+
+## [0.1.111]
+* **NEW**: Custom SF Symbols on iOS. `AdaptiveAppBarAction`, native buttons, and the tab bar now fall back to a bundle asset (`UIImage(named:)`) when a name is not a system SF Symbol, so custom symbols or images from the app's asset catalog work (@hieutbui)
+* **NEW**: `iconWidget` on `AdaptiveAppBarAction` for a custom fallback widget (e.g. an SVG) on iOS <26 and Android (@hieutbui)
+* **NEW**: Per-state SF Symbols on the iOS 26+ native tab bar. `AdaptiveNavigationDestination.selectedIcon` now accepts a distinct SF Symbol name for the selected state (outline when unselected, filled when selected) (@hieutbui, @philipgiuliani)
+* **NEW**: `minuteInterval` on `AdaptiveTimePicker` and `AdaptiveDatePicker` restricts selectable minutes to a fixed grid (e.g. 15-minute steps). iOS uses the native `minuteInterval`; Android snaps the picked value onto the grid (@luflow)
+* **NEW**: `AdaptiveDatePicker` now honors `dateAndTime` and `monthYear` modes on Android too, with `use24HourFormat` support (@luflow)
+
+## [0.1.110]
+* **NEW**: `subtitle` and `titleWidget` on `AdaptiveAppBar`. Show a smaller subtitle below the title, or replace the title area with any widget. Works on iOS 26+ native toolbar (centered overlay), iOS <26 `CupertinoNavigationBar`, and Material `AppBar` (@luflow)
+* **NEW**: `subtitle` and `imageBytes` on `AdaptivePopupMenuItem`. Subtitles render natively via `UIAction.subtitle` on iOS 15+, and image bytes (e.g. avatars) are shown clipped to a circle on iOS 26+ native menus, Material popup menus, and the iOS <26 action-sheet fallback (@luflow)
+* **IMPROVEMENT**: iOS 26+ native toolbar now insets the body's top padding by the toolbar height, so `SafeArea`/`SliverSafeArea` inside a page clear the Liquid Glass toolbar automatically, matching how `CupertinoPageScaffold` handles a translucent navigation bar. Removes the need for per-screen top-offset hacks (@luflow)
+* **FIX**: Material alert dialogs now place the cancel (dismissive) button on the left, matching the Material 3 dialog guidelines (@luflow)
+* **FIX**: iOS status bar style now follows the effective theme brightness on the Cupertino path, so it stays legible when a forced `ThemeMode` differs from the system brightness (@luflow)
+* **FIX**: Fixed iOS 16+ popup menu items being reordered by the system by setting `preferredMenuElementOrder = .fixed`, so items keep their declared order (@Sahil-Kundaliya)
+* **FIX**: Fixed an unbounded-width crash when an iOS 26 text popup button is placed directly in a `Row`, before its native intrinsic width has been measured
+* **FIX**: Silenced an iOS 26 native button Auto Layout constraint conflict that logged on every layout pass
+
+## [0.1.109]
+* **NEW**: `triggerOnLongPress` and `onTap` on popup menu buttons — tap fires `onTap`, long-press opens the menu (@yuriylybimov)
+* **NEW**: `isDestructive` on `AdaptivePopupMenuItem` — renders destructive (red) styling on Material, iOS <26, and iOS 26+ native menus (@yuriylybimov)
+* **FIX**: destructive menu items now use the theme `colorScheme.error` instead of a hardcoded red (@yuriylybimov)
+* **FIX**: `IOSSpringCurve` no longer clamps its output to [0,1], restoring the natural spring overshoot in the mid-range (endpoints remain exact) (@yuriylybimov)
+* **NEW**: Exported `IOSSpringCurve` from the package's public API (@yuriylybimov)
+
+## [0.1.108]
+* **IMPROVEMENT**: Migrated the iOS plugin from CocoaPods to Swift Package Manager — apps with SPM enabled (`flutter config --enable-swift-package-manager`) now consume the plugin as a Swift package, while CocoaPods-based projects keep working unchanged (@philipgiuliani)
+* **IMPROVEMENT**: Raised the iOS minimum deployment target from 12.0 to 13.0, matching Flutter's supported minimum (@philipgiuliani)
+
+## [0.1.107]
+* **NEW**: Added `resizeToAvoidBottomInset` prop to `AdaptiveScaffold` for explicit control over keyboard-driven scaffold resizing across all platform paths (iOS 26+, iOS <26, Android) (@philasmar)
+* **FIX**: Fixed iOS 26+ native tab bar rendering with truncated/ellipsized labels on cold launch — replaced timing-based retry with a layout-aware container that rebuilds items when the platform view receives its real width (@philasmar)
+
+## [0.1.106]
+* **NEW**: Added `ImageProvider` support (`AssetImage`, `FileImage`, `NetworkImage`) for `AdaptiveBottomNavigationBar` icons — including async network image loading with caching and circular avatar rendering for iOS 26+ native tab bar (@philasmar)
+* **NEW**: Added `textColor` and `selectedTextColor` props to `AdaptiveSegmentedControl` for explicit label color customization across iOS 26+, iOS <26, and Android (@philasmar)
+* **FIX**: Fixed dimmed background removal delay when closing iOS 26+ alert dialogs — removed redundant Flutter-side overlays so only the native `UIAlertController` dim is used (@ctrl-Felix)
+
+## [0.1.105]
+* **NEW**: Added `ImageIcon` / `AssetImage` support for iOS 26+ native tab bar — custom asset icons (with optional per-state selected icon) can now be used alongside SF Symbols (@Mohamed-7018)
+* **NEW**: Added automatic RTL (right-to-left) layout support for iOS 26+ native tab bar — mirrors automatically based on `Directionality.of(context)` (@Mohamed-7018)
+* **NEW**: Added `hideBottomDivider` prop to `AdaptiveListTile` for removing the bottom separator, useful for the last tile in a grouped list (@ctrl-Felix)
+* **NEW**: Added `separatorColor` prop to `AdaptiveListTile` for customizing the iOS bottom separator color (@philasmar)
+* **FIX**: Fixed iOS 26+ alert dialog incorrectly tinting the cancel button red when no primary action was present (@philasmar)
+* **FIX**: Removed unnecessary empty vertical space in message-only alert dialogs on Android and iOS <26 (@philasmar)
+* **FIX**: Fixed iOS segmented control inactive label colors not following the app theme on iOS 26+, and removed vertical overflow on older iOS versions (@philasmar)
+
+## [0.1.104]
+* **NEW**: Added `tabBarHidden` prop to `AdaptiveScaffold` to hide the native iOS 26+ tab bar — prevents native `UITabBar` from bleeding through `showModalBottomSheet` (@DmitriiSer)
+* **NEW**: Added `tintColor` support for iOS 26+ native toolbar and `prominent` button style for `AdaptiveAppBarAction` (@luflow)
+* **FIX**: Fixed dynamic title updates not reflecting on iOS 26+ native toolbar (@Qian-Samuel)
+* **FIX**: Fixed back button being obscured by window toolbar in iPadOS 26 windowed mode (@rivafarabi)
+
+## [0.1.103]
+* **FIX**: Fixed iOS 18 navigation bar not being displayed (@adrianorios)
+
+## [0.1.102]
+* **IMPROVEMENT**: Adjusted back button leading position on iOS 26+ native toolbar for better alignment
+* **NEW**: Added brightness synchronization for iOS 26+ components — native buttons, switches, sliders, segmented controls, toolbar, and blur view now react to light/dark mode changes
+* **NEW**: Added `cupertinoDecoration` property to AdaptiveTextField and AdaptiveTextFormField for customizable iOS styling
+* **NEW**: Added drawer and endDrawer support to AdaptiveScaffold with full Material drawer behavior on all platforms
+* **FIX**: Prevented native tab bar from floating above keyboard on iOS 26+ (@marcofucito)
+
+## [0.1.101]
+* **NEW**: Added `enableToolbarGradient` option to AdaptiveScaffold for iOS 26+ toolbar gradient customization (@nadavfima)
+* **NEW**: Added `extendBodyBehindAppBar` option to AdaptiveScaffold (@Crucialjun)
+* **NEW**: Added `scaffoldMessengerKey` parameter to AdaptiveApp (@Crucialjun)
+* **NEW**: Added `autofillHints` support to AdaptiveTextFormField (@Crucialjun)
+* **NEW**: Added `onTapOutside` callback to AdaptiveTextFormField
+* **FIX**: Fixed missing return result from AdaptiveDatePicker (@obrunsmann)
+* **FIX**: Fixed AdaptiveSwitch iOS 26 flutter container size (@PetrKubes97)
+* **FIX**: Improved AdaptiveButton icon alignment and sizing
+
+## [0.1.100]
+* **FIX**: Theme color support across all components
+  * All adaptive components now properly use theme colors when no explicit color provided
+  * iOS: Uses `CupertinoTheme.of(context).primaryColor`
+  * Android: Uses `Theme.of(context).colorScheme.primary`
+  * Material button styles now respect `elevatedButtonTheme`, `textButtonTheme`, etc.
+* **FIX**: iOS button width handling in Row/Flex layouts
+  * iOS 26+ native buttons now properly size to content width
+  * Removed forced full-width constraint in Swift implementation
+  * Buttons work correctly with `mainAxisAlignment: MainAxisAlignment.spaceBetween`
+* **FIX**: Dark mode text color issues on iOS
+  * Text now automatically switches to white in dark mode, black in light mode
+  * Applied to all scaffold implementations (iOS 26+ and legacy)
+* **FIX**: Android TextField suffix spacing issue
+  * Suffix widget now uses `suffixIcon` internally to prevent extra vertical space
+  * Added `isDense: true` to reduce padding
+* **FIX**: Android AppBar back button visibility
+  * Back button now shows even when title is not provided
+* **FIX**: Material context issues in AdaptiveScaffold
+  * Scaffold now always used on Android to ensure Material context
+
+## [0.1.99]
+* **NEW**: Added `AdaptiveBlurView` widget - iOS 26+ Liquid Glass blur effects
+  * iOS 26+: Native UIVisualEffectView with system blur styles (systemMaterial, systemThick, systemThin, etc.)
+  * iOS <26 & Android: Flutter-based BackdropFilter with gaussian blur
+  * Supports custom blur styles and border radius
+  * Perfect for overlays, card backgrounds, and glassmorphic effects
+* **FIX**: Fixed `unselectedItemColor` behavior in AdaptiveBottomNavigationBar
+  * When `unselectedItemColor` is null, now uses theme's default color instead of forcing a color
+  * iOS 26+: Uses `.alwaysTemplate` rendering mode when no custom color provided
+  * CupertinoTabBar: Removed forced `CupertinoColors.inactiveGray` fallback
+* **FIX**: Fixed iOS 26 toolbar layout issues
+  * Back button now stays on the left when title is missing
+  * Actions now properly align to the right when title is missing
+  * Improved flexible space handling for all layout combinations
+
+## [0.1.98]
+* **NEW**: Added `selectedItemColor` and `unselectedItemColor` support for AdaptiveBottomNavigationBar
+  * iOS 26+: Icon colors via renderingMode (`.alwaysOriginal` for unselected, `.alwaysTemplate` for selected)
+  * iOS <26 & Android: Native color properties
+  * Customizable tab bar item colors for better UI flexibility
+* **NEW**: Added `useSmoothRectangleBorder` parameter to AdaptiveButton (iOS 26+)
+  * Default `true`: Smooth rectangle corners
+  * Set to `false`: Perfect circular/capsule shape for icon buttons
+* **BREAKING**: Split AdaptiveAlertDialog methods for different use cases
+  * `show()` - Standard dialog (returns void)
+  * `inputShow()` - Text input dialog (returns String?)
+  * Cancel button now correctly returns null for input dialogs
+* **FIX**: Fixed dynamic label updates not working in AdaptivePopupMenuItem
+  * Labels now properly update when state changes
+* **FIX**: Fixed dark mode not updating in AdaptiveDatePicker and AdaptiveTimePicker
+  * Pickers now respond to theme changes dynamically
+## [0.1.97]
+* **NEW**: Added `spacerAfter` parameter (ToolbarSpacerType) to AdaptiveAppBarAction for iOS 26+ Liquid Glass toolbar grouping
+  * `ToolbarSpacerType.fixed` - 12pt fixed space using UIBarButtonItem.fixedSpace() for spacing within groups
+  * `ToolbarSpacerType.flexible` - Flexible space using UIBarButtonItem.flexibleSpace() for left/right group separation
+  * `ToolbarSpacerType.none` - No spacer (default)
+  * Follows iOS 26+ Liquid Glass design guidelines per Apple HIG
+  * Example: `AdaptiveAppBarAction(iosSymbol: 'arrow.uturn.forward', onPressed: () {}, spacerAfter: ToolbarSpacerType.flexible)`
+
+
+## [0.1.96]
+* **FIX**: Added automatic localization support for AdaptiveDatePicker, AdaptiveTimePicker, and popup menu buttons
+  * Platform-specific localizations: CupertinoLocalizations for iOS, MaterialLocalizations for Android
+  * Supports 70+ languages automatically based on system locale
+* **FIX**: Increased default height of AdaptiveSegmentedControl from 32 to 36 pixels to prevent overflow on iOS <26
+  * Resolves RenderConstraintsTransformBox overflow issue with CupertinoSlidingSegmentedControl
+* **FIX**: Fixed tab bar minimizing during pull-to-refresh bounce animation
+  * Tab bar now ignores scroll events when content is overscrolling (pixels outside minScrollExtent/maxScrollExtent)
+  * Prevents unwanted tab bar animation during iOS elastic scroll bounce
+
+## [0.1.95]
+* **NEW**: Added `AdaptiveTabBarView` widget - Platform-specific swipeable tab bar view with color customization
+* **NEW**: Added `AdaptiveFloatingActionButton` widget - Platform-specific FAB with custom colors, mini size, hero transitions
+* **NEW**: Added `AdaptiveFormSection` widget - Platform-specific form sections (iOS: CupertinoFormSection, Android: Card)
+  * Two constructors: default and insetGrouped
+  * Works with CupertinoFormRow and adaptive components
+* **NEW**: Added `AdaptiveExpansionTile` widget - Modern expandable/collapsible content
+  * iOS: Custom design with rounded corners, smooth shadows, animated chevron, gradient separator, modern child items with tap feedback
+  * Android: Material ExpansionTile with InkWell effects
+  * Full customization support (colors, padding, callbacks, alignment)
+* **BREAKING CHANGE**: Renamed `AdaptiveAppBarAction.androidIcon` to `icon`
+  * `iosSymbol` for iOS 26+ only, `icon` for iOS <26 and Android
+  * Migration: Replace `androidIcon:` with `icon:`
+* **IMPROVEMENT**: Updated `AdaptiveSegmentedControl` for iOS <26 to use CupertinoSlidingSegmentedControl
+* Added comprehensive tests and demo pages for all new widgets
+
+## [0.1.94+1]
+* fix: improve pub.dev score and CI compatibility
+
+## [0.1.94]
+* **NEW**: Added `AdaptiveTextField` for platform-specific text input
+  * iOS: Uses `CupertinoTextField` with tertiarySystemBackground color and rounded corners
+  * Android: Uses Material `TextField` with outlined border
+  * Supports all standard text field parameters: placeholder, keyboard type, obscure text, max length, etc.
+  * Supports prefix and suffix icons on both platforms
+  * Automatic platform-specific styling and behavior
+* **NEW**: Added `AdaptiveTextFormField` for form validation support
+  * iOS: Uses custom `FormField` wrapper with `CupertinoTextField` for proper validation
+  * Android: Uses Material `TextFormField`
+  * Full form validation support with validator, onSaved, and autovalidateMode
+  * Displays error messages with red border on iOS, standard Material error styling on Android
+  * Supports prefix and suffix icons with proper validation state handling
+* **FIX**: Fixed prefix/suffix icon support in text fields
+  * Icons now display correctly on both iOS and Android
+  * iOS icons wrapped in proper padding for consistent spacing
+  * Added GestureDetector to prevent focus when tapping icons
+* **FIX**: Fixed iOS26 button icon tap area issue
+  * Child widgets in `IOS26Button.child` now wrapped with `IgnorePointer`
+  * Icon buttons now respond to taps anywhere on the icon, not just the edges
+  * Resolves issue where `AdaptiveButton.icon` had limited tap area
+* **IMPROVEMENT**: Added `iconColor` parameter to `AdaptiveButton.icon`
+  * Separate color control for icon buttons
+  * `textColor` remains for label buttons, `iconColor` for icon buttons
+  * Consistent API across all button constructors
+* Added comprehensive demo page showcasing all text field features
+*
+* @amolon615, thanks for the changes below.
+* Updated documentation with text field examples
+* * **NEW**: Added badge counter support to `AdaptiveNavigationDestination`
+  * Added `badgeCount` parameter to `AdaptiveNavigationDestination` class
+  * iOS 26+: Uses native `UITabBarItem.badgeValue` for native badge display
+  * iOS <26 and Android: Uses `AdaptiveBadge` widget for cross-platform badge display
+  * Supports dynamic badge updates and proper badge clearing
+  * Badge counts > 99 display as "99+" following iOS conventions
+  * Added comprehensive demo page showcasing badge navigation functionality
+
+
+## [0.1.93]
+* **NEW**: Added `AdaptiveDatePicker` for platform-specific date selection
+  * iOS: Uses `CupertinoDatePicker` in a modal bottom sheet with Cancel/Done buttons
+  * Android: Uses Material `DatePickerDialog`
+  * Supports date, dateTime, and time modes
+  * Configurable date range with firstDate and lastDate parameters
+  * Returns `Future<DateTime?>` with selected date or null if cancelled
+* **NEW**: Added `AdaptiveTimePicker` for platform-specific time selection
+  * iOS: Uses `CupertinoDatePicker` in time mode in a modal bottom sheet
+  * Android: Uses Material `TimePickerDialog`
+  * Supports both 12-hour and 24-hour formats
+  * Returns `Future<TimeOfDay?>` with selected time or null if cancelled
+* **NEW**: Added `AdaptiveListTile` for platform-specific list item tiles
+  * iOS: Uses CupertinoListTile-like styling with bottom border separator
+  * Android: Uses Material `ListTile`
+  * Supports leading, title, subtitle, and trailing widgets
+  * Includes onTap and onLongPress callbacks
+  * Supports selected state and disabled state
+  * Customizable backgroundColor and padding
+* Updated README with comprehensive examples for new widgets
+* Updated widget catalog to include all new widgets
+
+## [0.1.92]
+* AdaptiveSegmentedControl now renders icons directly based on platform.
+* Maintained existing height, padding, and shrinkWrap behavior.
+
+## [0.1.91]
+* Enhance AdaptivePopupMenuButton to support dynamic icon types for iOS and Android
+
+## [0.1.9]
+* **NEW**: Added text input support to `AdaptiveAlertDialog`
+  * Added `AdaptiveAlertDialogInput` class for input configuration
+  * iOS 26+: Native UITextField with native keyboard types
+  * iOS <26: CupertinoTextField with scrollable content
+  * Android: Material TextField
+  * Returns `Future<String?>` with user input
+  * Supports placeholder, initial value, keyboard type, obscure text, and max length
+* **NEW**: Added `AdaptiveContextMenu` widget for long-press context menus
+  * iOS: Uses `CupertinoContextMenu.builder` with native animations
+  * Android: Uses `PopupMenuButton` with Material Design styling
+  * Supports icons, destructive actions, and disabled states
+  * Long press to show, tap to select action
+* **IMPROVEMENT**: Changed `AdaptiveAlertDialog` icon parameter to dynamic type
+  * iOS 26+: Accepts SF Symbol strings (e.g., "checkmark.circle.fill")
+  * iOS <26 and Android: Accepts IconData
+  * Automatically handles platform-specific icon rendering
+
+## [0.1.8]
+* **NEW**: Added `AdaptiveBottomNavigationBar` class for cleaner bottom navigation configuration
+  * Centralized bottom navigation configuration with `bottomNavigationBar` parameter in `AdaptiveScaffold`
+  * Replaces individual `destinations`, `selectedIndex`, `onDestinationSelected` parameters
+  * If `bottomNavigationBar` is null, no bottom navigation will be shown
+* **NEW**: Added custom bottom navigation bar support via `AdaptiveBottomNavigationBar`
+  * `items` parameter: Navigation items (renamed from `destinations`)
+  * `selectedIndex` parameter: Currently selected item index
+  * `onTap` parameter: Callback when item is tapped (renamed from `onDestinationSelected`)
+  * `useNativeBottomBar` parameter: Control iOS 26+ native bottom bar (default: `true`)
+  * `cupertinoTabBar` parameter: Provide custom `CupertinoTabBar` for iOS
+  * `bottomNavigationBar` parameter: Provide custom `NavigationBar` or `BottomNavigationBar` for Android
+* **IMPORTANT**: `useNativeBottomBar` priority behavior on iOS
+  * iOS 26+ with `useNativeBottomBar: true`: Native UITabBar with Liquid Glass effect is shown, custom `cupertinoTabBar` is ignored
+  * iOS 26+ with `useNativeBottomBar: false`: Custom `cupertinoTabBar` is used if provided, otherwise auto-generated from items
+  * iOS <26: Custom `cupertinoTabBar` is used if provided, otherwise auto-generated from items (useNativeBottomBar is ignored)
+* **FIX**: Fixed icon type handling in bottom navigation
+  * SF Symbol strings (e.g., "house.fill") are now properly converted to IconData for CupertinoTabBar
+  * Android NavigationBar handles both IconData and SF Symbol strings with appropriate fallbacks
+* **BREAKING CHANGE**: `AdaptiveScaffold` bottom navigation parameters refactored
+  * Removed: Direct `destinations`, `selectedIndex`, `onDestinationSelected` parameters
+  * Added: Single `bottomNavigationBar` parameter of type `AdaptiveBottomNavigationBar?`
+  * Migration: Wrap existing parameters in `AdaptiveBottomNavigationBar()`
+  ```dart
+  // Before
+  AdaptiveScaffold(
+    destinations: [...],
+    selectedIndex: 0,
+    onDestinationSelected: (index) {},
+  )
+
+  // After
+  AdaptiveScaffold(
+    bottomNavigationBar: AdaptiveBottomNavigationBar(
+      items: [...],
+      selectedIndex: 0,
+      onTap: (index) {},
+    ),
+  )
+  ```
+
+## [0.1.7+1]
+  * Updated README.md
+
+## [0.1.7]
+* **NEW**: Added `AdaptiveAppBar` class for cleaner app bar configuration
+  * Centralized app bar configuration with `appBar` parameter in `AdaptiveScaffold`
+  * Replaces individual `title`, `actions`, `leading`, `useNativeToolbar` parameters
+  * If `appBar` is null, no app bar or toolbar will be shown
+* **NEW**: Added custom navigation bar support via `AdaptiveAppBar`
+  * `cupertinoNavigationBar` parameter: Provide custom `CupertinoNavigationBar` for iOS
+  * `appBar` parameter: Provide custom `AppBar` for Android
+  * Custom navigation bars take priority over auto-generated ones
+* **IMPORTANT**: `useNativeToolbar` priority behavior on iOS
+  * When `useNativeToolbar: true`: Native iOS 26 toolbar is shown, custom `cupertinoNavigationBar` is ignored
+  * When `useNativeToolbar: false` or not set: Custom `cupertinoNavigationBar` is used if provided
+* **BREAKING CHANGE**: `AdaptiveScaffold` parameters refactored
+  * Removed: Direct `title`, `actions`, `leading`, `useNativeToolbar` parameters
+  * Added: Single `appBar` parameter of type `AdaptiveAppBar?`
+  * Migration: Wrap existing parameters in `AdaptiveAppBar()`
+  ```dart
+  // Before
+  AdaptiveScaffold(
+    title: 'My App',
+    actions: [...],
+    useNativeToolbar: true,
+  )
+
+  // After
+  AdaptiveScaffold(
+    appBar: AdaptiveAppBar(
+      title: 'My App',
+      actions: [...],
+      useNativeToolbar: true,
+    ),
+  )
+  ```
+
+## [0.1.6]
+* **NEW**: Added `AdaptivePopupMenuButton.widget()` constructor for custom widget support
+  * iOS <26: GestureDetector with CupertinoActionSheet fallback
+  * Android: Material PopupMenuButton with custom child
+  * Added demo examples: Custom Button, Card Style, and Chip Style
+
+## [0.1.5+2]
+  * Updated README.md
+
+## [0.1.5+1]
+  * Updated README.md
+
+## [0.1.5]
+
+* **NEW**: Added `AdaptiveSnackBar` widget for platform-specific notifications
+  * iOS: Banner-style notification at the top with slide/fade animations
+    - Tap to dismiss
+    - Icon indicators for different types
+    - Action button support with blur effect
+    - Automatic dismissal
+  * Android: Material SnackBar at the bottom
+    - Standard Material Design appearance
+    - Action button support
+  * Supports 4 types: info, success, warning, error
+  * Customizable duration and action callbacks
+* **BREAKING CHANGE**: iOS 26 Native Toolbar is now optional due to stability issues with GoRouter and other router packages
+  * Native toolbar can still be enabled via `useNativeToolbar: true` parameter in `AdaptiveScaffold`
+  * Default behavior now uses `CupertinoNavigationBar` for better compatibility
+  * iOS 26+ users will get custom animated back button when `useNativeToolbar: false`
+  * Resolves touch callback issues and navigation conflicts with router-based navigation
+* **IMPROVEMENT**: Added automatic back button with fade animation for iOS 26+ when using `useNativeToolbar: false`
+  * Appears automatically when page can pop
+  * Prevents native back button conflicts during transitions
+  * Smooth fade-out animation on tap
+* **FIX**: Fixed icon handling in bottom navigation - icons now properly support both SF Symbol strings and IconData
+* Updated demo app with comprehensive snackbar examples
+
+## [0.1.4+1]
+  * Updated README.md
+
+## [0.1.4]
+
+* **NEW**: Added `AdaptiveCard` widget for platform-specific card styling
+  * iOS: Custom iOS-style card with Cupertino design (border, subtle shadow, rounded corners)
+  * Android: Material Design Card with elevation support
+  * Support for custom colors, border radius, padding, margin, and clip behavior
+* **NEW**: Added `AdaptiveRadio` widget for radio button groups
+  * iOS: Custom iOS-style radio with circular design
+  * Android: Material Design Radio
+  * Support for custom colors, toggleable mode, and disabled state
+* **NEW**: Added `AdaptiveBadge` widget for notification badges
+  * iOS: Custom iOS-style badge with rounded design
+  * Android: Material Design Badge
+  * Support for count/label display, custom colors, show zero option, and large size
+* **NEW**: Added `AdaptiveTooltip` widget for platform-specific tooltips
+  * iOS: Custom iOS-style tooltip with animation and theme support
+  * Android: Material Design Tooltip
+  * Long press/tap to show, auto-hide after duration
+* **NEW**: Added `AdaptiveCheckbox` widget (Cupertino & Material only)
+  * iOS: Custom iOS-style checkbox with Cupertino design
+  * Android: Material Design Checkbox
+  * Support for tristate, custom colors, and dark/light mode
+* **EXPERIMENTAL**: Added `IOS26NativeSearchTabBar` for iOS 26+ native search tab bar
+  * App-level UITabBarController integration replacing Flutter's navigation
+  * Native search tab transformation with UISearchController
+  * Liquid Glass effects and native animations
+  * Method channel for Flutter ↔ Native communication
+  * Search query callbacks and tab selection handling
+  * ⚠️ **WARNING**: This feature is highly experimental and unstable:
+    - Replaces Flutter's root view controller
+    - Breaks widget lifecycle and state management
+    - Hot reload may not work properly
+    - Navigation stack becomes invalid
+    - Only recommended for prototyping and demos
+  * See demo page for detailed technical explanation of architectural conflicts
+* Added comprehensive demo pages for all new widgets
+
+## [0.1.3]
+
+* **BREAKING CHANGE**: Renamed `AdaptiveScaffold.child` parameter to `body` to match standard Scaffold API
+* **NEW**: Added `AdaptiveApp` widget for automatic platform-specific app configuration
+  * `AdaptiveApp()` - Constructor for normal navigation
+  * `AdaptiveApp.router()` - Constructor for router-based navigation (GoRouter, etc.)
+  * Direct theme parameters: `themeMode`, `materialLightTheme`, `materialDarkTheme`, `cupertinoLightTheme`, `cupertinoDarkTheme`
+  * Platform-specific callbacks: `material()` and `cupertino()` for advanced configuration
+  * Automatic platform detection (iOS uses CupertinoApp, Android uses MaterialApp)
+  * Full support for all MaterialApp and CupertinoApp properties
+* Debug banner now hidden by default (`debugShowCheckedModeBanner: false`)
+* Updated all example code to use new `body` parameter
+
+## [0.1.2]
+
+* Fix image links in README.md to use GitHub raw URLs
+* Images now display correctly on pub.dev
+
+## [0.1.1]
+
+* Documentation improvements
+* Added comprehensive README with images for all widgets
+* Added visual showcase for toolbar, tab bar, buttons, segmented controls, switches, sliders, alerts, and popup menus
+* Improved code examples and usage documentation
+
+## [0.1.0]
+
+* Initial release with iOS 26+ support
+* Features:
+  * `AdaptiveScaffold` - Platform-adaptive scaffold with native iOS 26 toolbar and tab bar
+  * `AdaptiveButton` - Adaptive buttons with iOS 26 Liquid Glass design
+  * `AdaptiveSegmentedControl` - Native segmented controls for all platforms
+  * `AdaptiveSwitch` - Platform-adaptive switches
+  * `AdaptiveSlider` - Platform-adaptive sliders
+  * `AdaptiveAlertDialog` - Native alert dialogs
+  * `AdaptivePopupMenuButton` - Platform-adaptive popup menus
+* iOS 26+ features:
+  * Native UIToolbar with Liquid Glass blur effects
+  * Native UITabBar with minimize behavior
+  * Native UISegmentedControl
+  * Native SF Symbol support
+  * Haptic feedback
+  * Automatic light/dark mode adaptation
+* Platform support:
+  * iOS 26+ with native Liquid Glass designs
+  * iOS <26 (iOS 18 and below) with traditional Cupertino widgets
+  * Android with Material Design 3

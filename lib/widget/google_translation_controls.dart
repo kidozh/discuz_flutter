@@ -8,61 +8,20 @@ import '../utility/PlatformAdaptiveWidgets.dart';
 const _translateUrl = 'https://translate.google.com/';
 const _policyUrl = 'https://docs.cloud.google.com/translate/attribution';
 
-/// Kept next to the translated body, separate from any AI-generated summary.
-class GoogleTranslationControls extends StatelessWidget {
-  const GoogleTranslationControls({
-    super.key,
-    required this.translated,
-    required this.busy,
-    required this.onTranslate,
-    required this.onChooseLanguage,
-  });
+/// Android attribution appears only alongside the translated body.
+class GoogleTranslationAttribution extends StatelessWidget {
+  const GoogleTranslationAttribution({super.key, required this.translated});
 
   final bool translated;
-  final bool busy;
-  final VoidCallback onTranslate;
-  final VoidCallback onChooseLanguage;
 
   @override
   Widget build(BuildContext context) {
-    final strings = S.of(context);
-    final label = busy
-        ? strings.postTranslating
-        : translated
-        ? strings.postShowOriginal
-        : strings.googleTranslationAction;
+    if (!translated) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 4,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          if (translated) const GoogleTranslationBadge(),
-          Tooltip(
-            message: strings.translationLongPress,
-            child: GestureDetector(
-              onSecondaryTap: onChooseLanguage,
-              child: TextButton.icon(
-                onPressed: busy ? null : onTranslate,
-                onLongPress: onChooseLanguage,
-                icon: busy
-                    ? const SizedBox.square(
-                        dimension: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Icon(translated ? Icons.undo : Icons.translate, size: 18),
-                label: Text(label),
-                style: TextButton.styleFrom(minimumSize: const Size(44, 44)),
-              ),
-            ),
-          ),
-          IconButton(
-            tooltip: strings.googleTranslationInfoTitle,
-            icon: const Icon(Icons.info_outline, size: 18),
-            onPressed: () => showGoogleTranslationInfo(context),
-          ),
-        ],
+      child: const Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: GoogleTranslationBadge(),
       ),
     );
   }

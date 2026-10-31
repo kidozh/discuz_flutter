@@ -20,10 +20,9 @@ packages:
   adaptive_platform_ui:
     dependency: "direct main"
     description:
-      name: adaptive_platform_ui
-      sha256: "87d68bd7b8de32768891cfc39a3dccbf0f539e4c6b714ada31d86e4d11b08822"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
+      path: "third_party/adaptive_platform_ui"
+      relative: true
+    source: path
     version: "1.0.1"
   analyzer:
     dependency: transitive

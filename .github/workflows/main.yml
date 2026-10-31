@@ -88,6 +88,15 @@ jobs:
       - name: Install dependencies
         run: flutter pub get --enforce-lockfile
 
+      - name: Run Flutter and release-preflight tests
+        run: |
+          flutter test --no-pub
+          python3 -m unittest discover -s test -p 'test_*.py'
+
+      - name: Run Android background-notification tests
+        working-directory: android
+        run: ./gradlew :app:testDebugUnitTest
+
       - name: Validate Android toolchain
         run: flutter analyze --suggestions
 

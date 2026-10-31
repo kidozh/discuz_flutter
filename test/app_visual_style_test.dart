@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/ChoosePlatformPage.dart';
 import 'package:discuz_flutter/widget/UserProfileListItem.dart';
@@ -16,20 +17,29 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('Mac glass renders frosted surfaces without UIKit platform views', (tester) async {
-    if (!Platform.isMacOS || !AppVisualStyle.supportsLiquidGlass) return;
-    await tester.pumpWidget(PlatformProvider(
-      style: AppVisualStyle.liquidGlass,
-      builder: (_) => MaterialApp(home: Builder(builder: (context) {
-        expect(usesAppleTranslucentSurface(context), isTrue);
-        expect(usesLiquidGlass(context), isFalse);
-        return const PlatformLiquidGlassCard(child: Text('Mac glass'));
-      })),
-    ));
-    expect(find.byType(PlatformGlassBackdrop), findsOneWidget);
-    expect(find.byType(UiKitView), findsNothing);
-    expect(tester.takeException(), isNull);
-  });
+  testWidgets(
+    'Mac glass renders frosted surfaces without UIKit platform views',
+    (tester) async {
+      if (!Platform.isMacOS || !AppVisualStyle.supportsLiquidGlass) return;
+      await tester.pumpWidget(
+        PlatformProvider(
+          style: AppVisualStyle.liquidGlass,
+          builder: (_) => MaterialApp(
+            home: Builder(
+              builder: (context) {
+                expect(usesAppleTranslucentSurface(context), isTrue);
+                expect(usesLiquidGlass(context), isFalse);
+                return const PlatformLiquidGlassCard(child: Text('Mac glass'));
+              },
+            ),
+          ),
+        ),
+      );
+      expect(find.byType(PlatformGlassBackdrop), findsOneWidget);
+      expect(find.byType(UiKitView), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   test(
     'Mac system appearance chooses glass on 26+, without overriding Material',
@@ -143,8 +153,13 @@ void main() {
                 matching: find.byType(Container),
               ),
             )
-            .firstWhere((widget) => widget.decoration is BoxDecoration);
-        expect((surface.decoration! as BoxDecoration).color, Colors.purple);
+            .firstWhere((widget) => widget.decoration != null);
+        final fill = switch (surface.decoration!) {
+          BoxDecoration decoration => decoration.color,
+          ShapeDecoration decoration => decoration.color,
+          _ => null,
+        };
+        expect(fill, Colors.purple);
         expect(
           tester.widget<Text>(find.text('Credits')).style!.color,
           Colors.white,
@@ -198,8 +213,13 @@ void main() {
                 matching: find.byType(Container),
               ),
             )
-            .firstWhere((widget) => widget.decoration is BoxDecoration);
-        expect((surface.decoration! as BoxDecoration).color, colors.primary);
+            .firstWhere((widget) => widget.decoration != null);
+        final fill = switch (surface.decoration!) {
+          BoxDecoration decoration => decoration.color,
+          ShapeDecoration decoration => decoration.color,
+          _ => null,
+        };
+        expect(fill, colors.primary);
         expect(
           tester.widget<Text>(find.text('匿名模式')).style!.color,
           colors.onPrimary,

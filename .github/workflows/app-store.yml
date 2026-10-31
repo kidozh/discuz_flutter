@@ -108,7 +108,9 @@ jobs:
         run: flutter pub get --enforce-lockfile
 
       - name: Run tests
-        run: flutter test
+        run: |
+          flutter test
+          python3 -m unittest discover -s test -p 'test_*.py'
 
       - name: Import App Store signing certificate
         uses: apple-actions/import-codesign-certs@v7
@@ -117,6 +119,7 @@ jobs:
           p12-password: ${{ secrets.APPSTORE_CERTIFICATES_PASSWORD }}
 
       - name: Download App Store provisioning profile
+        id: iphone_profiles
         uses: apple-actions/download-provisioning-profiles@v6
         with:
           bundle-id: ${{ env.IOS_BUNDLE_ID }}
@@ -124,6 +127,26 @@ jobs:
           issuer-id: ${{ vars.APPSTORE_ISSUER_ID }}
           api-key-id: ${{ vars.APPSTORE_API_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+
+      - name: Download Apple Watch provisioning profile
+        id: watch_profiles
+        uses: apple-actions/download-provisioning-profiles@v6
+        with:
+          bundle-id: com.kidozh.discuz-flutter.watchkitapp
+          profile-type: IOS_APP_STORE
+          issuer-id: ${{ vars.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ vars.APPSTORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+
+      - name: Configure distribution signing for both apps
+        env:
+          IPHONE_PROFILES: ${{ steps.iphone_profiles.outputs.profiles }}
+          WATCH_PROFILES: ${{ steps.watch_profiles.outputs.profiles }}
+        run: |
+          python3 scripts/configure_ios_distribution_signing.py \
+            --iphone-profiles "$IPHONE_PROFILES" \
+            --watch-profiles "$WATCH_PROFILES" \
+            --export-options build/ios/AppStoreExportOptions.plist
 
       - name: Determine release version
         id: version
@@ -158,7 +181,7 @@ jobs:
           --no-pub
           --build-name=${{ steps.version.outputs.build_name }}
           --build-number=${{ steps.version.outputs.build_number }}
-          --export-options-plist=ios/ExportOptions.plist
+          --export-options-plist=build/ios/AppStoreExportOptions.plist
 
       - name: Verify archived SDK for iPhone Duo
         shell: bash
@@ -175,6 +198,9 @@ jobs:
           plist=build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app/Info.plist
           test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$plist")" = "$EXPECTED_BUILD_NAME"
           test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$plist")" = "$EXPECTED_BUILD_NUMBER"
+
+      - name: Verify archived Keychain entitlements
+        run: python3 scripts/check_ios_keychain.py --app build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app
 
       - name: Locate IPA
         id: ipa

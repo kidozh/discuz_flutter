@@ -10,7 +10,6 @@ Widget host(double paneWidth, int count, {ValueChanged<int>? onTap}) =>
             width: paneWidth,
             child: ThreadCarouselLayout(
               itemCount: count,
-              height: 200,
               itemBuilder: (context, index) => GestureDetector(
                 onTap: () => onTap?.call(index),
                 child: ColoredBox(
@@ -46,10 +45,23 @@ void main() {
     tester.view.physicalSize = const Size(1800, 700);
     addTearDown(tester.view.reset);
     int? tapped;
-    for (final size in [(390.0, 1), (900.0, 2), (1600.0, 3)]) {
+    for (final size in [
+      (320.0, 1),
+      (390.0, 1),
+      (430.0, 1),
+      (900.0, 2),
+      (1600.0, 3),
+    ]) {
       await tester.pumpWidget(host(size.$1, 6, onTap: (i) => tapped = i));
       await tester.pumpAndSettle();
       expect(fullyVisible(tester, 6).length, size.$2);
+      if (size.$2 == 1) {
+        final cardSize = tester.getSize(
+          find.byKey(const ValueKey('promotion-0')),
+        );
+        expect(cardSize.height, greaterThanOrEqualTo(180));
+        expect(cardSize.width / cardSize.height, lessThanOrEqualTo(2));
+      }
       for (final card in find.byType(ColoredBox).evaluate()) {
         if (card.widget.key is ValueKey<String> &&
             (card.widget.key! as ValueKey<String>).value.startsWith(

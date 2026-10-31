@@ -1103,7 +1103,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
       _viewThreadResult.threadVariables.threadInfo.authorId,
       _viewThreadResult.threadVariables.formHash,
       key: ValueKey('reading-post-${post.pid}'),
-      showSeparator: !post.first,
+      // The complete post, including its actions, owns the separator below.
+      showSeparator: false,
       sessionUid: _isFirstLoading || _error?.errorType == ErrorType.userExpired
           ? 0
           : variables.member_uid,
@@ -1155,14 +1156,18 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
           _controller.callRefresh();
         },
       );
-      return asSliver
-          ? SliverMainAxisGroup(
-              slivers: [
-                content,
-                SliverToBoxAdapter(child: action),
-              ],
-            )
-          : Column(mainAxisSize: MainAxisSize.min, children: [content, action]);
+      return CupertinoSeparatedItem(
+        reading: true,
+        sliver: asSliver,
+        child: asSliver
+            ? SliverMainAxisGroup(
+                slivers: [
+                  content,
+                  SliverToBoxAdapter(child: action),
+                ],
+              )
+            : Column(mainAxisSize: MainAxisSize.min, children: [content, action]),
+      );
     }
     final feedback = ThreadFeedbackBar(
       key: ValueKey('feedback-$tid'),
@@ -1267,29 +1272,29 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     final lazyFirstPost = _hasLazyFirstPost;
 
     _updateNavigationTitle();
+    final previousPageTitle =
+        !context
+            .watch<UserPreferenceNotifierProvider>()
+            .forumDisplay
+            .showForumName
+        ? ''
+        : (route is CupertinoPageRoute<dynamic> &&
+              route.previousTitle.value != null)
+        ? route.previousTitle.value
+        : context.read<DiscuzAndUserNotifier>().discuz?.siteName;
     final adaptiveAppBar = PlatformAppBar(
       automaticallyImplyLeading: this.onClosed == null ? true : false,
       cupertino: (_, __) => CupertinoNavigationBarData(
         heroTag: this.onClosed == null ? null : "viewthread_${tid}",
         transitionBetweenRoutes: false,
-        previousPageTitle:
-            !context
-                .watch<UserPreferenceNotifierProvider>()
-                .forumDisplay
-                .showForumName
-            ? ''
-            : (route != null &&
-                  route is CupertinoPageRoute<dynamic> &&
-                  route.previousTitle.value != null)
-            ? route.previousTitle.value
-            : Provider.of<DiscuzAndUserNotifier>(
-                context,
-                listen: false,
-              ).discuz?.siteName,
+        previousPageTitle: previousPageTitle,
       ),
       leading: this.onClosed == null
           ? null
-          : PlatformBackButton(onPressed: onClosed),
+          : PlatformBackButton(
+              onPressed: onClosed,
+              previousPageTitle: previousPageTitle,
+            ),
       // Reveal the compact title only after the full title leaves the viewport.
       title: ValueListenableBuilder<bool>(
         valueListenable: _showNavigationTitle,
@@ -1435,7 +1440,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                     position: IndicatorPosition.locator,
                     safeArea: false,
                   ),
-                  footer: EasyRefreshUtils.i18nClassicFooter(context),
+                  footer: EasyRefreshUtils.i18nClassicFooter(
+                    context,
+                    safeArea: false,
+                  ),
                   refreshOnStart: true,
                   controller: _controller,
                   //scrollController: _scrollController,

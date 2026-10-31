@@ -1,5 +1,6 @@
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:hive_ce/hive.dart';
+import '../utility/background_new_posts.dart';
 
 class DiscuzDao{
   Box<Discuz> discuzBox;
@@ -53,7 +54,8 @@ class DiscuzDao{
   }
 
   Future<void> deleteDiscuz(Discuz discuz) async{
-    discuzBox.delete(discuz.key);
+    await BackgroundNewPosts.instance.removeSite(discuz.baseURL);
+    await discuzBox.delete(discuz.key);
 
   }
 

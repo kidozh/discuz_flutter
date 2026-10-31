@@ -19,15 +19,17 @@ import 'package:provider/provider.dart';
 class ExclusiveDiscuzApp extends StatefulWidget {
   final String initialPlatformName;
   final Discuz discuz;
+  final GlobalKey<NavigatorState>? navigatorKey;
 
-  const ExclusiveDiscuzApp(this.initialPlatformName, this.discuz, {super.key});
+  const ExclusiveDiscuzApp(this.initialPlatformName, this.discuz,
+      {super.key, this.navigatorKey});
 
   @override
   State<ExclusiveDiscuzApp> createState() => _ExclusiveDiscuzAppState();
 }
 
 class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
-  final _navigatorKey = GlobalKey<NavigatorState>();
+  late final _navigatorKey = widget.navigatorKey ?? GlobalKey<NavigatorState>();
   ThemeMode? themeMode;
   bool _didLoadPreferences = false;
 

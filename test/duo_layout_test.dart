@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:discuz_flutter/utility/TwoPaneScaffold.dart';
 import 'package:discuz_flutter/utility/TwoPaneUtils.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
+import 'package:discuz_flutter/utility/platform_native_view_scope.dart';
 import 'package:dual_screen/dual_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -55,6 +56,52 @@ class DraftPaneState extends State<DraftPane> {
 }
 
 void main() {
+  testWidgets(
+    'split panes use Flutter controls and retain appearance and state',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(1000, 700);
+      addTearDown(tester.view.reset);
+      final draft = GlobalKey<DraftPaneState>();
+      final nativeViews = <String, bool>{};
+      final styles = <String, AppVisualStyle>{};
+      Widget probe(String name, Widget child) => Builder(
+        builder: (context) {
+          nativeViews[name] = PlatformNativeViewScope.enabledOf(context);
+          styles[name] = visualStyle(context);
+          return child;
+        },
+      );
+      await tester.pumpWidget(
+        PlatformProvider(
+          style: AppVisualStyle.liquidGlass,
+          builder: (_) => MaterialApp(
+            home: TwoPaneScaffold(
+              type: TwoPaneType.tablet,
+              child: TwoPane(
+                startPane: probe('master', DraftPane('master', key: draft)),
+                endPane: probe('detail', const SizedBox.expand()),
+              ),
+            ),
+          ),
+        ),
+      );
+      final style = styles['master'];
+      final state = draft.currentState!;
+      state.controller.text = 'retained draft';
+      expect(nativeViews, {'master': false, 'detail': false});
+      expect(styles['detail'], style);
+
+      tester.view.physicalSize = const Size(390, 700);
+      await tester.pumpAndSettle();
+      expect(nativeViews, {'master': true, 'detail': true});
+      expect(styles['master'], style);
+      expect(styles['detail'], style);
+      expect(draft.currentState, same(state));
+      expect(state.controller.text, 'retained draft');
+    },
+  );
+
   test('width and height determine layout, with no simulated hinge', () {
     expect(PaneLayout.resolve(const Size(390, 844), []).showsBoth, isFalse);
     expect(PaneLayout.resolve(const Size(680, 900), []).showsBoth, isFalse);

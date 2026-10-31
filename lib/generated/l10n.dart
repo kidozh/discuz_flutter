@@ -7750,11 +7750,141 @@ class S {
     );
   }
 
+  /// `Background new-post alerts`
+  String get backgroundNewPostsTitle {
+    return Intl.message(
+      'Background new-post alerts',
+      name: 'backgroundNewPostsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Checks only when your Android device is idle, battery is not low, and a network is available. The target interval is about one hour; Android may delay checks. Reopen the app after force-stopping it to resume.`
+  String get backgroundNewPostsDescription {
+    return Intl.message(
+      'Checks only when your Android device is idle, battery is not low, and a network is available. The target interval is about one hour; Android may delay checks. Reopen the app after force-stopping it to resume.',
+      name: 'backgroundNewPostsDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Checks public posts on selected sites as a guest. The first successful check records existing posts; later alerts are deduplicated by thread ID.`
+  String get backgroundNewPostsPublicOnly {
+    return Intl.message(
+      'Checks public posts on selected sites as a guest. The first successful check records existing posts; later alerts are deduplicated by thread ID.',
+      name: 'backgroundNewPostsPublicOnly',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Monitored forum sites`
+  String get backgroundNewPostsSites {
+    return Intl.message(
+      'Monitored forum sites',
+      name: 'backgroundNewPostsSites',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add a forum site first.`
+  String get backgroundNewPostsNoSites {
+    return Intl.message(
+      'Add a forum site first.',
+      name: 'backgroundNewPostsNoSites',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select at least one forum site.`
+  String get backgroundNewPostsSelectSites {
+    return Intl.message(
+      'Select at least one forum site.',
+      name: 'backgroundNewPostsSelectSites',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Waiting for an idle-device check`
+  String get backgroundNewPostsWaiting {
+    return Intl.message(
+      'Waiting for an idle-device check',
+      name: 'backgroundNewPostsWaiting',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last successful check: {time}`
+  String backgroundNewPostsLastCheck(Object time) {
+    return Intl.message(
+      'Last successful check: $time',
+      name: 'backgroundNewPostsLastCheck',
+      desc: '',
+      args: [time],
+    );
+  }
+
+  /// `Last check failed; waiting for the next eligible run`
+  String get backgroundNewPostsCheckFailed {
+    return Intl.message(
+      'Last check failed; waiting for the next eligible run',
+      name: 'backgroundNewPostsCheckFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow new-post notifications in system settings.`
+  String get backgroundNewPostsPermissionRequired {
+    return Intl.message(
+      'Allow new-post notifications in system settings.',
+      name: 'backgroundNewPostsPermissionRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `System notification settings`
+  String get backgroundNewPostsSystemSettings {
+    return Intl.message(
+      'System notification settings',
+      name: 'backgroundNewPostsSystemSettings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not update background alert settings. Try again.`
+  String get backgroundNewPostsLoadFailed {
+    return Intl.message(
+      'Could not update background alert settings. Try again.',
+      name: 'backgroundNewPostsLoadFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `AI summary`
   String get postSummaryTitle {
     return Intl.message(
       'AI summary',
       name: 'postSummaryTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `AI may err. Check the original.`
+  String get postSummaryDisclaimer {
+    return Intl.message(
+      'AI may err. Check the original.',
+      name: 'postSummaryDisclaimer',
       desc: '',
       args: [],
     );
@@ -8135,6 +8265,36 @@ class S {
     return Intl.message(
       'Google Translate attribution guidelines',
       name: 'googleTranslationPolicy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Copy post text`
+  String get postCopyText {
+    return Intl.message(
+      'Copy post text',
+      name: 'postCopyText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Post text copied`
+  String get postTextCopied {
+    return Intl.message(
+      'Post text copied',
+      name: 'postTextCopied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This post has no text to copy.`
+  String get postCopyEmpty {
+    return Intl.message(
+      'This post has no text to copy.',
+      name: 'postCopyEmpty',
       desc: '',
       args: [],
     );

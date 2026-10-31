@@ -1,5 +1,7 @@
 import 'DashboardOrderPage.dart';
 import 'ForumFeedSettingsPage.dart';
+import 'background_new_posts_settings_page.dart';
+import '../utility/background_new_posts.dart';
 import '../utility/post_translation_service.dart';
 import '../widget/google_translation_controls.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
@@ -173,6 +175,16 @@ class _SettingPageState extends State<SettingPage> {
                 SetPushNotificationPage(),
               ),
             ),
+            if (BackgroundNewPosts.instance.supported)
+              _GlassNavigationTile(
+                title: S.of(context).backgroundNewPostsTitle,
+                leading: const Icon(Icons.notifications_active_outlined),
+                onTap: () => _open(
+                  context,
+                  S.of(context).backgroundNewPostsTitle,
+                  const BackgroundNewPostsSettingsPage(),
+                ),
+              ),
             if (account.discuz != null)
               _GlassNavigationTile(
                 title: S.of(context).feedForumsTitle,

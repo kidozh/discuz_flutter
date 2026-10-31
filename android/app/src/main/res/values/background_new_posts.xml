@@ -1,0 +1,7 @@
+<resources>
+    <string name="background_new_posts_channel">New forum posts</string>
+    <plurals name="background_new_posts_count">
+        <item quantity="one">%d new post</item>
+        <item quantity="other">%d new posts</item>
+    </plurals>
+</resources>

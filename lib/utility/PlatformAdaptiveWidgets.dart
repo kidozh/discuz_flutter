@@ -16,6 +16,7 @@ import 'PlatformGlass.dart';
 import 'app_foldable_provider.dart';
 import 'TwoPaneUtils.dart' show mediaQueryForPane;
 import 'app_visual_style.dart';
+import 'platform_native_view_scope.dart';
 export 'PlatformGlass.dart' show PlatformGlassEffect;
 export 'app_visual_style.dart' show AppVisualStyle;
 export 'pane_navigation.dart' show pushDetailPage;
@@ -55,11 +56,13 @@ bool isMaterial(BuildContext context) => !isCupertino(context);
 ///
 /// This deliberately checks both the user-selected style and the physical
 /// platform. A forced Material UI on iOS must remain Material, while a forced
-/// Cupertino UI on Android cannot host native UIKit views.
+/// Cupertino UI on Android cannot host native UIKit views. A split-pane host
+/// can also opt out of native controls while retaining the glass appearance.
 bool usesLiquidGlass(BuildContext context) =>
     Platform.isIOS &&
     visualStyle(context) == AppVisualStyle.liquidGlass &&
-    AppVisualStyle.supportsLiquidGlass;
+    AppVisualStyle.supportsLiquidGlass &&
+    PlatformNativeViewScope.enabledOf(context);
 
 /// Custom frosted cards belong only to the Liquid Glass appearance. Classic
 /// Cupertino retains its standard controls and opaque grouped surfaces.
@@ -703,10 +706,12 @@ class PlatformAppBar {
       key: widgetKey,
       title: title,
       backgroundColor: backgroundColor,
-      leading: leading,
+      leading: leading == null ? null : Center(child: leading),
       bottom: bottom,
       automaticallyImplyLeading: automaticallyImplyLeading ?? true,
-      actions: materialData?.actions ?? trailingActions,
+      actions: (materialData?.actions ?? trailingActions)
+          ?.map((action) => Center(widthFactor: 1, child: action))
+          .toList(),
       centerTitle: materialData?.centerTitle,
       elevation: materialData?.elevation,
       flexibleSpace: materialData?.flexibleSpace,
@@ -715,7 +720,7 @@ class PlatformAppBar {
       scrolledUnderElevation: materialData?.scrolledUnderElevation,
       surfaceTintColor: materialData?.surfaceTintColor,
       titleTextStyle: materialData?.titleTextStyle,
-      toolbarHeight: materialData?.toolbarHeight,
+      toolbarHeight: materialData?.toolbarHeight ?? 64,
     );
   }
 
@@ -735,18 +740,62 @@ class PlatformAppBar {
         : usesLiquidGlass(context)
         ? PlatformLiquidGlassToolbarGroup(children: actions)
         : Row(mainAxisSize: MainAxisSize.min, children: actions);
-    return CupertinoNavigationBar(
-      key: widgetKey,
-      middle: title,
-      backgroundColor: backgroundColor,
-      leading: useGlassBackButton ? const PlatformBackButton() : leading,
-      bottom: bottom,
-      automaticallyImplyLeading: useGlassBackButton
-          ? false
-          : automaticallyImplyLeading ?? true,
-      previousPageTitle: data?.previousPageTitle,
-      trailing: data?.trailing ?? trailing,
-      transitionBetweenRoutes: data?.transitionBetweenRoutes ?? true,
+    return _PaddedCupertinoNavigationBar(
+      navigationBar: CupertinoNavigationBar(
+        key: widgetKey,
+        middle: title,
+        backgroundColor: backgroundColor,
+        leading: useGlassBackButton ? const PlatformBackButton() : leading,
+        // The standard back control already includes the navigation edge inset.
+        padding: leading is PlatformBackButton && !usesLiquidGlass(context)
+            ? const EdgeInsetsDirectional.only(end: 16)
+            : null,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(
+            8 + (bottom?.preferredSize.height ?? 0),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: bottom ?? const SizedBox.shrink(),
+          ),
+        ),
+        automaticallyImplyLeading: useGlassBackButton
+            ? false
+            : automaticallyImplyLeading ?? true,
+        previousPageTitle: data?.previousPageTitle,
+        trailing: data?.trailing ?? trailing,
+        transitionBetweenRoutes: data?.transitionBetweenRoutes ?? true,
+      ),
+    );
+  }
+}
+
+/// Cupertino's toolbar is fixed at 44 points. Reserve space above and below
+/// that row while retaining its native back control, background and transitions.
+class _PaddedCupertinoNavigationBar extends StatelessWidget
+    implements ObstructingPreferredSizeWidget {
+  const _PaddedCupertinoNavigationBar({required this.navigationBar});
+
+  final CupertinoNavigationBar navigationBar;
+
+  @override
+  Size get preferredSize =>
+      Size.fromHeight(navigationBar.preferredSize.height + 8);
+
+  @override
+  bool shouldFullyObstruct(BuildContext context) =>
+      navigationBar.shouldFullyObstruct(context);
+
+  @override
+  Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    // Only the navigation bar consumes this extra top space. The page retains
+    // its real system insets and uses the full preferred height above.
+    return MediaQuery(
+      data: media.copyWith(
+        padding: media.padding.copyWith(top: media.padding.top + 8),
+      ),
+      child: navigationBar,
     );
   }
 }
@@ -1422,21 +1471,30 @@ class PlatformIconButton extends StatelessWidget {
 
 class PlatformBackButton extends StatelessWidget {
   final VoidCallback? onPressed;
+  final String? previousPageTitle;
 
-  const PlatformBackButton({this.onPressed, super.key});
+  const PlatformBackButton({this.onPressed, this.previousPageTitle, super.key});
 
   @override
-  Widget build(BuildContext context) => PlatformIconButton(
-    liquidGlassSymbol: 'chevron.left',
-    liquidGlassButtonSize: 44,
-    liquidGlassIconSize: 18,
-    onPressed: onPressed ?? () => Navigator.maybePop(context),
-    materialIcon: const Icon(Icons.arrow_back),
-    cupertinoIcon: Icon(
-      CupertinoIcons.back,
-      semanticLabel: CupertinoLocalizations.of(context).backButtonLabel,
-    ),
-  );
+  Widget build(BuildContext context) {
+    if (isCupertino(context) && !usesLiquidGlass(context)) {
+      return CupertinoNavigationBarBackButton(
+        previousPageTitle: previousPageTitle,
+        onPressed: onPressed ?? () => Navigator.maybePop(context),
+      );
+    }
+    return PlatformIconButton(
+      liquidGlassSymbol: 'chevron.left',
+      liquidGlassButtonSize: 44,
+      liquidGlassIconSize: 18,
+      onPressed: onPressed ?? () => Navigator.maybePop(context),
+      materialIcon: const Icon(Icons.arrow_back),
+      cupertinoIcon: Icon(
+        CupertinoIcons.back,
+        semanticLabel: CupertinoLocalizations.of(context).backButtonLabel,
+      ),
+    );
+  }
 }
 
 class PlatformCircularProgressIndicator extends StatelessWidget {
@@ -1751,7 +1809,7 @@ class PlatformLiquidGlassCard extends StatelessWidget {
   /// Solid fill used when translucent surfaces are disabled.
   final Color? backgroundColor;
 
-  /// Optional backing color beneath the translucent glass gradient.
+  /// Optional backing color beneath the translucent glass surface.
   final Color? glassBackgroundColor;
   final PlatformGlassEffect effect;
 
@@ -1775,36 +1833,36 @@ class PlatformLiquidGlassCard extends StatelessWidget {
     final primary = Theme.of(context).colorScheme.primary;
     final light = brightness == Brightness.light;
     final tint = tintColor ?? (selected ? primary : null);
-    final baseColor = tint != null
-        ? tint.withValues(alpha: light ? 0.24 : 0.30)
-        : Colors.white.withValues(alpha: light ? 0.44 : 0.10);
-    final highlight = tint != null
-        ? Color.alphaBlend(
-            Colors.white.withValues(alpha: light ? 0.34 : 0.12),
-            tint.withValues(alpha: light ? 0.34 : 0.40),
-          )
-        : Colors.white.withValues(alpha: light ? 0.70 : 0.18);
-    final borderColor = selected
-        ? primary.withValues(alpha: light ? 0.46 : 0.58)
-        : light
-        ? Color.alphaBlend(
-            primary.withValues(alpha: 0.10),
-            Colors.black.withValues(alpha: 0.08),
-          )
-        : Colors.white.withValues(alpha: 0.20);
+    final backing =
+        glassBackgroundColor ??
+        CupertinoColors.secondarySystemBackground
+            .resolveFrom(context)
+            .withValues(alpha: light ? 0.84 : 0.90);
+    final fill = tint == null
+        ? backing
+        : Color.alphaBlend(tint.withValues(alpha: 0.12), backing);
+    final shape = RoundedRectangleBorder(borderRadius: borderRadius);
+    final glassShape = shape.copyWith(
+      side: BorderSide(
+        color: CupertinoColors.separator
+            .resolveFrom(context)
+            .withValues(alpha: light ? 0.12 : 0.22),
+        width: 0.5,
+      ),
+    );
 
     final content = Padding(padding: padding ?? EdgeInsets.zero, child: child);
     if (opaque || !usesAppleTranslucentSurface(context)) {
       return Container(
         margin: margin,
-        decoration: BoxDecoration(
+        decoration: ShapeDecoration(
           color:
               backgroundColor ??
               (selected
                   ? Theme.of(context).colorScheme.primaryContainer
                   : CupertinoColors.secondarySystemGroupedBackground
                         .resolveFrom(context)),
-          borderRadius: borderRadius,
+          shape: shape,
         ),
         clipBehavior: Clip.antiAlias,
         child: PlatformGlassScope(child: content),
@@ -1813,39 +1871,22 @@ class PlatformLiquidGlassCard extends StatelessWidget {
 
     return Container(
       margin: margin,
-      decoration: BoxDecoration(
-        borderRadius: borderRadius,
-        boxShadow: [
+      decoration: ShapeDecoration(
+        shape: shape,
+        shadows: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: light ? 0.13 : 0.28),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black.withValues(alpha: light ? 0.045 : 0.16),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: borderRadius,
+      child: ClipPath(
+        clipper: ShapeBorderClipper(shape: shape),
         child: PlatformGlassBackdrop(
           effect: effect,
           child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color.alphaBlend(
-                    highlight,
-                    glassBackgroundColor ?? Colors.transparent,
-                  ),
-                  Color.alphaBlend(
-                    baseColor,
-                    glassBackgroundColor ?? Colors.transparent,
-                  ),
-                ],
-              ),
-              borderRadius: borderRadius,
-              border: Border.all(color: borderColor, width: 0.8),
-            ),
+            decoration: ShapeDecoration(color: fill, shape: glassShape),
             child: content,
           ),
         ),

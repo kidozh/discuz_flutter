@@ -6,6 +6,7 @@ import 'PlatformAdaptiveWidgets.dart' show isCupertino;
 
 import 'TwoPaneUtils.dart';
 import 'pane_navigation.dart';
+import 'platform_native_view_scope.dart';
 
 /// Keeps both page trees mounted through folding and window resizing.
 class TwoPaneScaffold extends StatefulWidget {
@@ -137,10 +138,17 @@ class _TwoPaneScaffoldState extends State<TwoPaneScaffold> {
                               ),
                               // A nested route's modal barrier must only hide
                               // previous routes in this pane from semantics.
-                              child: Semantics(
-                                container: true,
-                                explicitChildNodes: true,
-                                child: page,
+                              child: PlatformNativeViewScope(
+                                // Compatibility for blank content and native
+                                // navigation that stops responding on physical
+                                // iPads. Keep both panes on Flutter's surface;
+                                // cards retain the selected glass appearance.
+                                enabled: !layout.showsBoth,
+                                child: Semantics(
+                                  container: true,
+                                  explicitChildNodes: true,
+                                  child: page,
+                                ),
                               ),
                             ),
                           ),

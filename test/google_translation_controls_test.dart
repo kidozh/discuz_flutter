@@ -8,11 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 Widget host({
   required bool translated,
-  bool busy = false,
   Brightness brightness = Brightness.light,
   double scale = 1,
-  VoidCallback? onTranslate,
-  VoidCallback? onChooseLanguage,
 }) => PlatformProvider(
   style: AppVisualStyle.material,
   builder: (_) => MaterialApp(
@@ -32,12 +29,7 @@ Widget host({
           ),
           child: SizedBox(
             width: 240,
-            child: GoogleTranslationControls(
-              translated: translated,
-              busy: busy,
-              onTranslate: onTranslate ?? () {},
-              onChooseLanguage: onChooseLanguage ?? () {},
-            ),
+            child: GoogleTranslationAttribution(translated: translated),
           ),
         ),
       ),
@@ -46,36 +38,17 @@ Widget host({
 );
 
 void main() {
-  testWidgets(
-    'visible Google action keeps tap and language selection separate',
-    (tester) async {
-      var translations = 0, selections = 0;
-      await tester.pumpWidget(
-        host(
-          translated: false,
-          onTranslate: () => translations++,
-          onChooseLanguage: () => selections++,
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(find.byType(GoogleTranslationBadge), findsNothing);
-      final button = find.widgetWithText(TextButton, 'Translate with Google');
-      await tester.tap(button);
-      expect(translations, 1);
-      expect(selections, 0);
-      await tester.longPress(button);
-      expect(translations, 1);
-      expect(selections, 1);
-      await tester.pumpWidget(
-        host(translated: false, busy: true, onTranslate: () => translations++),
-      );
-      await tester.pump();
-      await tester.tap(find.widgetWithText(TextButton, 'Translating…'));
-      expect(translations, 1);
-      expect(find.byType(GoogleTranslationBadge), findsNothing);
-      await tester.pumpWidget(const SizedBox.shrink());
-    },
-  );
+  testWidgets('original body has no extra controls or attribution space', (
+    tester,
+  ) async {
+    await tester.pumpWidget(host(translated: false));
+    await tester.pumpAndSettle();
+    expect(find.byType(GoogleTranslationBadge), findsNothing);
+    expect(find.byType(TextButton), findsNothing);
+    expect(find.byType(IconButton), findsNothing);
+    expect(tester.getSize(find.byType(GoogleTranslationAttribution)).height, 0);
+    expect(tester.takeException(), isNull);
+  });
 
   for (final brightness in Brightness.values) {
     for (final scale in [1.0, 2.0]) {
@@ -88,7 +61,8 @@ void main() {
           );
           await tester.pumpAndSettle();
           expect(find.byType(GoogleTranslationBadge), findsOneWidget);
-          expect(find.text('Show original'), findsOneWidget);
+          expect(find.byType(TextButton), findsNothing);
+          expect(find.byType(IconButton), findsNothing);
           expect(
             find.bySemanticsLabel(
               'Automatic translation powered by Google Translate',
@@ -113,7 +87,10 @@ void main() {
           );
           await tester.pumpAndSettle();
           expect(find.byType(GoogleTranslationBadge), findsNothing);
-          expect(find.text('Translate with Google'), findsOneWidget);
+          expect(
+            tester.getSize(find.byType(GoogleTranslationAttribution)).height,
+            0,
+          );
           expect(tester.takeException(), isNull);
           semantics.dispose();
         },
@@ -126,7 +103,9 @@ void main() {
   ) async {
     await tester.pumpWidget(host(translated: false));
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('About Google Translate'));
+    final context = tester.element(find.byType(GoogleTranslationAttribution));
+    // Settings continues to use this same offline notice entry point.
+    showGoogleTranslationInfo(context);
     await tester.pump();
     await tester.runAsync(
       () => rootBundle.loadString('assets/translation/google_disclaimer.txt'),

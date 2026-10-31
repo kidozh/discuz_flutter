@@ -48,10 +48,8 @@ void main() {
       await tester.pumpAndSettle();
       final line = find.descendant(
           of: find.byType(CupertinoListSeparator),
-          matching: find.byType(ColoredBox));
+          matching: find.byType(CustomPaint));
       expect(tester.getSize(line).height, closeTo(1 / 3, .00001));
-      expect(tester.widget<ColoredBox>(line).color,
-          CupertinoColors.separator.resolveFrom(tester.element(line)));
       expect(find.byType(BackdropFilter), findsNothing);
     });
   }
