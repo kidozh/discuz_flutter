@@ -175,13 +175,31 @@ jobs:
           echo "Building App Store version $build_name ($build_number)"
 
       - name: Build signed IPA
-        run: >-
-          flutter build ipa
-          --release
-          --no-pub
-          --build-name=${{ steps.version.outputs.build_name }}
-          --build-number=${{ steps.version.outputs.build_number }}
-          --export-options-plist=build/ios/AppStoreExportOptions.plist
+        env:
+          APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
+          APPSTORE_API_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
+          APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+        run: |
+          key_dir=$(mktemp -d)
+          trap 'rm -rf "$key_dir"' EXIT
+          key_file="$key_dir/AuthKey_${APPSTORE_API_KEY_ID}.p8"
+          printf '%s' "$APPSTORE_API_PRIVATE_KEY" > "$key_file"
+          chmod 600 "$key_file"
+          flutter build ios --release --config-only --no-pub \
+            --build-name=${{ steps.version.outputs.build_name }} \
+            --build-number=${{ steps.version.outputs.build_number }}
+          xcodebuild archive -workspace ios/Runner.xcworkspace -scheme Runner \
+            -configuration Release -destination 'generic/platform=iOS' \
+            -archivePath build/ios/archive/Runner.xcarchive \
+            -allowProvisioningUpdates -authenticationKeyPath "$key_file" \
+            -authenticationKeyID "$APPSTORE_API_KEY_ID" \
+            -authenticationKeyIssuerID "$APPSTORE_ISSUER_ID"
+          xcodebuild -exportArchive -archivePath build/ios/archive/Runner.xcarchive \
+            -exportOptionsPlist build/ios/AppStoreExportOptions.plist \
+            -exportPath build/ios/ipa -allowProvisioningUpdates \
+            -authenticationKeyPath "$key_file" \
+            -authenticationKeyID "$APPSTORE_API_KEY_ID" \
+            -authenticationKeyIssuerID "$APPSTORE_ISSUER_ID"
 
       - name: Verify archived SDK for iPhone Duo
         shell: bash

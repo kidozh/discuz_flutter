@@ -51,10 +51,10 @@ class DistributionSigningTests(unittest.TestCase):
         result = signing.configure_project(source, {'objects': objects}, {
             'com.example.app': 'phone-profile', 'com.example.watch': 'watch-profile',
         })
-        self.assertEqual(result.count('CODE_SIGN_STYLE = "Manual";'), 2)
+        self.assertEqual(result.count('CODE_SIGN_STYLE = "Automatic";'), 2)
         self.assertEqual(result.count('CODE_SIGN_IDENTITY = "Apple Distribution";'), 2)
-        self.assertIn('PROVISIONING_PROFILE_SPECIFIER = "phone-profile";', result)
-        self.assertIn('PROVISIONING_PROFILE_SPECIFIER = "watch-profile";', result)
+        self.assertEqual(result.count('PROVISIONING_PROFILE_SPECIFIER = "";'), 2)
+        self.assertNotIn('old profile', result)
         self.assertIn('WATCHOS_DEPLOYMENT_TARGET = 10.0;', result)
         self.assertIn('MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";', result)
 

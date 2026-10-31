@@ -95,8 +95,9 @@ python3 scripts/check_ios_keychain.py --app <Runner.app路径>
 真机运行及发布前，需要为新增 Bundle ID 配置 Apple Developer 签名和 provisioning profile。
 `ios/ExportOptions.plist` 包含手机和手表的手动签名配置。GitHub 的 App Store 发布流程
 分别下载两个 Bundle ID 的有效分发 profile，再通过
-`scripts/configure_ios_distribution_signing.py` 配置两个 Release target 和导出设置，
-使用实际下载的 UUID，避免手表误用开发签名或缺少导出 profile。
+`scripts/configure_ios_distribution_signing.py` 配置两个 Release target 和导出设置。
+两个应用均使用自动管理的分发签名，兼容 Xcode 管理的 Team Store profile；
+归档和导出通过 App Store Connect API 授权，避免手表误用开发签名或缺少导出 profile。
 本地 Xcode 自动签名归档可用 `-allowProvisioningUpdates CODE_SIGN_STYLE=Automatic`，
 配合现有开发者账号生成所需的手机与手表 profile。归档包含二者，上传为同一个 iOS 构建。
 

@@ -26,8 +26,10 @@ def patch_configuration(source, configuration_id, profile):
     )
     changes = {
         'CODE_SIGN_IDENTITY': 'Apple Distribution',
-        'CODE_SIGN_STYLE': 'Manual',
-        'PROVISIONING_PROFILE_SPECIFIER': profile,
+        # Xcode-managed Team Store profiles require automatic signing. Pinning
+        # their UUID with Manual fails even when the certificate is installed.
+        'CODE_SIGN_STYLE': 'Automatic',
+        'PROVISIONING_PROFILE_SPECIFIER': '',
     }
 
     def replace(match):
@@ -83,8 +85,8 @@ def main():
     source = configure_project(args.project.read_text(), project, profiles)
     with args.template.open('rb') as file:
         options = plistlib.load(file)
-    options['provisioningProfiles'] = profiles
-    options['signingStyle'] = 'manual'
+    options.pop('provisioningProfiles', None)
+    options['signingStyle'] = 'automatic'
     args.export_options.parent.mkdir(parents=True, exist_ok=True)
     with args.export_options.open('wb') as file:
         plistlib.dump(options, file)
