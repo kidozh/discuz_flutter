@@ -25,7 +25,9 @@ def patch_configuration(source, configuration_id, profile):
         re.MULTILINE | re.DOTALL,
     )
     changes = {
-        'CODE_SIGN_IDENTITY': 'Apple Distribution',
+        # Automatic archives use development signing; App Store export then
+        # re-signs both apps with the distribution certificate.
+        'CODE_SIGN_IDENTITY': 'Apple Development',
         # Xcode-managed Team Store profiles require automatic signing. Pinning
         # their UUID with Manual fails even when the certificate is installed.
         'CODE_SIGN_STYLE': 'Automatic',

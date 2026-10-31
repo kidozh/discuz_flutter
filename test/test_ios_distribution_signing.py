@@ -52,7 +52,7 @@ class DistributionSigningTests(unittest.TestCase):
             'com.example.app': 'phone-profile', 'com.example.watch': 'watch-profile',
         })
         self.assertEqual(result.count('CODE_SIGN_STYLE = "Automatic";'), 2)
-        self.assertEqual(result.count('CODE_SIGN_IDENTITY = "Apple Distribution";'), 2)
+        self.assertEqual(result.count('CODE_SIGN_IDENTITY = "Apple Development";'), 2)
         self.assertEqual(result.count('PROVISIONING_PROFILE_SPECIFIER = "";'), 2)
         self.assertNotIn('old profile', result)
         self.assertIn('WATCHOS_DEPLOYMENT_TARGET = 10.0;', result)
