@@ -88,7 +88,7 @@ Keep the local dependencies in `third_party/` when cloning or packaging the proj
 
 ### TestFlight release notes
 
-For every TestFlight build, update `docs/testflight-release-notes.txt` with the actual changes and testing focus. Its first line must match the uploaded version and build number, for example `2.0.11 (168)`. Follow the release requirements in [AGENTS.md](AGENTS.md).
+For every TestFlight build, update `docs/testflight-release-notes.txt` with the actual changes and testing focus. Its first line must match the uploaded version and build number, for example `2.0.11 (169)`. Follow the release requirements in [AGENTS.md](AGENTS.md).
 
 ```sh
 python3 scripts/prepare_testflight_notes.py
