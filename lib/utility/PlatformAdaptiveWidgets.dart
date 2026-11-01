@@ -8,12 +8,13 @@ import 'package:adaptive_platform_ui/adaptive_platform_ui.dart' as liquid;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:foldable/foldable.dart'
+    show FoldableProvider, DisplayFeatureBridgeMode;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart'
     as adaptive;
 import 'package:settings_ui/settings_ui.dart' as settings;
 
 import 'PlatformGlass.dart';
-import 'app_foldable_provider.dart';
 import 'TwoPaneUtils.dart' show mediaQueryForPane;
 import 'app_visual_style.dart';
 import 'platform_native_view_scope.dart';
@@ -452,7 +453,10 @@ class PlatformApp extends StatelessWidget {
             data: MediaQuery.of(context).copyWith(
               platformBrightness: useDark ? Brightness.dark : Brightness.light,
             ),
-            child: AppFoldableProvider(child: themedChild),
+            child: FoldableProvider(
+              bridgeMode: DisplayFeatureBridgeMode.full,
+              child: themedChild,
+            ),
           );
         },
         title: title,
@@ -482,7 +486,8 @@ class PlatformApp extends StatelessWidget {
       onGenerateRoute: onGenerateRoute,
       onUnknownRoute: onUnknownRoute,
       navigatorObservers: navigatorObservers,
-      builder: (context, child) => AppFoldableProvider(
+      builder: (context, child) => FoldableProvider(
+        bridgeMode: DisplayFeatureBridgeMode.full,
         child: Builder(
           builder: (context) =>
               builder?.call(context, child) ?? child ?? const SizedBox.shrink(),
@@ -1895,11 +1900,168 @@ class PlatformLiquidGlassCard extends StatelessWidget {
   }
 }
 
-/// Keeps legacy `settings_ui` pages visually consistent with the adaptive
-/// navigation layer while they are migrated to [PlatformListTile]. On iOS 26
-/// the list background stays transparent and grouped sections use a restrained
-/// translucent material, preserving contrast without turning every row into a
-/// separate glass surface.
+/// Shared page background and spacing for settings, independent of OS theme.
+class PlatformSettingsList extends StatelessWidget {
+  const PlatformSettingsList({
+    required this.children,
+    this.shrinkWrap = false,
+    this.physics,
+    this.padding,
+    super.key,
+  });
+
+  final List<Widget> children;
+  final bool shrinkWrap;
+  final ScrollPhysics? physics;
+  final EdgeInsetsGeometry? padding;
+
+  @override
+  Widget build(BuildContext context) => ColoredBox(
+    color: isCupertino(context)
+        ? CupertinoColors.systemGroupedBackground.resolveFrom(context)
+        : Theme.of(context).scaffoldBackgroundColor,
+    child: ListView(
+      shrinkWrap: shrinkWrap,
+      physics: physics,
+      padding: padding ?? const EdgeInsets.fromLTRB(8, 8, 8, 32),
+      children: children,
+    ),
+  );
+}
+
+/// Shared grouping for the settings home and its detail pages.
+class PlatformSettingsSection extends StatelessWidget {
+  const PlatformSettingsSection({
+    required this.children,
+    this.title,
+    this.margin,
+    this.dividerIndent = 54,
+    super.key,
+  });
+
+  final Widget? title;
+  final List<Widget> children;
+  final EdgeInsetsGeometry? margin;
+  final double dividerIndent;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: margin ?? const EdgeInsets.only(bottom: 12),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (title != null)
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(12, 8, 12, 6),
+            child: DefaultTextStyle.merge(
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.w600,
+              ),
+              child: title!,
+            ),
+          ),
+        PlatformCard(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (var index = 0; index < children.length; index++) ...[
+                children[index],
+                if (index < children.length - 1)
+                  Divider(
+                    height: 1,
+                    thickness: 1 / MediaQuery.devicePixelRatioOf(context),
+                    indent: dividerIndent,
+                    endIndent: 14,
+                    color: isCupertino(context)
+                        ? CupertinoColors.separator.resolveFrom(context)
+                        : Theme.of(context).colorScheme.outlineVariant,
+                  ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+/// Settings rows always resolve colors from the app's selected theme.
+class PlatformSettingsTile extends StatelessWidget {
+  const PlatformSettingsTile({
+    required this.title,
+    this.leading,
+    this.subtitle,
+    this.trailing,
+    this.enabled = true,
+    this.onTap,
+    super.key,
+  });
+
+  final Widget title;
+  final Widget? leading;
+  final Widget? subtitle;
+  final Widget? trailing;
+  final bool enabled;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Opacity(
+      opacity: enabled ? 1 : 0.48,
+      child: PlatformListTile(
+        contentPadding: const EdgeInsetsDirectional.fromSTEB(14, 10, 12, 10),
+        leading: leading == null
+            ? null
+            : IconTheme.merge(
+                data: IconThemeData(color: colors.primary, size: 22),
+                child: leading!,
+              ),
+        title: DefaultTextStyle.merge(
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: colors.onSurface,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            height: 1.25,
+          ),
+          child: title,
+        ),
+        subtitle: subtitle == null
+            ? null
+            : DefaultTextStyle.merge(
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                  fontSize: 13,
+                  height: 1.25,
+                ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                child: subtitle!,
+              ),
+        trailing: trailing == null
+            ? null
+            : IconTheme.merge(
+                data: IconThemeData(color: colors.onSurfaceVariant, size: 18),
+                child: DefaultTextStyle.merge(
+                  style: TextStyle(
+                    color: colors.onSurfaceVariant,
+                    fontSize: 14,
+                  ),
+                  child: trailing!,
+                ),
+              ),
+        enabled: enabled,
+        onTap: onTap,
+      ),
+    );
+  }
+}
+
+/// Adapts legacy settings models to the same themed rows in all appearances.
 class PlatformAdaptiveSettingsList extends StatelessWidget {
   final List<settings.AbstractSettingsSection> sections;
   final bool shrinkWrap;
@@ -1916,28 +2078,17 @@ class PlatformAdaptiveSettingsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!usesAppleTranslucentSurface(context)) {
-      return settings.SettingsList(
-        sections: sections,
-        shrinkWrap: shrinkWrap,
-        physics: physics,
-        contentPadding: contentPadding,
-        applicationType: settings.ApplicationType.both,
-        platform: isCupertino(context)
-            ? settings.DevicePlatform.iOS
-            : settings.DevicePlatform.android,
-      );
-    }
-
-    return ListView.builder(
+    return PlatformSettingsList(
       shrinkWrap: shrinkWrap,
       physics: physics,
-      padding:
-          contentPadding ??
-          const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-      itemCount: sections.length,
-      itemBuilder: (context, index) =>
-          _PlatformAdaptiveSettingsSection(section: sections[index]),
+      padding: contentPadding,
+      children: [
+        for (final section in sections)
+          _PlatformAdaptiveSettingsSection(
+            key: section is settings.SettingsSection ? section.key : null,
+            section: section,
+          ),
+      ],
     );
   }
 }
@@ -1945,7 +2096,7 @@ class PlatformAdaptiveSettingsList extends StatelessWidget {
 class _PlatformAdaptiveSettingsSection extends StatelessWidget {
   final settings.AbstractSettingsSection section;
 
-  const _PlatformAdaptiveSettingsSection({required this.section});
+  const _PlatformAdaptiveSettingsSection({required this.section, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -1957,57 +2108,19 @@ class _PlatformAdaptiveSettingsSection extends StatelessWidget {
     }
 
     final settingsSection = section as settings.SettingsSection;
-    return Padding(
-      padding: settingsSection.margin ?? const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (settingsSection.title != null)
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(12, 6, 12, 6),
-              child: DefaultTextStyle.merge(
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-                child: settingsSection.title!,
-              ),
-            ),
-          PlatformLiquidGlassCard(
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            borderRadius: BorderRadius.circular(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (
-                  var index = 0;
-                  index < settingsSection.tiles.length;
-                  index++
-                ) ...[
-                  _PlatformAdaptiveSettingsTile(
-                    tile: settingsSection.tiles[index],
-                  ),
-                  if (index < settingsSection.tiles.length - 1 &&
-                      !usesLiquidGlass(context))
-                    Divider(
-                      height: 1,
-                      indent:
-                          _settingsTileHasLeading(
-                            settingsSection.tiles[index + 1],
-                          )
-                          ? 54
-                          : 14,
-                      endIndent: 12,
-                      color: CupertinoColors.separator
-                          .resolveFrom(context)
-                          .withValues(alpha: 0.34),
-                    ),
-                ],
-              ],
-            ),
+    return PlatformSettingsSection(
+      title: settingsSection.title,
+      margin: settingsSection.margin,
+      dividerIndent: settingsSection.tiles.any(_settingsTileHasLeading)
+          ? 54
+          : 14,
+      children: [
+        for (final tile in settingsSection.tiles)
+          _PlatformAdaptiveSettingsTile(
+            key: tile is settings.SettingsTile ? tile.key : null,
+            tile: tile,
           ),
-        ],
-      ),
+      ],
     );
   }
 }
@@ -2018,7 +2131,7 @@ bool _settingsTileHasLeading(settings.AbstractSettingsTile tile) =>
 class _PlatformAdaptiveSettingsTile extends StatelessWidget {
   final settings.AbstractSettingsTile tile;
 
-  const _PlatformAdaptiveSettingsTile({required this.tile});
+  const _PlatformAdaptiveSettingsTile({required this.tile, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -2030,9 +2143,7 @@ class _PlatformAdaptiveSettingsTile extends StatelessWidget {
     final settingsTile = tile as settings.SettingsTile;
     final enabled = settingsTile.enabled;
     final colors = Theme.of(context).colorScheme;
-    final secondaryColor = enabled
-        ? colors.onSurfaceVariant
-        : colors.onSurfaceVariant.withValues(alpha: 0.42);
+    final secondaryColor = colors.onSurfaceVariant;
 
     Widget? trailing;
     if (settingsTile.trailing != null) {
@@ -2061,7 +2172,7 @@ class _PlatformAdaptiveSettingsTile extends StatelessWidget {
               ),
             ),
           if (settingsTile.value != null) const SizedBox(width: 6),
-          Icon(CupertinoIcons.chevron_forward, size: 16, color: secondaryColor),
+          Icon(PlatformIcons(context).forward, size: 18, color: secondaryColor),
         ],
       );
     } else if (settingsTile.value != null) {
@@ -2087,51 +2198,13 @@ class _PlatformAdaptiveSettingsTile extends StatelessWidget {
       }
     }
 
-    return Opacity(
-      opacity: enabled ? 1 : 0.48,
-      child: PlatformListTile(
-        contentPadding: const EdgeInsetsDirectional.fromSTEB(14, 7, 12, 7),
-        leading: settingsTile.leading == null
-            ? null
-            : IconTheme.merge(
-                data: IconThemeData(
-                  color: enabled ? colors.primary : secondaryColor,
-                  size: 20,
-                ),
-                child: settingsTile.leading!,
-              ),
-        title: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DefaultTextStyle.merge(
-              style: TextStyle(
-                color: colors.onSurface,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                height: 1.12,
-              ),
-              child: settingsTile.title,
-            ),
-            if (settingsTile.description != null) ...[
-              const SizedBox(height: 3),
-              DefaultTextStyle.merge(
-                style: TextStyle(
-                  color: secondaryColor,
-                  fontSize: 13,
-                  height: 1.18,
-                ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                child: settingsTile.description!,
-              ),
-            ],
-          ],
-        ),
-        trailing: trailing,
-        enabled: enabled,
-        onTap: onTap,
-      ),
+    return PlatformSettingsTile(
+      leading: settingsTile.leading,
+      title: settingsTile.title,
+      subtitle: settingsTile.description,
+      trailing: trailing,
+      enabled: enabled,
+      onTap: onTap,
     );
   }
 }

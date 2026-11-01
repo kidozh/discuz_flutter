@@ -22,9 +22,9 @@ ML Kit 离线模型适用于简单翻译，非英语语言之间通过英语中�
 
 Android 翻译入口使用帖子工具栏中的紧凑图标，不在正文前额外显示文字按钮或信息按钮。点按翻译或切回原文，长按仍可选择目标语言；生成时显示加载状态并禁用重复点按。
 
-仅在 Android 实际显示 ML Kit 译文时，正文上方显示官方 `powered by Google Translate` 图。自动和手动翻译、普通正文及 sliver 正文共用这条路径；原文、请求中尚无译文以及失败状态不显示归属图。Apple 翻译和 AI 总结不会使用该标识。图片由官方归属素材包原样提取，使用 1x/2x/3x 原始文件和白色底板保证深浅主题下清楚可读；点击前往 Google Translate，不发送帖子正文。
+仅在 Android 实际显示 ML Kit 译文时，在正文末尾右侧显示紧凑的官方 `powered by Google Translate` 标识，不占据正文标题区域。标识高 24 像素，保留原图和少量留白。自动和手动翻译、普通正文及 sliver 正文共用这条路径；原文、请求中尚无译文以及失败状态不显示归属图。Apple 翻译和 AI 总结不会使用该标识。图片使用官方 1x/2x/3x 原始文件和白色底板保证深浅主题下清楚可读；点击前往 Google Translate，不发送帖子正文。
 
-Android 设置中的“Google 翻译说明”可离线查看官方完整免责声明，并提供 Google Cloud Translation 链接。原始素材地址与使用规范记录在 `assets/translation/SOURCE.txt`。本次不涉及发布商店描述，下面的文案可在下次更新 Google Play 简介时使用：
+设置中不再单列 Google 翻译说明；长按译文末尾的标识可离线查看完整免责声明和服务链接。原始素材地址与使用规范记录在 `assets/translation/SOURCE.txt`。本次不涉及发布商店描述，下面的文案可在下次更新 Google Play 简介时使用：
 
 > Android 正文翻译由 Google 翻译提供，使用设备上的 ML Kit 离线模型。首次使用可能需要下载语言包，随时可以切回原文。服务信息：https://cloud.google.com/translate
 

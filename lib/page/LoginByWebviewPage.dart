@@ -12,7 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:provider/provider.dart';
-import 'package:webview_cookie_manager/webview_cookie_manager.dart';
+
+import '../utility/DiscuzWebviewCookieManager.dart';
+
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../provider/DiscuzAndUserNotifier.dart';
@@ -39,7 +41,7 @@ class LoginByWebviewStatefulWidget extends StatefulWidget {
 }
 
 class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
-  final webviewCookieManager = WebviewCookieManager();
+  final webviewCookieManager = const DiscuzWebviewCookieManager();
   late final WebViewController _controller;
 
   final Discuz discuz;
@@ -72,22 +74,24 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
   void _loadWidgetControllerSetting() {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(NavigationDelegate(
-        onPageStarted: (String url) {
-          print('Page started loading: $url');
-          if (!mounted) return;
-          setState(() {
-            websiteLoaded = false;
-          });
-        },
-        onPageFinished: (String url) async {
-          print('Page finished loading: $url');
-          if (!mounted) return;
-          setState(() {
-            websiteLoaded = true;
-          });
-        },
-      ));
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (String url) {
+            print('Page started loading: $url');
+            if (!mounted) return;
+            setState(() {
+              websiteLoaded = false;
+            });
+          },
+          onPageFinished: (String url) async {
+            print('Page finished loading: $url');
+            if (!mounted) return;
+            setState(() {
+              websiteLoaded = true;
+            });
+          },
+        ),
+      );
   }
 
   bool websiteLoaded = false;
@@ -117,27 +121,29 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
             ),
         ],
       ),
-      body: Builder(builder: (BuildContext context) {
-        return Stack(
-          children: [
-            WebViewWidget(controller: _controller),
-            if (!websiteLoaded)
-              const PositionedDirectional(
-                top: 12,
-                end: 12,
-                child: IgnorePointer(
-                  child: PlatformLiquidGlassSurface(
-                    borderRadius: BorderRadius.all(Radius.circular(22)),
-                    child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: PlatformCircularProgressIndicator(),
+      body: Builder(
+        builder: (BuildContext context) {
+          return Stack(
+            children: [
+              WebViewWidget(controller: _controller),
+              if (!websiteLoaded)
+                const PositionedDirectional(
+                  top: 12,
+                  end: 12,
+                  child: IgnorePointer(
+                    child: PlatformLiquidGlassSurface(
+                      borderRadius: BorderRadius.all(Radius.circular(22)),
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: PlatformCircularProgressIndicator(),
+                      ),
                     ),
                   ),
                 ),
-              ),
-          ],
-        );
-      }),
+            ],
+          );
+        },
+      ),
       //floatingActionButton: checkButton(),
     );
   }
@@ -151,10 +157,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
       title: S.of(context).loginByWebTitle,
       message: S.of(context).loginByWebMessage,
       actions: [
-        PlatformAlertAction(
-          label: S.of(context).ok,
-          isDefaultAction: true,
-        ),
+        PlatformAlertAction(label: S.of(context).ok, isDefaultAction: true),
       ],
     );
   }
@@ -181,52 +184,65 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
 
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
-    client.userProfileResult(0).then((value) async {
-      if (value.variables.member_uid != 0) {
-        // it's a success
-        try {
-          final dao = await AppDatabase.getUserDao();
-          User user = value.variables.getUser(discuz);
-          user.discuz = discuz;
-          // search in database first
-          User? userInDataBase =
-              dao.findUsersByDiscuzAndUid(discuz, value.variables.member_uid);
-          if (userInDataBase != null) {
-            await dao.insertWithKey(userInDataBase.key, user);
+    client
+        .userProfileResult(0)
+        .then((value) async {
+          if (value.variables.member_uid != 0) {
+            // it's a success
+            try {
+              final dao = await AppDatabase.getUserDao();
+              User user = value.variables.getUser(discuz);
+              user.discuz = discuz;
+              // search in database first
+              User? userInDataBase = dao.findUsersByDiscuzAndUid(
+                discuz,
+                value.variables.member_uid,
+              );
+              if (userInDataBase != null) {
+                await dao.insertWithKey(userInDataBase.key, user);
+              } else {
+                await dao.insert(user);
+              }
+
+              // save it in cookiejar
+              List<Cookie> cookies = await cookieJar.loadForRequest(
+                Uri.parse(discuz.baseURL),
+              );
+              await NetworkUtils.replacePersistentCookiesForUser(
+                user,
+                Uri.parse(discuz.baseURL),
+                cookies,
+              );
+              if (!mounted) return;
+              // pop the activity
+              EasyLoading.showSuccess(
+                S
+                    .of(context)
+                    .signInSuccessTitle(user.username, discuz.siteName),
+              );
+              Provider.of<DiscuzAndUserNotifier>(
+                context,
+                listen: false,
+              ).setUser(user);
+
+              Navigator.pop(context);
+            } catch (e) {
+              VibrationUtils.vibrateErrorIfPossible();
+              EasyLoading.showError(e.toString());
+            }
           } else {
-            await dao.insert(user);
+            debugPrint(
+              'The login WebView did not return an authenticated user',
+            );
+            // trigger a alert
+            EasyLoading.showToast(S.of(context).websiteNotLogined);
           }
-
-          // save it in cookiejar
-          List<Cookie> cookies =
-              await cookieJar.loadForRequest(Uri.parse(discuz.baseURL));
-          await NetworkUtils.replacePersistentCookiesForUser(
-            user,
-            Uri.parse(discuz.baseURL),
-            cookies,
-          );
-          if (!mounted) return;
-          // pop the activity
-          EasyLoading.showSuccess(
-              S.of(context).signInSuccessTitle(user.username, discuz.siteName));
-          Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-              .setUser(user);
-
-          Navigator.pop(context);
-        } catch (e) {
+        })
+        .catchError((e, s) {
+          print("${e}");
           VibrationUtils.vibrateErrorIfPossible();
-          EasyLoading.showError(e.toString());
-        }
-      } else {
-        debugPrint('The login WebView did not return an authenticated user');
-        // trigger a alert
-        EasyLoading.showToast(S.of(context).websiteNotLogined);
-      }
-    }).catchError((e, s) {
-      print("${e}");
-      VibrationUtils.vibrateErrorIfPossible();
-      EasyLoading.showError(S.of(context).networkFailed);
-    });
+          EasyLoading.showError(S.of(context).networkFailed);
+        });
 
     // client.checkLoginResult().then((value) async {
     //   if(value.variables.member_uid!=0){
@@ -308,52 +324,52 @@ class NavigationControls extends StatelessWidget {
       future: _webViewControllerFuture,
       builder:
           (BuildContext context, AsyncSnapshot<WebViewController> snapshot) {
-        final bool webViewReady =
-            snapshot.connectionState == ConnectionState.done;
-        final WebViewController controller = snapshot.data!;
-        return Row(
-          children: <Widget>[
-            PlatformIconButton(
-              liquidGlassSymbol: 'chevron.backward',
-              icon: Icon(PlatformIcons(context).back),
-              onPressed: !webViewReady
-                  ? null
-                  : () async {
-                      if (await controller.canGoBack()) {
-                        await controller.goBack();
-                      } else {
-                        // ignore: deprecated_member_use
+            final bool webViewReady =
+                snapshot.connectionState == ConnectionState.done;
+            final WebViewController controller = snapshot.data!;
+            return Row(
+              children: <Widget>[
+                PlatformIconButton(
+                  liquidGlassSymbol: 'chevron.backward',
+                  icon: Icon(PlatformIcons(context).back),
+                  onPressed: !webViewReady
+                      ? null
+                      : () async {
+                          if (await controller.canGoBack()) {
+                            await controller.goBack();
+                          } else {
+                            // ignore: deprecated_member_use
 
-                        return;
-                      }
-                    },
-            ),
-            PlatformIconButton(
-              liquidGlassSymbol: 'chevron.forward',
-              icon: Icon(PlatformIcons(context).forward),
-              onPressed: !webViewReady
-                  ? null
-                  : () async {
-                      if (await controller.canGoForward()) {
-                        await controller.goForward();
-                      } else {
-                        // ignore: deprecated_member_use
-                        return;
-                      }
-                    },
-            ),
-            PlatformIconButton(
-              liquidGlassSymbol: 'arrow.clockwise',
-              icon: Icon(PlatformIcons(context).refresh),
-              onPressed: !webViewReady
-                  ? null
-                  : () {
-                      controller.reload();
-                    },
-            ),
-          ],
-        );
-      },
+                            return;
+                          }
+                        },
+                ),
+                PlatformIconButton(
+                  liquidGlassSymbol: 'chevron.forward',
+                  icon: Icon(PlatformIcons(context).forward),
+                  onPressed: !webViewReady
+                      ? null
+                      : () async {
+                          if (await controller.canGoForward()) {
+                            await controller.goForward();
+                          } else {
+                            // ignore: deprecated_member_use
+                            return;
+                          }
+                        },
+                ),
+                PlatformIconButton(
+                  liquidGlassSymbol: 'arrow.clockwise',
+                  icon: Icon(PlatformIcons(context).refresh),
+                  onPressed: !webViewReady
+                      ? null
+                      : () {
+                          controller.reload();
+                        },
+                ),
+              ],
+            );
+          },
     );
   }
 }

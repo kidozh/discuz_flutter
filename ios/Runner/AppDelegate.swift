@@ -16,5 +16,8 @@ import UIKit
     if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "AppleWatchCompanion") {
       AppleWatchBridge.register(with: registrar)
     }
+    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "DiscuzWebViewCookies") {
+      WebViewCookies.register(with: registrar)
+    }
   }
 }

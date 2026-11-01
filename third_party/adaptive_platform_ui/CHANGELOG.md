@@ -1,5 +1,40 @@
 # Changelog
 
+## [1.0.2]
+* **FIX**: iOS 26: the fixed toolbar's automatic back button is now a 44-point circle like the native one, instead of a 38-point rounded square, and sits level with the title. The page-owned toolbar's back button is circular too (@Anderzzon, #171)
+* **FIX**: iPhone Duo: in Split View, an app in the left pane now shows its controls and tab bar in a vertical bar on the left edge, as native apps do. It used to fall back to horizontal bars. The side now comes from the system's vertical bar edge (iOS 27.1) instead of the safe-area insets alone (@sergi-labhouse)
+  * Adds a Swift source file. With CocoaPods and a path or git dependency, if the iOS build fails with `cannot find 'VerticalBarEdgeStreamHandler' in scope`, run `pod install` in your `ios/` folder
+* **FIX**: iPhone Duo: in the left Split View pane the package reserves the strip itself, as UIKit only adds that inset for bars it draws, so the page body and `SafeArea` stay clear of the bar. The controls start near the top of the pane, since there is no camera there (@sergi-labhouse)
+* **IMPROVEMENT**: iPhone Duo: when the system gives no inset for the strip, its width now matches the system's 84 pt (it was 60 pt) (@sergi-labhouse)
+* **FIX**: iOS 26: reversing an interactive back swipe under the fixed toolbar could throw `SemanticsNode._replaceChildren` with a screen reader on. Every layer of the fixed chrome now keeps its semantics attached, and the layer that is not in front is excluded explicitly, so VoiceOver never lands on invisible items. Reported and diagnosed by @Anderzzon (#166)
+* **FIX**: iOS: `resizeToAvoidBottomInset` is now honored on the plain page branch (no app bar, no tab bar) and in the drawer wrapper, so a body anchored to the bottom is no longer lifted above the keyboard when it is set to `false` (@Danilo-Mota, #158)
+* **FIX**: Fixed toolbar: dragging back from a page pushed over an `IndexedStack` tab layout showed the bar of the last mounted tab instead of the selected one (@DFelten, #164)
+* **FIX**: Android: the plugin module now targets JVM 17 for both Java and Kotlin. Apps on AGP 8 / Kotlin 2 that force Kotlin to 17 failed with "Inconsistent JVM-target compatibility" (@goalbypro reported it in #119, @bryandelgado99 proposed the fix in #160)
+* **FIX**: iOS: the selected `AdaptiveRadio` is drawn as a ring with an inner dot, as in UIKit, instead of a filled circle (@luflow, #154)
+* **NEW**: `borderColor` and `borderWidth` on `AdaptiveCard` for iOS; the default stays a hairline separator (@luflow, #153)
+* **IMPROVEMENT**: Example app adopts the UIScene lifecycle, matching Flutter's template (@luflow, #151)
+* **FIX**: iOS 26 alert dialogs: the primary button now takes `CupertinoTheme.primaryColor` instead of a hardcoded system blue (@Qian-Samuel, #121)
+* **NEW**: `badgeText`, `badgeColor` and `badgeTextColor` on `AdaptiveNavigationDestination`. Arbitrary badge text and colors on the iOS 26+ native tab bar (`UITabBarItem.badgeValue` / `badgeColor`), and the same fields drawn through `AdaptiveBadge` on iOS <26 and Android; a transparent `badgeColor` with a glyph gives a dot indicator (@terrykang90, #127)
+* **NEW**: `menuItems` and `onMenuItemSelected` on `AdaptiveAppBarAction` turn an app bar action into a menu button: a native `UIMenu` on iOS 26+ (in the fixed toolbar and the iPhone Duo capsule too), an action sheet on iOS <26, a popup menu on Android (@DFelten, #163)
+* **NEW**: `AdaptivePopupMenuDivider(title:)` names the group that follows it: an inline section title in the native iOS 26 menu, a heading in the action sheet on iOS <26, a heading row on Android (@luflow, #149)
+* **NEW**: `selected` on `AdaptivePopupMenuItem` shows the current choice: the system checkmark in native iOS menus, a trailing check on Android, a leading check in the iOS <26 action sheet (@gem85247, #147)
+* **FIX**: iOS 26 `AdaptiveButton` in child mode (icon or custom child): `minSize` is now a minimum instead of a fixed width (a `Size(0, h)` no longer collapses the button), and the content gets the same 16pt horizontal padding as the other platforms, so such buttons can come out slightly wider than before (@gem85247, #147)
+* **FIX**: iOS 26 tab bar: the app's text direction is also written to `traitOverrides.layoutDirection`, so the selected Liquid Glass item follows the app locale when it differs from the device locale (@KhalidSaud, #140)
+* **IMPROVEMENT**: Example app moved from CocoaPods to Swift Package Manager (@luflow, #150)
+* **NEW**: `AdaptiveContextMenu` on iOS 26+ is a native `UIContextMenuInteraction` with Liquid Glass: the child lifts as the preview and the actions are a `UIMenu` (title, SF Symbol, disabled, destructive). iOS <26 and Android are unchanged. Pass an SF Symbol name as `icon` for the iOS 26 menu (@itsatifsiddiqui, #161)
+* **NEW**: The plugin now also gains `iOS26ContextMenuView`; CocoaPods users on a path or git dependency may need `pod install` to pick up the new Swift files
+* **FIX**: Adding or removing `AdaptiveAppBar.actions` within the same page now reaches the iOS 26 native toolbar even when the list starts out `null`. Before, the change only showed after leaving and re-entering the page (#84)
+* **FIX**: `AdaptiveScaffold` with a native tab bar mounted its body once per destination, so every page's `initState` ran as many times as there were tabs, and again on each tab switch. The body is now mounted once and kept across tab switches (#76)
+* **FIX**: `AdaptiveSwitch` on iOS 18 and below is system green again instead of the theme's blue tint, matching every other switch on those versions (#94)
+* **NEW**: `AdaptiveScaffold.extendBody` lets the body run under a custom floating bottom bar on Android and iOS 18 and below, so the bar's margins show the content instead of the scaffold background (#144)
+* **NEW**: `AdaptiveScaffold.backgroundColor` sets the page background on every platform, including the iOS 26 native scaffold (#60, #95)
+* **NEW**: `AdaptivePopupMenuButton.icon` takes `iconSize`, the glyph's point size on Android, iOS 18 and the iOS 26 native button (#139)
+* **FIX**: Example: the Info page no longer overflows on the repository URL row (#50)
+* **FIX**: `AdaptiveTabBarView` labels are readable on every background: on Android a custom or transparent `backgroundColor` now gets contrasting labels instead of white, and on iOS the selected segment's label contrasts with `selectedColor` (black thumb, white text). `unselectedColor` now reaches the iOS segments, and `selectedLabelColor` sets the selected label explicitly (#37)
+* **FIX**: An opaque `AdaptiveScaffold.backgroundColor` also sets the status bar style, so a dark page in a light theme keeps light status icons. A page's own `AnnotatedRegion<SystemUiOverlayStyle>` still takes precedence (#77)
+
+Thanks to everyone who shaped this release with code, reports and reviews: @luflow, @sergi-labhouse, @DFelten, @gem85247, @Anderzzon, @itsatifsiddiqui, @Danilo-Mota, @terrykang90, @KhalidSaud, @Qian-Samuel, @goalbypro, @bryandelgado99, @primer03, @pento, @Crucialjun, @robert-virkus and the reporters of #76, #84, #94, #144, #37, #77, #50, #139, #60 and #95. Who did what is in [CONTRIBUTORS.md](https://github.com/berkaycatak/adaptive_platform_ui/blob/main/CONTRIBUTORS.md).
+
 ## [1.0.1]
 * **FIX**: 📱 **iPhone Duo: the tab bar now lives in the vertical bar**, at the bottom of it, the way the system lays it out. In 1.0.0 it stayed at the bottom of the screen. The strip now reads, from the top: status cluster, back button, toolbar items, tab bar. Measured against a native UIKit app on the iPhone Duo simulator
 * **FIX**: iPhone Duo: the vertical bar follows the hardware through every rotation. On the cover display in landscape it stays on the side, including the rotation that puts the strip on the left, and it keeps clear of the camera wherever the rotation puts it (top or bottom of the strip). In 1.0.0 rotating fell back to horizontal bars. The inner display in portrait keeps horizontal bars, as it does in UIKit

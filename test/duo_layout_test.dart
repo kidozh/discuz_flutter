@@ -4,7 +4,6 @@ import 'package:discuz_flutter/utility/TwoPaneScaffold.dart';
 import 'package:discuz_flutter/utility/TwoPaneUtils.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/utility/platform_native_view_scope.dart';
-import 'package:dual_screen/dual_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -78,10 +77,8 @@ void main() {
           builder: (_) => MaterialApp(
             home: TwoPaneScaffold(
               type: TwoPaneType.tablet,
-              child: TwoPane(
-                startPane: probe('master', DraftPane('master', key: draft)),
-                endPane: probe('detail', const SizedBox.expand()),
-              ),
+              startPane: probe('master', DraftPane('master', key: draft)),
+              endPane: probe('detail', const SizedBox.expand()),
             ),
           ),
         ),
@@ -208,13 +205,9 @@ void main() {
               return TwoPaneScaffold(
                 type: TwoPaneType.tablet,
                 onCloseDetail: () => setState(() => selected = false),
-                child: TwoPane(
-                  panePriority: selected
-                      ? TwoPanePriority.end
-                      : TwoPanePriority.start,
-                  startPane: DraftPane('master', key: master),
-                  endPane: DraftPane('detail', key: detail),
-                ),
+                showDetail: selected,
+                startPane: DraftPane('master', key: master),
+                endPane: DraftPane('detail', key: detail),
               );
             },
           ),
@@ -262,13 +255,9 @@ void main() {
           builder: (context, setState) => TwoPaneScaffold(
             type: TwoPaneType.smallScreen,
             onCloseDetail: () => setState(() => selected = false),
-            child: TwoPane(
-              panePriority: selected
-                  ? TwoPanePriority.end
-                  : TwoPanePriority.start,
-              startPane: const Text('master'),
-              endPane: const Text('detail'),
-            ),
+            showDetail: selected,
+            startPane: const Text('master'),
+            endPane: const Text('detail'),
           ),
         ),
       ),
@@ -295,19 +284,17 @@ void main() {
         ),
         home: TwoPaneScaffold(
           type: TwoPaneType.tablet,
-          child: TwoPane(
-            startPane: Builder(
-              builder: (context) {
-                master = MediaQuery.of(context);
-                return const Text('master');
-              },
-            ),
-            endPane: Builder(
-              builder: (context) {
-                detail = MediaQuery.of(context);
-                return const Text('detail');
-              },
-            ),
+          startPane: Builder(
+            builder: (context) {
+              master = MediaQuery.of(context);
+              return const Text('master');
+            },
+          ),
+          endPane: Builder(
+            builder: (context) {
+              detail = MediaQuery.of(context);
+              return const Text('detail');
+            },
           ),
         ),
       ),
@@ -335,13 +322,9 @@ void main() {
                 builder: (context, setState) => TwoPaneScaffold(
                   type: TwoPaneType.smallScreen,
                   onCloseDetail: () => setState(() => selected = false),
-                  child: TwoPane(
-                    panePriority: selected
-                        ? TwoPanePriority.end
-                        : TwoPanePriority.start,
-                    startPane: const Text('master'),
-                    endPane: const Text('detail'),
-                  ),
+                  showDetail: selected,
+                  startPane: const Text('master'),
+                  endPane: const Text('detail'),
                 ),
               ),
             ),

@@ -43,8 +43,9 @@ class PostTextFieldUtils {
   static List<String> getAttachmentAidList(String message) {
     List<String> aidList = [];
     RegExp replaceRegex = RegExp(
-      r"\[attachimg\](\d*?)\[/attachimg\]",
+      r"\[attachimg\](\d+)\[/attachimg\]",
       multiLine: true,
+      caseSensitive: false,
     );
     if (replaceRegex.hasMatch(message)) {
       // contain

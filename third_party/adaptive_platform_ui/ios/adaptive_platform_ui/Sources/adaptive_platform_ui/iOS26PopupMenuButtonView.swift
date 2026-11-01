@@ -15,6 +15,7 @@ class iOS26PopupMenuButtonView: NSObject, FlutterPlatformView {
     private var dividers: [Bool] = []
     private var enabled: [Bool] = []
     private var isDestructive: [Bool] = []
+    private var isSelected: [Bool] = []
 
     init(frame: CGRect, viewId: Int64, args: Any?, messenger: FlutterBinaryMessenger) {
         self.channel = FlutterMethodChannel(name: "adaptive_platform_ui/ios26_popup_menu_button_\(viewId)", binaryMessenger: messenger)
@@ -23,6 +24,7 @@ class iOS26PopupMenuButtonView: NSObject, FlutterPlatformView {
 
         var title: String? = nil
         var iconName: String? = nil
+        var iconSize: CGFloat? = nil
         var makeRound: Bool = false
         var isDark: Bool = false
         var tint: UIColor? = nil
@@ -34,12 +36,14 @@ class iOS26PopupMenuButtonView: NSObject, FlutterPlatformView {
         var dividers: [NSNumber] = []
         var enabled: [NSNumber] = []
         var isDestructive: [NSNumber] = []
+        var isSelected: [NSNumber] = []
         var isCustomWidget: Bool = false
         var triggerOnLongPress: Bool = false
 
         if let dict = args as? [String: Any] {
             if let t = dict["buttonTitle"] as? String { title = t }
             if let s = dict["buttonIconName"] as? String { iconName = s }
+            if let n = dict["buttonIconSize"] as? NSNumber { iconSize = CGFloat(n.doubleValue) }
             if let r = dict["round"] as? NSNumber { makeRound = r.boolValue }
             if let v = dict["isDark"] as? NSNumber { isDark = v.boolValue }
             if let tintArgb = dict["tint"] as? NSNumber { tint = UIColor(argb: tintArgb.intValue) }
@@ -53,6 +57,7 @@ class iOS26PopupMenuButtonView: NSObject, FlutterPlatformView {
             dividers = (dict["isDivider"] as? [NSNumber]) ?? []
             enabled = (dict["enabled"] as? [NSNumber]) ?? []
             isDestructive = (dict["isDestructive"] as? [NSNumber]) ?? []
+            isSelected = (dict["isSelected"] as? [NSNumber]) ?? []
         }
 
         super.init()
@@ -84,6 +89,7 @@ class iOS26PopupMenuButtonView: NSObject, FlutterPlatformView {
         self.dividers = dividers.map { $0.boolValue }
         self.enabled = enabled.map { $0.boolValue }
         self.isDestructive = isDestructive.map { $0.boolValue }
+        self.isSelected = isSelected.map { $0.boolValue }
 
         self.isRoundButton = makeRound
         currentButtonStyle = buttonStyle
@@ -91,7 +97,7 @@ class iOS26PopupMenuButtonView: NSObject, FlutterPlatformView {
         // Set button content (hide if custom widget is used)
         if !isCustomWidget {
             applyButtonStyle(buttonStyle: buttonStyle, round: makeRound)
-            setButtonContent(title: title, icon: iconName)
+            setButtonContent(title: title, icon: iconName, iconSize: iconSize)
         } else {
             // Make button fully transparent but functional
             button.backgroundColor = .clear
@@ -145,6 +151,7 @@ class iOS26PopupMenuButtonView: NSObject, FlutterPlatformView {
                     self.dividers = ((args["isDivider"] as? [NSNumber]) ?? []).map { $0.boolValue }
                     self.enabled = ((args["enabled"] as? [NSNumber]) ?? []).map { $0.boolValue }
                     self.isDestructive = ((args["isDestructive"] as? [NSNumber]) ?? []).map { $0.boolValue }
+                    self.isSelected = ((args["isSelected"] as? [NSNumber]) ?? []).map { $0.boolValue }
                     self.rebuildMenu()
                     result(nil)
                 } else { result(FlutterError(code: "bad_args", message: "Missing menu items", details: nil)) }
@@ -152,7 +159,8 @@ class iOS26PopupMenuButtonView: NSObject, FlutterPlatformView {
                 if let args = call.arguments as? [String: Any] {
                     let title = args["buttonTitle"] as? String
                     let iconName = args["buttonIconName"] as? String
-                    self.setButtonContent(title: title, icon: iconName)
+                    let iconSize = (args["buttonIconSize"] as? NSNumber).map { CGFloat($0.doubleValue) }
+                    self.setButtonContent(title: title, icon: iconName, iconSize: iconSize)
                     result(nil)
                 } else { result(FlutterError(code: "bad_args", message: "Missing button content", details: nil)) }
             default:
@@ -186,11 +194,20 @@ class iOS26PopupMenuButtonView: NSObject, FlutterPlatformView {
         // iOS 14+ native menu
         if #available(iOS 14.0, *) {
             var groups: [[UIMenuElement]] = []
+            var groupTitles: [String] = []
+            // A divider carries the title of the group that follows it, so the
+            // one waiting here belongs to whatever is collected next.
+            var pendingTitle = ""
             var current: [UIMenuElement] = []
             let count = max(labels.count, max(symbols.count, dividers.count))
 
             let flushGroup: () -> Void = {
-                if !current.isEmpty { groups.append(current); current = [] }
+                if !current.isEmpty {
+                    groups.append(current)
+                    groupTitles.append(pendingTitle)
+                    current = []
+                    pendingTitle = ""
+                }
             }
 
             // Count only selectable items for indexing
@@ -198,7 +215,11 @@ class iOS26PopupMenuButtonView: NSObject, FlutterPlatformView {
 
             for i in 0..<count {
                 let isDiv = i < dividers.count ? dividers[i] : false
-                if isDiv { flushGroup(); continue }
+                if isDiv {
+                    flushGroup()
+                    pendingTitle = i < labels.count ? labels[i] : ""
+                    continue
+                }
 
                 let title = i < labels.count ? labels[i] : ""
                 let subtitle = i < subtitles.count ? subtitles[i] : ""
@@ -213,6 +234,7 @@ class iOS26PopupMenuButtonView: NSObject, FlutterPlatformView {
 
                 let isEnabled = i < enabled.count ? enabled[i] : true
                 let isDestructiveItem = i < isDestructive.count ? isDestructive[i] : false
+                let isSelectedItem = i < isSelected.count ? isSelected[i] : false
                 let currentSelectableIndex = selectableIndex
                 selectableIndex += 1
 
@@ -228,12 +250,14 @@ class iOS26PopupMenuButtonView: NSObject, FlutterPlatformView {
                         self?.channel.invokeMethod("itemSelected", arguments: ["index": currentSelectableIndex])
                     }
                 }
+                // Show the system trailing checkmark for the selected item.
+                action.state = isSelectedItem ? .on : .off
                 current.append(action)
             }
             flushGroup()
 
-            let children: [UIMenuElement] = groups.map { group in
-                UIMenu(title: "", options: .displayInline, children: group)
+            let children: [UIMenuElement] = groups.enumerated().map { index, group in
+                UIMenu(title: groupTitles[index], options: .displayInline, children: group)
             }
             button.menu = UIMenu(title: "", children: children)
         }
@@ -340,17 +364,20 @@ class iOS26PopupMenuButtonView: NSObject, FlutterPlatformView {
         }
     }
 
-    private func setButtonContent(title: String?, icon: String?) {
+    private func setButtonContent(title: String?, icon: String?, iconSize: CGFloat?) {
+        // A point size from Dart sizes the symbol; without one UIKit picks it.
+        let symbolConfig = iconSize.map { UIImage.SymbolConfiguration(pointSize: $0) }
+        let image = icon.flatMap { UIImage(systemName: $0, withConfiguration: symbolConfig) }
         if #available(iOS 15.0, *) {
             var cfg = button.configuration ?? .plain()
             cfg.title = title
-            if let iconName = icon, let image = UIImage(systemName: iconName) {
+            if let image = image {
                 cfg.image = image
             }
             button.configuration = cfg
         } else {
             button.setTitle(title, for: .normal)
-            if let iconName = icon, let image = UIImage(systemName: iconName) {
+            if let image = image {
                 button.setImage(image, for: .normal)
             }
         }

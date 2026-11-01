@@ -62,16 +62,20 @@ jobs:
             echo "::error::pubspec.lock must be committed for reproducible builds."
             exit 1
           }
-          test -f third_party/extended_text_field/pubspec.yaml || {
-            echo "::error::The path dependency third_party/extended_text_field is missing."
+          test -f third_party/adaptive_platform_ui/pubspec.yaml || {
+            echo "::error::The local Liquid Glass package is missing."
             exit 1
           }
-          test -f third_party/dual_screen/pubspec.yaml || {
-            echo "::error::The path dependency third_party/dual_screen is missing. Commit the Android compatibility fork."
+          test -f third_party/apple_post_translation/pubspec.yaml || {
+            echo "::error::The Apple Translation bridge is missing."
             exit 1
           }
-          test -f third_party/webview_cookie_manager/pubspec.yaml || {
-            echo "::error::The path dependency third_party/webview_cookie_manager is missing. Commit the Android compatibility fork."
+          test -f darwin/WebViewCookies.swift || {
+            echo "::error::The shared Apple WebView cookie bridge is missing."
+            exit 1
+          }
+          test -f android/app/src/main/kotlin/com/kidozh/discuz_flutter/WebViewCookiesChannel.kt || {
+            echo "::error::The Android WebView cookie bridge is missing."
             exit 1
           }
           test -f lib/utility/NtcColorLocalization.dart || {
@@ -92,8 +96,9 @@ jobs:
 
       - name: Run Flutter and release-preflight tests
         run: |
-          flutter test --no-pub
+          flutter test --no-pub test third_party/adaptive_platform_ui/test
           python3 -m unittest discover -s test -p 'test_*.py'
+          node --test test/testflight_release_verification_test.mjs
 
       - name: Run Android background-notification tests
         working-directory: android
@@ -222,16 +227,20 @@ jobs:
             echo "::error::pubspec.lock must be committed for reproducible builds."
             exit 1
           }
-          test -f third_party/extended_text_field/pubspec.yaml || {
-            echo "::error::The path dependency third_party/extended_text_field is missing."
+          test -f third_party/adaptive_platform_ui/pubspec.yaml || {
+            echo "::error::The local Liquid Glass package is missing."
             exit 1
           }
-          test -f third_party/dual_screen/pubspec.yaml || {
-            echo "::error::The path dependency third_party/dual_screen is missing."
+          test -f third_party/apple_post_translation/pubspec.yaml || {
+            echo "::error::The Apple Translation bridge is missing."
             exit 1
           }
-          test -f third_party/webview_cookie_manager/pubspec.yaml || {
-            echo "::error::The path dependency third_party/webview_cookie_manager is missing."
+          test -f darwin/WebViewCookies.swift || {
+            echo "::error::The shared Apple WebView cookie bridge is missing."
+            exit 1
+          }
+          test -f android/app/src/main/kotlin/com/kidozh/discuz_flutter/WebViewCookiesChannel.kt || {
+            echo "::error::The Android WebView cookie bridge is missing."
             exit 1
           }
           test -f lib/utility/NtcColorLocalization.dart || {

@@ -1271,5 +1271,9 @@
   "googleTranslationPolicy": "Google Translate attribution guidelines",
   "postCopyText": "Copy post text",
   "postTextCopied": "Post text copied",
-  "postCopyEmpty": "This post has no text to copy."
+  "postCopyEmpty": "This post has no text to copy.",
+  "composerImageLabel": "Image {number}",
+  "@composerImageLabel": {"placeholders": {"number": {"type": "int"}}},
+  "removeComposerImage": "Remove image {number}",
+  "@removeComposerImage": {"placeholders": {"number": {"type": "int"}}}
 }

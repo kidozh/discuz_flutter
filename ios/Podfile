@@ -8,6 +8,11 @@ end
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
+# Analytics and Messaging's latest CocoaPods releases are 12.19.0. The
+# 12.19.3 patch only publishes selected pods; FlutterFire's common exact
+# 12.19.3 pin cannot resolve every product. Keep the shared product version.
+$FirebaseSDKVersion = '12.19.0'
+
 project 'Runner', {
   'Debug' => :debug,
   'Profile' => :release,
@@ -75,43 +80,6 @@ post_install do |installer|
       script_path = phase.shell_script.strip
       phase.shell_path = '/bin/bash'
       phase.shell_script = "source #{script_path}\n"
-    end
-  end
-
-  # webview_flutter_wkwebview 3.26.x can decode a detached authentication
-  # challenge response as NSNull and then force-cast it, crashing the app.
-  # Keep this local workaround until flutter/flutter#191254 is fixed upstream.
-  webkit_generated_source = File.join(
-    __dir__,
-    '.symlinks',
-    'plugins',
-    'webview_flutter_wkwebview',
-    'darwin',
-    'webview_flutter_wkwebview',
-    'Sources',
-    'webview_flutter_wkwebview',
-    'WebKitLibrary.g.swift'
-  )
-  if File.exist?(webkit_generated_source)
-    source = File.read(webkit_generated_source)
-    unsafe_cast = <<~'SWIFT'.strip
-      let result = listResponse[0] as! AuthenticationChallengeResponse
-              completion(.success(result))
-    SWIFT
-    safe_cast = <<~'SWIFT'.strip
-      guard let result = listResponse[0] as? AuthenticationChallengeResponse else {
-                completion(
-                  .success(
-                    AuthenticationChallengeResponse(
-                      disposition: .performDefaultHandling,
-                      credential: nil)))
-                return
-              }
-              completion(.success(result))
-    SWIFT
-    if source.include?(unsafe_cast)
-      File.write(webkit_generated_source, source.sub(unsafe_cast, safe_cast))
-      Pod::UI.puts 'Patched WKWebView authentication challenge NSNull crash.'
     end
   end
 

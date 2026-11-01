@@ -26,7 +26,7 @@ on:
         required: false
         type: string
       release_notes:
-        description: Optional TestFlight release notes
+        description: Optional notes for this build; replaces repository notes
         required: false
         type: string
 
@@ -90,7 +90,9 @@ jobs:
         run: |
           test -f pubspec.lock
           test -f ios/ExportOptions.plist
-          test -f third_party/extended_text_field/pubspec.yaml
+          test -f third_party/adaptive_platform_ui/pubspec.yaml
+          test -f third_party/apple_post_translation/pubspec.yaml
+          test -f darwin/WebViewCookies.swift
           missing=0
           for name in \
             APPSTORE_ISSUER_ID \
@@ -105,13 +107,61 @@ jobs:
           done
           exit "$missing"
 
+      - name: Determine release version
+        id: version
+        shell: bash
+        env:
+          REQUESTED_BUILD_NUMBER: ${{ inputs.build_number }}
+        run: |
+          version=$(awk '$1 == "version:" { print $2; exit }' pubspec.yaml)
+          if [[ ! "$version" =~ ^([0-9]+\.[0-9]+\.[0-9]+)\+([1-9][0-9]*)$ ]]; then
+            echo "::error::Expected pubspec.yaml version in name+build format."
+            exit 1
+          fi
+          build_name="${BASH_REMATCH[1]}"
+          source_build="${BASH_REMATCH[2]}"
+          if [[ -n "$REQUESTED_BUILD_NUMBER" ]]; then
+            build_number="$REQUESTED_BUILD_NUMBER"
+          else
+            build_number="$source_build"
+          fi
+          if [[ ! "$build_number" =~ ^[1-9][0-9]*$ ]]; then
+            echo "::error::Build number must be a positive integer."
+            exit 1
+          fi
+          echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
+          echo "build_name=$build_name" >> "$GITHUB_OUTPUT"
+          echo "Building App Store version $build_name ($build_number)"
+
+      - name: Validate TestFlight release notes
+        id: testflight_notes
+        env:
+          CUSTOM_RELEASE_NOTES: ${{ inputs.release_notes }}
+          BUILD_NAME: ${{ steps.version.outputs.build_name }}
+          BUILD_NUMBER: ${{ steps.version.outputs.build_number }}
+        run: |
+          python3 scripts/prepare_testflight_notes.py \
+            --version "$BUILD_NAME" \
+            --build-number "$BUILD_NUMBER"
+
       - name: Install dependencies
         run: flutter pub get --enforce-lockfile
 
       - name: Run tests
         run: |
-          flutter test
+          flutter test --no-pub test third_party/adaptive_platform_ui/test
           python3 -m unittest discover -s test -p 'test_*.py'
+          node --test test/testflight_release_verification_test.mjs
+
+      - name: Check App Store build number availability
+        env:
+          APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
+          APPSTORE_API_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
+          APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+        run: |
+          node scripts/verify_testflight_release.mjs --check-available \
+            --version '${{ steps.version.outputs.build_name }}' \
+            --build-number '${{ steps.version.outputs.build_number }}'
 
       - name: Import App Store signing certificate
         uses: apple-actions/import-codesign-certs@v7
@@ -148,32 +198,6 @@ jobs:
             --iphone-profiles "$IPHONE_PROFILES" \
             --watch-profiles "$WATCH_PROFILES" \
             --export-options build/ios/AppStoreExportOptions.plist
-
-      - name: Determine release version
-        id: version
-        shell: bash
-        env:
-          REQUESTED_BUILD_NUMBER: ${{ inputs.build_number }}
-        run: |
-          version=$(awk '$1 == "version:" { print $2; exit }' pubspec.yaml)
-          if [[ ! "$version" =~ ^([0-9]+\.[0-9]+\.[0-9]+)\+([1-9][0-9]*)$ ]]; then
-            echo "::error::Expected pubspec.yaml version in name+build format."
-            exit 1
-          fi
-          build_name="${BASH_REMATCH[1]}"
-          source_build="${BASH_REMATCH[2]}"
-          if [[ -n "$REQUESTED_BUILD_NUMBER" ]]; then
-            build_number="$REQUESTED_BUILD_NUMBER"
-          else
-            build_number="$source_build"
-          fi
-          if [[ ! "$build_number" =~ ^[1-9][0-9]*$ ]]; then
-            echo "::error::Build number must be a positive integer."
-            exit 1
-          fi
-          echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
-          echo "build_name=$build_name" >> "$GITHUB_OUTPUT"
-          echo "Building App Store version $build_name ($build_number)"
 
       - name: Build signed IPA
         env:
@@ -239,27 +263,11 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: ios-app-store-${{ steps.version.outputs.build_number }}
-          path: ${{ steps.ipa.outputs.path }}
+          path: |
+            ${{ steps.ipa.outputs.path }}
+            build/ios/testflight-release-notes.txt
           if-no-files-found: error
           retention-days: 14
-
-      - name: Prepare TestFlight release notes
-        id: testflight_notes
-        env:
-          CUSTOM_RELEASE_NOTES: ${{ inputs.release_notes }}
-        run: |
-          python3 - <<'PYNOTES'
-          import os
-          import uuid
-          from pathlib import Path
-
-          notice = Path('docs/testflight-release-notes.txt').read_text().strip()
-          custom = os.environ.get('CUSTOM_RELEASE_NOTES', '').strip()
-          notes = '\n\n'.join(part for part in (custom, notice) if part)
-          delimiter = 'notes_' + uuid.uuid4().hex
-          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
-              output.write(f'notes<<{delimiter}\n{notes}\n{delimiter}\n')
-          PYNOTES
 
       - name: Upload to App Store Connect and TestFlight
         uses: apple-actions/upload-testflight-build@v5
@@ -270,3 +278,20 @@ jobs:
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
           release-notes: ${{ steps.testflight_notes.outputs.notes }}
           wait-for-processing: "true"
+
+      - name: Verify TestFlight notes after Apple processing
+        env:
+          APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
+          APPSTORE_API_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
+          APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+        run: |
+          node scripts/verify_testflight_release.mjs \
+            --version '${{ steps.version.outputs.build_name }}' \
+            --build-number '${{ steps.version.outputs.build_number }}'
+
+      - name: Preserve TestFlight verification receipt
+        uses: actions/upload-artifact@v7
+        with:
+          name: testflight-verification-${{ steps.version.outputs.build_number }}
+          path: build/ios/testflight-verification.json
+          if-no-files-found: error

@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/utility/TwoPaneScaffold.dart';
 import 'package:discuz_flutter/utility/TwoPaneUtils.dart';
-import 'package:dual_screen/dual_screen.dart';
 import 'package:foldable/foldable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -48,14 +47,12 @@ void main() {
               },
               home: TwoPaneScaffold(
                 type: TwoPaneType.foldable,
-                child: TwoPane(
-                  startPane: const Text('list'),
-                  endPane: Builder(
-                    builder: (context) {
-                      source = context;
-                      return const SizedBox.expand(child: Text('detail'));
-                    },
-                  ),
+                startPane: const Text('list'),
+                endPane: Builder(
+                  builder: (context) {
+                    source = context;
+                    return const SizedBox.expand(child: Text('detail'));
+                  },
                 ),
               ),
             ),

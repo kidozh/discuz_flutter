@@ -4,10 +4,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/Smiley.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
+import 'package:discuz_flutter/utility/post_editor_controller.dart';
+import 'package:discuz_flutter/widget/post_image_preview.dart';
 import 'package:extended_text_field/extended_text_field.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class PostTextField extends StatefulWidget {
@@ -17,32 +19,96 @@ class PostTextField extends StatefulWidget {
   final bool? expanded;
   final bool embeddedInComposer;
 
-  PostTextField(this._discuz, this._controller,
-      {required this.focusNode,
-      this.expanded,
-      this.embeddedInComposer = false});
+  PostTextField(
+    this._discuz,
+    this._controller, {
+    required this.focusNode,
+    this.expanded,
+    this.embeddedInComposer = false,
+    super.key,
+  });
 
   @override
   PostTextFieldState createState() {
-    return PostTextFieldState(this._discuz, this._controller,
-        focusNode: focusNode,
-        expanded: this.expanded,
-        embeddedInComposer: embeddedInComposer);
+    return PostTextFieldState();
   }
 }
 
 class PostTextFieldState extends State<PostTextField> {
-  final TextEditingController _controller;
+  TextEditingController get _controller => widget._controller;
+  Discuz get _discuz => widget._discuz;
+  FocusNode get focusNode => widget.focusNode;
+  bool? get expanded => widget.expanded;
+  bool get embeddedInComposer => widget.embeddedInComposer;
 
-  final Discuz _discuz;
-  final FocusNode focusNode;
-  final bool? expanded;
-  final bool embeddedInComposer;
+  TextSelection? _previousSelection;
+  bool _correctingSelection = false;
 
-  PostTextFieldState(this._discuz, this._controller,
-      {required this.focusNode,
-      this.expanded,
-      this.embeddedInComposer = false});
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_keepSelectionOutsideTokens);
+    _previousSelection = _controller.selection;
+  }
+
+  @override
+  void didUpdateWidget(PostTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget._controller != _controller) {
+      oldWidget._controller.removeListener(_keepSelectionOutsideTokens);
+      _controller.addListener(_keepSelectionOutsideTokens);
+      _previousSelection = _controller.selection;
+    }
+  }
+
+  void _keepSelectionOutsideTokens() {
+    if (_correctingSelection) return;
+    final value = _controller.value;
+    final selection = postEditorSelection(
+      value.text,
+      value.selection,
+      previous: _previousSelection,
+    );
+    final composing =
+        PostEditorToken.inText(value.text).any(
+          (token) =>
+              value.composing.start < token.end &&
+              value.composing.end > token.start,
+        )
+        ? TextRange.empty
+        : value.composing;
+    _previousSelection = selection;
+    if (selection == value.selection && composing == value.composing) return;
+    _correctingSelection = true;
+    _controller.value = value.copyWith(
+      selection: selection,
+      composing: composing,
+    );
+    _correctingSelection = false;
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_keepSelectionOutsideTokens);
+    super.dispose();
+  }
+
+  String? _imagePathFor(PostEditorToken token) {
+    final controller = _controller;
+    if (controller is PostEditorController) {
+      final path = controller.imagePathFor(token.text);
+      if (path != null) return path;
+    }
+    final box = AppDatabase.imageAttachmentBox;
+    if (token.isAttachment && box != null && box.isOpen) {
+      for (final attachment in box.values) {
+        if (attachment.discuz == _discuz && attachment.aid == token.content) {
+          return attachment.path;
+        }
+      }
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,17 +123,26 @@ class PostTextFieldState extends State<PostTextField> {
     );
     final textField = ExtendedTextField(
       controller: _controller,
-      specialTextSpanBuilder: PostSpecialTextSpanBuilder(_discuz),
+      specialTextSpanBuilder: PostSpecialTextSpanBuilder(
+        _discuz,
+        manageEdits: true,
+        imagePathFor: _imagePathFor,
+        onRemoveImage: (token) => removePostEditorImage(_controller, token),
+        editingValue: () => _controller.value,
+        compactImages: expanded == null,
+      ),
+      inputFormatters: const [PostEditorInputFormatter()],
+      strutStyle: const StrutStyle(forceStrutHeight: false),
       selectionControls: classicCupertino
           ? cupertinoTextSelectionHandleControls
           : isCupertino(context)
-              ? CupertinoTextSelectionControls()
-              : MaterialTextSelectionControls(),
+          ? CupertinoTextSelectionControls()
+          : MaterialTextSelectionControls(),
       style: classicCupertino ? cupertinoStyle : null,
       cursorColor: classicCupertino
           ? embeddedInComposer
-              ? CupertinoColors.systemBlue.resolveFrom(context)
-              : cupertinoTheme.primaryColor
+                ? CupertinoColors.systemBlue.resolveFrom(context)
+                : cupertinoTheme.primaryColor
           : null,
       cursorRadius: classicCupertino ? const Radius.circular(2) : null,
       cursorOpacityAnimates: classicCupertino ? true : null,
@@ -85,9 +160,7 @@ class PostTextFieldState extends State<PostTextField> {
             ),
       focusNode: focusNode,
       minLines: expanded == null ? 1 : null,
-      maxLines: expanded == null
-          ? (classicCupertino && embeddedInComposer ? 5 : 3)
-          : null,
+      maxLines: expanded == null ? 5 : null,
       expands: expanded == null ? false : true,
       decoration: classicCupertino
           ? null
@@ -116,15 +189,17 @@ class PostTextFieldState extends State<PostTextField> {
               onTap: focusNode.requestFocus,
               child: Container(
                 key: const ValueKey('cupertino-post-input'),
-                constraints:
-                    BoxConstraints(minHeight: embeddedInComposer ? 44 : 36),
+                constraints: BoxConstraints(
+                  minHeight: embeddedInComposer ? 44 : 36,
+                ),
                 // The message composer owns the single bubble around both the
                 // editable text and send button; never draw a second input box.
                 decoration: embeddedInComposer
                     ? null
                     : BoxDecoration(
-                        color: CupertinoColors.systemBackground
-                            .resolveFrom(context),
+                        color: CupertinoColors.systemBackground.resolveFrom(
+                          context,
+                        ),
                         border: Border.all(
                           color: CupertinoColors.separator.resolveFrom(context),
                           width: 1 / MediaQuery.devicePixelRatioOf(context),
@@ -185,7 +260,7 @@ class SmileyText extends SpecialText {
   int start;
 
   SmileyText(this._discuz, TextStyle textStyle, {required this.start})
-      : super(SmileyText.smileyStartFlag, SmileyText.smileyEndFlag, textStyle);
+    : super(SmileyText.smileyStartFlag, SmileyText.smileyEndFlag, textStyle);
 
   get smiley => Smiley.fromJson(jsonDecode(getContent()));
 
@@ -201,7 +276,8 @@ class SmileyText extends SpecialText {
   InlineSpan finishText() {
     return ImageSpan(
       CachedNetworkImageProvider(
-          _discuz.baseURL + "/static/image/smiley/" + smiley.relativePath),
+        _discuz.baseURL + "/static/image/smiley/" + smiley.relativePath,
+      ),
       imageWidth: 20,
       imageHeight: 20,
       start: this.start,
@@ -210,61 +286,124 @@ class SmileyText extends SpecialText {
   }
 }
 
-class AttachImageText extends SpecialText {
-  Discuz _discuz;
-  static String attachStartFlag = "[attachimg]";
-  static String attachEndFlag = "[/attachimg]";
-  int start;
-
-  AttachImageText(this._discuz, TextStyle textStyle, {required this.start})
-      : super(AttachImageText.attachStartFlag, AttachImageText.attachEndFlag,
-            textStyle);
-
-  get aid => getContent();
-
-  @override
-  InlineSpan finishText() {
-    return BackgroundTextSpan(
-      text: " 📃 ${aid} ",
-      background: Paint()..color = Colors.blue.withOpacity(0.15),
-      actualText: toString(),
-      start: start,
-      style: TextStyle(color: Colors.blue),
-    );
-  }
-}
-
 class PostSpecialTextSpanBuilder extends SpecialTextSpanBuilder {
-  Discuz _discuz;
+  final Discuz _discuz;
+  final bool manageEdits;
+  final String? Function(PostEditorToken token)? imagePathFor;
+  final void Function(PostEditorToken token)? onRemoveImage;
+  final TextEditingValue Function()? editingValue;
+  final bool compactImages;
+  bool _builtComposingPrefix = false;
 
-  PostSpecialTextSpanBuilder(this._discuz);
+  PostSpecialTextSpanBuilder(
+    this._discuz, {
+    this.manageEdits = false,
+    this.imagePathFor,
+    this.onRemoveImage,
+    this.editingValue,
+    this.compactImages = false,
+  });
 
   @override
-  SpecialText? createSpecialText(String flag,
-      {TextStyle? textStyle,
-      SpecialTextGestureTapCallback? onTap,
-      required int index}) {
-    if (flag == "") {
-      return null;
-    } else {
-      if (isStart(flag, AttachImageText.attachStartFlag)) {
-        return AttachImageText(_discuz, textStyle!,
-            start: index - (AttachImageText.attachStartFlag.length - 1));
-      } else if (isStart(flag, SmileyText.smileyStartFlag)) {
-        return SmileyText(_discuz, textStyle!,
-            start: index - (SmileyText.smileyStartFlag.length - 1));
-      } else {
-        return null;
+  SpecialText? createSpecialText(
+    String flag, {
+    TextStyle? textStyle,
+    SpecialTextGestureTapCallback? onTap,
+    required int index,
+  }) => null;
+
+  @override
+  TextSpan build(
+    String data, {
+    TextStyle? textStyle,
+    SpecialTextGestureTapCallback? onTap,
+  }) {
+    final spans = <InlineSpan>[];
+    final value = editingValue?.call();
+    int sourceOffset = 0;
+    // ExtendedTextField builds the prefix and suffix separately while an IME
+    // is composing. Keep image ordinals and remove actions in document offsets.
+    if (value != null && value.text == data) {
+      _builtComposingPrefix = false;
+    } else if (value != null && value.isComposingRangeValid) {
+      final before = value.composing.textBefore(value.text);
+      final after = value.composing.textAfter(value.text);
+      if (data == after && (data != before || _builtComposingPrefix)) {
+        sourceOffset = value.composing.end;
+        _builtComposingPrefix = false;
+      } else if (data == before) {
+        _builtComposingPrefix = true;
       }
     }
-  }
-
-  @override
-  TextSpan build(String data,
-      {TextStyle? textStyle, SpecialTextGestureTapCallback? onTap}) {
-    if (kIsWeb) {
-      return TextSpan(text: data, style: textStyle);
+    int offset = 0;
+    int imageNumber = sourceOffset == 0
+        ? 0
+        : PostEditorToken.inText(value!.text.substring(0, sourceOffset))
+              .where((token) => !token.isSmiley)
+              .length;
+    for (final localToken in PostEditorToken.inText(data)) {
+      final token = PostEditorToken(
+        localToken.start + sourceOffset,
+        localToken.text,
+      );
+      if (localToken.start > offset) {
+        spans.add(TextSpan(text: data.substring(offset, localToken.start)));
+      }
+      if (token.isSmiley) {
+        try {
+          final smiley = Smiley.fromJson(jsonDecode(token.content));
+          final span = ImageSpan(
+            CachedNetworkImageProvider(
+              '${_discuz.baseURL}/static/image/smiley/${smiley.relativePath}',
+            ),
+            imageWidth: 20,
+            imageHeight: 20,
+            start: token.start,
+            actualText: token.text,
+          );
+          spans.add(
+            manageEdits
+                ? ExtendedWidgetSpan(
+                    child: span.child,
+                    start: token.start,
+                    actualText: token.text,
+                    alignment: PlaceholderAlignment.middle,
+                    deleteAll: false,
+                  )
+                : span,
+          );
+        } on FormatException {
+          spans.add(TextSpan(text: token.text));
+        } on TypeError {
+          spans.add(TextSpan(text: token.text));
+        }
+      } else {
+        imageNumber++;
+        spans.add(
+          ExtendedWidgetSpan(
+            start: token.start,
+            actualText: token.text,
+            alignment: PlaceholderAlignment.bottom,
+            style: const TextStyle(height: 1),
+            // The formatter handles backward/forward deletion and replacements.
+            deleteAll: !manageEdits,
+            child: PostImagePreview(
+              compact: compactImages,
+              localPath: imagePathFor?.call(token),
+              url: token.isAttachment ? null : token.content.trim(),
+              number: imageNumber,
+              onRemove: onRemoveImage == null
+                  ? null
+                  : () => onRemoveImage!(token),
+            ),
+          ),
+        );
+      }
+      offset = localToken.end;
     }
-    return super.build(data, textStyle: textStyle, onTap: onTap);
+    if (offset < data.length) {
+      spans.add(TextSpan(text: data.substring(offset)));
+    }
+    return TextSpan(children: spans, style: textStyle);
   }
 }

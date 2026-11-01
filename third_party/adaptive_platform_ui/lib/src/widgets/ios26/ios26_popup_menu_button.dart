@@ -25,6 +25,7 @@ class AdaptivePopupMenuItem<T> extends AdaptivePopupMenuEntry {
     this.imageBytes,
     this.enabled = true,
     this.isDestructive = false,
+    this.selected = false,
     this.value,
   });
 
@@ -47,6 +48,13 @@ class AdaptivePopupMenuItem<T> extends AdaptivePopupMenuEntry {
   /// If true, renders the item in red (destructive action styling)
   final bool isDestructive;
 
+  /// If true, marks the item as the currently selected one.
+  ///
+  /// On iOS 14+ native menus this sets `UIAction.state = .on`, showing the
+  /// system's trailing checkmark. On Material popup menus and the iOS <26
+  /// action-sheet fallback a leading checkmark is shown instead.
+  final bool selected;
+
   /// Optional value of type T associated with this item
   final T? value;
 }
@@ -54,7 +62,15 @@ class AdaptivePopupMenuItem<T> extends AdaptivePopupMenuEntry {
 /// A visual divider between popup menu items
 class AdaptivePopupMenuDivider extends AdaptivePopupMenuEntry {
   /// Creates a visual divider between items
-  const AdaptivePopupMenuDivider();
+  ///
+  /// [title] names the group that follows it. On iOS 26+ it becomes the title
+  /// of the inline UIMenu section, which is where the platform puts such a
+  /// label. A divider placed before the first item titles that first group
+  /// without drawing a separator.
+  const AdaptivePopupMenuDivider({this.title});
+
+  /// Optional title for the group that follows this divider
+  final String? title;
 }
 
 /// Button style for popup menu button
@@ -82,6 +98,7 @@ class IOS26PopupMenuButton<T> extends StatefulWidget {
     this.shrinkWrap = false,
     this.buttonStyle = PopupButtonStyle.plain,
   }) : buttonIcon = null,
+       iconSize = null,
        child = null,
        width = null,
        round = false,
@@ -96,6 +113,7 @@ class IOS26PopupMenuButton<T> extends StatefulWidget {
     required this.onSelected,
     this.tint,
     double size = 44.0,
+    this.iconSize,
     this.buttonStyle = PopupButtonStyle.glass,
   }) : buttonLabel = null,
        child = null,
@@ -118,6 +136,7 @@ class IOS26PopupMenuButton<T> extends StatefulWidget {
     required this.child,
   }) : buttonLabel = null,
        buttonIcon = null,
+       iconSize = null,
        round = false,
        width = null,
        height = 32.0,
@@ -133,6 +152,9 @@ class IOS26PopupMenuButton<T> extends StatefulWidget {
 
   /// Icon for the button (non-null in icon mode)
   final String? buttonIcon;
+
+  /// Point size of the SF Symbol in [buttonIcon]; null keeps UIKit's default.
+  final double? iconSize;
 
   /// Custom child widget (non-null in widget mode)
   final Widget? child;
@@ -221,6 +243,7 @@ class _IOS26PopupMenuButtonState<T> extends State<IOS26PopupMenuButton<T>> {
       await ch.invokeMethod('updateButtonContent', {
         if (widget.buttonLabel != null) 'buttonTitle': widget.buttonLabel,
         if (widget.buttonIcon != null) 'buttonIconName': widget.buttonIcon,
+        if (widget.iconSize != null) 'buttonIconSize': widget.iconSize,
       });
     } catch (_) {}
   }
@@ -245,6 +268,7 @@ class _IOS26PopupMenuButtonState<T> extends State<IOS26PopupMenuButton<T>> {
             oldItem.imageBytes != newItem.imageBytes ||
             oldItem.enabled != newItem.enabled ||
             oldItem.isDestructive != newItem.isDestructive ||
+            oldItem.selected != newItem.selected ||
             oldItem.value != newItem.value) {
           return true;
         }
@@ -265,16 +289,18 @@ class _IOS26PopupMenuButtonState<T> extends State<IOS26PopupMenuButton<T>> {
     final isDivider = <bool>[];
     final enabled = <bool>[];
     final isDestructive = <bool>[];
+    final isSelected = <bool>[];
 
     for (final e in widget.items) {
       if (e is AdaptivePopupMenuDivider) {
-        labels.add('');
+        labels.add(e.title ?? '');
         subtitles.add('');
         symbols.add('');
         imageData.add(null);
         isDivider.add(true);
         enabled.add(false);
         isDestructive.add(false);
+        isSelected.add(false);
       } else if (e is AdaptivePopupMenuItem<T>) {
         labels.add(e.label);
         subtitles.add(e.subtitle ?? '');
@@ -283,6 +309,7 @@ class _IOS26PopupMenuButtonState<T> extends State<IOS26PopupMenuButton<T>> {
         isDivider.add(false);
         enabled.add(e.enabled);
         isDestructive.add(e.isDestructive);
+        isSelected.add(e.selected);
       }
     }
 
@@ -295,6 +322,7 @@ class _IOS26PopupMenuButtonState<T> extends State<IOS26PopupMenuButton<T>> {
         'isDivider': isDivider,
         'enabled': enabled,
         'isDestructive': isDestructive,
+        'isSelected': isSelected,
       });
     } catch (_) {}
   }
@@ -326,16 +354,18 @@ class _IOS26PopupMenuButtonState<T> extends State<IOS26PopupMenuButton<T>> {
       final isDivider = <bool>[];
       final enabled = <bool>[];
       final isDestructiveList = <bool>[];
+      final isSelectedList = <bool>[];
 
       for (final e in widget.items) {
         if (e is AdaptivePopupMenuDivider) {
-          labels.add('');
+          labels.add(e.title ?? '');
           subtitles.add('');
           symbols.add('');
           imageData.add(null);
           isDivider.add(true);
           enabled.add(false);
           isDestructiveList.add(false);
+          isSelectedList.add(false);
         } else if (e is AdaptivePopupMenuItem<T>) {
           labels.add(e.label);
           subtitles.add(e.subtitle ?? '');
@@ -344,12 +374,14 @@ class _IOS26PopupMenuButtonState<T> extends State<IOS26PopupMenuButton<T>> {
           isDivider.add(false);
           enabled.add(e.enabled);
           isDestructiveList.add(e.isDestructive);
+          isSelectedList.add(e.selected);
         }
       }
 
       final creationParams = <String, dynamic>{
         if (widget.buttonLabel != null) 'buttonTitle': widget.buttonLabel,
         if (widget.buttonIcon != null) 'buttonIconName': widget.buttonIcon,
+        if (widget.iconSize != null) 'buttonIconSize': widget.iconSize,
         if (widget.isIconButton) 'round': true,
         if (isCustomWidget) 'customWidget': true, // Hide native button content
         if (widget.triggerOnLongPress) 'triggerOnLongPress': true,
@@ -361,6 +393,7 @@ class _IOS26PopupMenuButtonState<T> extends State<IOS26PopupMenuButton<T>> {
         'isDivider': isDivider,
         'enabled': enabled,
         'isDestructive': isDestructiveList,
+        'isSelected': isSelectedList,
         'isDark': _isDark,
         if (_effectiveTint != null) 'tint': _colorToARGB(_effectiveTint!),
       };
@@ -369,7 +402,7 @@ class _IOS26PopupMenuButtonState<T> extends State<IOS26PopupMenuButton<T>> {
       final itemsKey = widget.items
           .map((item) {
             if (item is AdaptivePopupMenuItem<T>) {
-              return '${item.label}_${item.subtitle}_${item.icon}_${item.enabled}_${item.value}_${item.imageBytes?.length}';
+              return '${item.label}_${item.subtitle}_${item.icon}_${item.enabled}_${item.selected}_${item.value}_${item.imageBytes?.length}';
             }
             return 'divider';
           })
@@ -387,7 +420,9 @@ class _IOS26PopupMenuButtonState<T> extends State<IOS26PopupMenuButton<T>> {
         onPlatformViewCreated: _onCreated,
         gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
           widget.triggerOnLongPress
-              ? Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer())
+              ? Factory<LongPressGestureRecognizer>(
+                  () => LongPressGestureRecognizer(),
+                )
               : Factory<TapGestureRecognizer>(() => TapGestureRecognizer()),
         },
       );
@@ -553,11 +588,26 @@ class _IOS26PopupMenuButtonState<T> extends State<IOS26PopupMenuButton<T>> {
     final hasImage = item.imageBytes != null;
     final hasSubtitle = item.subtitle != null && item.subtitle!.isNotEmpty;
 
-    if (!hasImage && !hasSubtitle) return Text(item.label);
+    if (!hasImage && !hasSubtitle) {
+      if (!item.selected) return Text(item.label);
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(CupertinoIcons.checkmark, size: 18),
+          const SizedBox(width: 8),
+          Text(item.label),
+        ],
+      );
+    }
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        if (item.selected) ...[
+          const Icon(CupertinoIcons.checkmark, size: 18),
+          const SizedBox(width: 8),
+        ],
         if (hasImage) ...[
           ClipOval(
             child: Image.memory(
@@ -603,7 +653,9 @@ class _IOS26PopupMenuButtonState<T> extends State<IOS26PopupMenuButton<T>> {
               if (widget.items[i] is AdaptivePopupMenuItem<T>)
                 CupertinoActionSheetAction(
                   onPressed: () => Navigator.of(ctx).pop(i),
-                  isDestructiveAction: (widget.items[i] as AdaptivePopupMenuItem<T>).isDestructive,
+                  isDestructiveAction:
+                      (widget.items[i] as AdaptivePopupMenuItem<T>)
+                          .isDestructive,
                   child: _buildActionSheetItemContent(
                     widget.items[i] as AdaptivePopupMenuItem<T>,
                   ),

@@ -53,6 +53,13 @@ public class AdaptivePlatformUiPlugin: NSObject, FlutterPlugin {
             withId: "adaptive_platform_ui/ios26_popup_menu_button"
         )
 
+        // Register iOS 26 ContextMenu platform view factory
+        let ios26ContextMenuFactory = iOS26ContextMenuViewFactory(messenger: registrar.messenger())
+        registrar.register(
+            ios26ContextMenuFactory,
+            withId: "adaptive_platform_ui/ios26_context_menu"
+        )
+
         // Register iOS 26 TabBar platform view factory
         let ios26TabBarFactory = iOS26TabBarViewFactory(messenger: registrar.messenger())
         registrar.register(
@@ -80,5 +87,12 @@ public class AdaptivePlatformUiPlugin: NSObject, FlutterPlugin {
             ios26GlassCapsuleFactory,
             withId: "adaptive_platform_ui/ios26_glass_capsule"
         )
+
+        // iPhone Duo: where the system puts its vertical bar (iOS 27.1)
+        let verticalBarEdgeChannel = FlutterEventChannel(
+            name: "adaptive_platform_ui/vertical_bar_edge",
+            binaryMessenger: registrar.messenger()
+        )
+        verticalBarEdgeChannel.setStreamHandler(VerticalBarEdgeStreamHandler(registrar: registrar))
     }
 }

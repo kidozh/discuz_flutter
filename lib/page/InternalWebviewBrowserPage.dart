@@ -9,7 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:webview_cookie_manager/webview_cookie_manager.dart';
+
+import '../utility/DiscuzWebviewCookieManager.dart';
+
 import 'package:webview_flutter/webview_flutter.dart';
 
 class InternalWebviewBrowserPage extends StatefulWidget {
@@ -22,14 +24,17 @@ class InternalWebviewBrowserPage extends StatefulWidget {
   @override
   InternalWebviewBrowserState createState() {
     return InternalWebviewBrowserState(
-        this._discuz, this._user, this.initialURL);
+      this._discuz,
+      this._user,
+      this.initialURL,
+    );
   }
 }
 
 class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
   // final Completer<WebViewController> _controller =
   //     Completer<WebViewController>();
-  final webviewCookieManager = WebviewCookieManager();
+  final webviewCookieManager = const DiscuzWebviewCookieManager();
   WebViewController _controller = WebViewController();
 
   final Discuz _discuz;
@@ -43,41 +48,46 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
   void loadCookieByUser() async {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(NavigationDelegate(
-        onProgress: (int progress1) {
-          setState(() {
-            this.progress = progress1;
-          });
-        },
-        onNavigationRequest: (NavigationRequest request) {
-          return NavigationDecision.navigate;
-        },
-        onPageStarted: (String url) {
-          VibrationUtils.vibrateWithClickIfPossible();
-          print('Page started loading: $url');
-        },
-        onPageFinished: (String url) async {
-          setState(() {
-            progress = 0;
-          });
-          String? title = await this._controller.getTitle();
-          setState(() {
-            webTitle = title;
-          });
-          print('Page finished loading: $url');
-        },
-      ));
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress1) {
+            setState(() {
+              this.progress = progress1;
+            });
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            return NavigationDecision.navigate;
+          },
+          onPageStarted: (String url) {
+            VibrationUtils.vibrateWithClickIfPossible();
+            print('Page started loading: $url');
+          },
+          onPageFinished: (String url) async {
+            setState(() {
+              progress = 0;
+            });
+            String? title = await this._controller.getTitle();
+            setState(() {
+              webTitle = title;
+            });
+            print('Page finished loading: $url');
+          },
+        ),
+      );
 
     if (_user != null) {
       PersistCookieJar savedCookieJar =
           await NetworkUtils.getPersistentCookieJarByUser(_user!);
-      List<Cookie> cookies =
-          await savedCookieJar.loadForRequest(Uri.parse(_discuz.baseURL));
-      webviewCookieManager.setCookies(cookies, origin: _discuz.baseURL);
+      List<Cookie> cookies = await savedCookieJar.loadForRequest(
+        Uri.parse(_discuz.baseURL),
+      );
+      if (!mounted) return;
+      await webviewCookieManager.setCookies(cookies, origin: _discuz.baseURL);
     } else {
-      webviewCookieManager.clearCookies();
+      await webviewCookieManager.clearCookies();
     }
 
+    if (!mounted) return;
     _controller.loadRequest(Uri.parse(initialURL));
 
     setState(() {
@@ -98,17 +108,17 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
   @override
   Widget build(BuildContext context) {
     if (!cookieLoaded) {
-      return Container(
-        child: BlankScreen(),
-      );
+      return Container(child: BlankScreen());
     } else {
       return PlatformScaffold(
         iosContentBottomPadding: true,
         iosContentPadding: true,
         appBar: PlatformAppBar(
           title: webTitle == null
-              ? Text(S.of(context).openViaInternalBrowser,
-                  overflow: TextOverflow.ellipsis)
+              ? Text(
+                  S.of(context).openViaInternalBrowser,
+                  overflow: TextOverflow.ellipsis,
+                )
               : Text(webTitle!, overflow: TextOverflow.ellipsis),
           // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
           trailingActions: <Widget>[
@@ -139,21 +149,17 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
         ),
         // We're using a Builder here so we have a context that is below the Scaffold
         // to allow calling Scaffold.of(context) so we can show a snackbar.
-        body: Builder(builder: (BuildContext context) {
-          return Column(
-            children: [
-              if (progress != 0 && progress != 100)
-                LinearProgressIndicator(
-                  value: progress / 100,
-                ),
-              Expanded(
-                child: WebViewWidget(
-                  controller: this._controller,
-                ),
-              )
-            ],
-          );
-        }),
+        body: Builder(
+          builder: (BuildContext context) {
+            return Column(
+              children: [
+                if (progress != 0 && progress != 100)
+                  LinearProgressIndicator(value: progress / 100),
+                Expanded(child: WebViewWidget(controller: this._controller)),
+              ],
+            );
+          },
+        ),
         //floatingActionButton: checkButton(),
       );
     }

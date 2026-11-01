@@ -2,7 +2,6 @@ import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/utility/TwoPaneScaffold.dart';
 import 'package:discuz_flutter/utility/TwoPaneUtils.dart';
 import 'package:discuz_flutter/utility/pane_navigation.dart';
-import 'package:dual_screen/dual_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -82,42 +81,40 @@ class PaneHostState extends State<PaneHost> {
       closes++;
       select(0);
     },
-    child: TwoPane(
-      panePriority: tid == 0 ? TwoPanePriority.start : TwoPanePriority.end,
-      startPane: Builder(
-        builder: (context) {
-          master = context;
-          return Scaffold(
-            body: Column(
-              children: [
-                const Text('Master'),
-                TextButton(
-                  onPressed: () => pushDetailPage<void>(
-                    context,
-                    platformPageRoute<void>(
-                      context: context,
-                      builder: (_) => const DetailPage('Settings'),
-                    ),
-                  ),
-                  child: const Text('Master settings'),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    controller: scroll,
-                    itemCount: 50,
-                    itemBuilder: (_, i) =>
-                        SizedBox(height: 50, child: Text('row $i')),
+    showDetail: tid != 0,
+    startPane: Builder(
+      builder: (context) {
+        master = context;
+        return Scaffold(
+          body: Column(
+            children: [
+              const Text('Master'),
+              TextButton(
+                onPressed: () => pushDetailPage<void>(
+                  context,
+                  platformPageRoute<void>(
+                    context: context,
+                    builder: (_) => const DetailPage('Settings'),
                   ),
                 ),
-              ],
-            ),
-          );
-        },
-      ),
-      endPane: tid == 0
-          ? const Center(child: Text('Placeholder'))
-          : DetailPage('Thread $tid', key: ValueKey(tid)),
+                child: const Text('Master settings'),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  controller: scroll,
+                  itemCount: 50,
+                  itemBuilder: (_, i) =>
+                      SizedBox(height: 50, child: Text('row $i')),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     ),
+    endPane: tid == 0
+        ? const Center(child: Text('Placeholder'))
+        : DetailPage('Thread $tid', key: ValueKey(tid)),
   );
 }
 

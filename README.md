@@ -86,6 +86,16 @@ flutter run -d DEVICE_ID
 
 Keep the local dependencies in `third_party/` when cloning or packaging the project. For iOS and Apple Watch, use the normal Xcode signing flow; see the [running and signing notes](docs/apple_watch.md#工程与运行).
 
+### TestFlight release notes
+
+For every TestFlight build, update `docs/testflight-release-notes.txt` with the actual changes and testing focus. Its first line must match the uploaded version and build number, for example `2.0.11 (168)`. Follow the release requirements in [AGENTS.md](AGENTS.md).
+
+```sh
+python3 scripts/prepare_testflight_notes.py
+```
+
+The App Store workflow validates the notes before building and passes them to TestFlight after Apple processes the build. It then runs `scripts/verify_testflight_release.mjs` to populate Chinese and fallback-locale notes, read them back for the exact build, and preserve a verification receipt. A manual notes override replaces the repository text. Local Xcode or Transporter uploads must also apply the same notes to the matching build's “What to Test” in App Store Connect and verify that they were saved.
+
 ## Terms and privacy
 
 DisFly follows Discuz Hub's [Terms of Service](https://discuzhub.kidozh.com/zh/term_of_use/) and [Privacy Policy](https://discuzhub.kidozh.com/zh/privacy_policy/).

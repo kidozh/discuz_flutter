@@ -5,7 +5,9 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/DiscuzCheckResponseUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
-import 'package:webview_cookie_manager/webview_cookie_manager.dart';
+
+import '../utility/DiscuzWebviewCookieManager.dart';
+
 import 'package:webview_flutter/webview_flutter.dart';
 
 /// Holds the validated API response and any cookies extracted from the WebView
@@ -39,7 +41,7 @@ class SecurityChallengeWebviewPage extends StatelessWidget {
   final String checkUrl;
 
   const SecurityChallengeWebviewPage({Key? key, required this.checkUrl})
-      : super(key: key);
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +52,10 @@ class SecurityChallengeWebviewPage extends StatelessWidget {
 class _SecurityChallengeWebviewStatefulPage extends StatefulWidget {
   final String checkUrl;
 
-  const _SecurityChallengeWebviewStatefulPage(
-      {Key? key, required this.checkUrl})
-      : super(key: key);
+  const _SecurityChallengeWebviewStatefulPage({
+    Key? key,
+    required this.checkUrl,
+  }) : super(key: key);
 
   @override
   _SecurityChallengeWebviewState createState() =>
@@ -61,7 +64,7 @@ class _SecurityChallengeWebviewStatefulPage extends StatefulWidget {
 
 class _SecurityChallengeWebviewState
     extends State<_SecurityChallengeWebviewStatefulPage> {
-  final _cookieManager = WebviewCookieManager();
+  final _cookieManager = const DiscuzWebviewCookieManager();
   late final WebViewController _controller;
 
   bool _isLoading = true;

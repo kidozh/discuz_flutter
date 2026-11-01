@@ -2,7 +2,6 @@ import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/provider/ReplyPostNotifierProvider.dart';
 import 'package:discuz_flutter/utility/TwoPaneScaffold.dart';
 import 'package:discuz_flutter/utility/TwoPaneUtils.dart';
-import 'package:dual_screen/dual_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -76,17 +75,15 @@ void main() {
             rebuild = setState;
             return TwoPaneScaffold(
               type: TwoPaneType.foldable,
-              child: TwoPane(
-                panePriority: TwoPanePriority.end,
-                startPane: const Text('list'),
-                endPane: ThreadReplyScope(
-                  threadIdentity: ('https://example.com', 1, tid),
-                  child: Builder(
-                    builder: (context) {
-                      target = context.read<ReplyPostNotifierProvider>();
-                      return replyTarget('detail');
-                    },
-                  ),
+              showDetail: true,
+              startPane: const Text('list'),
+              endPane: ThreadReplyScope(
+                threadIdentity: ('https://example.com', 1, tid),
+                child: Builder(
+                  builder: (context) {
+                    target = context.read<ReplyPostNotifierProvider>();
+                    return replyTarget('detail');
+                  },
                 ),
               ),
             );

@@ -8,7 +8,7 @@ import '../utility/PlatformAdaptiveWidgets.dart';
 const _translateUrl = 'https://translate.google.com/';
 const _policyUrl = 'https://docs.cloud.google.com/translate/attribution';
 
-/// Android attribution appears only alongside the translated body.
+/// A small source credit at the end of the translated body.
 class GoogleTranslationAttribution extends StatelessWidget {
   const GoogleTranslationAttribution({super.key, required this.translated});
 
@@ -18,9 +18,10 @@ class GoogleTranslationAttribution extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!translated) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(top: 4),
       child: const Align(
-        alignment: AlignmentDirectional.centerStart,
+        heightFactor: 1,
+        alignment: AlignmentDirectional.centerEnd,
         child: GoogleTranslationBadge(),
       ),
     );
@@ -40,6 +41,7 @@ class GoogleTranslationBadge extends StatelessWidget {
       label: label,
       link: true,
       onTap: openTranslate,
+      onLongPress: () => showGoogleTranslationInfo(context),
       excludeSemantics: true,
       child: Tooltip(
         message: label,
@@ -48,9 +50,10 @@ class GoogleTranslationBadge extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
           child: InkWell(
             onTap: openTranslate,
+            onLongPress: () => showGoogleTranslationInfo(context),
             borderRadius: BorderRadius.circular(4),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+              padding: const EdgeInsets.all(4),
               child: Image.asset(
                 'assets/translation/google_translate.png',
                 width: 176,

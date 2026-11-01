@@ -2,8 +2,6 @@ import 'DashboardOrderPage.dart';
 import 'ForumFeedSettingsPage.dart';
 import 'background_new_posts_settings_page.dart';
 import '../utility/background_new_posts.dart';
-import '../utility/post_translation_service.dart';
-import '../widget/google_translation_controls.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 
 import 'package:discuz_flutter/utility/on_device_ai_labels.dart';
@@ -119,8 +117,7 @@ class _SettingPageState extends State<SettingPage> {
     final preference = context.watch<UserPreferenceNotifierProvider>();
     final account = context.watch<DiscuzAndUserNotifier>();
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(8, 8, 8, 32),
+    return PlatformSettingsList(
       children: [
         _GlassSettingsSection(
           title: S.of(context).securityTitle,
@@ -217,12 +214,6 @@ class _SettingPageState extends State<SettingPage> {
                 UserPreferencesUtils.putAutoTranslateEnabled(value);
               },
             ),
-            if (PostTranslationService.usesGoogleTranslation)
-              _GlassNavigationTile(
-                title: S.of(context).googleTranslationInfoTitle,
-                leading: const Icon(Icons.info_outline),
-                onTap: () => showGoogleTranslationInfo(context),
-              ),
           ],
         ),
         _GlassSettingsSection(
@@ -472,41 +463,8 @@ class _GlassSettingsSection extends StatelessWidget {
   const _GlassSettingsSection({required this.title, required this.children});
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 12),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
-          child: Text(
-            title,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        PlatformCard(
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          child: Column(
-            children: [
-              for (var index = 0; index < children.length; index++) ...[
-                children[index],
-                if (index < children.length - 1 && !usesLiquidGlass(context))
-                  Divider(
-                    height: 1,
-                    indent: 54,
-                    color: Theme.of(context).dividerColor
-                        .withValues(alpha: 0.35),
-                  ),
-              ],
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) =>
+      PlatformSettingsSection(title: Text(title), children: children);
 }
 
 class _GlassNavigationTile extends StatelessWidget {
@@ -523,11 +481,8 @@ class _GlassNavigationTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => PlatformListTile(
-    leading: IconTheme.merge(
-      data: IconThemeData(color: Theme.of(context).colorScheme.primary),
-      child: leading,
-    ),
+  Widget build(BuildContext context) => PlatformSettingsTile(
+    leading: leading,
     title: Text(title),
     trailing: Row(
       mainAxisSize: MainAxisSize.min,
@@ -567,11 +522,8 @@ class _GlassSwitchTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => PlatformListTile(
-    leading: IconTheme.merge(
-      data: IconThemeData(color: Theme.of(context).colorScheme.primary),
-      child: leading,
-    ),
+  Widget build(BuildContext context) => PlatformSettingsTile(
+    leading: leading,
     title: Text(title),
     trailing: PlatformSwitch(
       value: value,

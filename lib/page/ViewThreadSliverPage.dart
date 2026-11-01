@@ -1,4 +1,5 @@
 import '../utility/post_signature_service.dart';
+import '../utility/post_editor_controller.dart';
 import '../widget/cupertino_separated_item.dart';
 import '../widget/PostRatingsInline.dart';
 import 'PostCommentDialog.dart';
@@ -154,7 +155,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   List<Post> _postList = [];
   int _page = 1;
   String? passedSubject;
-  final TextEditingController _replyController = new TextEditingController();
+  final _replyController = PostEditorController();
   final CaptchaController _captchaController = new CaptchaController(
     new CaptchaFields("", "post", ""),
   );
@@ -660,7 +661,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
           );
           if (!mounted) return null;
           final attachImgMap = HashMap<String, String>.from({
-            for (final aid in draft.attachmentIds)
+            for (final aid in PostTextFieldUtils.getAttachmentAidList(
+              draft.text,
+            ).toSet())
               'attachnew[$aid][description]': aid,
           });
           return MobileApiClient(dio, baseUrl: discuz.baseURL).sendReplyResult(
@@ -1166,7 +1169,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                   SliverToBoxAdapter(child: action),
                 ],
               )
-            : Column(mainAxisSize: MainAxisSize.min, children: [content, action]),
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [content, action],
+              ),
       );
     }
     final feedback = ThreadFeedbackBar(
@@ -2035,6 +2041,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                           (imageUrl, path) =>
                                               _handleReplyWithHostedImage(
                                                 imageUrl,
+                                                path,
                                               ),
                                     ),
                                   ),
@@ -2060,8 +2067,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     String aid,
     String path,
   ) async {
-    if (aid.isEmpty) return;
-    _replyController.text += "[attachimg]$aid[/attachimg]";
+    if (!mounted || aid.isEmpty) return;
+    _replyController.insertAttachment(aid, path);
     insertedAidList.add(aid);
 
     final savedInDatabase =
@@ -2084,54 +2091,16 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     }
   }
 
-  void _handleReplyWithHostedImage(String imageUrl) {
-    if (imageUrl.isEmpty) return;
-    _replyController.text += "[img]$imageUrl[/img]";
+  void _handleReplyWithHostedImage(String imageUrl, String path) {
+    if (!mounted || imageUrl.isEmpty) return;
+    _replyController.insertHostedImage(imageUrl, path);
   }
 
   void insertSmiley(Smiley smiley) {
-    print("Smiley is pressed ${smiley.code} ${smiley.relativePath}");
-
-    final TextSelection selection = _replyController.selection.copyWith();
-    final int start = selection.baseOffset;
-    int end = selection.extentOffset;
-
-    final TextEditingValue value = _replyController.value;
-
-    String smileyCode =
-        "${SmileyText.smileyStartFlag}${smiley.toString()}${SmileyText.smileyEndFlag}";
-    final text = smileyCode;
-    if (selection.isValid) {
-      String newText = "";
-      if (value.selection.isCollapsed) {
-        if (end > 0) {
-          newText += value.text.substring(0, end);
-        }
-        newText += text;
-        if (value.text.length > end) {
-          newText += value.text.substring(end, value.text.length);
-        }
-      } else {
-        newText = value.text.replaceRange(start, end, text);
-        end = start;
-      }
-      _replyController.value = value.copyWith(
-        text: newText,
-        selection: selection.copyWith(
-          baseOffset: end + text.length,
-          extentOffset: end + text.length,
-        ),
-      );
-    } else {
-      String newText = "";
-      newText = _replyController.text + text;
-      _replyController.value = TextEditingValue(
-        text: newText,
-        selection: TextSelection.fromPosition(
-          TextPosition(offset: newText.length),
-        ),
-      );
-    }
+    if (!mounted) return;
+    _replyController.insertText(
+      '${SmileyText.smileyStartFlag}$smiley${SmileyText.smileyEndFlag}',
+    );
   }
 }
 

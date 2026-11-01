@@ -319,6 +319,7 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
               discuz: discuz,
               user: user,
               refresh: _highlightRefresh,
+              knownForums: result.discuzIndexVariables.forumList,
             ),
           ),
           if (favoriteForumDao != null)

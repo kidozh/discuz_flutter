@@ -2,6 +2,7 @@ import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
 import 'package:adaptive_platform_ui/src/toolbar/hosted_duo_bar.dart';
 import 'package:adaptive_platform_ui/src/toolbar/hosted_top_toolbar.dart';
 import 'package:adaptive_platform_ui/src/toolbar/toolbar_chrome_scope.dart';
+import 'package:flutter/cupertino.dart' show CupertinoPageRoute;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:foldable/foldable.dart';
@@ -70,6 +71,37 @@ Finder get backButton => inBar(find.byType(AdaptiveButton));
 
 void main() {
   group('HostedTopToolbar', () {
+    testWidgets('44-point back is centered and tappable near its edge', (
+      tester,
+    ) async {
+      usePhone(tester);
+      tester.view.display.size = tester.view.physicalSize;
+      addTearDown(tester.view.display.resetSize);
+      final nav = GlobalKey<NavigatorState>();
+      await tester.pumpWidget(hostedApp(navigatorKey: nav, home: page('Home')));
+      await tester.pump();
+      nav.currentState!.push(
+        MaterialPageRoute<void>(builder: (_) => page('Detail')),
+      );
+      await tester.pumpAndSettle();
+
+      final rect = tester.getRect(backButton);
+      expect(rect.size, const Size(44, 44));
+      expect(rect.left, 16);
+      expect(rect.center.dy, 62 + kHostedToolbarHeight / 2);
+      expect(rect.top - 62, 8);
+      expect(62 + kHostedToolbarHeight - rect.bottom, 8);
+      final button = tester.widget<AdaptiveButton>(backButton);
+      expect(button.size, AdaptiveButtonSize.large);
+      expect(button.useSmoothRectangleBorder, isFalse);
+
+      // This point is above the old 38-point button's bounds.
+      await tester.tapAt(rect.topCenter + const Offset(0, 1));
+      await tester.pumpAndSettle();
+      expect(find.text('body:Detail'), findsNothing);
+      expect(backButton, findsNothing);
+    });
+
     testWidgets('one fixed bar at the top shows the page in front', (
       tester,
     ) async {
@@ -180,6 +212,57 @@ void main() {
       await tester.pumpAndSettle();
     });
 
+    testWidgets(
+      'a back swipe reversed again and again keeps semantics intact',
+      (tester) async {
+        // A screen reader is on, so semantics nodes exist for the bar. Each
+        // page layer is a FadeTransition; one that reaches zero opacity used
+        // to drop its semantics and restore them when the swipe came back,
+        // which tripped SemanticsNode._replaceChildren mid gesture.
+        usePhone(tester);
+        final semantics = tester.ensureSemantics();
+        final nav = GlobalKey<NavigatorState>();
+        await tester.pumpWidget(
+          hostedApp(
+            navigatorKey: nav,
+            home: page('Home', action: Icons.add),
+          ),
+        );
+        await tester.pump();
+        nav.currentState!.push(
+          CupertinoPageRoute<void>(
+            builder: (_) => page('Detail', action: Icons.share),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final gesture = await tester.startGesture(const Offset(4, 300));
+        await gesture.moveBy(const Offset(40, 0));
+        for (var i = 0; i < 4; i++) {
+          // All the way across, so the leaving layer hits zero opacity, and
+          // back to the start, a few times without lifting the finger.
+          await gesture.moveBy(const Offset(360, 0));
+          await tester.pump();
+          await tester.pump(const Duration(milliseconds: 16));
+          await gesture.moveBy(const Offset(-360, 0));
+          await tester.pump();
+          await tester.pump(const Duration(milliseconds: 16));
+          expect(tester.takeException(), isNull, reason: 'pass $i');
+        }
+        await gesture.up();
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        expect(find.text('body:Detail'), findsOneWidget);
+
+        // The hidden page's bar is not read out while it is hidden.
+        expect(
+          find.descendant(of: bar, matching: find.byIcon(Icons.add)),
+          findsNothing,
+        );
+        semantics.dispose();
+      },
+    );
+
     testWidgets('pages are told the host draws their toolbar', (tester) async {
       usePhone(tester);
       ToolbarChromeScope? scope;
@@ -235,6 +318,41 @@ void main() {
       nav.currentState!.pop();
       await tester.pumpAndSettle();
       expect(inBar(find.text('Home')), findsOneWidget);
+    });
+
+    testWidgets('a Flutter-drawn bar opens an action\'s menu', (tester) async {
+      usePhone(tester);
+      final selected = <String>[];
+      await tester.pumpWidget(
+        hostedApp(
+          home: AdaptiveScaffold(
+            appBar: AdaptiveAppBar(
+              title: 'Game',
+              useNativeToolbar: true,
+              actions: [
+                AdaptiveAppBarAction(
+                  icon: Icons.more_horiz,
+                  label: 'More',
+                  menuItems: const [
+                    AdaptivePopupMenuItem(label: 'Hide game'),
+                    AdaptivePopupMenuItem(label: 'Report'),
+                  ],
+                  onMenuItemSelected: (_, item) => selected.add(item.label),
+                ),
+              ],
+            ),
+            body: const SizedBox.shrink(),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(inBar(find.byIcon(Icons.more_horiz)));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Report'));
+      await tester.pumpAndSettle();
+
+      expect(selected, ['Report']);
     });
 
     testWidgets('on iPhone Duo the top bar keeps the title only', (

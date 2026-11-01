@@ -9,11 +9,13 @@ class MainActivity : FlutterFragmentActivity() {
     private var onDeviceAi: AndroidOnDeviceAiChannel? = null
     private var translation: AndroidTranslationChannel? = null
     private var backgroundNewPosts: BackgroundNewPostsChannel? = null
+    private var webViewCookies: WebViewCookiesChannel? = null
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         onDeviceAi = AndroidOnDeviceAiChannel(this, flutterEngine.dartExecutor.binaryMessenger)
         translation = AndroidTranslationChannel(flutterEngine.dartExecutor.binaryMessenger)
         backgroundNewPosts = BackgroundNewPostsChannel(this, flutterEngine.dartExecutor.binaryMessenger)
+        webViewCookies = WebViewCookiesChannel(flutterEngine.dartExecutor.binaryMessenger)
         GoogleMobileAdsPlugin.registerNativeAdFactory(
             flutterEngine,
             "NativeAd",
@@ -35,6 +37,8 @@ class MainActivity : FlutterFragmentActivity() {
         translation = null
         backgroundNewPosts?.close()
         backgroundNewPosts = null
+        webViewCookies?.close()
+        webViewCookies = null
         super.cleanUpFlutterEngine(flutterEngine)
     }
 }

@@ -48,121 +48,125 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m13(version, number) => "应用版本v${version}，序列${number}";
 
-  static String m14(author) => "确认将 ${author} 的回复采纳为最佳答案？这会结算悬赏，不能在 App 内撤销。";
+  static String m14(number) => "图片 ${number}";
 
-  static String m15(username) => "此内容由一个屏蔽用户${username}发送";
+  static String m15(author) => "确认将 ${author} 的回复采纳为最佳答案？这会结算悬赏，不能在 App 内撤销。";
 
-  static String m16(name) => "自定义 · ${name}";
+  static String m16(username) => "此内容由一个屏蔽用户${username}发送";
 
-  static String m17(day) => "${day}天前";
+  static String m17(name) => "自定义 · ${name}";
 
-  static String m18(day) => "${day}天后";
+  static String m18(day) => "${day}天前";
 
-  static String m19(account) => "成功移除账号 ${account}。";
+  static String m19(day) => "${day}天后";
 
-  static String m20(account) => "成功删除论坛 ${account}。";
+  static String m20(account) => "成功移除账号 ${account}。";
 
-  static String m21(sitename) => "我们默认移除${sitename}的应用广告";
+  static String m21(account) => "成功删除论坛 ${account}。";
 
-  static String m22(sitename) =>
+  static String m22(sitename) => "我们默认移除${sitename}的应用广告";
+
+  static String m23(sitename) =>
       "欢迎使用谈坛访问${sitename}，在您浏览${sitename}的时候，我们不会展示应用内提供的广告。但论坛的帖子形式的软广告并不会被移除。";
 
-  static String m23(key, content) => "${content}（${key}）";
+  static String m24(key, content) => "${content}（${key}）";
 
-  static String m24(filename) => "后台下载文件 ${filename} 中。";
+  static String m25(filename) => "后台下载文件 ${filename} 中。";
 
-  static String m25(discuz, discuzUrl) =>
+  static String m26(discuz, discuzUrl) =>
       "我建议添加 ${discuz}（${discuzUrl}）到订阅频道获得定时的推送。";
 
-  static String m26(discuz) => "收录${discuz}到订阅频道中";
+  static String m27(discuz) => "收录${discuz}到订阅频道中";
 
-  static String m27(discuz) => "通知我们收录${discuz}";
+  static String m28(discuz) => "通知我们收录${discuz}";
 
-  static String m28(size) => "${size}逻辑像素";
+  static String m29(size) => "${size}逻辑像素";
 
-  static String m29(size) => "${size}倍";
+  static String m30(size) => "${size}倍";
 
-  static String m30(version) =>
+  static String m31(version) =>
       "--- 消息由 [url=https://discuzhub.kidozh.com/]谈坛（v${version}）[/url]发出。";
 
-  static String m31(device, version) =>
+  static String m32(device, version) =>
       "--- 消息由 ${device} 的 [url=https://discuzhub.kidozh.com/]谈坛（v${version}）[/url]发出。";
 
-  static String m32(device) => "消息由${device}发出。";
+  static String m33(device) => "消息由${device}发出。";
 
-  static String m33(language) => "不支持${language}";
+  static String m34(language) => "不支持${language}";
 
-  static String m34(readAccess, star) => "阅读权限： ${readAccess}， 等级： ${star}";
+  static String m35(readAccess, star) => "阅读权限： ${readAccess}， 等级： ${star}";
 
-  static String m35(hour) => "${hour}小时前";
+  static String m36(hour) => "${hour}小时前";
 
-  static String m36(hour) => "${hour}小时后";
+  static String m37(hour) => "${hour}小时后";
 
-  static String m37(uri) => "无法打开此链接 : ${uri}.";
+  static String m38(uri) => "无法打开此链接 : ${uri}.";
 
-  static String m38(name) => "${name}的Linux电脑";
+  static String m39(name) => "${name}的Linux电脑";
 
-  static String m39(name) => "${name}的MacOS设备";
+  static String m40(name) => "${name}的MacOS设备";
 
-  static String m40(min) => "${min}分钟前";
+  static String m41(min) => "${min}分钟前";
 
-  static String m41(min) => "${min}分钟后";
+  static String m42(min) => "${min}分钟后";
 
-  static String m42(discuz) => "${discuz}目前还没有任何订阅消息";
+  static String m43(discuz) => "${discuz}目前还没有任何订阅消息";
 
-  static String m43(downloaded) => "已下载 ${downloaded} MB";
+  static String m44(downloaded) => "已下载 ${downloaded} MB";
 
-  static String m44(hour) => "${hour}小时";
+  static String m45(hour) => "${hour}小时";
 
-  static String m45(pictureBedName) => "此服务由${pictureBedName}提供";
+  static String m46(pictureBedName) => "此服务由${pictureBedName}提供";
 
-  static String m46(time) => "该投票于${time}过期.";
+  static String m47(time) => "该投票于${time}过期.";
 
-  static String m47(people) => "共有${people}人已投票.";
+  static String m48(people) => "共有${people}人已投票.";
 
-  static String m48(pos) => "第${pos}层";
+  static String m49(pos) => "第${pos}层";
 
-  static String m49(discuz) => "${discuz}并未启用推送服务";
+  static String m50(discuz) => "${discuz}并未启用推送服务";
 
-  static String m50(pid, ptid, author, fullTimeString, trimMessage) =>
+  static String m51(number) => "移除图片 ${number}";
+
+  static String m52(pid, ptid, author, fullTimeString, trimMessage) =>
       "[quote][size=2][url=forum.php?mod=redirect&goto=findpost&pid=${pid}&ptid=${ptid}]${author} 发表于 ${fullTimeString}[/url][/size]\n${trimMessage}[/quote]";
 
-  static String m51(name) => "举报${name}的内容";
+  static String m53(name) => "举报${name}的内容";
 
-  static String m52(discuzName) => "成功向${discuzName}发送了举报信息，请等待管理员回应。";
+  static String m54(discuzName) => "成功向${discuzName}发送了举报信息，请等待管理员回应。";
 
-  static String m53(username, discuzName) =>
+  static String m55(username, discuzName) =>
       "用户 ${username} 已成功登录到 ${discuzName}。";
 
-  static String m54(discuzName) => "登录至 ${discuzName}";
+  static String m56(discuzName) => "登录至 ${discuzName}";
 
-  static String m55(index) => "表情 ${index}";
+  static String m57(index) => "表情 ${index}";
 
-  static String m56(name) => "关联游戏：${name}";
+  static String m58(name) => "关联游戏：${name}";
 
-  static String m57(checked, allowed) => "投票 (${checked} / ${allowed})";
+  static String m59(checked, allowed) => "投票 (${checked} / ${allowed})";
 
-  static String m58(title) => "成功删除历史记录 ${title}.";
+  static String m60(title) => "成功删除历史记录 ${title}.";
 
-  static String m59(filename) => "成功下载文件： ${filename}。";
+  static String m61(filename) => "成功下载文件： ${filename}。";
 
-  static String m60(num) => "已同步所有${num}个收藏的帖子";
+  static String m62(num) => "已同步所有${num}个收藏的帖子";
 
-  static String m61(num) => "阅读权限 ${num}";
+  static String m63(num) => "阅读权限 ${num}";
 
-  static String m62(reply) => "${reply}回复";
+  static String m64(reply) => "${reply}回复";
 
-  static String m63(view) => "${view}浏览";
+  static String m65(view) => "${view}浏览";
 
-  static String m64(username) => "用户 ${username} 已失效";
+  static String m66(username) => "用户 ${username} 已失效";
 
-  static String m65(uid) => "用户编号： ${uid}";
+  static String m67(uid) => "用户编号： ${uid}";
 
-  static String m66(user) => "查看${user}详情";
+  static String m68(user) => "查看${user}详情";
 
-  static String m67(version) => "欢迎使用版本 ${version}";
+  static String m69(version) => "欢迎使用版本 ${version}";
 
-  static String m68(name) => "${name}的Windows电脑";
+  static String m70(name) => "${name}的Windows电脑";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -232,9 +236,10 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "addDiscuzSuggestionDialogButtonTitle":
         MessageLookupByLibrary.simpleMessage("联系我们"),
-    "addDiscuzSuggestionDialogDescription": MessageLookupByLibrary.simpleMessage(
-      "除了统计来自用户使用的论坛，我们也非常希望得到您的反馈。您可以通过邮件向我们推荐论坛。如果您作为网站的管理员，不想让论坛出现在推荐界面，您也可以联系我们 （kidozh@gmail.com）。",
-    ),
+    "addDiscuzSuggestionDialogDescription":
+        MessageLookupByLibrary.simpleMessage(
+          "除了统计来自用户使用的论坛，我们也非常希望得到您的反馈。您可以通过邮件向我们推荐论坛。如果您作为网站的管理员，不想让论坛出现在推荐界面，您也可以联系我们 （kidozh@gmail.com）。",
+        ),
     "addDiscuzSuggestionDialogTitle": MessageLookupByLibrary.simpleMessage(
       "向我们推荐或者移除一个站点",
     ),
@@ -365,9 +370,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "authenticationLastUpdateAt": m7,
     "authenticationLocked": MessageLookupByLibrary.simpleMessage("数据已锁定"),
     "authenticationRetry": MessageLookupByLibrary.simpleMessage("验证身份"),
-    "authenticationSecurityAndroidContent": MessageLookupByLibrary.simpleMessage(
-      "您的凭证数据经由AES 256位强加密于您的设备中并且永不会发送出本机。AES-256的解密私钥经由RSA算法加密，RSA键值信息仅存储于您设备中的密钥库系统中。只有通过了来自系统的验证，应用才能访问并解密您的这些数据用于自动填充功能。",
-    ),
+    "authenticationSecurityAndroidContent":
+        MessageLookupByLibrary.simpleMessage(
+          "您的凭证数据经由AES 256位强加密于您的设备中并且永不会发送出本机。AES-256的解密私钥经由RSA算法加密，RSA键值信息仅存储于您设备中的密钥库系统中。只有通过了来自系统的验证，应用才能访问并解密您的这些数据用于自动填充功能。",
+        ),
     "authenticationSecurityIosContent": MessageLookupByLibrary.simpleMessage(
       "您的凭证数据经由AES 256位强加密于您的设备中并且永不会发送出本机。AES-256的解密私钥仅存储于您设备中的安全飞地中。只有通过了来自系统的验证，应用才能访问并解密您的这些数据用于自动填充功能。",
     ),
@@ -521,13 +527,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "compactTypography": MessageLookupByLibrary.simpleMessage("紧凑文本段落"),
     "completeLoad": MessageLookupByLibrary.simpleMessage("完成加载"),
     "completeRefresh": MessageLookupByLibrary.simpleMessage("完成刷新"),
-    "confirmBestAnswer": m14,
+    "composerImageLabel": m14,
+    "confirmBestAnswer": m15,
     "connectServerWhenAdding": MessageLookupByLibrary.simpleMessage(
       "正在连接论坛地址以验证兼容性。",
     ),
     "contactUsViaEmail": MessageLookupByLibrary.simpleMessage("邮件联系我们"),
     "contactUsViaWeibo": MessageLookupByLibrary.simpleMessage("在微博关注我们"),
-    "contentPostByBlockUserTitle": m15,
+    "contentPostByBlockUserTitle": m16,
     "continueAdding": MessageLookupByLibrary.simpleMessage("继续"),
     "continueToDo": MessageLookupByLibrary.simpleMessage("继续"),
     "continueToTest": MessageLookupByLibrary.simpleMessage("开始测试此版本"),
@@ -542,7 +549,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "经典苹果风格控件，不启用自定义 液态玻璃 效果。",
     ),
     "customColor": MessageLookupByLibrary.simpleMessage("自定义颜色"),
-    "customColorNamed": m16,
+    "customColorNamed": m17,
     "customSignature": MessageLookupByLibrary.simpleMessage("自定义"),
     "customStatusTitle": MessageLookupByLibrary.simpleMessage("自定义头衔"),
     "dashboard": MessageLookupByLibrary.simpleMessage("看板"),
@@ -555,11 +562,11 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "dataBackupInTestTitle": MessageLookupByLibrary.simpleMessage("数据备份"),
     "day": MessageLookupByLibrary.simpleMessage("天"),
-    "dayAgo": m17,
-    "dayLater": m18,
+    "dayAgo": m18,
+    "dayLater": m19,
     "deleteAccount": MessageLookupByLibrary.simpleMessage("删除"),
-    "deleteAccountSuccessfully": m19,
-    "deleteDiscuzSuccessfully": m20,
+    "deleteAccountSuccessfully": m20,
+    "deleteDiscuzSuccessfully": m21,
     "deleteViewHistoryWarnContent": MessageLookupByLibrary.simpleMessage(
       "清除历史记录是不可恢复的，确认要继续？",
     ),
@@ -581,9 +588,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "不再解析自定义字体的颜色，大小等信息",
     ),
     "discuzAuthenticationTitle": MessageLookupByLibrary.simpleMessage("密码与凭证"),
-    "discuzInAdExemptBuiltInList": m21,
-    "discuzInAdExemptBuiltInListDescription": m22,
-    "discuzOperationMessage": m23,
+    "discuzInAdExemptBuiltInList": m22,
+    "discuzInAdExemptBuiltInListDescription": m23,
+    "discuzOperationMessage": m24,
     "discuzServerAddress": MessageLookupByLibrary.simpleMessage("论坛地址"),
     "discuzServerAddressHelperText": MessageLookupByLibrary.simpleMessage(
       "其通常就是论坛的地址",
@@ -593,7 +600,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "displaySettingTitle": MessageLookupByLibrary.simpleMessage("显示"),
     "downloadAttachment": MessageLookupByLibrary.simpleMessage("下载附件"),
-    "downloadingFiles": m24,
+    "downloadingFiles": m25,
     "duplicatedPost": MessageLookupByLibrary.simpleMessage("重复发帖"),
     "dynamicSchemeVariant": MessageLookupByLibrary.simpleMessage("色调变体"),
     "dynamicSchemeVariantContentDescription":
@@ -696,12 +703,12 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "editPoll": MessageLookupByLibrary.simpleMessage("编辑投票"),
     "editedPost": MessageLookupByLibrary.simpleMessage("已编辑"),
-    "emailChannelBody": m25,
+    "emailChannelBody": m26,
     "emailChannelFailed": MessageLookupByLibrary.simpleMessage(
       "在此设备上无法发送邮件。你可以发送此站点信息到kidozh@gmail.com以添加此频道到订阅列表中。",
     ),
-    "emailChannelTitle": m26,
-    "emailUsToAddChannel": m27,
+    "emailChannelTitle": m27,
+    "emailUsToAddChannel": m28,
     "emoijButtonTooltip": MessageLookupByLibrary.simpleMessage("插入表情"),
     "emptyForum": MessageLookupByLibrary.simpleMessage("当前板块列表为空。"),
     "emptyHistory": MessageLookupByLibrary.simpleMessage(
@@ -736,9 +743,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "finishLoginInWeb": MessageLookupByLibrary.simpleMessage("完成登录"),
     "followSystem": MessageLookupByLibrary.simpleMessage("跟随系统"),
     "fontSizeInParagraph": MessageLookupByLibrary.simpleMessage("正文字体大小"),
-    "fontSizeInParagraphUnit": m28,
+    "fontSizeInParagraphUnit": m29,
     "fontSizeScaleParameter": MessageLookupByLibrary.simpleMessage("文本缩放比例"),
-    "fontSizeScaleParameterUnit": m29,
+    "fontSizeScaleParameterUnit": m30,
     "forgetPassword": MessageLookupByLibrary.simpleMessage("忘记密码?"),
     "forumAccountChanged": MessageLookupByLibrary.simpleMessage(
       "账号已切换，请返回后重新打开",
@@ -803,13 +810,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumWorking": MessageLookupByLibrary.simpleMessage("处理中…"),
     "friendList": MessageLookupByLibrary.simpleMessage("好友列表"),
     "friendNumber": MessageLookupByLibrary.simpleMessage("好友数"),
-    "fromAppOnlySignature": m30,
-    "fromAppSignature": m31,
-    "fromDeviceSignature": m32,
+    "fromAppOnlySignature": m31,
+    "fromAppSignature": m32,
+    "fromDeviceSignature": m33,
     "fuchsia": MessageLookupByLibrary.simpleMessage("Fuchsia"),
     "gameComingSoon": MessageLookupByLibrary.simpleMessage("即将发售"),
     "gameFreeOfCharge": MessageLookupByLibrary.simpleMessage("免费"),
-    "gameLanguageNotSupported": m33,
+    "gameLanguageNotSupported": m34,
     "goToPushSetting": MessageLookupByLibrary.simpleMessage("开启推送"),
     "googleAdSubTitle": MessageLookupByLibrary.simpleMessage("由Google提供的广告"),
     "googleAdTitle": MessageLookupByLibrary.simpleMessage("广告"),
@@ -828,7 +835,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "googleTranslationPolicy": MessageLookupByLibrary.simpleMessage(
       "Google 翻译归属规范",
     ),
-    "groupInfoDescription": m34,
+    "groupInfoDescription": m35,
     "habit": MessageLookupByLibrary.simpleMessage("爱好"),
     "hapticFeedbackTitle": MessageLookupByLibrary.simpleMessage("振动反馈"),
     "history": MessageLookupByLibrary.simpleMessage("历史"),
@@ -837,8 +844,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "hotForums": MessageLookupByLibrary.simpleMessage("热门版块"),
     "hotThread": MessageLookupByLibrary.simpleMessage("最新热门"),
     "hour": MessageLookupByLibrary.simpleMessage("时"),
-    "hourAgo": m35,
-    "hourLater": m36,
+    "hourAgo": m36,
+    "hourLater": m37,
     "httpBrowseWarn": MessageLookupByLibrary.simpleMessage("不安全的HTTP协议"),
     "iframeUrlNull": MessageLookupByLibrary.simpleMessage("无法解析嵌入视图的来源。"),
     "illegalContent": MessageLookupByLibrary.simpleMessage("违法内容"),
@@ -878,8 +885,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "lastVisitTime": MessageLookupByLibrary.simpleMessage("上次访问时间"),
     "lawInformation": MessageLookupByLibrary.simpleMessage("法律信息"),
     "legalInformation": MessageLookupByLibrary.simpleMessage("法律信息"),
-    "linkUnableToOpen": m37,
-    "linuxDeviceName": m38,
+    "linkUnableToOpen": m38,
+    "linuxDeviceName": m39,
     "liquidGlassStyle": MessageLookupByLibrary.simpleMessage("液态玻璃"),
     "liquidGlassStyleDescription": MessageLookupByLibrary.simpleMessage(
       "使用 iOS / iPadOS 26 及以上系统的原生玻璃控件。",
@@ -910,7 +917,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "loginByWebTitle": MessageLookupByLibrary.simpleMessage("使用网页登录提醒"),
     "loginSubtitle": MessageLookupByLibrary.simpleMessage("添加一个新的用户"),
     "loginTitle": MessageLookupByLibrary.simpleMessage("登录"),
-    "macOSDeviceName": m39,
+    "macOSDeviceName": m40,
     "manageAccount": MessageLookupByLibrary.simpleMessage("管理账号"),
     "manageAccountTitle": MessageLookupByLibrary.simpleMessage("管理账号"),
     "manageDiscuz": MessageLookupByLibrary.simpleMessage("管理论坛"),
@@ -928,8 +935,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "menuDrawerTitle": MessageLookupByLibrary.simpleMessage("菜单"),
     "menuIconTooltip": MessageLookupByLibrary.simpleMessage("菜单"),
     "minute": MessageLookupByLibrary.simpleMessage("分"),
-    "minuteAgo": m40,
-    "minuteLater": m41,
+    "minuteAgo": m41,
+    "minuteLater": m42,
     "mobileTemplateNotFound": MessageLookupByLibrary.simpleMessage(
       "此界面更适合使用网页访问",
     ),
@@ -973,7 +980,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "noMore": MessageLookupByLibrary.simpleMessage("没有更多数据"),
     "noSignature": MessageLookupByLibrary.simpleMessage("不使用签名"),
     "noSmileyFoundInDB": MessageLookupByLibrary.simpleMessage("要不使用一个表情包？"),
-    "noSubscribeChannelProvided": m42,
+    "noSubscribeChannelProvided": m43,
     "notification": MessageLookupByLibrary.simpleMessage("通知"),
     "nullDiscuzScreenSubtitle": MessageLookupByLibrary.simpleMessage(
       "现在开始添加一个Discuz X论坛以开始使用谈坛。",
@@ -1008,7 +1015,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "模型下载失败，请检查网络和可用存储空间后重试。",
     ),
     "onDeviceAiDownloadModel": MessageLookupByLibrary.simpleMessage("下载模型"),
-    "onDeviceAiDownloadProgress": m43,
+    "onDeviceAiDownloadProgress": m44,
     "onDeviceAiDownloadingModel": MessageLookupByLibrary.simpleMessage(
       "正在下载模型…",
     ),
@@ -1074,7 +1081,7 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage("系统智能服务仍在准备或暂时繁忙，请保持设备联网并稍后重试。"),
     "onDeviceAiTemporarilyUnavailableTitle":
         MessageLookupByLibrary.simpleMessage("暂时不可用"),
-    "onlineHours": m44,
+    "onlineHours": m45,
     "onlineHoursTitle": MessageLookupByLibrary.simpleMessage("在线时间"),
     "onlyViewAuthor": MessageLookupByLibrary.simpleMessage("只看作者 / 查看全部"),
     "openFileInExternalAppActionText": MessageLookupByLibrary.simpleMessage(
@@ -1121,7 +1128,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "pictureBedTermsSubtitle": MessageLookupByLibrary.simpleMessage(
       "请注意，此服务并非由我们提供。根据我们的服务条款，使用我们的服务并不代表您获得了第三方服务的授权，并且我们并不对第三方服务做出任何承诺或者担保。在使用第三方服务前，您需要同意他们的服务条款以及隐私政策。",
     ),
-    "pictureBedTermsTitle": m45,
+    "pictureBedTermsTitle": m46,
     "pictureBedTestAndSave": MessageLookupByLibrary.simpleMessage("测试并保存"),
     "pictureBedTestFailed": MessageLookupByLibrary.simpleMessage(
       "图床 API 测试失败。",
@@ -1138,7 +1145,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "policy": MessageLookupByLibrary.simpleMessage("条款"),
     "pollChoicesHint": MessageLookupByLibrary.simpleMessage("最多可选几项（1 为单选）"),
     "pollDaysHint": MessageLookupByLibrary.simpleMessage("有效天数（0 为不设截止时间）"),
-    "pollExpireAt": m46,
+    "pollExpireAt": m47,
     "pollInvalid": MessageLookupByLibrary.simpleMessage(
       "请检查选项数量、重复选项、可选项数及有效天数。",
     ),
@@ -1152,7 +1159,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "pollUnavailable": MessageLookupByLibrary.simpleMessage(
       "当前版块或账号无法发布投票，或权限检查失败。",
     ),
-    "pollVoterNumber": m47,
+    "pollVoterNumber": m48,
     "portalNoHotThreads": MessageLookupByLibrary.simpleMessage("暂无热帖"),
     "post": MessageLookupByLibrary.simpleMessage("发帖"),
     "postAddComment": MessageLookupByLibrary.simpleMessage("发表点评"),
@@ -1180,7 +1187,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "postPermissionUnknown": MessageLookupByLibrary.simpleMessage(
       "暂时无法确认发帖权限，请重试",
     ),
-    "postPosition": m48,
+    "postPosition": m49,
     "postRate": MessageLookupByLibrary.simpleMessage("评分"),
     "postRatingChanged": MessageLookupByLibrary.simpleMessage(
       "评分额度或规则已变化，请核对后重新确认。",
@@ -1292,7 +1299,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "pushServiceOnDescription": MessageLookupByLibrary.simpleMessage(
       "您现在就可以接收来自已授权论坛的推送啦~",
     ),
-    "pushServiceSiteNotSupport": m49,
+    "pushServiceSiteNotSupport": m50,
     "pushTermsOfService": MessageLookupByLibrary.simpleMessage("推送服务条款"),
     "pushThreadTitle": MessageLookupByLibrary.simpleMessage("发帖"),
     "pushThreadTitleHint": MessageLookupByLibrary.simpleMessage("帖子标题"),
@@ -1323,13 +1330,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "rememeberPasswordInApp": MessageLookupByLibrary.simpleMessage(
       "将登陆凭证在此设备中存储。",
     ),
+    "removeComposerImage": m51,
     "removePoll": MessageLookupByLibrary.simpleMessage("移除投票"),
     "replyPermissionDenied": MessageLookupByLibrary.simpleMessage(
       "当前账号没有回复此主题的权限",
     ),
     "replyPost": MessageLookupByLibrary.simpleMessage("回复"),
-    "replyPostTrimMessage": m50,
-    "reportContentTitle": m51,
+    "replyPostTrimMessage": m52,
+    "reportContentTitle": m53,
     "reportDiscuzApiInformationToAnalytics":
         MessageLookupByLibrary.simpleMessage("向我们报告论坛API可用性"),
     "reportDiscuzApiInformationToAnalyticsDescription":
@@ -1349,7 +1357,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "报告问题 · GitHub",
     ),
     "reportOtherReasonHint": MessageLookupByLibrary.simpleMessage("提供举报原因"),
-    "reportSuccessfully": m52,
+    "reportSuccessfully": m54,
     "reportThreadTooltip": MessageLookupByLibrary.simpleMessage("举报不当内容"),
     "residentPlace": MessageLookupByLibrary.simpleMessage("居住地"),
     "responseStatusError404": MessageLookupByLibrary.simpleMessage(
@@ -1397,8 +1405,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "showForumName": MessageLookupByLibrary.simpleMessage("在导航栏显示论坛名称"),
     "showKeyboardTooltip": MessageLookupByLibrary.simpleMessage("切换到键盘"),
     "showThreadStats": MessageLookupByLibrary.simpleMessage("显示帖子浏览和回复数"),
-    "signInSuccessTitle": m53,
-    "signInTitle": m54,
+    "signInSuccessTitle": m55,
+    "signInTitle": m56,
     "signInViaBrowser": MessageLookupByLibrary.simpleMessage("使用网页登录"),
     "signUp": MessageLookupByLibrary.simpleMessage("注册"),
     "signatureAppAndDevice": MessageLookupByLibrary.simpleMessage("应用名称和设备型号"),
@@ -1417,7 +1425,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "该论坛未开启推送插件。",
     ),
     "sitePage": MessageLookupByLibrary.simpleMessage("主页"),
-    "smileyLabel": m55,
+    "smileyLabel": m57,
     "sortThreadInAscendOrder": MessageLookupByLibrary.simpleMessage("从旧到新排列"),
     "sortThreadInDescendOrder": MessageLookupByLibrary.simpleMessage("从新到旧排列"),
     "spam": MessageLookupByLibrary.simpleMessage("恶意灌水"),
@@ -1428,7 +1436,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "specialReward": MessageLookupByLibrary.simpleMessage("悬赏"),
     "specialRewardAmount": MessageLookupByLibrary.simpleMessage("悬赏金额"),
     "steamComingSoon": MessageLookupByLibrary.simpleMessage("即将推出"),
-    "steamParentApp": m56,
+    "steamParentApp": m58,
     "steamPriceUnavailable": MessageLookupByLibrary.simpleMessage(
       "价格请查看 Steam 商店",
     ),
@@ -1441,16 +1449,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "steamTypeVideo": MessageLookupByLibrary.simpleMessage("视频"),
     "stickyThread": MessageLookupByLibrary.simpleMessage("置顶帖"),
     "style": MessageLookupByLibrary.simpleMessage("样式"),
-    "submitPoll": m57,
+    "submitPoll": m59,
     "subscribe": MessageLookupByLibrary.simpleMessage("订阅"),
     "subscribeChannel": MessageLookupByLibrary.simpleMessage("订阅推送"),
     "subscribeChannelForMore": MessageLookupByLibrary.simpleMessage(
       "订阅此论坛频道获得实时的最新消息",
     ),
     "subscriptionSuccess": MessageLookupByLibrary.simpleMessage("成功同步至推送服务器"),
-    "successfullyDeleteViewHistoryContent": m58,
-    "successfullyDownloadFiles": m59,
-    "syncSuccessfullyWithServer": m60,
+    "successfullyDeleteViewHistoryContent": m60,
+    "successfullyDownloadFiles": m61,
+    "syncSuccessfullyWithServer": m62,
     "systemStyleAndroidDescription": MessageLookupByLibrary.simpleMessage(
       "跟随系统，使用质感设计。",
     ),
@@ -1475,9 +1483,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "textFieldShouldNotBeEmpty": MessageLookupByLibrary.simpleMessage("此项不应为空"),
     "thread": MessageLookupByLibrary.simpleMessage("帖子"),
     "threadIsClosed": MessageLookupByLibrary.simpleMessage("此贴已关闭发帖。"),
-    "threadReadAccess": m61,
-    "threadReply": m62,
-    "threadView": m63,
+    "threadReadAccess": m63,
+    "threadReply": m64,
+    "threadView": m65,
     "translationAppLanguage": MessageLookupByLibrary.simpleMessage("跟随设备语言"),
     "translationLanguage": MessageLookupByLibrary.simpleMessage("翻译为"),
     "translationLanguagesFailed": MessageLookupByLibrary.simpleMessage(
@@ -1594,8 +1602,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "userExpiredSubtitle": MessageLookupByLibrary.simpleMessage(
       "当前用户授权已过期，你需要重新登录以重新激活此用户。",
     ),
-    "userExpiredTitle": m64,
-    "userIdTitle": m65,
+    "userExpiredTitle": m66,
+    "userIdTitle": m67,
     "userPost": MessageLookupByLibrary.simpleMessage("回复"),
     "userProfile": MessageLookupByLibrary.simpleMessage("用户中心"),
     "userProfileTitle": MessageLookupByLibrary.simpleMessage("用户信息"),
@@ -1612,7 +1620,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "viewThreadTwoPaneText": MessageLookupByLibrary.simpleMessage(
       "点击左侧的帖子以查看内容。",
     ),
-    "viewUserInfo": m66,
+    "viewUserInfo": m68,
     "warnedPost": MessageLookupByLibrary.simpleMessage("此贴被警告。"),
     "watchPictureInFullScreen": MessageLookupByLibrary.simpleMessage("查看大图"),
     "websiteNotLogined": MessageLookupByLibrary.simpleMessage(
@@ -1622,9 +1630,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "谈坛是支持Discuz X论坛的第三方客户端，欢迎使用我们的服务。",
     ),
     "welcomeTitle": MessageLookupByLibrary.simpleMessage("你好"),
-    "welcomeVersionTitle": m67,
+    "welcomeVersionTitle": m69,
     "wheelColorPickerType": MessageLookupByLibrary.simpleMessage("轮抽选色"),
-    "windowsDeviceName": m68,
+    "windowsDeviceName": m70,
     "workProcedure": MessageLookupByLibrary.simpleMessage("推送服务是如何工作的？"),
     "writeStorageDenied": MessageLookupByLibrary.simpleMessage("无法获得写入权限。"),
   };

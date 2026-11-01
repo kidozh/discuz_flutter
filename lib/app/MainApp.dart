@@ -31,7 +31,6 @@ import 'package:discuz_flutter/utility/OnDeviceAiService.dart';
 import 'package:discuz_flutter/utility/ToastUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
-import 'package:dual_screen/dual_screen.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/cupertino.dart';
@@ -1039,36 +1038,32 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
         _selectionRevision,
       ),
       onCloseDetail: () => _selectThread(0),
-      child: TwoPane(
-        paneProportion: 0.35,
-        panePriority: _currentTid.value == 0
-            ? TwoPanePriority.start
-            : TwoPanePriority.end,
-        startPane: MyHomePage(
-          navigatorKey: navigatorKey,
-          title: '',
-          onSelectTid: _selectThread,
-        ),
-        endPane: _currentTid.value == 0
-            ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText)
-            : Consumer<DiscuzAndUserNotifier>(
-                builder: (context, discuzAndUser, child) {
-                  final discuz = discuzAndUser.discuz;
-                  if (discuz == null) return const SizedBox.shrink();
-                  return KeyedSubtree(
-                    key: ValueKey(
-                      '${discuz.baseURL}:${discuzAndUser.user?.uid}:${_currentTid.value}',
-                    ),
-                    child: ViewThreadSliverPage(
-                      discuz,
-                      discuzAndUser.user,
-                      _currentTid.value,
-                      onClosed: () => _selectThread(0),
-                    ),
-                  );
-                },
-              ),
+      paneProportion: 0.35,
+      showDetail: _currentTid.value != 0,
+      startPane: MyHomePage(
+        navigatorKey: navigatorKey,
+        title: '',
+        onSelectTid: _selectThread,
       ),
+      endPane: _currentTid.value == 0
+          ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText)
+          : Consumer<DiscuzAndUserNotifier>(
+              builder: (context, discuzAndUser, child) {
+                final discuz = discuzAndUser.discuz;
+                if (discuz == null) return const SizedBox.shrink();
+                return KeyedSubtree(
+                  key: ValueKey(
+                    '${discuz.baseURL}:${discuzAndUser.user?.uid}:${_currentTid.value}',
+                  ),
+                  child: ViewThreadSliverPage(
+                    discuz,
+                    discuzAndUser.user,
+                    _currentTid.value,
+                    onClosed: () => _selectThread(0),
+                  ),
+                );
+              },
+            ),
     );
   }
 }

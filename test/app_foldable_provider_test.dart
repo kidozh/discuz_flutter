@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:discuz_flutter/utility/app_foldable_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:foldable/foldable.dart';
@@ -45,8 +44,11 @@ void main() {
     List<DisplayFeature>? features;
     await tester.pumpWidget(
       MaterialApp(
-        builder: (context, child) =>
-            AppFoldableProvider(platform: source, child: child!),
+        builder: (context, child) => FoldableProvider(
+          bridgeMode: DisplayFeatureBridgeMode.full,
+          platform: source,
+          child: child!,
+        ),
         home: Builder(
           builder: (context) {
             data = DuoMediaQuery.of(context);
@@ -95,8 +97,11 @@ void main() {
       SizeClass? sizeClass;
       await tester.pumpWidget(
         MaterialApp(
-          builder: (context, child) =>
-              AppFoldableProvider(platform: source, child: child!),
+          builder: (context, child) => FoldableProvider(
+            bridgeMode: DisplayFeatureBridgeMode.full,
+            platform: source,
+            child: child!,
+          ),
           home: Builder(
             builder: (context) {
               sizeClass = DuoMediaQuery.horizontalSizeClassOf(context);

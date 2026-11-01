@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart' show parseFragment;
+
 import '../client/ForumInteractionClient.dart';
 import '../entity/Discuz.dart';
 import '../entity/User.dart';
@@ -14,12 +15,14 @@ class PortalHighlights extends StatefulWidget {
   final Discuz discuz;
   final User? user;
   final int refresh;
+  final List<Forum> knownForums;
   final Future<ForumInteractionClient> Function()? createClient;
   const PortalHighlights({
     super.key,
     required this.discuz,
     this.user,
     required this.refresh,
+    this.knownForums = const [],
     this.createClient,
   });
   @override
@@ -27,7 +30,7 @@ class PortalHighlights extends StatefulWidget {
 }
 
 class _PortalHighlightsState extends State<PortalHighlights> {
-  List<Forum> forums = [];
+  List<Map<String, dynamic>> hotForums = [];
   bool loading = true, failed = false;
   int generation = 0;
   @override
@@ -58,20 +61,10 @@ class _PortalHighlightsState extends State<PortalHighlights> {
           .map(discuzMap)
           .where((row) => discuzInt(row['fid']) > 0)
           .take(4)
-          .map(
-            (row) => Forum()
-              ..fid = discuzString(row['fid'])
-              ..name = parseFragment(discuzString(row['name'])).text ?? ''
-              ..todayPosts = row['todayposts'] == null
-                  ? '0'
-                  : discuzString(row['todayposts'])
-              ..threads = discuzString(row['threads'])
-              ..posts = discuzString(row['posts']),
-          )
           .toList();
       if (mounted && run == generation)
         setState(() {
-          forums = rows;
+          hotForums = rows;
           failed = false;
         });
     } catch (_) {
@@ -81,8 +74,42 @@ class _PortalHighlightsState extends State<PortalHighlights> {
     }
   }
 
+  List<Forum> resolveForums() {
+    final details = <int, Forum>{};
+    void indexForums(List<Forum> forums) {
+      for (final forum in forums) {
+        details[discuzInt(forum.fid)] = forum;
+        indexForums(forum.subForumList);
+      }
+    }
+
+    indexForums(widget.knownForums);
+    String nonEmpty(Object? value, Object? fallback) {
+      final text = discuzString(value).trim();
+      return text.isNotEmpty ? text : discuzString(fallback).trim();
+    }
+
+    // Resolve on build so cached and refreshed index data can arrive later,
+    // without another hotforum request or changes to the server's ranking.
+    return hotForums.map((row) {
+      final known = details[discuzInt(row['fid'])];
+      return Forum()
+        ..fid = discuzString(row['fid'])
+        ..name = parseFragment(nonEmpty(known?.name, row['name'])).text ?? ''
+        ..description =
+            parseFragment(nonEmpty(known?.description, row['description']))
+                .text ??
+            ''
+        ..iconUrl = nonEmpty(known?.iconUrl, row['icon'])
+        ..todayPosts = nonEmpty(row['todayposts'], known?.todayPosts ?? '0')
+        ..threads = nonEmpty(row['threads'], known?.threads ?? '0')
+        ..posts = nonEmpty(row['posts'], known?.posts ?? '0');
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final forums = resolveForums();
     if (forums.isEmpty && !loading && !failed) return const SizedBox.shrink();
     final partition = ForumPartition()
       ..name = S.of(context).hotForums

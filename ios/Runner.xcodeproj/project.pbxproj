@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
+		29D10E11EB26B93356C2D575 /* WebViewCookies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3D724754EFBF7933137241 /* WebViewCookies.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		4470520A7DFC2AFAD2556E0C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1641D2B761624B45EA2FEBDE /* Foundation.framework */; };
 		4F29E70F75F4C2EE02A5DAEB /* DiscuzWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCA6152465ACAAC0E6A94A80 /* DiscuzWatchApp.swift */; };
@@ -90,6 +91,7 @@
 		97C146FB1CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		9B3D724754EFBF7933137241 /* WebViewCookies.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WebViewCookies.swift; path = ../../darwin/WebViewCookies.swift; sourceTree = "<group>"; };
 		C20BDCB72D5FF32300BCC956 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = en; path = en.lproj/Info.plist; sourceTree = "<group>"; };
 		C20BDCB92D5FF35D00BCC956 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Base; path = Base.lproj/Info.plist; sourceTree = "<group>"; };
 		C20BDCBA2D5FF38A00BCC956 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "zh-Hans"; path = "zh-Hans.lproj/Info.plist"; sourceTree = "<group>"; };
@@ -195,6 +197,7 @@
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 				C23395682CFE92B70096EC1D /* InfoPlist.strings */,
 				4E77B9BC7E8D9CF8C34B011F /* AppleWatchBridge.swift */,
+				9B3D724754EFBF7933137241 /* WebViewCookies.swift */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -423,6 +426,7 @@
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				C4135CF9CCD157515AAAEFD8 /* AppleWatchBridge.swift in Sources */,
+				29D10E11EB26B93356C2D575 /* WebViewCookies.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,4 +1,3 @@
-import 'package:dual_screen/dual_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:foldable/foldable.dart';
 
@@ -10,7 +9,11 @@ import 'platform_native_view_scope.dart';
 
 /// Keeps both page trees mounted through folding and window resizing.
 class TwoPaneScaffold extends StatefulWidget {
-  final TwoPane child;
+  final Widget startPane;
+  final Widget endPane;
+  final bool showDetail;
+  final double paneProportion;
+  final TextDirection? textDirection;
   final TwoPaneType type;
   final VoidCallback? onCloseDetail;
 
@@ -20,7 +23,11 @@ class TwoPaneScaffold extends StatefulWidget {
   const TwoPaneScaffold({
     super.key,
     required this.type,
-    required this.child,
+    required this.startPane,
+    required this.endPane,
+    this.showDetail = false,
+    this.paneProportion = 0.5,
+    this.textDirection,
     this.onCloseDetail,
     this.detailIdentity,
   });
@@ -65,7 +72,7 @@ class _TwoPaneScaffoldState extends State<TwoPaneScaffold> {
   @override
   void didUpdateWidget(TwoPaneScaffold oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.child.panePriority != oldWidget.child.panePriority) {
+    if (widget.showDetail != oldWidget.showDetail) {
       _backDrag = 0;
     }
     if (widget.detailIdentity != oldWidget.detailIdentity) {
@@ -80,7 +87,6 @@ class _TwoPaneScaffoldState extends State<TwoPaneScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    final child = widget.child;
     final onCloseDetail = widget.onCloseDetail;
     final media = MediaQuery.of(context);
     // Individual page scaffolds own their bars and keyboard resizing. Only
@@ -107,12 +113,11 @@ class _TwoPaneScaffoldState extends State<TwoPaneScaffold> {
                 localMedia.displayFeatures,
                 compactSizeClass: sizeClass == SizeClass.compact,
                 regularSizeClass: sizeClass == SizeClass.regular,
-                proportion: child.paneProportion,
+                proportion: widget.paneProportion,
                 textDirection:
-                    child.textDirection ?? Directionality.of(context),
+                    widget.textDirection ?? Directionality.of(context),
               );
-              final detailSelected =
-                  child.panePriority == TwoPanePriority.end || _detailCanPop;
+              final detailSelected = widget.showDetail || _detailCanPop;
               Widget pane(Widget page, Rect rect, bool visible, String key) =>
                   Positioned.fromRect(
                     rect: rect,
@@ -175,7 +180,7 @@ class _TwoPaneScaffoldState extends State<TwoPaneScaffold> {
                 child: Stack(
                   children: [
                     pane(
-                      child.startPane,
+                      widget.startPane,
                       layout.start,
                       layout.showsBoth || !detailSelected,
                       'master',
@@ -192,7 +197,7 @@ class _TwoPaneScaffoldState extends State<TwoPaneScaffold> {
                             pages: [
                               MaterialPage<void>(
                                 key: const ValueKey('detail-root'),
-                                child: child.endPane,
+                                child: widget.endPane,
                               ),
                             ],
                             onDidRemovePage: (_) {},

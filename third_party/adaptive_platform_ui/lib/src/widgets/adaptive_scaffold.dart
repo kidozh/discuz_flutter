@@ -1,6 +1,7 @@
 import 'package:adaptive_platform_ui/src/widgets/ios26/ios26_native_tab_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../platform/platform_info.dart';
 import '../style/sf_symbol.dart';
 import 'adaptive_app_bar.dart';
@@ -19,6 +20,9 @@ class AdaptiveNavigationDestination {
     this.selectedIcon,
     this.isSearch = false,
     this.badgeCount,
+    this.badgeText,
+    this.badgeColor,
+    this.badgeTextColor,
     this.addSpacerAfter = false,
   });
 
@@ -49,6 +53,44 @@ class AdaptiveNavigationDestination {
   /// On iOS 26+: Uses native UITabBarItem.badgeValue
   /// On iOS <26 and Android: Uses AdaptiveBadge widget
   final int? badgeCount;
+
+  /// Arbitrary badge text, such as "NEW", "!" or a glyph. Takes precedence
+  /// over [badgeCount] when non-null.
+  ///
+  /// - iOS 26+: `UITabBarItem.badgeValue`
+  /// - iOS <26 and Android: the label of the [AdaptiveBadge] drawn on the icon
+  ///
+  /// Tip: combine `badgeText: "●"` with a transparent [badgeColor] and a
+  /// [badgeTextColor] to render a dot indicator without a pill background.
+  final String? badgeText;
+
+  /// Badge background color. Null means the platform default (system red).
+  /// A transparent color removes the pill background, e.g. for a dot.
+  ///
+  /// - iOS 26+: `UITabBarItem.badgeColor`
+  /// - iOS <26 and Android: [AdaptiveBadge.backgroundColor]
+  final Color? badgeColor;
+
+  /// Badge text color. Null means the platform default (white).
+  ///
+  /// - iOS 26+: the badge's text attributes
+  /// - iOS <26 and Android: [AdaptiveBadge.textColor]
+  final Color? badgeTextColor;
+
+  /// Whether this destination shows a badge on any platform.
+  bool get hasBadge =>
+      (badgeText != null && badgeText!.isNotEmpty) ||
+      (badgeCount != null && badgeCount! > 0);
+
+  /// [child] with this destination's badge drawn on it, for the iOS <26 and
+  /// Android tab bars. The native iOS 26+ bar draws its own badge.
+  Widget wrapWithBadge(Widget child) => AdaptiveBadge(
+    label: badgeText,
+    count: badgeText == null ? badgeCount : null,
+    backgroundColor: badgeColor,
+    textColor: badgeTextColor,
+    child: child,
+  );
 
   /// Add flexible space after this tab item (iOS 26+ only)
   /// Useful for creating grouped tabs (e.g., left group and right group)
@@ -84,6 +126,8 @@ class AdaptiveScaffold extends StatefulWidget {
     this.enableBlur = true,
     this.enableToolbarGradient = true,
     this.extendBodyBehindAppBar = false,
+    this.extendBody = false,
+    this.backgroundColor,
     this.drawer,
     this.endDrawer,
     this.drawerScrimColor,
@@ -134,6 +178,20 @@ class AdaptiveScaffold extends StatefulWidget {
   /// When true, the body will extend behind the app bar, allowing for
   /// immersive content. When false, the body will start below the app bar.
   final bool extendBodyBehindAppBar;
+
+  /// Whether the body extends under [bottomNavigationBar] on Android and on
+  /// iOS 18 and below, like [Scaffold.extendBody]. Set it when the bar is
+  /// a custom floating one with margins, so the body shows through them
+  /// instead of the scaffold background (#144). On iOS 26+ the body already
+  /// sits under the native tab bar.
+  final bool extendBody;
+
+  /// Background colour of the page on every platform. Null keeps the
+  /// platform default: the Material or Cupertino theme's scaffold colour
+  /// (#60, #95). An opaque colour also sets the status bar style to
+  /// contrast with it, so a dark page in a light theme keeps a readable
+  /// status bar (#77).
+  final Color? backgroundColor;
 
   /// A panel displayed to the side of the body, often hidden on mobile.
   /// On Android, passed directly to the Material Scaffold.
@@ -294,6 +352,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
         // releases after 3.35; `of` works on every supported version.
         // ignore: deprecated_member_use
         visible: TickerMode.of(context) && Visibility.of(context),
+        shownInPlace: Visibility.of(context),
         tabBar: _tabBarForChrome,
       ),
     );
@@ -359,6 +418,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
     return Scaffold(
       key: widget.scaffoldKey,
       backgroundColor: Colors.transparent,
+      resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
       body: child,
       drawer: widget.drawer,
       endDrawer: widget.endDrawer,
@@ -372,36 +432,32 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
 
   @override
   Widget build(BuildContext context) {
+    final page = _buildPage(context);
+    final bg = widget.backgroundColor;
+    if (bg == null || bg.a < 0.5) return page;
+    // A page that sets its own background keeps the status bar legible
+    // over it, whatever the app theme says: light icons on a dark page and
+    // dark icons on a light one. Pages without a colour follow the theme
+    // through AdaptiveApp, and an inner AnnotatedRegion still wins (#77).
+    final dark = ThemeData.estimateBrightnessForColor(bg) == Brightness.dark;
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+      child: page,
+    );
+  }
+
+  Widget _buildPage(BuildContext context) {
     final useNativeToolbar = widget.appBar?.useNativeToolbar ?? false;
     final useNativeBottomBar =
         widget.bottomNavigationBar?.useNativeBottomBar ?? true;
 
     // iOS 26+ with native toolbar enabled - Use IOS26Scaffold
     if (PlatformInfo.isIOS26OrHigher() && useNativeToolbar) {
-      // For GoRouter compatibility: Use body directly if it's StatefulNavigationShell
-      // Otherwise replicate body for each destination
-      List<Widget> childrenList;
-      final bodyType = widget.body?.runtimeType.toString() ?? '';
-      final isNavigationShell = bodyType.contains('StatefulNavigationShell');
-
-      if (isNavigationShell) {
-        // GoRouter's StatefulNavigationShell already manages children
-        // Don't replicate, just use it directly
-        childrenList = [widget.body ?? const SizedBox.shrink()];
-      } else if (widget.bottomNavigationBar?.items != null &&
-          widget.bottomNavigationBar!.items!.isNotEmpty) {
-        // Tab-based navigation: replicate single body for all tabs with unique keys
-        childrenList = List.generate(
-          widget.bottomNavigationBar!.items!.length,
-          (index) => KeyedSubtree(
-            key: ValueKey('tab_$index'),
-            child: widget.body ?? const SizedBox.shrink(),
-          ),
-        );
-      } else {
-        // Single page: just one body
-        childrenList = [widget.body ?? const SizedBox.shrink()];
-      }
+      // The body is the app's own tab switcher (an `IndexedStack`, a
+      // `StatefulNavigationShell`, `pages[index]`...), so it is mounted
+      // exactly once. Earlier versions built one copy per tab, which ran
+      // every page's `initState` once per destination (#76).
+      List<Widget> childrenList = [widget.body ?? const SizedBox.shrink()];
 
       // Wrap children with Stack if floatingActionButton is provided
       if (widget.floatingActionButton != null) {
@@ -424,9 +480,6 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
 
       return _wrapWithDrawerIfNeeded(
         IOS26Scaffold(
-          key: ValueKey(
-            'ios26_scaffold_${widget.bottomNavigationBar?.selectedIndex ?? 0}_${widget.body?.runtimeType.toString() ?? "empty"}',
-          ),
           bottomNavigationBar: widget.bottomNavigationBar,
           title: widget.appBar?.title,
           actions: widget.appBar?.actions,
@@ -435,6 +488,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
           titleWidget: _buildIOS26TitleOverlay(),
           minimizeBehavior: widget.minimizeBehavior,
           enableBlur: widget.enableBlur,
+          backgroundColor: widget.backgroundColor,
           useHeroBackButton: widget.useHeroBackButton,
           useFixedToolbar: _usesFixedToolbar(context),
           tabBarHidden: widget.tabBarHidden,
@@ -493,10 +547,12 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                       } else {
                         actionChild = const Icon(CupertinoIcons.circle);
                       }
-                      return CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: action.onPressed,
-                        child: actionChild,
+                      return Builder(
+                        builder: (context) => CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: () => action.press(context),
+                          child: actionChild,
+                        ),
                       );
                     }).toList(),
                   )
@@ -550,15 +606,9 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   platform: TargetPlatform.iOS,
                 );
 
-                if (dest.badgeCount != null && dest.badgeCount! > 0) {
-                  iconWidget = AdaptiveBadge(
-                    count: dest.badgeCount,
-                    child: iconWidget,
-                  );
-                  activeIconWidget = AdaptiveBadge(
-                    count: dest.badgeCount,
-                    child: activeIconWidget,
-                  );
+                if (dest.hasBadge) {
+                  iconWidget = dest.wrapWithBadge(iconWidget);
+                  activeIconWidget = dest.wrapWithBadge(activeIconWidget);
                 }
 
                 return BottomNavigationBarItem(
@@ -697,10 +747,12 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                     } else {
                       actionChild = const Icon(CupertinoIcons.circle);
                     }
-                    return CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: action.onPressed,
-                      child: actionChild,
+                    return Builder(
+                      builder: (context) => CupertinoButton(
+                        padding: EdgeInsets.zero,
+                        onPressed: () => action.press(context),
+                        child: actionChild,
+                      ),
                     );
                   }).toList(),
                 )
@@ -740,7 +792,11 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
 
       // Always use CupertinoPageScaffold to ensure proper background color
       return _wrapWithDrawerIfNeeded(
-        CupertinoPageScaffold(navigationBar: navigationBar, child: body),
+        CupertinoPageScaffold(
+          resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset ?? true,
+          navigationBar: navigationBar,
+          child: body,
+        ),
       );
     }
 
@@ -776,19 +832,23 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
           centerTitle: widget.appBar!.titleWidget != null,
           actions: widget.appBar!.actions?.map((action) {
             if (action.title != null) {
-              return TextButton(
-                onPressed: action.onPressed,
-                child: Text(action.title!),
+              return Builder(
+                builder: (context) => TextButton(
+                  onPressed: () => action.press(context),
+                  child: Text(action.title!),
+                ),
               );
             }
-            return IconButton(
-              icon:
-                  action.iconWidget ??
-                  (action.icon != null
-                      ? Icon(action.icon!)
-                      : const Icon(Icons.circle)),
-              tooltip: action.effectiveLabel,
-              onPressed: action.onPressed,
+            return Builder(
+              builder: (context) => IconButton(
+                icon:
+                    action.iconWidget ??
+                    (action.icon != null
+                        ? Icon(action.icon!)
+                        : const Icon(Icons.circle)),
+                tooltip: action.effectiveLabel,
+                onPressed: () => action.press(context),
+              ),
             );
           }).toList(),
           leading: widget.appBar!.leading,
@@ -819,15 +879,9 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               platform: TargetPlatform.android,
             );
 
-            if (dest.badgeCount != null && dest.badgeCount! > 0) {
-              iconWidget = AdaptiveBadge(
-                count: dest.badgeCount,
-                child: iconWidget,
-              );
-              selectedIconWidget = AdaptiveBadge(
-                count: dest.badgeCount,
-                child: selectedIconWidget,
-              );
+            if (dest.hasBadge) {
+              iconWidget = dest.wrapWithBadge(iconWidget);
+              selectedIconWidget = dest.wrapWithBadge(selectedIconWidget);
             }
 
             return NavigationDestination(
@@ -847,6 +901,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
         bottomNavigationBar: bottomNavBar,
         floatingActionButton: widget.floatingActionButton,
         extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
+        extendBody: widget.extendBody,
+        backgroundColor: widget.backgroundColor,
         drawer: widget.drawer,
         endDrawer: widget.endDrawer,
         drawerScrimColor: widget.drawerScrimColor,
@@ -879,19 +935,23 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
         centerTitle: widget.appBar!.titleWidget != null,
         actions: widget.appBar!.actions?.map((action) {
           if (action.title != null) {
-            return TextButton(
-              onPressed: action.onPressed,
-              child: Text(action.title!),
+            return Builder(
+              builder: (context) => TextButton(
+                onPressed: () => action.press(context),
+                child: Text(action.title!),
+              ),
             );
           }
-          return IconButton(
-            icon:
-                action.iconWidget ??
-                (action.icon != null
-                    ? Icon(action.icon!)
-                    : const Icon(Icons.circle)),
-            tooltip: action.effectiveLabel,
-            onPressed: action.onPressed,
+          return Builder(
+            builder: (context) => IconButton(
+              icon:
+                  action.iconWidget ??
+                  (action.icon != null
+                      ? Icon(action.icon!)
+                      : const Icon(Icons.circle)),
+              tooltip: action.effectiveLabel,
+              onPressed: () => action.press(context),
+            ),
           );
         }).toList(),
         leading: widget.appBar!.leading,
@@ -907,6 +967,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
       resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
       floatingActionButton: widget.floatingActionButton,
       extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
+      extendBody: widget.extendBody,
+      backgroundColor: widget.backgroundColor,
       drawer: widget.drawer,
       endDrawer: widget.endDrawer,
       drawerScrimColor: widget.drawerScrimColor,

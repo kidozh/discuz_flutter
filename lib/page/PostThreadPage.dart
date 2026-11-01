@@ -1,4 +1,5 @@
 import '../utility/post_signature_service.dart';
+import '../utility/post_editor_controller.dart';
 import 'PollComposerPage.dart';
 import '../entity/PollDraft.dart';
 import '../client/ForumInteractionClient.dart';
@@ -17,7 +18,6 @@ import 'package:provider/provider.dart';
 
 import '../JsonResult/DisplayForumResult.dart';
 import '../widget/PostPermissionGate.dart';
-import '../dao/DraftDao.dart';
 import '../database/AppDatabase.dart';
 import '../entity/Discuz.dart';
 import '../entity/Draft.dart';
@@ -73,13 +73,12 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   Discuz discuz;
   int fid;
   int tid;
-  TextEditingController _controller = TextEditingController();
+  final _controller = PostEditorController();
   TextEditingController _titleEditingController = TextEditingController();
   CaptchaController captchaController = CaptchaController(
     new CaptchaFields("", "post", ""),
   );
   FocusNode focusNode = FocusNode();
-  List<String> insertedAidList = [];
   Draft? draft;
   PollDraft? _pollDraft;
   bool _sending = false;
@@ -357,8 +356,11 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                                 fid,
                                 onReplyWithImage: _handleReplyWithImage,
                                 onReplyWithHostedImage: (imageUrl, path) {
-                                  if (imageUrl.isNotEmpty) {
-                                    insertString("[img]$imageUrl[/img]");
+                                  if (mounted && imageUrl.isNotEmpty) {
+                                    _controller.insertHostedImage(
+                                      imageUrl,
+                                      path,
+                                    );
                                   }
                                 },
                                 showHistoricalAttachment: false,
@@ -479,54 +481,15 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
 
   // utilities
   void insertSmiley(Smiley smiley) {
-    print("Smiley is pressed ${smiley.code} ${smiley.relativePath}");
-
-    final TextSelection selection = _controller.selection.copyWith();
-    final int start = selection.baseOffset;
-    int end = selection.extentOffset;
-
-    final TextEditingValue value = _controller.value;
-
-    String smileyCode =
-        "${SmileyText.smileyStartFlag}${smiley.toString()}${SmileyText.smileyEndFlag}";
-    final text = smileyCode;
-    if (selection.isValid) {
-      String newText = "";
-      if (value.selection.isCollapsed) {
-        if (end > 0) {
-          newText += value.text.substring(0, end);
-        }
-        newText += text;
-        if (value.text.length > end) {
-          newText += value.text.substring(end, value.text.length);
-        }
-      } else {
-        newText = value.text.replaceRange(start, end, text);
-        end = start;
-      }
-      _controller.value = value.copyWith(
-        text: newText,
-        selection: selection.copyWith(
-          baseOffset: end + text.length,
-          extentOffset: end + text.length,
-        ),
-      );
-    } else {
-      String newText = "";
-      newText = _controller.text + text;
-      _controller.value = TextEditingValue(
-        text: newText,
-        selection: TextSelection.fromPosition(
-          TextPosition(offset: newText.length),
-        ),
-      );
-    }
+    if (!mounted) return;
+    _controller.insertText(
+      '${SmileyText.smileyStartFlag}$smiley${SmileyText.smileyEndFlag}',
+    );
   }
 
   Future<void> _handleReplyWithImage(String aid, String path) async {
-    if (aid.isEmpty) return;
-    insertString("[attachimg]$aid[/attachimg]");
-    insertedAidList.add(aid);
+    if (!mounted || aid.isEmpty) return;
+    _controller.insertAttachment(aid, path);
     if (!await UserPreferencesUtils.getRecordHistoryEnabled()) return;
 
     final dao = await AppDatabase.getImageAttachmentDao();
@@ -540,57 +503,33 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   }
 
   void insertString(String string) {
-    final TextSelection selection = _controller.selection.copyWith();
-    final int start = selection.baseOffset;
-    int end = selection.extentOffset;
+    if (!mounted) return;
+    _controller.insertText(string);
+  }
 
-    final TextEditingValue value = _controller.value;
-
-    final text = string;
-    if (selection.isValid) {
-      String newText = "";
-      if (value.selection.isCollapsed) {
-        if (end > 0) {
-          newText += value.text.substring(0, end);
-        }
-        newText += text;
-        if (value.text.length > end) {
-          newText += value.text.substring(end, value.text.length);
-        }
-      } else {
-        newText = value.text.replaceRange(start, end, text);
-        end = start;
-      }
-      _controller.value = value.copyWith(
-        text: newText,
-        selection: selection.copyWith(
-          baseOffset: end + text.length,
-          extentOffset: end + text.length,
-        ),
-      );
-    } else {
-      String newText = "";
-      newText = _controller.text + text;
-      _controller.value = TextEditingValue(
-        text: newText,
-        selection: TextSelection.fromPosition(
-          TextPosition(offset: newText.length),
-        ),
-      );
-    }
+  @override
+  void dispose() {
+    _controller.dispose();
+    _titleEditingController.dispose();
+    focusNode.dispose();
+    captchaController.dispose();
+    super.dispose();
   }
 
   void backupDraftIfPossible() {
-    {
-      // Save both new and restored drafts.
-      _titleEditingController.addListener(() {
-        backupDraft();
-      });
-
-      _controller.addListener(() {
-        backupDraft();
-      });
+    var previousTitle = _titleEditingController.text;
+    var previousText = _controller.text;
+    void saveChangedText() {
+      final title = _titleEditingController.text;
+      final text = _controller.text;
+      if (title == previousTitle && text == previousText) return;
+      previousTitle = title;
+      previousText = text;
+      backupDraft();
     }
+
+    _titleEditingController.addListener(saveChangedText);
+    _controller.addListener(saveChangedText);
   }
 
   Future<void> backupDraft() {

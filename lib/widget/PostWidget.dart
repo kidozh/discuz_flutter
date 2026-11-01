@@ -776,10 +776,6 @@ class PostState extends State<PostStatefulWidget> {
         key: ValueKey((_discuz.baseURL, _post.pid, widget.sessionUid)),
         html: _post.message,
       ),
-      if (PostTranslationService.usesGoogleTranslation)
-        GoogleTranslationAttribution(
-          translated: _translation.showingTranslation,
-        ),
     ];
     final body = DiscuzHtmlWidget(
       _discuz,
@@ -791,6 +787,10 @@ class PostState extends State<PostStatefulWidget> {
       onContentChanged: widget.onContentChanged,
     );
     final footer = <Widget>[
+      if (PostTranslationService.usesGoogleTranslation)
+        GoogleTranslationAttribution(
+          translated: _translation.showingTranslation,
+        ),
       if (_post.attachmentMapper.isNotEmpty)
         ListView.builder(
           padding: EdgeInsets.zero,

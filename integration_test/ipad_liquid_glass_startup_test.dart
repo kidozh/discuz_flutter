@@ -11,14 +11,18 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/main.dart' as app;
 import 'package:discuz_flutter/page/DrawerPage.dart';
+import 'package:discuz_flutter/page/ChoosePlatformPage.dart';
 import 'package:discuz_flutter/page/SettingPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
 import 'package:discuz_flutter/utility/DashboardPreferences.dart';
+import 'package:discuz_flutter/utility/DiscuzWebviewCookieManager.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/widget/KeylolTopicTabs.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -166,7 +170,32 @@ void main() {
     expect(tester.takeException(), isNull);
     await File('${Directory.systemTemp.path}/ipad-settings.png')
         .writeAsBytes(await binding.takeScreenshot('ipad-settings'));
-    Navigator.of(tester.element(find.byType(SettingPage)))
+    home.read<ThemeNotifierProvider>().setBrightness(Brightness.dark);
+    await _finishNavigation(tester);
+    final appearance = find.text(
+      S
+          .of(tester.element(find.byType(SettingPage)))
+          .appearanceOptimizedPlatform,
+    );
+    await tester.ensureVisible(appearance);
+    await _finishNavigation(tester);
+    await tester.tap(appearance);
+    await _finishNavigation(tester);
+    expect(find.byType(ChoosePlatformPage), findsOneWidget);
+    expect(
+      Theme.of(tester.element(find.byType(ChoosePlatformPage))).brightness,
+      Brightness.dark,
+    );
+    await File(
+      '${Directory.systemTemp.path}/ipad-settings-subpage-dark.png',
+    ).writeAsBytes(await binding.takeScreenshot('ipad-settings-subpage-dark'));
+    home.read<ThemeNotifierProvider>().setBrightness(Brightness.light);
+    await _finishNavigation(tester);
+    expect(
+      Theme.of(tester.element(find.byType(ChoosePlatformPage))).brightness,
+      Brightness.light,
+    );
+    Navigator.of(tester.element(find.byType(ChoosePlatformPage)))
         .popUntil((route) => route.isFirst);
     await _finishNavigation(tester);
 
@@ -196,4 +225,47 @@ void main() {
     );
     await tester.pumpWidget(const SizedBox.shrink());
   }, skip: !Platform.isIOS);
+
+  testWidgets('native cookies preserve auth values, flags and URL scope', (
+    tester,
+  ) async {
+    const manager = DiscuzWebviewCookieManager();
+    const origin = 'https://cookies-qa.example.test/forums/';
+    final expiry = DateTime.now().toUtc().add(const Duration(hours: 1));
+    Cookie auth(DateTime expires) => Cookie('discuz_auth', 'encoded%3Dauth==')
+      ..domain = 'cookies-qa.example.test'
+      ..path = '/forums'
+      ..httpOnly = true
+      ..secure = true
+      ..expires = expires;
+    try {
+      await manager.setCookies([auth(expiry)], origin: origin);
+      final cookies = await manager.getCookies('${origin}thread.php');
+      final cookie = cookies.singleWhere(
+        (cookie) => cookie.name == 'discuz_auth',
+      );
+      expect(cookie.value, 'encoded%3Dauth==');
+      expect(cookie.httpOnly, isTrue);
+      expect(cookie.secure, isTrue);
+      expect(cookie.path, '/forums');
+      expect(
+        cookie.expires!.difference(expiry).inSeconds.abs(),
+        lessThanOrEqualTo(2),
+      );
+      for (final url in [
+        'https://cookies-qa.example.test/other',
+        'https://not-cookies-qa.example.test/forums/',
+        'http://cookies-qa.example.test/forums/',
+      ]) {
+        expect(
+          (await manager.getCookies(url))
+              .where((cookie) => cookie.name == 'discuz_auth'),
+          isEmpty,
+        );
+      }
+    } finally {
+      // Only remove the test cookie; leave unrelated browser sessions intact.
+      await manager.setCookies([auth(DateTime.utc(2000))], origin: origin);
+    }
+  }, skip: !Platform.isIOS && !Platform.isMacOS);
 }

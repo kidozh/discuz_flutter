@@ -1272,5 +1272,9 @@
   "googleTranslationPolicy": "Google 翻译归属规范",
   "postCopyText": "复制正文",
   "postTextCopied": "正文已复制",
-  "postCopyEmpty": "这条帖子没有可复制的文字。"
+  "postCopyEmpty": "这条帖子没有可复制的文字。",
+  "composerImageLabel": "图片 {number}",
+  "@composerImageLabel": {"placeholders": {"number": {"type": "int"}}},
+  "removeComposerImage": "移除图片 {number}",
+  "@removeComposerImage": {"placeholders": {"number": {"type": "int"}}}
 }

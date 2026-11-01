@@ -9,6 +9,7 @@ class MainFlutterWindow: NSWindow {
     self.setFrame(windowFrame, display: true)
 
     RegisterGeneratedPlugins(registry: flutterViewController)
+    WebViewCookies.register(with: flutterViewController.registrar(forPlugin: "DiscuzWebViewCookies"))
 
     super.awakeFromNib()
   }

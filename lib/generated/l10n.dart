@@ -1,6 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -8297,6 +8298,26 @@ class S {
       name: 'postCopyEmpty',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Image {number}`
+  String composerImageLabel(int number) {
+    return Intl.message(
+      'Image $number',
+      name: 'composerImageLabel',
+      desc: '',
+      args: [number],
+    );
+  }
+
+  /// `Remove image {number}`
+  String removeComposerImage(int number) {
+    return Intl.message(
+      'Remove image $number',
+      name: 'removeComposerImage',
+      desc: '',
+      args: [number],
     );
   }
 }

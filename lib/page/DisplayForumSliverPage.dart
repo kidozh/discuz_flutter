@@ -35,7 +35,6 @@ import 'package:discuz_flutter/widget/DiscuzNotificationAppbarIconWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
 import 'package:discuz_flutter/widget/LoadingStateWidget.dart';
-import 'package:dual_screen/dual_screen.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -1408,30 +1407,26 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget>
         _selectionRevision,
       ),
       onCloseDetail: () => _selectThread(0),
-      child: TwoPane(
-        paneProportion: 0.35,
-        panePriority: _currentTid.value == 0
-            ? TwoPanePriority.start
-            : TwoPanePriority.end,
-        startPane: DisplayForumAltSliverPage(
-          discuz,
-          user,
-          fid,
-          onSelectTid: _selectThread,
-          forumTitle: forumTitle,
-        ),
-        endPane: _currentTid.value == 0
-            ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText)
-            : KeyedSubtree(
-                key: ValueKey(_currentTid.value),
-                child: ViewThreadSliverPage(
-                  discuz,
-                  user,
-                  _currentTid.value,
-                  onClosed: () => _selectThread(0),
-                ),
-              ),
+      paneProportion: 0.35,
+      showDetail: _currentTid.value != 0,
+      startPane: DisplayForumAltSliverPage(
+        discuz,
+        user,
+        fid,
+        onSelectTid: _selectThread,
+        forumTitle: forumTitle,
       ),
+      endPane: _currentTid.value == 0
+          ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText)
+          : KeyedSubtree(
+              key: ValueKey(_currentTid.value),
+              child: ViewThreadSliverPage(
+                discuz,
+                user,
+                _currentTid.value,
+                onClosed: () => _selectThread(0),
+              ),
+            ),
     );
   }
 }

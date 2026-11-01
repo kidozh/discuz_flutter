@@ -13,14 +13,14 @@ PODS:
   - Firebase/Messaging (12.19.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (~> 12.19.0)
-  - firebase_analytics (12.6.0):
+  - firebase_analytics (13.0.1):
     - firebase_core
     - FirebaseAnalytics (= 12.19.0)
     - Flutter
-  - firebase_core (4.15.0):
+  - firebase_core (5.1.0):
     - Firebase/CoreOnly (= 12.19.0)
     - Flutter
-  - firebase_messaging (16.7.0):
+  - firebase_messaging (17.0.1):
     - Firebase/Messaging (= 12.19.0)
     - firebase_core
     - Flutter
@@ -42,7 +42,7 @@ PODS:
     - GoogleUtilities/Network (~> 8.1)
     - "GoogleUtilities/NSData+zlib (~> 8.1)"
     - nanopb (~> 3.30910.0)
-  - FirebaseCore (12.19.0):
+  - FirebaseCore (12.19.3):
     - FirebaseCoreInternal (~> 12.19.0)
     - GoogleUtilities/Environment (~> 8.1)
     - GoogleUtilities/Logger (~> 8.1)
@@ -72,15 +72,15 @@ PODS:
   - flutter_secure_storage_darwin (10.0.0):
     - Flutter
     - FlutterMacOS
-  - foldable (1.0.4):
+  - foldable (1.0.5):
     - Flutter
   - foundation_models_framework (0.2.1):
     - Flutter
-  - Google-Mobile-Ads-SDK (13.10.0):
+  - Google-Mobile-Ads-SDK (13.11.0):
     - GoogleUserMessagingPlatform (>= 1.1)
-  - google_mobile_ads (9.1.0):
+  - google_mobile_ads (9.2.0):
     - Flutter
-    - Google-Mobile-Ads-SDK (~> 13.7)
+    - Google-Mobile-Ads-SDK (~> 13.11)
     - webview_flutter_wkwebview
   - GoogleAdsOnDeviceConversion (3.7.0):
     - GoogleUtilities/Environment (~> 8.1)
@@ -113,34 +113,34 @@ PODS:
     - nanopb (~> 3.30910.0)
     - PromisesObjC (~> 2.4)
   - GoogleUserMessagingPlatform (3.1.0)
-  - GoogleUtilities/AppDelegateSwizzler (8.1.3):
+  - GoogleUtilities/AppDelegateSwizzler (8.1.5):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
     - GoogleUtilities/Privacy
-  - GoogleUtilities/Environment (8.1.3):
+  - GoogleUtilities/Environment (8.1.5):
     - GoogleUtilities/Privacy
-  - GoogleUtilities/Logger (8.1.3):
+  - GoogleUtilities/Logger (8.1.5):
     - GoogleUtilities/Environment
     - GoogleUtilities/Privacy
-  - GoogleUtilities/MethodSwizzler (8.1.3):
+  - GoogleUtilities/MethodSwizzler (8.1.5):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-  - GoogleUtilities/Network (8.1.3):
+  - GoogleUtilities/Network (8.1.5):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Privacy
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (8.1.3)":
+  - "GoogleUtilities/NSData+zlib (8.1.5)":
     - GoogleUtilities/Privacy
-  - GoogleUtilities/Privacy (8.1.3)
-  - GoogleUtilities/Reachability (8.1.3):
+  - GoogleUtilities/Privacy (8.1.5)
+  - GoogleUtilities/Reachability (8.1.5):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-  - GoogleUtilities/UserDefaults (8.1.3):
+  - GoogleUtilities/UserDefaults (8.1.5):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-  - haptic_feedback (0.5.1):
+  - haptic_feedback (0.7.0):
     - Flutter
   - image_picker_ios (0.0.1):
     - Flutter
@@ -204,8 +204,6 @@ PODS:
     - FlutterMacOS
   - wakelock_plus (0.0.1):
     - Flutter
-  - webview_cookie_manager (0.0.1):
-    - Flutter
   - webview_flutter_wkwebview (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -242,7 +240,6 @@ DEPENDENCIES:
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/darwin`)
   - wakelock_plus (from `.symlinks/plugins/wakelock_plus/ios`)
-  - webview_cookie_manager (from `.symlinks/plugins/webview_cookie_manager/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
 
 SPEC REPOS:
@@ -328,8 +325,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/video_player_avfoundation/darwin"
   wakelock_plus:
     :path: ".symlinks/plugins/wakelock_plus/ios"
-  webview_cookie_manager:
-    :path: ".symlinks/plugins/webview_cookie_manager/ios"
   webview_flutter_wkwebview:
     :path: ".symlinks/plugins/webview_flutter_wkwebview/darwin"
 
@@ -339,11 +334,11 @@ SPEC CHECKSUMS:
   audio_session: 19e9480dbdd4e5f6c4543826b2e8b0e4ab6145fe
   device_info_plus: bf2e3232933866d73fe290f2942f2156cdd10342
   Firebase: 7ca191e43724142f79fae653547b3382c45413cc
-  firebase_analytics: f6023ed6c945c6cf4736d814dec670646d37d843
-  firebase_core: 7ed66bd750bf2b7a29268b21d63eec7bc6799ee8
-  firebase_messaging: 437b5662e6a3a945a7a07166bfba05a86c998b55
+  firebase_analytics: 1977ed5e29a1687f5bb5468adda4ba53fb08ae22
+  firebase_core: 93f6135537819637fa0c56d1d76bf665edde1b17
+  firebase_messaging: 9e8fb1bd83c5a53025df1f04fa0742e6e1dd3185
   FirebaseAnalytics: e9f8c369447e453da23f0455a06e4910bad10de0
-  FirebaseCore: c990214798d7c568ad436a15ba7da25c7a278c9a
+  FirebaseCore: ab948de5d99e69aeed3cd6f5ace263ce795b2559
   FirebaseCoreInternal: 656b1c2fd5a1c5976183dc54b73deda78fb26ee3
   FirebaseInstallations: f70a49eed611f5602f373e40974b3b01556ac217
   FirebaseMessaging: c15f48126adbe8b4d3238a5e1fa24bab3ad3e472
@@ -351,23 +346,23 @@ SPEC CHECKSUMS:
   flutter_image_compress_common: d1d827ee42025290fc9e3203ece582e4c74182ed
   flutter_local_notifications: eda81afddbf18f8589f6ec069ce593c4c6378769
   flutter_secure_storage_darwin: 557817588b80e60213cbecb573c45c76b788018d
-  foldable: 723051b26b54353b678de6ef4d9f49fcb1568d8d
+  foldable: 4c03431f75f6856d39a17f511b0539726f60538d
   foundation_models_framework: cd23b9972b415c5f5e6fb7a09498f72a6bd65ddc
-  Google-Mobile-Ads-SDK: 8e764c4990ef82c2727fd32e0c4143817b443603
-  google_mobile_ads: 8c61669fb8e2ba987b0b7116b5265ba647cdca0c
+  Google-Mobile-Ads-SDK: 09d0868abe43b9f851b7b340a245679f0eafc96c
+  google_mobile_ads: c8f164ff415b8440e50b0102508d148c7fbea07f
   GoogleAdsOnDeviceConversion: 41f168313b305040f4af27093d3c0af5ba46a9a3
   GoogleAppMeasurement: f2f676480e4c97936df934aa181bc29caea46975
   GoogleDataTransport: a24e58982ab3ba2f64d79613e027fe7f57e88539
   GoogleUserMessagingPlatform: befe603da6501006420c206222acd449bba45a9c
-  GoogleUtilities: 4e0c2ad9fa0d0d18b5c4df8bf57b461cba35b0bb
-  haptic_feedback: a366a27ec760f0e865651605b95de8a9bb04ef01
-  image_picker_ios: 4f2f91b01abdb52842a8e277617df877e40f905b
+  GoogleUtilities: 7dc09b3fa9ecb5c2298b952313d14628b61b9da3
+  haptic_feedback: f2ca6114896f9cd6ff2f969934b43bfb5943908b
+  image_picker_ios: 4839114eaa8338ecff94cde6d0ae6022c30aa6fb
   integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
   just_audio: a42c63806f16995daf5b219ae1d679deb76e6a79
   libwebp: af5937a13536ef73f3784d69cc342b98961acf33
   local_auth_darwin: 63c73d6d28cc3e239be2b6aa460ea6e317cd5100
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
-  open_filex: 6e26e659846ec990262224a12ef1c528bb4edbe4
+  open_filex: 3b005dd7021b22d36a74a9a02051cdcccd5146ba
   package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
   permission_handler_apple: ee2fe0fd04551b304eb002714ff067c371c822ed
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
@@ -375,16 +370,15 @@ SPEC CHECKSUMS:
   saver_gallery: d0a6db42d96be3048140ef50209651ae5c2d053a
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageWebPCoder: 0e06e365080397465cc73a7a9b472d8a3bd0f377
-  share_plus: 8b6f8b3447e494cca5317c8c3073de39b3600d1f
-  shared_preferences_foundation: 5086985c1d43c5ba4d5e69a4e8083a389e2909e6
+  share_plus: 796a4b55a883a34f4f1ff7bbd19436879a5055db
+  shared_preferences_foundation: 9a36184bb1299692bf7b972bd6c60ab373084504
   sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
   ua_client_hints: 1133b367920a3c80ed2f84afde2d106b26a728d5
   url_launcher_ios: bb13df5870e8c4234ca12609d04010a21be43dfa
-  video_player_avfoundation: e54d03b3b19f64f2c557354f72ce538387541ba6
+  video_player_avfoundation: 083b698055ffef969fbd8b70f2952858b9afe21f
   wakelock_plus: 4d70a9769dc8dad95ca6131e70c46b2d5a5de261
-  webview_cookie_manager: eaf920722b493bd0f7611b5484771ca53fed03f7
   webview_flutter_wkwebview: 29eb20d43355b48fe7d07113835b9128f84e3af4
 
-PODFILE CHECKSUM: 94688890f56ca044895fee74e87d1a39d7d95e6d
+PODFILE CHECKSUM: 2da163301f61401718e93c9f386084440422d3ae
 
 COCOAPODS: 1.16.2

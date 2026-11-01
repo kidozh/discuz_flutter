@@ -61,6 +61,10 @@ void main() {
           );
           await tester.pumpAndSettle();
           expect(find.byType(GoogleTranslationBadge), findsOneWidget);
+          expect(
+            tester.getSize(find.byType(GoogleTranslationAttribution)).height,
+            lessThanOrEqualTo(28),
+          );
           expect(find.byType(TextButton), findsNothing);
           expect(find.byType(IconButton), findsNothing);
           expect(
@@ -98,14 +102,12 @@ void main() {
     }
   }
 
-  testWidgets('translation notice is bundled and available without a result', (
+  testWidgets('compact credit opens its offline notice on long press', (
     tester,
   ) async {
-    await tester.pumpWidget(host(translated: false));
+    await tester.pumpWidget(host(translated: true));
     await tester.pumpAndSettle();
-    final context = tester.element(find.byType(GoogleTranslationAttribution));
-    // Settings continues to use this same offline notice entry point.
-    showGoogleTranslationInfo(context);
+    await tester.longPress(find.byType(GoogleTranslationBadge));
     await tester.pump();
     await tester.runAsync(
       () => rootBundle.loadString('assets/translation/google_disclaimer.txt'),

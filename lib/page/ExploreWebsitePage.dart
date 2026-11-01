@@ -14,7 +14,9 @@ import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:webview_cookie_manager/webview_cookie_manager.dart';
+
+import '../utility/DiscuzWebviewCookieManager.dart';
+
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../generated/l10n.dart';
@@ -28,12 +30,14 @@ class ExploreWebsitePage extends StatefulWidget {
   final ValueChanged<int>? onSelectTid;
 
   ExploreWebsitePage({this.initialURL, required Key key, this.onSelectTid})
-      : super(key: key);
+    : super(key: key);
 
   @override
   ExploreWebsiteState createState() {
     return ExploreWebsiteState(
-        initialURL: this.initialURL, onSelectTid: this.onSelectTid);
+      initialURL: this.initialURL,
+      onSelectTid: this.onSelectTid,
+    );
   }
 }
 
@@ -46,20 +50,22 @@ class ExploreWebsiteState extends State<ExploreWebsitePage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<DiscuzAndUserNotifier>(
-        builder: (context, discuzAndUser, child) {
-      if (discuzAndUser.discuz == null) {
-        return NullDiscuzScreen();
-      } else {
-        return SafeArea(
+      builder: (context, discuzAndUser, child) {
+        if (discuzAndUser.discuz == null) {
+          return NullDiscuzScreen();
+        } else {
+          return SafeArea(
             child: InnerWebviewScreen(
-          ValueKey(discuzAndUser.discuz),
-          discuzAndUser.discuz!,
-          discuzAndUser.user,
-          initialURL: initialURL,
-          onSelectTid: this.onSelectTid,
-        ));
-      }
-    });
+              ValueKey(discuzAndUser.discuz),
+              discuzAndUser.discuz!,
+              discuzAndUser.user,
+              initialURL: initialURL,
+              onSelectTid: this.onSelectTid,
+            ),
+          );
+        }
+      },
+    );
   }
 }
 
@@ -72,14 +78,11 @@ class NavigationControls extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder<WebViewController>(
       future: _webViewControllerFuture,
-      builder:
-          (BuildContext context, AsyncSnapshot<WebViewController> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<WebViewController> snapshot) {
         final bool webViewReady =
             snapshot.connectionState == ConnectionState.done;
         if (snapshot.data == null) {
-          return Row(
-            children: [],
-          );
+          return Row(children: []);
         }
         final WebViewController controller = snapshot.data!;
 
@@ -147,14 +150,22 @@ class InnerWebviewScreen extends StatefulWidget {
   String? initialURL;
   final ValueChanged<int>? onSelectTid;
 
-  InnerWebviewScreen(Key key, this._discuz, this._user,
-      {this.initialURL, this.onSelectTid})
-      : super(key: key);
+  InnerWebviewScreen(
+    Key key,
+    this._discuz,
+    this._user, {
+    this.initialURL,
+    this.onSelectTid,
+  }) : super(key: key);
 
   @override
   InnerWebviewState createState() {
-    return InnerWebviewState(this._discuz, this._user,
-        initialURL: this.initialURL, onSelectTid: this.onSelectTid);
+    return InnerWebviewState(
+      this._discuz,
+      this._user,
+      initialURL: this.initialURL,
+      onSelectTid: this.onSelectTid,
+    );
   }
 }
 
@@ -163,7 +174,7 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
   User? _user;
   final ValueChanged<int>? onSelectTid;
 
-  final webviewCookieManager = WebviewCookieManager();
+  final webviewCookieManager = const DiscuzWebviewCookieManager();
   WebViewController _controller = WebViewController();
 
   String? initialURL;
@@ -174,51 +185,60 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
 
   bool cookieLoaded = false;
 
-  InnerWebviewState(this._discuz, this._user,
-      {this.initialURL, this.onSelectTid});
+  InnerWebviewState(
+    this._discuz,
+    this._user, {
+    this.initialURL,
+    this.onSelectTid,
+  });
 
   void loadCookieByUser(Discuz _discuz, User? _user, String initialURL) async {
     if (_user != null) {
       PersistCookieJar savedCookieJar =
           await NetworkUtils.getPersistentCookieJarByUser(_user);
-      List<Cookie> cookies =
-          await savedCookieJar.loadForRequest(Uri.parse(_discuz.baseURL));
-      webviewCookieManager.setCookies(cookies, origin: _discuz.baseURL);
+      List<Cookie> cookies = await savedCookieJar.loadForRequest(
+        Uri.parse(_discuz.baseURL),
+      );
+      if (!mounted) return;
+      await webviewCookieManager.setCookies(cookies, origin: _discuz.baseURL);
     } else {
-      webviewCookieManager.clearCookies();
+      await webviewCookieManager.clearCookies();
     }
 
+    if (!mounted) return;
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(NavigationDelegate(
-        onProgress: (int progress) {
-          setState(() {
-            this.progress = progress;
-          });
-          print("WebView is loading (progress : $progress%)");
-        },
-        onNavigationRequest: (NavigationRequest request) {
-          return NavigationDecision.navigate;
-        },
-        onPageStarted: (String url) {
-          VibrationUtils.vibrateWithClickIfPossible();
-          print('Page started loading: $url');
-        },
-        onPageFinished: (String url) async {
-          setState(() {
-            progress = 0;
-          });
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {
+            setState(() {
+              this.progress = progress;
+            });
+            print("WebView is loading (progress : $progress%)");
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            return NavigationDecision.navigate;
+          },
+          onPageStarted: (String url) {
+            VibrationUtils.vibrateWithClickIfPossible();
+            print('Page started loading: $url');
+          },
+          onPageFinished: (String url) async {
+            setState(() {
+              progress = 0;
+            });
 
-          String? title = await _controller.getTitle();
-          setState(() {
-            webTitle = title;
-          });
-          print('Page finished loading: $url');
-          // check for if link is parsable
-          VibrationUtils.vibrateWithClickIfPossible();
-          checkIfLinkIsParsable(context, url);
-        },
-      ));
+            String? title = await _controller.getTitle();
+            setState(() {
+              webTitle = title;
+            });
+            print('Page finished loading: $url');
+            // check for if link is parsable
+            VibrationUtils.vibrateWithClickIfPossible();
+            checkIfLinkIsParsable(context, url);
+          },
+        ),
+      );
 
     setState(() {
       cookieLoaded = true;
@@ -246,13 +266,8 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
       return Column(
         children: [
           if (progress != 0 && progress != 100)
-            LinearProgressIndicator(
-              value: progress / 100,
-            ),
-          Expanded(
-              child: WebViewWidget(
-            controller: _controller,
-          ))
+            LinearProgressIndicator(value: progress / 100),
+          Expanded(child: WebViewWidget(controller: _controller)),
         ],
       );
     }
@@ -261,10 +276,14 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
   void checkIfLinkIsParsable(BuildContext context, String urlString) async {
     urlString = urlString.replaceAll("&amp;", "&");
     bool urlLauchable = await canLaunchUrl(Uri.parse(urlString));
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    Discuz discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
+    User? user = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).user;
+    Discuz discuz = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).discuz!;
     // judge if it is a path
     Uri? tryUri = Uri.tryParse(urlString);
     log("${Uri.parse(urlString).isAbsolute}");
@@ -300,12 +319,14 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
                   int tid = int.tryParse(tidString)!;
                   if (onSelectTid == null) {
                     await pushDetailPage(
-                        context,
-                        platformPageRoute(
-                            context: context,
-                            iosTitle: S.of(context).viewThreadTitle,
-                            builder: (context) =>
-                                ViewThreadSliverPage(discuz, user, tid)));
+                      context,
+                      platformPageRoute(
+                        context: context,
+                        iosTitle: S.of(context).viewThreadTitle,
+                        builder: (context) =>
+                            ViewThreadSliverPage(discuz, user, tid),
+                      ),
+                    );
                   } else {
                     onSelectTid!(tid);
                   }
@@ -325,12 +346,14 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
                   int tid = int.tryParse(tidString)!;
                   if (onSelectTid == null) {
                     await pushDetailPage(
-                        context,
-                        platformPageRoute(
-                            context: context,
-                            iosTitle: S.of(context).viewThreadTitle,
-                            builder: (context) =>
-                                ViewThreadSliverPage(discuz, user, tid)));
+                      context,
+                      platformPageRoute(
+                        context: context,
+                        iosTitle: S.of(context).viewThreadTitle,
+                        builder: (context) =>
+                            ViewThreadSliverPage(discuz, user, tid),
+                      ),
+                    );
                   } else {
                     onSelectTid!(tid);
                   }
@@ -348,12 +371,14 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
                 if (int.tryParse(fidString) != null) {
                   int fid = int.tryParse(fidString)!;
                   await Navigator.push(
-                      context,
-                      platformPageRoute(
-                          context: context,
-                          iosTitle: S.of(context).forumDisplayTitle,
-                          builder: (context) =>
-                              DisplayForumTwoPanePage(discuz, user, fid)));
+                    context,
+                    platformPageRoute(
+                      context: context,
+                      iosTitle: S.of(context).forumDisplayTitle,
+                      builder: (context) =>
+                          DisplayForumTwoPanePage(discuz, user, fid),
+                    ),
+                  );
                   return;
                 }
               }
@@ -369,12 +394,13 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
                 if (int.tryParse(uidString) != null) {
                   int uid = int.tryParse(uidString)!;
                   await pushDetailPage(
-                      context,
-                      platformPageRoute(
-                          context: context,
-                          iosTitle: S.of(context).userProfileTitle,
-                          builder: (context) =>
-                              UserProfilePage(discuz, user, uid)));
+                    context,
+                    platformPageRoute(
+                      context: context,
+                      iosTitle: S.of(context).userProfileTitle,
+                      builder: (context) => UserProfilePage(discuz, user, uid),
+                    ),
+                  );
                   return;
                 }
               }
@@ -387,12 +413,14 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
       log("read fid: ${fid} from url");
       if (fid != null && int.tryParse(fid) != null) {
         await Navigator.push(
-            context,
-            platformPageRoute(
-                context: context,
-                iosTitle: S.of(context).forumDisplayTitle,
-                builder: (context) =>
-                    DisplayForumTwoPanePage(discuz, user, int.tryParse(fid)!)));
+          context,
+          platformPageRoute(
+            context: context,
+            iosTitle: S.of(context).forumDisplayTitle,
+            builder: (context) =>
+                DisplayForumTwoPanePage(discuz, user, int.tryParse(fid)!),
+          ),
+        );
         return;
       }
 
@@ -402,12 +430,14 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
       if (tid != null && int.tryParse(tid) != null) {
         if (onSelectTid == null) {
           await pushDetailPage(
-              context,
-              platformPageRoute(
-                  context: context,
-                  iosTitle: S.of(context).viewThreadTitle,
-                  builder: (context) =>
-                      ViewThreadSliverPage(discuz, user, int.tryParse(tid)!)));
+            context,
+            platformPageRoute(
+              context: context,
+              iosTitle: S.of(context).viewThreadTitle,
+              builder: (context) =>
+                  ViewThreadSliverPage(discuz, user, int.tryParse(tid)!),
+            ),
+          );
         } else {
           onSelectTid!(int.tryParse(tid)!);
         }
@@ -418,12 +448,14 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
       String? uid = await RewriteRuleUtils.findUidInURL(discuz, urlString);
       if (uid != null && int.tryParse(uid) != null) {
         await pushDetailPage(
-            context,
-            platformPageRoute(
-                context: context,
-                iosTitle: S.of(context).userProfileTitle,
-                builder: (context) =>
-                    UserProfilePage(discuz, user, int.tryParse(uid)!)));
+          context,
+          platformPageRoute(
+            context: context,
+            iosTitle: S.of(context).userProfileTitle,
+            builder: (context) =>
+                UserProfilePage(discuz, user, int.tryParse(uid)!),
+          ),
+        );
         return;
       }
     } else {
