@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui' as ui;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
@@ -8,8 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-/// A deliberately indistinct thumbnail keeps the composition readable without
-/// decoding a full-size upload for every inline image.
+/// A clear thumbnail keeps the composition readable without decoding a
+/// full-size upload for every inline image.
 class PostImagePreview extends StatefulWidget {
   final String? localPath;
   final String? url;
@@ -62,7 +61,7 @@ class _PostImagePreviewState extends State<PostImagePreview> {
         uri.host.isNotEmpty) {
       _image = CachedNetworkImageProvider(uri.toString());
     }
-    if (_image != null) _image = ResizeImage.resizeIfNeeded(160, null, _image!);
+    if (_image != null) _image = ResizeImage.resizeIfNeeded(384, null, _image!);
   }
 
   @override
@@ -110,22 +109,15 @@ class _PostImagePreviewState extends State<PostImagePreview> {
                 ),
               ),
               if (_image != null)
-                ImageFiltered(
-                  imageFilter: ui.ImageFilter.blur(
-                    sigmaX: 8,
-                    sigmaY: 8,
-                    tileMode: ui.TileMode.clamp,
-                  ),
-                  child: Image(
-                    image: _image!,
-                    fit: BoxFit.cover,
-                    excludeFromSemantics: true,
-                    frameBuilder: (_, child, frame, wasSynchronouslyLoaded) =>
-                        frame != null || wasSynchronouslyLoaded
-                        ? ColoredBox(color: imageBackground, child: child)
-                        : const SizedBox.shrink(),
-                    errorBuilder: (_, _, _) => const SizedBox.shrink(),
-                  ),
+                Image(
+                  image: _image!,
+                  fit: BoxFit.cover,
+                  excludeFromSemantics: true,
+                  frameBuilder: (_, child, frame, wasSynchronouslyLoaded) =>
+                      frame != null || wasSynchronouslyLoaded
+                      ? ColoredBox(color: imageBackground, child: child)
+                      : const SizedBox.shrink(),
+                  errorBuilder: (_, _, _) => const SizedBox.shrink(),
                 ),
               PositionedDirectional(
                 start: 6,

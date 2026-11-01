@@ -456,7 +456,7 @@ void main() {
   );
 
   testWidgets(
-    'a new local upload renders a blurred thumbnail without attachment history',
+    'a new local upload renders a clear thumbnail without attachment history',
     (tester) async {
       final directory = Directory.systemTemp.createTempSync(
         'discuz-image-preview-',
@@ -471,7 +471,7 @@ void main() {
       await tester.pumpWidget(_host(controller, focus, expanded: true));
       await tester.runAsync(() async {
         await precacheImage(
-          ResizeImage.resizeIfNeeded(160, null, FileImage(image)),
+          ResizeImage.resizeIfNeeded(384, null, FileImage(image)),
           tester.element(find.byType(PostTextField)),
         );
       });
@@ -483,7 +483,13 @@ void main() {
             .localPath,
         image.path,
       );
-      expect(find.byType(ImageFiltered), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(PostImagePreview),
+          matching: find.byType(ImageFiltered),
+        ),
+        findsNothing,
+      );
       expect(
         tester
             .widget<RawImage>(
