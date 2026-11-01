@@ -63,3 +63,9 @@ test('preflight rejects a duplicate build without changing metadata', async () =
   await assert.rejects(verifyRelease(api, {...options, checkAvailable: true}), /already exists/);
   assert(calls.every(call => call.method === 'GET'));
 });
+test('preflight allows the same build number in an older version train', async () => {
+  const {api, calls} = fixture({wrongVersion: true});
+  const result = await verifyRelease(api, {...options, checkAvailable: true});
+  assert.equal(result.available, true);
+  assert(calls.every(call => call.method === 'GET'));
+});

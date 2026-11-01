@@ -28,14 +28,17 @@ export async function verifyRelease(api, {bundleId, version, buildNumber, notes,
     'filter[app]': app.id, 'filter[version]': buildNumber,
     'filter[preReleaseVersion.platform]': 'IOS', include: 'preReleaseVersion', limit: '200',
   })}`);
-  if (checkAvailable) {
-    if (builds.data?.length) throw new Error(`Build number ${buildNumber} already exists; choose a new build number before uploading.`);
-    return {bundleId, version, buildNumber, available: true};
-  }
   const matching = (builds.data ?? []).filter(build => {
     const id = build.relationships?.preReleaseVersion?.data?.id;
     return builds.included?.some(item => item.type === 'preReleaseVersions' && item.id === id && item.attributes?.version === version);
   });
+  if (checkAvailable) {
+    if (matching.length) {
+      const states = matching.map(build => `${build.id}: ${build.attributes?.processingState}`).join(', ');
+      throw new Error(`Build ${version} (${buildNumber}) already exists (${states}); choose a new build number before uploading.`);
+    }
+    return {bundleId, version, buildNumber, available: true};
+  }
   if (matching.length !== 1) throw new Error(`Cannot uniquely locate ${version} (${buildNumber}).`);
   const build = matching[0];
   if (build.attributes?.processingState !== 'VALID' || build.attributes?.expired) {
@@ -100,7 +103,7 @@ async function main() {
     await mkdir(dirname(values.output), {recursive: true});
     await writeFile(values.output, `${JSON.stringify(result, null, 2)}\n`);
   }
-  console.log(values['check-available'] ? `Build number ${result.buildNumber} is available.` : `Verified TestFlight ${result.version} (${result.buildNumber}), build ${result.buildId}, locales: ${result.locales.join(', ')}.`);
+  console.log(values['check-available'] ? `Build ${result.version} (${result.buildNumber}) is available.` : `Verified TestFlight ${result.version} (${result.buildNumber}), build ${result.buildId}, locales: ${result.locales.join(', ')}.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
