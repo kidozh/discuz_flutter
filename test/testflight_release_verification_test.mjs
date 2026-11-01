@@ -11,7 +11,7 @@ function fixture({state = 'VALID', wrongVersion = false, ignoreWrites = false} =
     calls.push({path, method, body});
     if (path.startsWith('/apps?')) return {data: [{id: 'app', attributes: {primaryLocale: 'en-US'}}]};
     if (path.startsWith('/builds?')) return {
-      data: [{id: 'build', attributes: {processingState: typeof state === 'function' ? state() : state, expired: false}, relationships: {preReleaseVersion: {data: {id: 'version'}}}}],
+      data: [{id: 'build', attributes: {version: options.buildNumber, processingState: typeof state === 'function' ? state() : state, expired: false}, relationships: {preReleaseVersion: {data: {id: 'version'}}}}],
       included: [{type: 'preReleaseVersions', id: 'version', attributes: {version: wrongVersion ? '2.0.10' : options.version}}],
     };
     if (path === '/builds/build/betaBuildLocalizations') return {data: structuredClone(localizations)};
@@ -92,4 +92,33 @@ test('resolves a build version directly when the included relationship is missin
   };
   const result = await verifyRelease(wrapped, options);
   assert.equal(result.buildId, 'build');
+});
+test('rejects a lookalike build number even if the API returns it for a filter', async () => {
+  const {api, calls} = fixture();
+  const wrapped = async (path, method, body) => {
+    const response = await api(path, method, body);
+    if (path.startsWith('/builds?')) response.data[0].attributes.version = '1680';
+    return response;
+  };
+  await assert.rejects(verifyRelease(wrapped, options), /not visible/);
+  assert(calls.every(call => call.method === 'GET'));
+});
+test('corrects only an explicitly selected older build containing the misplaced notes', async () => {
+  const {api} = fixture();
+  const oldId = 'f0fbc4be-58b4-408d-9480-9b99ceec48eb';
+  const oldNotes = [{id: 'old-zh', attributes: {locale: 'zh-Hans', whatsNew: options.notes}}];
+  const wrapped = async (path, method = 'GET', body) => {
+    if (path === `/builds/${oldId}`) return {data: {attributes: {version: options.buildNumber}}};
+    if (path === `/builds/${oldId}/preReleaseVersion`) return {data: {attributes: {version: '2.0.10'}}};
+    if (path === `/builds/${oldId}/betaBuildLocalizations`) return {data: structuredClone(oldNotes)};
+    if (path === '/betaBuildLocalizations/old-zh' && method === 'PATCH') {
+      oldNotes[0].attributes.whatsNew = body.data.attributes.whatsNew;
+      return {};
+    }
+    return api(path, method, body);
+  };
+  const result = await verifyRelease(wrapped, {...options, repairBuildId: oldId});
+  assert.equal(result.repairedPreviousBuild.version, '2.0.10');
+  assert.match(oldNotes[0].attributes.whatsNew, /^2\.0\.10 \(168\)/);
+  assert.match(oldNotes[0].attributes.whatsNew, /历史构建/);
 });

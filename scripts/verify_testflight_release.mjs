@@ -19,7 +19,7 @@ export function createToken(issuer, keyId, privateKey) {
   return `${input}.${signer.sign({key: privateKey, dsaEncoding: 'ieee-p1363'}).toString('base64url')}`;
 }
 
-export async function verifyRelease(api, {bundleId, version, buildNumber, notes, checkAvailable = false}) {
+export async function verifyRelease(api, {bundleId, version, buildNumber, notes, checkAvailable = false, repairBuildId}) {
   if (!checkAvailable && !notes?.startsWith(`${version} (${buildNumber})\n\n`)) {
     throw new Error('TestFlight notes do not match the selected version and build.');
   }
@@ -37,7 +37,7 @@ export async function verifyRelease(api, {bundleId, version, buildNumber, notes,
     let train = builds.included?.find(item => item.type === 'preReleaseVersions' && item.id === id);
     if (!train) train = (await api(`/builds/${build.id}/preReleaseVersion`)).data;
     observed.push({buildId: build.id, buildNumber: build.attributes?.version, version: train?.attributes?.version});
-    if (train?.attributes?.version === version) matching.push(build);
+    if (train?.attributes?.version === version && build.attributes?.version === buildNumber) matching.push(build);
   }
   if (checkAvailable) {
     if (matching.length) {
@@ -83,8 +83,37 @@ export async function verifyRelease(api, {bundleId, version, buildNumber, notes,
       throw new Error(`TestFlight notes read-back failed for ${locale}.`);
     }
   }
+  let repairedPreviousBuild;
+  if (repairBuildId && repairBuildId !== build.id) {
+    if (!/^[0-9a-f-]{36}$/i.test(repairBuildId)) throw new Error('Invalid previous build identifier.');
+    const previous = (await api(`/builds/${repairBuildId}`)).data;
+    const previousTrain = (await api(`/builds/${repairBuildId}/preReleaseVersion`)).data;
+    const previousVersion = previousTrain.attributes?.version;
+    const previousNumber = previous.attributes?.version;
+    if (!previousVersion || !previousNumber) {
+      throw new Error('Cannot resolve the previous build version.');
+    }
+    const previousPath = `/builds/${repairBuildId}/betaBuildLocalizations`;
+    const previousNotes = (await api(previousPath)).data ?? [];
+    const incorrect = previousNotes.filter(item => item.attributes?.whatsNew === notes);
+    const corrected = `${previousVersion} (${previousNumber})\n\n此为历史构建。本次图片编辑、设置外观和论坛首页等改进的更新说明对应 ${version} (${buildNumber})，请在 TestFlight 中查看相应版本。`;
+    for (const item of incorrect) {
+      await api(`/betaBuildLocalizations/${item.id}`, 'PATCH', {data: {
+        type: 'betaBuildLocalizations', id: item.id, attributes: {whatsNew: corrected},
+      }});
+    }
+    const readBack = (await api(previousPath)).data ?? [];
+    for (const item of incorrect) {
+      if (!readBack.some(row => row.id === item.id && row.attributes?.whatsNew === corrected)) {
+        throw new Error('Historical build correction did not persist.');
+      }
+    }
+    repairedPreviousBuild = {buildId: repairBuildId, version: previousVersion, buildNumber: previousNumber,
+      locales: incorrect.map(item => item.attributes.locale), notes: incorrect.length ? corrected : undefined};
+  }
   return {bundleId, appId: app.id, buildId: build.id, version, buildNumber,
-    processingState: build.attributes.processingState, locales, notes, verifiedAt: new Date().toISOString()};
+    processingState: build.attributes.processingState, locales, notes, observedBuilds: observed,
+    repairedPreviousBuild, verifiedAt: new Date().toISOString()};
 }
 
 export async function waitForRelease(api, options, {attempts = 60, sleep = () => new Promise(resolve => setTimeout(resolve, 30000)), onPending = () => {}} = {}) {
@@ -106,6 +135,7 @@ async function main() {
     output: {type: 'string', default: 'build/ios/testflight-verification.json'},
     'check-available': {type: 'boolean', default: false},
     'wait-for-processing': {type: 'boolean', default: false},
+    'repair-build-id': {type: 'string', default: ''},
   }});
   if (!/^\d+\.\d+\.\d+$/.test(values.version ?? '') || !/^[1-9]\d*$/.test(values['build-number'] ?? '')) {
     throw new Error('Provide --version major.minor.patch and --build-number.');
@@ -124,6 +154,7 @@ async function main() {
     bundleId: values['bundle-id'], version: values.version, buildNumber: values['build-number'],
     notes: values['check-available'] ? undefined : (await readFile(values['notes-file'], 'utf8')).trim(),
     checkAvailable: values['check-available'],
+    repairBuildId: values['repair-build-id'],
   };
   const result = values['wait-for-processing'] && !values['check-available']
     ? await waitForRelease(api, options, {onPending: message => console.log(message)})

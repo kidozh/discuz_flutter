@@ -34,6 +34,10 @@ on:
         required: false
         default: false
         type: boolean
+      repair_build_id:
+        description: Optional older build whose notes were misplaced by an uploader
+        required: false
+        type: string
 
 concurrency:
   group: app-store-upload-${{ github.ref }}
@@ -283,7 +287,10 @@ jobs:
           api-key-id: ${{ vars.APPSTORE_API_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
           release-notes: ${{ steps.testflight_notes.outputs.notes }}
-          wait-for-processing: "true"
+          # The upstream uploader matches only CFBundleVersion and may select
+          # another version train. The following mandatory verifier waits for
+          # the exact version + build, applies these same notes, and reads back.
+          wait-for-processing: "false"
 
       - name: Verify TestFlight notes after Apple processing
         env:
@@ -344,10 +351,12 @@ jobs:
           APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
           APPSTORE_API_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
           APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+          REPAIR_BUILD_ID: ${{ inputs.repair_build_id }}
         run: |
           node scripts/verify_testflight_release.mjs --wait-for-processing \
             --version '${{ steps.version.outputs.build_name }}' \
-            --build-number '${{ steps.version.outputs.build_number }}'
+            --build-number '${{ steps.version.outputs.build_number }}' \
+            --repair-build-id "$REPAIR_BUILD_ID"
 
       - name: Preserve TestFlight verification receipt
         uses: actions/upload-artifact@v7

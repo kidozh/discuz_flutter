@@ -94,7 +94,7 @@ For every TestFlight build, update `docs/testflight-release-notes.txt` with the 
 python3 scripts/prepare_testflight_notes.py
 ```
 
-The App Store workflow validates the notes before building and passes them to TestFlight after Apple processes the build. It then runs `scripts/verify_testflight_release.mjs` to populate Chinese and fallback-locale notes, read them back for the exact build, and preserve a verification receipt. A manual notes override replaces the repository text. Local Xcode or Transporter uploads must also apply the same notes to the matching build's “What to Test” in App Store Connect and verify that they were saved.
+The App Store workflow validates the notes before building and passes the generated `release-notes` to the upload step. The mandatory `scripts/verify_testflight_release.mjs` step waits for Apple to process the exact version and build, then populates Chinese and fallback-locale notes, reads them back, and preserves a verification receipt. This avoids the upload action matching a build from another version train. The `metadata_only` workflow input retries notes for an existing upload. A manual notes override replaces the repository text. Local Xcode or Transporter uploads must also apply the same notes to the matching build's “What to Test” in App Store Connect and verify that they were saved.
 
 ## Terms and privacy
 
