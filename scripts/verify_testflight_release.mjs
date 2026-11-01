@@ -7,6 +7,8 @@ import {dirname} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {parseArgs} from 'node:util';
 
+export class BuildPendingError extends Error {}
+
 export function createToken(issuer, keyId, privateKey) {
   const now = Math.floor(Date.now() / 1000);
   const encode = value => Buffer.from(JSON.stringify(value)).toString('base64url');
@@ -28,10 +30,15 @@ export async function verifyRelease(api, {bundleId, version, buildNumber, notes,
     'filter[app]': app.id, 'filter[version]': buildNumber,
     'filter[preReleaseVersion.platform]': 'IOS', include: 'preReleaseVersion', limit: '200',
   })}`);
-  const matching = (builds.data ?? []).filter(build => {
+  const matching = [];
+  const observed = [];
+  for (const build of builds.data ?? []) {
     const id = build.relationships?.preReleaseVersion?.data?.id;
-    return builds.included?.some(item => item.type === 'preReleaseVersions' && item.id === id && item.attributes?.version === version);
-  });
+    let train = builds.included?.find(item => item.type === 'preReleaseVersions' && item.id === id);
+    if (!train) train = (await api(`/builds/${build.id}/preReleaseVersion`)).data;
+    observed.push({buildId: build.id, buildNumber: build.attributes?.version, version: train?.attributes?.version});
+    if (train?.attributes?.version === version) matching.push(build);
+  }
   if (checkAvailable) {
     if (matching.length) {
       const states = matching.map(build => `${build.id}: ${build.attributes?.processingState}`).join(', ');
@@ -39,8 +46,15 @@ export async function verifyRelease(api, {bundleId, version, buildNumber, notes,
     }
     return {bundleId, version, buildNumber, available: true};
   }
+  if (matching.length === 0) {
+    const versions = (builds.included ?? []).map(item => ({id: item.id, type: item.type, version: item.attributes?.version}));
+    throw new BuildPendingError(`Build ${version} (${buildNumber}) is not visible yet. Candidates: ${JSON.stringify(observed)}; versions: ${JSON.stringify(versions)}.`);
+  }
   if (matching.length !== 1) throw new Error(`Cannot uniquely locate ${version} (${buildNumber}).`);
   const build = matching[0];
+  if (build.attributes?.processingState === 'PROCESSING' && !build.attributes?.expired) {
+    throw new BuildPendingError(`Build ${version} (${buildNumber}) is still processing.`);
+  }
   if (build.attributes?.processingState !== 'VALID' || build.attributes?.expired) {
     throw new Error(`Build is not ready: ${build.attributes?.processingState}, expired=${build.attributes?.expired}.`);
   }
@@ -73,6 +87,17 @@ export async function verifyRelease(api, {bundleId, version, buildNumber, notes,
     processingState: build.attributes.processingState, locales, notes, verifiedAt: new Date().toISOString()};
 }
 
+export async function waitForRelease(api, options, {attempts = 60, sleep = () => new Promise(resolve => setTimeout(resolve, 30000)), onPending = () => {}} = {}) {
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    try { return await verifyRelease(api, options); }
+    catch (error) {
+      if (!(error instanceof BuildPendingError) || attempt === attempts - 1) throw error;
+      onPending(error.message);
+      await sleep();
+    }
+  }
+}
+
 async function main() {
   const {values} = parseArgs({options: {
     'bundle-id': {type: 'string', default: 'com.kidozh.discuz-flutter'},
@@ -80,6 +105,7 @@ async function main() {
     'notes-file': {type: 'string', default: 'build/ios/testflight-release-notes.txt'},
     output: {type: 'string', default: 'build/ios/testflight-verification.json'},
     'check-available': {type: 'boolean', default: false},
+    'wait-for-processing': {type: 'boolean', default: false},
   }});
   if (!/^\d+\.\d+\.\d+$/.test(values.version ?? '') || !/^[1-9]\d*$/.test(values['build-number'] ?? '')) {
     throw new Error('Provide --version major.minor.patch and --build-number.');
@@ -94,11 +120,14 @@ async function main() {
     if (!response.ok) throw new Error(`App Store Connect ${method} ${path.split('?')[0]} returned ${response.status}: ${(await response.text()).slice(0, 1000)}`);
     return response.status === 204 ? null : response.json();
   };
-  const result = await verifyRelease(api, {
+  const options = {
     bundleId: values['bundle-id'], version: values.version, buildNumber: values['build-number'],
     notes: values['check-available'] ? undefined : (await readFile(values['notes-file'], 'utf8')).trim(),
     checkAvailable: values['check-available'],
-  });
+  };
+  const result = values['wait-for-processing'] && !values['check-available']
+    ? await waitForRelease(api, options, {onPending: message => console.log(message)})
+    : await verifyRelease(api, options);
   if (!values['check-available']) {
     await mkdir(dirname(values.output), {recursive: true});
     await writeFile(values.output, `${JSON.stringify(result, null, 2)}\n`);

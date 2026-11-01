@@ -1,7 +1,7 @@
 import {generateKeyPairSync, verify} from 'node:crypto';
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {createToken, verifyRelease} from '../scripts/verify_testflight_release.mjs';
+import {createToken, verifyRelease, waitForRelease} from '../scripts/verify_testflight_release.mjs';
 
 const options = {bundleId: 'com.example.app', version: '2.0.11', buildNumber: '168', notes: '2.0.11 (168)\n\n图片编辑改进。'};
 function fixture({state = 'VALID', wrongVersion = false, ignoreWrites = false} = {}) {
@@ -11,7 +11,7 @@ function fixture({state = 'VALID', wrongVersion = false, ignoreWrites = false} =
     calls.push({path, method, body});
     if (path.startsWith('/apps?')) return {data: [{id: 'app', attributes: {primaryLocale: 'en-US'}}]};
     if (path.startsWith('/builds?')) return {
-      data: [{id: 'build', attributes: {processingState: state, expired: false}, relationships: {preReleaseVersion: {data: {id: 'version'}}}}],
+      data: [{id: 'build', attributes: {processingState: typeof state === 'function' ? state() : state, expired: false}, relationships: {preReleaseVersion: {data: {id: 'version'}}}}],
       included: [{type: 'preReleaseVersions', id: 'version', attributes: {version: wrongVersion ? '2.0.10' : options.version}}],
     };
     if (path === '/builds/build/betaBuildLocalizations') return {data: structuredClone(localizations)};
@@ -68,4 +68,28 @@ test('preflight allows the same build number in an older version train', async (
   const result = await verifyRelease(api, {...options, checkAvailable: true});
   assert.equal(result.available, true);
   assert(calls.every(call => call.method === 'GET'));
+});
+test('waits for the exact target build to finish processing before writing notes', async () => {
+  let checks = 0;
+  let sleeps = 0;
+  const {api} = fixture({state: () => ++checks === 1 ? 'PROCESSING' : 'VALID'});
+  const result = await waitForRelease(api, options, {attempts: 2, sleep: async () => { sleeps++; }});
+  assert.equal(result.processingState, 'VALID');
+  assert.equal(sleeps, 1);
+});
+test('wait polling does not retry a terminal invalid build', async () => {
+  let sleeps = 0;
+  await assert.rejects(waitForRelease(fixture({state: 'INVALID'}).api, options, {attempts: 2, sleep: async () => { sleeps++; }}));
+  assert.equal(sleeps, 0);
+});
+test('resolves a build version directly when the included relationship is missing', async () => {
+  const {api} = fixture();
+  const wrapped = async (path, method, body) => {
+    if (path === '/builds/build/preReleaseVersion') return {data: {attributes: {version: options.version}}};
+    const response = await api(path, method, body);
+    if (path.startsWith('/builds?')) delete response.included;
+    return response;
+  };
+  const result = await verifyRelease(wrapped, options);
+  assert.equal(result.buildId, 'build');
 });

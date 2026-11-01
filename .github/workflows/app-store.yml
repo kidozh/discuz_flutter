@@ -29,6 +29,11 @@ on:
         description: Optional notes for this build; replaces repository notes
         required: false
         type: string
+      metadata_only:
+        description: Verify or repair notes for an already uploaded build
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: app-store-upload-${{ github.ref }}
@@ -45,6 +50,7 @@ env:
 
 jobs:
   upload:
+    if: ${{ !inputs.metadata_only }}
     name: Build, sign, and upload iOS
     runs-on: ${{ inputs.runner || 'macos-26' }}
     timeout-minutes: 90
@@ -286,6 +292,60 @@ jobs:
           APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
         run: |
           node scripts/verify_testflight_release.mjs \
+            --wait-for-processing \
+            --version '${{ steps.version.outputs.build_name }}' \
+            --build-number '${{ steps.version.outputs.build_number }}'
+
+      - name: Preserve TestFlight verification receipt
+        uses: actions/upload-artifact@v7
+        with:
+          name: testflight-verification-${{ steps.version.outputs.build_number }}
+          path: build/ios/testflight-verification.json
+          if-no-files-found: error
+
+  verify_existing:
+    name: Verify existing TestFlight build
+    if: ${{ inputs.metadata_only }}
+    runs-on: ${{ inputs.runner || 'macos-26' }}
+    timeout-minutes: 40
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Determine release version
+        id: version
+        env:
+          REQUESTED_BUILD_NUMBER: ${{ inputs.build_number }}
+        shell: bash
+        run: |
+          version=$(awk '$1 == "version:" { print $2; exit }' pubspec.yaml)
+          if [[ ! "$version" =~ ^([0-9]+\.[0-9]+\.[0-9]+)\+([1-9][0-9]*)$ ]]; then
+            echo "::error::Invalid pubspec version."
+            exit 1
+          fi
+          build_name="${BASH_REMATCH[1]}"
+          source_build="${BASH_REMATCH[2]}"
+          build_number="${REQUESTED_BUILD_NUMBER:-$source_build}"
+          [[ "$build_number" =~ ^[1-9][0-9]*$ ]]
+          echo "build_name=$build_name" >> "$GITHUB_OUTPUT"
+          echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
+
+      - name: Validate TestFlight release notes
+        env:
+          CUSTOM_RELEASE_NOTES: ${{ inputs.release_notes }}
+          BUILD_NAME: ${{ steps.version.outputs.build_name }}
+          BUILD_NUMBER: ${{ steps.version.outputs.build_number }}
+        run: |
+          python3 scripts/prepare_testflight_notes.py --version "$BUILD_NAME" --build-number "$BUILD_NUMBER"
+          node --test test/testflight_release_verification_test.mjs
+
+      - name: Verify TestFlight notes after Apple processing
+        env:
+          APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
+          APPSTORE_API_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
+          APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+        run: |
+          node scripts/verify_testflight_release.mjs --wait-for-processing \
             --version '${{ steps.version.outputs.build_name }}' \
             --build-number '${{ steps.version.outputs.build_number }}'
 
