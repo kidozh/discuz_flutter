@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
+import 'package:discuz_flutter/utility/material_surface_theme.dart';
 import 'package:discuz_flutter/widget/reading_glass_sliver_card.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,7 +27,7 @@ void main() {
         testWidgets(
           'reading cards stay distinct and legible: $style $brightness M3=$useMaterial3',
           (tester) async {
-            final theme = brightness == Brightness.light
+            var theme = brightness == Brightness.light
                 ? FlexThemeData.light(
                     scheme: FlexScheme.blueWhale,
                     useMaterial3: useMaterial3,
@@ -35,6 +36,9 @@ void main() {
                     scheme: FlexScheme.blueWhale,
                     useMaterial3: useMaterial3,
                   );
+            if (style == AppVisualStyle.material) {
+              theme = withNeutralMaterialSurfaces(theme);
+            }
             await tester.pumpWidget(
               PlatformProvider(
                 style: style,

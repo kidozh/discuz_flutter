@@ -7,24 +7,24 @@ part of 'SmmsUploadImageResult.dart';
 // **************************************************************************
 
 SmmsUploadImageResult _$SmmsUploadImageResultFromJson(
-        Map<String, dynamic> json) =>
-    SmmsUploadImageResult(
-      success: json['success'] as bool,
-      code: json['code'] as String,
-      message: json['message'] as String,
-      data: SmmsUploadImageData.fromJson(json['data'] as Map<String, dynamic>),
-      requestId: json['RequestId'] as String,
-    );
+  Map<String, dynamic> json,
+) => SmmsUploadImageResult(
+  success: json['success'] as bool,
+  code: json['code'] as String,
+  message: json['message'] as String,
+  data: SmmsUploadImageData.fromJson(json['data'] as Map<String, dynamic>),
+  requestId: json['RequestId'] as String,
+);
 
 Map<String, dynamic> _$SmmsUploadImageResultToJson(
-        SmmsUploadImageResult instance) =>
-    <String, dynamic>{
-      'success': instance.success,
-      'code': instance.code,
-      'message': instance.message,
-      'data': instance.data.toJson(),
-      'RequestId': instance.requestId,
-    };
+  SmmsUploadImageResult instance,
+) => <String, dynamic>{
+  'success': instance.success,
+  'code': instance.code,
+  'message': instance.message,
+  'data': instance.data.toJson(),
+  'RequestId': instance.requestId,
+};
 
 SmmsUploadImageData _$SmmsUploadImageDataFromJson(Map<String, dynamic> json) =>
     SmmsUploadImageData(
@@ -42,17 +42,17 @@ SmmsUploadImageData _$SmmsUploadImageDataFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$SmmsUploadImageDataToJson(
-        SmmsUploadImageData instance) =>
-    <String, dynamic>{
-      'file_id': instance.fileId,
-      'width': instance.width,
-      'height': instance.height,
-      'filename': instance.filename,
-      'storename': instance.storename,
-      'size': instance.size,
-      'path': instance.path,
-      'hash': instance.hash,
-      'url': instance.url,
-      'delete': instance.delete,
-      'page': instance.page,
-    };
+  SmmsUploadImageData instance,
+) => <String, dynamic>{
+  'file_id': instance.fileId,
+  'width': instance.width,
+  'height': instance.height,
+  'filename': instance.filename,
+  'storename': instance.storename,
+  'size': instance.size,
+  'path': instance.path,
+  'hash': instance.hash,
+  'url': instance.url,
+  'delete': instance.delete,
+  'page': instance.page,
+};

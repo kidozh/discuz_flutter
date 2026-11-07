@@ -8221,6 +8221,36 @@ class S {
     );
   }
 
+  /// `Interface display`
+  String get forumDisplaySettingsTitle {
+    return Intl.message(
+      'Interface display',
+      name: 'forumDisplaySettingsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Merge home navigation and categories`
+  String get mergeHomeNavigation {
+    return Intl.message(
+      'Merge home navigation and categories',
+      name: 'mergeHomeNavigation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Move category switching into the home title. Tap the title to choose a category. Off by default.`
+  String get mergeHomeNavigationDescription {
+    return Intl.message(
+      'Move category switching into the home title. Tap the title to choose a category. Off by default.',
+      name: 'mergeHomeNavigationDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Translate with Google`
   String get googleTranslationAction {
     return Intl.message(

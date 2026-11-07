@@ -7,17 +7,15 @@ part of 'SupportDiscuzListResult.dart';
 // **************************************************************************
 
 SupportDiscuzListResult _$SupportDiscuzListResultFromJson(
-        Map<String, dynamic> json) =>
-    SupportDiscuzListResult()
-      ..list = (json['list'] as List<dynamic>)
-          .map((e) => SupportDiscuzSite.fromJson(e as Map<String, dynamic>))
-          .toList();
+  Map<String, dynamic> json,
+) => SupportDiscuzListResult()
+  ..list = (json['list'] as List<dynamic>)
+      .map((e) => SupportDiscuzSite.fromJson(e as Map<String, dynamic>))
+      .toList();
 
 Map<String, dynamic> _$SupportDiscuzListResultToJson(
-        SupportDiscuzListResult instance) =>
-    <String, dynamic>{
-      'list': instance.list,
-    };
+  SupportDiscuzListResult instance,
+) => <String, dynamic>{'list': instance.list};
 
 SupportDiscuzSite _$SupportDiscuzSiteFromJson(Map<String, dynamic> json) =>
     SupportDiscuzSite()

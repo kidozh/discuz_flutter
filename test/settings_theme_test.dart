@@ -4,11 +4,13 @@ import 'dart:ui' as ui;
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/ChoosePlatformPage.dart';
 import 'package:discuz_flutter/page/SettingPage.dart';
+import 'package:discuz_flutter/page/forum_display_settings_page.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
+import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -36,7 +38,7 @@ void main() {
     AppVisualStyle.cupertino,
     AppVisualStyle.liquidGlass,
   ]) {
-    testWidgets('open settings subpage follows manual theme changes: $style', (
+    testWidgets('display settings persist and follow theme: $style', (
       tester,
     ) async {
       SharedPreferences.setMockInitialValues({});
@@ -67,6 +69,7 @@ void main() {
       );
       final preference = ThemeNotifierProvider(platformName: style.preference)
         ..setBrightness(Brightness.light);
+      final userPreferences = UserPreferenceNotifierProvider();
       final navigator = GlobalKey<NavigatorState>();
       final capture = GlobalKey();
       final light = ThemeData.from(
@@ -82,9 +85,7 @@ void main() {
         MultiProvider(
           providers: [
             ChangeNotifierProvider.value(value: preference),
-            ChangeNotifierProvider(
-              create: (_) => UserPreferenceNotifierProvider(),
-            ),
+            ChangeNotifierProvider.value(value: userPreferences),
             ChangeNotifierProvider(
               create: (_) => TypeSettingNotifierProvider(),
             ),
@@ -124,6 +125,68 @@ void main() {
       );
       await tester.pumpAndSettle();
       final strings = S.of(tester.element(find.byType(SettingPage)));
+      expect(find.text(strings.mergeHomeNavigation), findsNothing);
+      expect(find.text(strings.showForumName), findsNothing);
+      expect(find.text(strings.showAccountInfo), findsNothing);
+      expect(find.text(strings.showThreadStats), findsNothing);
+      expect(find.text(strings.showForumCarousel), findsNothing);
+      expect(find.text(strings.compactForumCarousel), findsNothing);
+      await tester.scrollUntilVisible(
+        find.text(strings.forumDisplaySettingsTitle),
+        250,
+      );
+      await tester.tap(find.text(strings.forumDisplaySettingsTitle));
+      await tester.pumpAndSettle();
+      expect(find.byType(ForumDisplaySettingsPage), findsOneWidget);
+      expect(userPreferences.forumDisplay.mergeHomeNavigation, isFalse);
+      expect(find.byType(PlatformSwitch), findsNWidgets(6));
+      await tester.tap(find.text(strings.mergeHomeNavigation));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(strings.showForumName));
+      await tester.pumpAndSettle();
+      expect(userPreferences.forumDisplay.mergeHomeNavigation, isTrue);
+      expect(userPreferences.forumDisplay.showForumName, isFalse);
+      final saved = await UserPreferencesUtils.getForumDisplayPreference();
+      expect(saved.mergeHomeNavigation, isTrue);
+      expect(saved.showForumName, isFalse);
+      expect(saved.showAccountInfo, isFalse);
+      expect(saved.showThreadStats, isTrue);
+      preference.setBrightness(Brightness.dark);
+      await tester.pumpAndSettle();
+      expect(
+        _textColor(tester, strings.mergeHomeNavigation),
+        dark.colorScheme.onSurface,
+      );
+      tester.binding.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(
+        tester.binding.platformDispatcher.clearTextScaleFactorTestValue,
+      );
+      await tester.pumpAndSettle();
+      for (final label in [
+        strings.mergeHomeNavigation,
+        strings.showForumName,
+        strings.showAccountInfo,
+        strings.showThreadStats,
+        strings.showForumCarousel,
+        strings.compactForumCarousel,
+      ]) {
+        await tester.scrollUntilVisible(find.text(label), 200);
+        final text = tester.renderObject<RenderParagraph>(
+          find
+              .descendant(of: find.text(label), matching: find.byType(RichText))
+              .first,
+        );
+        expect(text.didExceedMaxLines, isFalse, reason: label);
+      }
+      tester.binding.platformDispatcher.clearTextScaleFactorTestValue();
+      await tester.scrollUntilVisible(
+        find.text(strings.mergeHomeNavigation),
+        -200,
+      );
+      await tester.pumpAndSettle();
+      preference.setBrightness(Brightness.light);
+      navigator.currentState!.pop();
+      await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
         find.text(strings.appearanceOptimizedPlatform),
         250,

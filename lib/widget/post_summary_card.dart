@@ -60,10 +60,12 @@ class _PostSummaryCardState extends State<PostSummaryCard>
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final light = colors.brightness == Brightness.light;
-    final fill = Color.alphaBlend(
-      colors.primary.withValues(alpha: light ? 0.035 : 0.06),
-      colors.surfaceContainerLow,
-    );
+    final fill = isMaterial(context)
+        ? colors.surfaceContainerLow
+        : Color.alphaBlend(
+            colors.primary.withValues(alpha: light ? 0.035 : 0.06),
+            colors.surfaceContainerLow,
+          );
     return RepaintBoundary(
       child: CustomPaint(
         foregroundPainter: _SummaryBorder(

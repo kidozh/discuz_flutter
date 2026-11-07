@@ -11,6 +11,7 @@ import 'package:discuz_flutter/entity/Draft.dart';
 import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
 import 'package:discuz_flutter/entity/ImageAttachment.dart';
+import 'package:discuz_flutter/entity/PrivateMessageCache.dart';
 import 'package:discuz_flutter/entity/Smiley.dart';
 import 'package:discuz_flutter/entity/TrustHost.dart';
 import 'package:discuz_flutter/entity/User.dart';
@@ -28,6 +29,7 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(FavoriteForumInDatabaseAdapter());
     registerAdapter(FavoriteThreadInDatabaseAdapter());
     registerAdapter(ImageAttachmentAdapter());
+    registerAdapter(PrivateMessageCacheAdapter());
     registerAdapter(SmileyAdapter());
     registerAdapter(TrustHostAdapter());
     registerAdapter(UserAdapter());
@@ -47,6 +49,7 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(FavoriteForumInDatabaseAdapter());
     registerAdapter(FavoriteThreadInDatabaseAdapter());
     registerAdapter(ImageAttachmentAdapter());
+    registerAdapter(PrivateMessageCacheAdapter());
     registerAdapter(SmileyAdapter());
     registerAdapter(TrustHostAdapter());
     registerAdapter(UserAdapter());

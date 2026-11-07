@@ -9,6 +9,7 @@ import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
 import 'package:discuz_flutter/utility/OnDeviceAiService.dart';
 import 'package:discuz_flutter/utility/ToastUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
+import 'package:discuz_flutter/utility/material_surface_theme.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +22,12 @@ class ExclusiveDiscuzApp extends StatefulWidget {
   final Discuz discuz;
   final GlobalKey<NavigatorState>? navigatorKey;
 
-  const ExclusiveDiscuzApp(this.initialPlatformName, this.discuz,
-      {super.key, this.navigatorKey});
+  const ExclusiveDiscuzApp(
+    this.initialPlatformName,
+    this.discuz, {
+    super.key,
+    this.navigatorKey,
+  });
 
   @override
   State<ExclusiveDiscuzApp> createState() => _ExclusiveDiscuzAppState();
@@ -107,7 +112,7 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
       builder: (context, themeColorEntity, _) {
         // deal with theme data
         final customThemeColor = themeColorEntity.customThemeColor;
-        final materialThemeDataLight = FlexThemeData.light(
+        var materialThemeDataLight = FlexThemeData.light(
           scheme: customThemeColor == null ? themeColorEntity.themeColor : null,
           colorScheme: customThemeColor == null
               ? null
@@ -118,7 +123,7 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
                 ),
           useMaterial3: themeColorEntity.useMaterial3,
         );
-        final materialThemeDataDark = FlexThemeData.dark(
+        var materialThemeDataDark = FlexThemeData.dark(
           scheme: customThemeColor == null ? themeColorEntity.themeColor : null,
           colorScheme: customThemeColor == null
               ? null
@@ -129,6 +134,14 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
                 ),
           useMaterial3: themeColorEntity.useMaterial3,
         );
+        if (themeColorEntity.visualStyle.effective == AppVisualStyle.material) {
+          materialThemeDataLight = withNeutralMaterialSurfaces(
+            materialThemeDataLight,
+          );
+          materialThemeDataDark = withNeutralMaterialSurfaces(
+            materialThemeDataDark,
+          );
+        }
         const darkDefaultCupertinoTheme = CupertinoThemeData(
           brightness: Brightness.dark,
         );

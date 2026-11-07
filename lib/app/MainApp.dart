@@ -45,6 +45,7 @@ import 'package:upgrader/upgrader.dart';
 import '../provider/SelectedTidNotifierProvider.dart';
 import '../screen/TwoPaneEmptyScreen.dart';
 import '../utility/CustomizeColor.dart';
+import '../utility/material_surface_theme.dart';
 import '../utility/PushServiceUtils.dart';
 import '../utility/TwoPaneScaffold.dart';
 import '../utility/TwoPaneUtils.dart';
@@ -278,7 +279,7 @@ class _MyAppState extends State<MyApp> {
                 brightness: Brightness.dark,
                 dynamicSchemeVariant: themeColorEntity.dynamicSchemeVariant,
               );
-        final materialThemeDataLight = FlexThemeData.light(
+        var materialThemeDataLight = FlexThemeData.light(
           scheme: customThemeColor == null ? themeColorEntity.themeColor : null,
           colorScheme: lightColorScheme,
           pageTransitionsTheme: Platform.isIOS
@@ -293,7 +294,7 @@ class _MyAppState extends State<MyApp> {
           textTheme: typography.black.useSystemChineseFont(Brightness.light),
         );
 
-        final materialThemeDataDark = FlexThemeData.dark(
+        var materialThemeDataDark = FlexThemeData.dark(
           scheme: customThemeColor == null ? themeColorEntity.themeColor : null,
           colorScheme: darkColorScheme,
           pageTransitionsTheme: Platform.isIOS
@@ -307,6 +308,15 @@ class _MyAppState extends State<MyApp> {
           useMaterial3: themeColorEntity.useMaterial3,
           textTheme: typography.white.useSystemChineseFont(Brightness.dark),
         );
+
+        if (themeColorEntity.visualStyle.effective == AppVisualStyle.material) {
+          materialThemeDataLight = withNeutralMaterialSurfaces(
+            materialThemeDataLight,
+          );
+          materialThemeDataDark = withNeutralMaterialSurfaces(
+            materialThemeDataDark,
+          );
+        }
 
         // final materialThemeDataDark = ThemeData(
         //   colorScheme: ColorScheme.fromSeed(
@@ -855,6 +865,12 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             onTap: selectBottomDestination,
           ),
           appBar: PlatformAppBar(
+            // Constrain the interactive title between the toolbar actions.
+            // The native toolbar's title overlay otherwise spans the full row.
+            liquidGlassUseNativeToolbar:
+                !(selectedDiscuz != null &&
+                    _bottomNavigationbarIndex == 0 &&
+                    display.mergeHomeNavigation),
             liquidGlassTintColor:
                 Theme.of(context).textTheme.titleSmall?.color ??
                 CupertinoColors.label.resolveFrom(context),
@@ -862,6 +878,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               discuz: selectedDiscuz,
               user: user,
               preferences: display,
+              dashboard: _bottomNavigationbarIndex == 0,
             ),
             trailingActions: [
               if (liquidGlass && mainMenuButton != null) mainMenuButton,

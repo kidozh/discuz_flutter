@@ -12,11 +12,8 @@ SteamGameDataResult _$SteamGameDataResultFromJson(Map<String, dynamic> json) =>
       ..data = SteamGameData.fromJson(json['data'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$SteamGameDataResultToJson(
-        SteamGameDataResult instance) =>
-    <String, dynamic>{
-      'success': instance.success,
-      'data': instance.data,
-    };
+  SteamGameDataResult instance,
+) => <String, dynamic>{'success': instance.success, 'data': instance.data};
 
 SteamGameData _$SteamGameDataFromJson(Map<String, dynamic> json) =>
     SteamGameData()
@@ -24,7 +21,8 @@ SteamGameData _$SteamGameDataFromJson(Map<String, dynamic> json) =>
       ..name = json['name'] as String
       ..steam_appid = (json['steam_appid'] as num).toInt()
       ..is_free = json['is_free'] as bool? ?? false
-      ..dlc_app_list = (json['dlc'] as List<dynamic>?)
+      ..dlc_app_list =
+          (json['dlc'] as List<dynamic>?)
               ?.map((e) => (e as num).toInt())
               .toList() ??
           []
@@ -36,32 +34,41 @@ SteamGameData _$SteamGameDataFromJson(Map<String, dynamic> json) =>
       ..capsule_image = json['capsule_image'] as String
       ..capsule_imagev5 = json['capsule_imagev5'] as String
       ..legal_notice = json['legal_notice'] as String? ?? ''
-      ..developers =
-          (json['developers'] as List<dynamic>).map((e) => e as String).toList()
-      ..publishers =
-          (json['publishers'] as List<dynamic>).map((e) => e as String).toList()
+      ..developers = (json['developers'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList()
+      ..publishers = (json['publishers'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList()
       ..price_overview = json['price_overview'] == null
           ? PriceOverview()
           : PriceOverview.fromJson(
-              json['price_overview'] as Map<String, dynamic>)
-      ..platforms =
-          AvailablePlatform.fromJson(json['platforms'] as Map<String, dynamic>)
-      ..categories = (json['categories'] as List<dynamic>?)
+              json['price_overview'] as Map<String, dynamic>,
+            )
+      ..platforms = AvailablePlatform.fromJson(
+        json['platforms'] as Map<String, dynamic>,
+      )
+      ..categories =
+          (json['categories'] as List<dynamic>?)
               ?.map((e) => GameCategory.fromJson(e as Map<String, dynamic>))
               .toList() ??
           []
-      ..screenshots = (json['screenshots'] as List<dynamic>?)
+      ..screenshots =
+          (json['screenshots'] as List<dynamic>?)
               ?.map((e) => GameScreenshot.fromJson(e as Map<String, dynamic>))
               .toList() ??
           []
-      ..movies = (json['movies'] as List<dynamic>?)
+      ..movies =
+          (json['movies'] as List<dynamic>?)
               ?.map((e) => GameMovie.fromJson(e as Map<String, dynamic>))
               .toList() ??
           []
-      ..release_date =
-          GameReleaseDate.fromJson(json['release_date'] as Map<String, dynamic>)
+      ..release_date = GameReleaseDate.fromJson(
+        json['release_date'] as Map<String, dynamic>,
+      )
       ..support_info = GameSupportInformation.fromJson(
-          json['support_info'] as Map<String, dynamic>)
+        json['support_info'] as Map<String, dynamic>,
+      )
       ..background = json['background'] as String
       ..background_raw = json['background_raw'] as String;
 
@@ -130,10 +137,7 @@ GameCategory _$GameCategoryFromJson(Map<String, dynamic> json) => GameCategory()
   ..description = json['description'] as String;
 
 Map<String, dynamic> _$GameCategoryToJson(GameCategory instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'description': instance.description,
-    };
+    <String, dynamic>{'id': instance.id, 'description': instance.description};
 
 GameScreenshot _$GameScreenshotFromJson(Map<String, dynamic> json) =>
     GameScreenshot()
@@ -161,13 +165,13 @@ GameMovie _$GameMovieFromJson(Map<String, dynamic> json) => GameMovie()
   ..highlight = json['highlight'] as bool;
 
 Map<String, dynamic> _$GameMovieToJson(GameMovie instance) => <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'thumbnail': instance.thumbnail,
-      'webm': instance.webm,
-      'mp4': instance.mp4,
-      'highlight': instance.highlight,
-    };
+  'id': instance.id,
+  'name': instance.name,
+  'thumbnail': instance.thumbnail,
+  'webm': instance.webm,
+  'mp4': instance.mp4,
+  'highlight': instance.highlight,
+};
 
 GameMoviesFormat _$GameMoviesFormatFromJson(Map<String, dynamic> json) =>
     GameMoviesFormat()
@@ -192,14 +196,11 @@ Map<String, dynamic> _$GameReleaseDateToJson(GameReleaseDate instance) =>
     };
 
 GameSupportInformation _$GameSupportInformationFromJson(
-        Map<String, dynamic> json) =>
-    GameSupportInformation()
-      ..url = json['url'] as String
-      ..email = json['email'] as String;
+  Map<String, dynamic> json,
+) => GameSupportInformation()
+  ..url = json['url'] as String
+  ..email = json['email'] as String;
 
 Map<String, dynamic> _$GameSupportInformationToJson(
-        GameSupportInformation instance) =>
-    <String, dynamic>{
-      'url': instance.url,
-      'email': instance.email,
-    };
+  GameSupportInformation instance,
+) => <String, dynamic>{'url': instance.url, 'email': instance.email};

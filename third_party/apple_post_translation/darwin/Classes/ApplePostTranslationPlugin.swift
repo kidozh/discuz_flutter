@@ -35,7 +35,7 @@ public class ApplePostTranslationPlugin: NSObject, FlutterPlugin {
             result(FlutterError(code: "translation_unavailable", message: "Update the system to use Apple Translation.", details: nil))
             return
         }
-        Task { @MainActor in
+        Task { @MainActor [self] in
             if call.method == "languages" {
                 let availability: LanguageAvailability
                 if #available(iOS 26.4, macOS 26.4, *) {

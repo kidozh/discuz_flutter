@@ -1,3 +1,5 @@
+require_relative '../scripts/apple_plugin_compatibility'
+
 platform :osx, '15.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
@@ -46,32 +48,8 @@ post_install do |installer|
     flutter_additional_macos_build_settings(target)
   end
 
-  # Match the iOS compatibility patch for new Xcode 27 transcript cases.
-  foundation_models_source = File.join(
-    __dir__, 'Flutter', 'ephemeral', '.symlinks', 'plugins',
-    'foundation_models_framework', 'macos',
-    'Classes', 'FoundationModelsFrameworkPlugin.swift'
+  ApplePluginCompatibility.apply(
+    installer,
+    sdk_version: `xcrun --sdk macosx --show-sdk-version`.strip
   )
-  if File.exist?(foundation_models_source)
-    source = File.read(foundation_models_source)
-    entry_case = /(?<body>            case \.response\(let response\):\n                role = "response"\n                segmentsText = response\.segments\.map\(serializeSegment\)\n                content = segmentsText\.joined\(separator: "\\n"\)\n)(?<end>            \})/
-    segment_case = /(?<body>        case \.structure\(let structuredSegment\):\n            return String\(describing: structuredSegment\.content\)\n)(?<end>        \})/
-    changed = false
-    if source.match?(entry_case)
-      source.sub!(entry_case) do
-        "#{$~[:body]}            @unknown default:\n                role = \"unknown\"\n                let description = String(describing: entry)\n                segmentsText = [description]\n                content = description\n#{$~[:end]}"
-      end
-      changed = true
-    end
-    if source.match?(segment_case)
-      source.sub!(segment_case) do
-        "#{$~[:body]}        @unknown default:\n            return String(describing: segment)\n#{$~[:end]}"
-      end
-      changed = true
-    end
-    if changed
-      File.write(foundation_models_source, source)
-      Pod::UI.puts 'Patched Foundation Models transcript cases for Xcode 27.'
-    end
-  end
 end

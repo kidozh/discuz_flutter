@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../utility/app_motion.dart';
+
 /// Keep the artwork clear, with a shaded footer for readable promotion text.
 class ThreadCarouselCard extends StatelessWidget {
   const ThreadCarouselCard({
@@ -40,6 +42,15 @@ class ThreadCarouselCard extends StatelessWidget {
                 image: image,
                 fit: BoxFit.cover,
                 excludeFromSemantics: true,
+                frameBuilder: (context, child, frame, synchronous) =>
+                    synchronous
+                    ? child
+                    : AnimatedOpacity(
+                        opacity: frame == null ? 0 : 1,
+                        duration: AppMotion.duration(context, 160),
+                        curve: Curves.easeOut,
+                        child: child,
+                      ),
                 errorBuilder: (context, error, stackTrace) =>
                     const SizedBox.shrink(),
               ),

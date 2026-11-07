@@ -757,6 +757,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumBuyThread": MessageLookupByLibrary.simpleMessage("购买主题"),
     "forumConfirm": MessageLookupByLibrary.simpleMessage("确认"),
     "forumConfirmPurchase": MessageLookupByLibrary.simpleMessage("确认购买"),
+    "forumDisplaySettingsTitle": MessageLookupByLibrary.simpleMessage("界面显示"),
     "forumDisplayTitle": MessageLookupByLibrary.simpleMessage("显示板块"),
     "forumDisrecommend": MessageLookupByLibrary.simpleMessage("不推荐"),
     "forumEmpty": MessageLookupByLibrary.simpleMessage("暂无内容"),
@@ -934,6 +935,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "me": MessageLookupByLibrary.simpleMessage("我"),
     "menuDrawerTitle": MessageLookupByLibrary.simpleMessage("菜单"),
     "menuIconTooltip": MessageLookupByLibrary.simpleMessage("菜单"),
+    "mergeHomeNavigation": MessageLookupByLibrary.simpleMessage("合并首页导航栏和分类栏"),
+    "mergeHomeNavigationDescription": MessageLookupByLibrary.simpleMessage(
+      "将分类切换移到首页标题中，点击标题选择分类。默认关闭。",
+    ),
     "minute": MessageLookupByLibrary.simpleMessage("分"),
     "minuteAgo": m41,
     "minuteLater": m42,

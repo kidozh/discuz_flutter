@@ -1264,6 +1264,9 @@
     }
   },
   "compactForumCarousel": "Compact promoted thread carousel",
+  "forumDisplaySettingsTitle": "Interface display",
+  "mergeHomeNavigation": "Merge home navigation and categories",
+  "mergeHomeNavigationDescription": "Move category switching into the home title. Tap the title to choose a category. Off by default.",
   "googleTranslationAction": "Translate with Google",
   "googleTranslationAttribution": "Automatic translation powered by Google Translate",
   "googleTranslationInfoTitle": "About Google Translate",

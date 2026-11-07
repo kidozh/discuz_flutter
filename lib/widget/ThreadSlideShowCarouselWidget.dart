@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
-import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:html/parser.dart';
 import 'package:provider/provider.dart';
 
@@ -15,42 +14,32 @@ import '../utility/NetworkUtils.dart';
 import 'thread_carousel_card.dart';
 import 'thread_carousel_layout.dart';
 
-class ThreadSlideShowCarouselWidget extends StatelessWidget {
+class ThreadSlideShowCarouselWidget extends StatefulWidget {
   final ValueChanged<int>? onSelectTid;
+  final Future<List<KeylolCarouselItem>> Function()? loadItems;
+  final ImageProvider Function(String)? imageProviderBuilder;
 
-  ThreadSlideShowCarouselWidget({super.key, this.onSelectTid});
+  const ThreadSlideShowCarouselWidget({
+    super.key,
+    this.onSelectTid,
+    this.loadItems,
+    this.imageProviderBuilder,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    return ThreadSlideShowCarouselStatefulWidget(onSelectTid: this.onSelectTid);
-  }
+  State<ThreadSlideShowCarouselWidget> createState() =>
+      _ThreadSlideShowCarouselState();
 }
 
-class ThreadSlideShowCarouselStatefulWidget extends StatefulWidget {
-  final ValueChanged<int>? onSelectTid;
-
-  ThreadSlideShowCarouselStatefulWidget({super.key, this.onSelectTid});
-
-  @override
-  State<StatefulWidget> createState() {
-    return ThreadSlideShowCarouselState(onSelectTid: this.onSelectTid);
-  }
-}
-
-class ThreadSlideShowCarouselState
-    extends State<ThreadSlideShowCarouselStatefulWidget> {
-  final ValueChanged<int>? onSelectTid;
-
-  ThreadSlideShowCarouselState({this.onSelectTid});
-
+class _ThreadSlideShowCarouselState
+    extends State<ThreadSlideShowCarouselWidget> {
   bool isLoading = true;
+  bool _imagesReady = false;
   List<KeylolCarouselItem> keylolCarouselItemList = [];
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    //  start to fetch it
     _loadThreadSlideShow();
   }
 
@@ -58,55 +47,24 @@ class ThreadSlideShowCarouselState
 
   Future<void> _loadThreadSlideShow() async {
     try {
-      final dio = await NetworkUtils.getDioWithPersistCookieJar(null);
-      final html = await dio.get(keylolBaseUrl);
-      final document = parse(html.data);
-      final carouselItems = <KeylolCarouselItem>[];
-      final slideshowElements = document.getElementsByClassName("slideshow");
-
-      if (slideshowElements.isNotEmpty) {
-        final slides = slideshowElements.first.getElementsByTagName("li");
-        for (final slideListItem in slides) {
-          final anchors = slideListItem.getElementsByTagName("a");
-          if (anchors.isEmpty) continue;
-
-          final slide = anchors.first;
-          final link = slide.attributes["href"];
-          final images = slide.getElementsByTagName("img");
-          if (images.isEmpty || link == null) continue;
-
-          final imageSource = images.first.attributes["src"];
-          final imageTitle = images.first.attributes["title"];
-          final titleElements = slideListItem.getElementsByClassName("title");
-          if (titleElements.isEmpty ||
-              titleElements.first.innerHtml.isEmpty ||
-              imageSource == null ||
-              imageTitle == null) {
-            continue;
-          }
-
-          final titleParts = imageTitle.split("\n");
-          if (titleParts.length < 3) continue;
-
-          carouselItems.add(
-            KeylolCarouselItem(
-              imageSource,
-              titleElements.first.innerHtml,
-              titleParts[0].split(":").last,
-              titleParts[1].split(":").last,
-              titleParts[2].split(":").last,
-              0,
-              link,
-            ),
-          );
-        }
-      }
-
+      final items = await (widget.loadItems?.call() ?? _fetchThreadSlideShow());
       if (!mounted) return;
       setState(() {
-        keylolCarouselItemList = carouselItems;
+        keylolCarouselItemList = items;
         isLoading = false;
       });
+      // A wide feed shows at most three cards. Do not start the timer while
+      // their artwork is still loading; swiping remains available meanwhile.
+      await Future.wait([
+        for (final item in items.take(3))
+          precacheImage(
+            _imageProvider(item.imageSource),
+            context,
+            onError: (_, _) {},
+          ),
+      ]);
+      if (!mounted) return;
+      setState(() => _imagesReady = true);
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -114,6 +72,58 @@ class ThreadSlideShowCarouselState
         isLoading = false;
       });
     }
+  }
+
+  ImageProvider _imageProvider(String source) =>
+      widget.imageProviderBuilder?.call(source) ??
+      CachedNetworkImageProvider(source);
+
+  Future<List<KeylolCarouselItem>> _fetchThreadSlideShow() async {
+    final dio = await NetworkUtils.getDioWithPersistCookieJar(null);
+    final html = await dio.get(keylolBaseUrl);
+    final document = parse(html.data);
+    final carouselItems = <KeylolCarouselItem>[];
+    final slideshowElements = document.getElementsByClassName("slideshow");
+
+    if (slideshowElements.isNotEmpty) {
+      final slides = slideshowElements.first.getElementsByTagName("li");
+      for (final slideListItem in slides) {
+        final anchors = slideListItem.getElementsByTagName("a");
+        if (anchors.isEmpty) continue;
+
+        final slide = anchors.first;
+        final link = slide.attributes["href"];
+        final images = slide.getElementsByTagName("img");
+        if (images.isEmpty || link == null) continue;
+
+        final imageSource = images.first.attributes["src"];
+        final imageTitle = images.first.attributes["title"];
+        final titleElements = slideListItem.getElementsByClassName("title");
+        if (titleElements.isEmpty ||
+            titleElements.first.innerHtml.isEmpty ||
+            imageSource == null ||
+            imageTitle == null) {
+          continue;
+        }
+
+        final titleParts = imageTitle.split("\n");
+        if (titleParts.length < 3) continue;
+
+        carouselItems.add(
+          KeylolCarouselItem(
+            imageSource,
+            titleElements.first.innerHtml,
+            titleParts[0].split(":").last,
+            titleParts[1].split(":").last,
+            titleParts[2].split(":").last,
+            0,
+            link,
+          ),
+        );
+      }
+    }
+
+    return carouselItems;
   }
 
   @override
@@ -134,11 +144,13 @@ class ThreadSlideShowCarouselState
             return Padding(
               padding: const EdgeInsets.only(top: 8),
               child: ThreadCarouselLayout(
-                itemCount: isLoading ? 1 : keylolCarouselItemList.length,
+                itemCount: keylolCarouselItemList.length,
                 itemBuilder: (context, index) => isLoading
                     ? subscriptionSlide
                     : getSlideShowItemWidget(index),
                 compact: compact,
+                isLoading: isLoading,
+                autoPlay: _imagesReady,
               ),
             );
           }
@@ -156,31 +168,36 @@ class ThreadSlideShowCarouselState
     child: Container(
       margin: const EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(22),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          PlatformCircularProgressIndicator(
-            material: (context, platform) => MaterialProgressIndicatorData(
-              color: Theme.of(context).colorScheme.primary,
+      child: Padding(
+        padding: EdgeInsets.all(compact ? 16 : 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _placeholderBar(width: 64, height: 20),
+            const Spacer(),
+            _placeholderBar(width: 90, height: 12),
+            const SizedBox(height: 10),
+            _placeholderBar(height: 17),
+            const SizedBox(height: 8),
+            FractionallySizedBox(
+              widthFactor: 0.65,
+              child: _placeholderBar(height: 17),
             ),
-            cupertino: (context, platform) => CupertinoProgressIndicatorData(
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            S.of(context).loading,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface,
-              fontSize: compact ? 12 : 16,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
+    ),
+  );
+
+  Widget _placeholderBar({double? width, required double height}) => Container(
+    width: width,
+    height: height,
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08),
+      borderRadius: BorderRadius.circular(6),
     ),
   );
 
@@ -188,19 +205,20 @@ class ThreadSlideShowCarouselState
     KeylolCarouselItem slideShow = keylolCarouselItemList[itemIndex];
 
     return ThreadCarouselCard(
-      image: CachedNetworkImageProvider(slideShow.image_src),
+      image: _imageProvider(slideShow.imageSource),
       forum: slideShow.forum,
       category: slideShow.category,
       title: slideShow.title,
       compact: compact,
       onTap: () async {
         VibrationUtils.vibrateWithClickIfPossible();
+        final onSelectTid = widget.onSelectTid;
         Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
           context,
           listen: false,
         ).discuz;
         if (slideShow.tid != 0 && onSelectTid != null) {
-          return onSelectTid!(slideShow.tid);
+          return onSelectTid(slideShow.tid);
         }
 
         if (discuz != null) {
@@ -218,17 +236,16 @@ class ThreadSlideShowCarouselState
 }
 
 class KeylolCarouselItem {
-  String image_src = "";
-  String title = "";
-  String forum = "";
-  String category = "";
-  String author = "";
-  int tid = 0;
-  //String date = "";
-  String link = "";
+  final String imageSource;
+  final String title;
+  final String forum;
+  final String category;
+  final String author;
+  final int tid;
+  final String link;
 
-  KeylolCarouselItem(
-    this.image_src,
+  const KeylolCarouselItem(
+    this.imageSource,
     this.title,
     this.forum,
     this.category,

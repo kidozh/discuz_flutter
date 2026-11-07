@@ -8,7 +8,8 @@ part of 'SmmsApiClient.dart';
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main
+// ignore_for_file: type=lint
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main,avoid_redundant_argument_values
 
 class _SmmsApiClient implements SmmsApiClient {
   _SmmsApiClient(this._dio, {this.baseUrl, this.errorLogger}) {
@@ -30,11 +31,11 @@ class _SmmsApiClient implements SmmsApiClient {
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<SmmsTokenResult>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/token',
@@ -63,11 +64,11 @@ class _SmmsApiClient implements SmmsApiClient {
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<SmmsProfileResult>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/profile',
@@ -108,11 +109,11 @@ class _SmmsApiClient implements SmmsApiClient {
     );
     final _options = _setStreamType<SmmsUploadImageResult>(
       Options(
-        method: 'POST',
-        headers: _headers,
-        extra: _extra,
-        contentType: 'application/x-www-form-urlencoded',
-      )
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'application/x-www-form-urlencoded',
+          )
           .compose(
             _dio.options,
             '/upload',

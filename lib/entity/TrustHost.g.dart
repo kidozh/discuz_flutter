@@ -16,9 +16,7 @@ class TrustHostAdapter extends TypeAdapter<TrustHost> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return TrustHost(
-      fields[0] as String,
-    )..trustAt = fields[1] as DateTime;
+    return TrustHost(fields[0] as String)..trustAt = fields[1] as DateTime;
   }
 
   @override

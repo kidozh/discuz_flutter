@@ -57,6 +57,6 @@ Smiley _$SmileyFromJson(Map<String, dynamic> json) => Smiley()
   ..relativePath = json['image'] as String;
 
 Map<String, dynamic> _$SmileyToJson(Smiley instance) => <String, dynamic>{
-      'code': instance.code,
-      'image': instance.relativePath,
-    };
+  'code': instance.code,
+  'image': instance.relativePath,
+};

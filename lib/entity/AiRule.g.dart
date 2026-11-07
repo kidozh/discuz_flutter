@@ -17,17 +17,19 @@ class AiRuleAdapter extends TypeAdapter<AiRule> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return AiRule(
-      fields[5] as String,
-      fields[1] as String,
-      fields[2] as String,
-      fields[4] as DateTime,
-    )..insertTime = fields[3] as DateTime;
+        fields[5] as String,
+        fields[1] as String,
+        fields[2] as String,
+        fields[4] as DateTime,
+      )
+      ..insertTime = fields[3] as DateTime
+      ..isExample = fields[6] as bool?;
   }
 
   @override
   void write(BinaryWriter writer, AiRule obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(1)
       ..write(obj.instruction)
       ..writeByte(2)
@@ -37,7 +39,9 @@ class AiRuleAdapter extends TypeAdapter<AiRule> {
       ..writeByte(4)
       ..write(obj.updateTime)
       ..writeByte(5)
-      ..write(obj.name);
+      ..write(obj.name)
+      ..writeByte(6)
+      ..write(obj.isExample);
   }
 
   @override

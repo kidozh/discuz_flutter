@@ -1,5 +1,6 @@
 import 'DashboardOrderPage.dart';
 import 'ForumFeedSettingsPage.dart';
+import 'forum_display_settings_page.dart';
 import 'background_new_posts_settings_page.dart';
 import '../utility/background_new_posts.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
@@ -21,7 +22,6 @@ import 'package:discuz_flutter/utility/OnDeviceAiService.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 
 import '../entity/post_signature.dart';
-import '../entity/forum_display_preferences.dart';
 
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -219,44 +219,13 @@ class _SettingPageState extends State<SettingPage> {
         _GlassSettingsSection(
           title: S.of(context).displaySettingTitle,
           children: [
-            _GlassSwitchTile(
-              title: S.of(context).compactForumCarousel,
-              leading: const Icon(Icons.view_compact_outlined),
-              value: preference.forumDisplay.compactCarousel,
-              onChanged: (value) => _setForumDisplay(
-                preference.forumDisplay.copyWith(compactCarousel: value),
-              ),
-            ),
-            _GlassSwitchTile(
-              title: S.of(context).showForumName,
-              leading: const Icon(Icons.public),
-              value: preference.forumDisplay.showForumName,
-              onChanged: (value) => _setForumDisplay(
-                preference.forumDisplay.copyWith(showForumName: value),
-              ),
-            ),
-            _GlassSwitchTile(
-              title: S.of(context).showAccountInfo,
-              leading: const Icon(Icons.person_outline),
-              value: preference.forumDisplay.showAccountInfo,
-              onChanged: (value) => _setForumDisplay(
-                preference.forumDisplay.copyWith(showAccountInfo: value),
-              ),
-            ),
-            _GlassSwitchTile(
-              title: S.of(context).showThreadStats,
-              leading: const Icon(Icons.bar_chart),
-              value: preference.forumDisplay.showThreadStats,
-              onChanged: (value) => _setForumDisplay(
-                preference.forumDisplay.copyWith(showThreadStats: value),
-              ),
-            ),
-            _GlassSwitchTile(
-              title: S.of(context).showForumCarousel,
-              leading: const Icon(Icons.view_carousel_outlined),
-              value: preference.forumDisplay.showCarousel,
-              onChanged: (value) => _setForumDisplay(
-                preference.forumDisplay.copyWith(showCarousel: value),
+            _GlassNavigationTile(
+              title: S.of(context).forumDisplaySettingsTitle,
+              leading: const Icon(Icons.view_quilt_outlined),
+              onTap: () => _open(
+                context,
+                S.of(context).forumDisplaySettingsTitle,
+                const ForumDisplaySettingsPage(),
               ),
             ),
             _GlassNavigationTile(
@@ -428,11 +397,6 @@ class _SettingPageState extends State<SettingPage> {
         PostSignatureStyle.device => S.of(context).deviceNameSignature,
         PostSignatureStyle.custom => S.of(context).customSignature,
       };
-
-  void _setForumDisplay(ForumDisplayPreferences value) {
-    context.read<UserPreferenceNotifierProvider>().setForumDisplay(value);
-    UserPreferencesUtils.putForumDisplayPreference(value);
-  }
 
   String _themeColorLabel(BuildContext context, ThemeNotifierProvider theme) {
     final customColor = theme.customThemeColor;

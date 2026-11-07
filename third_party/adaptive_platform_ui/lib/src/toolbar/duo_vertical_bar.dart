@@ -256,9 +256,8 @@ const double kDuoBarRegionGap = 11.0;
 /// below the top, with the controls in the trailing bar instead of beside it.
 const double kDuoTitleBandHeight = 70.0;
 
-/// What sits behind the title on iPhone Duo: content scrolling underneath is
-/// blurred and faded out towards the top, like the system's scroll edge
-/// effect, so the leading-aligned title never reads on top of a list row.
+/// Blurs scrolling content under the title on iPhone Duo, with the fade
+/// ending inside the title band so pinned controls below stay clear.
 class DuoTitleBackdrop extends StatelessWidget {
   const DuoTitleBackdrop({super.key});
 
@@ -266,24 +265,18 @@ class DuoTitleBackdrop extends StatelessWidget {
   Widget build(BuildContext context) {
     final base = CupertinoColors.systemBackground.resolveFrom(context);
     return IgnorePointer(
-      child: OverflowBox(
-        alignment: Alignment.topCenter,
-        maxHeight: kDuoTitleBandHeight + 24,
-        minHeight: kDuoTitleBandHeight + 24,
-        child: ShaderMask(
-          blendMode: BlendMode.dstIn,
-          // Solid behind the title, gone just below the band.
-          shaderCallback: (rect) => const LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.0, 0.62, 1.0],
-            colors: [Color(0xFFFFFFFF), Color(0xFFFFFFFF), Color(0x00FFFFFF)],
-          ).createShader(rect),
-          child: ClipRect(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-              child: ColoredBox(color: base.withValues(alpha: 0.82)),
-            ),
+      child: ShaderMask(
+        blendMode: BlendMode.dstIn,
+        shaderCallback: (rect) => const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: [0.0, 0.8, 1.0],
+          colors: [Color(0xFFFFFFFF), Color(0xFFFFFFFF), Color(0x00FFFFFF)],
+        ).createShader(rect),
+        child: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+            child: ColoredBox(color: base.withValues(alpha: 0.82)),
           ),
         ),
       ),

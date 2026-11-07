@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../utility/PlatformAdaptiveWidgets.dart';
 
-/// Retains visible category navigation, including Material's swipe gesture.
+/// Keeps category selection and Material swiping when navigation is merged.
 class DashboardTabs extends StatefulWidget {
   const DashboardTabs({
     super.key,
@@ -13,12 +13,14 @@ class DashboardTabs extends StatefulWidget {
     required this.selectedId,
     required this.onSelected,
     required this.sectionBuilder,
+    this.showNavigation = true,
   });
   final List<String> ids;
   final List<String> labels;
   final String selectedId;
   final ValueChanged<String> onSelected;
   final Widget Function(String id) sectionBuilder;
+  final bool showNavigation;
 
   @override
   State<DashboardTabs> createState() => _DashboardTabsState();
@@ -76,24 +78,25 @@ class _DashboardTabsState extends State<DashboardTabs>
     if (isMaterial(context)) {
       return Column(
         children: [
-          TabBar(
-            controller: _controller,
-            tabs: [
-              for (var index = 0; index < widget.ids.length; index++)
-                Tab(
-                  height: 40,
-                  icon: Icon(
-                    switch (widget.ids[index]) {
-                      'new' => CupertinoIcons.today_fill,
-                      'hot' => Icons.whatshot,
-                      _ => Icons.today,
-                    },
-                    size: 22,
-                    semanticLabel: widget.labels[index],
+          if (widget.showNavigation)
+            TabBar(
+              controller: _controller,
+              tabs: [
+                for (var index = 0; index < widget.ids.length; index++)
+                  Tab(
+                    height: 40,
+                    icon: Icon(
+                      switch (widget.ids[index]) {
+                        'new' => CupertinoIcons.today_fill,
+                        'hot' => Icons.whatshot,
+                        _ => Icons.today,
+                      },
+                      size: 22,
+                      semanticLabel: widget.labels[index],
+                    ),
                   ),
-                ),
-            ],
-          ),
+              ],
+            ),
           Expanded(
             child: TabBarView(
               controller: _controller,
@@ -109,14 +112,15 @@ class _DashboardTabsState extends State<DashboardTabs>
       bottom: false,
       child: Column(
         children: [
-          SizedBox(
-            width: double.infinity,
-            child: PlatformSegmentedControl(
-              labels: widget.labels,
-              selectedIndex: _selectedIndex,
-              onValueChanged: (index) => widget.onSelected(widget.ids[index]),
+          if (widget.showNavigation)
+            SizedBox(
+              width: double.infinity,
+              child: PlatformSegmentedControl(
+                labels: widget.labels,
+                selectedIndex: _selectedIndex,
+                onValueChanged: (index) => widget.onSelected(widget.ids[index]),
+              ),
             ),
-          ),
           Expanded(
             child: KeyedSubtree(
               key: ValueKey(widget.selectedId),

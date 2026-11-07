@@ -894,6 +894,76 @@ void main() {
     expect(find.text('body:Home'), findsOneWidget);
   });
 
+  testWidgets('Duo cover title backdrop clears pinned home categories', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(466, 678);
+    tester.view.padding = duoRightPane;
+    tester.view.viewPadding = duoRightPane;
+    addTearDown(tester.view.reset);
+    var category = 0;
+    var tab = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: StatefulBuilder(
+          builder: (context, setState) => IOS26Scaffold(
+            title: 'Forum',
+            useHeroBackButton: false,
+            bottomNavigationBar: AdaptiveBottomNavigationBar(
+              items: const [
+                AdaptiveNavigationDestination(icon: Icons.home, label: 'Home'),
+                AdaptiveNavigationDestination(
+                  icon: Icons.forum,
+                  label: 'Forums',
+                ),
+              ],
+              selectedIndex: tab,
+              onTap: (index) => setState(() => tab = index),
+            ),
+            children: [
+              SafeArea(
+                child: Column(
+                  children: [
+                    if (tab == 0)
+                      AdaptiveSegmentedControl(
+                        labels: const ['New', 'Hot', 'Topics'],
+                        selectedIndex: category,
+                        onValueChanged: (index) =>
+                            setState(() => category = index),
+                      ),
+                    Expanded(
+                      child: Center(
+                        child: Text('tab $tab / category $category'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final backdrop = find.descendant(
+      of: find.byType(DuoTitleBackdrop),
+      matching: find.byType(BackdropFilter),
+    );
+    final categories = find.byType(AdaptiveSegmentedControl);
+    expect(tester.getRect(backdrop).bottom, tester.getRect(categories).top);
+
+    await tester.tap(find.text('Topics'));
+    await tester.pumpAndSettle();
+    expect(find.text('tab 0 / category 2'), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.forum));
+    await tester.pumpAndSettle();
+    expect(find.text('tab 1 / category 2'), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.home));
+    await tester.pumpAndSettle();
+    expect(find.text('tab 0 / category 2'), findsOneWidget);
+  });
+
   group('the body of a scaffold in the leading Split View pane', () {
     final bodyText = find.text('body:Home');
 

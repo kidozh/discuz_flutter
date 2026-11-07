@@ -7,21 +7,21 @@ part of 'SubscribeChannelResult.dart';
 // **************************************************************************
 
 SubscribeChannelResult _$SubscribeChannelResultFromJson(
-        Map<String, dynamic> json) =>
-    SubscribeChannelResult()
-      ..result = json['result'] as String
-      ..channelList = (json['channel_list'] as List<dynamic>)
-          .map((e) => SubscribeChannel.fromJson(e as Map<String, dynamic>))
-          .toList()
-      ..reason = json['reason'] as String;
+  Map<String, dynamic> json,
+) => SubscribeChannelResult()
+  ..result = json['result'] as String
+  ..channelList = (json['channel_list'] as List<dynamic>)
+      .map((e) => SubscribeChannel.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..reason = json['reason'] as String;
 
 Map<String, dynamic> _$SubscribeChannelResultToJson(
-        SubscribeChannelResult instance) =>
-    <String, dynamic>{
-      'result': instance.result,
-      'channel_list': instance.channelList,
-      'reason': instance.reason,
-    };
+  SubscribeChannelResult instance,
+) => <String, dynamic>{
+  'result': instance.result,
+  'channel_list': instance.channelList,
+  'reason': instance.reason,
+};
 
 SubscribeChannel _$SubscribeChannelFromJson(Map<String, dynamic> json) =>
     SubscribeChannel()

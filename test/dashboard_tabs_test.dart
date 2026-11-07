@@ -14,6 +14,7 @@ void main() {
       (tester) async {
         var selected = 'new';
         var ids = ['new', 'hot', 'keylol'];
+        var showNavigation = true;
         late StateSetter update;
         await tester.pumpWidget(
           PlatformProvider(
@@ -29,6 +30,7 @@ void main() {
                       selectedId: ids.contains(selected) ? selected : ids.first,
                       onSelected: (id) => setState(() => selected = id),
                       sectionBuilder: (id) => Center(child: Text('body-$id')),
+                      showNavigation: showNavigation,
                     );
                   },
                 ),
@@ -51,7 +53,24 @@ void main() {
           await tester.pumpAndSettle();
           expect(selected, 'keylol');
         }
-        update(() => ids = ['hot', 'keylol', 'new']);
+        update(() => showNavigation = false);
+        await tester.pumpAndSettle();
+        expect(find.byType(TabBar), findsNothing);
+        expect(find.byType(PlatformSegmentedControl), findsNothing);
+        expect(find.text('body-keylol'), findsOneWidget);
+        update(() => selected = 'new');
+        await tester.pumpAndSettle();
+        expect(find.text('body-new'), findsOneWidget);
+        if (style == AppVisualStyle.material) {
+          await tester.drag(find.byType(TabBarView), const Offset(-600, 0));
+          await tester.pumpAndSettle();
+          expect(selected, 'hot');
+        }
+        update(() {
+          showNavigation = true;
+          selected = 'keylol';
+          ids = ['hot', 'keylol', 'new'];
+        });
         await tester.pumpAndSettle();
         expect(find.text('body-keylol'), findsOneWidget);
         update(() => ids = ['new', 'hot']);

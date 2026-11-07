@@ -25,11 +25,7 @@ Map<String, dynamic> _$SmmsTokenResultToJson(SmmsTokenResult instance) =>
     };
 
 SmmsTokenData _$SmmsTokenDataFromJson(Map<String, dynamic> json) =>
-    SmmsTokenData(
-      token: json['token'] as String,
-    );
+    SmmsTokenData(token: json['token'] as String);
 
 Map<String, dynamic> _$SmmsTokenDataToJson(SmmsTokenData instance) =>
-    <String, dynamic>{
-      'token': instance.token,
-    };
+    <String, dynamic>{'token': instance.token};

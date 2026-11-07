@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.0.12+170
+version: 2.0.13+171
 
 environment:
   sdk: ">=3.13.0 <4.0.0"
@@ -113,7 +113,7 @@ dependencies:
   web: ^1.1.2
   persistent_bottom_nav_bar: ^6.2.1
   fwfh_cached_network_image: ^0.16.3
-  flutter_cache_manager: ^3.4.6
+  flutter_cache_manager: ^3.5.0
   flutter_cache_manager_dio: ^4.0.0
   saver_gallery: ^5.1.0
   flex_color_scheme: ^8.4.0
@@ -130,10 +130,10 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  # hive_ce_generator requires build 4; build_runner 2.17 requires build 5.
-  build_runner: ^2.16.2
-  retrofit_generator: ^10.3.2
-  hive_ce_generator: ^1.12.0
+  # These generator releases share build 5 and the current analyzer API.
+  build_runner: ^2.17.1
+  retrofit_generator: ^10.3.3
+  hive_ce_generator: ^1.12.1
   flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the

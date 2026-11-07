@@ -938,6 +938,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumConfirmPurchase": MessageLookupByLibrary.simpleMessage(
       "Confirm purchase",
     ),
+    "forumDisplaySettingsTitle": MessageLookupByLibrary.simpleMessage(
+      "Interface display",
+    ),
     "forumDisplayTitle": MessageLookupByLibrary.simpleMessage(
       "Display a forum",
     ),
@@ -1167,6 +1170,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "me": MessageLookupByLibrary.simpleMessage("Me"),
     "menuDrawerTitle": MessageLookupByLibrary.simpleMessage("Menu"),
     "menuIconTooltip": MessageLookupByLibrary.simpleMessage("Menu"),
+    "mergeHomeNavigation": MessageLookupByLibrary.simpleMessage(
+      "Merge home navigation and categories",
+    ),
+    "mergeHomeNavigationDescription": MessageLookupByLibrary.simpleMessage(
+      "Move category switching into the home title. Tap the title to choose a category. Off by default.",
+    ),
     "minute": MessageLookupByLibrary.simpleMessage("M"),
     "minuteAgo": m41,
     "minuteLater": m42,

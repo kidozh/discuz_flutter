@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/DiscuzAndUserNotifier.dart';
+import '../provider/UserPreferenceNotifierProvider.dart';
 import '../utility/DashboardPreferences.dart';
 import '../generated/l10n.dart';
 import '../widget/KeylolMobileTopicWidget.dart';
@@ -32,6 +33,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final account = context.watch<DiscuzAndUserNotifier>();
+    final display = context
+        .watch<UserPreferenceNotifierProvider>()
+        .forumDisplay;
     if (account.discuz == null) return NullDiscuzScreen();
     return ValueListenableBuilder<List<String>>(
       valueListenable: DashboardPreferences.order,
@@ -54,6 +58,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ids: ids,
             labels: ids.map(label).toList(),
             selectedId: DashboardPreferences.activeSection(ids),
+            showNavigation: !display.mergeHomeNavigation,
             onSelected: (id) => DashboardPreferences.selectedSection.value = id,
             sectionBuilder: section,
           ),
