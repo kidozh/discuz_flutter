@@ -87,7 +87,8 @@ jobs:
         with:
           channel: stable
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
+          # Self-hosted runners keep the SDK and Pub cache on disk.
+          cache: ${{ runner.environment == 'github-hosted' }}
 
       - name: Verify repository and App Store credentials
         shell: bash
