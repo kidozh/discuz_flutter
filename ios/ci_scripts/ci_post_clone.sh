@@ -6,7 +6,7 @@ FLUTTER_VERSION="3.47.5"
 REQUIRE_IPHONE_DUO="${REQUIRE_IPHONE_DUO:-1}"
 FLUTTER_SDK_PATH="$HOME/flutter-$FLUTTER_VERSION"
 
-export PUB_HOSTED_URL="https://pub.flutter-io.cn"
+export PUB_HOSTED_URL="https://pub.dev"
 export FLUTTER_STORAGE_BASE_URL="https://storage.flutter-io.cn"
 export PATH="$PATH:$FLUTTER_SDK_PATH/bin"
 export HOMEBREW_NO_AUTO_UPDATE=1
