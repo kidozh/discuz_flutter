@@ -269,16 +269,6 @@ jobs:
           ipa_path="${ipa_files[0]}"
           echo "path=$ipa_path" >> "$GITHUB_OUTPUT"
 
-      - name: Preserve signed IPA
-        uses: actions/upload-artifact@v7
-        with:
-          name: ios-app-store-${{ steps.version.outputs.build_number }}
-          path: |
-            ${{ steps.ipa.outputs.path }}
-            build/ios/testflight-release-notes.txt
-          if-no-files-found: error
-          retention-days: 14
-
       - name: Upload to App Store Connect and TestFlight
         uses: apple-actions/upload-testflight-build@v5
         with:
@@ -309,6 +299,20 @@ jobs:
           name: testflight-verification-${{ steps.version.outputs.build_number }}
           path: build/ios/testflight-verification.json
           if-no-files-found: error
+
+      - name: Preserve signed IPA
+        if: ${{ !cancelled() && steps.ipa.outcome == 'success' }}
+        continue-on-error: true
+        timeout-minutes: 3
+        uses: actions/upload-artifact@v7
+        with:
+          name: ios-app-store-${{ steps.version.outputs.build_number }}
+          path: |
+            ${{ steps.ipa.outputs.path }}
+            build/ios/testflight-release-notes.txt
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
 
   verify_existing:
     name: Verify existing TestFlight build
