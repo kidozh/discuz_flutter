@@ -129,6 +129,7 @@ void main() {
       expect(find.text(strings.showForumName), findsNothing);
       expect(find.text(strings.showAccountInfo), findsNothing);
       expect(find.text(strings.showThreadStats), findsNothing);
+      expect(find.text(strings.useForumCookiesForImages), findsNothing);
       expect(find.text(strings.showForumCarousel), findsNothing);
       expect(find.text(strings.compactForumCarousel), findsNothing);
       await tester.scrollUntilVisible(
@@ -139,10 +140,15 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(ForumDisplaySettingsPage), findsOneWidget);
       expect(userPreferences.forumDisplay.mergeHomeNavigation, isFalse);
-      expect(find.byType(PlatformSwitch), findsNWidgets(6));
+      expect(userPreferences.forumDisplay.useForumCookiesForImages, isTrue);
+      expect(find.byType(PlatformSwitch), findsNWidgets(7));
       await tester.tap(find.text(strings.mergeHomeNavigation));
       await tester.pumpAndSettle();
       await tester.tap(find.text(strings.showForumName));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text(strings.useForumCookiesForImages));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(strings.useForumCookiesForImages));
       await tester.pumpAndSettle();
       expect(userPreferences.forumDisplay.mergeHomeNavigation, isTrue);
       expect(userPreferences.forumDisplay.showForumName, isFalse);
@@ -151,6 +157,7 @@ void main() {
       expect(saved.showForumName, isFalse);
       expect(saved.showAccountInfo, isFalse);
       expect(saved.showThreadStats, isTrue);
+      expect(saved.useForumCookiesForImages, isFalse);
       preference.setBrightness(Brightness.dark);
       await tester.pumpAndSettle();
       expect(
@@ -167,6 +174,7 @@ void main() {
         strings.showForumName,
         strings.showAccountInfo,
         strings.showThreadStats,
+        strings.useForumCookiesForImages,
         strings.showForumCarousel,
         strings.compactForumCarousel,
       ]) {

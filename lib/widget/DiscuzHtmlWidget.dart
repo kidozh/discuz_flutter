@@ -22,16 +22,15 @@ import 'package:discuz_flutter/widget/DiscuzCodeBlock.dart';
 import 'package:discuz_flutter/widget/DiscuzQuoteBlock.dart';
 import 'package:discuz_flutter/widget/SteamGameWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
-import 'package:fwfh_cached_network_image/fwfh_cached_network_image.dart';
 import 'package:html/parser.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_countdown/slide_countdown.dart';
 
-import '../utility/DiscuzImageDioCacheManager.dart';
 import '../utility/URLUtils.dart';
+import '../utility/forum_image_session.dart';
+import 'forum_image.dart';
 
 typedef void JumpToPidCallback(int pid);
 
@@ -65,6 +64,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final imageSession = ForumImageSession.of(context, discuz);
     final content = Consumer<TypeSettingNotifierProvider>(
       builder: (context, typesetting, _) {
         final colorScheme = Theme.of(context).colorScheme;
@@ -172,18 +172,18 @@ class DiscuzHtmlWidget extends StatelessWidget {
             if (context.mounted) onBodyReady!();
           });
         }
-        //DiscuzImageDioCacheManager dioCacheManager = DiscuzImageDioCacheManager(futureDio);
-
         final rendered = HtmlWidget(
           normalizedHtml,
+          key: ValueKey(imageSession?.identity),
+          baseUrl: imageSession?.baseUrl,
           renderMode: asSliver ? RenderMode.sliverList : RenderMode.column,
-          factoryBuilder: () => _ReadingHtmlWidgetFactory(onBodyReady),
+          factoryBuilder: () =>
+              _ReadingHtmlWidgetFactory(imageSession, onBodyReady),
           //enableCaching: true,
           onTapUrl: (url) {
             URLUtils.openURL(context, onSelectTid, url, callback, tid);
             return true;
           },
-          //factoryBuilder: () => DiscuzHtmlWidgetFactory(dioCacheManager),
           onTapImage: (imageMetaData) {
             for (var source in imageMetaData.sources) {
               _openImage(context, source.url);
@@ -470,6 +470,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
               return DiscuzAdaptiveTable(
                 element: element,
                 textStyle: htmlTextStyle,
+                imageSession: imageSession,
                 onTapUrl: (url) {
                   URLUtils.openURL(context, onSelectTid, url, callback, tid);
                   return true;
@@ -600,12 +601,17 @@ class DiscuzHtmlWidget extends StatelessWidget {
 
   void _openImage(BuildContext context, String src) {
     VibrationUtils.vibrateWithClickIfPossible();
+    final base = forumBaseUri(discuz);
+    final images = getAllImageSrcList()
+        .map((url) => base?.resolve(url).toString() ?? url)
+        .toList();
+    if (!images.contains(src)) images.insert(0, src);
     Navigator.push(
       context,
       platformPageRoute(
         iosTitle: S.of(context).viewPicture,
         context: context,
-        builder: (context) => FullImagePage(src, getAllImageSrcList()),
+        builder: (context) => FullImagePage(src, images, forum: discuz),
       ),
     );
   }
@@ -626,9 +632,9 @@ class DiscuzHtmlWidget extends StatelessWidget {
 
 /// Keep only visited blocks alive: expansion state, media and horizontal table
 /// offsets survive scrolling away. Unvisited blocks are still laid out lazily.
-class _ReadingHtmlWidgetFactory extends WidgetFactory {
+class _ReadingHtmlWidgetFactory extends ForumHtmlImageFactory {
   final VoidCallback? onBodyReady;
-  _ReadingHtmlWidgetFactory(this.onBodyReady);
+  _ReadingHtmlWidgetFactory(super.imageSession, this.onBodyReady);
 
   @override
   Widget buildBodyWidget(BuildContext context, Widget child) {
@@ -678,13 +684,4 @@ class _RetainedReadingBlockState extends State<_RetainedReadingBlock>
     super.build(context);
     return widget.child;
   }
-}
-
-class DiscuzHtmlWidgetFactory extends WidgetFactory
-    with CachedNetworkImageFactory {
-  DiscuzImageDioCacheManager dioCacheManager;
-
-  DiscuzHtmlWidgetFactory(this.dioCacheManager) {}
-
-  BaseCacheManager get cacheManager => dioCacheManager;
 }

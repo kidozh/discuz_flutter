@@ -1,7 +1,5 @@
-import 'dart:developer';
+import 'dart:async';
 
-import 'package:dio/dio.dart';
-import 'package:discuz_flutter/JsonResult/UserDiscuzNotificationResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
@@ -13,13 +11,11 @@ import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
-import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/DiscuzNotificationWidget.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/LoadingStateWidget.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 import '../utility/EasyRefreshUtils.dart';
@@ -33,7 +29,9 @@ class NotificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final account = context.watch<DiscuzAndUserNotifier>();
     return NotificationStatefulWidget(
+      key: ValueKey(account.sessionIdentity),
       onSelectTid: onSelectTid,
     );
   }
@@ -45,32 +43,17 @@ class NotificationStatefulWidget extends StatefulWidget {
   const NotificationStatefulWidget({this.onSelectTid, super.key});
 
   @override
-  _NotificationState createState() {
-    return _NotificationState(onSelectTid: this.onSelectTid);
-  }
+  _NotificationState createState() => _NotificationState();
 }
 
 class _NotificationState extends State<NotificationStatefulWidget> {
-  late Dio _dio;
-  late MobileApiClient _client;
-  UserDiscuzNotificationResult result = UserDiscuzNotificationResult();
+  final _controller = EasyRefreshController();
   DiscuzError? _error;
   int _page = 1;
+  bool _hasMore = true;
+  bool _loading = false;
   List<DiscuzNotification> _noteList = [];
   bool _isFirstLoading = true;
-
-  late EasyRefreshController _controller;
-
-  final ValueChanged<int>? onSelectTid;
-
-  _NotificationState({this.onSelectTid});
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = EasyRefreshController(
-        controlFinishLoad: true, controlFinishRefresh: true);
-  }
 
   @override
   void dispose() {
@@ -78,190 +61,139 @@ class _NotificationState extends State<NotificationStatefulWidget> {
     super.dispose();
   }
 
-  Future<IndicatorResult> _invalidateNotificationContent(Discuz discuz) async {
-    _page = 1;
-    VibrationUtils.vibrateWithClickIfPossible();
-    return await _loadNotificationContent(discuz);
-  }
-
-  Future<IndicatorResult> _loadNotificationContent(Discuz discuz) async {
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-    this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
-
-    // _client.userNotificationRaw(_page).then((value){
-    //   log(value);
-    //   result = UserDiscuzNotificationResult.fromJson(jsonDecode(value));
-    //
-    // });
-
-    return await _client.userNotificationResult(_page).then((value) async {
+  Future<IndicatorResult> _loadPage(
+    Discuz discuz,
+    User user, {
+    bool refresh = false,
+  }) async {
+    if (_loading) return IndicatorResult.fail;
+    if (!refresh && !_hasMore) return IndicatorResult.noMore;
+    final account = context.read<DiscuzAndUserNotifier>();
+    final session = account.sessionIdentity;
+    bool isCurrent() => mounted && identical(session, account.sessionIdentity);
+    if (!identical(user, account.user)) return IndicatorResult.fail;
+    _loading = true;
+    final page = refresh ? 1 : _page;
+    try {
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      final response = await MobileApiClient(
+        dio,
+        baseUrl: discuz.baseURL,
+      ).userNotificationResult(page);
+      if (!isCurrent()) return IndicatorResult.fail;
+      final variables = response.variables;
+      final error = EasyRefreshUtils.responseError(
+        context,
+        response,
+        user,
+        variables.member_uid,
+      );
       setState(() {
+        _error = error;
         _isFirstLoading = false;
-        result = value;
-        _error = null;
-        if (_page == 1) {
-          _noteList = value.variables.notificationList;
-        } else {
-          _noteList.addAll(value.variables.notificationList);
+        if (error == null) {
+          final rows = variables.notificationList;
+          _noteList = page == 1 ? rows : [..._noteList, ...rows];
+          _page = page + 1;
+          _hasMore = rows.isNotEmpty && _noteList.length < variables.count;
         }
       });
-      _page += 1;
-      _controller.finishRefresh();
-      _controller.finishLoad(_noteList.length >= value.variables.count
-          ? IndicatorResult.noMore
-          : IndicatorResult.success);
-      // check for loaded all?
-      log("Get Notification ${_noteList.length} ${value.variables.count}");
-
-      if (user != null && value.variables.member_uid != user.uid) {
-        setState(() {
-          _error = DiscuzError(S.of(context).userExpiredTitle(user.username),
-              S.of(context).userExpiredSubtitle);
-        });
-      }
-
-      if (value.getErrorString() != null) {
-        EasyLoading.showError(value.getErrorString()!);
-      }
-
-      if (value.errorResult != null) {
-        setState(() {
-          _error =
-              DiscuzError(value.errorResult!.key, value.errorResult!.content);
-        });
-      } else {
-        setState(() {
-          _error = null;
-        });
-      }
-      // mobile sign?
-      if (user != null && value.variables.member_uid == user.uid) {
-        // conduct mobile sign
-        await MobileSignUtils.conductMobileSign(
-            context, discuz, user, value.variables.formHash);
-      }
-
-      if (_noteList.length >= value.variables.count) {
-        return IndicatorResult.noMore;
-      } else {
-        return IndicatorResult.success;
-      }
-    }).catchError((onError) {
-      if (mounted) {
-        setState(() {
-          _isFirstLoading = false;
-        });
-      }
-      switch (onError.runtimeType) {
-        case DioException:
-          {
-            DioException dioError = onError;
-            log("${dioError.message} >-> ${dioError.type}");
-            EasyLoading.showError("${dioError.message} (${dioError})");
-            setState(() {
-              _error = DiscuzError(
-                  dioError.message == null
-                      ? S.of(context).error
-                      : dioError.message!,
-                  dioError.type.name,
-                  dioError: dioError);
-            });
-
-            break;
-          }
-        default:
-          {
-            setState(() {
-              _error = DiscuzError(
-                  onError.runtimeType.toString(), onError.toString());
-            });
-          }
-      }
+      if (error != null) return IndicatorResult.fail;
+      unawaited(
+        MobileSignUtils.conductMobileSign(
+          context,
+          discuz,
+          user,
+          variables.formHash,
+        ),
+      );
+      return refresh || _hasMore
+          ? IndicatorResult.success
+          : IndicatorResult.noMore;
+    } catch (error) {
+      if (!isCurrent()) return IndicatorResult.fail;
+      setState(() {
+        _error = EasyRefreshUtils.requestError(context, error);
+        _isFirstLoading = false;
+      });
       return IndicatorResult.fail;
-    });
+    } finally {
+      _loading = false;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<DiscuzAndUserNotifier>(
-        builder: (context, discuzAndUser, child) {
-      if (discuzAndUser.discuz == null) {
-        return NullDiscuzScreen();
-      } else if (discuzAndUser.user == null) {
-        return NullUserScreen();
-      } else {
-        return PlatformLiquidGlassPageBackdrop(
-          child: Column(
-            children: [
-              if (_error != null)
-                PlatformCard(
-                  margin: const EdgeInsets.fromLTRB(8, 8, 8, 4),
-                  child: ErrorCard(_error!, () {
-                    _controller.callRefresh();
-                  }),
+      builder: (context, discuzAndUser, child) {
+        if (discuzAndUser.discuz == null) {
+          return NullDiscuzScreen();
+        } else if (discuzAndUser.user == null) {
+          return NullUserScreen();
+        } else {
+          return PlatformLiquidGlassPageBackdrop(
+            child: Column(
+              children: [
+                if (_error != null)
+                  PlatformCard(
+                    margin: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+                    child: ErrorCard(
+                      _error!,
+                      () => _controller.callRefresh(),
+                      errorType: _error!.errorType,
+                    ),
+                  ),
+                Expanded(
+                  child: getEasyRefreshWidget(
+                    discuzAndUser.discuz!,
+                    discuzAndUser.user!,
+                  ),
                 ),
-              Expanded(
-                child: getEasyRefreshWidget(
-                  discuzAndUser.discuz!,
-                  discuzAndUser.user,
-                ),
-              ),
-            ],
-          ),
-        );
-      }
-    });
+              ],
+            ),
+          );
+        }
+      },
+    );
   }
 
-  Widget getEasyRefreshWidget(Discuz discuz, User? user) {
+  Widget getEasyRefreshWidget(Discuz discuz, User user) {
     return EasyRefresh(
       header: EasyRefreshUtils.i18nClassicHeader(context),
       footer: EasyRefreshUtils.i18nClassicFooter(context),
       refreshOnStart: true,
       controller: _controller,
-      onRefresh: () async {
-        return await _invalidateNotificationContent(discuz);
-      },
-      onLoad: () async {
-        return await _loadNotificationContent(discuz);
-      },
+      onRefresh: () => _loadPage(discuz, user, refresh: true),
+      onLoad: () => _loadPage(discuz, user),
       child: CustomScrollView(
         slivers: [
           SliverList(
-              delegate: SliverChildBuilderDelegate(
-                  (context, index) => SafeArea(
-                        child: Container(),
-                        bottom: false,
-                      ),
-                  childCount: 1)),
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => SafeArea(child: Container(), bottom: false),
+              childCount: 1,
+            ),
+          ),
           if (_noteList.isEmpty)
             SliverList(
-                delegate: SliverChildBuilderDelegate(
-                    (context, index) => _isFirstLoading
-                        ? LoadingStateWidget(
-                            hintText: S.of(context).notification,
-                          )
-                        : EmptyListScreen(EmptyItemType.notification),
-                    childCount: 1)),
-          SliverList(
               delegate: SliverChildBuilderDelegate(
-                  (context, index) => DiscuzNotificationWidget(
-                        discuz,
-                        _noteList[index],
-                        onSelectTid: this.onSelectTid,
-                      ),
-                  childCount: _noteList.length)),
+                (context, index) => _isFirstLoading
+                    ? LoadingStateWidget(hintText: S.of(context).notification)
+                    : EmptyListScreen(EmptyItemType.notification),
+                childCount: 1,
+              ),
+            ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => DiscuzNotificationWidget(
+                discuz,
+                _noteList[index],
+                onSelectTid: widget.onSelectTid,
+              ),
+              childCount: _noteList.length,
+            ),
+          ),
         ],
       ),
     );
-  }
-
-  @override
-  void setState(fn) {
-    if (this.mounted) {
-      super.setState(fn);
-    }
   }
 }

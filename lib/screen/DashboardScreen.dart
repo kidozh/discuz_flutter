@@ -25,10 +25,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     DashboardPreferences.load().catchError((Object _) {});
   }
 
-  Widget section(String id) => switch (id) {
+  Widget section(String id, Object session) => switch (id) {
     'new' => NewThreadScreen(onSelectTid: widget.onSelectTid),
     'hot' => HotThreadScreen(onSelectTid: widget.onSelectTid),
-    _ => KeylolMobileTopicWidget(onSelectTid: widget.onSelectTid),
+    _ => KeylolMobileTopicWidget(
+      key: ValueKey(session),
+      onSelectTid: widget.onSelectTid,
+    ),
   };
   @override
   Widget build(BuildContext context) {
@@ -60,7 +63,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             selectedId: DashboardPreferences.activeSection(ids),
             showNavigation: !display.mergeHomeNavigation,
             onSelected: (id) => DashboardPreferences.selectedSection.value = id,
-            sectionBuilder: section,
+            sectionBuilder: (id) => section(id, account.sessionIdentity),
           ),
         );
       },

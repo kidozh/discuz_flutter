@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:html/dom.dart' as dom;
 
+import '../utility/forum_image_session.dart';
+import 'forum_image.dart';
+
 /// Repairs a common Discuz table serialization bug before the HTML parser can
 /// move orphaned cells outside their table (HTML "foster parenting").
 ///
@@ -87,12 +90,14 @@ class DiscuzAdaptiveTable extends StatelessWidget {
   final TextStyle textStyle;
   final FutureOr<bool> Function(String)? onTapUrl;
   final ValueChanged<String>? onTapImage;
+  final ForumImageSession? imageSession;
 
   const DiscuzAdaptiveTable({
     required this.element,
     required this.textStyle,
     this.onTapUrl,
     this.onTapImage,
+    this.imageSession,
     super.key,
   });
 
@@ -303,6 +308,9 @@ class DiscuzAdaptiveTable extends StatelessWidget {
 
     return HtmlWidget(
       data.outerHtml,
+      key: ValueKey(imageSession?.identity),
+      baseUrl: imageSession?.baseUrl,
+      factoryBuilder: () => ForumHtmlImageFactory(imageSession),
       textStyle: textStyle,
       onTapUrl: onTapUrl,
       onTapImage: _handleTapImage,
@@ -340,6 +348,9 @@ class DiscuzAdaptiveTable extends StatelessWidget {
     if (html.trim().isEmpty) return const SizedBox.shrink();
     return HtmlWidget(
       html,
+      key: ValueKey(imageSession?.identity),
+      baseUrl: imageSession?.baseUrl,
+      factoryBuilder: () => ForumHtmlImageFactory(imageSession),
       textStyle: style,
       onTapUrl: onTapUrl,
       onTapImage: _handleTapImage,

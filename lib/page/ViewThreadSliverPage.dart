@@ -104,12 +104,21 @@ class ViewThreadSliverPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final account = context.watch<DiscuzAndUserNotifier>();
+    final isCurrentForum = account.discuz?.baseURL == discuz.baseURL;
+    final activeUser = isCurrentForum ? account.user : user;
     return ThreadReplyScope(
-      threadIdentity: (discuz.baseURL, user?.uid, tid),
+      threadIdentity: (discuz.baseURL, activeUser?.uid, tid),
       child: ViewThreadStatefulSliverWidget(
         discuz,
-        user,
+        activeUser,
         tid,
+        key: ValueKey((
+          discuz.baseURL,
+          tid,
+          activeUser?.uid,
+          isCurrentForum ? account.sessionIdentity : activeUser,
+        )),
         passedSubject: passedSubject,
         onClosed: onClosed,
         initialPid: initialPid,
@@ -130,6 +139,7 @@ class ViewThreadStatefulSliverWidget extends StatefulWidget {
     this.discuz,
     this.user,
     this.tid, {
+    super.key,
     this.passedSubject,
     this.onClosed,
     this.initialPid,
@@ -175,10 +185,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     this.onClosed,
   });
 
-  EasyRefreshController _controller = EasyRefreshController(
-    controlFinishLoad: true,
-    controlFinishRefresh: true,
-  );
+  final _controller = EasyRefreshController();
   late final _positionWriter = LatestValueWriter<ViewThreadScrollDistance>(
     write: (value) => ReadingPerformanceProbe.measure(
       'readingPosition.submit',
@@ -214,7 +221,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
 
   final _readingRestorer = ReadingPositionRestorer();
   Completer<void>? _initialReadingLoad;
+  late final Object _session;
   int _contentGeneration = 0;
+  int? _requestGeneration;
+  bool _hasMore = true;
   bool _initialPidHandled = false;
   bool _locatingPost = false;
   int _locateGeneration = 0;
@@ -244,7 +254,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   final GlobalKey<ExtraFuncInThreadState> _extraFunctionsKey =
       GlobalKey<ExtraFuncInThreadState>();
   // cache status
-  bool cached = false;
   int _initialPage = 1;
   int preCachedItemNum = 0;
   DateTime lastFocusAt = DateTime.now();
@@ -252,6 +261,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   @override
   void initState() {
     super.initState();
+    _session = context.read<DiscuzAndUserNotifier>().sessionIdentity;
     _replySubmission = ReplySubmissionController(
       _replyController,
       insertedAidList,
@@ -343,6 +353,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
 
   @override
   void dispose() {
+    _controller.dispose();
     WidgetsBinding.instance.removeObserver(this);
     _readingRestorer.cancel();
     unawaited(_positionWriter.close());
@@ -399,7 +410,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
         await UserPreferencesUtils.getDisableFontCustomizationPreference();
   }
 
-  void _saveViewHistory(DetailedThreadInfo threadInfo, String contents) async {
+  Future<void> _saveViewHistory(
+    DetailedThreadInfo threadInfo,
+    String contents,
+  ) async {
     // check if needed
     bool allowViewHistory =
         await UserPreferencesUtils.getRecordHistoryEnabled();
@@ -429,121 +443,104 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   }
 
   Future<IndicatorResult> _invalidateContent() async {
-    _contentGeneration++;
+    var generation = ++_contentGeneration;
     _locateGeneration++;
     _locatingPost = false;
     _readingRestorer.cancel();
-    // Complete pending old-position writes before refresh can clear the cache.
-    await _positionWriter.flush();
-    if (!mounted) return IndicatorResult.fail;
-    _initialPage = 1;
-    if (!_initialPidHandled && widget.initialPid != null) {
-      _initialPidHandled = true;
-      final found = await scrollToPid(widget.initialPid!);
-      if (found) return IndicatorResult.success;
-      if (!mounted) return IndicatorResult.fail;
-    }
-    if (_focusedPage) {
-      _postList = [];
-      postCommentList = {};
-      preCachedItemNum = 0;
-    }
-    _focusedPage = false;
-    _focusedPpp = null;
+    final account = context.read<DiscuzAndUserNotifier>();
+    bool isCurrent() =>
+        mounted &&
+        generation == _contentGeneration &&
+        identical(_session, account.sessionIdentity);
+    Completer<void>? initialLoad;
+    try {
+      await _positionWriter.flush();
+      if (!isCurrent()) return IndicatorResult.fail;
+      if (!_initialPidHandled && widget.initialPid != null) {
+        _initialPidHandled = true;
+        final found = await scrollToPid(widget.initialPid!);
+        if (found) return IndicatorResult.success;
+        if (!mounted || generation + 1 != _contentGeneration) {
+          return IndicatorResult.fail;
+        }
+        generation = _contentGeneration;
+      }
 
-    if (viewThreadCacheDao == null || viewThreadScrollDistanceDao == null) {
-      _initialReadingLoad = Completer<void>();
-      // retrieve cache
-      viewThreadCacheDao = await AppDatabase.getViewThreadCacheDao();
-      viewThreadScrollDistanceDao =
-          await AppDatabase.getViewThreadScrollDistanceDao();
-      List<ViewThreadCache> viewThreadCacheList = viewThreadCacheDao!
-          .findAllViewThreadCacheListByDiscuz(
+      var firstPage = 1;
+      final hasCacheDao =
+          viewThreadCacheDao != null && viewThreadScrollDistanceDao != null;
+      if (!hasCacheDao) {
+        initialLoad = _initialReadingLoad = Completer<void>();
+        try {
+          final cacheDao = await AppDatabase.getViewThreadCacheDao();
+          final distanceDao =
+              await AppDatabase.getViewThreadScrollDistanceDao();
+          if (!isCurrent()) return IndicatorResult.fail;
+          viewThreadCacheDao = cacheDao;
+          viewThreadScrollDistanceDao = distanceDao;
+          final pages = cacheDao.findAllViewThreadCacheListByDiscuz(
             discuz,
             tid,
             viewThreadQuery.timeAscend,
           );
-      if (viewThreadCacheList.isEmpty) {
-        cached = false;
-      } else {
-        // point to the last cached page
-        cached = true;
-        _initialPage = viewThreadCacheList.last.page;
-
-        List<Post> cachedPost = [];
-        bool isCacheSuccessful = true;
-        log("Change to initial page ${_initialPage}");
-
-        for (var threadCache in viewThreadCacheList) {
-          try {
-            ViewThreadResult result = ViewThreadResult.fromJson(
-              jsonDecode(threadCache.json),
-            );
-            cachedPost.addAll(result.threadVariables.postList);
-            if (threadCache != viewThreadCacheList.last) {
-              preCachedItemNum += result.threadVariables.postList.length;
+          final posts = <Post>[];
+          final comments = <String, List<Comment>>{};
+          ViewThreadResult? lastResult;
+          for (final page in pages) {
+            final result = ViewThreadResult.fromJson(jsonDecode(page.json));
+            if (result.getErrorString() != null ||
+                result.threadVariables.member_uid != (user?.uid ?? 0) ||
+                page.page != firstPage + (lastResult == null ? 0 : 1)) {
+              break;
             }
-          } catch (e) {
-            log("Not Successful decode!!! ${threadCache.json}");
-            isCacheSuccessful = false;
-            break;
+            preCachedItemNum = posts.length;
+            posts.addAll(result.threadVariables.postList);
+            comments.addAll(result.threadVariables.commentList);
+            firstPage = page.page;
+            lastResult = result;
           }
-        }
-
-        if (isCacheSuccessful) {
-          // cache integrity successful
-          ViewThreadResult lastResult = ViewThreadResult.fromJson(
-            jsonDecode(viewThreadCacheList.last.json),
-          );
-          setState(() {
-            _viewThreadResult = lastResult;
-            _postList = cachedPost;
-            // should not present first loading page
-            _isFirstLoading = false;
-          });
-
-          double? offset = viewThreadScrollDistanceDao!
-              .findViewThreadCacheListByDiscuz(
-                discuz,
-                tid,
-                viewThreadQuery.timeAscend,
-              )
-              ?.offset;
-          log("GET cache information ${cachedPost.length} OFFSET ${offset}");
-          if (offset != null) {
-            // Box-mode/multi-image posts also parse and lay out asynchronously.
-            // Starting before the body exists clamps the old offset too early.
-            _readingRestorer.schedule(offset);
+          if (lastResult != null && posts.isNotEmpty) {
+            final cachedResult = lastResult;
+            setState(() {
+              _viewThreadResult = cachedResult;
+              _postList = posts;
+              postCommentList = comments;
+              _isFirstLoading = false;
+            });
+            final offset = distanceDao
+                .findViewThreadCacheListByDiscuz(
+                  discuz,
+                  tid,
+                  viewThreadQuery.timeAscend,
+                )
+                ?.offset;
+            if (offset != null) {
+              _readingRestorer.schedule(offset);
+              ToastUtils.showSuccessfulToast(
+                S.of(context).animateToLastReadingPosition,
+              );
+            }
           }
-          // Toast here
-          ToastUtils.showSuccessfulToast(
-            S.of(context).animateToLastReadingPosition,
-          );
+        } catch (error) {
+          // A cache read failure must not block the network refresh.
+          log('Unable to load the thread cache: $error');
+          firstPage = 1;
         }
       }
-    } else {
-      // should delete all cache now!!!
-      _initialPage = 1;
-      // clear cache
-      viewThreadCacheDao!.deleteAllViewThreadCacheByTid(discuz, tid);
-      viewThreadScrollDistanceDao!.deleteAllViewThreadScrollDistanceByTid(
-        discuz,
-        tid,
+      if (!isCurrent()) return IndicatorResult.fail;
+      return await _loadForumContent(
+        refreshPage: firstPage,
+        clearCache: hasCacheDao && viewThreadQuery.authorId == 0,
       );
-    }
-
-    setState(() {
-      _page = _initialPage;
-    });
-    try {
-      return await _loadForumContent();
+    } catch (error) {
+      if (isCurrent())
+        setState(() => _error = EasyRefreshUtils.requestError(context, error));
+      return IndicatorResult.fail;
     } finally {
-      final initialLoad = _initialReadingLoad;
-      if (initialLoad != null && !initialLoad.isCompleted) {
-        // Let EasyRefresh process the returned result before the last offset
-        // correction. A manual drag/disposal still cancels the restoration.
+      final settlingLoad = initialLoad;
+      if (settlingLoad != null && !settlingLoad.isCompleted) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!initialLoad.isCompleted) initialLoad.complete();
+          if (!settlingLoad.isCompleted) settlingLoad.complete();
         });
         WidgetsBinding.instance.scheduleFrame();
       }
@@ -562,12 +559,15 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
       preCachedItemNum = 0;
       this.viewThreadQuery = viewThreadQuery;
       _page = 1;
+      _hasMore = true;
       _postList = [];
+      postCommentList = {};
     });
+    _controller.resetFooter();
     _loadForumContent();
   }
 
-  void _saveViewThreadCache(
+  Future<void> _saveViewThreadCache(
     ViewThreadResult result,
     int tid,
     int page,
@@ -583,7 +583,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
       page,
       isAscend,
     );
-    viewThreadCacheDao?.insertViewThreadCache(viewThreadCache);
+    await viewThreadCacheDao?.insertViewThreadCache(viewThreadCache);
   }
 
   Widget _withReplyPermission(User user, Widget child) => PostPermissionGate(
@@ -704,10 +704,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   late MobileApiClient client;
   bool dioLoaded = false;
   Future<void> _loadClient() async {
-    User? user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
     dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     if (!mounted) return;
     client = MobileApiClient(dio, baseUrl: discuz.baseURL);
@@ -718,10 +714,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   }
 
   Future<void> favoriteThread() async {
-    final user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
     FavoriteThreadDao favoriteThreadDao =
         await AppDatabase.getFavoriteThreadDao();
     await favoriteThreadDao.insertFavoriteThread(
@@ -773,14 +765,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   }
 
   Future<void> unfavoriteThread() async {
-    final user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
     FavoriteThreadDao favoriteThreadDao =
         await AppDatabase.getFavoriteThreadDao();
     FavoriteThreadInDatabase? favoriteThreadInDatabase = favoriteThreadDao
-        .getFavoriteThreadByTid(tid, discuz);
+        .getFavoriteThreadByTid(tid, discuz, uid: user?.uid ?? 0);
     if (favoriteThreadInDatabase != null) {
       await favoriteThreadDao.removeFavoriteThread(favoriteThreadInDatabase);
       if (mounted) setState(() {});
@@ -823,236 +811,203 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
 
   Future<void> checkWithCacheResponse() async {}
 
-  Future<IndicatorResult> _loadForumContent() async {
-    if (_locatingPost) return IndicatorResult.fail;
+  Future<IndicatorResult> _loadForumContent({
+    int? refreshPage,
+    bool clearCache = false,
+  }) async {
     final generation = _contentGeneration;
-    final requestedPage = _page;
-    final timeAscend = viewThreadQuery.timeAscend;
-    final query = viewThreadQuery.generateForumQueriesMap();
-    // check the availability
-    log("Base url ${discuz.baseURL} ${_page}");
-    User? user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
-    final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-    if (!mounted || generation != _contentGeneration)
+    if (_locatingPost || _requestGeneration == generation) {
       return IndicatorResult.fail;
-    final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
-
-    if (_page > _initialPage &&
-        (_focusedPage
-            ? !hasMoreThreadPages(
-                page: _page - 1,
-                postsPerPage: _focusedPpp ?? 15,
-                replies: _viewThreadResult.threadVariables.threadInfo.replies,
-              )
-            : _postList.length >=
-                  _viewThreadResult.threadVariables.threadInfo.replies + 1)) {
-      _controller.finishLoad(IndicatorResult.noMore);
-      _controller.finishRefresh(IndicatorResult.success);
-      return IndicatorResult.noMore;
     }
-
-    return await client
-        .viewThreadPage(tid, requestedPage, _focusedPpp ?? 15, query)
-        .then((value) {
-          if (!mounted || generation != _contentGeneration)
-            return IndicatorResult.fail;
-          final update = ReadingPageUpdate.fromResponse(
-            value,
-            currentPosts: _postList,
-            requestedPage: requestedPage,
-            initialPage: _initialPage,
-            cachedPrefixCount: preCachedItemNum,
-          );
-          if (ReadingPerformanceProbe.enabled) {
-            ReadingPerformanceProbe.record('reading.pageResponse', {
-              'page': requestedPage,
-              'accepted': update != null,
-              'received_posts': value.threadVariables.postList.length,
-              'current_posts': _postList.length,
-            });
-          }
-          if (update == null) {
-            final message = value.getErrorString() ?? S.of(context).error;
-            setState(() {
-              _isFirstLoading = false;
-              // Later-page errors belong to the load footer and toast. Inserting an
-              // error card above an existing article would move its reading position.
-              if (_postList.isEmpty || requestedPage <= _initialPage) {
-                _error = DiscuzError(
-                  value.errorResult?.key ?? S.of(context).error,
-                  value.errorResult?.content ?? message,
-                );
-              }
-              if (user != null &&
-                  value.threadVariables.member_uid != user.uid) {
-                _error = DiscuzError(
-                  S.of(context).userExpiredTitle(user.username),
-                  S.of(context).userExpiredSubtitle,
-                  errorType: ErrorType.userExpired,
-                );
-              }
-            });
-            _controller.finishRefresh(IndicatorResult.fail);
-            _controller.finishLoad(IndicatorResult.fail);
-            EasyLoading.showError(message);
-            return IndicatorResult.fail;
-          }
-          if (!historySaved &&
-              requestedPage == 1 &&
-              value.threadVariables.postList.length > 0) {
-            _saveViewHistory(
-              value.threadVariables.threadInfo,
-              value.threadVariables.postList.first.message,
-            );
-          }
-
-          Provider.of<DiscuzNotificationProvider>(
-            context,
-            listen: false,
-          ).setNotificationCount(value.threadVariables.noticeCount);
-
-          Provider.of<DiscuzNotificationProvider>(
-            context,
-            listen: false,
-          ).setBaseVariableResult(value.threadVariables);
-
-          setState(() {
-            _viewThreadResult = value;
-            _isFirstLoading = false;
-            _error = null;
-            _postList = update.posts;
-            postCommentList.addAll(value.threadVariables.commentList);
-          });
-          // cache the result before _page changes
-          if (!_focusedPage && viewThreadQuery.authorId == 0)
-            _saveViewThreadCache(value, tid, requestedPage, timeAscend);
-          _page = update.nextPage;
-          _controller.finishRefresh();
-
-          // check for loaded all?
-          //log("Get list ${value.threadVariables.threadInfo.allreplies} ${_postList.length} ${value.threadVariables.threadInfo.replies}");
-          final noMore =
-              value.threadVariables.postList.isEmpty ||
-              (_focusedPage
-                  ? !hasMoreThreadPages(
-                      page: requestedPage,
-                      postsPerPage: _focusedPpp ?? 15,
-                      replies: value.threadVariables.threadInfo.replies,
-                    )
-                  : _postList.length >=
-                        value.threadVariables.threadInfo.replies + 1);
-          _controller.finishLoad(
-            noMore ? IndicatorResult.noMore : IndicatorResult.success,
-          );
-          _controller.finishRefresh(IndicatorResult.success);
-
-          if (user != null && value.threadVariables.member_uid != user.uid) {
-            log(
-              "recv user uid different! ${user.uid} ${value.threadVariables.member_uid} ${value.threadVariables.member_username}",
-            );
-            setState(() {
-              _error = DiscuzError(
-                S.of(context).userExpiredTitle(user.username),
-                S.of(context).userExpiredSubtitle,
-                errorType: ErrorType.userExpired,
-              );
-            });
-          }
-
-          log(
-            "set successful result ${_viewThreadResult.threadVariables.threadInfo.replies} ${_postList.length}",
-          );
-
-          // save rewrite rule
-          RewriteRule rewriteRule = value.threadVariables.rewriteRule;
-          if (rewriteRule.forumDisplay.isNotEmpty) {
-            RewriteRuleUtils.putForumDisplayRule(
-              discuz,
-              rewriteRule.forumDisplay,
-            );
-          }
-
-          if (rewriteRule.viewThread.isNotEmpty) {
-            RewriteRuleUtils.putViewThreadRule(discuz, rewriteRule.viewThread);
-          }
-
-          if (rewriteRule.userSpace.isNotEmpty) {
-            RewriteRuleUtils.putUserProfileRule(discuz, rewriteRule.userSpace);
-          }
-
-          if (noMore) {
-            log(
-              "No more posts ${_postList.length} ${value.threadVariables.threadInfo.replies}",
-            );
-            return IndicatorResult.noMore;
-          } else {
-            return IndicatorResult.success;
-          }
-        })
-        .catchError((onError, stack) {
-          if (!mounted || generation != _contentGeneration)
-            return IndicatorResult.fail;
-          VibrationUtils.vibrateErrorIfPossible();
-
-          log("${onError} ${stack}");
-          _controller.finishRefresh(IndicatorResult.fail);
-          _controller.finishLoad(IndicatorResult.fail);
-          if (onError is DioException) {
-            DioException dioError = onError;
-
-            // EasyLoading.showError("${dioError.message} (${dioError})");
-            setState(() {
-              _isFirstLoading = false;
-              DioException error = onError;
-
-              _error = DiscuzError(
-                dioError.type.name,
-                dioError.response?.statusMessage == null
-                    ? S.of(context).error
-                    : dioError.response!.statusMessage!,
-                dioError: dioError,
-              );
-            });
-          } else {
-            log("${onError} >-> ${onError.runtimeType}");
-            setState(() {
-              _error = DiscuzError(
-                onError.runtimeType.toString(),
-                onError.toString(),
-              );
-            });
-            EasyLoading.showError('${onError}');
-          }
-
-          return IndicatorResult.fail;
+    if (refreshPage == null && !_hasMore) return IndicatorResult.noMore;
+    final account = context.read<DiscuzAndUserNotifier>();
+    bool isCurrent() =>
+        mounted &&
+        generation == _contentGeneration &&
+        identical(_session, account.sessionIdentity);
+    if (!isCurrent()) return IndicatorResult.fail;
+    _requestGeneration = generation;
+    final requestedPage = refreshPage ?? _page;
+    final initialPage = refreshPage ?? _initialPage;
+    final focused = refreshPage == null && _focusedPage;
+    final postsPerPage = focused ? _focusedPpp ?? 15 : 15;
+    final timeAscend = viewThreadQuery.timeAscend;
+    final authorId = viewThreadQuery.authorId;
+    final query = viewThreadQuery.generateForumQueriesMap();
+    try {
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      final value = await MobileApiClient(
+        dio,
+        baseUrl: discuz.baseURL,
+      ).viewThreadPage(tid, requestedPage, postsPerPage, query);
+      if (!isCurrent()) return IndicatorResult.fail;
+      final variables = value.threadVariables;
+      final error = EasyRefreshUtils.responseError(
+        context,
+        value,
+        user,
+        variables.member_uid,
+      );
+      final update = ReadingPageUpdate.fromResponse(
+        value,
+        currentPosts: _postList,
+        requestedPage: requestedPage,
+        initialPage: initialPage,
+        cachedPrefixCount: preCachedItemNum,
+      );
+      if (ReadingPerformanceProbe.enabled) {
+        ReadingPerformanceProbe.record('reading.pageResponse', {
+          'page': requestedPage,
+          'accepted': error == null && update != null,
+          'received_posts': variables.postList.length,
+          'current_posts': _postList.length,
         });
+      }
+      if (error != null || update == null) {
+        final displayError = error ?? DiscuzError(S.of(context).error, '');
+        setState(() {
+          _isFirstLoading = false;
+          if (_postList.isEmpty ||
+              requestedPage <= initialPage ||
+              displayError.errorType == ErrorType.userExpired) {
+            _error = displayError;
+          }
+        });
+        EasyLoading.showError(displayError.content);
+        return IndicatorResult.fail;
+      }
+
+      final replies = variables.threadInfo.replies;
+      setState(() {
+        _viewThreadResult = value;
+        _isFirstLoading = false;
+        _error = null;
+        _postList = update.posts;
+        _page = update.nextPage;
+        if (requestedPage == 1) postCommentList = {};
+        postCommentList.addAll(variables.commentList);
+        if (refreshPage != null) {
+          _initialPage = refreshPage;
+          _focusedPage = false;
+          _focusedPpp = null;
+          if (refreshPage == 1) preCachedItemNum = 0;
+        }
+        _hasMore =
+            variables.postList.isNotEmpty &&
+            (focused
+                ? hasMoreThreadPages(
+                    page: requestedPage,
+                    postsPerPage: postsPerPage,
+                    replies: replies,
+                  )
+                : _postList.length < replies + 1);
+      });
+      if (refreshPage != null) _controller.resetFooter();
+
+      if (!historySaved &&
+          requestedPage == 1 &&
+          variables.postList.isNotEmpty) {
+        historySaved = true;
+        unawaited(
+          _saveViewHistory(
+            variables.threadInfo,
+            variables.postList.first.message,
+          ).catchError((Object error) {
+            historySaved = false;
+            log('Unable to save thread history: $error');
+          }),
+        );
+      }
+      context.read<DiscuzNotificationProvider>()
+        ..setNotificationCount(variables.noticeCount)
+        ..setBaseVariableResult(variables);
+
+      final rewriteRule = variables.rewriteRule;
+      if (rewriteRule.forumDisplay.isNotEmpty) {
+        RewriteRuleUtils.putForumDisplayRule(discuz, rewriteRule.forumDisplay);
+      }
+      if (rewriteRule.viewThread.isNotEmpty) {
+        RewriteRuleUtils.putViewThreadRule(discuz, rewriteRule.viewThread);
+      }
+      if (rewriteRule.userSpace.isNotEmpty) {
+        RewriteRuleUtils.putUserProfileRule(discuz, rewriteRule.userSpace);
+      }
+
+      if (!focused && authorId == 0) {
+        try {
+          if (clearCache) {
+            await viewThreadCacheDao?.deleteAllViewThreadCacheByTid(
+              discuz,
+              tid,
+            );
+            await viewThreadScrollDistanceDao
+                ?.deleteAllViewThreadScrollDistanceByTid(discuz, tid);
+          }
+          if (isCurrent())
+            await _saveViewThreadCache(value, tid, requestedPage, timeAscend);
+        } catch (error) {
+          log('Unable to save the thread cache: $error');
+        }
+      }
+      return refreshPage != null || _hasMore
+          ? IndicatorResult.success
+          : IndicatorResult.noMore;
+    } catch (error) {
+      if (!isCurrent()) return IndicatorResult.fail;
+      VibrationUtils.vibrateErrorIfPossible();
+      final displayError = EasyRefreshUtils.requestError(context, error);
+      setState(() {
+        _isFirstLoading = false;
+        if (_postList.isEmpty || requestedPage <= initialPage)
+          _error = displayError;
+      });
+      if (requestedPage > initialPage)
+        EasyLoading.showError(displayError.content);
+      return IndicatorResult.fail;
+    } finally {
+      if (_requestGeneration == generation) _requestGeneration = null;
+    }
   }
 
   Future<bool> scrollToPid(int pid) async {
     if (pid <= 0 || _locatingPost) return false;
+    final account = context.read<DiscuzAndUserNotifier>();
     final request = ++_locateGeneration;
+    bool isCurrent() =>
+        mounted &&
+        request == _locateGeneration &&
+        identical(_session, account.sessionIdentity);
     _readingRestorer.cancel();
     var index = _postList.indexWhere((post) => post.pid == pid);
     try {
       if (index < 0) {
         final generation = ++_contentGeneration;
         setState(() => _locatingPost = true);
-        final currentUser = context.read<DiscuzAndUserNotifier>().user;
-        final dio = await NetworkUtils.getDioWithPersistCookieJar(currentUser);
+        final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
         final located = await PostLocator.locate(dio, discuz.baseURL, tid, pid);
-        if (!mounted ||
-            request != _locateGeneration ||
-            generation != _contentGeneration)
+        if (!isCurrent() || generation != _contentGeneration) return false;
+        final variables = located.result.threadVariables;
+        final error = EasyRefreshUtils.responseError(
+          context,
+          located.result,
+          user,
+          variables.member_uid,
+        );
+        if (error != null) {
+          setState(() => _error = error);
           return false;
+        }
         setState(() {
           _focusedPage = true;
           _focusedPpp = int.tryParse(located.result.threadVariables.ppp);
           _initialPage = located.page;
           preCachedItemNum = 0;
           _page = located.page + 1;
+          _hasMore = hasMoreThreadPages(
+            page: located.page,
+            postsPerPage: _focusedPpp ?? 15,
+            replies: variables.threadInfo.replies,
+          );
           viewThreadQuery = ViewThreadQuery();
           _viewThreadResult = located.result;
           _postList = located.result.threadVariables.postList;
@@ -1061,25 +1016,21 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
           _error = null;
         });
         index = _postList.indexWhere((post) => post.pid == pid);
-        _controller.finishRefresh(IndicatorResult.success);
-        _controller.finishLoad(IndicatorResult.success);
+        _controller.resetFooter();
       }
-      if (!mounted || request != _locateGeneration) return false;
+      if (!isCurrent()) return false;
       setState(() => _highlightPid = pid);
       await WidgetsBinding.instance.endOfFrame;
-      if (!mounted ||
-          !_postAutoScrollController.hasClients ||
-          request != _locateGeneration)
-        return false;
+      if (!isCurrent() || !_postAutoScrollController.hasClients) return false;
       await _postAutoScrollController.scrollToIndex(
         index,
         preferPosition: AutoScrollPosition.begin,
       );
-      if (!mounted) return false;
+      if (!isCurrent()) return false;
       await _postAutoScrollController.highlight(index);
       return true;
     } catch (_) {
-      if (mounted) EasyLoading.showError(S.of(context).postLocateFailed);
+      if (isCurrent()) EasyLoading.showError(S.of(context).postLocateFailed);
       return false;
     } finally {
       if (mounted && request == _locateGeneration)
@@ -1272,6 +1223,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     final favoriteThreadInDatabase = favoriteThreadDao?.getFavoriteThreadByTid(
       tid,
       discuz,
+      uid: user?.uid ?? 0,
     );
     // A long main post must share the outer viewport to lay out only nearby
     // blocks. Replies and short/Material posts retain their existing box path.
@@ -1453,12 +1405,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                   refreshOnStart: true,
                   controller: _controller,
                   //scrollController: _scrollController,
-                  onRefresh: () async {
-                    return await _invalidateContent();
-                  },
-                  onLoad: () async {
-                    return await _loadForumContent();
-                  },
+                  onRefresh: _invalidateContent,
+                  onLoad: _loadForumContent,
                   // if first load then should display a loading screen
                   child: SelectionArea(
                     child: CustomScrollView(

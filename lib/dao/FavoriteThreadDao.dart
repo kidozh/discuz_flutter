@@ -1,44 +1,53 @@
-
 import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
 import 'package:hive_ce/hive.dart';
 
 import '../entity/Discuz.dart';
 
-class FavoriteThreadDao{
+class FavoriteThreadDao {
   Box<FavoriteThreadInDatabase> favoriteThreadBox;
 
   FavoriteThreadDao(this.favoriteThreadBox);
 
-  List<FavoriteThreadInDatabase> getFavoriteThreadList(Discuz discuz){
-    return favoriteThreadBox.values.where((element) => element.discuz == discuz).toList();
+  List<FavoriteThreadInDatabase> getFavoriteThreadList(
+    Discuz discuz, {
+    required int uid,
+  }) {
+    return favoriteThreadBox.values
+        .where((entry) => entry.discuz == discuz && entry.uid == uid)
+        .toList();
   }
-
 
   // Stream<List<FavoriteThreadInDatabase>> getFavoriteThreadListStream(Discuz discuz){
   //   return favoriteThreadBox.watch().map((event) => favoriteThreadBox.values.where((element) => element.discuz == discuz).toList());
   // }
 
-  Future<int> insertFavoriteThread(FavoriteThreadInDatabase favoriteThreadInDatabase){
+  Future<int> insertFavoriteThread(
+    FavoriteThreadInDatabase favoriteThreadInDatabase,
+  ) {
     return favoriteThreadBox.add(favoriteThreadInDatabase);
   }
 
-  Future<void> removeFavoriteThread(FavoriteThreadInDatabase favoriteThreadInDatabase) async{
-    favoriteThreadBox.delete(favoriteThreadInDatabase.key);
-  }
+  Future<void> removeFavoriteThread(FavoriteThreadInDatabase favorite) =>
+      favoriteThreadBox.delete(favorite.key);
 
-  FavoriteThreadInDatabase? getFavoriteThreadByTid(int idInServer, Discuz discuz){
-    if(favoriteThreadBox.values.where((element) => element.idInServer == idInServer && element.discuz == discuz).isNotEmpty){
-      return favoriteThreadBox.values.where((element) => element.idInServer == idInServer && element.discuz == discuz).first;
+  FavoriteThreadInDatabase? getFavoriteThreadByTid(
+    int idInServer,
+    Discuz discuz, {
+    required int uid,
+  }) {
+    for (final entry in favoriteThreadBox.values) {
+      if (entry.idInServer == idInServer &&
+          entry.discuz == discuz &&
+          entry.uid == uid) {
+        return entry;
+      }
     }
-    else{
-      return null;
-    }
+    return null;
   }
 
   // Stream<FavoriteThreadInDatabase?> getFavoriteThreadStreamByTid(int idInServer, Discuz discuz){
   //   return favoriteThreadBox.watch().map((event) => favoriteThreadBox.values.where((element) => element.idInServer == idInServer && element.discuz == discuz).first);
   // }
-
 }
 
 // @dao

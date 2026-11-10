@@ -7,8 +7,6 @@ import 'dart:developer';
 import '../utility/thread_selection_colors.dart';
 import 'thread_list_surface.dart';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/dao/ViewHistoryDao.dart';
@@ -20,8 +18,6 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/SelectedTidNotifierProvider.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
-import 'package:discuz_flutter/utility/DiscuzImageDioCacheManager.dart';
-import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
@@ -33,16 +29,15 @@ import 'package:provider/provider.dart';
 
 import '../entity/ViewHistory.dart';
 import '../page/ViewThreadSliverPage.dart';
-import '../provider/DiscuzAndUserNotifier.dart';
+import 'forum_image.dart';
 
-// ignore: must_be_immutable
 class ForumThreadWidget extends StatelessWidget {
-  ForumThread _forumThread;
-  Discuz _discuz;
-  User? _user;
-  ThreadType? threadType;
+  final ForumThread _forumThread;
+  final Discuz _discuz;
+  final User? _user;
+  final ThreadType? threadType;
   final ValueChanged<int>? onSelectTid;
-  int? afterTid = null;
+  final int? afterTid;
 
   ForumThreadWidget(
     this._discuz,
@@ -62,17 +57,23 @@ class ForumThreadWidget extends StatelessWidget {
       this.threadType,
       onSelectTid,
       afterTid: afterTid,
+      key: ValueKey((
+        _discuz.baseURL,
+        _user?.uid,
+        _forumThread.getTid(),
+        _forumThread.getAuthorId(),
+      )),
     );
   }
 }
 
 class ForumThreadStatefulWidget extends StatefulWidget {
-  ForumThread _forumThread;
-  Discuz _discuz;
-  User? _user;
-  ThreadType? threadType;
-  ValueChanged<int>? onSelectTid;
-  int? afterTid = null;
+  final ForumThread _forumThread;
+  final Discuz _discuz;
+  final User? _user;
+  final ThreadType? threadType;
+  final ValueChanged<int>? onSelectTid;
+  final int? afterTid;
 
   ForumThreadStatefulWidget(
     this._discuz,
@@ -80,54 +81,27 @@ class ForumThreadStatefulWidget extends StatefulWidget {
     this._forumThread,
     this.threadType,
     this.onSelectTid, {
+    super.key,
     this.afterTid,
   });
 
   @override
-  ForumThreadState createState() {
-    return ForumThreadState(
-      this._discuz,
-      this._user,
-      this._forumThread,
-      this.threadType,
-      this.onSelectTid,
-      afterTid: afterTid,
-    );
-  }
+  ForumThreadState createState() => ForumThreadState();
 }
 
 class ForumThreadState extends State<ForumThreadStatefulWidget> {
-  ForumThread _forumThread;
-  Discuz _discuz;
-  User? _user;
-  ThreadType? threadType;
+  ForumThread get _forumThread => widget._forumThread;
+  Discuz get _discuz => widget._discuz;
+  User? get _user => widget._user;
+  ThreadType? get threadType => widget.threadType;
+  int? get afterTid => widget.afterTid;
+  ValueChanged<int>? get onSelectTid => widget.onSelectTid;
   bool read = false;
-  int? afterTid = null;
-  Dio _dio = Dio();
-  DiscuzImageDioCacheManager? _discuzImageDioCacheManager;
-
-  final ValueChanged<int>? onSelectTid;
-
-  ForumThreadState(
-    this._discuz,
-    this._user,
-    this._forumThread,
-    this.threadType,
-    this.onSelectTid, {
-    this.afterTid,
-  }) {
-    log(
-      "Last selected during forum in init thread state ${_forumThread.tid} ${afterTid}",
-    );
-  }
 
   @override
   void initState() {
-    // set in case
-    _user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-
-    loadDatabase();
     super.initState();
+    loadDatabase();
   }
 
   ViewHistoryDao? dao;
@@ -137,10 +111,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
   void loadDatabase() async {
     ViewHistoryDao viewHistoryDao = await AppDatabase.getViewHistoryDao();
     if (!mounted) return;
-    _dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
-    if (!mounted) return;
     setState(() {
-      _discuzImageDioCacheManager = DiscuzImageDioCacheManager(_dio);
       dao = viewHistoryDao;
     });
     blockUserDao = await AppDatabase.getBlockUserDao();
@@ -196,16 +167,16 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
   Widget getAttachmentPreviewWidget(AttachmentPreview attachmentPreview) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8.0),
-      child: CachedNetworkImage(
-        cacheManager: _discuzImageDioCacheManager,
+      child: ForumImage(
+        forum: _discuz,
         fit: BoxFit.cover,
-        imageUrl:
-            "${_discuz.getBaseURLWithAfterfix()}/data/attachment/forum/${attachmentPreview.attachment}",
-        progressIndicatorBuilder: (context, url, downloadProgress) => Container(
+        url:
+            "${_discuz.getBaseURLWithAfterfix()}data/attachment/forum/${attachmentPreview.attachment}",
+        loading: (context, progress) => Container(
           color: Theme.of(context).colorScheme.secondaryContainer,
           child: PlatformCircularProgressIndicator(
             material: (context, platform) => MaterialProgressIndicatorData(
-              value: downloadProgress.progress,
+              value: progress,
               color: Theme.of(context).colorScheme.onSecondaryContainer,
             ),
             cupertino: (context, platform) => CupertinoProgressIndicatorData(
@@ -213,7 +184,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
             ),
           ),
         ),
-        errorWidget: (context, url, error) {
+        error: (context) {
           return Container(
             width: 64 / 0.618,
             height: 64,

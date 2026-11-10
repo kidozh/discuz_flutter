@@ -49,16 +49,7 @@ class ExtraFuncInThreadScreen extends StatefulWidget {
   });
 
   @override
-  ExtraFuncInThreadState createState() {
-    return ExtraFuncInThreadState(
-      this.discuz,
-      this.tid,
-      this.fid,
-      this.onReplyWithImage,
-      this.onReplyWithHostedImage,
-      this.showHistoricalAttachment,
-    );
-  }
+  ExtraFuncInThreadState createState() => ExtraFuncInThreadState();
 }
 
 class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
@@ -68,24 +59,15 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
   DiscuzError? _discuzError;
   bool _permissionLoaded = false;
   bool _uploading = false;
-  bool? showHistoricalAttachment;
+  bool? get showHistoricalAttachment => widget.showHistoricalAttachment;
 
-  int tid = 0;
-  int fid = 0;
-  StringToVoidFunc onReplyWithImage;
-  StringToVoidFunc? onReplyWithHostedImage;
+  int get tid => widget.tid;
+  int get fid => widget.fid;
+  StringToVoidFunc get onReplyWithImage => widget.onReplyWithImage;
+  StringToVoidFunc? get onReplyWithHostedImage => widget.onReplyWithHostedImage;
   List<ImageAttachment> imageAttachmentList = [];
-  Discuz discuz;
+  Discuz get discuz => widget.discuz;
   Map<ChevertoPictureBed, String> chevertoPictureBedTokens = {};
-
-  ExtraFuncInThreadState(
-    this.discuz,
-    this.tid,
-    this.fid,
-    this.onReplyWithImage,
-    this.onReplyWithHostedImage,
-    this.showHistoricalAttachment,
-  );
 
   void pickImageFromGallery() => _triggerMediaAction(0);
 
@@ -238,10 +220,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
                 ),
               SizedBox(
                 height: MediaQuery.sizeOf(dialogContext).height * 0.25,
-                child: Image.file(
-                  original,
-                  fit: BoxFit.contain,
-                ),
+                child: Image.file(original, fit: BoxFit.contain),
               ),
             ],
           ),

@@ -24,6 +24,7 @@ import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/DiscuzError.dart';
+import '../utility/EasyRefreshUtils.dart';
 import '../utility/UserPreferencesUtils.dart';
 import 'ExploreWebsiteScaffordPage.dart';
 import 'PrivateMessageDetailPage.dart';
@@ -38,12 +39,19 @@ class UserProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("get uid profile in page: ${uid} ${username}");
+    final account = context.watch<DiscuzAndUserNotifier>();
+    final isCurrentForum = account.discuz?.baseURL == discuz.baseURL;
+    final activeUser = isCurrentForum ? account.user : user;
     return UserProfileStatefulWidget(
       discuz,
-      user,
+      activeUser,
       uid,
-      username: this.username,
+      key: ValueKey((
+        discuz.baseURL,
+        uid,
+        isCurrentForum ? account.sessionIdentity : activeUser,
+      )),
+      username: username,
     );
   }
 }
@@ -54,7 +62,13 @@ class UserProfileStatefulWidget extends StatefulWidget {
   int uid = 0;
   String? username = null;
 
-  UserProfileStatefulWidget(this.discuz, this.user, this.uid, {this.username});
+  UserProfileStatefulWidget(
+    this.discuz,
+    this.user,
+    this.uid, {
+    this.username,
+    super.key,
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -112,50 +126,50 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
       return;
     setState(() => avatarRevision = DateTime.now().millisecondsSinceEpoch);
     account.setUser(current);
-    _loadUserProfile();
   }
 
-  void _loadUserProfile() async {
-    setState(() {
-      isUpdating = true;
-    });
-    print("get uid profile : ${uid} ${username}");
-    User? user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
-    var dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-    final MobileApiClient client = MobileApiClient(
-      dio,
-      baseUrl: discuz.baseURL,
-    );
-
-    client
-        .userProfileResult(uid)
-        .then((value) {
-          if (!mounted) return;
-          setState(() {
-            isUpdating = false;
-            this._userProfileResult = value;
-          });
-          // try to save the group information
-          UserPreferencesUtils.putDiscuzGroupNameById(
-            discuz,
-            value.variables.getSpace().groupId,
-            value.variables.getSpace().groupInfo.groupTitle,
-          );
-        })
-        .catchError((e) {
-          if (mounted) {
-            setState(() {
-              isUpdating = false;
-              _discuzError = DiscuzError(
-                S.of(context).networkFailed,
-                S.of(context).networkFail,
-              );
-            });
-          }
-        });
+  Future<IndicatorResult> _loadUserProfile() async {
+    if (isUpdating) return IndicatorResult.fail;
+    setState(() => isUpdating = true);
+    final account = context.read<DiscuzAndUserNotifier>();
+    final session = account.sessionIdentity;
+    bool isCurrent() => mounted && identical(session, account.sessionIdentity);
+    try {
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      final value = await MobileApiClient(
+        dio,
+        baseUrl: discuz.baseURL,
+      ).userProfileResult(uid);
+      if (!isCurrent()) return IndicatorResult.fail;
+      final variables = value.variables;
+      final error = EasyRefreshUtils.responseError(
+        context,
+        value,
+        user,
+        variables.member_uid,
+      );
+      setState(() {
+        _discuzError = error;
+        if (error == null) _userProfileResult = value;
+      });
+      if (error != null) return IndicatorResult.fail;
+      final space = variables.getSpace();
+      UserPreferencesUtils.putDiscuzGroupNameById(
+        discuz,
+        space.groupId,
+        space.groupInfo.groupTitle,
+      );
+      return IndicatorResult.success;
+    } catch (error) {
+      if (isCurrent()) {
+        setState(
+          () => _discuzError = EasyRefreshUtils.requestError(context, error),
+        );
+      }
+      return IndicatorResult.fail;
+    } finally {
+      if (isCurrent()) setState(() => isUpdating = false);
+    }
   }
 
   @override
@@ -184,23 +198,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
             : ErrorCard(_discuzError!, () {
                 VibrationUtils.vibrateWithClickIfPossible();
                 _loadUserProfile();
-              }),
-      );
-    } else if (_userProfileResult != null &&
-        _userProfileResult!.errorResult != null) {
-      return PlatformScaffold(
-        iosContentPadding: true,
-        iosContentBottomPadding: true,
-        appBar: PlatformAppBar(title: Text(S.of(context).userProfile)),
-        body: ErrorCard(
-          DiscuzError(
-            _userProfileResult!.errorResult!.key,
-            _userProfileResult!.errorResult!.content,
-          ),
-          () {
-            _loadUserProfile();
-          },
-        ),
+              }, errorType: _discuzError!.errorType),
       );
     }
     return PlatformScaffold(
@@ -238,8 +236,18 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
         ],
       ),
       body: EasyRefresh(
+        header: EasyRefreshUtils.i18nClassicHeader(context),
+        onRefresh: _loadUserProfile,
         child: CustomScrollView(
           slivers: [
+            if (_discuzError != null)
+              SliverToBoxAdapter(
+                child: ErrorCard(
+                  _discuzError!,
+                  _loadUserProfile,
+                  errorType: _discuzError!.errorType,
+                ),
+              ),
             SliverList(
               delegate: SliverChildListDelegate([
                 PlatformLiquidGlassCard(

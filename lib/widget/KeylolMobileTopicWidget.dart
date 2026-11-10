@@ -1,4 +1,5 @@
 import '../utility/DashboardPreferences.dart';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -44,10 +45,16 @@ class _KeylolMobileTopicState extends State<KeylolMobileTopicWidget> {
       _isLoading = true;
       _error = null;
     });
+    final account = context.read<DiscuzAndUserNotifier>();
+    final session = account.sessionIdentity;
+    bool isCurrent() =>
+        mounted &&
+        !request.isCancelled &&
+        identical(session, account.sessionIdentity);
     try {
-      final user = context.read<DiscuzAndUserNotifier>().user;
+      final user = account.user;
       final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-      if (!mounted || request.isCancelled) return;
+      if (!isCurrent()) return;
       dio.options.connectTimeout = const Duration(seconds: 20);
       final response = await dio.get<String>(
         'https://keylol.com',
@@ -57,14 +64,14 @@ class _KeylolMobileTopicState extends State<KeylolMobileTopicWidget> {
           receiveTimeout: const Duration(seconds: 20),
         ),
       );
-      if (!mounted || request.isCancelled) return;
+      if (!isCurrent()) return;
       final topics = parseKeylolPortalTopics(response.data ?? '');
       setState(() {
         _topics = topics;
         _isLoading = false;
       });
     } catch (error) {
-      if (!mounted || request.isCancelled) return;
+      if (!isCurrent()) return;
       setState(() {
         _isLoading = false;
         _error = DiscuzError(

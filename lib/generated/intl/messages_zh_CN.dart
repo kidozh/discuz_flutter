@@ -1591,6 +1591,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "uploadingImageToServer": MessageLookupByLibrary.simpleMessage(
       "向服务器传输数据中。。。",
     ),
+    "useForumCookiesForImages": MessageLookupByLibrary.simpleMessage(
+      "加载图片时携带论坛 Cookie",
+    ),
+    "useForumCookiesForImagesDescription": MessageLookupByLibrary.simpleMessage(
+      "用当前登录账号加载同一论坛的帖子图片和附件。默认开启。",
+    ),
     "useGoogleAnalyticsContent": MessageLookupByLibrary.simpleMessage(
       "本应用使用谷歌统计收集所有必要信息以减少崩溃次数、完成推送服务以及优化应用。",
     ),

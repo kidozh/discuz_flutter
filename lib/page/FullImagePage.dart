@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
+import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
@@ -14,12 +15,14 @@ import 'package:photo_view/photo_view_gallery.dart';
 import 'package:saver_gallery/saver_gallery.dart';
 
 import '../utility/AppPlatformIcons.dart';
+import '../utility/forum_image_session.dart';
 
 class FullImagePage extends StatefulWidget {
   String imageUrl;
   List<String> imageUrlList = [];
+  final Discuz? forum;
 
-  FullImagePage(this.imageUrl, this.imageUrlList);
+  FullImagePage(this.imageUrl, this.imageUrlList, {this.forum});
 
   @override
   State<StatefulWidget> createState() {
@@ -42,44 +45,44 @@ class FullImagePageState extends State<FullImagePage> {
 
   @override
   Widget build(BuildContext context) {
+    final imageSession = ForumImageSession.of(context, widget.forum);
     return PlatformScaffold(
-        appBar: PlatformAppBar(
-          title: Text(
-            "${currentPage + 1} / ${imageUrlList.length}",
-            maxLines: 1,
+      appBar: PlatformAppBar(
+        title: Text("${currentPage + 1} / ${imageUrlList.length}", maxLines: 1),
+        trailingActions: [
+          PlatformIconButton(
+            liquidGlassSymbol: 'square.and.arrow.down',
+            icon: Icon(
+              AppPlatformIcons(context).saveOutline,
+              semanticLabel: S.of(context).savePictureToDevice,
+            ),
+            onPressed: () {
+              VibrationUtils.vibrateWithClickIfPossible();
+              _save(context, imageSession);
+            },
           ),
-          trailingActions: [
-            PlatformIconButton(
-              liquidGlassSymbol: 'square.and.arrow.down',
-              icon: Icon(
-                AppPlatformIcons(context).saveOutline,
-                semanticLabel: S.of(context).savePictureToDevice,
-              ),
-              onPressed: () {
-                VibrationUtils.vibrateWithClickIfPossible();
-                _save(context);
-              },
-            )
-          ],
+        ],
+      ),
+      body: Container(
+        child: Column(
+          children: [Expanded(child: _photoViewGallery(imageSession))],
         ),
-        body: Container(
-            child: Column(
-          children: [
-            Expanded(
-              child: photoViewGalleryListBuilder,
-            )
-          ],
-        )));
+      ),
+    );
   }
 
   int get initialPage => imageUrlList.indexOf(imageUrl);
 
-  Widget get photoViewGalleryListBuilder => PhotoViewGallery.builder(
+  Widget _photoViewGallery(ForumImageSession? imageSession) =>
+      PhotoViewGallery.builder(
         itemCount: imageUrlList.length,
         scrollPhysics: const BouncingScrollPhysics(),
         builder: (BuildContext context, int index) {
+          final url = imageUrlList[index];
           return PhotoViewGalleryPageOptions(
-            imageProvider: CachedNetworkImageProvider(imageUrlList[index]),
+            imageProvider:
+                imageSession?.providerFor(url) ??
+                CachedNetworkImageProvider(url),
             initialScale: PhotoViewComputedScale.contained * 0.8,
             heroAttributes: PhotoViewHeroAttributes(tag: index),
           );
@@ -96,43 +99,49 @@ class FullImagePageState extends State<FullImagePage> {
             height: 48,
             child: PlatformCircularProgressIndicator(
               material: (context, platform) => MaterialProgressIndicatorData(
-                  value: (event == null || event.expectedTotalBytes == null)
-                      ? 0
-                      : event.cumulativeBytesLoaded /
-                          event.expectedTotalBytes!),
+                value: (event == null || event.expectedTotalBytes == null)
+                    ? 0
+                    : event.cumulativeBytesLoaded / event.expectedTotalBytes!,
+              ),
             ),
           ),
         ),
       );
 
-  Future<void> _saveFigureInDevice() async {
+  Future<void> _saveFigureInDevice(ForumImageSession? imageSession) async {
     if (currentPage < imageUrlList.length) {
-      var response = await Dio().get(imageUrlList[currentPage],
-          options: Options(responseType: ResponseType.bytes));
+      final url = imageUrlList[currentPage];
+      final bytes =
+          await (imageSession?.download(url) ??
+              Dio()
+                  .get<Uint8List>(
+                    url,
+                    options: Options(responseType: ResponseType.bytes),
+                  )
+                  .then((response) => response.data!));
       SaverGallery.saveImage(
-        Uint8List.fromList(response.data),
+        bytes,
         quality: 100,
-        fileName: imageUrlList[currentPage].split("/").last,
+        fileName: url.split("/").last,
         skipIfExists: false,
       );
       EasyLoading.showSuccess(S.of(context).saveImageSuccessfully);
     }
   }
 
-  _save(BuildContext context) async {
+  _save(BuildContext context, ForumImageSession? imageSession) async {
     if (Platform.isIOS || Platform.isAndroid) {
-      print(imageUrl);
       var status = await Permission.storage.status;
       print(status);
       if (status.isGranted) {
-        await _saveFigureInDevice();
+        await _saveFigureInDevice(imageSession);
       } else if (status.isPermanentlyDenied) {
         EasyLoading.showError(S.of(context).writeStorageDenied);
       } else if (status.isDenied) {
         PermissionStatus statusResult = await Permission.storage.request();
         if (statusResult.isGranted) {
           // save it
-          await _saveFigureInDevice();
+          await _saveFigureInDevice(imageSession);
         } else {
           EasyLoading.showError(S.of(context).writeStorageDenied);
         }

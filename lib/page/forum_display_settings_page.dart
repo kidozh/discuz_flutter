@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -89,6 +90,16 @@ class ForumDisplaySettingsPage extends StatelessWidget {
                 update: (value) =>
                     preference.forumDisplay.copyWith(showThreadStats: value),
               ),
+              if (!kIsWeb)
+                switchTile(
+                  title: strings.useForumCookiesForImages,
+                  description: strings.useForumCookiesForImagesDescription,
+                  icon: Icons.image_outlined,
+                  value: display.useForumCookiesForImages,
+                  update: (value) => preference.forumDisplay.copyWith(
+                    useForumCookiesForImages: value,
+                  ),
+                ),
               switchTile(
                 title: strings.showForumCarousel,
                 icon: Icons.view_carousel_outlined,

@@ -1,5 +1,6 @@
 import 'ForumListsPage.dart';
 
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -37,6 +38,7 @@ import 'package:discuz_flutter/widget/ForumThreadWidget.dart';
 import 'package:discuz_flutter/widget/LoadingStateWidget.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -85,10 +87,19 @@ class DisplayForumAltSliverPage extends StatelessWidget {
   Widget build(BuildContext context) {
     CustomizeColor.updateAndroidNavigationbar(context);
     // try ios
+    final account = context.watch<DiscuzAndUserNotifier>();
+    final isCurrentForum = account.discuz?.baseURL == discuz.baseURL;
+    final activeUser = isCurrentForum ? account.user : user;
     return DisplayForumSliverStatefulWidget(
       discuz,
-      user,
+      activeUser,
       fid,
+      key: ValueKey((
+        discuz.baseURL,
+        fid,
+        activeUser?.uid,
+        isCurrentForum ? account.sessionIdentity : activeUser,
+      )),
       onSelectTid: this.onSelectTid,
       forumTitle: this.forumTitle,
     );
@@ -107,6 +118,7 @@ class DisplayForumSliverStatefulWidget extends StatefulWidget {
     this.discuz,
     this.user,
     this.fid, {
+    super.key,
     this.onSelectTid,
     this.forumTitle,
   });
@@ -129,6 +141,11 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   DisplayForumQuery _displayForumQuery = DisplayForumQuery();
   List<ForumThread> _forumThreadList = [];
   int _page = 1;
+  bool _hasMore = true;
+  bool _loading = false;
+  int _requestId = 0;
+  late final Object _session;
+  Map<String, String>? _appliedQuery;
 
   late final Discuz discuz;
   late final User? user;
@@ -147,7 +164,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     this.forumTitle,
   });
 
-  late EasyRefreshController _controller;
+  final _controller = EasyRefreshController();
   late Dio dio;
   late MobileApiClient client;
   bool _isFirstLoading = true;
@@ -155,43 +172,31 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   @override
   void initState() {
     super.initState();
-    _controller = EasyRefreshController(
-      controlFinishLoad: true,
-      controlFinishRefresh: true,
-    );
+    _session = context.read<DiscuzAndUserNotifier>().sessionIdentity;
     _loadClient();
     _loadFavoriteDao();
   }
 
   Future<void> _loadClient() async {
-    User? user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
     dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     client = MobileApiClient(dio, baseUrl: discuz.baseURL);
   }
 
   Future<void> _loadFavoriteDao() async {
     FavoriteForumDao dao = await AppDatabase.getFavoriteForumDao();
+    if (!mounted) return;
     setState(() {
       favoriteForumDao = dao;
     });
   }
 
-  Future<IndicatorResult> _invalidateContent() async {
-    setState(() {
-      _page = 1;
-      _forumThreadList = [];
-    });
-    return await _loadForumContent();
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   Future<void> favoriteForum() async {
-    final user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
     FavoriteForumDao favoriteForumDao = await AppDatabase.getFavoriteForumDao();
     await favoriteForumDao.insertFavoriteForum(
       FavoriteForumInDatabase(
@@ -239,14 +244,10 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   }
 
   Future<void> unfavoriteForum() async {
-    final user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
     FavoriteForumDao favoriteForumDao = await AppDatabase.getFavoriteForumDao();
 
     FavoriteForumInDatabase? favoriteForumInDatabase = favoriteForumDao
-        .getFavoriteForumByFid(fid, discuz);
+        .getFavoriteForumByFid(fid, discuz, uid: user?.uid ?? 0);
     if (favoriteForumInDatabase != null) {
       await favoriteForumDao.removeFavoriteForum(favoriteForumInDatabase);
       if (mounted) setState(() {});
@@ -294,7 +295,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     } else {
       ViewHistory? viewHistory = dao.forumExistInDatabase(discuz, fid);
       print("Found forum $viewHistory");
-      if (viewHistory == null) {
+      if (viewHistory == null && mounted) {
         // show rule
         _showInformationBottomSheet(context);
       }
@@ -316,163 +317,84 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     historySaved = true;
   }
 
-  Future<IndicatorResult> _loadForumContent() async {
-    // check the availability
-    User? user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
-    var dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-    final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
+  Future<IndicatorResult> _loadForumContent({
+    bool refresh = false,
+    bool filterChanged = false,
+  }) async {
+    if (_loading && !filterChanged) return IndicatorResult.fail;
+    if (!refresh && !_hasMore) return IndicatorResult.noMore;
+    final request = ++_requestId;
+    _loading = true;
+    final page = refresh ? 1 : _page;
+    final query = !refresh && _appliedQuery != null
+        ? _appliedQuery!
+        : _displayForumQuery.generateForumQueriesMap();
+    final account = context.read<DiscuzAndUserNotifier>();
+    final currentUser = user;
+    bool isCurrent() =>
+        mounted &&
+        request == _requestId &&
+        identical(_session, account.sessionIdentity);
+    try {
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(currentUser);
+      final response = await MobileApiClient(
+        dio,
+        baseUrl: discuz.baseURL,
+      ).displayForumResult(fid.toString(), page, query);
+      if (!isCurrent()) return IndicatorResult.fail;
+      final variables = response.discuzIndexVariables;
+      final error = EasyRefreshUtils.responseError(
+        context,
+        response,
+        currentUser,
+        variables.member_uid,
+      );
+      setState(() {
+        _error = error;
+        _isFirstLoading = false;
+        if (error == null) {
+          final threads = variables.forumThreadList;
+          _displayForumResult = response;
+          _forumThreadList = page == 1
+              ? threads
+              : [..._forumThreadList, ...threads];
+          _page = page + 1;
+          _appliedQuery = query;
+          final total = variables.forum.getThreadCount();
+          _hasMore =
+              threads.isNotEmpty &&
+              (total <= 0 || _forumThreadList.length < total);
+        }
+      });
+      if (error != null) return IndicatorResult.fail;
 
-    // client.displayForumRaw(fid.toString(), _page).then((value){
-    //   log(value);
-    //   DisplayForumResult result = DisplayForumResult.fromJson(jsonDecode(value));
-    // });
-
-    if (_displayForumResult.discuzIndexVariables.forum.getThreadCount() != 0 &&
-        _forumThreadList.length >=
-            _displayForumResult.discuzIndexVariables.forum.getThreadCount()) {
-      _controller.finishLoad(IndicatorResult.noMore);
-      return IndicatorResult.noMore;
+      if (page == 1 && !historySaved) {
+        historySaved = true;
+        unawaited(
+          _saveViewHistory(variables.forum).catchError((Object error) {
+            historySaved = false;
+            log('Unable to save forum history: $error');
+          }),
+        );
+      }
+      context.read<DiscuzNotificationProvider>().setNotificationCount(
+        variables.noticeCount,
+      );
+      if (refresh) _controller.resetFooter();
+      return refresh || _hasMore
+          ? IndicatorResult.success
+          : IndicatorResult.noMore;
+    } catch (error) {
+      if (!isCurrent()) return IndicatorResult.fail;
+      VibrationUtils.vibrateErrorIfPossible();
+      setState(() {
+        _isFirstLoading = false;
+        _error = EasyRefreshUtils.requestError(context, error);
+      });
+      return IndicatorResult.fail;
+    } finally {
+      if (request == _requestId) _loading = false;
     }
-
-    print(
-      "Request display forum map ${_displayForumQuery.generateForumQueriesMap()}",
-    );
-
-    IndicatorResult result = await client
-        .displayForumResult(
-          fid.toString(),
-          _page,
-          _displayForumQuery.generateForumQueriesMap(),
-        )
-        .then((value) {
-          if (!historySaved && _page == 1) {
-            _saveViewHistory(value.discuzIndexVariables.forum);
-          }
-
-          setState(() {
-            _displayForumResult = value;
-            _error = null;
-            print("GET page ${_page} results");
-            _isFirstLoading = false;
-          });
-
-          if (_page == 1) {
-            print("Clearing list since page ${_page} results");
-            setState(() {
-              _forumThreadList = [];
-            });
-
-            setState(() {
-              _forumThreadList = value.discuzIndexVariables.forumThreadList;
-            });
-          } else {
-            setState(() {
-              _forumThreadList.addAll(
-                value.discuzIndexVariables.forumThreadList,
-              );
-            });
-          }
-          _page += 1;
-          _controller.finishRefresh();
-          _controller.resetFooter();
-          _controller.finishLoad(
-            _forumThreadList.length >=
-                    value.discuzIndexVariables.forum.getThreadCount()
-                ? IndicatorResult.noMore
-                : IndicatorResult.success,
-          );
-
-          if (value.getErrorString() != null) {
-            EasyLoading.showError(value.getErrorString()!);
-          }
-
-          if (value.errorResult != null) {
-            setState(() {
-              _error = DiscuzError(
-                value.errorResult!.key,
-                value.errorResult!.content,
-              );
-            });
-          } else {
-            setState(() {
-              _error = null;
-            });
-          }
-
-          Provider.of<DiscuzNotificationProvider>(
-            context,
-            listen: false,
-          ).setNotificationCount(value.discuzIndexVariables.noticeCount);
-
-          // check with user
-          if (user != null &&
-              value.discuzIndexVariables.member_uid != user.uid) {
-            setState(() {
-              _error = DiscuzError(
-                S.of(context).userExpiredTitle(user.username),
-                S.of(context).userExpiredSubtitle,
-                errorType: ErrorType.userExpired,
-              );
-            });
-          }
-          if (_forumThreadList.length >=
-              value.discuzIndexVariables.forum.getThreadCount()) {
-            return IndicatorResult.noMore;
-          } else {
-            return IndicatorResult.success;
-          }
-
-          //log("set successful result ${_displayForumResult} ${_forumThreadList.length}");
-        })
-        .catchError((onError) {
-          if (!mounted) {
-            return IndicatorResult.fail;
-          }
-          VibrationUtils.vibrateErrorIfPossible();
-          //log(onError);
-          EasyLoading.showError('${onError}');
-          _controller.finishRefresh();
-          setState(() {
-            _isFirstLoading = false;
-          });
-
-          switch (onError.runtimeType) {
-            case DioException:
-              {
-                DioException dioError = onError;
-                log("${dioError.message} >-> ${dioError.type}");
-                EasyLoading.showError("${dioError.message} (${dioError})");
-                print(dioError.stackTrace);
-                setState(() {
-                  _error = DiscuzError(
-                    dioError.message == null
-                        ? S.of(context).error
-                        : dioError.message!,
-                    dioError.type.name,
-                    dioError: dioError,
-                  );
-                });
-
-                break;
-              }
-            default:
-              {
-                setState(() {
-                  _error = DiscuzError(
-                    onError.runtimeType.toString(),
-                    onError.toString(),
-                  );
-                });
-              }
-          }
-          print(onError.stackTrace);
-
-          return IndicatorResult.fail;
-        });
-    return result;
   }
 
   FavoriteForumDao? favoriteForumDao;
@@ -483,6 +405,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     final favoriteForumInDatabase = favoriteForumDao?.getFavoriteForumByFid(
       fid,
       discuz,
+      uid: user?.uid ?? 0,
     );
     final hasUser = Provider.of<DiscuzAndUserNotifier>(context).user != null;
 
@@ -661,13 +584,8 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         ),
         footer: EasyRefreshUtils.i18nClassicFooter(context),
         refreshOnStart: true,
-        onRefresh: () async {
-          VibrationUtils.vibrateSuccessfullyIfPossible();
-          return await _invalidateContent();
-        },
-        onLoad: () async {
-          return await _loadForumContent();
-        },
+        onRefresh: () => _loadForumContent(refresh: true),
+        onLoad: _loadForumContent,
         child: CustomScrollView(
           slivers: <Widget>[
             AppPlatformSliverAppBar(
@@ -866,6 +784,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
           _displayForumResult.discuzIndexVariables.threadType!;
       threadTypeList = threadType.getThreadTypeList();
     }
+    final previousQuery = _displayForumQuery.generateForumQueriesMap();
     showPlatformModalSheet(
       context: context,
       material: const MaterialModalSheetData(isScrollControlled: false),
@@ -1143,11 +1062,14 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         );
       },
     ).whenComplete(() {
-      setState(() {
-        _forumThreadList = [];
-      });
-      //print("Closing the dialog");
-      _controller.callRefresh();
+      if (!mounted ||
+          mapEquals(
+            previousQuery,
+            _displayForumQuery.generateForumQueriesMap(),
+          )) {
+        return;
+      }
+      _loadForumContent(refresh: true, filterChanged: true);
     });
   }
 }

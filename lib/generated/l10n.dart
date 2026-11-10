@@ -8251,6 +8251,26 @@ class S {
     );
   }
 
+  /// `Use forum cookies for images`
+  String get useForumCookiesForImages {
+    return Intl.message(
+      'Use forum cookies for images',
+      name: 'useForumCookiesForImages',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Load post images and attachments on this forum using your signed-in account. On by default.`
+  String get useForumCookiesForImagesDescription {
+    return Intl.message(
+      'Load post images and attachments on this forum using your signed-in account. On by default.',
+      name: 'useForumCookiesForImagesDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Translate with Google`
   String get googleTranslationAction {
     return Intl.message(

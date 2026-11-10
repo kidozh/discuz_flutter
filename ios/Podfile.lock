@@ -356,7 +356,7 @@ SPEC CHECKSUMS:
   GoogleUserMessagingPlatform: befe603da6501006420c206222acd449bba45a9c
   GoogleUtilities: 7dc09b3fa9ecb5c2298b952313d14628b61b9da3
   haptic_feedback: f2ca6114896f9cd6ff2f969934b43bfb5943908b
-  image_picker_ios: 4839114eaa8338ecff94cde6d0ae6022c30aa6fb
+  image_picker_ios: 3b5c3761ec7755e83b659fd65c7f03c9c7f25d6c
   integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
   just_audio: a42c63806f16995daf5b219ae1d679deb76e6a79
   libwebp: af5937a13536ef73f3784d69cc342b98961acf33

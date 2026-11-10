@@ -1,17 +1,20 @@
-
-
 import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:hive_ce/hive.dart';
 
 import '../entity/Discuz.dart';
 
-class FavoriteForumDao{
+class FavoriteForumDao {
   Box<FavoriteForumInDatabase> favoriteForumBox;
 
   FavoriteForumDao(this.favoriteForumBox);
 
-  List<FavoriteForumInDatabase> getFavoriteForumList(Discuz discuz){
-    return favoriteForumBox.values.where((element) => element.discuz == discuz).toList();
+  List<FavoriteForumInDatabase> getFavoriteForumList(
+    Discuz discuz, {
+    required int uid,
+  }) {
+    return favoriteForumBox.values
+        .where((entry) => entry.discuz == discuz && entry.uid == uid)
+        .toList();
   }
 
   // Stream<List<FavoriteForumInDatabase>> getFavoriteForumListFStream(Discuz discuz){
@@ -23,17 +26,26 @@ class FavoriteForumDao{
   //   );
   // }
 
-  Future<int> insertFavoriteForum(FavoriteForumInDatabase favoriteThreadInDatabase){
+  Future<int> insertFavoriteForum(
+    FavoriteForumInDatabase favoriteThreadInDatabase,
+  ) {
     return favoriteForumBox.add(favoriteThreadInDatabase);
   }
 
-  Future<void> removeFavoriteForum(FavoriteForumInDatabase favoriteThreadInDatabase) async{
-    favoriteForumBox.delete(favoriteThreadInDatabase.key);
-  }
+  Future<void> removeFavoriteForum(FavoriteForumInDatabase favorite) =>
+      favoriteForumBox.delete(favorite.key);
 
-  FavoriteForumInDatabase? getFavoriteForumByFid(int idInServer, Discuz discuz){
-    if(favoriteForumBox.values.where((element) => element.idKey == idInServer && element.discuz == discuz).isNotEmpty){
-      return favoriteForumBox.values.where((element) => element.idKey == idInServer && element.discuz == discuz).first;
+  FavoriteForumInDatabase? getFavoriteForumByFid(
+    int idInServer,
+    Discuz discuz, {
+    required int uid,
+  }) {
+    for (final entry in favoriteForumBox.values) {
+      if (entry.idKey == idInServer &&
+          entry.discuz == discuz &&
+          entry.uid == uid) {
+        return entry;
+      }
     }
     return null;
   }
@@ -41,7 +53,6 @@ class FavoriteForumDao{
   // Stream<FavoriteForumInDatabase?> getFavoriteForumStreamByFid(int idInServer, Discuz discuz){
   //   return favoriteForumBox.watch().map((event) => favoriteForumBox.values.where((element) => element.idKey == idInServer && element.discuz == discuz).first);
   // }
-
 }
 
 // @dao

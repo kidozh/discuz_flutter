@@ -2045,6 +2045,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "uploadingImageToServer": MessageLookupByLibrary.simpleMessage(
       "Upload the file to the server...",
     ),
+    "useForumCookiesForImages": MessageLookupByLibrary.simpleMessage(
+      "Use forum cookies for images",
+    ),
+    "useForumCookiesForImagesDescription": MessageLookupByLibrary.simpleMessage(
+      "Load post images and attachments on this forum using your signed-in account. On by default.",
+    ),
     "useGoogleAnalyticsContent": MessageLookupByLibrary.simpleMessage(
       "The app use Google analytics to collect only basic information and we will not track your account according to our privacy policy.",
     ),

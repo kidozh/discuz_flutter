@@ -1,8 +1,10 @@
+import 'dart:async';
+
 import '../widget/PortalHighlights.dart';
+
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/DiscuzIndexResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/dao/FavoriteForumDao.dart';
@@ -11,7 +13,6 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/User.dart';
-import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/DisplayForumSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
@@ -25,7 +26,6 @@ import 'package:discuz_flutter/widget/ForumPartitionWidget.dart';
 import 'package:discuz_flutter/widget/LoadingStateWidget.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:provider/provider.dart';
@@ -39,11 +39,7 @@ class DiscuzPortalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final account = context.watch<DiscuzAndUserNotifier>();
-    return DiscuzPortalStatefulWidget(
-      key: ValueKey(
-        '${account.discuz?.baseURL}:${account.user?.uid}:${account.user?.auth}',
-      ),
-    );
+    return DiscuzPortalStatefulWidget(key: ValueKey(account.sessionIdentity));
   }
 }
 
@@ -56,14 +52,10 @@ class DiscuzPortalStatefulWidget extends StatefulWidget {
 }
 
 class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
-  late Dio _dio;
-  late MobileApiClient _client;
   DiscuzIndexResult result = DiscuzIndexResult();
   DiscuzError? _error;
-  late EasyRefreshController _controller;
-
-  // 控制结束
-  bool _enableControlFinish = false;
+  final _controller = EasyRefreshController();
+  bool _loading = false;
 
   bool _isFirstlyRefreshing = true;
   int _highlightRefresh = 0;
@@ -79,12 +71,8 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
   @override
   void initState() {
     super.initState();
-    _controller = EasyRefreshController(
-      controlFinishLoad: true,
-      controlFinishRefresh: true,
-    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializePortal();
+      if (mounted) _initializePortal();
     });
   }
 
@@ -104,34 +92,34 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
 
   Future<void> _loadFavoriteForum() async {
     FavoriteForumDao dao = await AppDatabase.getFavoriteForumDao();
+    if (!mounted) return;
     setState(() {
       favoriteForumDao = dao;
     });
   }
 
   Future<void> _loadPortalCache() async {
-    // load cache first
-    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).discuz;
-    if (discuz != null) {
-      String portalJson =
-          await UserPreferencesUtils.getDiscuzPortalResultCacheJson(discuz);
-      // try to recover from Simley
-      if (portalJson == "") {
+    final account = context.read<DiscuzAndUserNotifier>();
+    final discuz = account.discuz;
+    final session = account.sessionIdentity;
+    final uid = account.user?.uid ?? 0;
+    if (discuz == null) return;
+    try {
+      final json = await UserPreferencesUtils.getDiscuzPortalResultCacheJson(
+        discuz,
+      );
+      if (!mounted ||
+          !identical(session, account.sessionIdentity) ||
+          !_isFirstlyRefreshing ||
+          json.isEmpty)
         return;
+      final cached = DiscuzIndexResult.fromJson(jsonDecode(json));
+      if (cached.discuzIndexVariables.member_uid == uid &&
+          cached.getErrorString() == null) {
+        setState(() => result = cached);
       }
-      try {
-        DiscuzIndexResult discuzIndexResult = DiscuzIndexResult.fromJson(
-          jsonDecode(portalJson),
-        );
-        setState(() {
-          result = discuzIndexResult;
-        });
-      } catch (e) {
-        log("Loading portal json error ${portalJson} \n --- \n ${e} ");
-      }
+    } catch (error) {
+      log('Unable to load the forum directory cache: $error');
     }
   }
 
@@ -139,131 +127,74 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
     Discuz discuz, {
     bool refreshHighlights = true,
   }) async {
-    setState(() {
-      if (refreshHighlights) _highlightRefresh++;
-      _error = null;
-    });
-    User? user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
-    this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-    this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
+    if (_loading) return IndicatorResult.fail;
+    _loading = true;
+    if (refreshHighlights) setState(() => _highlightRefresh++);
+    final account = context.read<DiscuzAndUserNotifier>();
+    final user = account.user;
+    final session = account.sessionIdentity;
+    bool isCurrent() => mounted && identical(session, account.sessionIdentity);
+    try {
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      final response = await MobileApiClient(
+        dio,
+        baseUrl: discuz.baseURL,
+      ).getDiscuzPortalResult();
+      if (!isCurrent()) return IndicatorResult.fail;
+      final variables = response.discuzIndexVariables;
+      final error = EasyRefreshUtils.responseError(
+        context,
+        response,
+        user,
+        variables.member_uid,
+      );
+      setState(() {
+        _isFirstlyRefreshing = false;
+        _error = error;
+        if (error == null) result = response;
+      });
+      if (error != null) return IndicatorResult.fail;
 
-    IndicatorResult indictaorResult = await _client
-        .getDiscuzPortalResult()
-        .then((value) async {
-          if (!mounted) return IndicatorResult.none;
-          // render page
-          setState(() {
-            result = value;
-            _isFirstlyRefreshing = false;
-          });
-          Provider.of<DiscuzNotificationProvider>(
+      context.read<DiscuzNotificationProvider>().setNotificationCount(
+        variables.noticeCount,
+      );
+      if (variables.forumList.isNotEmpty) {
+        final fids = variables.forumList.map((forum) => '${forum.fid},').join();
+        UserPreferencesUtils.putDiscuzForumFids(discuz, fids);
+        UserPreferencesUtils.putDiscuzPortalResultCacheJson(
+          discuz,
+          jsonEncode(response.toJson()),
+        );
+        final group = variables.groupInfo;
+        if (group.getGroupId() != 0) {
+          UserPreferencesUtils.putDiscuzGroupNameById(
+            discuz,
+            group.getGroupId(),
+            group.groupTitle,
+          );
+        }
+      }
+      if (user != null) {
+        unawaited(
+          MobileSignUtils.conductMobileSign(
             context,
-            listen: false,
-          ).setNotificationCount(value.discuzIndexVariables.noticeCount);
-          // get fids;
-          if (value.discuzIndexVariables.forumList.isNotEmpty) {
-            String fids = "";
-            for (var forum in value.discuzIndexVariables.forumList) {
-              fids += "${forum.fid},";
-            }
-            UserPreferencesUtils.putDiscuzForumFids(discuz, fids);
-            log("Save fids ${fids} to User Preference");
-            // save cache
-            UserPreferencesUtils.putDiscuzPortalResultCacheJson(
-              discuz,
-              jsonEncode(value.toJson()),
-            );
-            // save group title and id mapping
-            if (value.discuzIndexVariables.groupInfo.getGroupId() != 0) {
-              UserPreferencesUtils.putDiscuzGroupNameById(
-                discuz,
-                value.discuzIndexVariables.groupInfo.getGroupId(),
-                value.discuzIndexVariables.groupInfo.groupTitle,
-              );
-            }
-          }
-          if (value.getErrorString() != null) {
-            EasyLoading.showError(value.getErrorString()!);
-          }
-          if (!_enableControlFinish) {
-            //_controller.resetLoadState();
-            _controller.finishRefresh();
-          }
-          if (!_enableControlFinish) {
-            _controller.finishLoad(IndicatorResult.noMore);
-          }
-
-          // check with user
-          if (user != null &&
-              value.discuzIndexVariables.member_uid != user.uid) {
-            log(
-              "Recv user ${value.discuzIndexVariables.member_uid} ${user.uid}",
-            );
-            setState(() {
-              _error = DiscuzError(
-                S.of(context).userExpiredTitle(user.username),
-                S.of(context).userExpiredSubtitle,
-                errorType: ErrorType.userExpired,
-              );
-            });
-          }
-
-          if (user != null &&
-              value.discuzIndexVariables.member_uid == user.uid) {
-            // conduct mobile sign
-            await MobileSignUtils.conductMobileSign(
-              context,
-              discuz,
-              user,
-              value.discuzIndexVariables.formHash,
-            );
-          }
-
-          return IndicatorResult.noMore;
-        })
-        .catchError((onError) {
-          if (!mounted) return IndicatorResult.none;
-          if (mounted) {
-            setState(() {
-              _isFirstlyRefreshing = false;
-            });
-          }
-          _controller.finishLoad(IndicatorResult.fail);
-          switch (onError.runtimeType) {
-            case DioException:
-              {
-                DioException dioError = onError;
-                log("${dioError.message} >-> ${dioError.type}");
-                EasyLoading.showError("${dioError.message} (${dioError})");
-                setState(() {
-                  _error = DiscuzError(
-                    dioError.message == null
-                        ? S.of(context).error
-                        : dioError.message!,
-                    dioError.type.name,
-                    dioError: dioError,
-                  );
-                });
-
-                break;
-              }
-            default:
-              {
-                setState(() {
-                  _error = DiscuzError(
-                    onError.runtimeType.toString(),
-                    onError.toString(),
-                  );
-                });
-              }
-          }
-
-          return IndicatorResult.fail;
-        });
-    return indictaorResult;
+            discuz,
+            user,
+            variables.formHash,
+          ),
+        );
+      }
+      return IndicatorResult.success;
+    } catch (error) {
+      if (!isCurrent()) return IndicatorResult.fail;
+      setState(() {
+        _isFirstlyRefreshing = false;
+        _error = EasyRefreshUtils.requestError(context, error);
+      });
+      return IndicatorResult.fail;
+    } finally {
+      _loading = false;
+    }
   }
 
   @override
@@ -303,19 +234,11 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
       footer: EasyRefreshUtils.i18nClassicFooter(context),
       refreshOnStart: false,
       controller: _controller,
-      onRefresh: () async {
-        IndicatorResult indicatorResult = await _loadPortalContent(discuz);
-        if (!_enableControlFinish) {
-          //_controller.resetLoadState();
-          _controller.finishRefresh();
-        }
-        return indicatorResult;
-      },
+      onRefresh: () => _loadPortalContent(discuz),
       child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
             child: PortalHighlights(
-              key: ValueKey('${discuz.baseURL}:${user?.uid}:${user?.auth}'),
               discuz: discuz,
               user: user,
               refresh: _highlightRefresh,
@@ -327,7 +250,10 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
               valueListenable: favoriteForumDao!.favoriteForumBox.listenable(),
               builder: (BuildContext context, value, Widget? child) {
                 List<FavoriteForumInDatabase> favoriteForumInDbList =
-                    favoriteForumDao!.getFavoriteForumList(discuz);
+                    favoriteForumDao!.getFavoriteForumList(
+                      discuz,
+                      uid: user?.uid ?? 0,
+                    );
                 return SliverList(
                   delegate: SliverChildBuilderDelegate((context, index) {
                     return FavoriteForumCardWidget(
@@ -348,19 +274,23 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
               }, childCount: 1),
             ),
           SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
-              List<ForumPartition> forumPartitionList =
-                  result.discuzIndexVariables.forumPartitionList;
-              List<Forum> _allForumList = result.discuzIndexVariables.forumList;
-              ForumPartition forumPartition = forumPartitionList[index];
-              //log("Forum partition length ${result!.discuzIndexVariables.forumPartitionList.length} all ${_allForumList.length}" );
-              return ForumPartitionWidget(
-                discuz,
-                user,
-                forumPartition,
-                _allForumList,
-              );
-            }, childCount: result.discuzIndexVariables.forumPartitionList.length),
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                List<ForumPartition> forumPartitionList =
+                    result.discuzIndexVariables.forumPartitionList;
+                List<Forum> _allForumList =
+                    result.discuzIndexVariables.forumList;
+                ForumPartition forumPartition = forumPartitionList[index];
+                //log("Forum partition length ${result!.discuzIndexVariables.forumPartitionList.length} all ${_allForumList.length}" );
+                return ForumPartitionWidget(
+                  discuz,
+                  user,
+                  forumPartition,
+                  _allForumList,
+                );
+              },
+              childCount: result.discuzIndexVariables.forumPartitionList.length,
+            ),
           ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
@@ -371,13 +301,6 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
         ],
       ),
     );
-  }
-
-  @override
-  void setState(fn) {
-    if (this.mounted) {
-      super.setState(fn);
-    }
   }
 }
 

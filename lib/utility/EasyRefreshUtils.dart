@@ -1,10 +1,48 @@
+import 'package:dio/dio.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../JsonResult/BaseResult.dart';
+import '../entity/DiscuzError.dart';
+import '../entity/User.dart';
 import '../generated/l10n.dart';
 
 class EasyRefreshUtils {
+  static DiscuzError? responseError(
+    BuildContext context,
+    BaseResult result,
+    User? user,
+    int memberUid,
+  ) {
+    final apiError = result.getErrorString();
+    if (apiError != null) {
+      return DiscuzError(
+        result.errorResult?.key ?? S.of(context).error,
+        result.errorResult?.content ?? apiError,
+      );
+    }
+    if (user != null && memberUid != user.uid) {
+      return DiscuzError(
+        S.of(context).userExpiredTitle(user.username),
+        S.of(context).userExpiredSubtitle,
+        errorType: ErrorType.userExpired,
+      );
+    }
+    return null;
+  }
+
+  static DiscuzError requestError(BuildContext context, Object error) {
+    if (error is DioException) {
+      return DiscuzError(
+        error.message ?? S.of(context).error,
+        error.type.name,
+        dioError: error,
+      );
+    }
+    return DiscuzError(error.runtimeType.toString(), error.toString());
+  }
+
   static Header i18nClassicHeader(
     BuildContext context, {
     IndicatorPosition position = IndicatorPosition.above,

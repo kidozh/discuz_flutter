@@ -55,8 +55,10 @@ class SmileyListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final account = context.watch<DiscuzAndUserNotifier>();
     return SmileyListStatefulWidget(
       onSmileyPressed,
+      key: ValueKey(account.sessionIdentity),
       onAttachmentPressed: onAttachmentPressed,
       recentActions: recentActions,
     );
@@ -76,28 +78,16 @@ class SmileyListStatefulWidget extends StatefulWidget {
   });
 
   @override
-  State<SmileyListStatefulWidget> createState() {
-    return SmileyListState(
-      smileyValueGetter,
-      onAttachmentPressed: onAttachmentPressed,
-      recentActions: recentActions,
-    );
-  }
+  State<SmileyListStatefulWidget> createState() => SmileyListState();
 }
 
 class SmileyListState extends State<SmileyListStatefulWidget> {
   static const double _tabItemExtent = 84;
   static const double _tabGap = 4;
 
-  final SmileyPressedFunc smileyValueGetter;
-  final AttachmentPressedFunc? onAttachmentPressed;
-  final List<SmileyPanelAction> recentActions;
-
-  SmileyListState(
-    this.smileyValueGetter, {
-    this.onAttachmentPressed,
-    this.recentActions = const [],
-  });
+  SmileyPressedFunc get smileyValueGetter => widget.smileyValueGetter;
+  AttachmentPressedFunc? get onAttachmentPressed => widget.onAttachmentPressed;
+  List<SmileyPanelAction> get recentActions => widget.recentActions;
 
   SmileyResult? result;
   late SmileyDao _smileyDao;
@@ -143,8 +133,10 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
     _smileyDao = await AppDatabase.getSmileyDao();
     if (!mounted) return;
 
-    Discuz? discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).discuz;
     if (discuz == null) {
       return;
     }
@@ -153,12 +145,13 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
     final attachmentCount = onAttachmentPressed == null
         ? 0
         : (await AppDatabase.getImageAttachmentDao())
-            .getFavoriteThreadList(discuz)
-            .where((attachment) => File(attachment.path).existsSync())
-            .length;
+              .getFavoriteThreadList(discuz)
+              .where((attachment) => File(attachment.path).existsSync())
+              .length;
     // load cache first
-    final smileyJson =
-        await UserPreferencesUtils.getDiscuzSmileyCacheJson(discuz);
+    final smileyJson = await UserPreferencesUtils.getDiscuzSmileyCacheJson(
+      discuz,
+    );
     SmileyResult? cachedResult;
     // Try to recover the cached smiley groups before loading the network data.
     try {
@@ -170,7 +163,8 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
     }
 
     if (!mounted) return;
-    final shouldSelectFirstRemote = cachedResult != null &&
+    final shouldSelectFirstRemote =
+        cachedResult != null &&
         _selectedTabIndex == 0 &&
         smileyList.isEmpty &&
         attachmentCount == 0 &&
@@ -188,20 +182,25 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
   }
 
   Future<void> _loadSmilesInfo() async {
-    Discuz? discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).discuz;
     if (discuz == null) {
       return;
     }
-    User? user =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
+    User? user = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).user;
     try {
       final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
       final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
       final value = await client.smileyResult();
       if (!mounted) return;
 
-      final shouldSelectFirstRemote = _selectedTabIndex == 0 &&
+      final shouldSelectFirstRemote =
+          _selectedTabIndex == 0 &&
           _savedSmileyList.isEmpty &&
           _savedAttachmentCount == 0 &&
           recentActions.isEmpty &&
@@ -216,11 +215,7 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
         jsonEncode(value.toJson()),
       );
     } catch (error, stackTrace) {
-      log(
-        "Loading smiley info failed",
-        error: error,
-        stackTrace: stackTrace,
-      );
+      log("Loading smiley info failed", error: error, stackTrace: stackTrace);
     }
   }
 
@@ -283,22 +278,24 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
     List<String> labels,
     int selectedIndex,
   ) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return SingleChildScrollView(
-        controller: _tabScrollController,
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minWidth: constraints.maxWidth),
-          child: PlatformSegmentedControl(
-            key: _cupertinoTabsKey,
-            labels: labels,
-            selectedIndex: selectedIndex,
-            onValueChanged: _selectTab,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          controller: _tabScrollController,
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minWidth: constraints.maxWidth),
+            child: PlatformSegmentedControl(
+              key: _cupertinoTabsKey,
+              labels: labels,
+              selectedIndex: selectedIndex,
+              onValueChanged: _selectTab,
+            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 
   Widget _buildScrollableGlassTabs(
@@ -353,12 +350,11 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: selected
-                              ? colorScheme.primary
-                              : colorScheme.onSurfaceVariant,
-                          fontWeight:
-                              selected ? FontWeight.w600 : FontWeight.w400,
-                        ),
+                      color: selected
+                          ? colorScheme.primary
+                          : colorScheme.onSurfaceVariant,
+                      fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                    ),
                   ),
                 ),
               ),
@@ -371,8 +367,10 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Discuz? discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).discuz;
     if (discuz == null) {
       return NullDiscuzScreen();
     } else {
@@ -382,11 +380,13 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
       // add saved smiley first
       smileyTabLabels.add(S.of(context).savedSmileyTabTitle);
 
-      tabBarViewList.add(SavedSmileyTabView(
-        smileyValueGetter,
-        onAttachmentPressed: onAttachmentPressed,
-        actions: recentActions,
-      ));
+      tabBarViewList.add(
+        SavedSmileyTabView(
+          smileyValueGetter,
+          onAttachmentPressed: onAttachmentPressed,
+          actions: recentActions,
+        ),
+      );
       if (result != null) {
         smileyList.addAll(result!.variables.smilies);
         for (int i = 0; i < smileyList.length; i++) {
@@ -401,54 +401,61 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
             Smiley smiley = currentSmiley[j];
             smileyImageList.add(
               InkWell(
-                  onTap: () async {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    smileyValueGetter(smiley);
+                onTap: () async {
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  smileyValueGetter(smiley);
 
-                    // add to smiley
-                    // check whether exist
-                    Smiley? smileyInDb = _smileyDao.findSmileyByDiscuzIdAndCode(
-                        discuz, smiley.code);
-                    log("on tap smiley $smiley ${smileyInDb}");
-                    if (smileyInDb != null) {
-                      smileyInDb.dateTime = DateTime.now();
-                      smiley.discuz = discuz;
-                      _smileyDao.insertSmileyWithKey(
-                          smileyInDb.key, smileyInDb);
-                    } else {
-                      smiley.discuz = discuz;
-                      _smileyDao.insertSmiley(smiley);
-                    }
-                  },
-                  child: CachedNetworkImage(
-                    imageUrl: discuz.baseURL +
-                        "/static/image/smiley/" +
-                        currentSmiley[j].relativePath,
-                    progressIndicatorBuilder:
-                        (context, url, downloadProgress) =>
-                            PlatformCircularProgressIndicator(
-                      material: (context, platform) =>
-                          MaterialProgressIndicatorData(
-                              value: downloadProgress.progress),
-                      cupertino: (context, platform) =>
-                          CupertinoProgressIndicatorData(
-                              color: Theme.of(context).colorScheme.primary),
-                    ),
-                    errorWidget: (context, url, error) =>
-                        Icon(PlatformIcons(context).unavailableImage),
-                  )),
+                  // add to smiley
+                  // check whether exist
+                  Smiley? smileyInDb = _smileyDao.findSmileyByDiscuzIdAndCode(
+                    discuz,
+                    smiley.code,
+                  );
+                  log("on tap smiley $smiley ${smileyInDb}");
+                  if (smileyInDb != null) {
+                    smileyInDb.dateTime = DateTime.now();
+                    smiley.discuz = discuz;
+                    _smileyDao.insertSmileyWithKey(smileyInDb.key, smileyInDb);
+                  } else {
+                    smiley.discuz = discuz;
+                    _smileyDao.insertSmiley(smiley);
+                  }
+                },
+                child: CachedNetworkImage(
+                  imageUrl:
+                      discuz.baseURL +
+                      "/static/image/smiley/" +
+                      currentSmiley[j].relativePath,
+                  progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      PlatformCircularProgressIndicator(
+                        material: (context, platform) =>
+                            MaterialProgressIndicatorData(
+                              value: downloadProgress.progress,
+                            ),
+                        cupertino: (context, platform) =>
+                            CupertinoProgressIndicatorData(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                      ),
+                  errorWidget: (context, url, error) =>
+                      Icon(PlatformIcons(context).unavailableImage),
+                ),
+              ),
             );
           }
-          tabBarViewList.add(GridView.count(
-            shrinkWrap: true,
-            crossAxisCount: 6,
-            padding: EdgeInsets.all(4.0),
-            children: smileyImageList,
-          ));
+          tabBarViewList.add(
+            GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 6,
+              padding: EdgeInsets.all(4.0),
+              children: smileyImageList,
+            ),
+          );
         }
       }
-      final effectiveIndex =
-          _selectedTabIndex.clamp(0, smileyTabLabels.length - 1).toInt();
+      final effectiveIndex = _selectedTabIndex
+          .clamp(0, smileyTabLabels.length - 1)
+          .toInt();
       if (isMaterial(context)) {
         return SizedBox(
           height: MediaQuery.of(context).size.height * 0.25,
@@ -459,13 +466,12 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
             child: Column(
               children: [
                 TabBar(
-                  tabs: [
-                    for (final label in smileyTabLabels) Tab(text: label),
-                  ],
+                  tabs: [for (final label in smileyTabLabels) Tab(text: label)],
                   isScrollable: true,
                   labelColor: Theme.of(context).colorScheme.primary,
-                  unselectedLabelColor:
-                      Theme.of(context).colorScheme.onSurfaceVariant,
+                  unselectedLabelColor: Theme.of(context)
+                      .colorScheme
+                      .onSurfaceVariant,
                 ),
                 Expanded(child: TabBarView(children: tabBarViewList)),
               ],
@@ -482,9 +488,15 @@ class SmileyListState extends State<SmileyListStatefulWidget> {
               padding: const EdgeInsets.fromLTRB(8, 6, 8, 4),
               child: visualStyle(context) == AppVisualStyle.cupertino
                   ? _buildScrollableCupertinoTabs(
-                      context, smileyTabLabels, effectiveIndex)
+                      context,
+                      smileyTabLabels,
+                      effectiveIndex,
+                    )
                   : _buildScrollableGlassTabs(
-                      context, smileyTabLabels, effectiveIndex),
+                      context,
+                      smileyTabLabels,
+                      effectiveIndex,
+                    ),
             ),
             Expanded(
               child: PageView(
@@ -539,26 +551,25 @@ class SavedSmileyTabViewStatefulWidget extends StatefulWidget {
     super.key,
   });
   @override
-  SavedSmileyTabViewState createState() {
-    return SavedSmileyTabViewState(
-      smileyValueGetter,
-      onAttachmentPressed: onAttachmentPressed,
-      actions: actions,
-    );
-  }
+  SavedSmileyTabViewState createState() => SavedSmileyTabViewState();
 }
 
 class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
-  final SmileyPressedFunc smileyValueGetter;
-  final AttachmentPressedFunc? onAttachmentPressed;
-  final List<SmileyPanelAction> actions;
+  SmileyPressedFunc get smileyValueGetter => widget.smileyValueGetter;
+  AttachmentPressedFunc? get onAttachmentPressed => widget.onAttachmentPressed;
+  List<SmileyPanelAction> get actions => widget.actions;
   SmileyDao? _smileyDao;
   ImageAttachmentDao? _attachmentDao;
-  SavedSmileyTabViewState(
-    this.smileyValueGetter, {
-    this.onAttachmentPressed,
-    this.actions = const [],
-  });
+
+  @override
+  void didUpdateWidget(covariant SavedSmileyTabViewStatefulWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.onAttachmentPressed == null &&
+        onAttachmentPressed != null &&
+        _attachmentDao == null) {
+      _initDB();
+    }
+  }
 
   @override
   void initState() {
@@ -577,8 +588,10 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
       _attachmentDao = attachmentDao;
     });
 
-    Discuz? discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).discuz;
     if (discuz == null) {
       return;
     }
@@ -586,8 +599,10 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Discuz? discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
+      context,
+      listen: false,
+    ).discuz;
     if (_smileyDao == null ||
         (onAttachmentPressed != null && _attachmentDao == null)) {
       return BlankScreen();
@@ -599,7 +614,8 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
         valueListenable: _smileyDao!.smileyBox.listenable(),
         builder: (BuildContext context, Box<Smiley> value, Widget? child) {
           List<Smiley> smileyData = _smileyDao!.findAllSmileyByDiscuz(discuz);
-          final attachments = _attachmentDao
+          final attachments =
+              (onAttachmentPressed == null ? null : _attachmentDao)
                   ?.getFavoriteThreadList(discuz)
                   .where((attachment) => File(attachment.path).existsSync())
                   .toList() ??
@@ -610,7 +626,7 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(PlatformIcons(context).forward),
-                Text(S.of(context).noSmileyFoundInDB)
+                Text(S.of(context).noSmileyFoundInDB),
               ],
             );
           } else {
@@ -643,57 +659,64 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
               // log("on Database smiley $smiley");
               smileyImageList.add(
                 InkWell(
-                    onTap: () async {
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      smileyValueGetter(smiley);
-                      // add to smiley
-                      // check whether exist
-                      if (smiley.key != null) {
-                        smiley.dateTime = DateTime.now();
-                        _smileyDao!.insertSmileyWithKey(smiley.key, smiley);
-                      }
-                      log("pressed smiley ${smiley} ${smiley.key} ");
-                    },
-                    child: CachedNetworkImage(
-                      imageUrl: discuz.baseURL +
-                          "/static/image/smiley/" +
-                          smiley.relativePath,
-                      progressIndicatorBuilder:
-                          (context, url, downloadProgress) =>
-                              CircularProgressIndicator(
-                                  value: downloadProgress.progress),
-                      errorWidget: (context, url, error) =>
-                          Icon(PlatformIcons(context).unavailableImage),
-                    )),
+                  onTap: () async {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    smileyValueGetter(smiley);
+                    // add to smiley
+                    // check whether exist
+                    if (smiley.key != null) {
+                      smiley.dateTime = DateTime.now();
+                      _smileyDao!.insertSmileyWithKey(smiley.key, smiley);
+                    }
+                    log("pressed smiley ${smiley} ${smiley.key} ");
+                  },
+                  child: CachedNetworkImage(
+                    imageUrl:
+                        discuz.baseURL +
+                        "/static/image/smiley/" +
+                        smiley.relativePath,
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) =>
+                            CircularProgressIndicator(
+                              value: downloadProgress.progress,
+                            ),
+                    errorWidget: (context, url, error) =>
+                        Icon(PlatformIcons(context).unavailableImage),
+                  ),
+                ),
               );
             }
             if (classicCupertino && actions.isNotEmpty) {
               // Attachment actions need more room than a six-column smiley
               // cell, especially with large text. Keep them above the grid.
-              return CustomScrollView(slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for (final action in actions)
-                          Expanded(
-                              child: _SmileyPanelActionTile(action: action)),
-                      ],
+              return CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          for (final action in actions)
+                            Expanded(
+                              child: _SmileyPanelActionTile(action: action),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.all(4),
-                  sliver: SliverGrid(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 6),
-                    delegate: SliverChildListDelegate(smileyImageList),
+                  SliverPadding(
+                    padding: const EdgeInsets.all(4),
+                    sliver: SliverGrid(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 6,
+                          ),
+                      delegate: SliverChildListDelegate(smileyImageList),
+                    ),
                   ),
-                ),
-              ]);
+                ],
+              );
             }
             return GridView.count(
               shrinkWrap: true,
@@ -728,25 +751,34 @@ class _SmileyPanelActionTile extends StatelessWidget {
           VibrationUtils.vibrateWithClickIfPossible();
           action.onPressed();
         },
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: CupertinoColors.tertiarySystemFill.resolveFrom(context)),
-            child: Icon(action.icon,
+                color: CupertinoColors.tertiarySystemFill.resolveFrom(context),
+              ),
+              child: Icon(
+                action.icon,
                 size: 24,
-                color: CupertinoColors.systemBlue.resolveFrom(context)),
-          ),
-          const SizedBox(height: 5),
-          Text(action.label,
+                color: CupertinoColors.systemBlue.resolveFrom(context),
+              ),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              action.label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
-                  fontSize: 13,
-                  color: CupertinoColors.label.resolveFrom(context))),
-        ]),
+                fontSize: 13,
+                color: CupertinoColors.label.resolveFrom(context),
+              ),
+            ),
+          ],
+        ),
       );
     }
     return Semantics(
@@ -771,9 +803,9 @@ class _SmileyPanelActionTile extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: colors.onSurfaceVariant,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  color: colors.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ],
           ),

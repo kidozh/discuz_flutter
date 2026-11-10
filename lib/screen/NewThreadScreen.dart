@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../widget/ForumFeedEmptyState.dart';
 import '../utility/MobileSignUtils.dart';
 import '../utility/ForumFeedPreferences.dart';
@@ -43,9 +45,7 @@ class NewThreadScreen extends StatelessWidget {
     return ValueListenableBuilder<int>(
       valueListenable: ForumFeedPreferences.revision,
       builder: (_, revision, __) => NewThreadStatefulWidget(
-        key: ValueKey(
-          '${account.discuz?.baseURL}:${account.user?.uid}:${account.user?.auth}:$revision',
-        ),
+        key: ValueKey((account.sessionIdentity, revision)),
         onSelectTid: onSelectTid,
       ),
     );
@@ -56,36 +56,17 @@ class NewThreadStatefulWidget extends StatefulWidget {
   final ValueChanged<int>? onSelectTid;
   NewThreadStatefulWidget({super.key, this.onSelectTid});
 
-  _NewThreadState createState() {
-    return _NewThreadState(onSelectTid: onSelectTid);
-  }
+  @override
+  _NewThreadState createState() => _NewThreadState();
 }
 
 class _NewThreadState extends State<NewThreadStatefulWidget> {
   bool _isFirstLoading = true;
-  NewThreadResult result = NewThreadResult();
   DiscuzError? _error;
   int _page = 1;
+  bool _hasMore = true;
   List<NewThread> _newThreadList = [];
-  final ValueChanged<int>? onSelectTid;
-
-  _NewThreadState({this.onSelectTid});
-
-  late EasyRefreshController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = EasyRefreshController(
-      controlFinishLoad: true,
-      controlFinishRefresh: true,
-    );
-  }
-
-  Future<IndicatorResult> _invalidateNewThreadContent(Discuz discuz) async {
-    _page = 1;
-    return await _loadNewThreadContent(discuz);
-  }
+  final _controller = EasyRefreshController();
 
   bool _cacheRestored = false;
   String? _activeFids;
@@ -97,10 +78,17 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
     super.dispose();
   }
 
-  Future<IndicatorResult> _loadNewThreadContent(Discuz discuz) async {
-    if (_loading) return IndicatorResult.none;
+  Future<IndicatorResult> _loadNewThreadContent(
+    Discuz discuz, {
+    bool refresh = false,
+  }) async {
+    if (_loading) return IndicatorResult.fail;
+    if (!refresh && !_hasMore) return IndicatorResult.noMore;
     _loading = true;
-    final user = context.read<DiscuzAndUserNotifier>().user;
+    final account = context.read<DiscuzAndUserNotifier>();
+    final user = account.user;
+    final session = account.sessionIdentity;
+    bool isCurrent() => mounted && identical(session, account.sessionIdentity);
     final scope = ForumFeedPreferences.scope(discuz, user);
     try {
       final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
@@ -108,31 +96,27 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
         scope,
         ForumInteractionClient(dio, discuz.baseURL),
       );
-      if (!mounted) return IndicatorResult.none;
-      if (_activeFids != fids) {
-        _activeFids = fids;
-        _page = 1;
-        _cacheRestored = false;
-        _newThreadList = [];
-      }
+      if (!isCurrent()) return IndicatorResult.fail;
       if (fids.isEmpty) {
         setState(() {
+          _activeFids = fids;
+          _page = 1;
           _newThreadList = [];
           _isFirstLoading = false;
           _error = null;
+          _hasMore = false;
         });
-        _controller.finishRefresh(IndicatorResult.success);
-        _controller.finishLoad(IndicatorResult.noMore);
-        return IndicatorResult.noMore;
+        return refresh ? IndicatorResult.success : IndicatorResult.noMore;
       }
       if (!_cacheRestored) {
         _cacheRestored = true;
         final cached = await ForumFeedPreferences.cachedFeed(scope, fids);
-        if (!mounted) return IndicatorResult.none;
+        if (!isCurrent()) return IndicatorResult.fail;
         if (cached != null) {
           try {
             final value = NewThreadResult.fromJson(cached);
-            if (value.variables.member_uid == (user?.uid ?? 0)) {
+            if (value.getErrorString() == null &&
+                value.variables.member_uid == (user?.uid ?? 0)) {
               setState(() {
                 _newThreadList = value.variables.newThreadList;
                 _isFirstLoading = false;
@@ -143,33 +127,28 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
           }
         }
       }
-      final page = _page;
+      final page = refresh || _activeFids != fids ? 1 : _page;
       final value = await MobileApiClient(
         dio,
         baseUrl: discuz.baseURL,
       ).newThreadsResult(fids, (page - 1) * 20);
-      if (!mounted) return IndicatorResult.none;
-      if (value.errorResult != null)
-        throw ForumApiException(
-          value.errorResult!.key,
-          value.errorResult!.content,
-        );
+      if (!isCurrent()) return IndicatorResult.fail;
+      final apiError = value.getErrorString();
+      if (apiError != null) {
+        throw ForumApiException(value.errorResult?.key ?? '', apiError);
+      }
       if (value.variables.member_uid != (user?.uid ?? 0)) {
         setState(() {
           _isFirstLoading = false;
-          _newThreadList = [];
           _error = DiscuzError(
             S.of(context).errorUserExpired,
             S.of(context).userExpiredSubtitle,
             errorType: ErrorType.userExpired,
           );
         });
-        _controller.finishRefresh(IndicatorResult.fail);
-        _controller.finishLoad(IndicatorResult.fail);
         return IndicatorResult.fail;
       }
       setState(() {
-        result = value;
         _error = null;
         _isFirstLoading = false;
         if (page == 1)
@@ -182,30 +161,36 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
             ),
           );
         }
+        _activeFids = fids;
         _page = page + 1;
+        _hasMore = value.variables.newThreadList.isNotEmpty;
       });
       context.read<DiscuzNotificationProvider>().setNotificationCount(
         value.variables.noticeCount,
       );
-      if (page == 1)
-        await ForumFeedPreferences.saveFeed(scope, fids, value.toJson());
-      if (!mounted) return IndicatorResult.none;
-      final status = value.variables.newThreadList.isEmpty
-          ? IndicatorResult.noMore
-          : IndicatorResult.success;
-      _controller.finishRefresh(IndicatorResult.success);
-      _controller.finishLoad(status);
+      if (page == 1) {
+        try {
+          await ForumFeedPreferences.saveFeed(scope, fids, value.toJson());
+        } catch (error) {
+          log('Unable to save the latest threads cache: $error');
+        }
+      }
+      if (!isCurrent()) return IndicatorResult.fail;
       if (user != null) {
-        await MobileSignUtils.conductMobileSign(
-          context,
-          discuz,
-          user,
-          value.variables.formHash,
+        unawaited(
+          MobileSignUtils.conductMobileSign(
+            context,
+            discuz,
+            user,
+            value.variables.formHash,
+          ),
         );
       }
-      return status;
+      return refresh || _hasMore
+          ? IndicatorResult.success
+          : IndicatorResult.noMore;
     } catch (error) {
-      if (!mounted) return IndicatorResult.none;
+      if (!isCurrent()) return IndicatorResult.fail;
       setState(() {
         _isFirstLoading = false;
         _error = DiscuzError(
@@ -216,8 +201,6 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
           dioError: error is DioException ? error : null,
         );
       });
-      _controller.finishRefresh(IndicatorResult.fail);
-      _controller.finishLoad(IndicatorResult.fail);
       return IndicatorResult.fail;
     } finally {
       _loading = false;
@@ -255,12 +238,8 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
       footer: EasyRefreshUtils.i18nClassicFooter(context),
       refreshOnStart: true,
       controller: _controller,
-      onRefresh: () async {
-        return await _invalidateNewThreadContent(discuz);
-      },
-      onLoad: () async {
-        return await _loadNewThreadContent(discuz);
-      },
+      onRefresh: () => _loadNewThreadContent(discuz, refresh: true),
+      onLoad: () => _loadNewThreadContent(discuz),
       child: CustomScrollView(
         slivers: [
           if (_newThreadList.isEmpty)
@@ -283,12 +262,14 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
                           .watch<UserPreferenceNotifierProvider>()
                           .forumDisplay
                           .showCarousel)
-                    ThreadSlideShowCarouselWidget(onSelectTid: onSelectTid),
+                    ThreadSlideShowCarouselWidget(
+                      onSelectTid: widget.onSelectTid,
+                    ),
                   NewThreadWidget(
                     discuz,
                     user,
                     _newThreadList[index],
-                    this.onSelectTid,
+                    widget.onSelectTid,
                     afterTid: index < _newThreadList.length - 1
                         ? _newThreadList[index + 1].tid
                         : null,

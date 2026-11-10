@@ -15,6 +15,7 @@ void main() {
     expect(value.showAccountInfo, isFalse);
     expect(value.showForumName, isTrue);
     expect(value.showThreadStats, isTrue);
+    expect(value.useForumCookiesForImages, isTrue);
   });
   test('display options persist independently across launches', () async {
     final value = const ForumDisplayPreferences().copyWith(
@@ -24,6 +25,7 @@ void main() {
       showAccountInfo: true,
       showThreadStats: false,
       showCarousel: false,
+      useForumCookiesForImages: false,
     );
     await UserPreferencesUtils.putForumDisplayPreference(value);
     expect(
@@ -44,31 +46,41 @@ void main() {
         final value = await UserPreferencesUtils.getForumDisplayPreference();
         expect(value.compactCarousel, compact);
         expect(value.mergeHomeNavigation, isFalse);
+        expect(value.useForumCookiesForImages, isTrue);
         expect(value.toJson().containsKey('compactHeader'), isFalse);
       }
     }
   });
-  test('partial and malformed settings preserve privacy defaults', () async {
-    for (final raw in [
-      false,
-      '[1]',
-      'invalid',
-      jsonEncode({'showAccountInfo': 'true'}),
-      jsonEncode({'mergeHomeNavigation': 'true'}),
-    ]) {
-      SharedPreferences.setMockInitialValues({
-        UserPreferencesUtils.forumDisplayPreferenceKey: raw,
-      });
-      expect(
-        (await UserPreferencesUtils.getForumDisplayPreference())
-            .showAccountInfo,
-        isFalse,
-      );
-      expect(
-        (await UserPreferencesUtils.getForumDisplayPreference())
-            .mergeHomeNavigation,
-        isFalse,
-      );
-    }
-  });
+  test(
+    'partial and malformed settings fall back to current defaults',
+    () async {
+      for (final raw in [
+        false,
+        '[1]',
+        'invalid',
+        jsonEncode({'showAccountInfo': 'true'}),
+        jsonEncode({'mergeHomeNavigation': 'true'}),
+        jsonEncode({'useForumCookiesForImages': 'true'}),
+      ]) {
+        SharedPreferences.setMockInitialValues({
+          UserPreferencesUtils.forumDisplayPreferenceKey: raw,
+        });
+        expect(
+          (await UserPreferencesUtils.getForumDisplayPreference())
+              .showAccountInfo,
+          isFalse,
+        );
+        expect(
+          (await UserPreferencesUtils.getForumDisplayPreference())
+              .mergeHomeNavigation,
+          isFalse,
+        );
+        expect(
+          (await UserPreferencesUtils.getForumDisplayPreference())
+              .useForumCookiesForImages,
+          isTrue,
+        );
+      }
+    },
+  );
 }

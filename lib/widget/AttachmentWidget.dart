@@ -1,4 +1,6 @@
 import 'ForumInteractionWidgets.dart';
+import 'forum_image.dart';
+
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -128,19 +130,19 @@ class AttachmentWidget extends StatelessWidget {
       return InkWell(
         child: PlatformCard(
           elevation: 8.0,
-          child: CachedNetworkImage(
-            imageUrl: _attachment.getAttachmentRealUrl(_discuz),
+          child: ForumImage(
+            forum: _discuz,
+            url: _attachment.getAttachmentRealUrl(_discuz),
             fit: BoxFit.fill,
-            errorWidget: (context, url, error) =>
-                Icon(PlatformIcons(context).error),
-            progressIndicatorBuilder: (context, url, progress) => Container(
+            error: (context) => Icon(PlatformIcons(context).error),
+            loading: (context, progress) => Container(
               padding: EdgeInsets.all(16.0),
               child: SizedBox(
                 width: 24,
                 height: 24,
                 child: PlatformCircularProgressIndicator(
                   material: (_, __) =>
-                      MaterialProgressIndicatorData(value: progress.progress),
+                      MaterialProgressIndicatorData(value: progress),
                 ),
               ),
             ),
@@ -165,6 +167,7 @@ class AttachmentWidget extends StatelessWidget {
                     _attachment.aidEncode,
                   ),
                 ],
+                forum: _discuz,
               ),
             ),
           );
@@ -241,6 +244,7 @@ class AttachmentWidget extends StatelessWidget {
                               _attachment.aidEncode,
                             ),
                           ],
+                          forum: _discuz,
                         ),
                       ),
                     );

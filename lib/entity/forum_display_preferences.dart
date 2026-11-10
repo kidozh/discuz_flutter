@@ -6,6 +6,7 @@ class ForumDisplayPreferences {
     this.showAccountInfo = false,
     this.showThreadStats = true,
     this.showCarousel = true,
+    this.useForumCookiesForImages = true,
   });
 
   final bool mergeHomeNavigation;
@@ -14,6 +15,7 @@ class ForumDisplayPreferences {
   final bool showAccountInfo;
   final bool showThreadStats;
   final bool showCarousel;
+  final bool useForumCookiesForImages;
 
   ForumDisplayPreferences copyWith({
     bool? mergeHomeNavigation,
@@ -22,6 +24,7 @@ class ForumDisplayPreferences {
     bool? showAccountInfo,
     bool? showThreadStats,
     bool? showCarousel,
+    bool? useForumCookiesForImages,
   }) => ForumDisplayPreferences(
     mergeHomeNavigation: mergeHomeNavigation ?? this.mergeHomeNavigation,
     compactCarousel: compactCarousel ?? this.compactCarousel,
@@ -29,6 +32,8 @@ class ForumDisplayPreferences {
     showAccountInfo: showAccountInfo ?? this.showAccountInfo,
     showThreadStats: showThreadStats ?? this.showThreadStats,
     showCarousel: showCarousel ?? this.showCarousel,
+    useForumCookiesForImages:
+        useForumCookiesForImages ?? this.useForumCookiesForImages,
   );
 
   factory ForumDisplayPreferences.fromJson(Map<String, dynamic> json) {
@@ -43,6 +48,7 @@ class ForumDisplayPreferences {
       showAccountInfo: read('showAccountInfo', false),
       showThreadStats: read('showThreadStats', true),
       showCarousel: read('showCarousel', true),
+      useForumCookiesForImages: read('useForumCookiesForImages', true),
     );
   }
 
@@ -53,5 +59,6 @@ class ForumDisplayPreferences {
     'showAccountInfo': showAccountInfo,
     'showThreadStats': showThreadStats,
     'showCarousel': showCarousel,
+    'useForumCookiesForImages': useForumCookiesForImages,
   };
 }

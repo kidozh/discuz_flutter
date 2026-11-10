@@ -3,17 +3,21 @@ import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/dao/FavoriteForumDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
+import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
+import 'package:discuz_flutter/utility/EasyRefreshUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:discuz_flutter/widget/ErrorCard.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -23,127 +27,177 @@ import 'DisplayForumSliverPage.dart';
 class FavoriteForumPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final account = context.watch<DiscuzAndUserNotifier>();
+    final discuz = account.discuz;
     return PlatformScaffold(
       iosContentPadding: true,
       iosContentBottomPadding: true,
-      appBar: PlatformAppBar(
-        title: Text(S.of(context).favoriteForum),
-      ),
+      appBar: PlatformAppBar(title: Text(S.of(context).favoriteForum)),
       body: PlatformLiquidGlassPageBackdrop(
-        child: FavoriteForumStatefulWidget(),
+        child: discuz == null
+            ? NullDiscuzScreen()
+            : FavoriteForumStatefulWidget(
+                key: ValueKey(account.sessionIdentity),
+                discuz: discuz,
+                user: account.user,
+              ),
       ),
     );
   }
 }
 
 class FavoriteForumStatefulWidget extends StatefulWidget {
+  final Discuz discuz;
+  final User? user;
+
+  const FavoriteForumStatefulWidget({
+    required this.discuz,
+    this.user,
+    super.key,
+  });
+
   @override
-  State<StatefulWidget> createState() {
-    return FavoriteForumState();
-  }
+  State<FavoriteForumStatefulWidget> createState() => FavoriteForumState();
 }
 
 class FavoriteForumState extends State<FavoriteForumStatefulWidget> {
-  late Discuz _discuz;
-  late User? _user;
-
-  FavoriteForumDao? _favoriteForumDao;
-  int progress = 0;
-  late MobileApiClient client;
+  final _controller = EasyRefreshController();
+  FavoriteForumDao? _dao;
+  DiscuzError? _error;
+  bool _syncing = false;
 
   @override
   void initState() {
     super.initState();
-    // get user and discuz from provider
-    _user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
-    _discuz =
-        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz!;
-    // check with local data
-
     _loadDb();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   Future<void> _loadDb() async {
     final dao = await AppDatabase.getFavoriteForumDao();
-    if (!mounted) return;
-    setState(() => _favoriteForumDao = dao);
-
-    if (_user == null) return;
-    var dio = await NetworkUtils.getDioWithPersistCookieJar(_user);
-    client = MobileApiClient(dio, baseUrl: _discuz.baseURL);
-    await _loadDataFromServer();
+    if (mounted) setState(() => _dao = dao);
   }
 
-  Future<void> _loadDataFromServer() async {
-    // initial trial
-    int page = 1;
-    await fetchDataByPage(page, []);
-  }
-
-  Future<void> fetchDataByPage(
-      int page, List<FavoriteForum> FavoriteForumList) async {
-    print("load favorite forum data ${page}");
-    client.favoriteForumResult(page).then((value) async {
-      int totalNumber = value.variables.count;
-      List<FavoriteForum> FavoriteForumListInServer = value.variables.pmList;
-      FavoriteForumList.addAll(FavoriteForumListInServer);
-      print("Recv favorite forum data ${value} / ${totalNumber}");
-      for (var favoriteForum in FavoriteForumListInServer) {
-        // save them one by one
-        FavoriteForumInDatabase? favoriteForumInDatabase =
-            _favoriteForumDao!.getFavoriteForumByFid(favoriteForum.id, _discuz);
-        print("Get FavoriteForum In DB ${FavoriteForumInDatabase}");
-        if (favoriteForumInDatabase == null) {
-          // insert it
-          int insertId = await _favoriteForumDao!
-              .insertFavoriteForum(favoriteForum.toDb(_discuz));
-          print("Inserted id ${insertId}");
-        } else if (favoriteForumInDatabase.favid != favoriteForum.favId) {
-          favoriteForumInDatabase.favid = favoriteForum.favId;
-          int insertId = await _favoriteForumDao!
-              .insertFavoriteForum(favoriteForumInDatabase);
+  Future<IndicatorResult> _syncFavorites() async {
+    final dao = _dao;
+    final user = widget.user;
+    final discuz = widget.discuz;
+    if (_syncing || dao == null || user == null) return IndicatorResult.fail;
+    final account = context.read<DiscuzAndUserNotifier>();
+    final session = account.sessionIdentity;
+    bool isCurrent() => mounted && identical(session, account.sessionIdentity);
+    _syncing = true;
+    try {
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
+      final favorites = <int, FavoriteForum>{};
+      var page = 1;
+      while (isCurrent()) {
+        final response = await client.favoriteForumResult(page++);
+        if (!isCurrent()) return IndicatorResult.fail;
+        final variables = response.variables;
+        final error = EasyRefreshUtils.responseError(
+          context,
+          response,
+          user,
+          variables.member_uid,
+        );
+        if (error != null) {
+          setState(() => _error = error);
+          return IndicatorResult.fail;
+        }
+        final previousCount = favorites.length;
+        for (final favorite in variables.pmList) {
+          favorites[favorite.id] = favorite;
+        }
+        if (favorites.length >= variables.count || variables.pmList.isEmpty) {
+          break;
+        }
+        if (favorites.length == previousCount) {
+          final strings = S.of(context);
+          setState(
+            () => _error = DiscuzError(strings.error, strings.loadFailed),
+          );
+          return IndicatorResult.fail;
         }
       }
-
-      if (totalNumber <= FavoriteForumList.length) {
-        // should finish all and refresh data
-        if (totalNumber > 0) {
-          EasyLoading.showSuccess(
-              S.of(context).syncSuccessfullyWithServer(totalNumber));
+      for (final favorite in favorites.values) {
+        if (!isCurrent()) return IndicatorResult.fail;
+        final existing = dao.getFavoriteForumByFid(
+          favorite.id,
+          discuz,
+          uid: user.uid,
+        );
+        final updated = favorite.toDb(discuz)..uid = user.uid;
+        if (existing == null) {
+          await dao.insertFavoriteForum(updated);
+        } else {
+          updated.date = existing.date;
+          await dao.favoriteForumBox.put(existing.key, updated);
         }
-      } else {
-        // save the data into database
-
-        EasyLoading.showProgress(FavoriteForumList.length / totalNumber);
-
-        fetchDataByPage(page + 1, FavoriteForumList);
       }
-    });
+      if (!isCurrent()) return IndicatorResult.fail;
+      setState(() => _error = null);
+      return IndicatorResult.success;
+    } catch (error) {
+      if (isCurrent()) {
+        setState(() => _error = EasyRefreshUtils.requestError(context, error));
+      }
+      return IndicatorResult.fail;
+    } finally {
+      _syncing = false;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_favoriteForumDao == null) {
+    final dao = _dao;
+    if (dao == null)
       return const Center(child: PlatformCircularProgressIndicator());
-    }
-    return ValueListenableBuilder(
-      valueListenable: _favoriteForumDao!.favoriteForumBox.listenable(),
-      builder: (BuildContext context, Box<FavoriteForumInDatabase> value,
-          Widget? child) {
-        List<FavoriteForumInDatabase> favoriteForumList =
-            _favoriteForumDao!.getFavoriteForumList(_discuz);
-        if (favoriteForumList.isNotEmpty) {
-          return ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 6),
-              itemBuilder: (context, index) {
-                return FavoriteForumCardWidget(
-                    _discuz, _user, favoriteForumList[index]);
+    final discuz = widget.discuz;
+    final user = widget.user;
+    return Column(
+      children: [
+        if (_error != null)
+          ErrorCard(
+            _error!,
+            () => _controller.callRefresh(),
+            errorType: _error!.errorType,
+          ),
+        Expanded(
+          child: EasyRefresh(
+            controller: _controller,
+            header: EasyRefreshUtils.i18nClassicHeader(context),
+            refreshOnStart: user != null,
+            onRefresh: user == null ? null : _syncFavorites,
+            child: ValueListenableBuilder(
+              valueListenable: dao.favoriteForumBox.listenable(),
+              builder: (context, box, child) {
+                final favorites = dao.getFavoriteForumList(
+                  discuz,
+                  uid: user?.uid ?? 0,
+                );
+                if (favorites.isEmpty) {
+                  return ListView(
+                    children: [EmptyListScreen(EmptyItemType.forum)],
+                  );
+                }
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  itemCount: favorites.length,
+                  itemBuilder: (context, index) =>
+                      FavoriteForumCardWidget(discuz, user, favorites[index]),
+                );
               },
-              itemCount: favoriteForumList.length);
-        } else {
-          return EmptyListScreen(EmptyItemType.forum);
-        }
-      },
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -173,9 +227,8 @@ class FavoriteForumCardWidget extends StatelessWidget {
         ),
         title: Text(
           favoriteForumInDatabase.title,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+          style: Theme.of(context).textTheme.bodyLarge
+              ?.copyWith(fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
           TimeDisplayUtils.getLocaledTimeDisplay(
@@ -187,12 +240,17 @@ class FavoriteForumCardWidget extends StatelessWidget {
         onTap: () async {
           VibrationUtils.vibrateWithClickIfPossible();
           await Navigator.push(
-              context,
-              platformPageRoute(
-                  context: context,
-                  iosTitle: favoriteForumInDatabase.title,
-                  builder: (context) => DisplayForumTwoPanePage(
-                      discuz, user, favoriteForumInDatabase.idKey)));
+            context,
+            platformPageRoute(
+              context: context,
+              iosTitle: favoriteForumInDatabase.title,
+              builder: (context) => DisplayForumTwoPanePage(
+                discuz,
+                user,
+                favoriteForumInDatabase.idKey,
+              ),
+            ),
+          );
         },
       ),
     );

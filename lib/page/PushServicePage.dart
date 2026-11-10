@@ -1,8 +1,6 @@
-import 'dart:developer';
-
-import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/PushTokenListResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
@@ -10,8 +8,7 @@ import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/PushServiceUtils.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
-import 'package:discuz_flutter/utility/URLUtils.dart';
-import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -27,12 +24,13 @@ class PushServicePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PushServiceStateWidget();
+    final account = context.watch<DiscuzAndUserNotifier>();
+    return PushServiceStateWidget(key: ValueKey(account.sessionIdentity));
   }
 }
 
 class PushServiceStateWidget extends StatefulWidget {
-  PushServiceStateWidget();
+  const PushServiceStateWidget({super.key});
 
   @override
   PushServiceState createState() {
@@ -43,216 +41,172 @@ class PushServiceStateWidget extends StatefulWidget {
 class PushServiceState extends State<PushServiceStateWidget> {
   PushServiceState();
 
-  late EasyRefreshController _controller;
-  late Dio _dio;
-  late MobileApiClient _client;
-
+  final _controller = EasyRefreshController();
   PushTokenListResult result = PushTokenListResult();
-
-  // 控制结束
-  bool _enableControlFinish = false;
-  bool _enableRefresh = true;
-  PushTokenChannel? pushTokenChannel = null;
-
-  bool _isSupportPushService = true;
+  PushTokenChannel? pushTokenChannel;
+  DiscuzError? _error;
+  bool _loading = false;
 
   @override
-  void initState() {
-    super.initState();
-    _controller = EasyRefreshController(
-        controlFinishLoad: true, controlFinishRefresh: true);
-  }
-
-  @override
-  void didChangeDependencies() async {
-    super.didChangeDependencies();
-    pushTokenChannel = await PushServiceUtils.getPushToken();
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
-        //iosContentPadding: true,
-        appBar: PlatformAppBar(
-          title: Text(S.of(context).pushNotification),
-        ),
-        body: SafeArea(
-          child: Consumer<DiscuzAndUserNotifier>(
-            builder: (context, discuzAndUser, child) {
-              if (discuzAndUser.discuz == null || discuzAndUser.user == null) {
-                return NullUserScreen();
-              } else {
-                Discuz discuz = discuzAndUser.discuz!;
-                User user = discuzAndUser.user!;
-                if (!_isSupportPushService) {
-                  // display a page which does not support DHP
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: Icon(
-                          PlatformIcons(context).error,
-                          color: Theme.of(context).colorScheme.error,
-                          size: 64,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          //Text(discuzError.content, style: Theme.of(context).textTheme.headlineSmall),
-                          Text(
-                            S
-                                .of(context)
-                                .pushServiceSiteNotSupport(discuz.siteName),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 24,
-                      ),
-                      PlatformElevatedButton(
-                        child: Text(S.of(context).viewPushServiceHomePage),
-                        onPressed: () {
-                          VibrationUtils.vibrateWithClickIfPossible();
-                          URLUtils.launchURL("https://dhp.kidozh.com");
-                        },
-                      )
-                    ],
-                  );
-                }
-                // start to trigger
-                return EasyRefresh(
-                  header: EasyRefreshUtils.i18nClassicHeader(context),
-                  footer: EasyRefreshUtils.i18nClassicFooter(context),
-                  refreshOnStart: true,
-                  controller: _controller,
-                  child: ListView.builder(
-                    itemBuilder: (context, index) {
-                      if (result.list[index].token != pushTokenChannel?.token) {
-                        return PlatformListTile(
-                          title: Text(result.list[index].deviceName),
-                          subtitle: Text(TimeDisplayUtils.getLocaledTimeDisplay(
-                              context, result.list[index].updateAt)),
-                          trailing: result.list[index].token ==
-                                  pushTokenChannel?.token
-                              ? Icon(AppPlatformIcons(context).thisDeviceSolid)
-                              : null,
-                        );
-                      } else {
-                        return PlatformCard(
-                          color: Theme.of(context).primaryColor,
-                          child: PlatformListTile(
-                            textColor: Theme.of(context)
-                                .primaryTextTheme
-                                .bodyLarge
-                                ?.color,
-                            title: Text(result.list[index].deviceName),
-                            subtitle: Text(
+      //iosContentPadding: true,
+      appBar: PlatformAppBar(title: Text(S.of(context).pushNotification)),
+      body: SafeArea(
+        child: Consumer<DiscuzAndUserNotifier>(
+          builder: (context, discuzAndUser, child) {
+            if (discuzAndUser.discuz == null || discuzAndUser.user == null) {
+              return NullUserScreen();
+            } else {
+              Discuz discuz = discuzAndUser.discuz!;
+              User user = discuzAndUser.user!;
+              return Column(
+                children: [
+                  if (_error != null)
+                    ErrorCard(_error!, () => _controller.callRefresh()),
+                  Expanded(
+                    child: EasyRefresh(
+                      header: EasyRefreshUtils.i18nClassicHeader(context),
+                      refreshOnStart: true,
+                      controller: _controller,
+                      child: ListView.builder(
+                        itemBuilder: (context, index) {
+                          if (result.list[index].token !=
+                              pushTokenChannel?.token) {
+                            return PlatformListTile(
+                              title: Text(result.list[index].deviceName),
+                              subtitle: Text(
                                 TimeDisplayUtils.getLocaledTimeDisplay(
-                                    context, result.list[index].updateAt)),
-                            trailing: result.list[index].token ==
-                                    pushTokenChannel?.token
-                                ? Icon(
-                                    AppPlatformIcons(context).thisDeviceSolid,
-                                    color: Theme.of(context)
-                                        .primaryTextTheme
-                                        .bodyLarge
-                                        ?.color,
-                                  )
-                                : null,
-                          ),
-                        );
-                      }
-                    },
-                    itemCount: result.list.length,
+                                  context,
+                                  result.list[index].updateAt,
+                                ),
+                              ),
+                              trailing:
+                                  result.list[index].token ==
+                                      pushTokenChannel?.token
+                                  ? Icon(
+                                      AppPlatformIcons(context).thisDeviceSolid,
+                                    )
+                                  : null,
+                            );
+                          } else {
+                            return PlatformCard(
+                              color: Theme.of(context).primaryColor,
+                              child: PlatformListTile(
+                                textColor: Theme.of(context)
+                                    .primaryTextTheme
+                                    .bodyLarge
+                                    ?.color,
+                                title: Text(result.list[index].deviceName),
+                                subtitle: Text(
+                                  TimeDisplayUtils.getLocaledTimeDisplay(
+                                    context,
+                                    result.list[index].updateAt,
+                                  ),
+                                ),
+                                trailing:
+                                    result.list[index].token ==
+                                        pushTokenChannel?.token
+                                    ? Icon(
+                                        AppPlatformIcons(context)
+                                            .thisDeviceSolid,
+                                        color: Theme.of(context)
+                                            .primaryTextTheme
+                                            .bodyLarge
+                                            ?.color,
+                                      )
+                                    : null,
+                              ),
+                            );
+                          }
+                        },
+                        itemCount: result.list.length,
+                      ),
+                      onRefresh: () => _loadTokenList(discuz, user),
+                    ),
                   ),
-                  onRefresh: _enableRefresh
-                      ? () async {
-                          await _loadTokenList(discuz, user);
-                        }
-                      : null,
-                );
-              }
-            },
+                ],
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<IndicatorResult> _loadTokenList(Discuz discuz, User user) async {
+    if (_loading) return IndicatorResult.fail;
+    _loading = true;
+    final account = context.read<DiscuzAndUserNotifier>();
+    final session = account.sessionIdentity;
+    bool isCurrent() => mounted && identical(session, account.sessionIdentity);
+    try {
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
+      var response = await client.getPushTokenListResult();
+      if (!isCurrent()) return IndicatorResult.fail;
+      if (response.formhash.isEmpty) {
+        setState(
+          () => _error = DiscuzError(
+            S.of(context).pushNotification,
+            S.of(context).siteDoesNotSupportPushService,
           ),
-        ));
-  }
+        );
+        return IndicatorResult.fail;
+      }
+      final channel = await PushServiceUtils.getPushToken();
+      if (!isCurrent()) return IndicatorResult.fail;
+      if (channel != null &&
+          !response.list.any(
+            (entry) =>
+                entry.token == channel.token &&
+                DateTime.now().difference(entry.updateAt).inDays < 6,
+          )) {
+        final registration = await client.sendToken(
+          response.formhash,
+          channel.token,
+          channel.deviceName,
+          channel.packageId,
+          channel.channelName,
+        );
+        if (!isCurrent()) return IndicatorResult.fail;
+        if (registration.result == 'success') {
+          response = await client.getPushTokenListResult();
+          if (!isCurrent()) return IndicatorResult.fail;
+          if (response.formhash.isEmpty) {
+            setState(
+              () => _error = DiscuzError(
+                S.of(context).pushNotification,
+                S.of(context).loadFailed,
+              ),
+            );
+            return IndicatorResult.fail;
+          }
+        } else {
+          EasyLoading.showError(S.of(context).uploadTokenUnsuccessful);
+        }
+      }
 
-  Future<void> _loadTokenList(Discuz discuz, User user) async {
-    this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-    this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
-
-    _client.getPushTokenListResult().then((value) async {
-      await PushServiceUtils.putDiscuzPushPluginEnabled(discuz, true);
       setState(() {
-        result = value;
+        pushTokenChannel = channel;
+        result = response;
+        _error = null;
       });
-      if (!_enableControlFinish) {
-        //_controller.resetLoadState();
-        _controller.finishRefresh();
-        _controller.finishRefresh(IndicatorResult.noMore);
+      await PushServiceUtils.putDiscuzPushPluginEnabled(discuz, true);
+      return IndicatorResult.success;
+    } catch (error) {
+      if (isCurrent()) {
+        setState(() => _error = EasyRefreshUtils.requestError(context, error));
       }
-      // check with token
-      PushTokenChannel? pushTokenChannel =
-          await PushServiceUtils.getPushToken();
-      bool refreshToken = true;
-      DateTime now = DateTime.now();
-      for (var tokenInfo in result.list) {
-        // if time interval > 6, we need to refresh the page
-        if (tokenInfo.token == pushTokenChannel?.token &&
-            now.difference(tokenInfo.updateAt).inDays < 6) {
-          refreshToken = false;
-        }
-      }
-      if (refreshToken || true) {
-        _sendTokenList(discuz, user);
-      }
-    }).catchError((e, StackTrace stackTrace) {
-      log(stackTrace.toString());
-      EasyLoading.showError(S.of(context).siteDoesNotSupportPushService);
-      if (mounted) {
-        setState(() {
-          _isSupportPushService = false;
-        });
-      }
-    });
-  }
-
-  Future<void> _sendTokenList(Discuz discuz, User user) async {
-    this._dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-    this._client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
-    // send it
-    // check with token
-    PushTokenChannel? _pushTokenChannel =
-        await PushServiceUtils.getPushToken();
-    if (_pushTokenChannel != null) {
-      // prepare to send token
-
-      log("Get formhash ${result.formhash}");
-      _client
-          .sendToken(
-              result.formhash,
-              _pushTokenChannel.token,
-              _pushTokenChannel.deviceName,
-              _pushTokenChannel.packageId,
-              _pushTokenChannel.channelName)
-          .then((value) async {
-        if (value.result == "success") {
-          EasyLoading.showSuccess(S.of(context).uploadTokenSuccessful);
-          await PushServiceUtils.putDiscuzPushPluginEnabled(discuz, true);
-        }
-      }).catchError((Object object, StackTrace stackTrace) {
-        log(stackTrace.toString());
-        EasyLoading.showError(S.of(context).uploadTokenUnsuccessful);
-      });
+      return IndicatorResult.fail;
+    } finally {
+      _loading = false;
     }
   }
 }

@@ -219,10 +219,10 @@ packages:
     dependency: transitive
     description:
       name: code_assets
-      sha256: "828110d598123b5ea96c00c9f3c72105bf79f8ee36c20a39b26209ade421ec57"
+      sha256: "1ef22a0be3af9370bd9481ac76db114db92bfe75d5ca2b2d7bc911764478a4d9"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.0"
+    version: "2.2.0"
   code_builder:
     dependency: transitive
     description:
@@ -564,14 +564,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.5.0"
-  flutter_cache_manager_dio:
-    dependency: "direct main"
-    description:
-      name: flutter_cache_manager_dio
-      sha256: dec00b21ddd5206fe79201274ec53ab848f337a2716f11a5ead8e68a79e11ec0
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.0.0"
   flutter_driver:
     dependency: transitive
     description: flutter
@@ -953,10 +945,10 @@ packages:
     dependency: "direct main"
     description:
       name: hive_ce
-      sha256: "8b6eea82b06a7e2bb298a6a279139c45838b82491a66f3972bf609d48681392a"
+      sha256: "72fdeccc40b89d9f05d6c16185c233d5a23781e6e77661eccaa6680deb22c9bf"
       url: "https://pub.dev"
     source: hosted
-    version: "2.22.0"
+    version: "2.23.2"
   hive_ce_flutter:
     dependency: "direct main"
     description:
@@ -1057,10 +1049,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker_ios
-      sha256: b8f508306db2bf71141aba2de4ec13456338bf01e13f034bd2594f341a5f8eb2
+      sha256: f4e5650a81b268af3886bc789216ff6d56bdfa79934f93f1a5a8a303b8f60f77
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.13+14"
+    version: "0.8.13+15"
   image_picker_linux:
     dependency: transitive
     description:
@@ -1134,10 +1126,10 @@ packages:
     dependency: transitive
     description:
       name: isolate_channel
-      sha256: a9d3d620695bc984244dafae00b95e4319d6974b2d77f4b9e1eb4f2efe099094
+      sha256: bd56e1bb2787bed914158c2696943dc7254732bfea2c207aafca6bc930580fd4
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.1"
+    version: "0.6.2"
   jni:
     dependency: transitive
     description:
@@ -1374,10 +1366,10 @@ packages:
     dependency: transitive
     description:
       name: objective_c
-      sha256: "5c80c2ad6e2c0397de5db38c6d653e69616a3397e13aa7633bf39eb668f2041b"
+      sha256: "322d5f1f0680534acaf557c5d68e97b40c3800ee5e15b63dcacc3c31504674c2"
       url: "https://pub.dev"
     source: hosted
-    version: "9.6.2"
+    version: "9.6.3"
   octo_image:
     dependency: transitive
     description:
@@ -1398,10 +1390,10 @@ packages:
     dependency: transitive
     description:
       name: os_detect
-      sha256: "7d87c0dd98c6faf110d5aa498e9a6df02ffce4bb78cc9cfc8ad02929be9bb71f"
+      sha256: c34f67a4cc4d8df9d4a07277ebb1a28bb63ef428c0be19c565accddf1fdb66f9
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.3"
+    version: "2.0.4"
   package_config:
     dependency: transitive
     description:
@@ -1558,10 +1550,10 @@ packages:
     dependency: transitive
     description:
       name: permission_handler_windows
-      sha256: f411872409a099a7f4826f80cb98cb903317be890cbf8a2e6d062024cd88e4fb
+      sha256: "210031f00c32d61038fb4175d82dd874a426bfbae2c2af774bd4e5abb5cac755"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.3"
+    version: "0.2.4"
   persistent_bottom_nav_bar:
     dependency: "direct main"
     description:
