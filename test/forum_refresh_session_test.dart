@@ -171,6 +171,8 @@ void main() {
         expect(find.text('SIGNED IN AGAIN'), findsNothing);
         expect(replies, isEmpty);
         expect(pages, [1, 2, 1, 3, 1, 1, 1]);
+        // The header's completion timer can outlive its last scheduled frame.
+        await tester.pump(const Duration(seconds: 1));
         await tester.pumpAndSettle();
       }, _TestHttpOverrides(serve));
     },
