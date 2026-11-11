@@ -1,11 +1,81 @@
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:discuz_flutter/utility/ToastUtils.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
+  testWidgets('Android content and tabs clear the system bars and keyboard', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(400, 800);
+    const insets = FakeViewPadding(left: 24, top: 32, bottom: 48);
+    tester.view.padding = insets;
+    tester.view.viewPadding = insets;
+    addTearDown(tester.view.reset);
+
+    const contentKey = ValueKey('page-content');
+    final body = find.byKey(contentKey);
+    Future<void> showPage({PlatformBottomNavigationBar? tabs}) =>
+        tester.pumpWidget(
+          PlatformProvider(
+            style: AppVisualStyle.material,
+            builder: (_) => PlatformTheme(
+              themeMode: ThemeMode.dark,
+              materialLightTheme: ThemeData.light(),
+              materialDarkTheme: ThemeData.dark(),
+              builder: (_) => PlatformApp(
+                home: PlatformScaffold(
+                  appBar: PlatformAppBar(title: const Text('Forum')),
+                  body: const SizedBox.expand(key: contentKey),
+                  bottomNavigationBar: tabs,
+                ),
+              ),
+            ),
+          ),
+        );
+
+    await showPage();
+    expect(tester.getRect(body).left, 24);
+    expect(tester.getRect(body).top, 32 + 64);
+    expect(tester.getRect(body).bottom, 800 - 48);
+    expect(
+      tester
+          .widgetList<AnnotatedRegion<SystemUiOverlayStyle>>(
+            find.byType(AnnotatedRegion<SystemUiOverlayStyle>),
+          )
+          .map((region) => region.value.systemNavigationBarIconBrightness),
+      contains(Brightness.light),
+    );
+
+    var selected = -1;
+    await showPage(
+      tabs: PlatformBottomNavigationBar(
+        selectedIndex: 0,
+        onTap: (index) => selected = index,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Boards'),
+        ],
+      ),
+    );
+    final tabs = find.byType(BottomNavigationBar);
+    expect(tester.getBottomRight(tabs).dy, 800);
+    expect(tester.getRect(body).bottom, tester.getRect(tabs).top);
+    expect(tester.getBottomRight(find.text('Boards')).dy, lessThan(800 - 48));
+    await tester.tap(find.text('Boards'));
+    expect(selected, 1);
+
+    await showPage();
+    tester.view.padding = const FakeViewPadding(left: 24, top: 32);
+    tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+    await tester.pump();
+    expect(tester.getRect(body).bottom, 800 - 300);
+  }, variant: const TargetPlatformVariant({TargetPlatform.android}));
+
   testWidgets('switching Material to Cupertino preserves the active route', (
     tester,
   ) async {

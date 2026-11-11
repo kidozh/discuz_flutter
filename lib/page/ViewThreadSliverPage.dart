@@ -46,7 +46,6 @@ import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/screen/ExtraFuncInThreadScreen.dart';
 import 'package:discuz_flutter/screen/SmileyListScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
-import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
 import 'package:discuz_flutter/utility/RewriteRuleUtils.dart';
@@ -363,6 +362,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     _focusNode.dispose();
     _replySubmission.dispose();
     _replyController.dispose();
+    _captchaController.dispose();
     super.dispose();
   }
 
@@ -617,6 +617,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     final captchaFields = _captchaController.value;
     final captchaHash = captchaFields?.captchaFormHash ?? '';
     final verification = captchaFields?.verification ?? '';
+    if (captchaHash.isNotEmpty && verification.trim().isEmpty) {
+      EasyLoading.showError(strings.captchaRequired);
+      return;
+    }
     final captchaMod = captchaHash.isEmpty ? '' : 'forum::viewthread';
     String? notifyAuthorMessage;
     if (replyPost != null) {
@@ -685,8 +689,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
       if (!mounted || value == null) return;
       final result = value.errorResult;
       if (result?.key == 'post_reply_succeed') {
+        if (captchaHash.isNotEmpty || _captchaController.requiredByServer) {
+          _captchaController.reloadCaptcha(requiredByServer: false);
+        }
         EasyLoading.showSuccess('${result!.content}(${result.key})');
       } else {
+        if (result?.key == 'submit_seccode_invalid') {
+          _captchaController.reloadCaptcha(requiredByServer: true);
+        }
         EasyLoading.showError(
           result == null
               ? strings.progressButtonReplyFailed
@@ -1212,7 +1222,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
 
   @override
   Widget build(BuildContext context) {
-    CustomizeColor.updateAndroidNavigationbar(context);
     ModalRoute<Object?>? route = ModalRoute.of(context);
     final loadedSubject = _viewThreadResult.threadVariables.threadInfo.subject;
     final threadSubject = HtmlUnescape().convert(
@@ -1900,6 +1909,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                       user,
                                       "post",
                                       captchaController: _captchaController,
+                                      hideUnconfirmedFailure: true,
                                     ),
                                   CupertinoKeyboardAccessory(
                                     enabled:

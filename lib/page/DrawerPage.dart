@@ -354,7 +354,6 @@ class DrawerState extends State<DrawerStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    CustomizeColor.updateAndroidNavigationbar(context);
     return PlatformScaffold(
       appBar: PlatformAppBar(
         automaticallyImplyLeading: true,

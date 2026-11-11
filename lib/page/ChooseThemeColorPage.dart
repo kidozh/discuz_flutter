@@ -2,7 +2,6 @@ import 'dart:ui' show ImageFilter;
 
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
-import 'package:discuz_flutter/utility/CustomizeColor.dart';
 import 'package:discuz_flutter/utility/NtcColorLocalization.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
@@ -468,7 +467,6 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
     context.read<ThemeNotifierProvider>().setCustomThemeColor(selected);
     await UserPreferencesUtils.putCustomThemeColor(selected);
     if (!mounted) return;
-    CustomizeColor.updateAndroidNavigationbar(context);
     VibrationUtils.vibrateSuccessfullyIfPossible();
   }
 
@@ -476,7 +474,6 @@ class _ChooseThemeColorState extends State<ChooseThemeColorPage> {
     context.read<ThemeNotifierProvider>().setTheme(scheme);
     await UserPreferencesUtils.putThemeColor(scheme);
     if (!mounted) return;
-    CustomizeColor.updateAndroidNavigationbar(context);
     VibrationUtils.vibrateSuccessfullyIfPossible();
   }
 

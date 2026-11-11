@@ -25,9 +25,11 @@ class CaptchaWidget extends StatelessWidget {
     this.captchaType, {
     this.captchaController,
     this.showProgress,
+    this.hideUnconfirmedFailure = false,
   });
 
   CaptchaController? captchaController;
+  final bool hideUnconfirmedFailure;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +39,7 @@ class CaptchaWidget extends StatelessWidget {
       captchaType,
       captchaController,
       showProgress,
+      hideUnconfirmedFailure: hideUnconfirmedFailure,
       key: ValueKey((
         dio,
         _discuz.baseURL,
@@ -53,6 +56,7 @@ class CaptchaStatefulWidget extends StatefulWidget {
   final String captchaType;
   final CaptchaController? captchaController;
   final bool? showProgress;
+  final bool hideUnconfirmedFailure;
   final Dio dio;
 
   const CaptchaStatefulWidget(
@@ -61,6 +65,7 @@ class CaptchaStatefulWidget extends StatefulWidget {
     this.captchaType,
     this.captchaController,
     this.showProgress, {
+    this.hideUnconfirmedFailure = false,
     super.key,
   });
 
@@ -74,6 +79,7 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
   final _textEditingController = TextEditingController();
   bool loaded = false;
   bool _loadFailed = false;
+  bool _captchaRequired = false;
   int _request = 0;
 
   @override
@@ -116,6 +122,7 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
       _loadFailed = false;
     });
     _textEditingController.clear();
+    widget.captchaController?.value = CaptchaFields('', widget.captchaType, '');
     final dio = widget.dio;
     final baseUrl = widget.discuz.getBaseURLWithAfterfix();
     final type = widget.captchaType;
@@ -126,8 +133,14 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
       ).captchaResult(type);
       if (!isCurrent()) return;
       final variables = value.variables;
+      if (value.getErrorString() != null && variables.secHash.isEmpty) {
+        throw StateError(value.getErrorString()!);
+      }
+      _captchaRequired = variables.secHash.isNotEmpty;
       if (variables.secHash.isEmpty) {
-        widget.captchaController?.value = CaptchaFields('', type, '');
+        if (widget.captchaController?.requiredByServer == true) {
+          setState(() => _loadFailed = true);
+        }
         return;
       }
       final uri = Uri.parse('${baseUrl}api/mobile/index.php').replace(
@@ -146,6 +159,10 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
         ),
       );
       if (!isCurrent()) return;
+      final image = response.data;
+      if (image == null || image.isEmpty) {
+        throw StateError('Empty captcha image');
+      }
       widget.captchaController?.value = CaptchaFields(
         variables.secHash,
         type,
@@ -153,25 +170,29 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
       );
       setState(() {
         captchaVariable = variables;
-        imageByte = response.data;
+        imageByte = image;
       });
     } catch (_) {
-      if (isCurrent()) {
-        widget.captchaController?.value = CaptchaFields('', type, '');
-        setState(() => _loadFailed = true);
-      }
+      if (isCurrent()) setState(() => _loadFailed = true);
     } finally {
       if (isCurrent()) setState(() => loaded = true);
     }
   }
 
+  Widget _reloadButton(BuildContext context) => PlatformTextButton(
+    onPressed: _loadCaptchaInfo,
+    child: Text(S.of(context).reloadCaptcha),
+  );
+
   @override
   Widget build(BuildContext context) {
     if (_loadFailed) {
-      return PlatformTextButton(
-        onPressed: _loadCaptchaInfo,
-        child: Text(S.of(context).retry),
-      );
+      if (widget.hideUnconfirmedFailure &&
+          !_captchaRequired &&
+          widget.captchaController?.requiredByServer != true) {
+        return const SizedBox.shrink();
+      }
+      return _reloadButton(context);
     }
     if (captchaVariable == null) {
       // an empty container
@@ -218,7 +239,11 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
             SizedBox(width: 8.0),
             if (imageByte != null)
               GestureDetector(
-                child: Image.memory(imageByte!),
+                child: Image.memory(
+                  imageByte!,
+                  errorBuilder: (context, error, stack) =>
+                      _reloadButton(context),
+                ),
                 onTap: () {
                   VibrationUtils.vibrateWithClickIfPossible();
                   _loadCaptchaInfo();
@@ -242,7 +267,11 @@ class CaptchaFields {
 class CaptchaController extends ValueNotifier<CaptchaFields?> {
   CaptchaController(CaptchaFields value) : super(value);
 
-  void reloadCaptcha() {
+  bool _requiredByServer = false;
+  bool get requiredByServer => _requiredByServer;
+
+  void reloadCaptcha({bool? requiredByServer}) {
+    _requiredByServer = requiredByServer ?? _requiredByServer;
     if (value == null) {
       notifyListeners();
     } else {

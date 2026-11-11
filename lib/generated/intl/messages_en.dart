@@ -1676,6 +1676,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "releaseToRefresh": MessageLookupByLibrary.simpleMessage(
       "Release to refresh",
     ),
+    "reloadCaptcha": MessageLookupByLibrary.simpleMessage("Reload captcha"),
     "relogin": MessageLookupByLibrary.simpleMessage("relogin"),
     "rememberPasswordInAppDetail": MessageLookupByLibrary.simpleMessage(
       "View details",

@@ -166,6 +166,7 @@
   "trustHostTitle": "主机域名白名单",
   "trustHostActionText": "信任此域名",
   "captchaRequired": "需要验证码",
+  "reloadCaptcha": "重新加载验证码",
   "submitPoll": "投票 ({checked} / {allowed})",
   "@submitPoll": {
     "placeholders": {

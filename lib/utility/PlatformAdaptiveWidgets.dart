@@ -6,6 +6,7 @@ import 'dart:math' as math;
 
 import 'package:adaptive_platform_ui/adaptive_platform_ui.dart' as liquid;
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foldable/foldable.dart'
@@ -455,7 +456,15 @@ class PlatformApp extends StatelessWidget {
             ),
             child: FoldableProvider(
               bridgeMode: DisplayFeatureBridgeMode.full,
-              child: themedChild,
+              child: Builder(
+                builder: (context) => _androidSystemBars(
+                  CupertinoDynamicColor.resolve(
+                    CupertinoTheme.of(context).scaffoldBackgroundColor,
+                    context,
+                  ),
+                  themedChild,
+                ),
+              ),
             ),
           );
         },
@@ -489,8 +498,10 @@ class PlatformApp extends StatelessWidget {
       builder: (context, child) => FoldableProvider(
         bridgeMode: DisplayFeatureBridgeMode.full,
         child: Builder(
-          builder: (context) =>
-              builder?.call(context, child) ?? child ?? const SizedBox.shrink(),
+          builder: (context) => _androidSystemBars(
+            Theme.of(context).scaffoldBackgroundColor,
+            builder?.call(context, child) ?? child ?? const SizedBox.shrink(),
+          ),
         ),
       ),
       title: title,
@@ -511,6 +522,21 @@ class PlatformApp extends StatelessWidget {
       themeMode: themes?.themeMode,
     );
   }
+}
+
+Widget _androidSystemBars(Color background, Widget child) {
+  if (defaultTargetPlatform != TargetPlatform.android) return child;
+  final icons =
+      ThemeData.estimateBrightnessForColor(background) == Brightness.dark
+      ? Brightness.light
+      : Brightness.dark;
+  return AnnotatedRegion<SystemUiOverlayStyle>(
+    value: SystemUiOverlayStyle(
+      statusBarIconBrightness: icons,
+      systemNavigationBarIconBrightness: icons,
+    ),
+    child: child,
+  );
 }
 
 abstract class PlatformWidgetBase<I extends Widget, A extends Widget>
@@ -829,7 +855,9 @@ class PlatformScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget content = SafeArea(
       top: false,
-      bottom: false,
+      bottom:
+          defaultTargetPlatform == TargetPlatform.android &&
+          bottomNavigationBar == null,
       child: body ?? const SizedBox.shrink(),
     );
     if (isCupertino(context) &&
@@ -901,6 +929,8 @@ class PlatformScaffold extends StatelessWidget {
       key: widgetKey,
       appBar: appBar?.createMaterialWidget(context),
       backgroundColor: backgroundColor,
+      bottomNavigationBar: bottomNavigationBar
+          ?.createMaterialBottomNavigationBar(context),
       body: content,
     );
   }
@@ -970,6 +1000,30 @@ class PlatformBottomNavigationBar {
             label: items[index].label ?? '',
           ),
       ],
+    );
+  }
+
+  Widget createMaterialBottomNavigationBar(BuildContext context) {
+    final theme = Theme.of(context);
+    final background =
+        theme.bottomNavigationBarTheme.backgroundColor ?? theme.canvasColor;
+    return _androidSystemBars(
+      background,
+      ColoredBox(
+        color: background,
+        child: SafeArea(
+          top: false,
+          bottom: false,
+          child: BottomNavigationBar(
+            elevation: 0,
+            selectedItemColor: selectedItemColor,
+            unselectedItemColor: unselectedItemColor,
+            currentIndex: selectedIndex,
+            items: items,
+            onTap: onTap,
+          ),
+        ),
+      ),
     );
   }
 }

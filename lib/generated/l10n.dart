@@ -970,6 +970,16 @@ class S {
     );
   }
 
+  /// `Reload captcha`
+  String get reloadCaptcha {
+    return Intl.message(
+      'Reload captcha',
+      name: 'reloadCaptcha',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Submit ({checked} / {allowed})`
   String submitPoll(Object checked, Object allowed) {
     return Intl.message(

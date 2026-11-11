@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart' show PointerDeviceKind;
 
-import 'post_header_layout.dart';
+import 'post_action_row.dart';
 import 'post_copy_menu_option.dart';
 import 'post_translation_button.dart';
 import 'google_translation_controls.dart';
@@ -751,18 +751,7 @@ class PostState extends State<PostStatefulWidget> {
     log("AFTER HTML ${_html}");
 
     final header = <Widget>[
-      // post header
-      if (_post.first)
-        PostHeaderLayout(
-          author: getPostHeader(context),
-          actions: getPostFunctionWidget(context),
-          overflowBuilder: (hidden) => getPostPopupMenu(
-            context,
-            extraOptions: hidden.expand(_overflowOptions).toList(),
-          ),
-        )
-      else
-        getPostHeader(context),
+      getPostHeader(context),
       PostStatusBadges(
         blocked: _post.blocked,
         warned: _post.warned,
@@ -866,7 +855,11 @@ class PostState extends State<PostStatefulWidget> {
             ),
           ),
         ),
-      getPostTailWidget(context),
+      if (!_post.first)
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: _postActionRow(context),
+        ),
     ];
     if (asSliver) {
       return SliverMainAxisGroup(
@@ -1090,7 +1083,7 @@ class PostState extends State<PostStatefulWidget> {
     );
   }
 
-  PlatformLiquidGlassToolbarGroup getPostFunctionWidget(BuildContext context) {
+  List<Widget> _postActions(BuildContext context) {
     final notification = Provider.of<DiscuzNotificationProvider>(context);
     final intelligence = Provider.of<UserPreferenceNotifierProvider>(context);
     final actionColor = Theme.of(context).colorScheme.onSurfaceVariant;
@@ -1195,7 +1188,7 @@ class PostState extends State<PostStatefulWidget> {
     }
 
     actions.add(getPostPopupMenu(context));
-    return PlatformLiquidGlassToolbarGroup(wrap: true, children: actions);
+    return actions;
   }
 
   WidgetSpan getGroupWidgetSpan(BuildContext context) {
@@ -1244,196 +1237,136 @@ class PostState extends State<PostStatefulWidget> {
   }
 
   Widget getPostHeader(BuildContext context) {
-    // get star and member title
-
     if (_post.first) {
+      final theme = Theme.of(context);
       return Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           getUserAvatar(context),
+          const SizedBox(width: 4),
           Expanded(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(width: 4.0),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                Text.rich(
+                  TextSpan(
                     children: [
-                      // username and OP come first
-                      RichText(
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        text: TextSpan(
-                          text: "",
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                          children: [
-                            TextSpan(
-                              text: _post.author,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            if (_authorId == _post.authorId)
-                              TextSpan(
-                                text: ' ' + S.of(context).postAuthorLabel,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontSize: 14,
-                                ),
-                              ),
-                          ],
+                      TextSpan(
+                        text: _post.author,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
                         ),
                       ),
-
-                      RichText(
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        text: TextSpan(
-                          text: TimeDisplayUtils.getLocaledTimeDisplay(
-                            context,
-                            _post.publishAt,
+                      if (_authorId == _post.authorId)
+                        TextSpan(
+                          text: ' ${S.of(context).postAuthorLabel}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w300,
+                            color: theme.colorScheme.primary,
+                            fontSize: 14,
                           ),
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                          children: [
-                            if (_post.status & POST_REVISED != 0)
-                              TextSpan(
-                                text: ' · ' + S.of(context).editedPost,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            if (_post.ipLocation != "")
-                              TextSpan(
-                                text: ' ' + _post.ipLocation,
-                                style: TextStyle(fontSize: 14),
-                              ),
-                            if (groupTitle != "") getGroupWidgetSpan(context),
-                          ],
                         ),
-                      ),
                     ],
                   ),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurface,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
+                _postActionRow(context),
               ],
             ),
           ),
         ],
       );
-    } else {
-      return Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          getUserAvatar(context),
-          Expanded(
-            // the author
-            child: RichText(
-              overflow: TextOverflow.ellipsis,
-              text: TextSpan(
-                text: "",
-                style: Theme.of(context).textTheme.bodyMedium
-                    ?.copyWith(color: Theme.of(context).colorScheme.onSurface),
-                children: [
-                  TextSpan(
-                    text: _post.author,
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
-                  ),
-                  if (groupTitle != "") getGroupWidgetSpan(context),
-                  if (_authorId == _post.authorId)
-                    TextSpan(
-                      text: ' ' + S.of(context).postAuthorLabel,
-                      style: TextStyle(
-                        fontWeight: FontWeight.normal,
-                        color: Theme.of(context).colorScheme.primary,
-                        fontSize: 18,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              _post.position.toString(),
-              style: TextStyle(
-                fontSize: 18,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-        ],
-      );
     }
+
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        getUserAvatar(context),
+        Expanded(
+          // the author
+          child: RichText(
+            overflow: TextOverflow.ellipsis,
+            text: TextSpan(
+              text: "",
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: Theme.of(context).colorScheme.onSurface),
+              children: [
+                TextSpan(
+                  text: _post.author,
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+                ),
+                if (groupTitle != "") getGroupWidgetSpan(context),
+                if (_authorId == _post.authorId)
+                  TextSpan(
+                    text: ' ' + S.of(context).postAuthorLabel,
+                    style: TextStyle(
+                      fontWeight: FontWeight.normal,
+                      color: Theme.of(context).colorScheme.primary,
+                      fontSize: 18,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Text(
+            _post.position.toString(),
+            style: TextStyle(
+              fontSize: 18,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
-  Widget getPostTailWidget(BuildContext context) {
-    if (_post.first) {
-      return Container();
-    } else {
-      return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+  Widget _postActionRow(BuildContext context) {
+    final theme = Theme.of(context);
+    return PostActionRow(
+      timestamp: Text.rich(
+        TextSpan(
+          text: TimeDisplayUtils.getLocaledTimeDisplay(
+            context,
+            _post.publishAt,
+          ),
           children: [
-            RichText(
-              overflow: TextOverflow.ellipsis,
-              text: TextSpan(
-                text: "",
-                children: [
-                  TextSpan(
-                    text: TimeDisplayUtils.getLocaledTimeDisplay(
-                      context,
-                      _post.publishAt,
-                    ),
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  if (_post.status & POST_REVISED != 0)
-                    TextSpan(
-                      text: ' · ' + S.of(context).editedPost,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  if (_post.ipLocation != "")
-                    TextSpan(
-                      text: ' ' + _post.ipLocation,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                ],
+            if (_post.status & POST_REVISED != 0)
+              TextSpan(
+                text: ' · ${S.of(context).editedPost}',
+                style: _post.first
+                    ? const TextStyle(fontWeight: FontWeight.bold)
+                    : null,
               ),
-            ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: getPostFunctionWidget(context),
-            ),
+            if (_post.ipLocation.isNotEmpty)
+              TextSpan(text: ' ${_post.ipLocation}'),
+            if (_post.first && groupTitle.isNotEmpty)
+              getGroupWidgetSpan(context),
           ],
         ),
-      );
-    }
+        style: theme.textTheme.bodyMedium?.copyWith(
+          fontSize: 14,
+          color: _post.first
+              ? theme.colorScheme.onSurface
+              : theme.colorScheme.onSurfaceVariant,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      actions: _postActions(context),
+      overflowBuilder: (hidden) => getPostPopupMenu(
+        context,
+        extraOptions: hidden.expand(_overflowOptions).toList(),
+      ),
+    );
   }
 
   Widget get adminPostPopupMenu => PlatformPopupMenu(

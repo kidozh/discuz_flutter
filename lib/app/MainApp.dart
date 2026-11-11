@@ -44,7 +44,6 @@ import 'package:upgrader/upgrader.dart';
 
 import '../provider/SelectedTidNotifierProvider.dart';
 import '../screen/TwoPaneEmptyScreen.dart';
-import '../utility/CustomizeColor.dart';
 import '../utility/material_surface_theme.dart';
 import '../utility/PushServiceUtils.dart';
 import '../utility/TwoPaneScaffold.dart';
@@ -222,7 +221,6 @@ class _MyAppState extends State<MyApp> {
       unawaited(_initPush(context));
     }
     //_listenToChanges(context);
-    CustomizeColor.updateAndroidNavigationbar(context);
     return Consumer<ThemeNotifierProvider>(
       builder: (context, themeColorEntity, _) {
         ThemeMode? themeMode = null;
@@ -766,7 +764,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     // need to check whether discuz exists in dataset
 
-    CustomizeColor.updateAndroidNavigationbarColorWithDashboard(context);
     return Consumer<DiscuzAndUserNotifier>(
       builder: (context, discuzAndUser, child) {
         final user = discuzAndUser.user;
@@ -941,27 +938,18 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   },
                 ),
               ),
-              if (!usesLiquidGlass(context))
-                PlatformWidget(
-                  material: (_, __) => BottomNavigationBar(
-                    elevation: 0,
-                    selectedItemColor: Theme.of(context).colorScheme.primary,
-                    unselectedItemColor: Theme.of(context).disabledColor,
-                    currentIndex: _bottomNavigationbarIndex,
-                    items: bottomNavigationItems,
-                    onTap: selectBottomDestination,
+              if (isCupertino(context) && !liquidGlass)
+                CupertinoTabBar(
+                  currentIndex: _bottomNavigationbarIndex,
+                  activeColor: Theme.of(context).colorScheme.primary,
+                  inactiveColor: CupertinoColors.secondaryLabel.resolveFrom(
+                    context,
                   ),
-                  cupertino: (_, __) => CupertinoTabBar(
-                    currentIndex: _bottomNavigationbarIndex,
-                    activeColor: Theme.of(context).colorScheme.primary,
-                    inactiveColor: CupertinoColors.secondaryLabel.resolveFrom(
-                      context,
-                    ),
-                    backgroundColor: CupertinoColors.systemBackground
-                        .resolveFrom(context),
-                    items: bottomNavigationItems,
-                    onTap: selectBottomDestination,
+                  backgroundColor: CupertinoColors.systemBackground.resolveFrom(
+                    context,
                   ),
+                  items: bottomNavigationItems,
+                  onTap: selectBottomDestination,
                 ),
             ],
           ),

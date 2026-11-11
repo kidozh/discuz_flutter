@@ -166,6 +166,7 @@
   "trustHostTitle": "Trusted host",
   "trustHostActionText": "Trust this host",
   "captchaRequired": "Captcha required.",
+  "reloadCaptcha": "Reload captcha",
   "submitPoll": "Submit ({checked} / {allowed})",
   "@submitPoll": {
     "placeholders": {

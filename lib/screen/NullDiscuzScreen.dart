@@ -12,7 +12,7 @@ class NullDiscuzScreen extends StatelessWidget{
   Widget build(BuildContext context) {
 
     return SafeArea(
-        child: Container(
+        child: SingleChildScrollView(
 
           child: Padding(
 

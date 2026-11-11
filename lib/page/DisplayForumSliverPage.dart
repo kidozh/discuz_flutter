@@ -49,7 +49,6 @@ import 'package:share_plus/share_plus.dart';
 import '../provider/DiscuzNotificationProvider.dart';
 import '../provider/UserPreferenceNotifierProvider.dart';
 import '../screen/TwoPaneEmptyScreen.dart';
-import '../utility/CustomizeColor.dart';
 import '../utility/EasyRefreshUtils.dart';
 import 'SettingPage.dart';
 
@@ -85,7 +84,6 @@ class DisplayForumAltSliverPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    CustomizeColor.updateAndroidNavigationbar(context);
     // try ios
     final account = context.watch<DiscuzAndUserNotifier>();
     final isCurrentForum = account.discuz?.baseURL == discuz.baseURL;

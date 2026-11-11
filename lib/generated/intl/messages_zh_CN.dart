@@ -1330,6 +1330,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "registerPushTokenTitle": MessageLookupByLibrary.simpleMessage("注册你的设备到论坛"),
     "releaseToLoad": MessageLookupByLibrary.simpleMessage("释放加载"),
     "releaseToRefresh": MessageLookupByLibrary.simpleMessage("释放刷新"),
+    "reloadCaptcha": MessageLookupByLibrary.simpleMessage("重新加载验证码"),
     "relogin": MessageLookupByLibrary.simpleMessage("重新登陆"),
     "rememberPasswordInAppDetail": MessageLookupByLibrary.simpleMessage("了解详情"),
     "rememeberPasswordInApp": MessageLookupByLibrary.simpleMessage(
