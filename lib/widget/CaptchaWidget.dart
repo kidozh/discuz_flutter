@@ -1,12 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
-import 'package:discuz_flutter/JsonResult/CaptchaResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
-import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
@@ -16,7 +14,6 @@ class CaptchaWidget extends StatelessWidget {
   User? _user;
   String captchaType;
   Dio dio;
-  bool? showProgress;
 
   CaptchaWidget(
     this.dio,
@@ -24,12 +21,11 @@ class CaptchaWidget extends StatelessWidget {
     this._user,
     this.captchaType, {
     this.captchaController,
-    this.showProgress,
-    this.hideUnconfirmedFailure = false,
+    this.checkOnMount = false,
   });
 
   CaptchaController? captchaController;
-  final bool hideUnconfirmedFailure;
+  final bool checkOnMount;
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +34,7 @@ class CaptchaWidget extends StatelessWidget {
       _discuz,
       captchaType,
       captchaController,
-      showProgress,
-      hideUnconfirmedFailure: hideUnconfirmedFailure,
+      checkOnMount: checkOnMount,
       key: ValueKey((
         dio,
         _discuz.baseURL,
@@ -55,17 +50,15 @@ class CaptchaStatefulWidget extends StatefulWidget {
   final Discuz discuz;
   final String captchaType;
   final CaptchaController? captchaController;
-  final bool? showProgress;
-  final bool hideUnconfirmedFailure;
+  final bool checkOnMount;
   final Dio dio;
 
   const CaptchaStatefulWidget(
     this.dio,
     this.discuz,
     this.captchaType,
-    this.captchaController,
-    this.showProgress, {
-    this.hideUnconfirmedFailure = false,
+    this.captchaController, {
+    required this.checkOnMount,
     super.key,
   });
 
@@ -74,10 +67,9 @@ class CaptchaStatefulWidget extends StatefulWidget {
 }
 
 class CaptchaState extends State<CaptchaStatefulWidget> {
-  CaptchaVariable? captchaVariable;
-  Uint8List? imageByte;
+  Uint8List? _imageBytes;
   final _textEditingController = TextEditingController();
-  bool loaded = false;
+  bool _loading = false;
   bool _loadFailed = false;
   bool _captchaRequired = false;
   int _request = 0;
@@ -87,7 +79,10 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
     super.initState();
     _textEditingController.addListener(_updateVerification);
     widget.captchaController?.addListener(_onCaptchaChanged);
-    _loadCaptchaInfo();
+    if (widget.checkOnMount ||
+        widget.captchaController?.requiredByServer == true) {
+      _loadCaptchaInfo();
+    }
   }
 
   @override
@@ -109,16 +104,28 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
   }
 
   void _onCaptchaChanged() {
-    if (widget.captchaController?.value == null) _loadCaptchaInfo();
+    final controller = widget.captchaController;
+    if (controller?.value != null) return;
+    if (controller?.requiredByServer == true) {
+      _loadCaptchaInfo();
+      return;
+    }
+    _request++;
+    _textEditingController.clear();
+    setState(() {
+      _imageBytes = null;
+      _loading = false;
+      _loadFailed = false;
+      _captchaRequired = false;
+    });
   }
 
   Future<void> _loadCaptchaInfo() async {
     final request = ++_request;
     bool isCurrent() => mounted && request == _request;
     setState(() {
-      captchaVariable = null;
-      imageByte = null;
-      loaded = false;
+      _imageBytes = null;
+      _loading = true;
       _loadFailed = false;
     });
     _textEditingController.clear();
@@ -136,13 +143,12 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
       if (value.getErrorString() != null && variables.secHash.isEmpty) {
         throw StateError(value.getErrorString()!);
       }
-      _captchaRequired = variables.secHash.isNotEmpty;
       if (variables.secHash.isEmpty) {
-        if (widget.captchaController?.requiredByServer == true) {
-          setState(() => _loadFailed = true);
-        }
+        _captchaRequired = false;
+        _loadFailed = widget.captchaController?.requiredByServer == true;
         return;
       }
+      setState(() => _captchaRequired = true);
       final uri = Uri.parse('${baseUrl}api/mobile/index.php').replace(
         queryParameters: {
           'module': 'seccode',
@@ -168,14 +174,11 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
         type,
         '',
       );
-      setState(() {
-        captchaVariable = variables;
-        imageByte = image;
-      });
+      _imageBytes = image;
     } catch (_) {
-      if (isCurrent()) setState(() => _loadFailed = true);
+      if (isCurrent()) _loadFailed = true;
     } finally {
-      if (isCurrent()) setState(() => loaded = true);
+      if (isCurrent()) setState(() => _loading = false);
     }
   }
 
@@ -186,73 +189,49 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final required =
+        _captchaRequired || widget.captchaController?.requiredByServer == true;
     if (_loadFailed) {
-      if (widget.hideUnconfirmedFailure &&
-          !_captchaRequired &&
-          widget.captchaController?.requiredByServer != true) {
-        return const SizedBox.shrink();
-      }
-      return _reloadButton(context);
+      return required ? _reloadButton(context) : const SizedBox.shrink();
     }
-    if (captchaVariable == null) {
-      // an empty container
-      if (widget.showProgress == true) {
-        if (loaded == false) {
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
-            child: Row(
-              children: [
-                PlatformCircularProgressIndicator(),
-                Expanded(child: Text(S.of(context).loadingCaptchaInformation)),
-              ],
-            ),
-          );
-        } else {
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
-            child: Row(
-              children: [
-                Icon(
-                  AppPlatformIcons(context).checkCircleSolid,
-                  color: Colors.green,
-                ),
-                Expanded(child: Text(S.of(context).noCaptachaRequired)),
-              ],
-            ),
-          );
-        }
-      } else {
-        return Container(width: 0, height: 0);
-      }
-    } else {
+    final image = _imageBytes;
+    if (image == null) {
+      if (!_loading || !required) return const SizedBox.shrink();
       return Padding(
-        padding: EdgeInsets.all(4.0),
+        padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
         child: Row(
-          mainAxisSize: MainAxisSize.max,
           children: [
-            Expanded(
-              child: PlatformTextField(
-                controller: _textEditingController,
-                hintText: S.of(context).captchaRequired,
-              ),
-            ),
-            SizedBox(width: 8.0),
-            if (imageByte != null)
-              GestureDetector(
-                child: Image.memory(
-                  imageByte!,
-                  errorBuilder: (context, error, stack) =>
-                      _reloadButton(context),
-                ),
-                onTap: () {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  _loadCaptchaInfo();
-                },
-              ),
+            const PlatformCircularProgressIndicator(),
+            const SizedBox(width: 8),
+            Expanded(child: Text(S.of(context).loadingCaptchaInformation)),
           ],
         ),
       );
     }
+    return Padding(
+      padding: const EdgeInsets.all(4),
+      child: Row(
+        children: [
+          Expanded(
+            child: PlatformTextField(
+              controller: _textEditingController,
+              hintText: S.of(context).captchaRequired,
+            ),
+          ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            child: Image.memory(
+              image,
+              errorBuilder: (context, error, stack) => _reloadButton(context),
+            ),
+            onTap: () {
+              VibrationUtils.vibrateWithClickIfPossible();
+              _loadCaptchaInfo();
+            },
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -270,8 +249,8 @@ class CaptchaController extends ValueNotifier<CaptchaFields?> {
   bool _requiredByServer = false;
   bool get requiredByServer => _requiredByServer;
 
-  void reloadCaptcha({bool? requiredByServer}) {
-    _requiredByServer = requiredByServer ?? _requiredByServer;
+  void reloadCaptcha({required bool requiredByServer}) {
+    _requiredByServer = requiredByServer;
     if (value == null) {
       notifyListeners();
     } else {

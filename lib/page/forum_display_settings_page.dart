@@ -17,6 +17,22 @@ class ForumDisplaySettingsPage extends StatelessWidget {
     final display = preference.forumDisplay;
     final strings = S.of(context);
 
+    String cookiePolicyLabel(ForumImageCookiePolicy policy) => switch (policy) {
+      ForumImageCookiePolicy.always => strings.imageCookiePolicyAlways,
+      ForumImageCookiePolicy.sameSite => strings.imageCookiePolicySameSite,
+      ForumImageCookiePolicy.never => strings.imageCookiePolicyNever,
+    };
+
+    String cookiePolicyDescription(ForumImageCookiePolicy policy) =>
+        switch (policy) {
+          ForumImageCookiePolicy.always =>
+            strings.imageCookiePolicyAlwaysDescription,
+          ForumImageCookiePolicy.sameSite =>
+            strings.imageCookiePolicySameSiteDescription,
+          ForumImageCookiePolicy.never =>
+            strings.imageCookiePolicyNeverDescription,
+        };
+
     // Cupertino list tiles impose a line limit. Let settings text wrap so
     // labels and explanations remain readable at larger accessibility sizes.
     Widget wrappingText(String text) => Builder(
@@ -51,6 +67,38 @@ class ForumDisplaySettingsPage extends StatelessWidget {
         ),
         onTap: () => change(!value),
       );
+    }
+
+    Future<void> chooseCookiePolicy() async {
+      final selected = await showPlatformModalSheet<ForumImageCookiePolicy>(
+        context: context,
+        material: const MaterialModalSheetData(isScrollControlled: true),
+        builder: (sheetContext) => PlatformSettingsList(
+          shrinkWrap: true,
+          children: [
+            PlatformSettingsSection(
+              title: wrappingText(strings.imageCookiePolicyTitle),
+              children: [
+                for (final policy in ForumImageCookiePolicy.values)
+                  PlatformSettingsTile(
+                    title: wrappingText(cookiePolicyLabel(policy)),
+                    subtitle: wrappingText(cookiePolicyDescription(policy)),
+                    trailing: policy == display.imageCookiePolicy
+                        ? const Icon(Icons.check)
+                        : null,
+                    onTap: () => Navigator.of(sheetContext).pop(policy),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      );
+      if (!context.mounted || selected == null) return;
+      final current = preference.forumDisplay;
+      if (selected == current.imageCookiePolicy) return;
+      final updated = current.copyWith(imageCookiePolicy: selected);
+      preference.setForumDisplay(updated);
+      await UserPreferencesUtils.putForumDisplayPreference(updated);
     }
 
     return PlatformScaffold(
@@ -91,14 +139,14 @@ class ForumDisplaySettingsPage extends StatelessWidget {
                     preference.forumDisplay.copyWith(showThreadStats: value),
               ),
               if (!kIsWeb)
-                switchTile(
-                  title: strings.useForumCookiesForImages,
-                  description: strings.useForumCookiesForImagesDescription,
-                  icon: Icons.image_outlined,
-                  value: display.useForumCookiesForImages,
-                  update: (value) => preference.forumDisplay.copyWith(
-                    useForumCookiesForImages: value,
+                PlatformSettingsTile(
+                  title: wrappingText(strings.imageCookiePolicyTitle),
+                  subtitle: wrappingText(
+                    cookiePolicyLabel(display.imageCookiePolicy),
                   ),
+                  leading: const Icon(Icons.image_outlined),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: chooseCookiePolicy,
                 ),
               switchTile(
                 title: strings.showForumCarousel,

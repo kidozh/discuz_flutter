@@ -8261,21 +8261,71 @@ class S {
     );
   }
 
-  /// `Use forum cookies for images`
-  String get useForumCookiesForImages {
+  /// `Cookies for images`
+  String get imageCookiePolicyTitle {
     return Intl.message(
-      'Use forum cookies for images',
-      name: 'useForumCookiesForImages',
+      'Cookies for images',
+      name: 'imageCookiePolicyTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Load post images and attachments on this forum using your signed-in account. On by default.`
-  String get useForumCookiesForImagesDescription {
+  /// `Always allow`
+  String get imageCookiePolicyAlways {
     return Intl.message(
-      'Load post images and attachments on this forum using your signed-in account. On by default.',
-      name: 'useForumCookiesForImagesDescription',
+      'Always allow',
+      name: 'imageCookiePolicyAlways',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Allow cookies on any site. Each address only receives cookies that apply to it.`
+  String get imageCookiePolicyAlwaysDescription {
+    return Intl.message(
+      'Allow cookies on any site. Each address only receives cookies that apply to it.',
+      name: 'imageCookiePolicyAlwaysDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Same site`
+  String get imageCookiePolicySameSite {
+    return Intl.message(
+      'Same site',
+      name: 'imageCookiePolicySameSite',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Share eligible forum cookies with the forum and subdomains of the same site.`
+  String get imageCookiePolicySameSiteDescription {
+    return Intl.message(
+      'Share eligible forum cookies with the forum and subdomains of the same site.',
+      name: 'imageCookiePolicySameSiteDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Never`
+  String get imageCookiePolicyNever {
+    return Intl.message(
+      'Never',
+      name: 'imageCookiePolicyNever',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Load images and attachments without account cookies.`
+  String get imageCookiePolicyNeverDescription {
+    return Intl.message(
+      'Load images and attachments without account cookies.',
+      name: 'imageCookiePolicyNeverDescription',
       desc: '',
       args: [],
     );

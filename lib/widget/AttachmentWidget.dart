@@ -3,7 +3,6 @@ import 'forum_image.dart';
 
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/Post.dart';
@@ -114,10 +113,13 @@ class AttachmentWidget extends StatelessWidget {
         ],
       );
     }
-    Discuz discuz = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).discuz!;
+    final previewUrl = _attachment.getAttachmentRealUrl(_discuz);
+    final downloadUrl = _attachment.aidEncode.isEmpty
+        ? null
+        : URLUtils.getAttachmentURLWithAidEncode(
+            _discuz,
+            _attachment.aidEncode,
+          );
 
     if ([
       "jpg",
@@ -126,13 +128,17 @@ class AttachmentWidget extends StatelessWidget {
       "bmp",
       "gif",
       "jpeg",
+      "webp",
+      "avif",
     ].contains(_attachment.ext.toLowerCase())) {
       return InkWell(
         child: PlatformCard(
           elevation: 8.0,
           child: ForumImage(
             forum: _discuz,
-            url: _attachment.getAttachmentRealUrl(_discuz),
+            threadId: _attachment.tid,
+            url: previewUrl,
+            fallbackUrl: downloadUrl,
             fit: BoxFit.fill,
             error: (context) => Icon(PlatformIcons(context).error),
             loading: (context, progress) => Container(
@@ -150,6 +156,7 @@ class AttachmentWidget extends StatelessWidget {
         ),
         onTap: () {
           VibrationUtils.vibrateWithClickIfPossible();
+          final url = downloadUrl ?? previewUrl;
 
           Navigator.push(
             context,
@@ -157,17 +164,10 @@ class AttachmentWidget extends StatelessWidget {
               context: context,
               iosTitle: S.of(context).viewPicture,
               builder: (context) => FullImagePage(
-                URLUtils.getAttachmentURLWithAidEncode(
-                  discuz,
-                  _attachment.aidEncode,
-                ),
-                [
-                  URLUtils.getAttachmentURLWithAidEncode(
-                    discuz,
-                    _attachment.aidEncode,
-                  ),
-                ],
+                url,
+                [url],
                 forum: _discuz,
+                threadId: _attachment.tid,
               ),
             ),
           );
@@ -190,15 +190,15 @@ class AttachmentWidget extends StatelessWidget {
               child: Icon(PlatformIcons(context).download),
             ),
           ),
-          CachedNetworkImage(
-            imageUrl: _attachment.getAttachmentRealUrl(_discuz),
-            errorWidget: (context, url, error) =>
-                Icon(PlatformIcons(context).error),
-            progressIndicatorBuilder: (context, url, progress) =>
-                PlatformCircularProgressIndicator(
-                  material: (_, __) =>
-                      MaterialProgressIndicatorData(value: progress.progress),
-                ),
+          ForumImage(
+            forum: _discuz,
+            threadId: _attachment.tid,
+            url: previewUrl,
+            error: (context) => Icon(PlatformIcons(context).error),
+            loading: (context, progress) => PlatformCircularProgressIndicator(
+              material: (_, __) =>
+                  MaterialProgressIndicatorData(value: progress),
+            ),
           ),
           Wrap(
             alignment: WrapAlignment.start,
@@ -218,46 +218,6 @@ class AttachmentWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              if ([
-                "jpg",
-                "png",
-                "svg",
-                "bmp",
-                "gif",
-              ].contains(_attachment.ext.toLowerCase()))
-                PlatformTextButton(
-                  onPressed: () {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    Navigator.push(
-                      context,
-                      platformPageRoute(
-                        context: context,
-                        iosTitle: S.of(context).viewPicture,
-                        builder: (context) => FullImagePage(
-                          URLUtils.getAttachmentURLWithAidEncode(
-                            discuz,
-                            _attachment.aidEncode,
-                          ),
-                          [
-                            URLUtils.getAttachmentURLWithAidEncode(
-                              discuz,
-                              _attachment.aidEncode,
-                            ),
-                          ],
-                          forum: _discuz,
-                        ),
-                      ),
-                    );
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(PlatformIcons(context).fullscreen, size: 20),
-                      const SizedBox(width: 6),
-                      Text(S.of(context).watchPictureInFullScreen),
-                    ],
-                  ),
-                ),
             ],
           ),
         ],

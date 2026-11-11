@@ -292,4 +292,19 @@ void main() {
     expect(widget.getAllImageSrcList(),
         ['https://example.com/first.png', 'https://example.com/last.png']);
   });
+
+  test('image gallery uses original Discuz sources and resolves relative URLs', () {
+    final widget = DiscuzHtmlWidget(
+      _discuz,
+      '<img src="one.thumb.jpg" file="one.jpg">'
+      '<img src="static/image/common/none.gif" file="/images/two.jpg">'
+      '<img data-src="/images/three.jpg">',
+    );
+    final base = Uri.parse(_discuz.getBaseURLWithAfterfix());
+    expect(widget.getAllImageSrcList(), [
+      base.resolve('one.jpg').toString(),
+      base.resolve('/images/two.jpg').toString(),
+      base.resolve('/images/three.jpg').toString(),
+    ]);
+  });
 }

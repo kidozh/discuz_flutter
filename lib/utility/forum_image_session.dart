@@ -11,8 +11,11 @@ import 'package:provider/provider.dart';
 
 import '../entity/Discuz.dart';
 import '../entity/User.dart';
+import '../entity/forum_display_preferences.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../provider/UserPreferenceNotifierProvider.dart';
+import 'forum_image_site.dart';
+import 'forum_image_url.dart';
 import 'NetworkUtils.dart';
 
 class ForumImageSession {
@@ -21,19 +24,30 @@ class ForumImageSession {
     this._account,
     this._preferences,
     this._user,
+    this._threadId,
+    this._policy,
   ) : identity = _account.sessionIdentity;
 
   final Uri baseUrl;
   final DiscuzAndUserNotifier _account;
   final UserPreferenceNotifierProvider _preferences;
   final User _user;
+  final int? _threadId;
+  final ForumImageCookiePolicy _policy;
   final Object identity;
+  Object get cacheKey => (identity, _policy);
 
-  static ForumImageSession? of(BuildContext context, Discuz? forum) {
+  static ForumImageSession? of(
+    BuildContext context,
+    Discuz? forum, {
+    int? threadId,
+  }) {
     if (kIsWeb || forum == null) return null;
     final preferences = context.watch<UserPreferenceNotifierProvider?>();
+    final policy = preferences?.forumDisplay.imageCookiePolicy;
     if (preferences == null ||
-        !preferences.forumDisplay.useForumCookiesForImages) {
+        policy == null ||
+        policy == ForumImageCookiePolicy.never) {
       return null;
     }
     final account = context.watch<DiscuzAndUserNotifier?>();
@@ -47,19 +61,25 @@ class ForumImageSession {
         forumBaseUri(user.discuz) != baseUrl) {
       return null;
     }
-    return ForumImageSession._(baseUrl, account, preferences, user);
+    return ForumImageSession._(
+      baseUrl,
+      account,
+      preferences,
+      user,
+      threadId,
+      policy,
+    );
   }
 
   bool get _active =>
       identical(identity, _account.sessionIdentity) &&
-      _preferences.forumDisplay.useForumCookiesForImages;
+      _preferences.forumDisplay.imageCookiePolicy == _policy;
 
   Uri? _forumImageUri(String url) {
-    final uri = Uri.tryParse(url);
-    if (uri == null || !_isHttp(uri) || uri.origin != baseUrl.origin) {
-      return null;
-    }
-    return uri;
+    final uri = resolveForumImageUri(baseUrl, url);
+    return uri != null && _canUseForumSession(_policy, baseUrl, uri)
+        ? uri
+        : null;
   }
 
   ImageProvider? providerFor(String url) {
@@ -75,85 +95,157 @@ class ForumImageSession {
   Future<Uint8List> _load(Uri uri) => loadForumImage(
     uri,
     forum: baseUrl,
-    cookieJar: () async {
-      if (!_active) return null;
-      final jar = await NetworkUtils.getPersistentCookieJarByUser(_user);
-      return _active ? jar : null;
-    },
+    policy: _policy,
+    threadId: _threadId,
+    isCurrent: () => _active,
+    cookieJar: () => NetworkUtils.getPersistentCookieJarByUser(_user),
   );
 }
-
-Uri? forumBaseUri(Discuz forum) {
-  final uri = Uri.tryParse(forum.baseURL.trim());
-  if (uri == null || !_isHttp(uri)) return null;
-  final path = uri.path.replaceFirst(RegExp(r'/+$'), '');
-  return Uri.parse('${uri.origin}$path/');
-}
-
-bool _isHttp(Uri uri) =>
-    (uri.scheme == 'http' || uri.scheme == 'https') &&
-    uri.host.isNotEmpty &&
-    uri.userInfo.isEmpty;
 
 final _imageDio = NetworkUtils.getDio();
 const _redirectStatuses = {301, 302, 303, 307, 308};
 
-/// Read the account's cookies for each same-origin request. Follow redirects
-/// explicitly so a response can redirect to a CDN without forwarding cookies.
+bool _canUseForumSession(ForumImageCookiePolicy policy, Uri forum, Uri image) =>
+    switch (policy) {
+      ForumImageCookiePolicy.never => false,
+      ForumImageCookiePolicy.sameSite => sameForumImageSite(forum, image),
+      ForumImageCookiePolicy.always =>
+        forum.scheme != 'https' || image.scheme == 'https',
+    };
+
+/// Re-evaluate the cookie policy and scope at each redirect.
 @visibleForTesting
 Future<Uint8List> loadForumImage(
   Uri uri, {
   required Uri forum,
   required Future<CookieJar?> Function() cookieJar,
+  ForumImageCookiePolicy policy = ForumImageCookiePolicy.sameSite,
+  int? threadId,
+  bool Function()? isCurrent,
+  Dio? dio,
 }) async {
-  if (!_isHttp(uri)) throw ArgumentError.value(uri, 'uri');
-  var allowCookies = uri.origin == forum.origin;
+  uri =
+      resolveForumImageUri(forum, uri.toString()) ??
+      (throw ArgumentError.value(uri, 'uri'));
+  final referer = threadId != null && threadId > 0
+      ? forum
+            .resolve('forum.php')
+            .replace(queryParameters: {'mod': 'viewthread', 'tid': '$threadId'})
+      : forum;
+  void checkSession() {
+    if (isCurrent?.call() == false) {
+      throw StateError('Forum image session changed');
+    }
+  }
+
+  var useSession = _canUseForumSession(policy, forum, uri);
   for (var redirects = 0; redirects <= 5; redirects++) {
-    final jar = allowCookies ? await cookieJar() : null;
-    final cookies = jar == null ? '' : await _cookieHeader(jar, uri);
-    final response = await _imageDio.getUri<Uint8List>(
+    checkSession();
+    final sameOrigin = uri.origin == forum.origin;
+    final jar = useSession ? await cookieJar() : null;
+    final cookies = jar == null
+        ? ''
+        : await _cookieHeader(
+            jar,
+            uri,
+            forumHost: policy == ForumImageCookiePolicy.sameSite
+                ? forum.host
+                : null,
+          );
+    checkSession();
+    final response = await (dio ?? _imageDio).getUri<Uint8List>(
       uri,
       options: Options(
         followRedirects: false,
         responseType: ResponseType.bytes,
-        headers: {if (cookies.isNotEmpty) HttpHeaders.cookieHeader: cookies},
+        headers: {
+          if (cookies.isNotEmpty) HttpHeaders.cookieHeader: cookies,
+          if (useSession && sameForumImageSite(forum, uri))
+            HttpHeaders.refererHeader: sameOrigin
+                ? referer.toString()
+                : '${forum.origin}/',
+        },
         validateStatus: (status) =>
             status != null &&
             ((status >= 200 && status < 300) ||
                 _redirectStatuses.contains(status)),
       ),
     );
+    checkSession();
     if (!_redirectStatuses.contains(response.statusCode)) {
-      return response.data ?? (throw HttpException('Empty image', uri: uri));
+      final data = response.data;
+      if (data == null || data.isEmpty) {
+        throw HttpException('Empty image', uri: uri);
+      }
+      return data;
     }
     final location = response.headers.value(HttpHeaders.locationHeader);
-    final target = location == null ? null : uri.resolve(location);
-    if (target == null || !_isHttp(target)) {
+    final target = location == null
+        ? null
+        : resolveForumImageUri(uri, location);
+    if (target == null) {
       throw HttpException('Invalid image redirect', uri: uri);
     }
-    allowCookies = allowCookies && target.origin == forum.origin;
+    useSession = useSession && _canUseForumSession(policy, forum, target);
     uri = target;
   }
   throw HttpException('Too many image redirects', uri: uri);
 }
 
-Future<String> _cookieHeader(CookieJar jar, Uri uri) async {
-  final cookies = (await jar.loadForRequest(uri))
-      .where((cookie) => !cookie.secure || uri.scheme == 'https')
-      .toList();
-  // The current jar can return expired Secure cookies on HTTPS. Its stored
-  // entries retain the creation time needed to enforce Max-Age.
+Future<String> _cookieHeader(
+  CookieJar jar,
+  Uri uri, {
+  String? forumHost,
+}) async {
+  final cookies = await jar.loadForRequest(uri);
+  if (cookies.isEmpty) return '';
+
+  final allowed = <Cookie>{};
+  // The jar's paths preserve the default path, and its entries retain the
+  // creation time needed to enforce Max-Age on Secure cookies.
   if (jar is DefaultCookieJar) {
-    for (final path in [
-      ...?jar.hostCookies[uri.host]?.values,
-      ...jar.domainCookies.values.expand((paths) => paths.values),
+    for (final entry in [
+      ...?jar.hostCookies[uri.host]?.entries,
+      ...jar.domainCookies.entries
+          .where((entry) => _domainMatches(uri.host, entry.key))
+          .expand((entry) => entry.value.entries),
     ]) {
-      for (final stored in path.values) {
-        if (stored.isExpired()) cookies.remove(stored.cookie);
+      if (!_pathMatches(uri.path, entry.key)) continue;
+      for (final stored in entry.value.values) {
+        if (!stored.isExpired()) allowed.add(stored.cookie);
       }
     }
   }
-  return CookieManager.getCookies(cookies);
+
+  return CookieManager.getCookies(
+    cookies.where((cookie) {
+      if (cookie.secure && uri.scheme != 'https') return false;
+      if (jar is DefaultCookieJar) {
+        if (!allowed.contains(cookie)) return false;
+      } else if (cookie.expires?.isBefore(DateTime.now()) == true ||
+          (cookie.maxAge != null && cookie.maxAge! <= 0) ||
+          !_pathMatches(uri.path, cookie.path ?? '/')) {
+        return false;
+      }
+      final domain = cookie.domain?.toLowerCase().replaceFirst(
+        RegExp(r'^\.'),
+        '',
+      );
+      if (domain == null) return forumHost == null || uri.host == forumHost;
+      return registrableDomain(domain) != null &&
+          _domainMatches(uri.host, domain) &&
+          (forumHost == null || _domainMatches(forumHost, domain));
+    }).toList(),
+  );
+}
+
+bool _domainMatches(String host, String domain) =>
+    host == domain || host.endsWith('.$domain');
+
+bool _pathMatches(String requestPath, String cookiePath) {
+  final path = requestPath.isEmpty ? '/' : requestPath;
+  return path == cookiePath ||
+      path.startsWith(cookiePath.endsWith('/') ? cookiePath : '$cookiePath/');
 }
 
 /// Keep authenticated images in the normal Flutter memory cache and scope
@@ -188,8 +280,9 @@ class _ForumSessionImage extends ImageProvider<_ForumSessionImage> {
   bool operator ==(Object other) =>
       other is _ForumSessionImage &&
       uri == other.uri &&
-      identical(session.identity, other.session.identity);
+      session._threadId == other.session._threadId &&
+      session.cacheKey == other.session.cacheKey;
 
   @override
-  int get hashCode => Object.hash(uri, session.identity);
+  int get hashCode => Object.hash(uri, session.cacheKey, session._threadId);
 }

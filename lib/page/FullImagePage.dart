@@ -21,8 +21,9 @@ class FullImagePage extends StatefulWidget {
   String imageUrl;
   List<String> imageUrlList = [];
   final Discuz? forum;
+  final int? threadId;
 
-  FullImagePage(this.imageUrl, this.imageUrlList, {this.forum});
+  FullImagePage(this.imageUrl, this.imageUrlList, {this.forum, this.threadId});
 
   @override
   State<StatefulWidget> createState() {
@@ -45,7 +46,11 @@ class FullImagePageState extends State<FullImagePage> {
 
   @override
   Widget build(BuildContext context) {
-    final imageSession = ForumImageSession.of(context, widget.forum);
+    final imageSession = ForumImageSession.of(
+      context,
+      widget.forum,
+      threadId: widget.threadId,
+    );
     return PlatformScaffold(
       appBar: PlatformAppBar(
         title: Text("${currentPage + 1} / ${imageUrlList.length}", maxLines: 1),

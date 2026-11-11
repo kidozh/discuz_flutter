@@ -192,10 +192,12 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
               size: 20,
               semanticLabel: S.of(context).pushThreadTitle,
             ),
-            onPressed: () async {
-              VibrationUtils.vibrateWithClickIfPossible();
-              await _launchCaptchaDialog(context);
-            },
+            onPressed: _sending
+                ? null
+                : () {
+                    VibrationUtils.vibrateWithClickIfPossible();
+                    _confirmPost();
+                  },
           ),
         ],
       ),
@@ -551,70 +553,90 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     return _draftWrite;
   }
 
-  Future<void> _launchCaptchaDialog(BuildContext context) async {
-    User? user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
-    Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-    // MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
-
-    showPlatformDialog(
-      context: context,
-      builder: (context) {
-        return PlatformAlertDialog(
-          title: Text(S.of(context).pushThreadTitle),
-          content: Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CaptchaWidget(
-                  dio,
-                  discuz,
-                  user,
-                  "post",
-                  captchaController: captchaController,
-                  showProgress: true,
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            PlatformDialogAction(
-              child: Text(S.of(context).send),
-              onPressed: () {
-                VibrationUtils.vibrateWithClickIfPossible();
-                postThread();
-                Navigator.of(context).pop();
-              },
-            ),
-            PlatformDialogAction(
-              child: Text(S.of(context).cancel),
-              onPressed: () {
-                VibrationUtils.vibrateWithClickIfPossible();
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+  Future<void> _confirmPost() async {
+    do {
+      final confirmed = await _showPostConfirmation();
+      if (!mounted || confirmed != true) {
+        if (mounted) captchaController.reloadCaptcha(requiredByServer: false);
+        return;
+      }
+    } while (await _postThread());
   }
 
-  Future<void> postThread() async {
-    if (_sending) return;
+  Future<bool?> _showPostConfirmation() async {
+    final requiresCaptcha = captchaController.requiredByServer;
+    final user = context.read<DiscuzAndUserNotifier>().user;
+    final dio = requiresCaptcha
+        ? await NetworkUtils.getDioWithPersistCookieJar(user)
+        : null;
+    if (!mounted) {
+      dio?.close();
+      return null;
+    }
+    try {
+      return await showPlatformDialog<bool>(
+        context: context,
+        builder: (context) {
+          return PlatformAlertDialog(
+            title: Text(S.of(context).pushThreadTitle),
+            content: dio == null
+                ? null
+                : Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: CaptchaWidget(
+                      dio,
+                      discuz,
+                      user,
+                      'post',
+                      captchaController: captchaController,
+                    ),
+                  ),
+            actions: [
+              PlatformDialogAction(
+                child: Text(S.of(context).send),
+                onPressed: () {
+                  final captcha = captchaController.value;
+                  if (requiresCaptcha &&
+                      (captcha == null ||
+                          captcha.captchaFormHash.isEmpty ||
+                          captcha.verification.trim().isEmpty)) {
+                    EasyLoading.showError(S.of(context).captchaRequired);
+                    return;
+                  }
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  Navigator.of(context).pop(true);
+                },
+              ),
+              PlatformDialogAction(
+                child: Text(S.of(context).cancel),
+                onPressed: () {
+                  VibrationUtils.vibrateWithClickIfPossible();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } finally {
+      dio?.close();
+    }
+  }
+
+  Future<bool> _postThread() async {
+    if (_sending) return false;
     setState(() => _sending = true);
     try {
-      await _submitThread();
+      return await _submitThread();
     } catch (_) {
       if (mounted) EasyLoading.showError(S.of(context).forumSubmissionUnknown);
+      return false;
     } finally {
       if (mounted) setState(() => _sending = false);
     }
   }
 
-  Future<void> _submitThread() async {
+  Future<bool> _submitThread() async {
     // prepare client
     User? user = Provider.of<DiscuzAndUserNotifier>(
       context,
@@ -626,7 +648,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     String submitHash = '';
     try {
       final permission = await client.checkPost(fid, null);
-      if (!mounted) return;
+      if (!mounted) return false;
       submitHash = permission.variables.formHash;
       if (permission.getErrorString() != null ||
           permission.variables.allowPerm.allowPost != true) {
@@ -636,19 +658,21 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                   ? S.of(context).postPermissionDenied
                   : S.of(context).postPermissionUnknown),
         );
-        return;
+        return false;
       }
     } catch (_) {
       if (mounted) EasyLoading.showError(S.of(context).postPermissionUnknown);
-      return;
+      return false;
     }
-    if (!mounted || context.read<DiscuzAndUserNotifier>().user != user) return;
+    if (!mounted || context.read<DiscuzAndUserNotifier>().user != user)
+      return false;
     String title = _titleEditingController.text;
     final content = await PostSignatureService.append(
       context,
       PostTextFieldUtils.getPostMessage(_controller.text),
     );
-    if (!mounted || context.read<DiscuzAndUserNotifier>().user != user) return;
+    if (!mounted || context.read<DiscuzAndUserNotifier>().user != user)
+      return false;
     // need to process aid
     List<String> aidList = PostTextFieldUtils.getAttachmentAidList(
       _controller.text,
@@ -669,39 +693,40 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       captchaHash = captchaFields.captchaFormHash;
       verification = captchaFields.verification;
       captchaMod = "forum::post";
-      //captchaMod = "forum::viewthread";
-      print(
-        "Captcha hash: ${captchaFields.captchaFormHash} verification: ${captchaFields.verification}",
-      );
     }
 
-    if (_displayForumResult != null) {
-      await client
-          .postNewThread(
-            submitHash,
-            fid,
-            typeId,
-            title,
-            content,
-            captchaHash,
-            captchaMod,
-            verification,
-            aidList,
-            dataMap,
-          )
-          .then((value) {
-            if (!mounted) return;
-            if (value.errorResult?.key == "post_newthread_succeed") {
-              EasyLoading.showSuccess(
-                "${value.errorResult?.content}(${value.errorResult?.key})",
-              );
-              Navigator.of(context).pop();
-            } else {
-              EasyLoading.showError(
-                "${value.errorResult?.content}(${value.errorResult?.key})",
-              );
-            }
-          });
+    if (_displayForumResult == null) return false;
+    final value = await client.postNewThread(
+      submitHash,
+      fid,
+      typeId,
+      title,
+      content,
+      captchaHash,
+      captchaMod,
+      verification,
+      aidList,
+      dataMap,
+    );
+    if (!mounted) return false;
+    final result = value.errorResult;
+    if (result?.key == 'submit_seccode_invalid') {
+      captchaController.reloadCaptcha(requiredByServer: true);
+      if (captchaHash.isNotEmpty) {
+        EasyLoading.showError('${result!.content}(${result.key})');
+      }
+      return true;
     }
+    if (result?.key == 'post_newthread_succeed') {
+      EasyLoading.showSuccess('${result!.content}(${result.key})');
+      Navigator.of(context).pop();
+    } else {
+      EasyLoading.showError(
+        result == null
+            ? S.of(context).forumSubmissionUnknown
+            : '${result.content}(${result.key})',
+      );
+    }
+    return false;
   }
 }

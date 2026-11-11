@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:discuz_flutter/entity/forum_display_preferences.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/ChoosePlatformPage.dart';
 import 'package:discuz_flutter/page/SettingPage.dart';
@@ -129,7 +130,7 @@ void main() {
       expect(find.text(strings.showForumName), findsNothing);
       expect(find.text(strings.showAccountInfo), findsNothing);
       expect(find.text(strings.showThreadStats), findsNothing);
-      expect(find.text(strings.useForumCookiesForImages), findsNothing);
+      expect(find.text(strings.imageCookiePolicyTitle), findsNothing);
       expect(find.text(strings.showForumCarousel), findsNothing);
       expect(find.text(strings.compactForumCarousel), findsNothing);
       await tester.scrollUntilVisible(
@@ -140,15 +141,30 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(ForumDisplaySettingsPage), findsOneWidget);
       expect(userPreferences.forumDisplay.mergeHomeNavigation, isFalse);
-      expect(userPreferences.forumDisplay.useForumCookiesForImages, isTrue);
-      expect(find.byType(PlatformSwitch), findsNWidgets(7));
+      expect(
+        userPreferences.forumDisplay.imageCookiePolicy,
+        ForumImageCookiePolicy.sameSite,
+      );
+      expect(find.byType(PlatformSwitch), findsNWidgets(6));
       await tester.tap(find.text(strings.mergeHomeNavigation));
       await tester.pumpAndSettle();
       await tester.tap(find.text(strings.showForumName));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text(strings.useForumCookiesForImages));
+      await tester.ensureVisible(find.text(strings.imageCookiePolicyTitle));
       await tester.pumpAndSettle();
-      await tester.tap(find.text(strings.useForumCookiesForImages));
+      await tester.tap(find.text(strings.imageCookiePolicyTitle));
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.text(strings.imageCookiePolicyAlways).hitTestable(),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        userPreferences.forumDisplay.imageCookiePolicy,
+        ForumImageCookiePolicy.always,
+      );
+      await tester.tap(find.text(strings.imageCookiePolicyTitle));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(strings.imageCookiePolicyNever).hitTestable());
       await tester.pumpAndSettle();
       expect(userPreferences.forumDisplay.mergeHomeNavigation, isTrue);
       expect(userPreferences.forumDisplay.showForumName, isFalse);
@@ -157,7 +173,7 @@ void main() {
       expect(saved.showForumName, isFalse);
       expect(saved.showAccountInfo, isFalse);
       expect(saved.showThreadStats, isTrue);
-      expect(saved.useForumCookiesForImages, isFalse);
+      expect(saved.imageCookiePolicy, ForumImageCookiePolicy.never);
       preference.setBrightness(Brightness.dark);
       await tester.pumpAndSettle();
       expect(
@@ -174,7 +190,7 @@ void main() {
         strings.showForumName,
         strings.showAccountInfo,
         strings.showThreadStats,
-        strings.useForumCookiesForImages,
+        strings.imageCookiePolicyTitle,
         strings.showForumCarousel,
         strings.compactForumCarousel,
       ]) {

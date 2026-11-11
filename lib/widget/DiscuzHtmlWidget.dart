@@ -30,6 +30,7 @@ import 'package:slide_countdown/slide_countdown.dart';
 
 import '../utility/URLUtils.dart';
 import '../utility/forum_image_session.dart';
+import '../utility/forum_image_url.dart';
 import 'forum_image.dart';
 
 typedef void JumpToPidCallback(int pid);
@@ -64,7 +65,8 @@ class DiscuzHtmlWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageSession = ForumImageSession.of(context, discuz);
+    final baseUrl = forumBaseUri(discuz);
+    final imageSession = ForumImageSession.of(context, discuz, threadId: tid);
     final content = Consumer<TypeSettingNotifierProvider>(
       builder: (context, typesetting, _) {
         final colorScheme = Theme.of(context).colorScheme;
@@ -174,11 +176,11 @@ class DiscuzHtmlWidget extends StatelessWidget {
         }
         final rendered = HtmlWidget(
           normalizedHtml,
-          key: ValueKey(imageSession?.identity),
-          baseUrl: imageSession?.baseUrl,
+          key: ValueKey((baseUrl, imageSession?.cacheKey, tid)),
+          baseUrl: baseUrl,
           renderMode: asSliver ? RenderMode.sliverList : RenderMode.column,
           factoryBuilder: () =>
-              _ReadingHtmlWidgetFactory(imageSession, onBodyReady),
+              _ReadingHtmlWidgetFactory(imageSession, baseUrl, onBodyReady),
           //enableCaching: true,
           onTapUrl: (url) {
             URLUtils.openURL(context, onSelectTid, url, callback, tid);
@@ -471,6 +473,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
                 element: element,
                 textStyle: htmlTextStyle,
                 imageSession: imageSession,
+                baseUrl: baseUrl,
                 onTapUrl: (url) {
                   URLUtils.openURL(context, onSelectTid, url, callback, tid);
                   return true;
@@ -490,7 +493,9 @@ class DiscuzHtmlWidget extends StatelessWidget {
                   VibrationUtils.vibrateWithClickIfPossible();
                 },
                 controlAffinity: ListTileControlAffinity.platform,
-                children: [DiscuzHtmlWidget(discuz, element.innerHtml)],
+                children: [
+                  DiscuzHtmlWidget(discuz, element.innerHtml, tid: tid),
+                ],
                 collapsedBackgroundColor: Theme.of(context).colorScheme.primary,
                 collapsedTextColor: Theme.of(context).colorScheme.onPrimary,
                 collapsedIconColor: Theme.of(context).colorScheme.onPrimary,
@@ -602,31 +607,42 @@ class DiscuzHtmlWidget extends StatelessWidget {
   void _openImage(BuildContext context, String src) {
     VibrationUtils.vibrateWithClickIfPossible();
     final base = forumBaseUri(discuz);
-    final images = getAllImageSrcList()
-        .map((url) => base?.resolve(url).toString() ?? url)
-        .toList();
-    if (!images.contains(src)) images.insert(0, src);
+    final preview = resolveForumImageUri(base, src)?.toString() ?? src;
+    final sources = _imageSources(base);
+    var selected = preview;
+    for (final (thumbnail, original) in sources) {
+      if (thumbnail == preview) {
+        selected = original;
+        break;
+      }
+    }
+    final images = sources.map((source) => source.$2).toList();
+    if (!images.contains(selected)) images.insert(0, selected);
     Navigator.push(
       context,
       platformPageRoute(
         iosTitle: S.of(context).viewPicture,
         context: context,
-        builder: (context) => FullImagePage(src, images, forum: discuz),
+        builder: (context) =>
+            FullImagePage(selected, images, forum: discuz, threadId: tid),
       ),
     );
   }
 
-  List<String> getAllImageSrcList() {
-    var htmlDocument = parse(html);
-    var imageElementList = htmlDocument.getElementsByTagName("img");
-    List<String> imageSrcList = [];
-    for (var imageElement in imageElementList) {
-      if (imageElement.attributes["src"] != null) {
-        imageSrcList.add(imageElement.attributes["src"]!);
-      }
-    }
+  List<String> getAllImageSrcList() =>
+      _imageSources(forumBaseUri(discuz)).map((source) => source.$2).toList();
 
-    return imageSrcList;
+  List<(String, String)> _imageSources(Uri? base) {
+    String resolve(String url) =>
+        resolveForumImageUri(base, url)?.toString() ?? url;
+    final sources = <(String, String)>[];
+    for (final element in parse(html).getElementsByTagName('img')) {
+      final preview = forumHtmlImageSource(element);
+      if (preview == null) continue;
+      final original = forumHtmlImageSource(element, original: true) ?? preview;
+      sources.add((resolve(preview), resolve(original)));
+    }
+    return sources;
   }
 }
 
@@ -634,7 +650,11 @@ class DiscuzHtmlWidget extends StatelessWidget {
 /// offsets survive scrolling away. Unvisited blocks are still laid out lazily.
 class _ReadingHtmlWidgetFactory extends ForumHtmlImageFactory {
   final VoidCallback? onBodyReady;
-  _ReadingHtmlWidgetFactory(super.imageSession, this.onBodyReady);
+  _ReadingHtmlWidgetFactory(
+    ForumImageSession? imageSession,
+    Uri? baseUrl,
+    this.onBodyReady,
+  ) : super(imageSession, baseUrl: baseUrl);
 
   @override
   Widget buildBodyWidget(BuildContext context, Widget child) {

@@ -169,6 +169,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
       borderRadius: BorderRadius.circular(8.0),
       child: ForumImage(
         forum: _discuz,
+        threadId: _forumThread.getTid(),
         fit: BoxFit.cover,
         url:
             "${_discuz.getBaseURLWithAfterfix()}data/attachment/forum/${attachmentPreview.attachment}",

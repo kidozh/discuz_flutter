@@ -1,3 +1,5 @@
+enum ForumImageCookiePolicy { always, sameSite, never }
+
 class ForumDisplayPreferences {
   const ForumDisplayPreferences({
     this.mergeHomeNavigation = false,
@@ -6,7 +8,7 @@ class ForumDisplayPreferences {
     this.showAccountInfo = false,
     this.showThreadStats = true,
     this.showCarousel = true,
-    this.useForumCookiesForImages = true,
+    this.imageCookiePolicy = ForumImageCookiePolicy.sameSite,
   });
 
   final bool mergeHomeNavigation;
@@ -15,7 +17,7 @@ class ForumDisplayPreferences {
   final bool showAccountInfo;
   final bool showThreadStats;
   final bool showCarousel;
-  final bool useForumCookiesForImages;
+  final ForumImageCookiePolicy imageCookiePolicy;
 
   ForumDisplayPreferences copyWith({
     bool? mergeHomeNavigation,
@@ -24,7 +26,7 @@ class ForumDisplayPreferences {
     bool? showAccountInfo,
     bool? showThreadStats,
     bool? showCarousel,
-    bool? useForumCookiesForImages,
+    ForumImageCookiePolicy? imageCookiePolicy,
   }) => ForumDisplayPreferences(
     mergeHomeNavigation: mergeHomeNavigation ?? this.mergeHomeNavigation,
     compactCarousel: compactCarousel ?? this.compactCarousel,
@@ -32,8 +34,7 @@ class ForumDisplayPreferences {
     showAccountInfo: showAccountInfo ?? this.showAccountInfo,
     showThreadStats: showThreadStats ?? this.showThreadStats,
     showCarousel: showCarousel ?? this.showCarousel,
-    useForumCookiesForImages:
-        useForumCookiesForImages ?? this.useForumCookiesForImages,
+    imageCookiePolicy: imageCookiePolicy ?? this.imageCookiePolicy,
   );
 
   factory ForumDisplayPreferences.fromJson(Map<String, dynamic> json) {
@@ -48,7 +49,15 @@ class ForumDisplayPreferences {
       showAccountInfo: read('showAccountInfo', false),
       showThreadStats: read('showThreadStats', true),
       showCarousel: read('showCarousel', true),
-      useForumCookiesForImages: read('useForumCookiesForImages', true),
+      imageCookiePolicy: switch (json['imageCookiePolicy']) {
+        'always' => ForumImageCookiePolicy.always,
+        'sameSite' => ForumImageCookiePolicy.sameSite,
+        'never' => ForumImageCookiePolicy.never,
+        _ =>
+          read('useForumCookiesForImages', true)
+              ? ForumImageCookiePolicy.sameSite
+              : ForumImageCookiePolicy.never,
+      },
     );
   }
 
@@ -59,6 +68,6 @@ class ForumDisplayPreferences {
     'showAccountInfo': showAccountInfo,
     'showThreadStats': showThreadStats,
     'showCarousel': showCarousel,
-    'useForumCookiesForImages': useForumCookiesForImages,
+    'imageCookiePolicy': imageCookiePolicy.name,
   };
 }

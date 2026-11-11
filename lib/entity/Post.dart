@@ -6,6 +6,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 import '../widget/PostWidget.dart';
 import '../utility/discuz_json.dart';
+import '../utility/forum_image_url.dart';
 import 'Discuz.dart';
 
 part 'Post.g.dart';
@@ -135,13 +136,13 @@ class Attachment{
   factory Attachment.fromJson(Map<String, dynamic> json) => _$AttachmentFromJson(discuzScalars(json));
   Map<String, dynamic> toJson() => _$AttachmentToJson(this);
 
-  String getAttachmentRealUrl(Discuz discuz){
-    if(url.startsWith("http") || url.startsWith("http")){
-      return url + attachmentPathName;
-    }
-    else{
-      return discuz.baseURL.toString() + "/" + url + attachmentPathName;
-    }
-
+  String getAttachmentRealUrl(Discuz discuz) {
+    final forum = forumBaseUri(discuz);
+    final base = resolveForumImageUri(forum, url) ?? forum;
+    final directory = base == null || base.path.endsWith('/')
+        ? base
+        : base.replace(path: '${base.path}/');
+    return resolveForumImageUri(directory, attachmentPathName)?.toString() ??
+        '$url$attachmentPathName';
   }
 }

@@ -95,7 +95,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
       _accountController.text = accountName!;
     }
 
-    _initDio();
+    NetworkUtils.addCookieManager(_dio, cookieJar);
     _checkWithAuthentication();
   }
 
@@ -249,29 +249,26 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
     }
   }
 
-  Dio _dio = Dio();
-  late CookieJar cookieJar;
+  final Dio _dio = NetworkUtils.getDio();
+  final CookieJar cookieJar = CookieJar();
 
-  Future<void> _initDio() async {
-    cookieJar = await NetworkUtils.getTemporaryCookieJar();
-    _dio = NetworkUtils.getDio();
-    NetworkUtils.addCookieManager(_dio, cookieJar);
+  @override
+  void dispose() {
+    _captchaController.dispose();
+    _dio.close(force: true);
+    _accountController.dispose();
+    _passwdController.dispose();
+    super.dispose();
   }
 
   void _verifyAccountAndPassword() async {
-    // create a dio
+    if (_loginState == LoginResultStatus.loading) return;
 
     String account = _accountController.text;
     String password = _passwdController.text;
 
     log("Recv url " + discuz.baseURL);
-    // check the availability
-    // refresh the dio
-    await _initDio();
     final client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
-    setState(() {
-      _loginState = LoginResultStatus.loading;
-    });
 
     CaptchaFields? captchaFields = _captchaController.value;
     String captchaHash = "";
@@ -281,14 +278,18 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
       captchaHash = captchaFields.captchaFormHash;
       verification = captchaFields.verification;
       captchaMod = "member::logging";
-      print(
-          "Captcha hash: ${captchaFields.captchaFormHash} verification: ${captchaFields.verification}");
+      if (verification.trim().isEmpty) {
+        EasyLoading.showError(S.of(context).captchaRequired);
+        return;
+      }
     }
+    setState(() => _loginState = LoginResultStatus.loading);
 
     client
         .sendLoginRequest(
             account, password, captchaHash, captchaMod, verification)
         .then((value) async {
+      if (!mounted) return;
       setState(() {
         error = null;
       });
@@ -298,10 +299,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
       User user = value.loginVariables.getUser(discuz);
       user.discuz = discuz;
       if (value.errorResult!.key == "login_succeed") {
-        // save it in database
-        setState(() {
-          _loginState = LoginResultStatus.idle;
-        });
+        _captchaController.reloadCaptcha(requiredByServer: false);
         try {
           final dao = await AppDatabase.getUserDao();
 
@@ -331,16 +329,23 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
             log("Save authentification to secure storage");
             await _saveAuthentificationToSecureDatabase();
           }
+          if (!mounted) return;
           Provider.of<DiscuzAndUserNotifier>(context, listen: false)
               .setUser(user);
 
           Navigator.pop(context);
         } catch (e, s) {
+          await cookieJar.deleteAll();
+          if (!mounted) return;
+          setState(() => _loginState = LoginResultStatus.idle);
           VibrationUtils.vibrateErrorIfPossible();
           log("${e},${s}");
         }
       } else {
-        _captchaController.reloadCaptcha();
+        if (captchaHash.isNotEmpty ||
+            value.errorResult?.key == 'submit_seccode_invalid') {
+          _captchaController.reloadCaptcha(requiredByServer: true);
+        }
         setState(() {
           error =
               DiscuzError(value.errorResult!.key, value.errorResult!.content);
@@ -348,8 +353,11 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
         });
       }
     }).catchError((onError) {
+      if (!mounted) return;
       VibrationUtils.vibrateErrorIfPossible();
-      _captchaController.reloadCaptcha();
+      if (captchaHash.isNotEmpty) {
+        _captchaController.reloadCaptcha(requiredByServer: true);
+      }
       setState(() {
         _loginState = LoginResultStatus.idle;
       });
@@ -498,6 +506,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                     null,
                     "login",
                     captchaController: _captchaController,
+                    checkOnMount: true,
                   ),
                   if (error != null)
                     Column(

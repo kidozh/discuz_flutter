@@ -1909,7 +1909,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                       user,
                                       "post",
                                       captchaController: _captchaController,
-                                      hideUnconfirmedFailure: true,
                                     ),
                                   CupertinoKeyboardAccessory(
                                     enabled:

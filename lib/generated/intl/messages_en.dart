@@ -1073,6 +1073,26 @@ class MessageLookup extends MessageLookupByLibrary {
       "Can\'t parse URL in the iframe.",
     ),
     "illegalContent": MessageLookupByLibrary.simpleMessage("Illegal Content"),
+    "imageCookiePolicyAlways": MessageLookupByLibrary.simpleMessage(
+      "Always allow",
+    ),
+    "imageCookiePolicyAlwaysDescription": MessageLookupByLibrary.simpleMessage(
+      "Allow cookies on any site. Each address only receives cookies that apply to it.",
+    ),
+    "imageCookiePolicyNever": MessageLookupByLibrary.simpleMessage("Never"),
+    "imageCookiePolicyNeverDescription": MessageLookupByLibrary.simpleMessage(
+      "Load images and attachments without account cookies.",
+    ),
+    "imageCookiePolicySameSite": MessageLookupByLibrary.simpleMessage(
+      "Same site",
+    ),
+    "imageCookiePolicySameSiteDescription":
+        MessageLookupByLibrary.simpleMessage(
+          "Share eligible forum cookies with the forum and subdomains of the same site.",
+        ),
+    "imageCookiePolicyTitle": MessageLookupByLibrary.simpleMessage(
+      "Cookies for images",
+    ),
     "incognitoSubtitle": MessageLookupByLibrary.simpleMessage(
       "You will browse the forum in incognito mode",
     ),
@@ -2045,12 +2065,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "uploadUnlimited": MessageLookupByLibrary.simpleMessage("Unlimited"),
     "uploadingImageToServer": MessageLookupByLibrary.simpleMessage(
       "Upload the file to the server...",
-    ),
-    "useForumCookiesForImages": MessageLookupByLibrary.simpleMessage(
-      "Use forum cookies for images",
-    ),
-    "useForumCookiesForImagesDescription": MessageLookupByLibrary.simpleMessage(
-      "Load post images and attachments on this forum using your signed-in account. On by default.",
     ),
     "useGoogleAnalyticsContent": MessageLookupByLibrary.simpleMessage(
       "The app use Google analytics to collect only basic information and we will not track your account according to our privacy policy.",

@@ -850,6 +850,20 @@ class MessageLookup extends MessageLookupByLibrary {
     "httpBrowseWarn": MessageLookupByLibrary.simpleMessage("不安全的HTTP协议"),
     "iframeUrlNull": MessageLookupByLibrary.simpleMessage("无法解析嵌入视图的来源。"),
     "illegalContent": MessageLookupByLibrary.simpleMessage("违法内容"),
+    "imageCookiePolicyAlways": MessageLookupByLibrary.simpleMessage("总是允许"),
+    "imageCookiePolicyAlwaysDescription": MessageLookupByLibrary.simpleMessage(
+      "允许各站点接收与图片地址匹配的 Cookie。",
+    ),
+    "imageCookiePolicyNever": MessageLookupByLibrary.simpleMessage("从不"),
+    "imageCookiePolicyNeverDescription": MessageLookupByLibrary.simpleMessage(
+      "加载图片和附件时不使用账号 Cookie。",
+    ),
+    "imageCookiePolicySameSite": MessageLookupByLibrary.simpleMessage("同站点"),
+    "imageCookiePolicySameSiteDescription":
+        MessageLookupByLibrary.simpleMessage("仅向论坛和同一站点的子域名发送适用的论坛 Cookie。"),
+    "imageCookiePolicyTitle": MessageLookupByLibrary.simpleMessage(
+      "图片加载 Cookie",
+    ),
     "incognitoSubtitle": MessageLookupByLibrary.simpleMessage("某些功能可能不可用"),
     "incognitoTitle": MessageLookupByLibrary.simpleMessage("匿名模式"),
     "incorrectDiscuzAddress": MessageLookupByLibrary.simpleMessage("无效的论坛地址."),
@@ -1591,12 +1605,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "uploadUnlimited": MessageLookupByLibrary.simpleMessage("不限"),
     "uploadingImageToServer": MessageLookupByLibrary.simpleMessage(
       "向服务器传输数据中。。。",
-    ),
-    "useForumCookiesForImages": MessageLookupByLibrary.simpleMessage(
-      "加载图片时携带论坛 Cookie",
-    ),
-    "useForumCookiesForImagesDescription": MessageLookupByLibrary.simpleMessage(
-      "用当前登录账号加载同一论坛的帖子图片和附件。默认开启。",
     ),
     "useGoogleAnalyticsContent": MessageLookupByLibrary.simpleMessage(
       "本应用使用谷歌统计收集所有必要信息以减少崩溃次数、完成推送服务以及优化应用。",

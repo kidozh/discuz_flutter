@@ -91,6 +91,7 @@ class DiscuzAdaptiveTable extends StatelessWidget {
   final FutureOr<bool> Function(String)? onTapUrl;
   final ValueChanged<String>? onTapImage;
   final ForumImageSession? imageSession;
+  final Uri? baseUrl;
 
   const DiscuzAdaptiveTable({
     required this.element,
@@ -98,6 +99,7 @@ class DiscuzAdaptiveTable extends StatelessWidget {
     this.onTapUrl,
     this.onTapImage,
     this.imageSession,
+    this.baseUrl,
     super.key,
   });
 
@@ -308,9 +310,10 @@ class DiscuzAdaptiveTable extends StatelessWidget {
 
     return HtmlWidget(
       data.outerHtml,
-      key: ValueKey(imageSession?.identity),
-      baseUrl: imageSession?.baseUrl,
-      factoryBuilder: () => ForumHtmlImageFactory(imageSession),
+      key: ValueKey(imageSession?.cacheKey),
+      baseUrl: baseUrl ?? imageSession?.baseUrl,
+      factoryBuilder: () =>
+          ForumHtmlImageFactory(imageSession, baseUrl: baseUrl),
       textStyle: textStyle,
       onTapUrl: onTapUrl,
       onTapImage: _handleTapImage,
@@ -348,9 +351,10 @@ class DiscuzAdaptiveTable extends StatelessWidget {
     if (html.trim().isEmpty) return const SizedBox.shrink();
     return HtmlWidget(
       html,
-      key: ValueKey(imageSession?.identity),
-      baseUrl: imageSession?.baseUrl,
-      factoryBuilder: () => ForumHtmlImageFactory(imageSession),
+      key: ValueKey(imageSession?.cacheKey),
+      baseUrl: baseUrl ?? imageSession?.baseUrl,
+      factoryBuilder: () =>
+          ForumHtmlImageFactory(imageSession, baseUrl: baseUrl),
       textStyle: style,
       onTapUrl: onTapUrl,
       onTapImage: _handleTapImage,
