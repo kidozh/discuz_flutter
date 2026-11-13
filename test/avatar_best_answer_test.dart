@@ -172,8 +172,7 @@ void main() {
     await tester.pumpWidget(
       ChangeNotifierProvider.value(
         value: DiscuzAndUserNotifier()
-          ..discuz = discuz
-          ..user = user,
+          ..initDiscuz(discuz, user: user),
         child: MaterialApp(
           localizationsDelegates: const [S.delegate],
           home: Scaffold(
@@ -251,8 +250,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: DiscuzAndUserNotifier()
-            ..discuz = discuz
-            ..user = user,
+            ..initDiscuz(discuz, user: user),
           child: MaterialApp(
             localizationsDelegates: const [S.delegate],
             home: UploadAvatarPage(

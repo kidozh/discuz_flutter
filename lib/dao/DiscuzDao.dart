@@ -17,12 +17,9 @@ class DiscuzDao{
   // }
 
   Discuz? findDiscuzByBaseURL(String baseURL){
-    if (discuzBox.values.where((element) => element.baseURL == baseURL).isEmpty){
-      return null;
-    }
-    else{
-      return discuzBox.values.where((element) => element.baseURL == baseURL).first;
-    }
+    final site = Discuz.normalizeSiteUrl(baseURL);
+    if (site.isEmpty) return null;
+    return discuzBox.values.where((forum) => forum.siteIdentity == site).firstOrNull;
   }
 
   Discuz? findDiscuzByHost(String baseURL){
@@ -36,13 +33,8 @@ class DiscuzDao{
   }
 
   Discuz? findDiscuzByRealHost(String host){
-
-    if (discuzBox.values.where((element) => Uri.parse(element.baseURL).host == host).isEmpty){
-      return null;
-    }
-    else{
-      return discuzBox.values.where((element) => Uri.parse(element.baseURL).host == host).first;
-    }
+    final matches = discuzBox.values.where((forum) => forum.host == host).toList();
+    return matches.length == 1 ? matches.single : null;
   }
 
   Future<int> insertDiscuz(Discuz discuz){

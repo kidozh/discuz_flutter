@@ -48,7 +48,7 @@ void main() {
     await temporaryDirectory.delete(recursive: true);
   });
   setUp(() {
-    notifier = DiscuzAndUserNotifier()..discuz = _site;
+    notifier = DiscuzAndUserNotifier()..initDiscuz(_site);
     final result = SmileyResult()
       ..variables =
           (SmileyVariables()..smilies = List.generate(7, (_) => <Smiley>[]));
@@ -190,13 +190,18 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  for (final scale in [1.0, 2.0]) {
+  for (final (style, scale) in [
+    (AppVisualStyle.cupertino, 1.0),
+    (AppVisualStyle.cupertino, 2.0),
+    (AppVisualStyle.liquidGlass, 2.0),
+    (AppVisualStyle.material, 2.0),
+  ]) {
     testWidgets(
-        'Cupertino photo actions fit narrow screens at text scale $scale',
+        '${style.name} photo actions fit narrow screens at text scale $scale',
         (tester) async {
       var picked = false;
       var captured = false;
-      await tester.pumpWidget(host(textScale: scale, actions: [
+      await tester.pumpWidget(host(style: style, textScale: scale, actions: [
         SmileyPanelAction(
             icon: CupertinoIcons.photo,
             label: 'Photo',
@@ -207,7 +212,9 @@ void main() {
             onPressed: () => captured = true),
       ]));
       await tester.pumpAndSettle();
-      expect(find.byType(PlatformLiquidGlassCard), findsNothing);
+      if (style != AppVisualStyle.liquidGlass) {
+        expect(find.byType(PlatformLiquidGlassCard), findsNothing);
+      }
       expect(find.text('Photo').hitTestable(), findsOneWidget);
       await tester.tap(find.text('Photo'));
       await tester.pumpAndSettle();

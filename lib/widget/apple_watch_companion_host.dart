@@ -47,6 +47,7 @@ class _AppleWatchCompanionHostState extends State<AppleWatchCompanionHost> {
               page = PrivateMessageDetailPage(
                 toUid: item['id'] as int,
                 toUsername: item['title'] as String,
+                forum: discuz,
               );
             case 'notifications':
               page = DiscuzUserNotificationPage();

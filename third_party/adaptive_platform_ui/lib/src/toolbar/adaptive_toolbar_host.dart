@@ -71,7 +71,8 @@ class _AdaptiveToolbarHostState extends State<AdaptiveToolbarHost>
   void initState() {
     super.initState();
     _blend = ToolbarBlend(registry: _registry, vsync: this);
-    // Fold readings are only needed for the camera clearance of the bar.
+    // Fold readings determine when to use horizontal bars and where to clear
+    // the camera when the toolbar is vertical.
     if (widget.debugFold == null && PlatformInfo.isIOS26OrHigher()) {
       Foldable.snapshot.then(_onFoldChanged).catchError((Object _) {});
       _foldSub = Foldable.changes.listen(
@@ -115,9 +116,11 @@ class _AdaptiveToolbarHostState extends State<AdaptiveToolbarHost>
         _edge?.value ??
         SystemVerticalBarEdge.unknown;
     // Resolved once: the bar, the title and the pages all read this decision.
+    final viewPadding = MediaQuery.viewPaddingOf(context);
     final pose = hostsToolbar
-        ? DuoLayout.resolvePose(MediaQuery.viewPaddingOf(context), edge)
+        ? DuoLayout.resolvePose(viewPadding, edge, hingeStatus: fold?.status)
         : null;
+    final coverBarInsets = DuoLayout.coverBarInsets(viewPadding, fold?.status);
     assert(() {
       // Pose bugs only reproduce on a Duo; this makes a report actionable.
       if (edge != _loggedEdge || pose != _loggedPose) {
@@ -138,6 +141,7 @@ class _AdaptiveToolbarHostState extends State<AdaptiveToolbarHost>
         hostsDuoControls: pose != null,
         child: DuoPoseScope(
           pose: pose,
+          coverBarInsets: coverBarInsets,
           child: Stack(
             fit: StackFit.expand,
             children: [
@@ -150,7 +154,13 @@ class _AdaptiveToolbarHostState extends State<AdaptiveToolbarHost>
               // View panes), and rebuild every route.
               _BarInset(pose: pose, child: widget.child),
               if (hostsToolbar)
-                HostedTopToolbar(blend: _blend, titleOnly: pose != null),
+                Padding(
+                  padding: coverBarInsets,
+                  child: HostedTopToolbar(
+                    blend: _blend,
+                    titleOnly: pose != null,
+                  ),
+                ),
               if (pose != null)
                 // The bar sits on whichever edge the pose names: the right in
                 // most poses, the left in the leading Split View pane.

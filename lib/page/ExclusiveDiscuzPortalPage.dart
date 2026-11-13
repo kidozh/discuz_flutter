@@ -1,10 +1,7 @@
-import '../widget/forum_home_title.dart';
-import '../provider/UserPreferenceNotifierProvider.dart';
+import 'dart:async';
 
-import 'package:discuz_flutter/dao/UserDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/ExploreWebsitePage.dart';
 import 'package:discuz_flutter/page/TestFlightBannerPage.dart';
@@ -20,21 +17,26 @@ import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
-class ExclusiveDiscuzPortalPage extends StatelessWidget {
-  Discuz _discuz;
+import '../provider/UserPreferenceNotifierProvider.dart';
+import '../widget/forum_home_title.dart';
 
-  ExclusiveDiscuzPortalPage(this._discuz);
+class ExclusiveDiscuzPortalPage extends StatelessWidget {
+  final Discuz _discuz;
+  final VoidCallback? onClose;
+
+  ExclusiveDiscuzPortalPage(this._discuz, {this.onClose});
 
   @override
   Widget build(BuildContext context) {
-    return ExclusiveDiscuzPortalStatefulWidget(this._discuz);
+    return ExclusiveDiscuzPortalStatefulWidget(_discuz, onClose: onClose);
   }
 }
 
 class ExclusiveDiscuzPortalStatefulWidget extends StatefulWidget {
-  Discuz _discuz;
+  final Discuz _discuz;
+  final VoidCallback? onClose;
 
-  ExclusiveDiscuzPortalStatefulWidget(this._discuz);
+  ExclusiveDiscuzPortalStatefulWidget(this._discuz, {this.onClose});
 
   @override
   ExclusiveDiscuzPortalState createState() {
@@ -47,34 +49,23 @@ class ExclusiveDiscuzPortalState
   Discuz _discuz;
   ExclusiveDiscuzPortalState(this._discuz);
 
-  late UserDao _userDao;
-
-  void _initDb() async {
-    Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).setDiscuz(_discuz);
-    _userDao = await AppDatabase.getUserDao();
-    await _setFirstUserInDiscuz(_discuz);
+  Future<void> _initDb() async {
+    final account = context.read<DiscuzAndUserNotifier>();
+    if (_discuz.isSameSite(account.discuz)) return;
+    final session = account.sessionIdentity;
+    final users = await AppDatabase.getUserDao();
+    if (!mounted || !identical(session, account.sessionIdentity)) return;
+    account.initDiscuz(
+      _discuz,
+      user: users.findAllUsersByDiscuz(_discuz).lastOrNull,
+    );
   }
 
-  Future<void> _setFirstUserInDiscuz(Discuz discuz) async {
-    List<User> userList = await _userDao.findAllUsersByDiscuz(discuz);
-    if (userList.isNotEmpty && userList.length > 0) {
-      print("find a user in the database ${userList.length}");
-      Provider.of<DiscuzAndUserNotifier>(
-        context,
-        listen: false,
-      ).setUser(userList.last);
-      // might need to refresh the layout
-    }
-  }
-
-  _showNotificationIfFirstlyShown() async {
+  Future<void> _showNotificationIfFirstlyShown() async {
     String flag = await UserPreferencesUtils.getAcceptVersionCodeFlag();
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     String version = packageInfo.version;
-    if (flag != version) {
+    if (mounted && flag != version) {
       // shown
       Navigator.push(
         context,
@@ -91,13 +82,23 @@ class ExclusiveDiscuzPortalState
   void initState() {
     super.initState();
 
-    _initDb();
+    unawaited(_initDb());
 
-    _showNotificationIfFirstlyShown();
+    if (widget.onClose == null) unawaited(_showNotificationIfFirstlyShown());
   }
 
   @override
   Widget build(BuildContext context) {
+    final account = context.watch<DiscuzAndUserNotifier>();
+    if (!_discuz.isSameSite(account.discuz)) {
+      return PlatformScaffold(
+        appBar: PlatformAppBar(
+          title: Text(_discuz.siteName),
+          leading: _previewBackButton,
+        ),
+        body: const Center(child: PlatformCircularProgressIndicator()),
+      );
+    }
     return PlatformTabScaffold(
       tabDestinations: [
         TabDestination(
@@ -129,6 +130,10 @@ class ExclusiveDiscuzPortalState
     );
   }
 
+  Widget? get _previewBackButton => widget.onClose == null
+      ? null
+      : PlatformBackButton(onPressed: widget.onClose);
+
   Widget _buildTab(Widget body) => PlatformScaffold(
     appBar: PlatformAppBar(
       title: ForumHomeTitle(
@@ -138,6 +143,7 @@ class ExclusiveDiscuzPortalState
             .watch<UserPreferenceNotifierProvider>()
             .forumDisplay,
       ),
+      leading: _previewBackButton,
       automaticallyImplyLeading: false,
     ),
     body: body,

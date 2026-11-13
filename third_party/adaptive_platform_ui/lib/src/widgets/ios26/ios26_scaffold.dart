@@ -275,13 +275,9 @@ class _IOS26ScaffoldState extends State<IOS26Scaffold>
             ),
     );
 
-    // iPhone Duo (inner display, and the cover display while folded): the
-    // system reserves a trailing strip and moves *controls* (back button,
-    // actions) into a vertical bar on the trailing edge and leaves the title
-    // in place. Our toolbar is a hand-built UINavigationBar, which iOS never
-    // lays out vertically, so mirror that behaviour here: keep a title-only
-    // toolbar at the top (when there is a title) and render the controls in a
-    // trailing vertical bar of our own.
+    // On the inner display, keep the title at the top when controls move
+    // into the vertical bar. The cover uses horizontal bars inset from the
+    // system's status strip.
     //
     // With an AdaptiveToolbarHost above the navigator the host decides the
     // pose and draws the one fixed vertical bar for every page, so this page
@@ -301,7 +297,11 @@ class _IOS26ScaffoldState extends State<IOS26Scaffold>
             widget.debugVerticalBarEdge ??
                 _edge?.value ??
                 SystemVerticalBarEdge.unknown,
+            hingeStatus: _fold?.status,
           );
+    final coverBarInsets =
+        scope?.coverBarInsets ??
+        DuoLayout.coverBarInsets(mq.viewPadding, _fold?.status);
     final duoVerticalPose = pose != null;
     if (chrome == null &&
         pose != null &&
@@ -345,28 +345,26 @@ class _IOS26ScaffoldState extends State<IOS26Scaffold>
     // The strip is on the right in most poses and on the left in the leading
     // Split View pane; the pose says which.
     final barOnLeft = pose?.onLeft ?? false;
-    final trailingInset = !duoVerticalPose
-        ? 0.0
-        : barOnLeft
+    final leftInset = barOnLeft || coverBarInsets.left > 0
         ? mq.padding.left
-        : mq.padding.right;
-    if (showTopToolbar || trailingInset > 0) {
+        : 0.0;
+    final rightInset = pose?.onLeft == false || coverBarInsets.right > 0
+        ? mq.padding.right
+        : 0.0;
+    if (showTopToolbar || leftInset > 0 || rightInset > 0) {
       final topInset = !showTopToolbar
           ? 0.0
           : duoVerticalPose
           ? kDuoTitleBandHeight
           : kToolbarContentHeight;
       bodyContent = Padding(
-        padding: EdgeInsets.only(
-          left: barOnLeft ? trailingInset : 0,
-          right: barOnLeft ? 0 : trailingInset,
-        ),
+        padding: EdgeInsets.only(left: leftInset, right: rightInset),
         child: MediaQuery(
           data: mq.copyWith(
             padding: mq.padding.copyWith(
               top: mq.padding.top + topInset,
-              left: mq.padding.left - (barOnLeft ? trailingInset : 0),
-              right: mq.padding.right - (barOnLeft ? 0 : trailingInset),
+              left: mq.padding.left - leftInset,
+              right: mq.padding.right - rightInset,
             ),
             viewPadding: mq.viewPadding.copyWith(
               top: mq.viewPadding.top + topInset,
@@ -385,8 +383,8 @@ class _IOS26ScaffoldState extends State<IOS26Scaffold>
         // only the title; the controls live in the trailing vertical bar.
         if (showTopToolbar && !(chrome?.hostsToolbar ?? false))
           Positioned(
-            left: 0,
-            right: 0,
+            left: coverBarInsets.left,
+            right: coverBarInsets.right,
             top: 0,
             height: duoVerticalPose ? kDuoTitleBandHeight : null,
             child: duoVerticalPose
@@ -452,8 +450,8 @@ class _IOS26ScaffoldState extends State<IOS26Scaffold>
             widget.bottomNavigationBar!.selectedIndex != null &&
             widget.bottomNavigationBar!.onTap != null)
           Positioned(
-            left: 0,
-            right: 0,
+            left: coverBarInsets.left,
+            right: coverBarInsets.right,
             bottom: 0,
             child: AnimatedBuilder(
               animation: _tabBarAnimation,
@@ -502,7 +500,11 @@ class _IOS26ScaffoldState extends State<IOS26Scaffold>
 
     // The title and the own bar read the pose from the scope, so they agree
     // with the body inset above.
-    final scoped = DuoPoseScope(pose: pose, child: stackContent);
+    final scoped = DuoPoseScope(
+      pose: pose,
+      coverBarInsets: coverBarInsets,
+      child: stackContent,
+    );
 
     return CupertinoPageScaffold(
       backgroundColor: widget.backgroundColor,

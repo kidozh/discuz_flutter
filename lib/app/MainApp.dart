@@ -5,20 +5,16 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:chinese_font_library/chinese_font_library.dart';
-import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:discuz_flutter/dao/DiscuzDao.dart';
-import 'package:discuz_flutter/dao/UserDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/dialog/SwitchDiscuzDialog.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
-import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/AddDiscuzPage.dart';
 import 'package:discuz_flutter/page/DrawerPage.dart';
 import 'package:discuz_flutter/page/TestFlightBannerPage.dart';
 import 'package:discuz_flutter/page/ViewThreadSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/provider/DiscuzNotificationProvider.dart';
 import 'package:discuz_flutter/provider/ThemeNotifierProvider.dart';
 import 'package:discuz_flutter/provider/TypeSettingNotifierProvider.dart';
 import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
@@ -171,10 +167,6 @@ class _MyAppState extends State<MyApp> {
       context,
       listen: false,
     ).allowPush = allowPush;
-    Provider.of<DiscuzNotificationProvider>(
-      context,
-      listen: false,
-    ).setNotificationCount(NoticeCount());
 
     Provider.of<UserPreferenceNotifierProvider>(
       context,
@@ -454,14 +446,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   int _bottomNavigationbarIndex = 0;
   late List<Widget> bodies = [];
-  late UserDao _userDao;
 
   //
   List<Discuz> _allDiscuzs = [];
 
-  _MyHomePageState({this.onSelectTid, required this.navigatorKey}) {
-    _queryDiscuzList();
-  }
+  _MyHomePageState({this.onSelectTid, required this.navigatorKey});
 
   @override
   void didChangePlatformBrightness() {
@@ -520,7 +509,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    _initDb();
+    final account = context.read<DiscuzAndUserNotifier>();
+    unawaited(_queryDiscuzList(account));
     WidgetsBinding.instance.addObserver(this);
     _checkAcceptVersionFlag(context);
     setupInteractedMessage();
@@ -575,59 +565,39 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  void _initDb() async {
-    _userDao = await AppDatabase.getUserDao();
-  }
-
-  void _setFirstUserInDiscuz(Discuz discuz) async {
-    List<User> userList = await _userDao.findAllUsersByDiscuz(discuz);
-    if (userList.isNotEmpty && userList.length > 0) {
-      Provider.of<DiscuzAndUserNotifier>(
-        context,
-        listen: false,
-      ).setUser(userList.first);
-    }
-  }
-
   Future<void> _triggerSwitchDiscuzDialog() async {
     VibrationUtils.vibrateWithClickIfPossible();
+    final account = context.read<DiscuzAndUserNotifier>();
     await _getDiscuzList();
+    final users = await AppDatabase.getUserDao();
+    if (!mounted) return;
     List<Widget> widgetList = [];
     for (int i = 0; i < _allDiscuzs.length; i++) {
       Discuz discuz = _allDiscuzs[i];
-      Discuz? _selecteddiscuz = Provider.of<DiscuzAndUserNotifier>(
-        context,
-        listen: false,
-      ).discuz;
+      final selected = discuz.isSameSite(account.discuz);
 
       widgetList.add(
         SimpleDialogItem(
           key: UniqueKey(),
-          icon: (_selecteddiscuz != null && _selecteddiscuz == discuz)
+          icon: selected
               ? PlatformIcons(context).checkMarkCircledSolid
               : AppPlatformIcons(context).discuzSolid,
-          color: (_selecteddiscuz != null && _selecteddiscuz == discuz)
+          color: selected
               ? Theme.of(context).colorScheme.primary
               : Theme.of(context).unselectedWidgetColor,
           text: discuz.siteName,
           onPressed: () async {
+            VibrationUtils.vibrateWithClickIfPossible();
+            if (!discuz.isSameSite(account.discuz)) {
+              account.initDiscuz(
+                discuz,
+                user: users.findAllUsersByDiscuz(discuz).firstOrNull,
+              );
+            }
+            Navigator.of(context).pop();
             await UserPreferencesUtils.putFirstShowDiscuzPreference(
               discuz.key.toString(),
             );
-            setState(() {
-              VibrationUtils.vibrateWithClickIfPossible();
-              Provider.of<DiscuzAndUserNotifier>(
-                context,
-                listen: false,
-              ).initDiscuz(discuz);
-              // save to user preference
-
-              _setFirstUserInDiscuz(discuz);
-              if (onSelectTid != null) {
-                onSelectTid!(0);
-              }
-              Navigator.of(context).pop();
-            });
           },
         ),
       );
@@ -726,10 +696,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     _allDiscuzs = await dao.findAllDiscuzs();
   }
 
-  void _queryDiscuzList() async {
-    final dao = await AppDatabase.getDiscuzDao();
-
-    _allDiscuzs = await dao.findAllDiscuzs();
+  Future<void> _queryDiscuzList(DiscuzAndUserNotifier account) async {
+    if (account.discuz != null) return;
+    final session = account.sessionIdentity;
+    await _getDiscuzList();
 
     // query data
     String? discuzKey =
@@ -738,6 +708,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       "recv discuz list ${_allDiscuzs.length} -> selected discuz key ${discuzKey}",
     );
     if (_allDiscuzs.isNotEmpty) {
+      final users = await AppDatabase.getUserDao();
+      if (!mounted || !identical(session, account.sessionIdentity)) return;
       Discuz selectedDiscuz = _allDiscuzs.first;
       if (discuzKey != null) {
         for (var discuz in _allDiscuzs) {
@@ -747,14 +719,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           }
         }
       }
-      setState(() {
-        // set
-        Provider.of<DiscuzAndUserNotifier>(
-          context,
-          listen: false,
-        ).initDiscuz(selectedDiscuz);
-        _setFirstUserInDiscuz(selectedDiscuz);
-      });
+      account.initDiscuz(
+        selectedDiscuz,
+        user: users.findAllUsersByDiscuz(selectedDiscuz).firstOrNull,
+      );
     }
   }
 
@@ -997,6 +965,9 @@ class MainTwoPaneStatefulWidget extends StatefulWidget {
 class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
     with RestorationMixin {
   final RestorableInt _currentTid = RestorableInt(0);
+  final RestorableStringN _threadSite = RestorableStringN(null);
+  late final DiscuzAndUserNotifier _account;
+  String? _lastSite;
   int _selectionRevision = 0;
   GlobalKey<NavigatorState> navigatorKey;
 
@@ -1008,66 +979,69 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
   @override
   void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
     registerForRestoration(_currentTid, "DisplayForumTid");
+    registerForRestoration(_threadSite, 'DisplayForumSite');
   }
 
   @override
   void dispose() {
+    _account.removeListener(_onForumChanged);
     _currentTid.dispose();
+    _threadSite.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
+    _account = context.read<DiscuzAndUserNotifier>();
+    _lastSite = _account.discuz?.siteIdentity;
+    _account.addListener(_onForumChanged);
+  }
+
+  void _onForumChanged() {
+    final site = _account.discuz?.siteIdentity;
+    if (site == _lastSite) return;
+    _lastSite = site;
+    if (_currentTid.value != 0 && _threadSite.value != site) _selectThread(0);
   }
 
   void _selectThread(int tid) {
     Provider.of<SelectedTidNotifierProvider>(
       context,
       listen: false,
-    ).setTid(tid);
+    ).setTid(tid, _account.discuz);
     setState(() {
       _currentTid.value = tid;
+      _threadSite.value = tid == 0 ? null : _account.discuz?.siteIdentity;
       _selectionRevision++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final account = context.watch<DiscuzAndUserNotifier>();
+    final discuz = account.discuz;
+    final tid = _threadSite.value == discuz?.siteIdentity
+        ? _currentTid.value
+        : 0;
     return TwoPaneScaffold(
       type: widget.type,
-      detailIdentity: (
-        context.watch<DiscuzAndUserNotifier>().discuz?.baseURL,
-        context.watch<DiscuzAndUserNotifier>().user?.uid,
-        _currentTid.value,
-        _selectionRevision,
-      ),
+      detailIdentity: (discuz?.siteIdentity, tid, _selectionRevision),
       onCloseDetail: () => _selectThread(0),
       paneProportion: 0.35,
-      showDetail: _currentTid.value != 0,
+      showDetail: tid != 0,
       startPane: MyHomePage(
         navigatorKey: navigatorKey,
         title: '',
         onSelectTid: _selectThread,
       ),
-      endPane: _currentTid.value == 0
+      endPane: tid == 0 || discuz == null
           ? TwoPaneEmptyScreen(S.of(context).viewThreadTwoPaneText)
-          : Consumer<DiscuzAndUserNotifier>(
-              builder: (context, discuzAndUser, child) {
-                final discuz = discuzAndUser.discuz;
-                if (discuz == null) return const SizedBox.shrink();
-                return KeyedSubtree(
-                  key: ValueKey(
-                    '${discuz.baseURL}:${discuzAndUser.user?.uid}:${_currentTid.value}',
-                  ),
-                  child: ViewThreadSliverPage(
-                    discuz,
-                    discuzAndUser.user,
-                    _currentTid.value,
-                    onClosed: () => _selectThread(0),
-                  ),
-                );
-              },
+          : ViewThreadSliverPage(
+              discuz,
+              account.user,
+              tid,
+              onClosed: () => _selectThread(0),
             ),
     );
   }

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io' show Cookie;
 
-import 'package:cookie_jar/cookie_jar.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../utility/DiscuzWebviewCookieManager.dart';
+import '../utility/forum_image_url.dart';
 
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -56,7 +57,7 @@ class ExploreWebsiteState extends State<ExploreWebsitePage> {
         } else {
           return SafeArea(
             child: InnerWebviewScreen(
-              ValueKey(discuzAndUser.discuz),
+              ValueKey(discuzAndUser.sessionIdentity),
               discuzAndUser.discuz!,
               discuzAndUser.user,
               initialURL: initialURL,
@@ -145,9 +146,9 @@ class NavigationControls extends StatelessWidget {
 }
 
 class InnerWebviewScreen extends StatefulWidget {
-  Discuz _discuz;
-  User? _user;
-  String? initialURL;
+  final Discuz _discuz;
+  final User? _user;
+  final String? initialURL;
   final ValueChanged<int>? onSelectTid;
 
   InnerWebviewScreen(
@@ -193,24 +194,20 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
   });
 
   void loadCookieByUser(Discuz _discuz, User? _user, String initialURL) async {
-    if (_user != null) {
-      PersistCookieJar savedCookieJar =
-          await NetworkUtils.getPersistentCookieJarByUser(_user);
-      List<Cookie> cookies = await savedCookieJar.loadForRequest(
-        Uri.parse(_discuz.baseURL),
-      );
-      if (!mounted) return;
-      await webviewCookieManager.setCookies(cookies, origin: _discuz.baseURL);
-    } else {
-      await webviewCookieManager.clearCookies();
-    }
-
-    if (!mounted) return;
+    final account = context.read<DiscuzAndUserNotifier>();
+    final session = account.sessionIdentity;
+    bool isCurrent() => mounted && identical(session, account.sessionIdentity);
+    final cookies = _user != null && _discuz.isSameSite(_user.discuz)
+        ? await (await NetworkUtils.getPersistentCookieJarByUser(_user))
+              .loadForRequest(Uri.parse(_discuz.getBaseURLWithAfterfix()))
+        : <Cookie>[];
+    if (!isCurrent()) return;
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
+            if (!isCurrent()) return;
             setState(() {
               this.progress = progress;
             });
@@ -224,11 +221,13 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
             print('Page started loading: $url');
           },
           onPageFinished: (String url) async {
+            if (!isCurrent()) return;
             setState(() {
               progress = 0;
             });
 
             String? title = await _controller.getTitle();
+            if (!isCurrent()) return;
             setState(() {
               webTitle = title;
             });
@@ -240,11 +239,13 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
         ),
       );
 
-    setState(() {
-      cookieLoaded = true;
-    });
-
-    _controller.loadRequest(Uri.parse(initialURL));
+    await webviewCookieManager.loadWithCookies(
+      cookies,
+      origin: _discuz.baseURL,
+      isCurrent: isCurrent,
+      load: () => _controller.loadRequest(Uri.parse(initialURL)),
+    );
+    if (isCurrent()) setState(() => cookieLoaded = true);
   }
 
   @override
@@ -274,18 +275,15 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
   }
 
   void checkIfLinkIsParsable(BuildContext context, String urlString) async {
+    final account = context.read<DiscuzAndUserNotifier>();
+    final session = account.sessionIdentity;
     urlString = urlString.replaceAll("&amp;", "&");
     bool urlLauchable = await canLaunchUrl(Uri.parse(urlString));
-    User? user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
-    Discuz discuz = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).discuz!;
+    if (!mounted || !identical(session, account.sessionIdentity)) return;
+    if (!_discuz.isSameSite(account.discuz)) return;
+    final user = account.userFor(_discuz);
+    final discuz = _discuz;
     // judge if it is a path
-    Uri? tryUri = Uri.tryParse(urlString);
     log("${Uri.parse(urlString).isAbsolute}");
     if (!Uri.parse(urlString).isAbsolute) {
       // add a prefix to test if it's a url
@@ -299,7 +297,10 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
       Uri uri = Uri.parse(urlString);
       // check host
       log("Pressed url ${urlString} host ${uri.host}");
-      if (uri.host != Uri.parse(discuz.baseURL).host) {
+      final base = forumBaseUri(discuz);
+      if (base == null ||
+          uri.origin != base.origin ||
+          !uri.path.startsWith(base.path)) {
         // not website
         return;
       }

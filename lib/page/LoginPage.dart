@@ -131,9 +131,14 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
               await openPasswordStoreWithRecovery(context);
           if (discuzAuthentificationDao == null) return;
           if (!mounted) return;
-          List<DiscuzAuthentication> discuzAuthentificationList =
-              discuzAuthentificationDao
-                  .getDiscuzAuthenticationListByHost(discuz.host);
+          final discuzDao = await AppDatabase.getDiscuzDao();
+          if (!mounted) return;
+          final scoped = discuzAuthentificationDao
+              .getDiscuzAuthenticationListByHost(discuz.siteIdentity);
+          final discuzAuthentificationList = scoped.isNotEmpty ||
+                  !discuz.isSameSite(discuzDao.findDiscuzByRealHost(discuz.host))
+              ? scoped
+              : discuzAuthentificationDao.getDiscuzAuthenticationListByHost(discuz.host);
           log("The list of authentification ${discuzAuthentificationList.length}");
           if (discuzAuthentificationList.length == 1) {
             // only one element in authentication
@@ -240,7 +245,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
       DiscuzAuthentication discuzAuthentification = DiscuzAuthentication();
       discuzAuthentification.account = account;
       discuzAuthentification.password = password;
-      discuzAuthentification.discuz_host = discuz.host;
+      discuzAuthentification.discuz_host = discuz.siteIdentity;
       discuzAuthentification.updateTime = DateTime.now();
       await discuzAuthentificationDao
           .insertDiscuzAuthentication(discuzAuthentification);
@@ -263,6 +268,8 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
 
   void _verifyAccountAndPassword() async {
     if (_loginState == LoginResultStatus.loading) return;
+    final selection = context.read<DiscuzAndUserNotifier>();
+    final session = selection.sessionIdentity;
 
     String account = _accountController.text;
     String password = _passwdController.text;
@@ -285,6 +292,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
     }
     setState(() => _loginState = LoginResultStatus.loading);
 
+    final loginOrigin = Uri.parse(discuz.getBaseURLWithAfterfix());
     client
         .sendLoginRequest(
             account, password, captchaHash, captchaMod, verification)
@@ -296,9 +304,13 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
       // check if the
       log('Login response received from ${discuz.host}');
       // if user is validated
-      User user = value.loginVariables.getUser(discuz);
-      user.discuz = discuz;
+      final user = value.loginVariables.getUser(discuz);
       if (value.errorResult!.key == "login_succeed") {
+        if (discuz.isSameSite(selection.discuz) &&
+            !identical(session, selection.sessionIdentity)) {
+          setState(() => _loginState = LoginResultStatus.idle);
+          return;
+        }
         _captchaController.reloadCaptcha(requiredByServer: false);
         try {
           final dao = await AppDatabase.getUserDao();
@@ -312,11 +324,11 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
           }
           // save it in cookiejar
           List<Cookie> cookies =
-              await cookieJar.loadForRequest(Uri.parse(discuz.baseURL));
+              await cookieJar.loadForRequest(loginOrigin);
           log('Persisting ${cookies.length} login cookies for uid ${user.uid}');
           await NetworkUtils.replacePersistentCookiesForUser(
             user,
-            Uri.parse(discuz.baseURL),
+            loginOrigin,
             cookies,
           );
           if (!mounted) return;
@@ -330,8 +342,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
             await _saveAuthentificationToSecureDatabase();
           }
           if (!mounted) return;
-          Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-              .setUser(user);
+          selection.setUser(user, expectedSession: session);
 
           Navigator.pop(context);
         } catch (e, s) {

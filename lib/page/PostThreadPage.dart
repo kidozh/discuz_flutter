@@ -23,7 +23,6 @@ import '../entity/Discuz.dart';
 import '../entity/Draft.dart';
 import '../entity/ImageAttachment.dart';
 import '../entity/Smiley.dart';
-import '../entity/User.dart';
 import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../screen/ExtraFuncInThreadScreen.dart';
@@ -41,9 +40,10 @@ class PostThreadPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<DiscuzAndUserNotifier>().user;
+    final account = context.watch<DiscuzAndUserNotifier>();
+    final user = account.userFor(discuz);
     return PostPermissionGate(
-      key: ValueKey('${discuz.baseURL}:$fid:${user?.uid}'),
+      key: ValueKey((discuz.siteIdentity, fid, account.sessionIdentity)),
       reply: false,
       fullPage: true,
       load: () async => MobileApiClient(
@@ -104,8 +104,8 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
 
   Future<void> _configurePoll() async {
     final account = context.read<DiscuzAndUserNotifier>();
-    final user = account.user;
-    if (user == null || account.discuz?.baseURL != discuz.baseURL) return;
+    final user = account.userFor(discuz);
+    if (user == null) return;
     try {
       final api = ForumInteractionClient(
         await NetworkUtils.getDioWithPersistCookieJar(user),
@@ -389,10 +389,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   String? _forumLoadError;
 
   Future<void> _loadForumInfo() async {
-    User? user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
+    final user = context.read<DiscuzAndUserNotifier>().userFor(discuz);
     Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
     try {
@@ -565,7 +562,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
 
   Future<bool?> _showPostConfirmation() async {
     final requiresCaptcha = captchaController.requiredByServer;
-    final user = context.read<DiscuzAndUserNotifier>().user;
+    final user = context.read<DiscuzAndUserNotifier>().userFor(discuz);
     final dio = requiresCaptcha
         ? await NetworkUtils.getDioWithPersistCookieJar(user)
         : null;
@@ -638,17 +635,21 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
 
   Future<bool> _submitThread() async {
     // prepare client
-    User? user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
+    final account = context.read<DiscuzAndUserNotifier>();
+    final session = account.sessionIdentity;
+    final user = account.userFor(discuz);
+    if (user == null) return false;
+    bool isCurrent() => mounted && identical(session, account.sessionIdentity);
     Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
     String submitHash = '';
     try {
       final permission = await client.checkPost(fid, null);
-      if (!mounted) return false;
+      if (!isCurrent()) return false;
+      if (permission.variables.member_uid != 0 &&
+          permission.variables.member_uid != user.uid)
+        return false;
       submitHash = permission.variables.formHash;
       if (permission.getErrorString() != null ||
           permission.variables.allowPerm.allowPost != true) {
@@ -664,15 +665,13 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       if (mounted) EasyLoading.showError(S.of(context).postPermissionUnknown);
       return false;
     }
-    if (!mounted || context.read<DiscuzAndUserNotifier>().user != user)
-      return false;
+    if (!isCurrent()) return false;
     String title = _titleEditingController.text;
     final content = await PostSignatureService.append(
       context,
       PostTextFieldUtils.getPostMessage(_controller.text),
     );
-    if (!mounted || context.read<DiscuzAndUserNotifier>().user != user)
-      return false;
+    if (!isCurrent()) return false;
     // need to process aid
     List<String> aidList = PostTextFieldUtils.getAttachmentAidList(
       _controller.text,
@@ -708,7 +707,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       aidList,
       dataMap,
     );
-    if (!mounted) return false;
+    if (!isCurrent()) return false;
     final result = value.errorResult;
     if (result?.key == 'submit_seccode_invalid') {
       captchaController.reloadCaptcha(requiredByServer: true);

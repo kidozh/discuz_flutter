@@ -84,7 +84,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
           session: imageSession,
         );
       } else {
-        URLUtils.openURL(context, onSelectTid, url, callback, tid);
+        URLUtils.openURL(context, onSelectTid, url, callback, tid, forum: discuz);
       }
       return true;
     }

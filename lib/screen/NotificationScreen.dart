@@ -192,6 +192,12 @@ class _NotificationState extends State<NotificationStatefulWidget> {
               childCount: _noteList.length,
             ),
           ),
+          const SliverSafeArea(
+            top: false,
+            left: false,
+            right: false,
+            sliver: SliverToBoxAdapter(),
+          ),
         ],
       ),
     );

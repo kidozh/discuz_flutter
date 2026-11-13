@@ -56,7 +56,6 @@ class DrawerState extends State<DrawerStatefulWidget> {
 
   Widget _buildFunctionNavWidgetList() {
     return ListView(
-      padding: EdgeInsets.zero,
       children: [
         PlatformListTile(
           title: Text(S.of(context).loginTitle),
@@ -298,7 +297,6 @@ class DrawerState extends State<DrawerStatefulWidget> {
             );
           } else {
             return ListView.builder(
-                padding: EdgeInsets.zero,
                 itemCount: userList.length + 1,
                 itemBuilder: (context, position) {
                   if (position != userList.length) {
@@ -359,6 +357,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
         automaticallyImplyLeading: true,
       ),
       body: SafeArea(
+          bottom: false,
           child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,

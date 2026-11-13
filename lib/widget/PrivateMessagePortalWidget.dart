@@ -120,7 +120,7 @@ class PrivateMessagePortalWidget extends StatelessWidget {
                   iosTitle: _privateMessagePortal.toUserName,
                   builder: (context) => PrivateMessageDetailScreen(
                       _privateMessagePortal.toUid,
-                      _privateMessagePortal.toUserName)));
+                      _privateMessagePortal.toUserName, forum: _discuz)));
           onConversationClosed?.call();
         },
       ),

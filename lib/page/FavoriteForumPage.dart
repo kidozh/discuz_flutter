@@ -12,17 +12,13 @@ import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/EasyRefreshUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
-import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
-import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
-import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:discuz_flutter/widget/favorite_forum_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-
-import 'DisplayForumSliverPage.dart';
 
 class FavoriteForumPage extends StatelessWidget {
   @override
@@ -31,17 +27,14 @@ class FavoriteForumPage extends StatelessWidget {
     final discuz = account.discuz;
     return PlatformScaffold(
       iosContentPadding: true,
-      iosContentBottomPadding: true,
       appBar: PlatformAppBar(title: Text(S.of(context).favoriteForum)),
-      body: PlatformLiquidGlassPageBackdrop(
-        child: discuz == null
-            ? NullDiscuzScreen()
-            : FavoriteForumStatefulWidget(
-                key: ValueKey(account.sessionIdentity),
-                discuz: discuz,
-                user: account.user,
-              ),
-      ),
+      body: discuz == null
+          ? NullDiscuzScreen()
+          : FavoriteForumStatefulWidget(
+              key: ValueKey(account.sessionIdentity),
+              discuz: discuz,
+              user: account.user,
+            ),
     );
   }
 }
@@ -157,8 +150,9 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     final dao = _dao;
-    if (dao == null)
+    if (dao == null) {
       return const Center(child: PlatformCircularProgressIndicator());
+    }
     final discuz = widget.discuz;
     final user = widget.user;
     return Column(
@@ -188,71 +182,25 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget> {
                   );
                 }
                 return ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  padding: EdgeInsets.fromLTRB(
+                    8,
+                    6,
+                    8,
+                    6 + MediaQuery.paddingOf(context).bottom,
+                  ),
                   itemCount: favorites.length,
-                  itemBuilder: (context, index) =>
-                      FavoriteForumCardWidget(discuz, user, favorites[index]),
+                  itemBuilder: (context, index) => FavoriteForumTile(
+                    discuz: discuz,
+                    user: user,
+                    favorite: favorites[index],
+                    showSavedDate: true,
+                  ),
                 );
               },
             ),
           ),
         ),
       ],
-    );
-  }
-}
-
-class FavoriteForumCardWidget extends StatelessWidget {
-  FavoriteForumInDatabase favoriteForumInDatabase;
-  Discuz discuz;
-  User? user;
-  FavoriteForumCardWidget(this.discuz, this.user, this.favoriteForumInDatabase);
-
-  @override
-  Widget build(BuildContext context) {
-    return PlatformCard(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-      child: PlatformListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-        leading: PlatformLiquidGlassAvatar(
-          size: 42,
-          child: ColoredBox(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            child: Icon(
-              AppPlatformIcons(context).forumOutlined,
-              size: 18,
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
-          ),
-        ),
-        title: Text(
-          favoriteForumInDatabase.title,
-          style: Theme.of(context).textTheme.bodyLarge
-              ?.copyWith(fontWeight: FontWeight.w600),
-        ),
-        subtitle: Text(
-          TimeDisplayUtils.getLocaledTimeDisplay(
-            context,
-            favoriteForumInDatabase.date,
-          ),
-        ),
-        trailing: Icon(PlatformIcons(context).forward),
-        onTap: () async {
-          VibrationUtils.vibrateWithClickIfPossible();
-          await Navigator.push(
-            context,
-            platformPageRoute(
-              context: context,
-              iosTitle: favoriteForumInDatabase.title,
-              builder: (context) => DisplayForumTwoPanePage(
-                discuz,
-                user,
-                favoriteForumInDatabase.idKey,
-              ),
-            ),
-          );
-        },
-      ),
     );
   }
 }

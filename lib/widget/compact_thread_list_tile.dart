@@ -102,10 +102,64 @@ class CompactThreadListTile extends StatelessWidget {
             ],
           ),
           if (replyPreview != null) ...[
-            const SizedBox(height: 4),
+            const SizedBox(height: 8),
             replyPreview!,
           ],
         ],
+      ),
+    );
+  }
+}
+
+class ThreadReplyPreview extends StatelessWidget {
+  const ThreadReplyPreview({
+    super.key,
+    required this.author,
+    required this.message,
+    required this.color,
+  });
+
+  final String author;
+  final String message;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      container: true,
+      label: S.of(context).replyPost,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          child: Row(
+            children: [
+              Icon(Icons.chat_bubble_outline, size: 12, color: color),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text.rich(
+                  TextSpan(
+                    children: [
+                      if (author.isNotEmpty)
+                        TextSpan(
+                          text: '$author · ',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      TextSpan(text: message),
+                    ],
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall
+                      ?.copyWith(color: color, height: 1.25),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

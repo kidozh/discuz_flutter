@@ -2,8 +2,10 @@ import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
 import 'package:adaptive_platform_ui/src/platform/system_vertical_bar.dart';
 import 'package:adaptive_platform_ui/src/toolbar/duo_vertical_bar.dart';
 import 'package:adaptive_platform_ui/src/toolbar/hosted_duo_bar.dart';
+import 'package:adaptive_platform_ui/src/toolbar/hosted_top_toolbar.dart';
 import 'package:adaptive_platform_ui/src/toolbar/toolbar_blend.dart';
 import 'package:adaptive_platform_ui/src/toolbar/toolbar_chrome_scope.dart';
+import 'package:adaptive_platform_ui/src/widgets/ios26/ios26_native_tab_bar.dart';
 import 'package:adaptive_platform_ui/src/widgets/ios26/ios26_scaffold.dart';
 import 'package:flutter/cupertino.dart' show CupertinoIcons, CupertinoPageRoute;
 import 'package:flutter/material.dart';
@@ -136,6 +138,60 @@ double opacityOf(WidgetTester tester, Finder finder) => tester
     .value;
 
 void main() {
+  testWidgets(
+    'cover display keeps actions at the top outside the status strip',
+    (tester) async {
+      tester.view.physicalSize = const Size(466, 678);
+      tester.view.devicePixelRatio = 1;
+      tester.view.padding = duoRightPane;
+      tester.view.viewPadding = duoRightPane;
+      addTearDown(tester.view.reset);
+
+      final posture = ValueNotifier(HingeStatus.closed);
+      addTearDown(posture.dispose);
+      final nav = GlobalKey<NavigatorState>();
+      var taps = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          navigatorKey: nav,
+          builder: (context, child) => ValueListenableBuilder(
+            valueListenable: posture,
+            builder: (context, status, child) => AdaptiveToolbarHost(
+              debugFold: duoInnerDisplay().copyWith(status: status),
+              debugVerticalBarEdge: SystemVerticalBarEdge.right,
+              child: child!,
+            ),
+            child: child,
+          ),
+          home: page('Home'),
+        ),
+      );
+      nav.currentState!.push(
+        MaterialPageRoute<void>(
+          builder: (context) =>
+              page('Detail', action: Icons.add, onAction: () => taps++),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final top = find.byType(HostedTopToolbar);
+      final action = find.descendant(of: top, matching: find.byIcon(Icons.add));
+      expect(bar, findsNothing);
+      expect(
+        find.byKey(const ValueKey('adaptive_toolbar_back')),
+        findsOneWidget,
+      );
+      expect(tester.getRect(top).right, 466 - 84);
+      expect(tester.getCenter(action).dy, lessThan(60));
+      await tester.tap(action);
+      expect(taps, 1);
+
+      posture.value = HingeStatus.fullyOpen;
+      await tester.pumpAndSettle();
+      expect(inBar(find.byIcon(Icons.add)), findsOneWidget);
+      expect(find.text('body:Detail'), findsOneWidget);
+    },
+  );
+
   testWidgets('one fixed bar shows the controls of the page in front', (
     tester,
   ) async {
@@ -894,7 +950,7 @@ void main() {
     expect(find.text('body:Home'), findsOneWidget);
   });
 
-  testWidgets('Duo cover title backdrop clears pinned home categories', (
+  testWidgets('Duo cover keeps home categories and bottom tabs separate', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -906,10 +962,15 @@ void main() {
     var tab = 0;
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => AdaptiveToolbarHost(
+          debugFold: duoInnerDisplay().copyWith(status: HingeStatus.closed),
+          child: child!,
+        ),
         home: StatefulBuilder(
           builder: (context, setState) => IOS26Scaffold(
             title: 'Forum',
             useHeroBackButton: false,
+            useFixedToolbar: false,
             bottomNavigationBar: AdaptiveBottomNavigationBar(
               items: const [
                 AdaptiveNavigationDestination(icon: Icons.home, label: 'Home'),
@@ -946,20 +1007,20 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    final backdrop = find.descendant(
-      of: find.byType(DuoTitleBackdrop),
-      matching: find.byType(BackdropFilter),
-    );
     final categories = find.byType(AdaptiveSegmentedControl);
-    expect(tester.getRect(backdrop).bottom, tester.getRect(categories).top);
+    final tabs = find.byType(IOS26NativeTabBar);
+    expect(find.byType(DuoVerticalBar), findsNothing);
+    expect(tester.getRect(categories).top, kToolbarContentHeight);
+    expect(tester.getRect(tabs).right, 466 - 84);
+    expect(tester.getRect(tabs).bottom, 678);
 
     await tester.tap(find.text('Topics'));
     await tester.pumpAndSettle();
     expect(find.text('tab 0 / category 2'), findsOneWidget);
-    await tester.tap(find.byIcon(Icons.forum));
+    await tester.tap(find.descendant(of: tabs, matching: find.text('Forums')));
     await tester.pumpAndSettle();
     expect(find.text('tab 1 / category 2'), findsOneWidget);
-    await tester.tap(find.byIcon(Icons.home));
+    await tester.tap(find.descendant(of: tabs, matching: find.text('Home')));
     await tester.pumpAndSettle();
     expect(find.text('tab 0 / category 2'), findsOneWidget);
   });

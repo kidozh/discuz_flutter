@@ -1,4 +1,3 @@
-
 import 'package:hive_ce/hive.dart';
 
 import '../utility/ConstUtils.dart';
@@ -10,7 +9,7 @@ class Discuz extends HiveObject {
   @HiveField(1)
   String discuzVersion = "";
   @HiveField(2)
-  String charset="utf-8";
+  String charset = "utf-8";
   @HiveField(3)
   int apiVersion = 4;
   @HiveField(4)
@@ -38,38 +37,58 @@ class Discuz extends HiveObject {
 
   bool get isDiscuzVersion35 => trueDiscuzVersion == "X3.5";
 
-  String getDiscuzAvatarURL(){
+  String getDiscuzAvatarURL() {
     return this.baseURL + "/static/image/common/logo.png";
   }
 
-  String getBaseURLWithAfterfix(){
+  String getBaseURLWithAfterfix() {
     String afterfix = "";
-    if(!this.baseURL.endsWith("/")){
+    if (!this.baseURL.endsWith("/")) {
       afterfix = "/";
     }
     return this.baseURL + afterfix;
   }
 
-  String get host => Uri.tryParse(this.baseURL) == null? "" : Uri.tryParse(this.baseURL)!.host;
+  String get host => Uri.tryParse(this.baseURL) == null
+      ? ""
+      : Uri.tryParse(this.baseURL)!.host;
 
+  String get siteIdentity => normalizeSiteUrl(baseURL);
 
+  bool isSameSite(Discuz? other) =>
+      other != null &&
+      siteIdentity.isNotEmpty &&
+      siteIdentity == other.siteIdentity;
+
+  static String normalizeSiteUrl(String url) {
+    final trimmed = url.trim();
+    final uri = Uri.tryParse(trimmed);
+    if (uri == null ||
+        !{'http', 'https'}.contains(uri.scheme) ||
+        uri.host.isEmpty ||
+        uri.userInfo.isNotEmpty) {
+      return '';
+    }
+    final path = uri.path.replaceFirst(RegExp(r'/+$'), '');
+    return '${uri.origin}$path';
+  }
 
   Discuz(
-      this.baseURL,
-      this.discuzVersion,
-      this.charset,
-      this.apiVersion,
-      this.pluginVersion,
-      this.regname,
-      this.qqconnect,
-      this.wsqqqconnect,
-      this.wsqhideregister,
-      this.siteName,
-      this.siteId,
-      this.uCenterURL,
-      this.defaultFid,
-      {this.trueDiscuzVersion = "X3.4"}
-      );
+    this.baseURL,
+    this.discuzVersion,
+    this.charset,
+    this.apiVersion,
+    this.pluginVersion,
+    this.regname,
+    this.qqconnect,
+    this.wsqqqconnect,
+    this.wsqhideregister,
+    this.siteName,
+    this.siteId,
+    this.uCenterURL,
+    this.defaultFid, {
+    this.trueDiscuzVersion = "X3.4",
+  });
 
   @override
   bool operator ==(Object other) =>
@@ -89,8 +108,7 @@ class Discuz extends HiveObject {
           uCenterURL == other.uCenterURL &&
           defaultFid == other.defaultFid &&
           baseURL == other.baseURL &&
-          trueDiscuzVersion == other.trueDiscuzVersion
-  ;
+          trueDiscuzVersion == other.trueDiscuzVersion;
 
   @override
   int get hashCode =>
@@ -107,6 +125,5 @@ class Discuz extends HiveObject {
       uCenterURL.hashCode ^
       defaultFid.hashCode ^
       baseURL.hashCode ^
-      trueDiscuzVersion.hashCode
-  ;
+      trueDiscuzVersion.hashCode;
 }

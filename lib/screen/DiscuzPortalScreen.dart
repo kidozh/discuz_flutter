@@ -13,17 +13,16 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/User.dart';
-import 'package:discuz_flutter/page/DisplayForumSliverPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/MobileSignUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
-import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/ForumPartitionWidget.dart';
 import 'package:discuz_flutter/widget/LoadingStateWidget.dart';
+import 'package:discuz_flutter/widget/favorite_forum_tile.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
@@ -256,10 +255,10 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
                     );
                 return SliverList(
                   delegate: SliverChildBuilderDelegate((context, index) {
-                    return FavoriteForumCardWidget(
-                      discuz,
-                      user,
-                      favoriteForumInDbList[index],
+                    return FavoriteForumTile(
+                      discuz: discuz,
+                      user: user,
+                      favorite: favoriteForumInDbList[index],
                     );
                   }, childCount: favoriteForumInDbList.length),
                 );
@@ -299,55 +298,6 @@ class _DiscuzPortalState extends State<DiscuzPortalStatefulWidget> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class FavoriteForumCardWidget extends StatelessWidget {
-  FavoriteForumInDatabase favoriteForumInDatabase;
-  Discuz discuz;
-  User? user;
-  FavoriteForumCardWidget(this.discuz, this.user, this.favoriteForumInDatabase);
-
-  @override
-  Widget build(BuildContext context) {
-    return PlatformCard(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: PlatformListTile(
-        //dense: true,
-        leading: isCupertino(context)
-            ? Icon(
-                PlatformIcons(context).favoriteSolid,
-                color: Theme.of(context).colorScheme.primary,
-              )
-            : null,
-        title: Text(
-          favoriteForumInDatabase.title,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.primary,
-            //fontWeight: FontWeight.bold
-          ),
-        ),
-        onTap: () async {
-          VibrationUtils.vibrateWithClickIfPossible();
-          await Navigator.push(
-            context,
-            platformPageRoute(
-              context: context,
-              iosTitle: favoriteForumInDatabase.title,
-              builder: (context) => DisplayForumTwoPanePage(
-                discuz,
-                user,
-                favoriteForumInDatabase.idKey,
-              ),
-            ),
-          );
-        },
-        trailing: Icon(
-          PlatformIcons(context).forward,
-          color: Theme.of(context).colorScheme.primary,
-        ),
       ),
     );
   }

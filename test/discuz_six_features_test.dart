@@ -45,8 +45,7 @@ final discuz = Discuz(
 final user = User('auth', 'salt', 'test', '', 1, 1, 10, discuz);
 Widget host(Widget child, {bool login = true}) => ChangeNotifierProvider.value(
   value: DiscuzAndUserNotifier()
-    ..discuz = discuz
-    ..user = login ? user : null,
+    ..initDiscuz(discuz, user: login ? user : null),
   child: MaterialApp(localizationsDelegates: const [S.delegate], home: child),
 );
 Map<String, dynamic> activity({String cost = '5', String button = 'join'}) => {

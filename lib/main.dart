@@ -157,13 +157,15 @@ Widget _buildRootApp({
       ChangeNotifierProvider.value(
         value: ThemeNotifierProvider(platformName: initialPlatform),
       ),
-      ChangeNotifierProvider.value(value: DiscuzAndUserNotifier()),
+      ChangeNotifierProvider(create: (_) => DiscuzAndUserNotifier()),
       ChangeNotifierProvider.value(value: ReplyPostNotifierProvider()),
       ChangeNotifierProvider.value(value: TypeSettingNotifierProvider()),
       ChangeNotifierProvider.value(value: UserPreferenceNotifierProvider()),
       ChangeNotifierProvider.value(value: SelectedTidNotifierProvider()),
-      ChangeNotifierProvider.value(
-        value: DiscuzNotificationProvider(),
+      ChangeNotifierProvider(
+        create: (context) => DiscuzNotificationProvider(
+          account: context.read<DiscuzAndUserNotifier>(),
+        ),
       )
     ],
     child: startupError == null

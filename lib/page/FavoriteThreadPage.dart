@@ -8,7 +8,6 @@ import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/EmptyListScreen.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/EasyRefreshUtils.dart';
@@ -32,7 +31,6 @@ class FavoriteThreadPage extends StatelessWidget {
     final discuz = account.discuz;
     return PlatformScaffold(
       iosContentPadding: true,
-      iosContentBottomPadding: true,
       appBar: PlatformAppBar(
         liquidGlassTitle: S.of(context).favoriteThread,
         title: Text(S.of(context).favoriteThread),
@@ -169,7 +167,9 @@ class FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     final dao = _dao;
-    if (dao == null) return BlankScreen();
+    if (dao == null) {
+      return const Center(child: PlatformCircularProgressIndicator());
+    }
     final discuz = widget.discuz;
     final user = widget.user;
     return Column(
@@ -199,7 +199,10 @@ class FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
                   );
                 }
                 return ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  padding: EdgeInsets.only(
+                    top: 6,
+                    bottom: 6 + MediaQuery.paddingOf(context).bottom,
+                  ),
                   itemCount: favorites.length,
                   itemBuilder: (context, index) =>
                       FavoriteThreadCardWidget(discuz, user, favorites[index]),

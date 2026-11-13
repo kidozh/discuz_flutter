@@ -4,6 +4,7 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/LoginPage.dart';
+import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/CustomizeColor.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 
 class ManageAccountPage extends StatelessWidget {
   Discuz discuz;
@@ -163,8 +165,14 @@ class ManageAccountState extends State<ManageAccountStateWidget> {
 
   _deleteAccount(User user) async {
     if (_userDao != null) {
+      final selection = context.read<DiscuzAndUserNotifier>();
+      final session = selection.sessionIdentity;
       await NetworkUtils.clearPersistentCookiesForUser(user);
       await _userDao!.deleteUser(user);
+      if (selection.user == user) {
+        selection.setUser(null, expectedSession: session);
+      }
+      if (!mounted) return;
       EasyLoading.showSuccess(
           S.of(context).deleteAccountSuccessfully(user.username));
     }

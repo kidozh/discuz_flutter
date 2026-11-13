@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:discuz_flutter/client/MobileApiClient.dart';
+import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
@@ -23,12 +24,16 @@ class ReportContentPage extends StatefulWidget {
   final int rid;
   final int fid;
   final String formhash;
+  final Discuz? forum;
+  final Object? session;
 
   const ReportContentPage(
     this.authorName,
     this.rid,
     this.fid,
     this.formhash, {
+    this.forum,
+    this.session,
     super.key,
   });
 
@@ -150,15 +155,18 @@ class _ReportContentPageState extends State<ReportContentPage> {
 
   Future<void> _reportContent() async {
     if (!_canSubmit) return;
+    final notifier = context.read<DiscuzAndUserNotifier>();
+    final discuz = widget.forum ?? notifier.discuz;
+    final session = widget.session ?? notifier.sessionIdentity;
+    if (discuz == null || !identical(session, notifier.sessionIdentity)) return;
+    final user = notifier.userFor(discuz);
+    if (user == null) return;
     setState(() => _isSubmitting = true);
 
     try {
-      final notifier =
-          Provider.of<DiscuzAndUserNotifier>(context, listen: false);
-      final discuz = notifier.discuz!;
-      final dio = await NetworkUtils.getDioWithPersistCookieJar(notifier.user);
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
       final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
-      if (!mounted) return;
+      if (!mounted || !identical(session, notifier.sessionIdentity)) return;
       final reportSelect = _reasonLabels(context)[selectedReason]!;
 
       await client.reportContent(
@@ -168,12 +176,13 @@ class _ReportContentPageState extends State<ReportContentPage> {
         'post',
         widget.rid,
       );
-      if (!mounted) return;
+      if (!mounted || !identical(session, notifier.sessionIdentity)) return;
       EasyLoading.showSuccess(
           S.of(context).reportSuccessfully(discuz.siteName));
       Navigator.of(context).pop();
     } catch (error, stackTrace) {
       log('Failed to report content', error: error, stackTrace: stackTrace);
+    } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
   }

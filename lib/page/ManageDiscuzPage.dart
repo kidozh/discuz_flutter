@@ -4,6 +4,8 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/AddDiscuzPage.dart';
 import 'package:discuz_flutter/page/ExclusiveDiscuzPortalPage.dart';
+import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:discuz_flutter/provider/DiscuzNotificationProvider.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/screen/NullUserScreen.dart';
 import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
@@ -13,6 +15,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive_ce_flutter/adapters.dart';
+import 'package:provider/provider.dart';
 
 class ManageDiscuzPage extends StatelessWidget {
   @override
@@ -133,7 +136,7 @@ class ManageDiscuzState extends State<ManageDiscuzStateWidget> {
                               context: context,
                               iosTitle: discuz.siteName,
                               builder: (context) =>
-                                  ExclusiveDiscuzPortalPage(discuz)));
+                                  _ForumPreview(discuz)));
                     },
                   ),
                   endActionPane: ActionPane(
@@ -227,4 +230,43 @@ class ManageDiscuzState extends State<ManageDiscuzStateWidget> {
           S.of(context).deleteDiscuzSuccessfully(discuz.siteName));
     }
   }
+}
+
+class _ForumPreview extends StatefulWidget {
+  const _ForumPreview(this.discuz);
+
+  final Discuz discuz;
+
+  @override
+  State<_ForumPreview> createState() => _ForumPreviewState();
+}
+
+class _ForumPreviewState extends State<_ForumPreview> {
+  final _navigator = GlobalKey<NavigatorState>();
+
+  @override
+  Widget build(BuildContext context) => MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => DiscuzAndUserNotifier()),
+      ChangeNotifierProvider(
+        create: (context) => DiscuzNotificationProvider(
+          account: context.read<DiscuzAndUserNotifier>(),
+        ),
+      ),
+    ],
+    child: NavigatorPopHandler<Object?>(
+      onPopWithResult: (result) => _navigator.currentState?.pop(result),
+      child: Navigator(
+        key: _navigator,
+        onGenerateRoute: (_) => platformPageRoute(
+          context: context,
+          iosTitle: widget.discuz.siteName,
+          builder: (_) => ExclusiveDiscuzPortalPage(
+            widget.discuz,
+            onClose: () => Navigator.of(context).pop(),
+          ),
+        ),
+      ),
+    ),
+  );
 }

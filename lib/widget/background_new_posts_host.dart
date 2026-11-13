@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../database/AppDatabase.dart';
 import '../page/ViewThreadSliverPage.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
+import '../provider/DiscuzNotificationProvider.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
 import '../utility/background_new_posts.dart';
 
@@ -66,10 +67,19 @@ class _BackgroundNewPostsHostState extends State<BackgroundNewPostsHost> {
       navigator.push(
         platformPageRoute(
           context: navigator.context,
-          builder: (_) => ChangeNotifierProvider(
-            create: (_) => DiscuzAndUserNotifier()
-              ..initDiscuz(site)
-              ..setUser(users.firstOrNull),
+          builder: (_) => MultiProvider(
+            providers: [
+              ChangeNotifierProvider(
+                create: (_) =>
+                    DiscuzAndUserNotifier()
+                      ..initDiscuz(site, user: users.firstOrNull),
+              ),
+              ChangeNotifierProvider(
+                create: (context) => DiscuzNotificationProvider(
+                  account: context.read<DiscuzAndUserNotifier>(),
+                ),
+              ),
+            ],
             child: ViewThreadSliverPage(site, users.firstOrNull, target.tid),
           ),
         ),

@@ -347,8 +347,9 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
   Future<void> _showAuthenticationDetailDialog(
       DiscuzAuthentication discuzAuthentication) async {
     DiscuzDao discuzDao = await AppDatabase.getDiscuzDao();
-    Discuz? discuz =
-        discuzDao.findDiscuzByRealHost(discuzAuthentication.discuz_host);
+    final site = discuzAuthentication.discuz_host;
+    final discuz = discuzDao.findDiscuzByBaseURL(site) ??
+        discuzDao.findDiscuzByRealHost(site);
     log("Get discuz ${discuz} and ${discuzAuthentication.discuz_host}");
 
     if (discuz == null) {
@@ -685,7 +686,7 @@ class DiscuzAuthenticationState extends State<DiscuzAuthenticationPage> {
                                 _accountController.text;
                             discuzAuthentication.password =
                                 _passwordController.text;
-                            discuzAuthentication.discuz_host = _discuz!.host;
+                            discuzAuthentication.discuz_host = _discuz!.siteIdentity;
                             discuzAuthentication.updateTime = DateTime.now();
                             await discuzAuthenticationDao!
                                 .insertDiscuzAuthentication(

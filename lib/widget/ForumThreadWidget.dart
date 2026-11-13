@@ -141,14 +141,13 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
   Widget getForumThreadCard(bool viewed) {
     return Consumer<SelectedTidNotifierProvider>(
       builder: (context, selectedTid, child) {
-        bool selected = selectedTid.tid == _forumThread.getTid();
-        bool lastSelected = selectedTid.tid == afterTid;
+        final tid = selectedTid.tidFor(_discuz);
+        bool selected = tid == _forumThread.getTid();
+        bool lastSelected = tid == afterTid;
         log(
           "Select changed ${_forumThread.tid} ${selected} ${afterTid} ${lastSelected}",
         );
         return CupertinoSeparatedItem(
-          reading: true,
-          includeLiquidGlass: false,
           child: ThreadListSurface(
             selected: selected,
             child: getForumThreadListTile(viewed, selected),
@@ -223,7 +222,10 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
         .showThreadStats;
     final message = forumThreadPreview(_forumThread.message);
     final attachments = _forumThread.attachmentImagePreviewList;
-    final reply = _forumThread.reply.firstOrNull;
+    final reply = _forumThread.reply
+        .map((reply) => (reply.author.trim(), forumThreadPreview(reply.message)))
+        .where((reply) => reply.$2.isNotEmpty)
+        .firstOrNull;
     final metadata = [
       if (category.isNotEmpty) category,
       _forumThread.author,
@@ -321,20 +323,10 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
                 ),
           replyPreview: reply == null
               ? null
-              : Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '${reply.author}: ',
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      TextSpan(text: forumThreadPreview(reply.message)),
-                    ],
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodySmall
-                      ?.copyWith(color: metadataColor),
+              : ThreadReplyPreview(
+                  author: reply.$1,
+                  message: reply.$2,
+                  color: metadataColor,
                 ),
         ),
       ],
@@ -383,8 +375,6 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
   Widget build(BuildContext context) {
     if (isUserBlocked) {
       return CupertinoSeparatedItem(
-        reading: true,
-        includeLiquidGlass: false,
         child: ThreadListSurface(
           selected: false,
           child: Padding(

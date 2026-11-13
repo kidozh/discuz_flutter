@@ -16,7 +16,7 @@ class UserDao{
   // }
 
   List<User> findAllUsersByDiscuz(Discuz discuz){
-    return userBox.values.where((element) => element.discuz == discuz).toList();
+    return userBox.values.where((user) => discuz.isSameSite(user.discuz)).toList();
   }
 
   // Stream<List<User>> findAllUsersStreamByDiscuz(Discuz discuz){
@@ -32,12 +32,8 @@ class UserDao{
   }
 
   User? findUsersByDiscuzAndUid(Discuz discuz, int uid){
-    if(userBox.values.where((element) => element.discuz == discuz && element.uid == uid).isNotEmpty){
-      return userBox.values.where((element) => element.discuz == discuz && element.uid == uid).first;
-    }
-    else {
-      return null;
-    }
+    return userBox.values.where((user) =>
+        user.uid == uid && discuz.isSameSite(user.discuz)).firstOrNull;
   }
 
   Future<void> deleteUser(User user) async{

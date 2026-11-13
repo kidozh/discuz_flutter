@@ -9,7 +9,6 @@ import 'package:discuz_flutter/dao/ImageAttachmentDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
-import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
@@ -419,24 +418,23 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
   ) async {
     DiscuzAndUserNotifier discuzAndUserNotifier =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false);
-    if (discuzAndUserNotifier.discuz == null ||
-        discuzAndUserNotifier.user == null ||
+    final user = discuzAndUserNotifier.userFor(discuz);
+    final session = discuzAndUserNotifier.sessionIdentity;
+    bool isCurrent() =>
+        mounted && identical(session, discuzAndUserNotifier.sessionIdentity);
+    if (user == null ||
         _checkPostResult.variables.allowPerm.uploadHash.isEmpty) {
       return null;
     } else {
-      Discuz discuz = discuzAndUserNotifier.discuz!;
-      User user = discuzAndUserNotifier.user!;
-      final dio = await NetworkUtils.getDioWithPersistCookieJar(
-        discuzAndUserNotifier.user,
-      );
-      final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
-
       if (_uploading) return null;
       _uploading = true;
       try {
+        final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+        if (!isCurrent()) return null;
+        final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
         // Refresh quota before each upload; other devices may have consumed it.
         final permission = await client.checkPost(fid, tid > 0 ? tid : null);
-        if (!mounted) return null;
+        if (!isCurrent()) return null;
         final error = permission.getErrorString();
         if (error != null) {
           EasyLoading.showError(error);
@@ -447,7 +445,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
           photoFile,
           permission.variables.allowPerm,
         );
-        if (!mounted) return null;
+        if (!isCurrent()) return null;
         if (prepared == null) {
           final restriction = permission.variables.allowPerm.validateUpload(
             photoFile.path,
@@ -465,10 +463,11 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
           permission.variables.allowPerm.uploadHash,
           prepared,
         );
-        if (mounted) _loadCheckPostInfo();
+        if (!isCurrent()) return null;
+        _loadCheckPostInfo();
         return (response: uploadedString, file: prepared);
       } catch (_) {
-        if (mounted) EasyLoading.showError(S.of(context).uploadImageFailed);
+        if (isCurrent()) EasyLoading.showError(S.of(context).uploadImageFailed);
         return null;
       } finally {
         _uploading = false;
@@ -635,11 +634,11 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
   void _loadCheckPostInfo() async {
     DiscuzAndUserNotifier discuzAndUserNotifier =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false);
-    print(
-      "load check post func by ${discuzAndUserNotifier.discuz} User: ${discuzAndUserNotifier.user}",
-    );
-    if (discuzAndUserNotifier.discuz == null ||
-        discuzAndUserNotifier.user == null) {
+    final user = discuzAndUserNotifier.userFor(discuz);
+    final session = discuzAndUserNotifier.sessionIdentity;
+    bool isCurrent() =>
+        mounted && identical(session, discuzAndUserNotifier.sessionIdentity);
+    if (user == null) {
       if (mounted)
         setState(() {
           _permissionLoaded = true;
@@ -650,15 +649,14 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
         });
       return;
     } else {
-      Discuz discuz = discuzAndUserNotifier.discuz!;
-      User user = discuzAndUserNotifier.user!;
       final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      if (!isCurrent()) return;
       final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
       client
           .checkPost(fid, tid > 0 ? tid : null)
           .then((value) {
-            if (!mounted) return;
+            if (!isCurrent()) return;
             print("Did get the value ${value}");
             setState(() {
               _checkPostResult = value;
@@ -669,7 +667,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
             });
           })
           .catchError((e, s) {
-            if (!mounted) return;
+            if (!isCurrent()) return;
             print("${e} ${s}");
             setState(() {
               _discuzError = DiscuzError(

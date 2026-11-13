@@ -1,5 +1,6 @@
 import '../utility/DashboardPreferences.dart';
 import '../page/PostRatingsPage.dart';
+
 import 'dart:developer';
 import 'dart:io';
 
@@ -13,7 +14,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../dao/TrustHostDao.dart';
 import '../database/AppDatabase.dart';
 import '../entity/TrustHost.dart';
-import '../entity/User.dart';
 import '../generated/l10n.dart';
 import '../page/DisplayForumSliverPage.dart';
 import '../page/UserProfilePage.dart';
@@ -38,7 +38,11 @@ class URLUtils {
     return "${discuz.uCenterURL}/avatar.php?uid=${uid}&size=small";
   }
 
-  static Uri? getAttachmentUrl(Discuz discuz, String aid, {bool preview = false}) {
+  static Uri? getAttachmentUrl(
+    Discuz discuz,
+    String aid, {
+    bool preview = false,
+  }) {
     if (aid.trim().isEmpty) return null;
     var token = aid.trim();
     try {
@@ -47,11 +51,15 @@ class URLUtils {
     } on FormatException {
       return null;
     }
-    return forumBaseUri(discuz)?.resolve('forum.php').replace(queryParameters: {
-      'mod': 'attachment',
-      'aid': token,
-      if (preview) ...{'nothumb': 'yes', 'noupdate': 'yes'},
-    });
+    return forumBaseUri(discuz)
+        ?.resolve('forum.php')
+        .replace(
+          queryParameters: {
+            'mod': 'attachment',
+            'aid': token,
+            if (preview) ...{'nothumb': 'yes', 'noupdate': 'yes'},
+          },
+        );
   }
 
   static String getViewThreadURL(Discuz discuz, int tid) {
@@ -81,20 +89,16 @@ class URLUtils {
     ValueChanged<int>? onSelectTid,
     String? urlString,
     JumpToPidCallback? callback,
-    int? originalTid,
-  ) async {
+    int? originalTid, {
+    Discuz? forum,
+  }) async {
     VibrationUtils.vibrateWithClickIfPossible();
-    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).discuz;
+    final account = context.read<DiscuzAndUserNotifier>();
+    final discuz = forum ?? account.discuz;
     if (discuz == null) {
       return;
     }
-    User? user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
+    final user = account.userFor(discuz);
     if (urlString != null) {
       urlString = urlString.replaceAll("&amp;", "&");
       if (urlString.startsWith('#') && callback != null) {
@@ -105,12 +109,14 @@ class URLUtils {
           return;
         }
       }
-      final siteBase = Uri.parse(
-        '${discuz.baseURL.replaceAll(RegExp(r'/+$'), '')}/',
-      );
+      final siteBase = forumBaseUri(discuz);
+      if (siteBase == null) return;
       final resolved = siteBase.resolve(urlString);
-      if (DashboardPreferences.isKeylol(discuz.baseURL) &&
+      final belongsToForum =
           resolved.origin == siteBase.origin &&
+          resolved.path.startsWith(siteBase.path);
+      if (DashboardPreferences.isKeylol(discuz.baseURL) &&
+          belongsToForum &&
           resolved.queryParameters['mod'] == 'misc' &&
           resolved.queryParameters['action'] == 'viewratings') {
         final ratingTid = int.tryParse(resolved.queryParameters['tid'] ?? '');
@@ -135,7 +141,7 @@ class URLUtils {
         }
       }
       final internalTarget = PostLinkTarget.parse(resolved);
-      if (resolved.origin == siteBase.origin && internalTarget?.pid != null) {
+      if (belongsToForum && internalTarget?.pid != null) {
         if (internalTarget!.tid == originalTid && callback != null) {
           callback(internalTarget.pid!);
         } else {
@@ -174,9 +180,9 @@ class URLUtils {
         // parse url
         Uri uri = Uri.parse(urlString);
         // check host
-        if (uri.host != Uri.parse(discuz.baseURL).host) {
+        if (!belongsToForum) {
           VibrationUtils.vibrateWithClickIfPossible();
-          await checkWithDbAndOpenURL(context, urlString);
+          await checkWithDbAndOpenURL(context, urlString, forum: discuz);
           return;
         }
 
@@ -381,16 +387,14 @@ class URLUtils {
 
   static Future<void> checkWithDbAndOpenURL(
     BuildContext context,
-    String urlString,
-  ) async {
+    String urlString, {
+    Discuz? forum,
+  }) async {
     Uri uri = Uri.parse(urlString);
-    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).discuz;
-    if (discuz == null) {
-      return;
-    }
+    final discuz =
+        forum ??
+        Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
+    if (discuz == null) return;
     // check host
     if (uri.host != Uri.parse(discuz.baseURL).host) {
       // check if database exists
@@ -429,6 +433,7 @@ class URLUtils {
       }
       return;
     }
+    await launchURL(urlString);
   }
 
   static Future<void> _trustHost(String host) async {

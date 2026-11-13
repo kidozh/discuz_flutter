@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart' show Theme;
 
 import '../utility/PlatformAdaptiveWidgets.dart';
 
@@ -10,29 +9,18 @@ class CupertinoSeparatedItem extends StatelessWidget {
   final bool sliver;
   final bool enabled;
 
-  /// Reading rows may also show separators in the light Liquid Glass appearance.
-  /// Classic Cupertino rows always use separators, in both light and dark mode.
-  final bool reading;
-  final bool includeLiquidGlass;
-
   const CupertinoSeparatedItem({
     required this.child,
     this.sliver = false,
     this.enabled = true,
-    this.reading = false,
-    this.includeLiquidGlass = true,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    final showSeparator =
-        visualStyle(context) == AppVisualStyle.cupertino ||
-        (reading &&
-            includeLiquidGlass &&
-            isCupertino(context) &&
-            Theme.of(context).brightness == Brightness.light);
-    if (!enabled || !showSeparator) return child;
+    if (!enabled || visualStyle(context) != AppVisualStyle.cupertino) {
+      return child;
+    }
 
     const separator = CupertinoListSeparator();
     return sliver

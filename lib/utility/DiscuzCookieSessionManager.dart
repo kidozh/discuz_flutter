@@ -56,7 +56,8 @@ class DiscuzCookieSessionManager {
   }
 
   String sessionKeyFor(User user) {
-    return '${_normalizeBaseUrl(user.discuz.baseURL)}#${user.uid}';
+    final site = user.discuz.siteIdentity;
+    return '${site.isEmpty ? user.discuz.baseURL : site}#${user.uid}';
   }
 
   Future<PersistCookieJar> _createJar(User user) async {
@@ -116,8 +117,7 @@ class DiscuzCookieSessionManager {
   }
 
   Uri _originFor(User user) {
-    final uri = Uri.parse(user.discuz.baseURL.trim());
-    return uri.path.isEmpty ? uri.replace(path: '/') : uri;
+    return Uri.parse(user.discuz.getBaseURLWithAfterfix().trim());
   }
 
   String _storagePath(Directory directory, User user) {
@@ -130,21 +130,5 @@ class DiscuzCookieSessionManager {
     if (cookie.maxAge != null && cookie.maxAge! <= 0) return false;
     final expires = cookie.expires;
     return expires == null || expires.isAfter(DateTime.now());
-  }
-
-  String _normalizeBaseUrl(String value) {
-    final trimmed = value.trim();
-    final uri = Uri.tryParse(trimmed);
-    if (uri == null || uri.host.isEmpty) {
-      return trimmed.replaceAll(RegExp(r'/+$'), '').toLowerCase();
-    }
-
-    final scheme = uri.scheme.toLowerCase();
-    final host = uri.host.toLowerCase();
-    final isDefaultPort = (scheme == 'https' && uri.port == 443) ||
-        (scheme == 'http' && uri.port == 80);
-    final port = uri.hasPort && !isDefaultPort ? ':${uri.port}' : '';
-    final path = uri.path.replaceAll(RegExp(r'/+$'), '');
-    return '$scheme://$host$port$path';
   }
 }

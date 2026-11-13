@@ -35,6 +35,7 @@ CompactThreadListTile tile({
   String message = '',
   bool stats = true,
   Widget? thumbnail,
+  Widget? replyPreview,
 }) => CompactThreadListTile(
   leading: const SizedBox(width: 18, height: 18),
   title: const Text('A thread title', key: Key('subject'), maxLines: 2),
@@ -48,6 +49,7 @@ CompactThreadListTile tile({
       : null,
   message: message,
   thumbnail: thumbnail,
+  replyPreview: replyPreview,
 );
 
 void main() {
@@ -146,6 +148,58 @@ void main() {
       }
     }
   }
+
+  testWidgets('reply preview has its own row below the summary and thumbnail', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    const reply =
+        'This reply belongs to a different author and is long enough to truncate.';
+    await tester.pumpWidget(
+      host(
+        tile(
+          message: 'Thread body summary',
+          thumbnail: const SizedBox(key: Key('thumbnail')),
+          replyPreview: const ThreadReplyPreview(
+            author: 'Reply author',
+            message: reply,
+            color: Colors.black,
+          ),
+        ),
+        AppVisualStyle.liquidGlass,
+        scale: 2,
+      ),
+    );
+    final preview = find.byType(ThreadReplyPreview);
+    final summary = find.text('Thread body summary');
+    final thumbnail = find.byKey(const Key('thumbnail'));
+    expect(
+      tester.getTopLeft(preview).dy,
+      greaterThan(tester.getBottomLeft(summary).dy),
+    );
+    expect(
+      tester.getTopLeft(preview).dy,
+      greaterThan(tester.getBottomLeft(thumbnail).dy),
+    );
+    expect(
+      find.descendant(
+        of: preview,
+        matching: find.byIcon(Icons.chat_bubble_outline),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.bySemanticsLabel(RegExp('^${S.current.replyPost}\\b')),
+      findsOneWidget,
+    );
+    final text = tester.widget<RichText>(
+      find.text('Reply author · $reply', findRichText: true),
+    );
+    expect(text.maxLines, 1);
+    expect(text.overflow, TextOverflow.ellipsis);
+    expect(tester.takeException(), isNull);
+    semantics.dispose();
+  });
 
   testWidgets(
     'preview thumbnail is larger for summaries and compact for title-only rows',

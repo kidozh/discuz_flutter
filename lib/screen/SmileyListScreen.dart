@@ -630,13 +630,7 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
               ],
             );
           } else {
-            final classicCupertino =
-                visualStyle(context) == AppVisualStyle.cupertino;
-            List<Widget> smileyImageList = [
-              if (!classicCupertino)
-                for (final action in actions)
-                  _SmileyPanelActionTile(action: action),
-            ];
+            final smileyImageList = <Widget>[];
             for (final attachment in attachments) {
               smileyImageList.add(
                 InkWell(
@@ -686,7 +680,7 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
                 ),
               );
             }
-            if (classicCupertino && actions.isNotEmpty) {
+            if (actions.isNotEmpty) {
               // Attachment actions need more room than a six-column smiley
               // cell, especially with large text. Keep them above the grid.
               return CustomScrollView(

@@ -128,7 +128,6 @@ class ViewHistoryState extends State<ViewHistoryPage> {
     if (_viewHistoryDao != null) {
       return PlatformScaffold(
           iosContentPadding: true,
-          iosContentBottomPadding: true,
           appBar: PlatformAppBar(
             title: Text(S.of(context).viewHistory),
             automaticallyImplyLeading: true,
@@ -158,7 +157,10 @@ class ViewHistoryState extends State<ViewHistoryPage> {
                   return EmptyListScreen(EmptyItemType.history);
                 }
                 return ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  padding: EdgeInsets.only(
+                    top: 6,
+                    bottom: 6 + MediaQuery.paddingOf(context).bottom,
+                  ),
                   itemBuilder: (context, index) {
                     final viewHistory = viewHistoryList[index];
                     return Dismissible(

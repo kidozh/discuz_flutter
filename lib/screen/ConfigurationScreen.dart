@@ -157,21 +157,22 @@ class ConfigurationUserState extends State<ConfigurationUserStatefulWidget> {
               ),
               onTap: () async {
                 VibrationUtils.vibrateWithClickIfPossible();
+                final discuz = discuzAndUser.discuz!;
+                final session = discuzAndUser.sessionIdentity;
                 // wipe out first
                 if (discuzAndUser.user != null) {
                   final user = discuzAndUser.user!;
                   var _userDao = await AppDatabase.getUserDao();
                   await NetworkUtils.clearPersistentCookiesForUser(user);
                   await _userDao.deleteUser(user);
-                  Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-                      .setUser(null);
+                  if (!mounted || !discuzAndUser.setUser(null, expectedSession: session)) return;
                 }
                 await Navigator.push(
                     context,
                     platformPageRoute(
                         context: context,
                         builder: (context) =>
-                            LoginPage(discuzAndUser.discuz!, null)));
+                            LoginPage(discuz, null)));
               },
             ),
           );

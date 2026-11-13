@@ -161,10 +161,7 @@ class AppleWatchCompanion with WidgetsBindingObserver {
     this.loadSection = loadWatchSection,
   });
 
-  User? get _user {
-    final user = selection.user;
-    return user?.discuz.baseURL == selection.discuz?.baseURL ? user : null;
-  }
+  User? get _user => selection.user;
 
   String get _currentIdentity =>
       jsonEncode([selection.discuz?.baseURL ?? '', _user?.uid ?? 0]);

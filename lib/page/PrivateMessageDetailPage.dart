@@ -34,21 +34,32 @@ import 'UserProfilePage.dart';
 class PrivateMessageDetailScreen extends StatelessWidget {
   final int toUid;
   final String toUsername;
+  final Discuz? forum;
 
-  const PrivateMessageDetailScreen(this.toUid, this.toUsername, {super.key});
+  const PrivateMessageDetailScreen(
+    this.toUid,
+    this.toUsername, {
+    this.forum,
+    super.key,
+  });
 
   @override
-  Widget build(BuildContext context) =>
-      PrivateMessageDetailPage(toUid: toUid, toUsername: toUsername);
+  Widget build(BuildContext context) => PrivateMessageDetailPage(
+    toUid: toUid,
+    toUsername: toUsername,
+    forum: forum,
+  );
 }
 
 class PrivateMessageDetailPage extends StatefulWidget {
   final int toUid;
   final String toUsername;
+  final Discuz? forum;
 
   const PrivateMessageDetailPage({
     required this.toUid,
     required this.toUsername,
+    this.forum,
     super.key,
   });
 
@@ -76,6 +87,8 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
   bool _hasLoaded = false;
   (Object, int)? _accountIdentity;
   int _generation = 0;
+  late final Discuz? _forum;
+  late final int? _ownerUid;
   final Set<int> _pendingMessageIds = <int>{};
   final Map<int, String> _failedMessages = <int, String>{};
 
@@ -85,6 +98,9 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
   @override
   void initState() {
     super.initState();
+    final account = context.read<DiscuzAndUserNotifier>();
+    _forum = widget.forum ?? account.discuz;
+    _ownerUid = _forum == null ? null : account.userFor(_forum!)?.uid;
     _refreshController = EasyRefreshController();
     _textController = TextEditingController()..addListener(_onTextChanged);
     _composerFocus.addListener(_onComposerFocusChanged);
@@ -218,7 +234,7 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
     bool supersede = false,
   }) async {
     final account = context.read<DiscuzAndUserNotifier>();
-    final user = account.user;
+    final user = account.userFor(discuz);
     if (user == null ||
         generation != _generation ||
         _accountIdentity != (account.sessionIdentity, widget.toUid) ||
@@ -237,6 +253,7 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
     final showLatest = !_hasLoaded;
     try {
       final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      if (!isCurrent()) return IndicatorResult.fail;
       final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
       final value = await client.privateMessageDetailResult(
         widget.toUid,
@@ -374,7 +391,7 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
     final message = (retryMessage ?? _textController.text).trim();
     if ((_sending || !_hasLoaded) || message.isEmpty) return;
     final account = context.read<DiscuzAndUserNotifier>();
-    final user = account.user;
+    final user = account.userFor(discuz);
     final identity = (account.sessionIdentity, widget.toUid);
     bool isCurrent() =>
         mounted && identity == (account.sessionIdentity, widget.toUid);
@@ -470,15 +487,15 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
   Widget build(BuildContext context) {
     return Consumer<DiscuzAndUserNotifier>(
       builder: (context, discuzAndUser, child) {
-        final discuz = discuzAndUser.discuz;
-        final user = discuzAndUser.user;
+        final discuz = _forum;
+        final user = discuz == null ? null : discuzAndUser.userFor(discuz);
         if (discuz == null) {
           return PlatformScaffold(
             appBar: PlatformAppBar(),
             body: NullDiscuzScreen(),
           );
         }
-        if (user == null) {
+        if (user == null || user.uid != _ownerUid) {
           return PlatformScaffold(
             appBar: PlatformAppBar(),
             body: NullUserScreen(),
@@ -487,7 +504,6 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
         _ensureInitialized(discuz, user, discuzAndUser.sessionIdentity);
 
         return PlatformScaffold(
-          iosContentBottomPadding: true,
           iosContentPadding: true,
           appBar: PlatformAppBar(
             title: Text(widget.toUsername),
@@ -589,8 +605,14 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
                   else
                     SafeArea(
                       top: false,
+                      bottom: !_showSmiley,
                       child: MessageComposerSurface(
-                        margin: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+                        margin: EdgeInsets.fromLTRB(
+                          8,
+                          4,
+                          8,
+                          isCupertino(context) ? 2 : 8,
+                        ),
                         padding: const EdgeInsets.all(6),
                         borderRadius: BorderRadius.circular(24),
                         child: Row(
@@ -684,8 +706,11 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
                       switchInCurve: Curves.easeOutCubic,
                       switchOutCurve: Curves.easeInCubic,
                       child: _showSmiley
-                          ? SmileyListScreen(
-                              (smiley) => _insertSmiley(smiley.code),
+                          ? SafeArea(
+                              top: false,
+                              child: SmileyListScreen(
+                                (smiley) => _insertSmiley(smiley.code),
+                              ),
                             )
                           : const SizedBox.shrink(
                               key: ValueKey('private_message_smiley_hidden'),

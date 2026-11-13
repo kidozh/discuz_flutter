@@ -14,7 +14,6 @@ class ManageTrustHostPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return PlatformScaffold(
       iosContentPadding: true,
-      iosContentBottomPadding: true,
       appBar: PlatformAppBar(
         title: Text(S.of(context).trustHostTitle),
       ),

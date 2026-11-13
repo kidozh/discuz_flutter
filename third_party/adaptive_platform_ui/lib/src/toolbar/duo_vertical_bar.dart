@@ -94,8 +94,10 @@ abstract final class DuoLayout {
   /// pane move.
   static DuoPose? resolvePose(
     EdgeInsets viewPadding,
-    SystemVerticalBarEdge edge,
-  ) {
+    SystemVerticalBarEdge edge, {
+    HingeStatus? hingeStatus,
+  }) {
+    if (hingeStatus == HingeStatus.closed) return null;
     final side =
         barSide(viewPadding) ??
         switch (edge) {
@@ -113,6 +115,14 @@ abstract final class DuoLayout {
       reservedBySystem: inset > 0,
     );
   }
+
+  /// Horizontal app bars on the cover display clear the system status strip.
+  static EdgeInsets coverBarInsets(
+    EdgeInsets viewPadding,
+    HingeStatus? hingeStatus,
+  ) => hingeStatus == HingeStatus.closed
+      ? EdgeInsets.only(left: viewPadding.left, right: viewPadding.right)
+      : EdgeInsets.zero;
 
   /// The edge the safe-area insets alone put the bar on, or null where they
   /// say bars stay horizontal. [resolvePose] trusts it first and consults the
@@ -219,10 +229,17 @@ abstract final class DuoLayout {
 /// and the page body agree on one decision instead of re-reading insets the
 /// host may have adjusted.
 class DuoPoseScope extends InheritedWidget {
-  const DuoPoseScope({super.key, required this.pose, required super.child});
+  const DuoPoseScope({
+    super.key,
+    required this.pose,
+    this.coverBarInsets = EdgeInsets.zero,
+    required super.child,
+  });
 
   /// The pose in effect, or null where bars stay horizontal.
   final DuoPose? pose;
+
+  final EdgeInsets coverBarInsets;
 
   /// The nearest scope, or null when there is none. Tells "no scope" apart
   /// from a scope whose pose is null (a decision for horizontal bars).
@@ -240,7 +257,8 @@ class DuoPoseScope extends InheritedWidget {
   }
 
   @override
-  bool updateShouldNotify(DuoPoseScope oldWidget) => pose != oldWidget.pose;
+  bool updateShouldNotify(DuoPoseScope oldWidget) =>
+      pose != oldWidget.pose || coverBarInsets != oldWidget.coverBarInsets;
 }
 
 /// Space the system leaves between the controls and a free edge of the

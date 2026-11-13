@@ -11,6 +11,26 @@ class DiscuzWebviewCookieManager {
   static const _channel = MethodChannel(
     'com.kidozh.discuz_flutter/webview_cookies',
   );
+  static Future<void> _loading = Future.value();
+
+  /// The native cookie store is shared across WebViews. Install a complete
+  /// account session and start its navigation as one operation.
+  Future<void> loadWithCookies(
+    List<Cookie> cookies, {
+    required String origin,
+    required bool Function() isCurrent,
+    required Future<void> Function() load,
+  }) {
+    final operation = _loading.then((_) async {
+      if (!isCurrent()) return;
+      await clearCookies();
+      if (!isCurrent()) return;
+      if (cookies.isNotEmpty) await setCookies(cookies, origin: origin);
+      if (isCurrent()) await load();
+    });
+    _loading = operation.then((_) {}, onError: (Object _, StackTrace __) {});
+    return operation;
+  }
 
   Uri _url(String value) {
     final uri = Uri.parse(value);

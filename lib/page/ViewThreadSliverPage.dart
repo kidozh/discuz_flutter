@@ -104,8 +104,7 @@ class ViewThreadSliverPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final account = context.watch<DiscuzAndUserNotifier>();
-    final isCurrentForum = account.discuz?.baseURL == discuz.baseURL;
-    final activeUser = isCurrentForum ? account.user : user;
+    final activeUser = account.userFor(discuz);
     return ThreadReplyScope(
       threadIdentity: (discuz.baseURL, activeUser?.uid, tid),
       child: ViewThreadStatefulSliverWidget(
@@ -116,7 +115,7 @@ class ViewThreadSliverPage extends StatelessWidget {
           discuz.baseURL,
           tid,
           activeUser?.uid,
-          isCurrentForum ? account.sessionIdentity : activeUser,
+          account.sessionIdentity,
         )),
         passedSubject: passedSubject,
         onClosed: onClosed,
@@ -599,11 +598,11 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   );
 
   Future<void> _sendReply() async {
-    final user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
+    final account = context.read<DiscuzAndUserNotifier>();
+    final user = account.userFor(discuz);
     if (user == null) return;
+    bool isCurrent() => mounted && identical(_session, account.sessionIdentity);
+    if (!isCurrent()) return;
     // Capture all mutable request fields before the first async operation.
     final strings = S.of(context);
     final formhash = _viewThreadResult.threadVariables.formHash;
@@ -644,12 +643,15 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
       final value = await _replySubmission.submit(
         request: (draft) async {
           final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-          if (!mounted) return null;
+          if (!isCurrent()) return null;
           final permission = await MobileApiClient(
             dio,
             baseUrl: discuz.baseURL,
           ).checkPost(fid, threadId);
-          if (!mounted) return null;
+          if (!isCurrent()) return null;
+          if (permission.variables.member_uid != 0 &&
+              permission.variables.member_uid != user.uid)
+            return null;
           if (permission.getErrorString() != null ||
               permission.variables.allowPerm.allowReply != true) {
             throw StateError(
@@ -663,7 +665,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
             context,
             PostTextFieldUtils.getPostMessage(draft.text),
           );
-          if (!mounted) return null;
+          if (!isCurrent()) return null;
           final attachImgMap = HashMap<String, String>.from({
             for (final aid in PostTextFieldUtils.getAttachmentAidList(
               draft.text,
@@ -686,7 +688,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
         },
         succeeded: (value) => value?.errorResult?.key == 'post_reply_succeed',
       );
-      if (!mounted || value == null) return;
+      if (!isCurrent() || value == null) return;
       final result = value.errorResult;
       if (result?.key == 'post_reply_succeed') {
         if (captchaHash.isNotEmpty || _captchaController.requiredByServer) {
@@ -704,7 +706,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
         );
       }
     } catch (error) {
-      if (!mounted) return;
+      if (!isCurrent()) return;
       VibrationUtils.vibrateErrorIfPossible();
       EasyLoading.showError(error is DioException ? error.type.name : '$error');
     }
@@ -928,9 +930,11 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
           }),
         );
       }
-      context.read<DiscuzNotificationProvider>()
-        ..setNotificationCount(variables.noticeCount)
-        ..setBaseVariableResult(variables);
+      if (discuz.isSameSite(account.discuz)) {
+        context.read<DiscuzNotificationProvider>()
+          ..setNotificationCount(variables.noticeCount)
+          ..setBaseVariableResult(variables);
+      }
 
       final rewriteRule = variables.rewriteRule;
       if (rewriteRule.forumDisplay.isNotEmpty) {
@@ -1053,7 +1057,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   Widget _buildReadingPost(int index, {bool asSliver = false}) {
     final post = _postList[index];
     final variables = _viewThreadResult.threadVariables;
-    final user = context.watch<DiscuzAndUserNotifier>().user;
+    final user = context.watch<DiscuzAndUserNotifier>().userFor(discuz);
     final canComment =
         !_isFirstLoading &&
         _error?.errorType != ErrorType.userExpired &&
@@ -1121,7 +1125,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
         },
       );
       return CupertinoSeparatedItem(
-        reading: true,
         sliver: asSliver,
         child: asSliver
             ? SliverMainAxisGroup(
@@ -1168,7 +1171,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
           )
         : null;
     return CupertinoSeparatedItem(
-      reading: true,
       sliver: asSliver,
       child: asSliver
           ? SliverMainAxisGroup(
@@ -1237,6 +1239,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     // A long main post must share the outer viewport to lay out only nearby
     // blocks. Replies and short/Material posts retain their existing box path.
     final lazyFirstPost = _hasLazyFirstPost;
+    final threadClosed = _viewThreadResult.threadVariables.threadInfo.closed;
+    final showReplyPanel = dialogStatus == SHOW_SMILEY_DIALOG;
 
     _updateNavigationTitle();
     final previousPageTitle =
@@ -1320,7 +1324,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
           icon: Icon(PlatformIcons(context).ellipsis, size: 24),
           options: [
             if (_viewThreadResult.threadVariables.isModerator > 0 &&
-                context.read<DiscuzAndUserNotifier>().user != null)
+                user != null)
               PopupMenuOption(
                 label: S.of(context).moderateThread,
                 onTap: (_) async {
@@ -1330,7 +1334,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                       context: context,
                       builder: (_) => ModerateThreadPage(
                         discuz: discuz,
-                        user: context.read<DiscuzAndUserNotifier>().user!,
+                        user: user!,
                         tid: tid,
                       ),
                     ),
@@ -1519,9 +1523,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                         ),
                         SliverToBoxAdapter(
                           child: SpecialThreadCard(
-                            onActivityRegistration:
-                                context.read<DiscuzAndUserNotifier>().user ==
-                                    null
+                            onActivityRegistration: user == null
                                 ? null
                                 : () async {
                                     final changed = await Navigator.push<bool>(
@@ -1531,9 +1533,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                         builder: (_) =>
                                             ActivityRegistrationPage(
                                               discuz: discuz,
-                                              user: context
-                                                  .read<DiscuzAndUserNotifier>()
-                                                  .user!,
+                                              user: user!,
                                               tid: tid,
                                             ),
                                       ),
@@ -1554,7 +1554,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                 context: context,
                                 builder: (_) => InternalWebviewBrowserPage(
                                   discuz,
-                                  context.read<DiscuzAndUserNotifier>().user,
+                                  user,
                                   URLUtils.getViewThreadURL(discuz, tid),
                                 ),
                               ),
@@ -1627,6 +1627,17 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                 _postList.length - (lazyFirstPost ? 1 : 0),
                           ),
                         ),
+                        if (!threadClosed &&
+                            (user == null ||
+                                _viewThreadResult.threadVariables.member_uid ==
+                                    0 ||
+                                _viewThreadResult.errorResult != null))
+                          const SliverSafeArea(
+                            top: false,
+                            left: false,
+                            right: false,
+                            sliver: SliverToBoxAdapter(),
+                          ),
                       ],
                     ),
                   ),
@@ -1634,11 +1645,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
               ),
             ),
             // comment parts
-            if (_viewThreadResult.threadVariables.threadInfo.closed)
+            if (threadClosed)
               Container(
-                color: Theme.of(context).colorScheme.error.withOpacity(0.1),
-                child: Padding(
-                  padding: EdgeInsets.only(top: 6.0, bottom: 16.0),
+                color: Theme.of(context).colorScheme.error
+                    .withValues(alpha: 0.1),
+                child: SafeArea(
+                  top: false,
+                  minimum: const EdgeInsets.symmetric(vertical: 6),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -1652,13 +1665,15 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                   ),
                 ),
               ),
-            if (!_viewThreadResult.threadVariables.threadInfo.closed &&
-                _viewThreadResult.errorResult == null)
+            if (!threadClosed && _viewThreadResult.errorResult == null)
               Consumer<DiscuzAndUserNotifier>(
                 builder: (context, discuzAndUser, child) {
-                  if (discuzAndUser.user != null) {
+                  final replyUser = discuzAndUser.userFor(discuz);
+                  if (replyUser != null &&
+                      _viewThreadResult.threadVariables.member_uid ==
+                          replyUser.uid) {
                     return _withReplyPermission(
-                      discuzAndUser.user!,
+                      replyUser,
                       Container(
                         //padding: EdgeInsets.all(4.0),
                         child: Column(
@@ -1669,6 +1684,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                 0)
                               Column(
                                 children: [
+                                  if (dioLoaded)
+                                    CaptchaWidget(
+                                      dio,
+                                      discuz,
+                                      user,
+                                      "post",
+                                      captchaController: _captchaController,
+                                    ),
                                   if (visualStyle(context) ==
                                       AppVisualStyle.cupertino)
                                     CupertinoThreadReplyComposer(
@@ -1681,8 +1704,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                       replyTarget: _buildReplyTargetBanner(
                                         context,
                                       ),
-                                      panelVisible:
-                                          dialogStatus == SHOW_SMILEY_DIALOG,
+                                      panelVisible: showReplyPanel,
                                       sendStatus: _sendReplyStatus,
                                       onTogglePanel: _toggleReplyPanel,
                                       onSend: () {
@@ -1693,6 +1715,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                   else
                                     SafeArea(
                                       top: false,
+                                      bottom: !showReplyPanel,
                                       child: MessageComposerSurface(
                                         key: const ValueKey(
                                           'thread-reply-composer',
@@ -1902,14 +1925,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                         ),
                                       ),
                                     ),
-                                  if (dioLoaded)
-                                    CaptchaWidget(
-                                      dio,
-                                      discuz,
-                                      user,
-                                      "post",
-                                      captchaController: _captchaController,
-                                    ),
                                   CupertinoKeyboardAccessory(
                                     enabled:
                                         visualStyle(context) ==
@@ -1925,18 +1940,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                       ),
                                       switchInCurve: Curves.easeOutCubic,
                                       switchOutCurve: Curves.easeInCubic,
-                                      child: dialogStatus == SHOW_SMILEY_DIALOG
+                                      child: showReplyPanel
                                           ? SafeArea(
                                               top: false,
-                                              left:
-                                                  visualStyle(context) ==
-                                                  AppVisualStyle.cupertino,
-                                              right:
-                                                  visualStyle(context) ==
-                                                  AppVisualStyle.cupertino,
-                                              bottom:
-                                                  visualStyle(context) ==
-                                                  AppVisualStyle.cupertino,
                                               child: SmileyListScreen(
                                                 (smiley) =>
                                                     insertSmiley(smiley),

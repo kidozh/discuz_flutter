@@ -37,8 +37,6 @@ void main() {
           final rows = [
             for (var i = 0; i < 4; i++)
               CupertinoSeparatedItem(
-                reading: true,
-                includeLiquidGlass: false,
                 sliver: sliver,
                 child: sliver
                     ? SliverToBoxAdapter(child: SizedBox(height: 40 + i * 5))
@@ -141,7 +139,6 @@ void main() {
         _host(
           const CupertinoSeparatedItem(
             enabled: false,
-            reading: true,
             child: SizedBox(height: 40),
           ),
           style: style,
@@ -156,32 +153,40 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _host(
-        const CupertinoSeparatedItem(
-          reading: true,
-          child: SizedBox(height: 40),
-        ),
+        const CupertinoSeparatedItem(child: SizedBox(height: 40)),
         style: AppVisualStyle.material,
       ),
     );
     expect(find.byType(CupertinoListSeparator), findsNothing);
   });
 
-  testWidgets('Liquid Glass thread rows retain their separator opt-out', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _host(
-        const CupertinoSeparatedItem(
-          reading: true,
-          includeLiquidGlass: false,
-          child: SizedBox(height: 40),
+  for (final brightness in Brightness.values) {
+    testWidgets('Liquid Glass omits box and sliver separators in $brightness', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(
+          const CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: CupertinoSeparatedItem(child: Text('Thread row')),
+              ),
+              CupertinoSeparatedItem(
+                sliver: true,
+                child: SliverToBoxAdapter(child: Text('Post body')),
+              ),
+            ],
+          ),
+          brightness: brightness,
+          style: AppVisualStyle.liquidGlass,
         ),
-        style: AppVisualStyle.liquidGlass,
-      ),
-    );
-    expect(
-      find.byType(CupertinoListSeparator),
-      AppVisualStyle.supportsLiquidGlass ? findsNothing : findsOneWidget,
-    );
-  });
+      );
+      expect(find.text('Thread row'), findsOneWidget);
+      expect(find.text('Post body'), findsOneWidget);
+      expect(
+        find.byType(CupertinoListSeparator),
+        AppVisualStyle.supportsLiquidGlass ? findsNothing : findsNWidgets(2),
+      );
+    });
+  }
 }

@@ -117,9 +117,12 @@ class _AddDiscuzFormFieldState
     }
 
     if (!mounted) return;
-    Provider.of<DiscuzAndUserNotifier>(context, listen: false)
-        .setDiscuz(discuz);
-    Provider.of<DiscuzAndUserNotifier>(context, listen: false).setUser(null);
+    final users = await AppDatabase.getUserDao();
+    if (!mounted) return;
+    context.read<DiscuzAndUserNotifier>().initDiscuz(
+      discuz,
+      user: users.findAllUsersByDiscuz(discuz).firstOrNull,
+    );
     // pop the activity
     if (_reportDiscuzResultToAnalytics) {
       try {

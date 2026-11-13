@@ -208,8 +208,7 @@ void main() {
     final account =
         notifier ??
         (DiscuzAndUserNotifier()
-          ..discuz = discuz
-          ..user = user);
+          ..initDiscuz(discuz, user: user));
     await tester.pumpWidget(
       ChangeNotifierProvider.value(
         value: account,
@@ -287,8 +286,7 @@ void main() {
     final requests = <RequestOptions>[];
     final dio = fakeDio((_) => {'Variables': quote()}, requests);
     final account = DiscuzAndUserNotifier()
-      ..discuz = discuz
-      ..user = user;
+      ..initDiscuz(discuz, user: user);
     await mount(
       tester,
       ForumInteractionClient(dio, discuz.baseURL),
@@ -332,8 +330,7 @@ void main() {
         };
       }, requests);
       final account = DiscuzAndUserNotifier()
-        ..discuz = discuz
-        ..user = user;
+        ..initDiscuz(discuz, user: user);
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: account,
@@ -413,7 +410,7 @@ void main() {
   testWidgets(
     'feedback requires matching server login and hides again on expiry',
     (tester) async {
-      final account = DiscuzAndUserNotifier()..discuz = discuz;
+      final account = DiscuzAndUserNotifier()..initDiscuz(discuz);
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: account,
@@ -475,8 +472,7 @@ void main() {
       'feedback updates locally without a reader refresh: $positive',
       (tester) async {
         final account = DiscuzAndUserNotifier()
-          ..discuz = discuz
-          ..user = user;
+          ..initDiscuz(discuz, user: user);
         await tester.pumpWidget(
           ChangeNotifierProvider.value(
             value: account,

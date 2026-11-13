@@ -9,7 +9,6 @@ class DiscuzUserNotificationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return PlatformScaffold(
       iosContentPadding: false,
-      iosContentBottomPadding: true,
       appBar: PlatformAppBar(
         liquidGlassTitle: S.of(context).notification,
         title: Text(S.of(context).notification),

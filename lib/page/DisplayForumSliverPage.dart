@@ -86,8 +86,7 @@ class DisplayForumAltSliverPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // try ios
     final account = context.watch<DiscuzAndUserNotifier>();
-    final isCurrentForum = account.discuz?.baseURL == discuz.baseURL;
-    final activeUser = isCurrentForum ? account.user : user;
+    final activeUser = account.userFor(discuz);
     return DisplayForumSliverStatefulWidget(
       discuz,
       activeUser,
@@ -96,7 +95,7 @@ class DisplayForumAltSliverPage extends StatelessWidget {
         discuz.baseURL,
         fid,
         activeUser?.uid,
-        isCurrentForum ? account.sessionIdentity : activeUser,
+        account.sessionIdentity,
       )),
       onSelectTid: this.onSelectTid,
       forumTitle: this.forumTitle,
@@ -375,9 +374,11 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
           }),
         );
       }
-      context.read<DiscuzNotificationProvider>().setNotificationCount(
-        variables.noticeCount,
-      );
+      if (discuz.isSameSite(account.discuz)) {
+        context.read<DiscuzNotificationProvider>().setNotificationCount(
+          variables.noticeCount,
+        );
+      }
       if (refresh) _controller.resetFooter();
       return refresh || _hasMore
           ? IndicatorResult.success
@@ -405,7 +406,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       discuz,
       uid: user?.uid ?? 0,
     );
-    final hasUser = Provider.of<DiscuzAndUserNotifier>(context).user != null;
+    final hasUser = user != null;
 
     final adaptiveAppBar = PlatformAppBar(
       //middle: Text(S.of(context).forumDisplayTitle),
@@ -477,7 +478,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                   context: context,
                   builder: (_) => ForumListsPage(
                     discuz: discuz,
-                    user: context.read<DiscuzAndUserNotifier>().user,
+                    user: context.read<DiscuzAndUserNotifier>().userFor(discuz),
                     fid: fid,
                     directory: ForumDirectory.pinnedThreads,
                   ),
@@ -1309,7 +1310,7 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget>
     Provider.of<SelectedTidNotifierProvider>(
       context,
       listen: false,
-    ).setTid(tid);
+    ).setTid(tid, discuz);
     setState(() {
       _currentTid.value = tid;
       _selectionRevision++;

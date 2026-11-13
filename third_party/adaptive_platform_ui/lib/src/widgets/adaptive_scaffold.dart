@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../platform/platform_info.dart';
 import '../style/sf_symbol.dart';
+import '../toolbar/duo_vertical_bar.dart';
 import 'adaptive_app_bar.dart';
 import 'adaptive_badge.dart';
 import 'adaptive_bottom_navigation_bar.dart';
@@ -622,6 +623,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
         }
 
         // Wrap body with Stack if floatingActionButton is provided
+        final coverBarInsets =
+            DuoPoseScope.maybeOf(context)?.coverBarInsets ?? EdgeInsets.zero;
         Widget bodyWidget = Column(
           children: [
             Expanded(
@@ -644,8 +647,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                           // bottom bar is not built at all.
                           if (!_tabsInTrailingBar(context))
                             Positioned(
-                              left: 0,
-                              right: 0,
+                              left: coverBarInsets.left,
+                              right: coverBarInsets.right,
                               bottom: 0,
                               child: tabBar!,
                             ),
@@ -655,7 +658,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               ),
             ),
             // Show tab bar at bottom for non-native cases
-            if (!PlatformInfo.isIOS26OrHigher() || !useNativeBottomBar) tabBar!,
+            if (!PlatformInfo.isIOS26OrHigher() || !useNativeBottomBar)
+              Padding(padding: coverBarInsets, child: tabBar!),
           ],
         );
 

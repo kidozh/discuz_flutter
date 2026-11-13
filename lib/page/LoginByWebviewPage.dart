@@ -61,14 +61,19 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
     // cookie clear could finish after the login page had started and erase the
     // new session, making a successful browser login appear to have failed.
     try {
-      await webviewCookieManager.clearCookies();
+      await webviewCookieManager.loadWithCookies(
+        const [],
+        origin: discuz.baseURL,
+        isCurrent: () => mounted,
+        load: () => _controller.loadRequest(
+          Uri.parse(
+            '${discuz.getBaseURLWithAfterfix()}member.php?mod=logging&action=login',
+          ),
+        ),
+      );
     } catch (error) {
       debugPrint('Unable to clear WebView cookies before login: $error');
     }
-    if (!mounted) return;
-    await _controller.loadRequest(
-      Uri.parse('${discuz.baseURL}/member.php?mod=logging&action=login'),
-    );
   }
 
   void _loadWidgetControllerSetting() {
@@ -95,6 +100,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
   }
 
   bool websiteLoaded = false;
+  bool _checkingLogin = false;
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +112,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         trailingActions: <Widget>[
           //NavigationControls(_controller.future),
-          if (websiteLoaded)
+          if (websiteLoaded && !_checkingLogin)
             PlatformIconButton(
               liquidGlassSymbol: 'checkmark',
               icon: Icon(
@@ -162,15 +168,28 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
     );
   }
 
-  void _checkUserLogined() async {
-    final dio = NetworkUtils.getDio();
-    // trigger an alert
+  Future<void> _checkUserLogined() async {
+    if (_checkingLogin) return;
+    final selection = context.read<DiscuzAndUserNotifier>();
+    final session = selection.sessionIdentity;
+    setState(() => _checkingLogin = true);
+    try {
+      await _verifyWebLogin(selection, session);
+    } catch (_) {
+      if (mounted) EasyLoading.showError(S.of(context).networkFailed);
+    } finally {
+      if (mounted) setState(() => _checkingLogin = false);
+    }
+  }
+
+  Future<void> _verifyWebLogin(
+    DiscuzAndUserNotifier selection,
+    Object session,
+  ) async {
     EasyLoading.showInfo(S.of(context).checkUserLoginStatus);
-    // transfer from webview to cookiejar
-    // split by ;
     final webviewCookie = await _readWebViewCookies();
+    if (!mounted) return;
     if (webviewCookie == null) {
-      if (!mounted) return;
       EasyLoading.showError(S.of(context).invalidCookie);
       return;
     }
@@ -178,21 +197,28 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
     CookieJar cookieJar = await NetworkUtils.getTemporaryCookieJar();
     // transfer from cookie string
     debugPrint('Read ${webviewCookie.length} cookies from the login WebView');
-    await cookieJar.saveFromResponse(Uri.parse(discuz.baseURL), webviewCookie);
+    final origin = Uri.parse(discuz.getBaseURLWithAfterfix());
+    await cookieJar.saveFromResponse(origin, webviewCookie);
 
+    final dio = NetworkUtils.getDio();
     NetworkUtils.addCookieManager(dio, cookieJar);
 
     final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
-    client
+    await client
         .userProfileResult(0)
         .then((value) async {
+          if (!mounted ||
+              (discuz.isSameSite(selection.discuz) &&
+                  !identical(session, selection.sessionIdentity))) {
+            if (mounted) EasyLoading.dismiss();
+            return;
+          }
           if (value.variables.member_uid != 0) {
             // it's a success
             try {
               final dao = await AppDatabase.getUserDao();
-              User user = value.variables.getUser(discuz);
-              user.discuz = discuz;
+              final user = value.variables.getUser(discuz);
               // search in database first
               User? userInDataBase = dao.findUsersByDiscuzAndUid(
                 discuz,
@@ -205,12 +231,10 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
               }
 
               // save it in cookiejar
-              List<Cookie> cookies = await cookieJar.loadForRequest(
-                Uri.parse(discuz.baseURL),
-              );
+              List<Cookie> cookies = await cookieJar.loadForRequest(origin);
               await NetworkUtils.replacePersistentCookiesForUser(
                 user,
-                Uri.parse(discuz.baseURL),
+                origin,
                 cookies,
               );
               if (!mounted) return;
@@ -220,10 +244,7 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
                     .of(context)
                     .signInSuccessTitle(user.username, discuz.siteName),
               );
-              Provider.of<DiscuzAndUserNotifier>(
-                context,
-                listen: false,
-              ).setUser(user);
+              selection.setUser(user, expectedSession: session);
 
               Navigator.pop(context);
             } catch (e) {
@@ -242,7 +263,8 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
           print("${e}");
           VibrationUtils.vibrateErrorIfPossible();
           EasyLoading.showError(S.of(context).networkFailed);
-        });
+        })
+        .whenComplete(() => dio.close());
 
     // client.checkLoginResult().then((value) async {
     //   if(value.variables.member_uid!=0){
@@ -296,7 +318,9 @@ class _LoginByWebviewState extends State<LoginByWebviewStatefulWidget> {
     StackTrace? lastStackTrace;
     for (var attempt = 0; attempt < 2; attempt++) {
       try {
-        return await webviewCookieManager.getCookies(discuz.baseURL);
+        return await webviewCookieManager.getCookies(
+          discuz.getBaseURLWithAfterfix(),
+        );
       } catch (error, stackTrace) {
         lastError = error;
         lastStackTrace = stackTrace;

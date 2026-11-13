@@ -18,9 +18,9 @@ import '../page/ForumListsPage.dart';
 
 import 'dart:developer';
 
-import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
+import 'package:discuz_flutter/JsonResult/BaseResult.dart';
 import 'package:discuz_flutter/dao/BlockUserDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/BlockUser.dart';
@@ -330,7 +330,6 @@ class PostState extends State<PostStatefulWidget> {
 
   Post _post;
   Discuz _discuz;
-  User? _user;
   int _authorId;
   VoidCallback? onAuthorSelectedCallback;
   JumpToPidCallback? jumpToPidCallback;
@@ -341,7 +340,7 @@ class PostState extends State<PostStatefulWidget> {
   int? fid;
 
   String? get _quotaKey {
-    final user = context.read<DiscuzAndUserNotifier>().user;
+    final user = context.read<DiscuzAndUserNotifier>().userFor(_discuz);
     return user == null
         ? null
         : RatingAllowanceCache.key(_discuz.baseURL, user.uid, user.auth);
@@ -368,12 +367,12 @@ class PostState extends State<PostStatefulWidget> {
 
   bool get _canReview {
     final account = context.read<DiscuzAndUserNotifier>();
-    return account.discuz?.baseURL == _discuz.baseURL &&
-        account.user != null &&
-        account.user!.uid > 0 &&
-        widget.sessionUid == account.user!.uid &&
+    final user = account.userFor(_discuz);
+    return user != null &&
+        user.uid > 0 &&
+        widget.sessionUid == user.uid &&
         _post.authorId > 0 &&
-        _post.authorId != account.user!.uid &&
+        _post.authorId != user.uid &&
         _post.pid > 0;
   }
 
@@ -386,12 +385,10 @@ class PostState extends State<PostStatefulWidget> {
       return;
     final account = context.read<DiscuzAndUserNotifier>();
     final user = account.user!;
+    final session = account.sessionIdentity;
     final key = _reviewKey(user);
     bool sameAccount() =>
-        mounted &&
-        account.discuz?.baseURL == _discuz.baseURL &&
-        account.user?.uid == user.uid &&
-        account.user?.auth == user.auth;
+        mounted && identical(session, account.sessionIdentity);
     setState(() => _reviewBusy = true);
     try {
       final client = PostReviewClient(
@@ -531,14 +528,9 @@ class PostState extends State<PostStatefulWidget> {
     groupTitle = groupTitle.replaceAll(RegExp(r'<.*?>'), "");
     // query whether use get blocked
     if (mounted) {
-      Discuz discuz = Provider.of<DiscuzAndUserNotifier>(
-        context,
-        listen: false,
-      ).discuz!;
-      _user = Provider.of<DiscuzAndUserNotifier>(context, listen: false).user;
       List<BlockUser> userBlockedInDB = await _blockUserDao.isUserBlocked(
         _post.authorId,
-        discuz,
+        _discuz,
       );
       if (!mounted) return;
       if (userBlockedInDB.isEmpty) {
@@ -600,7 +592,6 @@ class PostState extends State<PostStatefulWidget> {
       );
       return CupertinoSeparatedItem(
         enabled: widget.showSeparator,
-        reading: true,
         sliver: widget.asSliver,
         child: widget.asSliver ? SliverToBoxAdapter(child: blocked) : blocked,
       );
@@ -611,7 +602,6 @@ class PostState extends State<PostStatefulWidget> {
         if (widget.asSliver) {
           return CupertinoSeparatedItem(
             enabled: widget.showSeparator,
-            reading: true,
             sliver: true,
             child: ReadingGlassSliverCard(
               sliver: getPostContent(
@@ -625,7 +615,6 @@ class PostState extends State<PostStatefulWidget> {
         // should return the container
         return CupertinoSeparatedItem(
           enabled: widget.showSeparator,
-          reading: true,
           child: ReadingPostCard(
             child: getPostContent(context, typesetting.useCompactParagraph),
           ),
@@ -790,7 +779,8 @@ class PostState extends State<PostStatefulWidget> {
               _discuz,
               entry.value,
               threadId: tid,
-              isListedImage: _post.imageIdList.contains(entry.key) ||
+              isListedImage:
+                  _post.imageIdList.contains(entry.key) ||
                   _post.imageIdList.contains('${entry.value.aid}'),
               onContentChanged: widget.onContentChanged,
             );
@@ -821,13 +811,15 @@ class PostState extends State<PostStatefulWidget> {
                           .colorScheme
                           .onPrimaryContainer,
                     ),
-                    if (index != getCommentList().length - 1 &&
-                        (!isCupertino(context) ||
-                            Theme.of(context).brightness == Brightness.light))
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Divider(),
-                      ),
+                    if (index != getCommentList().length - 1)
+                      if (visualStyle(context) == AppVisualStyle.liquidGlass)
+                        const SizedBox(height: 8)
+                      else if (!isCupertino(context) ||
+                          Theme.of(context).brightness == Brightness.light)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Divider(),
+                        ),
                   ],
                 );
               },
@@ -847,7 +839,7 @@ class PostState extends State<PostStatefulWidget> {
                 context: context,
                 builder: (_) => ForumListsPage(
                   discuz: _discuz,
-                  user: context.read<DiscuzAndUserNotifier>().user,
+                  user: context.read<DiscuzAndUserNotifier>().userFor(_discuz),
                   tid: tid,
                   pid: _post.pid,
                   onAddComment: widget.onAddComment,
@@ -918,6 +910,7 @@ class PostState extends State<PostStatefulWidget> {
     BuildContext context, {
     List<PopupMenuOption> extraOptions = const [],
   }) {
+    final session = context.read<DiscuzAndUserNotifier>().sessionIdentity;
     return PlatformPopupMenu(
       icon: Icon(
         PlatformIcons(context).ellipsis,
@@ -941,7 +934,7 @@ class PostState extends State<PostStatefulWidget> {
                 context: context,
                 builder: (_) => PostRatingsPage(
                   discuz: _discuz,
-                  user: context.read<DiscuzAndUserNotifier>().user,
+                  user: context.read<DiscuzAndUserNotifier>().userFor(_discuz),
                   tid: _post.tid,
                   pid: _post.pid,
                 ),
@@ -970,10 +963,7 @@ class PostState extends State<PostStatefulWidget> {
           label: S.of(context).viewUserInfo(_post.author),
           onTap: (option) {
             VibrationUtils.vibrateWithClickIfPossible();
-            User? user = Provider.of<DiscuzAndUserNotifier>(
-              context,
-              listen: false,
-            ).user;
+            final user = context.read<DiscuzAndUserNotifier>().userFor(_discuz);
             pushDetailPage(
               context,
               platformPageRoute(
@@ -1004,7 +994,7 @@ class PostState extends State<PostStatefulWidget> {
                     .baseVariableResult
                     .isModerator ==
                 0 &&
-            _user != null)
+            context.read<DiscuzAndUserNotifier>().userFor(_discuz) != null)
           PopupMenuOption(
             label: S.of(context).reportContentTitle(_post.author),
             onTap: (_) => Navigator.push(
@@ -1012,8 +1002,14 @@ class PostState extends State<PostStatefulWidget> {
               platformPageRoute(
                 context: context,
                 iosTitle: S.of(context).reportThreadTooltip,
-                builder: (_) =>
-                    ReportContentPage(_post.author, _post.pid, 0, formhash),
+                builder: (_) => ReportContentPage(
+                  _post.author,
+                  _post.pid,
+                  0,
+                  formhash,
+                  forum: _discuz,
+                  session: session,
+                ),
               ),
             ),
             material: (context, _) => MaterialPopupMenuOptionData(
@@ -1187,7 +1183,9 @@ class PostState extends State<PostStatefulWidget> {
       );
     }
 
-    if (notification.baseVariableResult.isModerator != 0 && fid != null) {
+    if (notification.baseVariableResult.isModerator != 0 &&
+        fid != null &&
+        context.read<DiscuzAndUserNotifier>().userFor(_discuz) != null) {
       actions.add(adminPostPopupMenu);
     }
 
@@ -1413,151 +1411,77 @@ class PostState extends State<PostStatefulWidget> {
 
   bool isSendingAdminRequest = false;
 
-  Future<void> toggleAdminBlockRequest() async {
-    setState(() {
-      isSendingAdminRequest = true;
-    });
-    User? user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
-    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).discuz;
-    if (discuz == null || fid == null) {
-      return;
+  Future<void> toggleAdminBlockRequest() => _updatePostModeration(
+    (client, fid, post) => client.banPostResult(
+      formhash,
+      fid,
+      post.tid,
+      [post.pid],
+      post.blocked ? 0 : 1,
+      '',
+    ),
+    POST_BLOCKED,
+  );
+
+  Future<void> toggleAdminWarnRequest() => _updatePostModeration(
+    (client, fid, post) => client.warnPostResult(
+      formhash,
+      fid,
+      post.tid,
+      [post.pid],
+      post.warned ? 0 : 1,
+      '',
+    ),
+    POST_WARNED,
+  );
+
+  Future<void> adminDeletePostRequest() => _updatePostModeration(
+    (client, fid, post) => client.deletePostResult(
+      formhash,
+      fid,
+      post.tid,
+      [post.pid],
+      post.blocked ? 0 : 1,
+      '',
+    ),
+    POST_BLOCKED,
+  );
+
+  Future<void> _updatePostModeration(
+    Future<BaseResult> Function(MobileApiClient, int, Post) request,
+    int statusFlag,
+  ) async {
+    final account = context.read<DiscuzAndUserNotifier>();
+    final user = account.userFor(_discuz);
+    final forumId = fid;
+    if (user == null || forumId == null || isSendingAdminRequest) return;
+    final session = account.sessionIdentity;
+    final post = _post;
+    bool isCurrent() =>
+        mounted &&
+        identical(session, account.sessionIdentity) &&
+        identical(post, _post);
+    setState(() => isSendingAdminRequest = true);
+    try {
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      if (!isCurrent()) return;
+      final result = await request(
+        MobileApiClient(dio, baseUrl: _discuz.baseURL),
+        forumId,
+        post,
+      );
+      if (!isCurrent()) return;
+      final message = result.errorResult;
+      if (message?.key == 'admin_succeed') {
+        setState(() => post.status ^= statusFlag);
+        EasyLoading.showSuccess(message?.content ?? S.of(context).ok);
+      } else {
+        EasyLoading.showError(message?.content ?? S.of(context).error);
+      }
+    } catch (_) {
+      if (isCurrent()) EasyLoading.showError(S.of(context).networkFail);
+    } finally {
+      if (mounted) setState(() => isSendingAdminRequest = false);
     }
-    Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-    MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
-
-    int banned = _post.blocked ? 0 : 1;
-
-    client
-        .banPostResult(formhash, fid!, _post.tid, [_post.pid], banned, "")
-        .then((value) {
-          if (!mounted) return;
-          if (value.errorResult?.key == "admin_succeed") {
-            // it should be banned
-            Post newPostStage = _post;
-            newPostStage.status = newPostStage.status ^ POST_BLOCKED;
-            setState(() {
-              _post = newPostStage;
-            });
-            EasyLoading.showSuccess(
-              value.errorResult?.content == null
-                  ? S.of(context).ok
-                  : value.errorResult!.content,
-            );
-          } else {
-            EasyLoading.showError(
-              value.errorResult?.content == null
-                  ? S.of(context).error
-                  : value.errorResult!.content,
-            );
-          }
-          setState(() {
-            isSendingAdminRequest = false;
-          });
-        });
-  }
-
-  Future<void> toggleAdminWarnRequest() async {
-    setState(() {
-      isSendingAdminRequest = true;
-    });
-    User? user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
-    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).discuz;
-    if (discuz == null || fid == null) {
-      return;
-    }
-    Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-    MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
-
-    int banned = _post.warned ? 0 : 1;
-
-    client
-        .warnPostResult(formhash, fid!, _post.tid, [_post.pid], banned, "")
-        .then((value) {
-          if (!mounted) return;
-          if (value.errorResult?.key == "admin_succeed") {
-            // it should be banned
-            Post newPostStage = _post;
-            newPostStage.status = newPostStage.status ^ POST_WARNED;
-            setState(() {
-              _post = newPostStage;
-            });
-            EasyLoading.showSuccess(
-              value.errorResult?.content == null
-                  ? S.of(context).ok
-                  : value.errorResult!.content,
-            );
-          } else {
-            EasyLoading.showError(
-              value.errorResult?.content == null
-                  ? S.of(context).error
-                  : value.errorResult!.content,
-            );
-          }
-          setState(() {
-            isSendingAdminRequest = false;
-          });
-        });
-  }
-
-  Future<void> adminDeletePostRequest() async {
-    setState(() {
-      isSendingAdminRequest = true;
-    });
-    User? user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
-    Discuz? discuz = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).discuz;
-    if (discuz == null || fid == null) {
-      return;
-    }
-    Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-    MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
-
-    int banned = _post.blocked ? 0 : 1;
-
-    client
-        .deletePostResult(formhash, fid!, _post.tid, [_post.pid], banned, "")
-        .then((value) {
-          if (!mounted) return;
-          if (value.errorResult?.key == "admin_succeed") {
-            // it should be banned
-            Post newPostStage = _post;
-            newPostStage.status = newPostStage.status ^ POST_BLOCKED;
-            setState(() {
-              _post = newPostStage;
-            });
-            EasyLoading.showSuccess(
-              value.errorResult?.content == null
-                  ? S.of(context).ok
-                  : value.errorResult!.content,
-            );
-          } else {
-            EasyLoading.showError(
-              value.errorResult?.content == null
-                  ? S.of(context).error
-                  : value.errorResult!.content,
-            );
-          }
-          setState(() {
-            isSendingAdminRequest = false;
-          });
-          // Navigator.of(context).pop();
-        });
   }
 }

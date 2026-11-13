@@ -40,17 +40,12 @@ class UserProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final account = context.watch<DiscuzAndUserNotifier>();
-    final isCurrentForum = account.discuz?.baseURL == discuz.baseURL;
-    final activeUser = isCurrentForum ? account.user : user;
+    final activeUser = account.userFor(discuz);
     return UserProfileStatefulWidget(
       discuz,
       activeUser,
       uid,
-      key: ValueKey((
-        discuz.baseURL,
-        uid,
-        isCurrentForum ? account.sessionIdentity : activeUser,
-      )),
+      key: ValueKey((discuz.baseURL, uid, account.sessionIdentity)),
       username: username,
     );
   }
@@ -93,11 +88,9 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
 
   Future<void> _editAvatar() async {
     final account = context.read<DiscuzAndUserNotifier>();
-    final current = account.user;
-    if (current == null ||
-        current.uid != uid ||
-        account.discuz?.baseURL != discuz.baseURL)
-      return;
+    final current = account.userFor(discuz);
+    final session = account.sessionIdentity;
+    if (current == null || current.uid != uid) return;
     final changed = await Navigator.push<bool>(
       context,
       platformPageRoute(
@@ -120,12 +113,9 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
         }
       }
     }
-    if (!mounted ||
-        account.user != current ||
-        account.discuz?.baseURL != discuz.baseURL)
-      return;
+    if (!mounted || !identical(session, account.sessionIdentity)) return;
     setState(() => avatarRevision = DateTime.now().millisecondsSinceEpoch);
-    account.setUser(current);
+    account.setUser(current, expectedSession: session);
   }
 
   Future<IndicatorResult> _loadUserProfile() async {
@@ -209,30 +199,32 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
             ? Text(S.of(context).userProfile)
             : Text(_userProfileResult!.variables.getSpace().username),
         trailingActions: [
-          PlatformIconButton(
-            liquidGlassSymbol: 'message',
-            icon: Icon(
-              AppPlatformIcons(context).contactUserSolid,
-              size: 24,
-              semanticLabel: S.of(context).chatIconToolTip,
-            ),
-            onPressed: () {
-              if (_userProfileResult != null &&
-                  _userProfileResult!.variables.space != null) {
-                pushDetailPage(
-                  context,
-                  platformPageRoute(
-                    iosTitle: S.of(context).privateMessage,
-                    context: context,
-                    builder: (context) => PrivateMessageDetailScreen(
-                      uid,
-                      _userProfileResult!.variables.space!.username,
+          if (user != null)
+            PlatformIconButton(
+              liquidGlassSymbol: 'message',
+              icon: Icon(
+                AppPlatformIcons(context).contactUserSolid,
+                size: 24,
+                semanticLabel: S.of(context).chatIconToolTip,
+              ),
+              onPressed: () {
+                if (_userProfileResult != null &&
+                    _userProfileResult!.variables.space != null) {
+                  pushDetailPage(
+                    context,
+                    platformPageRoute(
+                      iosTitle: S.of(context).privateMessage,
+                      context: context,
+                      builder: (context) => PrivateMessageDetailScreen(
+                        uid,
+                        _userProfileResult!.variables.space!.username,
+                        forum: discuz,
+                      ),
                     ),
-                  ),
-                );
-              }
-            },
-          ),
+                  );
+                }
+              },
+            ),
         ],
       ),
       body: EasyRefresh(

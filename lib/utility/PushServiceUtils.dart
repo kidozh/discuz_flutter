@@ -219,82 +219,43 @@ class PushServiceUtils{
     return _handleMessage(msgData, navigatorKey);
   }
 
-  static Future<void> _handleMessage(Map<String?, Object?> msgData, GlobalKey<NavigatorState> navigatorKey) async {
-
-    Map<String, dynamic> data = msgData.cast<String, dynamic>();
-    int tid = int.parse(data["tid"].toString());
-    String site_url = data["site_url"].toString();
-    int uid = int.parse(data["uid"].toString());
-    UserDao _userDao = await AppDatabase.getUserDao();
-    DiscuzDao _discuzDao = await AppDatabase.getDiscuzDao();
-    Discuz? _discuz = _discuzDao.findDiscuzByHost(site_url);
-
-    //print("Receive discuz ${msg}} ");
-    //Map<String, String>? data = msg;
-    switch (data['type']){
-      case 'thread_reply':{
-        if(_discuz!=null){
-          User? _user = _userDao.findUsersByDiscuzAndUid(_discuz, uid);
-
-          print("Receive user ${_user}");
-          if(_user != null && navigatorKey.currentState!=null && navigatorKey.currentState?.context!=null){
-
-            // set to current discuz now
-            Provider.of<DiscuzAndUserNotifier>(navigatorKey.currentState!.context, listen: false)
-                .initDiscuz(_discuz);
-            Navigator.push(
-                navigatorKey.currentState!.context,
-                platformPageRoute(
-                    iosTitle: S.of(navigatorKey.currentState!.context).viewThreadTitle,
-                    context: navigatorKey.currentState!.context,
-                    builder: (context) => ViewThreadSliverPage(_discuz, _user, tid)));
-          }
-        }
-        break;
-      }
-      // for login notification
-      case 'login':{
-        if(_discuz != null){
-          Provider.of<DiscuzAndUserNotifier>(navigatorKey.currentState!.context, listen: false)
-              .initDiscuz(_discuz);
-          Navigator.push(
-              navigatorKey.currentState!.context,
-              platformPageRoute(
-                  iosTitle: S.of(navigatorKey.currentState!.context).pushNotification,
-                  context: navigatorKey.currentState!.context,
-                  builder: (context) => PushServicePage()));
-        }
-        break;
-
-      }
-      // for RSS
-      case 'RSS_FEED':{
-        if(_discuz!=null){
-          List<User> _userList = _userDao.findAllUsersByDiscuz(_discuz);
-          User? _user = _userList.length == 0? null: _userList.first;
-
-          print("Receive user ${_user} context is null? ${navigatorKey.currentState?.context == null} ${navigatorKey.currentContext == null}");
-          if(navigatorKey.currentState!=null && navigatorKey.currentState?.context!=null){
-
-            // set to current discuz now
-            Provider.of<DiscuzAndUserNotifier>(navigatorKey.currentState!.context, listen: false)
-                .initDiscuz(_discuz);
-            Provider.of<DiscuzAndUserNotifier>(navigatorKey.currentState!.context, listen: false)
-                .setUser(_user);
-            Navigator.push(
-                navigatorKey.currentState!.context,
-                platformPageRoute(
-                  iosTitle: S.of(navigatorKey.currentState!.context).viewThreadTitle,
-                    context: navigatorKey.currentState!.context,
-                    builder: (context) => ViewThreadSliverPage(_discuz, _user, tid)));
-          }
-          else{
-
-          }
-        }
-        break;
-      }
+  static Future<void> _handleMessage(
+    Map<String?, Object?> data,
+    GlobalKey<NavigatorState> navigatorKey,
+  ) async {
+    final type = data['type'];
+    if (type != 'thread_reply' && type != 'RSS_FEED' && type != 'login') return;
+    final tid = int.tryParse('${data['tid']}');
+    if (type != 'login' && (tid == null || tid <= 0)) return;
+    final uid = int.tryParse('${data['uid']}');
+    final forums = await AppDatabase.getDiscuzDao();
+    final discuz = forums.findDiscuzByBaseURL('${data['site_url']}');
+    if (discuz == null) return;
+    final users = await AppDatabase.getUserDao();
+    final navigator = navigatorKey.currentState;
+    if (navigator == null || !navigator.mounted) return;
+    final context = navigator.context;
+    final account = context.read<DiscuzAndUserNotifier>();
+    final user = type == 'RSS_FEED'
+        ? (discuz.isSameSite(account.discuz)
+            ? account.user
+            : users.findAllUsersByDiscuz(discuz).firstOrNull)
+        : uid == null ? null : users.findUsersByDiscuzAndUid(discuz, uid);
+    if (type != 'RSS_FEED' && user == null) return;
+    if (!discuz.isSameSite(account.discuz) || account.user != user) {
+      account.initDiscuz(discuz, user: user);
     }
+    await navigator.push(
+      platformPageRoute(
+        context: context,
+        iosTitle: type == 'login'
+            ? S.of(context).pushNotification
+            : S.of(context).viewThreadTitle,
+        builder: (_) => type == 'login'
+            ? PushServicePage()
+            : ViewThreadSliverPage(discuz, user, tid!),
+      ),
+    );
   }
 
   static Future<void> firebaseMessagingBackgroundHandlerByMsg(Map<String?, Object?>? msgData) async{
@@ -323,7 +284,7 @@ class PushServiceUtils{
     String baseURL = data["site_url"];
     String uid = data["uid"];
     String type = data["type"];
-    Discuz? discuz = discuzDao.findDiscuzByHost(baseURL);
+    Discuz? discuz = discuzDao.findDiscuzByBaseURL(baseURL);
     if(discuz!= null){
       // find uid
       UserDao userDao = await AppDatabase.getUserDao();
@@ -372,7 +333,7 @@ class PushServiceUtils{
     String baseURL = data["site_url"];
     String uid = data["uid"];
     String type = data["type"];
-    Discuz? discuz = discuzDao.findDiscuzByHost(baseURL);
+    Discuz? discuz = discuzDao.findDiscuzByBaseURL(baseURL);
     if(discuz!= null){
       // find uid
       UserDao userDao = await AppDatabase.getUserDao();

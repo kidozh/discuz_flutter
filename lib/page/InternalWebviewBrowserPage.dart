@@ -1,6 +1,8 @@
-import 'package:cookie_jar/cookie_jar.dart';
+import 'dart:io' show Cookie;
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/User.dart';
+import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
+import 'package:provider/provider.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/screen/BlankScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
@@ -46,11 +48,15 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
   bool cookieLoaded = false;
 
   void loadCookieByUser() async {
+    final account = context.read<DiscuzAndUserNotifier?>();
+    final session = account?.sessionIdentity;
+    bool isCurrent() => mounted && identical(session, account?.sessionIdentity);
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress1) {
+            if (!isCurrent()) return;
             setState(() {
               this.progress = progress1;
             });
@@ -63,10 +69,12 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
             print('Page started loading: $url');
           },
           onPageFinished: (String url) async {
+            if (!isCurrent()) return;
             setState(() {
               progress = 0;
             });
             String? title = await this._controller.getTitle();
+            if (!isCurrent()) return;
             setState(() {
               webTitle = title;
             });
@@ -75,20 +83,19 @@ class InternalWebviewBrowserState extends State<InternalWebviewBrowserPage> {
         ),
       );
 
-    if (_user != null) {
-      PersistCookieJar savedCookieJar =
-          await NetworkUtils.getPersistentCookieJarByUser(_user!);
-      List<Cookie> cookies = await savedCookieJar.loadForRequest(
-        Uri.parse(_discuz.baseURL),
-      );
-      if (!mounted) return;
-      await webviewCookieManager.setCookies(cookies, origin: _discuz.baseURL);
-    } else {
-      await webviewCookieManager.clearCookies();
-    }
-
-    if (!mounted) return;
-    _controller.loadRequest(Uri.parse(initialURL));
+    final user = account == null ? _user : account.userFor(_discuz);
+    final cookies = user != null && _discuz.isSameSite(user.discuz)
+        ? await (await NetworkUtils.getPersistentCookieJarByUser(user))
+            .loadForRequest(Uri.parse(_discuz.getBaseURLWithAfterfix()))
+        : <Cookie>[];
+    if (!isCurrent()) return;
+    await webviewCookieManager.loadWithCookies(
+      cookies,
+      origin: _discuz.baseURL,
+      isCurrent: isCurrent,
+      load: () => _controller.loadRequest(Uri.parse(initialURL)),
+    );
+    if (!isCurrent()) return;
 
     setState(() {
       cookieLoaded = true;
