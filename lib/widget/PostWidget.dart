@@ -775,23 +775,27 @@ class PostState extends State<PostStatefulWidget> {
       onBodyReady: widget.onBodyReady,
       onContentChanged: widget.onContentChanged,
     );
+    final attachments = _post.attachmentMapper.entries.toList();
     final footer = <Widget>[
       if (PostTranslationService.usesGoogleTranslation)
         GoogleTranslationAttribution(
           translated: _translation.showingTranslation,
         ),
-      if (_post.attachmentMapper.isNotEmpty)
+      if (attachments.isNotEmpty)
         ListView.builder(
           padding: EdgeInsets.zero,
           itemBuilder: (context, index) {
-            Attachment attachment = _post.getAttachmentList()[index];
+            final entry = attachments[index];
             return AttachmentWidget(
               _discuz,
-              attachment,
+              entry.value,
+              threadId: tid,
+              isListedImage: _post.imageIdList.contains(entry.key) ||
+                  _post.imageIdList.contains('${entry.value.aid}'),
               onContentChanged: widget.onContentChanged,
             );
           },
-          itemCount: _post.getAttachmentList().length,
+          itemCount: attachments.length,
           physics: new NeverScrollableScrollPhysics(),
           shrinkWrap: true,
         ),

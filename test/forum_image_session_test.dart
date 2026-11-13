@@ -8,10 +8,14 @@ import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/Post.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/entity/forum_display_preferences.dart';
+import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/page/FullImagePage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
+import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/forum_image_session.dart';
 import 'package:discuz_flutter/utility/forum_image_site.dart';
+import 'package:discuz_flutter/widget/AttachmentWidget.dart';
 import 'package:discuz_flutter/widget/forum_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -33,6 +37,130 @@ void main() {
       _verifyStaleSession,
       _LoopbackHttpOverrides(),
     ),
+  );
+
+  test(
+    'attachment downloads use the same scoped cookies across redirects',
+    () async {
+      final forum = Uri.parse('https://forum.example.com/bbs/');
+      final endpoint = forum.resolve('forum.php?mod=attachment&aid=token');
+      final cdn = Uri.parse('https://cdn.example.com/files/report.zip');
+      final external = Uri.parse('https://files.example.net/report.zip');
+      final directory = await Directory.systemTemp.createTemp(
+        'forum-attachment-test-',
+      );
+      addTearDown(() => directory.delete(recursive: true));
+      final jar = CookieJar();
+      await jar.saveFromResponse(forum, [
+        Cookie('login', 'forum')..path = '/bbs/',
+        Cookie('shared', 'same-site')
+          ..domain = '.example.com'
+          ..path = '/',
+      ]);
+      await jar.saveFromResponse(cdn, [Cookie('cdn', 'own')..path = '/files/']);
+      await jar.saveFromResponse(external, [
+        Cookie('external', 'own')..path = '/',
+      ]);
+
+      final seen = <(Uri, String?, String?)>[];
+      final dio = Dio()
+        ..interceptors.add(
+          InterceptorsWrapper(
+            onRequest: (request, handler) {
+              seen.add((
+                request.uri,
+                request.headers['cookie'] as String?,
+                request.headers['referer'] as String?,
+              ));
+              expect(request.responseType, ResponseType.stream);
+              final target = request.uri == endpoint
+                  ? cdn
+                  : request.uri == cdn
+                  ? external
+                  : null;
+              final isLoginPage = request.uri.path.endsWith('login');
+              final headers = <String, List<String>>{
+                if (target != null) 'location': [target.toString()],
+                if (target == null)
+                  'content-type': [
+                    isLoginPage
+                        ? 'text/html; charset=utf-8'
+                        : 'application/zip',
+                  ],
+                if (target == null && !isLoginPage)
+                  'content-disposition': [
+                    "attachment; filename*=utf-8''%E9%99%84%E4%BB%B6.zip",
+                  ],
+              };
+              final status = target == null ? 200 : 302;
+              handler.resolve(
+                Response<ResponseBody>(
+                  requestOptions: request,
+                  statusCode: status,
+                  headers: Headers.fromMap(headers),
+                  data: ResponseBody.fromBytes(
+                    [1, 2, 3],
+                    status,
+                    headers: headers,
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      addTearDown(dio.close);
+      var jarReads = 0;
+      Future<File> download(Uri uri, ForumImageCookiePolicy policy) =>
+          downloadForumAttachment(
+            uri,
+            directory,
+            forum: forum,
+            threadId: 42,
+            policy: policy,
+            cookieJar: () async {
+              jarReads++;
+              return jar;
+            },
+            dio: dio,
+          );
+
+      const referer =
+          'https://forum.example.com/bbs/forum.php?mod=viewthread&tid=42';
+      final file = await download(endpoint, ForumImageCookiePolicy.sameSite);
+      expect(file.uri.pathSegments.last, '附件.zip');
+      expect(await file.readAsBytes(), [1, 2, 3]);
+      expect(seen, [
+        (endpoint, 'login=forum; shared=same-site', referer),
+        (cdn, 'shared=same-site', 'https://forum.example.com/'),
+        (external, null, null),
+      ]);
+      expect(jarReads, 2);
+
+      seen.clear();
+      await download(endpoint, ForumImageCookiePolicy.always);
+      expect(seen, [
+        (endpoint, 'login=forum; shared=same-site', referer),
+        (cdn, 'cdn=own; shared=same-site', 'https://forum.example.com/'),
+        (external, 'external=own', null),
+      ]);
+      expect(jarReads, 5);
+
+      seen.clear();
+      await download(endpoint, ForumImageCookiePolicy.never);
+      expect(seen, [
+        (endpoint, null, null),
+        (cdn, null, null),
+        (external, null, null),
+      ]);
+      expect(jarReads, 5);
+
+      final existing = await directory.list().length;
+      await expectLater(
+        download(forum.resolve('login'), ForumImageCookiePolicy.sameSite),
+        throwsA(isA<HttpException>()),
+      );
+      expect(await directory.list().length, existing);
+    },
   );
 
   test('Stage1st shares only domain cookies with its image host', () async {
@@ -209,6 +337,29 @@ void main() {
         image.url = entry.key;
         expect(image.getAttachmentRealUrl(forum), entry.value);
       }
+      image.url = 'forum.php?mod=attachment&aid=token%3D';
+      expect(
+        image.getAttachmentRealUrl(forum),
+        'https://example.test/bbs/forum.php?mod=attachment&aid=token%3D',
+      );
+      image.url = 'https://images.example.test/files/post.png';
+      expect(image.getAttachmentRealUrl(forum), image.url);
+      image.attachmentPathName = '';
+      expect(image.getAttachmentRealUrl(forum), image.url);
+      image.url = '';
+      expect(image.getAttachmentRealUrl(forum), isEmpty);
+      final encoded = URLUtils.getAttachmentUrl(
+        forum,
+        'a%2Bb%3D',
+        preview: true,
+      )!;
+      expect(encoded.path, '/bbs/forum.php');
+      expect(encoded.queryParameters, {
+        'mod': 'attachment',
+        'aid': 'a+b=',
+        'nothumb': 'yes',
+        'noupdate': 'yes',
+      });
     },
   );
 
@@ -235,6 +386,42 @@ void main() {
       ]);
     },
   );
+
+  testWidgets('attachment cards preview images with the post thread context', (
+    tester,
+  ) async {
+    final forum = _forum('https://example.test/bbs');
+    final attachment = Attachment()
+      ..url = 'https://cdn.example.test/files/'
+      ..attachmentPathName = '202611/attachment'
+      ..aidEncode = 'a%2Bb%3D';
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: const [S.delegate],
+        home: Scaffold(
+          body: AttachmentWidget(
+            forum,
+            attachment,
+            threadId: 42,
+            isListedImage: true,
+          ),
+        ),
+      ),
+    );
+    final preview = tester.widget<ForumImage>(find.byType(ForumImage));
+    expect(preview.threadId, 42);
+    expect(preview.url, 'https://cdn.example.test/files/202611/attachment');
+    final original = preview.fallbackUrl!;
+    expect(Uri.parse(original).queryParameters['aid'], 'a+b=');
+
+    await tester.tap(find.byType(ForumImage));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    final gallery = tester.widget<FullImagePage>(find.byType(FullImagePage));
+    expect(gallery.threadId, 42);
+    expect(gallery.imageUrl, original);
+    expect(gallery.fallbackUrls[original], preview.url);
+  });
 
   testWidgets('image cookies respect the setting and current login', (
     tester,

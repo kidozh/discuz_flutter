@@ -1,102 +1,39 @@
 import 'ForumInteractionWidgets.dart';
 import 'forum_image.dart';
 
-import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/Post.dart';
-import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/FullImagePage.dart';
-import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
-import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/URLUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
-import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
+
+import '../utility/forum_image_session.dart';
+import '../utility/forum_image_url.dart';
+import 'forum_attachment_download.dart';
 
 class AttachmentWidget extends StatelessWidget {
-  Discuz _discuz;
-  Attachment _attachment;
+  final Discuz _discuz;
+  final Attachment _attachment;
 
   final VoidCallback? onContentChanged;
-  AttachmentWidget(this._discuz, this._attachment, {this.onContentChanged});
+  final int? threadId;
+  final bool isListedImage;
 
-  double downloadPercent = 0.0;
-
-  Future<void> _downloadFile(BuildContext context) async {
-    // judge permission
-    if (Platform.isAndroid || Platform.isIOS) {
-      var status = await Permission.storage.status;
-      print(status);
-      if (status.isGranted) {}
-      if (status.isDenied) {
-        EasyLoading.showError(S.of(context).writeStorageDenied);
-        return;
-      }
-    }
-    // get saved directory
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    String appDocPath = appDocDir.path;
-    String savePath = "${appDocPath}/${_attachment.filename}";
-
-    Discuz discuz = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).discuz!;
-    User? user = Provider.of<DiscuzAndUserNotifier>(
-      context,
-      listen: false,
-    ).user;
-    Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-    String urlPath = URLUtils.getAttachmentURLWithAidEncode(
-      discuz,
-      _attachment.aidEncode,
-    );
-    EasyLoading.showInfo(S.of(context).downloadingFiles(_attachment.filename));
-    dio.download(
-      urlPath,
-      savePath,
-      onReceiveProgress: (int loaded, int total) {
-        if (loaded >= total) {
-          showPlatformAlert(
-            context: context,
-            title: S
-                .of(context)
-                .successfullyDownloadFiles(_attachment.filename),
-            message: S.of(context).openFileInExternalAppContent,
-            actions: [
-              PlatformAlertAction(
-                label: S.of(context).cancel,
-                isCancelAction: true,
-                onPressed: VibrationUtils.vibrateWithClickIfPossible,
-              ),
-              PlatformAlertAction(
-                label: S.of(context).openFileInExternalAppActionText,
-                isDefaultAction: true,
-                onPressed: () async {
-                  VibrationUtils.vibrateWithClickIfPossible();
-                  final result = await OpenFilex.open(savePath);
-                  if (result.type != ResultType.done) {
-                    EasyLoading.showError("${result.message}(${result.type})");
-                  }
-                },
-              ),
-            ],
-          );
-        }
-      },
-    );
-  }
+  const AttachmentWidget(
+    this._discuz,
+    this._attachment, {
+    super.key,
+    this.onContentChanged,
+    this.threadId,
+    this.isListedImage = false,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final tid = _attachment.tid > 0 ? _attachment.tid : threadId;
     if (_attachment.price > 0 && !_attachment.payed) {
       return Column(
         mainAxisSize: MainAxisSize.min,
@@ -104,7 +41,7 @@ class AttachmentWidget extends StatelessWidget {
           Text(_attachment.filename),
           ForumActionButton(
             discuz: _discuz,
-            tid: _attachment.tid,
+            tid: tid ?? 0,
             aid: _attachment.aid,
             purchase: true,
             label: S.of(context).forumBuyAttachment,
@@ -113,15 +50,18 @@ class AttachmentWidget extends StatelessWidget {
         ],
       );
     }
-    final previewUrl = _attachment.getAttachmentRealUrl(_discuz);
-    final downloadUrl = _attachment.aidEncode.isEmpty
-        ? null
-        : URLUtils.getAttachmentURLWithAidEncode(
-            _discuz,
-            _attachment.aidEncode,
-          );
+    final baseUrl = forumBaseUri(_discuz);
+    final directUrl = resolveForumImageUri(
+      baseUrl,
+      _attachment.getAttachmentRealUrl(_discuz),
+    );
+    final attachmentUrl = URLUtils.getAttachmentUrl(
+      _discuz,
+      _attachment.aidEncode,
+    );
+    final downloadUrl = attachmentUrl ?? directUrl;
 
-    if ([
+    const imageExtensions = {
       "jpg",
       "png",
       "svg",
@@ -130,15 +70,36 @@ class AttachmentWidget extends StatelessWidget {
       "jpeg",
       "webp",
       "avif",
-    ].contains(_attachment.ext.toLowerCase())) {
+      "heic",
+      "heif",
+    };
+    final isImage =
+        isListedImage ||
+        [
+          _attachment.ext,
+          _attachment.filename.split('.').last,
+          directUrl?.pathSegments.lastOrNull?.split('.').last ?? '',
+        ].any(
+          (ext) => imageExtensions.contains(
+            ext.trim().toLowerCase().replaceFirst(RegExp(r'^\.'), ''),
+          ),
+        );
+    final protectedImage = URLUtils.getAttachmentUrl(
+      _discuz,
+      _attachment.aidEncode,
+      preview: true,
+    );
+    final previewUrl = directUrl ?? protectedImage;
+    if (isImage && previewUrl != null) {
+      final original = protectedImage ?? previewUrl;
       return InkWell(
         child: PlatformCard(
           elevation: 8.0,
           child: ForumImage(
             forum: _discuz,
-            threadId: _attachment.tid,
-            url: previewUrl,
-            fallbackUrl: downloadUrl,
+            threadId: tid,
+            url: previewUrl.toString(),
+            fallbackUrl: protectedImage?.toString(),
             fit: BoxFit.fill,
             error: (context) => Icon(PlatformIcons(context).error),
             loading: (context, progress) => Container(
@@ -156,7 +117,7 @@ class AttachmentWidget extends StatelessWidget {
         ),
         onTap: () {
           VibrationUtils.vibrateWithClickIfPossible();
-          final url = downloadUrl ?? previewUrl;
+          final url = original.toString();
 
           Navigator.push(
             context,
@@ -167,7 +128,11 @@ class AttachmentWidget extends StatelessWidget {
                 url,
                 [url],
                 forum: _discuz,
-                threadId: _attachment.tid,
+                threadId: tid,
+                fallbackUrls: original == previewUrl
+                    ? const {}
+                    : {url: previewUrl.toString()},
+                filenames: {url: _attachment.filename},
               ),
             ),
           );
@@ -175,6 +140,7 @@ class AttachmentWidget extends StatelessWidget {
       );
     }
 
+    final session = ForumImageSession.of(context, _discuz, threadId: tid);
     return PlatformCard(
       child: Column(
         children: [
@@ -190,25 +156,21 @@ class AttachmentWidget extends StatelessWidget {
               child: Icon(PlatformIcons(context).download),
             ),
           ),
-          ForumImage(
-            forum: _discuz,
-            threadId: _attachment.tid,
-            url: previewUrl,
-            error: (context) => Icon(PlatformIcons(context).error),
-            loading: (context, progress) => PlatformCircularProgressIndicator(
-              material: (_, __) =>
-                  MaterialProgressIndicatorData(value: progress),
-            ),
-          ),
           Wrap(
             alignment: WrapAlignment.start,
             spacing: 8,
             runSpacing: 8,
             children: [
               PlatformTextButton(
-                onPressed: () {
-                  _downloadFile(context);
-                },
+                onPressed: baseUrl == null || downloadUrl == null
+                    ? null
+                    : () => downloadAndOpenForumAttachment(
+                        context,
+                        downloadUrl,
+                        forum: baseUrl,
+                        session: session,
+                        filename: _attachment.filename,
+                      ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

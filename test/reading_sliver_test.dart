@@ -298,13 +298,16 @@ void main() {
       _discuz,
       '<img src="one.thumb.jpg" file="one.jpg">'
       '<img src="static/image/common/none.gif" file="/images/two.jpg">'
-      '<img data-src="/images/three.jpg">',
+      '<img data-src="/images/three.jpg">'
+      '<img src="static/image/common/none.gif" file="thumb.jpg" '
+      'zoomfile="forum.php?mod=attachment&amp;aid=token&amp;nothumb=yes">',
     );
     final base = Uri.parse(_discuz.getBaseURLWithAfterfix());
     expect(widget.getAllImageSrcList(), [
       base.resolve('one.jpg').toString(),
       base.resolve('/images/two.jpg').toString(),
       base.resolve('/images/three.jpg').toString(),
+      base.resolve('forum.php?mod=attachment&aid=token&nothumb=yes').toString(),
     ]);
   });
 }

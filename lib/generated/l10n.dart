@@ -695,6 +695,26 @@ class S {
     );
   }
 
+  /// `Downloading attachment…`
+  String get downloadingAttachment {
+    return Intl.message(
+      'Downloading attachment…',
+      name: 'downloadingAttachment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unable to download the attachment.`
+  String get attachmentDownloadFailed {
+    return Intl.message(
+      'Unable to download the attachment.',
+      name: 'attachmentDownloadFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Full display`
   String get watchPictureInFullScreen {
     return Intl.message(
@@ -8261,10 +8281,10 @@ class S {
     );
   }
 
-  /// `Cookies for images`
+  /// `Cookies for images and attachments`
   String get imageCookiePolicyTitle {
     return Intl.message(
-      'Cookies for images',
+      'Cookies for images and attachments',
       name: 'imageCookiePolicyTitle',
       desc: '',
       args: [],

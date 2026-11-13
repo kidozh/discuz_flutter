@@ -2,8 +2,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/forum_display_preferences.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
@@ -16,32 +17,41 @@ import 'package:saver_gallery/saver_gallery.dart';
 
 import '../utility/AppPlatformIcons.dart';
 import '../utility/forum_image_session.dart';
+import '../utility/forum_image_url.dart';
 
 class FullImagePage extends StatefulWidget {
-  String imageUrl;
-  List<String> imageUrlList = [];
+  final String imageUrl;
+  final List<String> imageUrlList;
   final Discuz? forum;
   final int? threadId;
+  final Map<String, String> fallbackUrls;
+  final Map<String, String> filenames;
 
-  FullImagePage(this.imageUrl, this.imageUrlList, {this.forum, this.threadId});
+  const FullImagePage(
+    this.imageUrl,
+    this.imageUrlList, {
+    this.forum,
+    this.threadId,
+    this.fallbackUrls = const {},
+    this.filenames = const {},
+    super.key,
+  });
 
   @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return FullImagePageState(imageUrl, imageUrlList);
-  }
+  State<FullImagePage> createState() => FullImagePageState();
 }
 
 class FullImagePageState extends State<FullImagePage> {
-  String imageUrl;
-  List<String> imageUrlList = [];
+  late final PageController pageController;
+  late int currentPage;
+  List<String> get imageUrlList => widget.imageUrlList;
 
-  late PageController pageController;
-
-  int currentPage = 0;
-  FullImagePageState(this.imageUrl, this.imageUrlList) {
-    currentPage = initialPage;
-    pageController = PageController(initialPage: initialPage);
+  @override
+  void initState() {
+    super.initState();
+    final index = imageUrlList.indexOf(widget.imageUrl);
+    currentPage = index < 0 ? 0 : index;
+    pageController = PageController(initialPage: currentPage);
   }
 
   @override
@@ -63,33 +73,44 @@ class FullImagePageState extends State<FullImagePage> {
             ),
             onPressed: () {
               VibrationUtils.vibrateWithClickIfPossible();
-              _save(context, imageSession);
+              _save(imageSession);
             },
           ),
         ],
       ),
-      body: Container(
-        child: Column(
-          children: [Expanded(child: _photoViewGallery(imageSession))],
-        ),
-      ),
+      body: _photoViewGallery(imageSession),
     );
   }
 
-  int get initialPage => imageUrlList.indexOf(imageUrl);
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
+  }
+
+  ImageProvider _imageProvider(String url, ForumImageSession? session) =>
+      session?.providerFor(url) ?? CachedNetworkImageProvider(url);
 
   Widget _photoViewGallery(ForumImageSession? imageSession) =>
       PhotoViewGallery.builder(
+        key: ValueKey(imageSession?.cacheKey),
         itemCount: imageUrlList.length,
         scrollPhysics: const BouncingScrollPhysics(),
         builder: (BuildContext context, int index) {
           final url = imageUrlList[index];
+          final fallback = widget.fallbackUrls[url];
           return PhotoViewGalleryPageOptions(
-            imageProvider:
-                imageSession?.providerFor(url) ??
-                CachedNetworkImageProvider(url),
+            imageProvider: _imageProvider(url, imageSession),
             initialScale: PhotoViewComputedScale.contained * 0.8,
             heroAttributes: PhotoViewHeroAttributes(tag: index),
+            errorBuilder: (context, _, _) => fallback == null || fallback == url
+                ? const Icon(Icons.broken_image_outlined)
+                : PhotoView(
+                    imageProvider: _imageProvider(fallback, imageSession),
+                    initialScale: PhotoViewComputedScale.contained * 0.8,
+                    errorBuilder: (_, _, _) =>
+                        const Icon(Icons.broken_image_outlined),
+                  ),
           );
         },
         pageController: pageController,
@@ -99,7 +120,7 @@ class FullImagePageState extends State<FullImagePage> {
           });
         },
         loadingBuilder: (context, event) => Center(
-          child: Container(
+          child: SizedBox(
             width: 48,
             height: 48,
             child: PlatformCircularProgressIndicator(
@@ -113,44 +134,64 @@ class FullImagePageState extends State<FullImagePage> {
         ),
       );
 
-  Future<void> _saveFigureInDevice(ForumImageSession? imageSession) async {
-    if (currentPage < imageUrlList.length) {
-      final url = imageUrlList[currentPage];
-      final bytes =
-          await (imageSession?.download(url) ??
-              Dio()
-                  .get<Uint8List>(
-                    url,
-                    options: Options(responseType: ResponseType.bytes),
-                  )
-                  .then((response) => response.data!));
-      SaverGallery.saveImage(
-        bytes,
-        quality: 100,
-        fileName: url.split("/").last,
-        skipIfExists: false,
-      );
-      EasyLoading.showSuccess(S.of(context).saveImageSuccessfully);
-    }
+  Future<Uint8List> _imageBytes(String url, ForumImageSession? session) async {
+    final download = session?.download(url);
+    if (download != null) return download;
+    final forum = widget.forum;
+    final base = forum == null ? null : forumBaseUri(forum);
+    final uri = resolveForumImageUri(base, url);
+    if (uri == null) throw const HttpException('Invalid image URL');
+    return loadForumImage(
+      uri,
+      forum: base ?? Uri.parse(uri.origin),
+      policy: ForumImageCookiePolicy.never,
+    );
   }
 
-  _save(BuildContext context, ForumImageSession? imageSession) async {
-    if (Platform.isIOS || Platform.isAndroid) {
-      var status = await Permission.storage.status;
-      print(status);
-      if (status.isGranted) {
-        await _saveFigureInDevice(imageSession);
-      } else if (status.isPermanentlyDenied) {
-        EasyLoading.showError(S.of(context).writeStorageDenied);
-      } else if (status.isDenied) {
-        PermissionStatus statusResult = await Permission.storage.request();
-        if (statusResult.isGranted) {
-          // save it
-          await _saveFigureInDevice(imageSession);
-        } else {
-          EasyLoading.showError(S.of(context).writeStorageDenied);
-        }
+  Future<void> _save(ForumImageSession? imageSession) async {
+    if ((!Platform.isIOS && !Platform.isAndroid) ||
+        currentPage >= imageUrlList.length) {
+      return;
+    }
+    final strings = S.of(context);
+    final url = imageUrlList[currentPage];
+    try {
+      final needsStoragePermission =
+          Platform.isAndroid &&
+          (await DeviceInfoPlugin().androidInfo).version.sdkInt < 29;
+      if (needsStoragePermission &&
+          !(await Permission.storage.request()).isGranted) {
+        if (mounted) EasyLoading.showError(strings.writeStorageDenied);
+        return;
       }
+      if (!mounted) return;
+      final fallback = widget.fallbackUrls[url];
+      Uint8List bytes;
+      var source = url;
+      try {
+        bytes = await _imageBytes(source, imageSession);
+      } on ForumResourceSessionChanged {
+        rethrow;
+      } catch (_) {
+        if (fallback == null || fallback == url) rethrow;
+        source = fallback;
+        bytes = await _imageBytes(source, imageSession);
+      }
+      final uri = Uri.parse(source);
+      final filename = widget.filenames[url]?.trim();
+      final result = await SaverGallery.saveImage(
+        bytes,
+        fileName: filename != null && filename.isNotEmpty
+            ? filename
+            : isForumAttachmentUrl(uri)
+            ? 'image'
+            : uri.pathSegments.lastOrNull ?? 'image',
+        skipIfExists: false,
+      );
+      if (!result.isSuccess) throw StateError('Could not save image');
+      if (mounted) EasyLoading.showSuccess(strings.saveImageSuccessfully);
+    } catch (_) {
+      if (mounted) EasyLoading.showError(strings.loadFailed);
     }
   }
 }

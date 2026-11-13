@@ -21,6 +21,7 @@ import '../page/ViewThreadSliverPage.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../widget/DiscuzHtmlWidget.dart';
 import 'RewriteRuleUtils.dart';
+import 'forum_image_url.dart';
 import 'post_locator.dart';
 import 'VibrationUtils.dart';
 
@@ -37,8 +38,20 @@ class URLUtils {
     return "${discuz.uCenterURL}/avatar.php?uid=${uid}&size=small";
   }
 
-  static String getAttachmentURLWithAidEncode(Discuz discuz, String aid) {
-    return "${discuz.baseURL}/forum.php?mod=attachment&aid=${aid}";
+  static Uri? getAttachmentUrl(Discuz discuz, String aid, {bool preview = false}) {
+    if (aid.trim().isEmpty) return null;
+    var token = aid.trim();
+    try {
+      // Discuz often percent-encodes the Base64 token in its API response.
+      token = Uri.decodeComponent(token);
+    } on FormatException {
+      return null;
+    }
+    return forumBaseUri(discuz)?.resolve('forum.php').replace(queryParameters: {
+      'mod': 'attachment',
+      'aid': token,
+      if (preview) ...{'nothumb': 'yes', 'noupdate': 'yes'},
+    });
   }
 
   static String getViewThreadURL(Discuz discuz, int tid) {

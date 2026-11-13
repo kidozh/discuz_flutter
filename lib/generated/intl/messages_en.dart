@@ -409,6 +409,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "Translate posts or process text with custom on-device AI rules. Content is processed locally rather than sent to a cloud model for these actions. Initial model setup may require an internet download. Generated results can be inaccurate; check important information.",
     ),
     "attachFile": m6,
+    "attachmentDownloadFailed": MessageLookupByLibrary.simpleMessage(
+      "Unable to download the attachment.",
+    ),
     "attachmentUploadExceedingSizeDescription":
         MessageLookupByLibrary.simpleMessage(
           "The attachment shall be compressed to be accepted by the forum.",
@@ -731,6 +734,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "displaySettingTitle": MessageLookupByLibrary.simpleMessage("Display"),
     "downloadAttachment": MessageLookupByLibrary.simpleMessage("Download"),
+    "downloadingAttachment": MessageLookupByLibrary.simpleMessage(
+      "Downloading attachment…",
+    ),
     "downloadingFiles": m25,
     "duplicatedPost": MessageLookupByLibrary.simpleMessage("Duplicated Posts"),
     "dynamicSchemeVariant": MessageLookupByLibrary.simpleMessage(
@@ -1091,7 +1097,7 @@ class MessageLookup extends MessageLookupByLibrary {
           "Share eligible forum cookies with the forum and subdomains of the same site.",
         ),
     "imageCookiePolicyTitle": MessageLookupByLibrary.simpleMessage(
-      "Cookies for images",
+      "Cookies for images and attachments",
     ),
     "incognitoSubtitle": MessageLookupByLibrary.simpleMessage(
       "You will browse the forum in incognito mode",

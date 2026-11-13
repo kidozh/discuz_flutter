@@ -138,11 +138,22 @@ class Attachment{
 
   String getAttachmentRealUrl(Discuz discuz) {
     final forum = forumBaseUri(discuz);
-    final base = resolveForumImageUri(forum, url) ?? forum;
+    final suppliedUrl = resolveForumImageUri(forum, url);
+    final path = Uri.tryParse(attachmentPathName.trim());
+    final filename = path?.pathSegments.lastOrNull;
+    if (suppliedUrl != null &&
+        (attachmentPathName.trim().isEmpty ||
+            isForumAttachmentUrl(suppliedUrl) ||
+            (filename != null && filename == suppliedUrl.pathSegments.lastOrNull))) {
+      return suppliedUrl.toString();
+    }
+    if (path != null && (path.hasAuthority || isForumAttachmentUrl(path))) {
+      return resolveForumImageUri(forum, attachmentPathName)?.toString() ?? '';
+    }
+    final base = suppliedUrl ?? forum;
     final directory = base == null || base.path.endsWith('/')
         ? base
         : base.replace(path: '${base.path}/');
-    return resolveForumImageUri(directory, attachmentPathName)?.toString() ??
-        '$url$attachmentPathName';
+    return resolveForumImageUri(directory, attachmentPathName)?.toString() ?? '';
   }
 }

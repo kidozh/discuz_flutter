@@ -356,6 +356,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "在帖子中使用翻译，或通过自定义场景让设备端模型处理文本。内容在本机处理，不会为此发送到云端模型；模型首次准备可能需要联网下载。生成结果可能有误，请核对重要信息。",
     ),
     "attachFile": m6,
+    "attachmentDownloadFailed": MessageLookupByLibrary.simpleMessage("无法下载附件。"),
     "attachmentUploadExceedingSizeDescription":
         MessageLookupByLibrary.simpleMessage("附件需要被压缩以满足限额"),
     "attachmentUploadExceedingSizeTitle": MessageLookupByLibrary.simpleMessage(
@@ -600,6 +601,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "displaySettingTitle": MessageLookupByLibrary.simpleMessage("显示"),
     "downloadAttachment": MessageLookupByLibrary.simpleMessage("下载附件"),
+    "downloadingAttachment": MessageLookupByLibrary.simpleMessage("正在下载附件…"),
     "downloadingFiles": m25,
     "duplicatedPost": MessageLookupByLibrary.simpleMessage("重复发帖"),
     "dynamicSchemeVariant": MessageLookupByLibrary.simpleMessage("色调变体"),
@@ -862,7 +864,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "imageCookiePolicySameSiteDescription":
         MessageLookupByLibrary.simpleMessage("仅向论坛和同一站点的子域名发送适用的论坛 Cookie。"),
     "imageCookiePolicyTitle": MessageLookupByLibrary.simpleMessage(
-      "图片加载 Cookie",
+      "图片与附件 Cookie",
     ),
     "incognitoSubtitle": MessageLookupByLibrary.simpleMessage("某些功能可能不可用"),
     "incognitoTitle": MessageLookupByLibrary.simpleMessage("匿名模式"),

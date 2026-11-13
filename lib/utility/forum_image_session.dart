@@ -88,7 +88,7 @@ class ForumImageSession {
   }
 
   Future<Uint8List>? download(String url) {
-    final uri = _forumImageUri(url);
+    final uri = resolveForumImageUri(baseUrl, url);
     return uri == null ? null : _load(uri);
   }
 
@@ -100,9 +100,24 @@ class ForumImageSession {
     isCurrent: () => _active,
     cookieJar: () => NetworkUtils.getPersistentCookieJarByUser(_user),
   );
+
+  Future<File> downloadAttachment(
+    Uri uri,
+    Directory directory, {
+    String? filename,
+  }) => downloadForumAttachment(
+    uri,
+    directory,
+    forum: baseUrl,
+    filename: filename,
+    policy: _policy,
+    threadId: _threadId,
+    isCurrent: () => _active,
+    cookieJar: () => NetworkUtils.getPersistentCookieJarByUser(_user),
+  );
 }
 
-final _imageDio = NetworkUtils.getDio();
+final _resourceDio = NetworkUtils.getDio();
 const _redirectStatuses = {301, 302, 303, 307, 308};
 
 bool _canUseForumSession(ForumImageCookiePolicy policy, Uri forum, Uri image) =>
@@ -113,13 +128,161 @@ bool _canUseForumSession(ForumImageCookiePolicy policy, Uri forum, Uri image) =>
         forum.scheme != 'https' || image.scheme == 'https',
     };
 
-/// Re-evaluate the cookie policy and scope at each redirect.
-@visibleForTesting
 Future<Uint8List> loadForumImage(
   Uri uri, {
   required Uri forum,
-  required Future<CookieJar?> Function() cookieJar,
+  Future<CookieJar?> Function()? cookieJar,
   ForumImageCookiePolicy policy = ForumImageCookiePolicy.sameSite,
+  int? threadId,
+  bool Function()? isCurrent,
+  Dio? dio,
+}) async {
+  final response = await _getForumResource<Uint8List>(
+    uri,
+    forum: forum,
+    cookieJar: cookieJar,
+    policy: policy,
+    threadId: threadId,
+    isCurrent: isCurrent,
+    dio: dio,
+    responseType: ResponseType.bytes,
+  );
+  final data = response.data;
+  if (data == null || data.isEmpty || _isHtml(response.headers)) {
+    throw HttpException('No image received', uri: response.requestOptions.uri);
+  }
+  return data;
+}
+
+Future<File> downloadForumAttachment(
+  Uri uri,
+  Directory directory, {
+  required Uri forum,
+  String? filename,
+  ForumImageCookiePolicy policy = ForumImageCookiePolicy.never,
+  int? threadId,
+  bool Function()? isCurrent,
+  Future<CookieJar?> Function()? cookieJar,
+  Dio? dio,
+}) async {
+  final response = await _getForumResource<ResponseBody>(
+    uri,
+    forum: forum,
+    responseType: ResponseType.stream,
+    policy: policy,
+    threadId: threadId,
+    isCurrent: isCurrent,
+    cookieJar: cookieJar,
+    dio: dio,
+  );
+  final body = response.data;
+  final disposition = response.headers.value('content-disposition');
+  // Discuz can return a login or permission page with HTTP 200.
+  if (body == null || (_isHtml(response.headers) && disposition == null)) {
+    await body?.stream.listen(null).cancel();
+    throw HttpException(
+      'No attachment received',
+      uri: response.requestOptions.uri,
+    );
+  }
+  Directory? downloadDirectory;
+  var consuming = false;
+  try {
+    downloadDirectory = await directory.createTemp('attachment-');
+    final name = _attachmentFilename(
+      filename,
+      disposition,
+      response.requestOptions.uri,
+    );
+    final file = File(
+      '${downloadDirectory.path}${Platform.pathSeparator}$name',
+    );
+    _checkSession(isCurrent);
+    final sink = file.openWrite();
+    var received = 0;
+    try {
+      consuming = true;
+      await sink.addStream(
+        body.stream.map((bytes) {
+          _checkSession(isCurrent);
+          received += bytes.length;
+          return bytes;
+        }),
+      );
+    } finally {
+      await sink.close();
+    }
+    _checkSession(isCurrent);
+    if (received == 0) throw HttpException('Empty attachment', uri: uri);
+    return file;
+  } catch (_) {
+    if (!consuming) await body.stream.listen(null).cancel();
+    await downloadDirectory?.delete(recursive: true);
+    rethrow;
+  }
+}
+
+bool _isHtml(Headers headers) =>
+    headers
+        .value(HttpHeaders.contentTypeHeader)
+        ?.split(';')
+        .first
+        .trim()
+        .toLowerCase() ==
+    'text/html';
+
+String _attachmentFilename(String? preferred, String? disposition, Uri uri) {
+  final encoded = RegExp(
+    "filename\\*=utf-8'[^']*'([^;]+)",
+    caseSensitive: false,
+  ).firstMatch(disposition ?? '')?.group(1);
+  final plain = RegExp(
+    r'filename\s*=\s*(?:"([^"]+)"|([^;]+))',
+    caseSensitive: false,
+  ).firstMatch(disposition ?? '');
+  String? decoded;
+  if (encoded != null) {
+    try {
+      decoded = Uri.decodeComponent(encoded.trim());
+    } on FormatException {
+      // A malformed optional filename can fall back to the plain header.
+    }
+  }
+  for (final candidate in [
+    preferred,
+    decoded,
+    plain?.group(1) ?? plain?.group(2),
+    if (!isForumAttachmentUrl(uri)) uri.pathSegments.lastOrNull,
+  ]) {
+    final name = candidate
+        ?.split(RegExp(r'[/\\]'))
+        .last
+        .trim()
+        .replaceAll(RegExp(r'[\x00-\x1f<>:"|?*]'), '_');
+    if (name != null && name.isNotEmpty && name != '.' && name != '..') {
+      return name;
+    }
+  }
+  return 'attachment';
+}
+
+void _checkSession(bool Function()? isCurrent) {
+  if (isCurrent?.call() == false) {
+    throw ForumResourceSessionChanged();
+  }
+}
+
+class ForumResourceSessionChanged extends StateError {
+  ForumResourceSessionChanged() : super('Forum resource session changed');
+}
+
+/// Re-evaluate the cookie policy and scope at each redirect.
+Future<Response<T>> _getForumResource<T>(
+  Uri uri, {
+  required Uri forum,
+  required ResponseType responseType,
+  Future<CookieJar?> Function()? cookieJar,
+  ForumImageCookiePolicy policy = ForumImageCookiePolicy.never,
   int? threadId,
   bool Function()? isCurrent,
   Dio? dio,
@@ -132,17 +295,11 @@ Future<Uint8List> loadForumImage(
             .resolve('forum.php')
             .replace(queryParameters: {'mod': 'viewthread', 'tid': '$threadId'})
       : forum;
-  void checkSession() {
-    if (isCurrent?.call() == false) {
-      throw StateError('Forum image session changed');
-    }
-  }
-
   var useSession = _canUseForumSession(policy, forum, uri);
   for (var redirects = 0; redirects <= 5; redirects++) {
-    checkSession();
+    _checkSession(isCurrent);
     final sameOrigin = uri.origin == forum.origin;
-    final jar = useSession ? await cookieJar() : null;
+    final jar = useSession ? await cookieJar?.call() : null;
     final cookies = jar == null
         ? ''
         : await _cookieHeader(
@@ -152,12 +309,12 @@ Future<Uint8List> loadForumImage(
                 ? forum.host
                 : null,
           );
-    checkSession();
-    final response = await (dio ?? _imageDio).getUri<Uint8List>(
+    _checkSession(isCurrent);
+    final response = await (dio ?? _resourceDio).getUri<T>(
       uri,
       options: Options(
         followRedirects: false,
-        responseType: ResponseType.bytes,
+        responseType: responseType,
         headers: {
           if (cookies.isNotEmpty) HttpHeaders.cookieHeader: cookies,
           if (useSession && sameForumImageSite(forum, uri))
@@ -171,25 +328,25 @@ Future<Uint8List> loadForumImage(
                 _redirectStatuses.contains(status)),
       ),
     );
-    checkSession();
-    if (!_redirectStatuses.contains(response.statusCode)) {
-      final data = response.data;
-      if (data == null || data.isEmpty) {
-        throw HttpException('Empty image', uri: uri);
-      }
-      return data;
+    final redirected = _redirectStatuses.contains(response.statusCode);
+    final body = response.data;
+    final sessionChanged = isCurrent?.call() == false;
+    if (body is ResponseBody && (redirected || sessionChanged)) {
+      await body.stream.listen(null).cancel();
     }
+    if (sessionChanged) throw ForumResourceSessionChanged();
+    if (!redirected) return response;
     final location = response.headers.value(HttpHeaders.locationHeader);
     final target = location == null
         ? null
         : resolveForumImageUri(uri, location);
     if (target == null) {
-      throw HttpException('Invalid image redirect', uri: uri);
+      throw HttpException('Invalid resource redirect', uri: uri);
     }
     useSession = useSession && _canUseForumSession(policy, forum, target);
     uri = target;
   }
-  throw HttpException('Too many image redirects', uri: uri);
+  throw HttpException('Too many resource redirects', uri: uri);
 }
 
 Future<String> _cookieHeader(

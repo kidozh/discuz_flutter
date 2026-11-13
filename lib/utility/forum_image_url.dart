@@ -28,3 +28,14 @@ Uri? resolveForumImageUri(Uri? base, String url) {
   }
   return uri;
 }
+
+bool isForumAttachmentUrl(Uri uri) {
+  if (uri.pathSegments.lastOrNull != 'forum.php') return false;
+  try {
+    final params = uri.queryParameters;
+    return params['mod'] == 'attachment' &&
+        (params['aid']?.isNotEmpty ?? false);
+  } on FormatException {
+    return false;
+  }
+}

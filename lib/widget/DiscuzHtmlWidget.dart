@@ -21,6 +21,7 @@ import 'package:discuz_flutter/widget/DiscuzAdaptiveTable.dart';
 import 'package:discuz_flutter/widget/DiscuzCodeBlock.dart';
 import 'package:discuz_flutter/widget/DiscuzQuoteBlock.dart';
 import 'package:discuz_flutter/widget/SteamGameWidget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
@@ -31,6 +32,7 @@ import 'package:slide_countdown/slide_countdown.dart';
 import '../utility/URLUtils.dart';
 import '../utility/forum_image_session.dart';
 import '../utility/forum_image_url.dart';
+import 'forum_attachment_download.dart';
 import 'forum_image.dart';
 
 typedef void JumpToPidCallback(int pid);
@@ -67,6 +69,26 @@ class DiscuzHtmlWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final baseUrl = forumBaseUri(discuz);
     final imageSession = ForumImageSession.of(context, discuz, threadId: tid);
+    bool openLink(String url) {
+      final target = resolveForumImageUri(baseUrl, url);
+      if (!kIsWeb &&
+          baseUrl != null &&
+          target != null &&
+          target.path == baseUrl.resolve('forum.php').path &&
+          target.origin == baseUrl.origin &&
+          isForumAttachmentUrl(target)) {
+        downloadAndOpenForumAttachment(
+          context,
+          target,
+          forum: baseUrl,
+          session: imageSession,
+        );
+      } else {
+        URLUtils.openURL(context, onSelectTid, url, callback, tid);
+      }
+      return true;
+    }
+
     final content = Consumer<TypeSettingNotifierProvider>(
       builder: (context, typesetting, _) {
         final colorScheme = Theme.of(context).colorScheme;
@@ -182,10 +204,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
           factoryBuilder: () =>
               _ReadingHtmlWidgetFactory(imageSession, baseUrl, onBodyReady),
           //enableCaching: true,
-          onTapUrl: (url) {
-            URLUtils.openURL(context, onSelectTid, url, callback, tid);
-            return true;
-          },
+          onTapUrl: openLink,
           onTapImage: (imageMetaData) {
             for (var source in imageMetaData.sources) {
               _openImage(context, source.url);
@@ -474,10 +493,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
                 textStyle: htmlTextStyle,
                 imageSession: imageSession,
                 baseUrl: baseUrl,
-                onTapUrl: (url) {
-                  URLUtils.openURL(context, onSelectTid, url, callback, tid);
-                  return true;
-                },
+                onTapUrl: openLink,
                 onTapImage: (src) => _openImage(context, src),
               );
             } else if (element.localName == "collapse" ||
@@ -618,13 +634,22 @@ class DiscuzHtmlWidget extends StatelessWidget {
     }
     final images = sources.map((source) => source.$2).toList();
     if (!images.contains(selected)) images.insert(0, selected);
+    final fallbackUrls = {
+      for (final (thumbnail, original) in sources)
+        if (thumbnail != original) original: thumbnail,
+    };
     Navigator.push(
       context,
       platformPageRoute(
         iosTitle: S.of(context).viewPicture,
         context: context,
-        builder: (context) =>
-            FullImagePage(selected, images, forum: discuz, threadId: tid),
+        builder: (context) => FullImagePage(
+          selected,
+          images,
+          forum: discuz,
+          threadId: tid,
+          fallbackUrls: fallbackUrls,
+        ),
       ),
     );
   }

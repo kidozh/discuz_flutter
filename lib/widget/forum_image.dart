@@ -32,16 +32,23 @@ class ForumImage extends StatelessWidget {
     final baseUrl = forumBaseUri(forum);
     final source = resolveForumImageUri(baseUrl, url)?.toString() ?? url;
     final session = ForumImageSession.of(context, forum, threadId: threadId);
-    final provider = session?.providerFor(source);
-    final fallback = fallbackUrl;
-    final fallbackProvider = fallback == null
-        ? null
-        : session?.providerFor(fallback);
+    final fallback = resolveForumImageUri(
+      baseUrl,
+      fallbackUrl ?? '',
+    )?.toString();
     Widget onError(BuildContext context) =>
-        fallbackProvider == null || fallbackProvider == provider
+        fallback == null || fallback == source
         ? error(context)
-        : _image(fallbackProvider, error);
+        : _imageForUrl(fallback, session, error);
+    return _imageForUrl(source, session, onError);
+  }
 
+  Widget _imageForUrl(
+    String source,
+    ForumImageSession? session,
+    WidgetBuilder onError,
+  ) {
+    final provider = session?.providerFor(source);
     if (provider == null) {
       return CachedNetworkImage(
         imageUrl: source,
@@ -69,21 +76,28 @@ String? forumHtmlImageSource(dom.Element element, {bool original = false}) {
     return value == null || value.isEmpty ? null : value;
   }
 
-  final preview = read('src');
-  final fullImage = read('file') ?? read('data-src');
-  final reference = fullImage == null ? null : Uri.tryParse(fullImage);
-  if (reference == null ||
-      (reference.hasScheme &&
-          reference.scheme != 'https' &&
-          reference.scheme != 'http')) {
-    return preview;
+  String? networkSource(String name) {
+    final value = read(name);
+    final reference = value == null ? null : Uri.tryParse(value);
+    if (reference == null ||
+        reference.userInfo.isNotEmpty ||
+        (reference.hasScheme &&
+            reference.scheme != 'https' &&
+            reference.scheme != 'http')) {
+      return null;
+    }
+    return value;
   }
+
+  final preview = read('src');
+  final zoom = networkSource('zoomfile');
+  final lazy = networkSource('file') ?? networkSource('data-src');
+  if (original) return zoom ?? lazy ?? preview;
   final path = preview == null ? null : Uri.tryParse(preview)?.path;
-  if (original ||
-      preview == null ||
+  if (preview == null ||
       preview.startsWith('data:image/') ||
       path?.split('/').last.toLowerCase() == 'none.gif') {
-    return fullImage;
+    return lazy ?? zoom ?? preview;
   }
   return preview;
 }
@@ -110,14 +124,21 @@ class ForumHtmlImageFactory extends WidgetFactory {
 
   @override
   Widget? buildImageWidget(BuildTree meta, ImageSource src) {
-    final provider = imageSession?.providerFor(src.url);
+    final uri = resolveForumImageUri(_baseUrl, src.url);
+    if (uri == null) return super.buildImageWidget(meta, src);
+    ImageProvider? providerFor(Uri uri) =>
+        imageSession?.providerFor(uri.toString()) ??
+        imageProviderFromNetwork(uri.toString());
+    final provider = providerFor(uri);
     if (provider == null) return super.buildImageWidget(meta, src);
-
     final label = src.image?.alt ?? src.image?.title;
-    final original = forumHtmlImageSource(meta.element, original: true);
-    final fallback = original == null
+    final fallbackUri = resolveForumImageUri(
+      _baseUrl,
+      forumHtmlImageSource(meta.element, original: true) ?? '',
+    );
+    final fallback = fallbackUri == null || fallbackUri == uri
         ? null
-        : imageSession?.providerFor(original);
+        : providerFor(fallbackUri);
     Widget image(ImageProvider source, {ImageProvider? fallback}) => Image(
       image: source,
       fit: BoxFit.fill,
