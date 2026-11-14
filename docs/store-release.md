@@ -32,7 +32,7 @@ gcloud iam service-accounts add-iam-policy-binding "$PLAY_ACCOUNT" --project "$P
   --member="principalSet://iam.googleapis.com/projects/${PLAY_PROJECT_NUMBER}/locations/global/workloadIdentityPools/github-play/attribute.repository_id/358940287"
 ```
 
-在 [Play Console 的「用户和权限」](https://play.google.com/console/u/0/developers/4975597316788261391/user-management) 邀请 `PLAY_ACCOUNT`，应用权限只选「谈坛」(`com.kidozh.discuz_flutter`)，授予查看应用信息及「发布正式版、排除设备和使用 Play 应用签名」。在 [GitHub Actions 仓库变量](https://github.com/kidozh/discuz_flutter/settings/variables/actions) 加入以下两项。
+在 [Play Console 的「用户和权限」](https://play.google.com/console/u/0/developers/4975597316788261391/users-and-permissions) 邀请 `PLAY_ACCOUNT`，应用权限只选「谈坛」(`com.kidozh.discuz_flutter`)，授予查看应用信息及「发布正式版、排除设备和使用 Play 应用签名」。在 [GitHub Actions 仓库变量](https://github.com/kidozh/discuz_flutter/settings/variables/actions) 加入以下两项。
 
 | 变量 | 值 |
 | --- | --- |
