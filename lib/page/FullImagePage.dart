@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/forum_display_preferences.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
@@ -10,7 +9,6 @@ import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:saver_gallery/saver_gallery.dart';
@@ -156,15 +154,6 @@ class FullImagePageState extends State<FullImagePage> {
     final strings = S.of(context);
     final url = imageUrlList[currentPage];
     try {
-      final needsStoragePermission =
-          Platform.isAndroid &&
-          (await DeviceInfoPlugin().androidInfo).version.sdkInt < 29;
-      if (needsStoragePermission &&
-          !(await Permission.storage.request()).isGranted) {
-        if (mounted) EasyLoading.showError(strings.writeStorageDenied);
-        return;
-      }
-      if (!mounted) return;
       final fallback = widget.fallbackUrls[url];
       Uint8List bytes;
       var source = url;

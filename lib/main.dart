@@ -21,6 +21,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
+import 'package:image_picker_android/image_picker_android.dart';
+import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:provider/provider.dart';
 
 import 'app/MainApp.dart';
@@ -61,6 +63,8 @@ void main() async {
 
   try {
     if (Platform.isAndroid) {
+      final picker = ImagePickerPlatform.instance;
+      if (picker is ImagePickerAndroid) picker.useAndroidPhotoPicker = true;
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     }
     await _initRequiredStartupServices();

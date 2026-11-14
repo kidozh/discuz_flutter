@@ -2,7 +2,7 @@
 // Read back the exact uploaded build and its TestFlight "What to Test" text.
 // Uses only Node built-ins; credentials stay in memory and are never logged.
 import {createSign} from 'node:crypto';
-import {readFile, writeFile, mkdir} from 'node:fs/promises';
+import {appendFile, readFile, writeFile, mkdir} from 'node:fs/promises';
 import {dirname} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {parseArgs} from 'node:util';
@@ -19,7 +19,7 @@ export function createToken(issuer, keyId, privateKey) {
   return `${input}.${signer.sign({key: privateKey, dsaEncoding: 'ieee-p1363'}).toString('base64url')}`;
 }
 
-export async function verifyRelease(api, {bundleId, version, buildNumber, notes, checkAvailable = false, repairBuildId}) {
+export async function verifyRelease(api, {bundleId, version, buildNumber, notes, checkAvailable = false, reuseExisting = false, repairBuildId}) {
   if (!checkAvailable && !notes?.startsWith(`${version} (${buildNumber})\n\n`)) {
     throw new Error('TestFlight notes do not match the selected version and build.');
   }
@@ -40,6 +40,24 @@ export async function verifyRelease(api, {bundleId, version, buildNumber, notes,
     if (train?.attributes?.version === version && build.attributes?.version === buildNumber) matching.push(build);
   }
   if (checkAvailable) {
+    if (reuseExisting) {
+      if (matching.length > 1 || matching.some(build =>
+        build.attributes?.expired || !['VALID', 'PROCESSING'].includes(build.attributes?.processingState))) {
+        throw new Error(`Build ${version} (${buildNumber}) exists but cannot be reused.`);
+      }
+      if (matching.length) return {bundleId, version, buildNumber, available: false};
+      const uploadQuery = new URLSearchParams({
+        'filter[cfBundleVersion]': buildNumber, 'filter[cfBundleShortVersionString]': version,
+      });
+      const uploads = await api(`/apps/${app.id}/buildUploads?${uploadQuery}`);
+      const states = (uploads.data ?? []).filter(({attributes}) =>
+        attributes?.cfBundleShortVersionString === version && attributes?.cfBundleVersion === buildNumber &&
+        attributes?.platform === 'IOS').map(({attributes}) => attributes.state?.state);
+      if (states.some(state => ['PROCESSING', 'COMPLETE'].includes(state))) {
+        return {bundleId, version, buildNumber, available: false};
+      }
+      if (states.includes('FAILED')) throw new Error(`Build ${version} (${buildNumber}) failed Apple processing.`);
+    }
     if (matching.length) {
       const states = matching.map(build => `${build.id}: ${build.attributes?.processingState}`).join(', ');
       throw new Error(`Build ${version} (${buildNumber}) already exists (${states}); choose a new build number before uploading.`);
@@ -127,22 +145,9 @@ export async function waitForRelease(api, options, {attempts = 60, sleep = () =>
   }
 }
 
-async function main() {
-  const {values} = parseArgs({options: {
-    'bundle-id': {type: 'string', default: 'com.kidozh.discuz-flutter'},
-    version: {type: 'string'}, 'build-number': {type: 'string'},
-    'notes-file': {type: 'string', default: 'build/ios/testflight-release-notes.txt'},
-    output: {type: 'string', default: 'build/ios/testflight-verification.json'},
-    'check-available': {type: 'boolean', default: false},
-    'wait-for-processing': {type: 'boolean', default: false},
-    'repair-build-id': {type: 'string', default: ''},
-  }});
-  if (!/^\d+\.\d+\.\d+$/.test(values.version ?? '') || !/^[1-9]\d*$/.test(values['build-number'] ?? '')) {
-    throw new Error('Provide --version major.minor.patch and --build-number.');
-  }
-  const {APPSTORE_ISSUER_ID: issuer, APPSTORE_API_KEY_ID: keyId, APPSTORE_API_PRIVATE_KEY: privateKey} = process.env;
+export function appStoreApi({APPSTORE_ISSUER_ID: issuer, APPSTORE_API_KEY_ID: keyId, APPSTORE_API_PRIVATE_KEY: privateKey} = process.env) {
   if (!issuer || !keyId || !privateKey) throw new Error('Missing App Store Connect credentials.');
-  const api = async (path, method = 'GET', body) => {
+  return async (path, method = 'GET', body) => {
     const response = await fetch(`https://api.appstoreconnect.apple.com/v1${path}`, {
       method, headers: {Authorization: `Bearer ${createToken(issuer, keyId, privateKey)}`, 'Content-Type': 'application/json'},
       body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(60000),
@@ -150,20 +155,43 @@ async function main() {
     if (!response.ok) throw new Error(`App Store Connect ${method} ${path.split('?')[0]} returned ${response.status}: ${(await response.text()).slice(0, 1000)}`);
     return response.status === 204 ? null : response.json();
   };
+}
+
+async function main() {
+  const {values} = parseArgs({options: {
+    'bundle-id': {type: 'string', default: 'com.kidozh.discuz-flutter'},
+    version: {type: 'string'}, 'build-number': {type: 'string'},
+    'notes-file': {type: 'string', default: 'build/ios/testflight-release-notes.txt'},
+    output: {type: 'string', default: 'build/ios/testflight-verification.json'},
+    'check-available': {type: 'boolean', default: false},
+    'reuse-existing': {type: 'boolean', default: false},
+    'wait-for-processing': {type: 'boolean', default: false},
+    'repair-build-id': {type: 'string', default: ''},
+  }});
+  if (!/^\d+\.\d+\.\d+$/.test(values.version ?? '') || !/^[1-9]\d*$/.test(values['build-number'] ?? '')) {
+    throw new Error('Provide --version major.minor.patch and --build-number.');
+  }
+  const api = appStoreApi();
   const options = {
     bundleId: values['bundle-id'], version: values.version, buildNumber: values['build-number'],
     notes: values['check-available'] ? undefined : (await readFile(values['notes-file'], 'utf8')).trim(),
     checkAvailable: values['check-available'],
+    reuseExisting: values['reuse-existing'],
     repairBuildId: values['repair-build-id'],
   };
   const result = values['wait-for-processing'] && !values['check-available']
     ? await waitForRelease(api, options, {onPending: message => console.log(message)})
     : await verifyRelease(api, options);
-  if (!values['check-available']) {
+  if (values['check-available']) {
+    if (process.env.GITHUB_OUTPUT) {
+      await appendFile(process.env.GITHUB_OUTPUT, `exists=${!result.available}\n`);
+    }
+    console.log(`Build ${result.version} (${result.buildNumber}) ${result.available ? 'is available' : 'already exists'}.`);
+  } else {
     await mkdir(dirname(values.output), {recursive: true});
     await writeFile(values.output, `${JSON.stringify(result, null, 2)}\n`);
+    console.log(`Verified TestFlight ${result.version} (${result.buildNumber}), build ${result.buildId}, locales: ${result.locales.join(', ')}.`);
   }
-  console.log(values['check-available'] ? `Build ${result.version} (${result.buildNumber}) is available.` : `Verified TestFlight ${result.version} (${result.buildNumber}), build ${result.buildId}, locales: ${result.locales.join(', ')}.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

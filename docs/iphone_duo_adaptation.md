@@ -59,7 +59,7 @@ CocoaPods 使用 iOS 27.1 SDK 时会为 `foldable` 开启 `FOLDABLE_NATIVE_API`�
 
 本次重新执行 27.1 环境下的 `pod install` 和正常 `flutter run --debug`，已安装包确认记录 `iphonesimulator27.1` / `27A9275`；Runner 与 `Runner.debug.dylib` 的 Mach-O SDK 都为 27.1，模拟器内的 Runner 与构建产物一致。展开时右侧状态栏黑条消失，左边原先的额外留白缩小，列表与所选帖子正文均正常显示。启动及打开含 Steam 卡片的帖子未发现运行异常。构建预检测试 7 项、分栏/弹层/导航/紧凑列表测试 42 项通过。本次未修改 SafeArea 或强制减少系统安全区域。
 
-App Store workflow 的 `xcode_version` 可选择已安装的 Xcode，`runner` 可指定具有新 SDK 的 macOS runner 标签，`require_duo` 默认开启。当前 GitHub 托管 runner 若没有新 SDK，检查会阻止上传；可配置安装了 Xcode 27.1+ 的 runner。显式关闭 `require_duo` 可发布兼容模式包。
+GitHub 正式 Release 使用 `xcode-27` 托管 runner，归档前后均检查 iOS 27.1+ SDK。可通过 `APPSTORE_RUNNER` 和 `APPSTORE_XCODE_VERSION` 选择发布环境，见[发布说明](store-release.md)。
 
 Xcode Cloud 在 App Store Connect 的 Environment 中选择 Xcode 27.1+，默认也严格检查 SDK。仅构建旧 SDK 兼容包时，将环境变量 `REQUIRE_IPHONE_DUO` 设为 `0`。普通 iOS CI 保留兼容性构建，并报告 SDK 能力。
 

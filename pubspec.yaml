@@ -65,6 +65,8 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   extended_text_field: ^17.0.0
   image_picker: ^1.2.4
+  image_picker_android: ^0.8.13+25
+  image_picker_platform_interface: ^2.11.2
   flutter_image_compress: ^2.5.1
 
   package_info_plus: ^10.2.2

@@ -5,10 +5,12 @@ on:
     branches: [dev, test, master]
   push:
     branches: [dev, test, master]
+  release:
+    types: [published]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name != 'release' }}
 
 permissions:
   contents: read
@@ -19,15 +21,26 @@ env:
   FLUTTER_STORAGE_BASE_URL: https://storage.googleapis.com
 
 jobs:
+  release_version:
+    name: Validate published release
+    if: github.event_name == 'release' && !github.event.release.prerelease
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+      build: ${{ steps.release.outputs.build }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - id: release
+        run: python3 scripts/prepare_store_release.py --tag "$GITHUB_REF_NAME"
+
   android:
     name: Android
+    needs: release_version
+    if: ${{ !cancelled() && (github.event_name != 'release' || needs.release_version.result == 'success') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
-    env:
-      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
 
     steps:
       - name: Checkout repository
@@ -94,7 +107,7 @@ jobs:
         run: |
           flutter test --no-pub test third_party/adaptive_platform_ui/test
           python3 -m unittest discover -s test -p 'test_*.py'
-          node --test test/testflight_release_verification_test.mjs
+          node --test test/*release*_test.mjs
 
       - name: Run Android background-notification tests
         working-directory: android
@@ -104,7 +117,12 @@ jobs:
         run: flutter analyze --suggestions
 
       - name: Validate release signing secrets
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'release'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         shell: bash
         run: |
           missing=0
@@ -117,7 +135,12 @@ jobs:
           exit "$missing"
 
       - name: Configure release signing
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'release'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         shell: bash
         run: |
           printf '%s' "$KEYSTORE_BASE64" | base64 --decode > android/app/keystore.jks
@@ -129,27 +152,26 @@ jobs:
           } > android/key.properties
 
       - name: Build signed Android release
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'release'
         shell: bash
+        env:
+          BUILD_NAME: ${{ needs.release_version.outputs.version }}
+          BUILD_NUMBER: ${{ needs.release_version.outputs.build }}
         run: |
-          version=$(awk '$1 == "version:" { print $2; exit }' pubspec.yaml)
-          if [[ ! "$version" =~ ^([0-9]+\.[0-9]+\.[0-9]+)\+([1-9][0-9]*)$ ]]; then
-            echo "::error::Expected pubspec.yaml version in name+build format (for example 2.0.4+160)."
-            exit 1
-          fi
-          build_name="${BASH_REMATCH[1]}"
-          build_number="${BASH_REMATCH[2]}"
+          version="$BUILD_NAME+$BUILD_NUMBER"
           # Release builds must regenerate plugin registration for release mode.
           # --no-pub can retain dev-only plugins such as integration_test from
           # the dependency/toolchain checks, while Gradle excludes them.
           mkdir -p release
-          flutter build apk --release --build-name="$build_name" --build-number="$build_number"
+          flutter build apk --release --build-name="$BUILD_NAME" --build-number="$BUILD_NUMBER"
           test -s build/app/outputs/mapping/release/mapping.txt
           cp build/app/outputs/mapping/release/mapping.txt release/apk-mapping.txt
-          flutter build appbundle --release --build-name="$build_name" --build-number="$build_number"
+          flutter build appbundle --release --build-name="$BUILD_NAME" --build-number="$BUILD_NUMBER"
           git diff --exit-code -- pubspec.lock
           cp build/app/outputs/flutter-apk/app-release.apk release/
           cp build/app/outputs/bundle/release/app-release.aab release/
+          python3 scripts/check_android_media_permissions.py \
+            build/app/intermediates/packaged_manifests/release/processReleaseManifestForPackage/AndroidManifest.xml
           # Extract from the submitted AAB so this mapping always matches it.
           python3 - <<'PY'
           from pathlib import Path
@@ -167,15 +189,17 @@ jobs:
           cat release/android-release-info.txt >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build Android debug artifact
-        if: github.event_name != 'push' || github.ref != 'refs/heads/master'
+        if: github.event_name != 'release'
         shell: bash
         run: |
           flutter build apk --debug --no-pub
+          python3 scripts/check_android_media_permissions.py \
+            build/app/intermediates/packaged_manifests/debug/processDebugManifestForPackage/AndroidManifest.xml
           mkdir -p release
           cp build/app/outputs/flutter-apk/app-debug.apk release/
 
       - name: Upload Android release artifacts
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'release'
         uses: actions/upload-artifact@v7
         with:
           name: android-release
@@ -184,7 +208,7 @@ jobs:
           retention-days: 14
 
       - name: Upload Android debug artifact
-        if: github.event_name != 'push' || github.ref != 'refs/heads/master'
+        if: github.event_name != 'release'
         uses: actions/upload-artifact@v7
         with:
           name: android-debug
@@ -194,6 +218,8 @@ jobs:
 
   ios:
     name: iOS
+    needs: release_version
+    if: ${{ !cancelled() && (github.event_name != 'release' || needs.release_version.result == 'success') }}
     runs-on: macos-26
     timeout-minutes: 60
     env:
@@ -276,63 +302,67 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  release:
-    name: GitHub Release
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+  github_assets:
+    name: Attach binaries to GitHub Release
+    if: github.event_name == 'release'
     needs: [android, ios]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: write
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@v8
         with:
           pattern: "*-release"
           path: dist
           merge-multiple: true
-
-      - name: Determine release tag
-        shell: bash
-        run: |
-          version=$(awk '$1 == "version:" { print $2; exit }' pubspec.yaml)
-          if [ -z "$version" ]; then
-            echo "::error::Unable to read the version from pubspec.yaml."
-            exit 1
-          fi
-
-          tag="v${version}"
-          if git ls-remote --exit-code --tags origin "refs/tags/${tag}" >/dev/null 2>&1; then
-            tag="${tag}-build-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT}"
-          fi
-          echo "RELEASE_TAG=$tag" >> "$GITHUB_ENV"
-          notes="docs/releases/${version%%+*}.md"
-          if [ ! -f "$notes" ]; then
-            echo "::error::Missing release notes: $notes"
-            exit 1
-          fi
-          echo "RELEASE_NOTES=$notes" >> "$GITHUB_ENV"
-
-      - name: Create GitHub release
+      - name: Upload release assets
         env:
           GH_TOKEN: ${{ github.token }}
-        shell: bash
+        run: gh release upload "$GITHUB_REF_NAME" dist/* --repo "$GITHUB_REPOSITORY" --clobber
+
+  google_play:
+    name: Submit Google Play production release
+    if: github.event_name == 'release'
+    needs: [release_version, android]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    concurrency:
+      group: google-play-production
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      PLAY_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.PLAY_WORKLOAD_IDENTITY_PROVIDER }}
+      PLAY_SERVICE_ACCOUNT: ${{ vars.PLAY_SERVICE_ACCOUNT }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v8
+        with:
+          name: android-release
+          path: dist
+      - name: Verify signed artifact and Play authorization settings
         run: |
-          gh release create "$RELEASE_TAG" \
-            dist/app-release.apk \
-            dist/app-release.aab \
-            dist/mapping.txt \
-            dist/apk-mapping.txt \
-            dist/android-release-info.txt \
-            dist/SHA256SUMS.txt \
-            dist/Runner-ios.tar.gz \
-            --target "$GITHUB_SHA" \
-            --title "$RELEASE_TAG" \
-            --notes-file "$RELEASE_NOTES" \
-            --generate-notes
+          (cd dist && sha256sum --check SHA256SUMS.txt)
+          if [[ -z "$PLAY_WORKLOAD_IDENTITY_PROVIDER" || -z "$PLAY_SERVICE_ACCOUNT" ]]; then
+            echo '::error::Configure PLAY_WORKLOAD_IDENTITY_PROVIDER and PLAY_SERVICE_ACCOUNT. See docs/store-release.md.'
+            exit 1
+          fi
+      - name: Authenticate as the Play publishing service account
+        id: play_auth
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ env.PLAY_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.PLAY_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/androidpublisher
+          create_credentials_file: false
+      - name: Submit signed AAB to the production track
+        env:
+          PLAY_ACCESS_TOKEN: ${{ steps.play_auth.outputs.access_token }}
+        run: |
+          python3 scripts/prepare_store_release.py --tag "$GITHUB_REF_NAME" --output dist/store-release.json
+          node scripts/submit_google_play.mjs dist/store-release.json dist/app-release.aab

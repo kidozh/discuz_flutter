@@ -1,46 +1,25 @@
 name: Upload iOS to App Store Connect
 
 on:
-  push:
-    branches:
-      - release
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
-      xcode_version:
-        description: Xcode selection; Duo requires 27.1 or newer on the runner
-        required: true
-        default: latest-stable
-        type: string
-      runner:
-        description: macOS runner label with the requested Xcode installed
-        required: true
-        default: macos-26
-        type: string
-      require_duo:
-        description: Require full-display iPhone Duo support before uploading
-        required: true
-        default: true
-        type: boolean
       build_number:
-        description: Optional CFBundleVersion; defaults to the pubspec.yaml build number
+        description: Existing CFBundleVersion; defaults to pubspec.yaml
         required: false
         type: string
       release_notes:
-        description: Optional notes for this build; replaces repository notes
+        description: TestFlight notes override for an already uploaded build
         required: false
         type: string
-      metadata_only:
-        description: Verify or repair notes for an already uploaded build
-        required: false
-        default: false
-        type: boolean
       repair_build_id:
         description: Optional older build whose notes were misplaced by an uploader
         required: false
         type: string
 
 concurrency:
-  group: app-store-upload-${{ github.ref }}
+  group: app-store-upload
   cancel-in-progress: false
 
 permissions:
@@ -54,12 +33,12 @@ env:
 
 jobs:
   upload:
-    if: ${{ !inputs.metadata_only }}
+    if: github.event_name == 'release' && !github.event.release.prerelease
     name: Build, sign, and upload iOS
-    runs-on: ${{ inputs.runner || 'macos-26' }}
+    runs-on: ${{ vars.APPSTORE_RUNNER || 'xcode-27' }}
     timeout-minutes: 90
     env:
-      REQUIRE_IPHONE_DUO: ${{ github.event_name != 'workflow_dispatch' || inputs.require_duo }}
+      REQUIRE_IPHONE_DUO: '1'
 
     steps:
       - name: Checkout repository
@@ -69,18 +48,14 @@ jobs:
         if: runner.environment == 'github-hosted'
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: ${{ inputs.xcode_version || 'latest-stable' }}
+          xcode-version: ${{ vars.APPSTORE_XCODE_VERSION || 'latest-stable' }}
 
       - name: Verify Xcode and iOS SDK
         shell: bash
         run: |
           xcodebuild -version
           xcodebuild -version -sdk iphoneos
-          if [[ "${{ github.event_name != 'workflow_dispatch' || inputs.require_duo }}" == "true" ]]; then
-            python3 scripts/check_iphone_duo.py --require-duo
-          else
-            python3 scripts/check_iphone_duo.py
-          fi
+          python3 scripts/check_iphone_duo.py --require-duo
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -120,36 +95,13 @@ jobs:
 
       - name: Determine release version
         id: version
-        shell: bash
-        env:
-          REQUESTED_BUILD_NUMBER: ${{ inputs.build_number }}
-        run: |
-          version=$(awk '$1 == "version:" { print $2; exit }' pubspec.yaml)
-          if [[ ! "$version" =~ ^([0-9]+\.[0-9]+\.[0-9]+)\+([1-9][0-9]*)$ ]]; then
-            echo "::error::Expected pubspec.yaml version in name+build format."
-            exit 1
-          fi
-          build_name="${BASH_REMATCH[1]}"
-          source_build="${BASH_REMATCH[2]}"
-          if [[ -n "$REQUESTED_BUILD_NUMBER" ]]; then
-            build_number="$REQUESTED_BUILD_NUMBER"
-          else
-            build_number="$source_build"
-          fi
-          if [[ ! "$build_number" =~ ^[1-9][0-9]*$ ]]; then
-            echo "::error::Build number must be a positive integer."
-            exit 1
-          fi
-          echo "build_number=$build_number" >> "$GITHUB_OUTPUT"
-          echo "build_name=$build_name" >> "$GITHUB_OUTPUT"
-          echo "Building App Store version $build_name ($build_number)"
+        run: python3 scripts/prepare_store_release.py --tag "$GITHUB_REF_NAME" --output build/ios/store-release.json
 
       - name: Validate TestFlight release notes
         id: testflight_notes
         env:
-          CUSTOM_RELEASE_NOTES: ${{ inputs.release_notes }}
-          BUILD_NAME: ${{ steps.version.outputs.build_name }}
-          BUILD_NUMBER: ${{ steps.version.outputs.build_number }}
+          BUILD_NAME: ${{ steps.version.outputs.version }}
+          BUILD_NUMBER: ${{ steps.version.outputs.build }}
         run: |
           python3 scripts/prepare_testflight_notes.py \
             --version "$BUILD_NAME" \
@@ -162,25 +114,28 @@ jobs:
         run: |
           flutter test --no-pub test third_party/adaptive_platform_ui/test
           python3 -m unittest discover -s test -p 'test_*.py'
-          node --test test/testflight_release_verification_test.mjs
+          node --test test/*release*_test.mjs
 
-      - name: Check App Store build number availability
+      - name: Check whether this build already exists
+        id: existing_build
         env:
           APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
           APPSTORE_API_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
           APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
         run: |
-          node scripts/verify_testflight_release.mjs --check-available \
-            --version '${{ steps.version.outputs.build_name }}' \
-            --build-number '${{ steps.version.outputs.build_number }}'
+          node scripts/verify_testflight_release.mjs --check-available --reuse-existing \
+            --version '${{ steps.version.outputs.version }}' \
+            --build-number '${{ steps.version.outputs.build }}'
 
       - name: Import App Store signing certificate
+        if: steps.existing_build.outputs.exists == 'false'
         uses: apple-actions/import-codesign-certs@v7
         with:
           p12-file-base64: ${{ secrets.APPSTORE_CERTIFICATES_FILE_BASE64 }}
           p12-password: ${{ secrets.APPSTORE_CERTIFICATES_PASSWORD }}
 
       - name: Download App Store provisioning profile
+        if: steps.existing_build.outputs.exists == 'false'
         id: iphone_profiles
         uses: apple-actions/download-provisioning-profiles@v6
         with:
@@ -191,6 +146,7 @@ jobs:
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
       - name: Download Apple Watch provisioning profile
+        if: steps.existing_build.outputs.exists == 'false'
         id: watch_profiles
         uses: apple-actions/download-provisioning-profiles@v6
         with:
@@ -201,6 +157,7 @@ jobs:
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
       - name: Configure distribution signing for both apps
+        if: steps.existing_build.outputs.exists == 'false'
         env:
           IPHONE_PROFILES: ${{ steps.iphone_profiles.outputs.profiles }}
           WATCH_PROFILES: ${{ steps.watch_profiles.outputs.profiles }}
@@ -211,6 +168,7 @@ jobs:
             --export-options build/ios/AppStoreExportOptions.plist
 
       - name: Build signed IPA
+        if: steps.existing_build.outputs.exists == 'false'
         env:
           APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
           APPSTORE_API_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
@@ -223,8 +181,8 @@ jobs:
           chmod 600 "$key_file"
           unset APPSTORE_API_PRIVATE_KEY
           flutter build ios --release --config-only --no-pub \
-            --build-name=${{ steps.version.outputs.build_name }} \
-            --build-number=${{ steps.version.outputs.build_number }}
+            --build-name=${{ steps.version.outputs.version }} \
+            --build-number=${{ steps.version.outputs.build }}
           xcodebuild archive -workspace ios/Runner.xcworkspace -scheme Runner \
             -configuration Release -destination 'generic/platform=iOS' \
             -archivePath build/ios/archive/Runner.xcarchive \
@@ -239,25 +197,27 @@ jobs:
             -authenticationKeyIssuerID "$APPSTORE_ISSUER_ID"
 
       - name: Verify archived SDK for iPhone Duo
+        if: steps.existing_build.outputs.exists == 'false'
         shell: bash
         run: |
-          if [[ "${{ github.event_name != 'workflow_dispatch' || inputs.require_duo }}" == "true" ]]; then
-            python3 scripts/check_iphone_duo.py --require-duo --app build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app
-          fi
+          python3 scripts/check_iphone_duo.py --require-duo --app build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app
 
       - name: Verify archived iOS version
+        if: steps.existing_build.outputs.exists == 'false'
         env:
-          EXPECTED_BUILD_NAME: ${{ steps.version.outputs.build_name }}
-          EXPECTED_BUILD_NUMBER: ${{ steps.version.outputs.build_number }}
+          EXPECTED_BUILD_NAME: ${{ steps.version.outputs.version }}
+          EXPECTED_BUILD_NUMBER: ${{ steps.version.outputs.build }}
         run: |
           plist=build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app/Info.plist
           test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$plist")" = "$EXPECTED_BUILD_NAME"
           test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$plist")" = "$EXPECTED_BUILD_NUMBER"
 
       - name: Verify archived Keychain entitlements
+        if: steps.existing_build.outputs.exists == 'false'
         run: python3 scripts/check_ios_keychain.py --app build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app
 
       - name: Locate IPA
+        if: steps.existing_build.outputs.exists == 'false'
         id: ipa
         shell: bash
         run: |
@@ -271,6 +231,7 @@ jobs:
           echo "path=$ipa_path" >> "$GITHUB_OUTPUT"
 
       - name: Upload to App Store Connect and TestFlight
+        if: steps.existing_build.outputs.exists == 'false'
         uses: apple-actions/upload-testflight-build@v5
         with:
           app-path: ${{ steps.ipa.outputs.path }}
@@ -291,13 +252,13 @@ jobs:
         run: |
           node scripts/verify_testflight_release.mjs \
             --wait-for-processing \
-            --version '${{ steps.version.outputs.build_name }}' \
-            --build-number '${{ steps.version.outputs.build_number }}'
+            --version '${{ steps.version.outputs.version }}' \
+            --build-number '${{ steps.version.outputs.build }}'
 
       - name: Preserve TestFlight verification receipt
         uses: actions/upload-artifact@v7
         with:
-          name: testflight-verification-${{ steps.version.outputs.build_number }}
+          name: testflight-verification-${{ steps.version.outputs.build }}
           path: build/ios/testflight-verification.json
           if-no-files-found: error
 
@@ -307,7 +268,7 @@ jobs:
         timeout-minutes: 3
         uses: actions/upload-artifact@v7
         with:
-          name: ios-app-store-${{ steps.version.outputs.build_number }}
+          name: ios-app-store-${{ steps.version.outputs.build }}
           path: |
             ${{ steps.ipa.outputs.path }}
             build/ios/testflight-release-notes.txt
@@ -315,10 +276,18 @@ jobs:
           compression-level: 0
           retention-days: 14
 
+      - name: Submit App Store and external TestFlight reviews
+        env:
+          APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
+          APPSTORE_API_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
+          APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+          TESTFLIGHT_EXTERNAL_GROUP_ID: ${{ vars.TESTFLIGHT_EXTERNAL_GROUP_ID }}
+        run: node scripts/submit_app_store.mjs build/ios/store-release.json build/ios/testflight-verification.json
+
   verify_existing:
     name: Verify existing TestFlight build
-    if: ${{ inputs.metadata_only }}
-    runs-on: ${{ inputs.runner || 'macos-26' }}
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
       - name: Checkout repository
