@@ -1,5 +1,6 @@
 
 
+import 'package:discuz_flutter/utility/pane_navigation.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/NewThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
@@ -13,7 +14,7 @@ class NewThreadWidget extends StatelessWidget{
   NewThread _newThread;
   Discuz _discuz;
   User? _user;
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
   int? afterTid = null;
 
   NewThreadWidget(this._discuz,this._user,this._newThread, this.onSelectTid, {this.afterTid});

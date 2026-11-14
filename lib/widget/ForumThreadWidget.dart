@@ -36,7 +36,7 @@ class ForumThreadWidget extends StatelessWidget {
   final Discuz _discuz;
   final User? _user;
   final ThreadType? threadType;
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
   final int? afterTid;
 
   ForumThreadWidget(
@@ -72,7 +72,7 @@ class ForumThreadStatefulWidget extends StatefulWidget {
   final Discuz _discuz;
   final User? _user;
   final ThreadType? threadType;
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
   final int? afterTid;
 
   ForumThreadStatefulWidget(
@@ -95,7 +95,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
   User? get _user => widget._user;
   ThreadType? get threadType => widget.threadType;
   int? get afterTid => widget.afterTid;
-  ValueChanged<int>? get onSelectTid => widget.onSelectTid;
+  ThreadSelectionCallback? get onSelectTid => widget.onSelectTid;
   bool read = false;
 
   @override
@@ -223,7 +223,9 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
     final message = forumThreadPreview(_forumThread.message);
     final attachments = _forumThread.attachmentImagePreviewList;
     final reply = _forumThread.reply
-        .map((reply) => (reply.author.trim(), forumThreadPreview(reply.message)))
+        .map(
+          (reply) => (reply.author.trim(), forumThreadPreview(reply.message)),
+        )
         .where((reply) => reply.$2.isNotEmpty)
         .firstOrNull;
     final metadata = [
@@ -338,7 +340,7 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
     markThreadAsRead();
     // recall
     if (onSelectTid != null) {
-      onSelectTid!(_forumThread.getTid());
+      onSelectTid!(_forumThread.getTid(), subject: _forumThread.subject);
     } else {
       await pushDetailPage(
         context,

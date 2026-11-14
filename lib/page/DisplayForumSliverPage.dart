@@ -71,7 +71,7 @@ class DisplayForumAltSliverPage extends StatelessWidget {
   late final Discuz discuz;
   late final User? user;
   int fid = 0;
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
   String? forumTitle = null;
 
   DisplayForumAltSliverPage(
@@ -108,7 +108,7 @@ class DisplayForumSliverStatefulWidget extends StatefulWidget {
   late final User? user;
   int fid = 0;
 
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
   String? forumTitle = null;
 
   DisplayForumSliverStatefulWidget(
@@ -150,7 +150,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
 
   bool historySaved = false;
 
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
   String? forumTitle = null;
 
   _DisplayForumSliverState(
@@ -1287,6 +1287,7 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget>
   }
 
   final RestorableInt _currentTid = RestorableInt(0);
+  final RestorableStringN _threadSubject = RestorableStringN(null);
   int _selectionRevision = 0;
   late final RestorableInt _currentFid;
 
@@ -1296,22 +1297,27 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget>
   @override
   void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
     registerForRestoration(_currentTid, "DisplayForumTid");
+    registerForRestoration(_threadSubject, 'DisplayThreadSubject');
     registerForRestoration(_currentFid, "DisplayForumFid");
   }
 
   @override
   void dispose() {
     _currentTid.dispose();
+    _threadSubject.dispose();
     _currentFid.dispose();
     super.dispose();
   }
 
-  void _selectThread(int tid) {
+  void _selectThread(int tid, {String? subject}) {
     Provider.of<SelectedTidNotifierProvider>(
       context,
       listen: false,
     ).setTid(tid, discuz);
     setState(() {
+      _threadSubject.value = tid == 0
+          ? null
+          : subject ?? (tid == _currentTid.value ? _threadSubject.value : null);
       _currentTid.value = tid;
       _selectionRevision++;
     });
@@ -1345,6 +1351,7 @@ class DisplayForumTwoPaneState extends State<DisplayForumTwoPaneStatefulWidget>
                 discuz,
                 user,
                 _currentTid.value,
+                passedSubject: _threadSubject.value,
                 onClosed: () => _selectThread(0),
               ),
             ),

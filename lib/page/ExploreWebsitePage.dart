@@ -28,7 +28,7 @@ import 'ViewThreadSliverPage.dart';
 class ExploreWebsitePage extends StatefulWidget {
   final String? initialURL;
 
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
 
   ExploreWebsitePage({this.initialURL, required Key key, this.onSelectTid})
     : super(key: key);
@@ -45,7 +45,7 @@ class ExploreWebsitePage extends StatefulWidget {
 class ExploreWebsiteState extends State<ExploreWebsitePage> {
   String? initialURL;
 
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
   ExploreWebsiteState({this.initialURL, this.onSelectTid});
 
   @override
@@ -149,7 +149,7 @@ class InnerWebviewScreen extends StatefulWidget {
   final Discuz _discuz;
   final User? _user;
   final String? initialURL;
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
 
   InnerWebviewScreen(
     Key key,
@@ -173,7 +173,7 @@ class InnerWebviewScreen extends StatefulWidget {
 class InnerWebviewState extends State<InnerWebviewScreen> {
   Discuz _discuz;
   User? _user;
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
 
   final webviewCookieManager = const DiscuzWebviewCookieManager();
   WebViewController _controller = WebViewController();

@@ -1,3 +1,4 @@
+import 'package:discuz_flutter/utility/pane_navigation.dart';
 import '../utility/DashboardPreferences.dart';
 
 import 'package:dio/dio.dart';
@@ -17,7 +18,7 @@ import 'KeylolTopicTabs.dart';
 import 'LoadingStateWidget.dart';
 
 class KeylolMobileTopicWidget extends StatefulWidget {
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
 
   const KeylolMobileTopicWidget({super.key, this.onSelectTid});
 

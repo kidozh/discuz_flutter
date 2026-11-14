@@ -1,3 +1,4 @@
+import 'package:discuz_flutter/utility/pane_navigation.dart';
 import '../provider/UserPreferenceNotifierProvider.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -15,7 +16,7 @@ import 'thread_carousel_card.dart';
 import 'thread_carousel_layout.dart';
 
 class ThreadSlideShowCarouselWidget extends StatefulWidget {
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
   final Future<List<KeylolCarouselItem>> Function()? loadItems;
   final ImageProvider Function(String)? imageProviderBuilder;
 
@@ -218,7 +219,7 @@ class _ThreadSlideShowCarouselState
           listen: false,
         ).discuz;
         if (slideShow.tid != 0 && onSelectTid != null) {
-          return onSelectTid(slideShow.tid);
+          return onSelectTid(slideShow.tid, subject: slideShow.title);
         }
 
         if (discuz != null) {
@@ -228,6 +229,7 @@ class _ThreadSlideShowCarouselState
             slideShow.link,
             (pid) {},
             null,
+            subject: slideShow.title,
           );
         }
       },

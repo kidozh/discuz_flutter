@@ -1,3 +1,4 @@
+import 'package:discuz_flutter/utility/pane_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +13,7 @@ import 'HotThreadScreen.dart';
 import 'NullDiscuzScreen.dart';
 
 class DashboardScreen extends StatefulWidget {
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
   const DashboardScreen({super.key, this.onSelectTid});
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();

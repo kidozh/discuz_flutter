@@ -1,5 +1,6 @@
 
 
+import 'package:discuz_flutter/utility/pane_navigation.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/HotThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
@@ -13,7 +14,7 @@ class HotThreadWidget extends StatelessWidget{
   HotThread _hotThread;
   Discuz _discuz;
   User? _user;
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
   int? afterTid = null;
 
   HotThreadWidget(this._discuz,this._user,this._hotThread, this.onSelectTid, {this.afterTid});

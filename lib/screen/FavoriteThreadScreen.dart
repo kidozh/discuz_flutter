@@ -196,6 +196,7 @@ class _FavoriteThreadState extends State<FavoriteThreadStatefulWidget> {
                             discuz,
                             user,
                             favoriteThread.id,
+                            passedSubject: favoriteThread.title,
                           ),
                         ),
                       );

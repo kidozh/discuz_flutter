@@ -42,7 +42,12 @@ class _AppleWatchCompanionHostState extends State<AppleWatchCompanionHost> {
           final Widget page;
           switch (section) {
             case 'threads':
-              page = ViewThreadSliverPage(discuz, user, item['id'] as int);
+              page = ViewThreadSliverPage(
+                discuz,
+                user,
+                item['id'] as int,
+                passedSubject: item['title'] as String?,
+              );
             case 'messages':
               page = PrivateMessageDetailPage(
                 toUid: item['id'] as int,

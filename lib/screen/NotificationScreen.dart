@@ -25,7 +25,7 @@ import 'EmptyListScreen.dart';
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({this.onSelectTid, super.key});
 
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class NotificationScreen extends StatelessWidget {
 }
 
 class NotificationStatefulWidget extends StatefulWidget {
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
 
   const NotificationStatefulWidget({this.onSelectTid, super.key});
 

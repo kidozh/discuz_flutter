@@ -287,6 +287,7 @@ class ViewHistoryState extends State<ViewHistoryPage> {
             discuz,
             user,
             viewHistory.identification,
+            passedSubject: viewHistory.title,
           ),
         ),
       );

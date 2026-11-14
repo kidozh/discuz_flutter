@@ -43,7 +43,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
   Discuz discuz;
   JumpToPidCallback? callback;
   int? tid;
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
   final Color? textColor;
 
   /// Use only as a direct sliver in the page's existing CustomScrollView.

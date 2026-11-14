@@ -18,6 +18,7 @@ import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/HotThreadWidget.dart';
+import 'package:discuz_flutter/utility/pane_navigation.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +33,7 @@ import '../widget/ThreadSlideShowCarouselWidget.dart';
 import 'EmptyListScreen.dart';
 
 class HotThreadScreen extends StatelessWidget {
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
 
   HotThreadScreen({this.onSelectTid}) {
     log("Hot thread When create it ${onSelectTid}");
@@ -52,7 +53,7 @@ class HotThreadScreen extends StatelessWidget {
 }
 
 class HotThreadStatefulWidget extends StatefulWidget {
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
   HotThreadStatefulWidget({super.key, this.onSelectTid});
 
   @override

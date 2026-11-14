@@ -9,6 +9,7 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/NewThreadResult.dart';
+import 'package:discuz_flutter/utility/pane_navigation.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,7 @@ import 'EmptyListScreen.dart';
 import 'NullDiscuzScreen.dart';
 
 class NewThreadScreen extends StatelessWidget {
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
   NewThreadScreen({this.onSelectTid}) {
     log("New thread When create it ${onSelectTid}");
   }
@@ -53,7 +54,7 @@ class NewThreadScreen extends StatelessWidget {
 }
 
 class NewThreadStatefulWidget extends StatefulWidget {
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
   NewThreadStatefulWidget({super.key, this.onSelectTid});
 
   @override

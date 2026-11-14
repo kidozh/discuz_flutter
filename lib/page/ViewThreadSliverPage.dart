@@ -129,7 +129,7 @@ class ViewThreadStatefulSliverWidget extends StatefulWidget {
   late final Discuz discuz;
   late final User? user;
   int tid = 0;
-  String? passedSubject;
+  final String? passedSubject;
   VoidCallback? onClosed;
   final int? initialPid;
 
@@ -149,7 +149,6 @@ class ViewThreadStatefulSliverWidget extends StatefulWidget {
       this.discuz,
       this.user,
       this.tid,
-      passedSubject: passedSubject,
       onClosed: onClosed,
     );
   }
@@ -162,7 +161,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   DiscuzError? _error;
   List<Post> _postList = [];
   int _page = 1;
-  String? passedSubject;
   final _replyController = PostEditorController();
   final CaptchaController _captchaController = new CaptchaController(
     new CaptchaFields("", "post", ""),
@@ -175,13 +173,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
 
   bool historySaved = false;
   VoidCallback? onClosed;
-  _ViewThreadSliverState(
-    this.discuz,
-    this.user,
-    this.tid, {
-    this.passedSubject,
-    this.onClosed,
-  });
+  _ViewThreadSliverState(this.discuz, this.user, this.tid, {this.onClosed});
 
   final _controller = EasyRefreshController();
   late final _positionWriter = LatestValueWriter<ViewThreadScrollDistance>(
@@ -1226,10 +1218,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   Widget build(BuildContext context) {
     ModalRoute<Object?>? route = ModalRoute.of(context);
     final loadedSubject = _viewThreadResult.threadVariables.threadInfo.subject;
+    final passedSubject = widget.passedSubject?.trim() ?? '';
+    final initialSubject = passedSubject.isEmpty
+        ? S.of(context).viewThreadTitle
+        : passedSubject;
     final threadSubject = HtmlUnescape().convert(
-      loadedSubject.isNotEmpty
-          ? loadedSubject
-          : passedSubject ?? S.of(context).viewThreadTitle,
+      loadedSubject.isNotEmpty ? loadedSubject : initialSubject,
     );
     final favoriteThreadInDatabase = favoriteThreadDao?.getFavoriteThreadByTid(
       tid,
@@ -1481,7 +1475,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                               index,
                             ) {
                               return _isFirstLoading
-                                  ? LoadingStateWidget(hintText: passedSubject)
+                                  ? LoadingStateWidget(hintText: initialSubject)
                                   : EmptyListScreen(EmptyItemType.post);
                             }, childCount: 1),
                           ),

@@ -1070,16 +1070,8 @@ class PostState extends State<PostStatefulWidget> {
 
   Widget getUserAvatar(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: _post.first ? 4 : 2,
-        horizontal: 8.0,
-      ),
-      child: UserAvatar(
-        _discuz,
-        _post.authorId,
-        _post.author,
-        size: _post.first ? 30.0 : 24.0,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+      child: UserAvatar(_discuz, _post.authorId, _post.author, size: 24),
     );
   }
 
@@ -1241,46 +1233,54 @@ class PostState extends State<PostStatefulWidget> {
   Widget getPostHeader(BuildContext context) {
     if (_post.first) {
       final theme = Theme.of(context);
-      return Row(
-        children: [
-          getUserAvatar(context),
-          const SizedBox(width: 4),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: _post.author,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      if (_authorId == _post.authorId)
+      const avatarSize = 32.0;
+      const avatarGap = 8.0;
+      return _postActionRow(
+        context,
+        metadata: Row(
+          children: [
+            UserAvatar(_discuz, _post.authorId, _post.author, size: avatarSize),
+            const SizedBox(width: avatarGap),
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text.rich(
+                    TextSpan(
+                      children: [
                         TextSpan(
-                          text: ' ${S.of(context).postAuthorLabel}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w300,
-                            color: theme.colorScheme.primary,
-                            fontSize: 14,
+                          text: _post.author,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
                           ),
                         ),
-                    ],
+                        if (_authorId == _post.authorId)
+                          TextSpan(
+                            text: ' ${S.of(context).postAuthorLabel}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w300,
+                              color: theme.colorScheme.primary,
+                              fontSize: 14,
+                            ),
+                          ),
+                      ],
+                    ),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurface,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                _postActionRow(context),
-              ],
+                  const SizedBox(height: 2),
+                  _postTimestamp(context),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
+        metadataLeadingWidth: avatarSize + avatarGap,
       );
     }
 
@@ -1331,38 +1331,41 @@ class PostState extends State<PostStatefulWidget> {
     );
   }
 
-  Widget _postActionRow(BuildContext context) {
+  Widget _postTimestamp(BuildContext context) {
     final theme = Theme.of(context);
-    return PostActionRow(
-      timestamp: Text.rich(
-        TextSpan(
-          text: TimeDisplayUtils.getLocaledTimeDisplay(
-            context,
-            _post.publishAt,
-          ),
-          children: [
-            if (_post.status & POST_REVISED != 0)
-              TextSpan(
-                text: ' · ${S.of(context).editedPost}',
-                style: _post.first
-                    ? const TextStyle(fontWeight: FontWeight.bold)
-                    : null,
-              ),
-            if (_post.ipLocation.isNotEmpty)
-              TextSpan(text: ' ${_post.ipLocation}'),
-            if (_post.first && groupTitle.isNotEmpty)
-              getGroupWidgetSpan(context),
-          ],
-        ),
-        style: theme.textTheme.bodyMedium?.copyWith(
-          fontSize: 14,
-          color: _post.first
-              ? theme.colorScheme.onSurface
-              : theme.colorScheme.onSurfaceVariant,
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+    return Text.rich(
+      TextSpan(
+        text: TimeDisplayUtils.getLocaledTimeDisplay(context, _post.publishAt),
+        children: [
+          if (_post.status & POST_REVISED != 0)
+            TextSpan(
+              text: ' · ${S.of(context).editedPost}',
+              style: _post.first
+                  ? const TextStyle(fontWeight: FontWeight.bold)
+                  : null,
+            ),
+          if (_post.ipLocation.isNotEmpty)
+            TextSpan(text: ' ${_post.ipLocation}'),
+          if (_post.first && groupTitle.isNotEmpty) getGroupWidgetSpan(context),
+        ],
       ),
+      style: theme.textTheme.bodyMedium?.copyWith(
+        fontSize: 14,
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _postActionRow(
+    BuildContext context, {
+    Widget? metadata,
+    double metadataLeadingWidth = 0,
+  }) {
+    return PostActionRow(
+      metadata: metadata ?? _postTimestamp(context),
+      metadataLeadingWidth: metadataLeadingWidth,
       actions: _postActions(context),
       overflowBuilder: (hidden) => getPostPopupMenu(
         context,

@@ -429,7 +429,7 @@ class MyHomePage extends StatefulWidget {
     required this.navigatorKey,
   }) : super(key: key);
 
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
 
   final String title;
 
@@ -442,7 +442,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   GlobalKey<NavigatorState> navigatorKey;
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
 
   int _bottomNavigationbarIndex = 0;
   late List<Widget> bodies = [];
@@ -966,6 +966,7 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
     with RestorationMixin {
   final RestorableInt _currentTid = RestorableInt(0);
   final RestorableStringN _threadSite = RestorableStringN(null);
+  final RestorableStringN _threadSubject = RestorableStringN(null);
   late final DiscuzAndUserNotifier _account;
   String? _lastSite;
   int _selectionRevision = 0;
@@ -980,6 +981,7 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
   void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
     registerForRestoration(_currentTid, "DisplayForumTid");
     registerForRestoration(_threadSite, 'DisplayForumSite');
+    registerForRestoration(_threadSubject, 'DisplayThreadSubject');
   }
 
   @override
@@ -987,6 +989,7 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
     _account.removeListener(_onForumChanged);
     _currentTid.dispose();
     _threadSite.dispose();
+    _threadSubject.dispose();
     super.dispose();
   }
 
@@ -1005,12 +1008,15 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
     if (_currentTid.value != 0 && _threadSite.value != site) _selectThread(0);
   }
 
-  void _selectThread(int tid) {
+  void _selectThread(int tid, {String? subject}) {
     Provider.of<SelectedTidNotifierProvider>(
       context,
       listen: false,
     ).setTid(tid, _account.discuz);
     setState(() {
+      _threadSubject.value = tid == 0
+          ? null
+          : subject ?? (tid == _currentTid.value ? _threadSubject.value : null);
       _currentTid.value = tid;
       _threadSite.value = tid == 0 ? null : _account.discuz?.siteIdentity;
       _selectionRevision++;
@@ -1041,6 +1047,7 @@ class MainTwoPaneState extends State<MainTwoPaneStatefulWidget>
               discuz,
               account.user,
               tid,
+              passedSubject: _threadSubject.value,
               onClosed: () => _selectThread(0),
             ),
     );

@@ -86,11 +86,12 @@ class URLUtils {
 
   static Future<void> openURL(
     BuildContext context,
-    ValueChanged<int>? onSelectTid,
+    ThreadSelectionCallback? onSelectTid,
     String? urlString,
     JumpToPidCallback? callback,
     int? originalTid, {
     Discuz? forum,
+    String? subject,
   }) async {
     VibrationUtils.vibrateWithClickIfPossible();
     final account = context.read<DiscuzAndUserNotifier>();
@@ -153,6 +154,7 @@ class URLUtils {
                 discuz,
                 user,
                 internalTarget!.tid,
+                passedSubject: subject,
                 initialPid: internalTarget.pid,
               ),
             ),
@@ -201,6 +203,7 @@ class URLUtils {
                   discuz,
                   user,
                   target!.tid,
+                  passedSubject: subject,
                   initialPid: target.pid,
                 ),
               ),
@@ -243,12 +246,16 @@ class URLUtils {
                         platformPageRoute(
                           context: context,
                           iosTitle: S.of(context).viewThreadTitle,
-                          builder: (context) =>
-                              ViewThreadSliverPage(discuz, user, tid),
+                          builder: (context) => ViewThreadSliverPage(
+                            discuz,
+                            user,
+                            tid,
+                            passedSubject: subject,
+                          ),
                         ),
                       );
                     } else {
-                      onSelectTid(tid);
+                      onSelectTid(tid, subject: subject);
                     }
 
                     return;
@@ -270,12 +277,16 @@ class URLUtils {
                         platformPageRoute(
                           context: context,
                           iosTitle: S.of(context).viewThreadTitle,
-                          builder: (context) =>
-                              ViewThreadSliverPage(discuz, user, tid),
+                          builder: (context) => ViewThreadSliverPage(
+                            discuz,
+                            user,
+                            tid,
+                            passedSubject: subject,
+                          ),
                         ),
                       );
                     } else {
-                      onSelectTid(tid);
+                      onSelectTid(tid, subject: subject);
                     }
                     return;
                   }
@@ -352,12 +363,16 @@ class URLUtils {
               platformPageRoute(
                 context: context,
                 iosTitle: S.of(context).viewThreadTitle,
-                builder: (context) =>
-                    ViewThreadSliverPage(discuz, user, int.tryParse(tid)!),
+                builder: (context) => ViewThreadSliverPage(
+                  discuz,
+                  user,
+                  int.tryParse(tid)!,
+                  passedSubject: subject,
+                ),
               ),
             );
           } else {
-            onSelectTid(int.tryParse(tid)!);
+            onSelectTid(int.tryParse(tid)!, subject: subject);
           }
 
           return;

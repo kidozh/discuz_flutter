@@ -21,7 +21,7 @@ import 'app_visual_style.dart';
 import 'platform_native_view_scope.dart';
 export 'PlatformGlass.dart' show PlatformGlassEffect;
 export 'app_visual_style.dart' show AppVisualStyle;
-export 'pane_navigation.dart' show pushDetailPage;
+export 'pane_navigation.dart' show ThreadSelectionCallback, pushDetailPage;
 
 export 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart'
     hide

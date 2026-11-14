@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 class DiscuzNotificationWidget extends StatelessWidget {
   final DiscuzNotification notification;
   final Discuz discuz;
-  final ValueChanged<int>? onSelectTid;
+  final ThreadSelectionCallback? onSelectTid;
 
   const DiscuzNotificationWidget(
     this.discuz,

@@ -253,7 +253,11 @@ class PushServiceUtils{
             : S.of(context).viewThreadTitle,
         builder: (_) => type == 'login'
             ? PushServicePage()
-            : ViewThreadSliverPage(discuz, user, tid!),
+            : ViewThreadSliverPage(
+                discuz, user, tid!, passedSubject: data['title'] is String
+                    ? data['title'] as String
+                    : null,
+              ),
       ),
     );
   }

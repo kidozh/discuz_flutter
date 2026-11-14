@@ -14,7 +14,7 @@ void main() {
             body: SizedBox(
               width: width,
               child: PostActionRow(
-                timestamp: const Text(
+                metadata: const Text(
                   '2026-11-11 08:30 · 已编辑',
                   key: Key('timestamp'),
                   maxLines: 1,

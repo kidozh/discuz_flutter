@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+typedef ThreadSelectionCallback = void Function(int tid, {String? subject});
+
 /// Routes detail destinations into the pane's persistent navigator, including
 /// on a compact display so expanding later restores the same page stack.
 class PaneNavigationScope extends InheritedWidget {
