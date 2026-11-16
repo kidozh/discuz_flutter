@@ -21,6 +21,7 @@ import 'package:discuz_flutter/utility/EasyRefreshUtils.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:discuz_flutter/utility/forum_error.dart';
 import 'package:discuz_flutter/utility/private_message_pagination.dart';
 import 'package:discuz_flutter/widget/ErrorCard.dart';
 import 'package:discuz_flutter/widget/PrivateMessageDetailWidget.dart';
@@ -424,7 +425,7 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
         identity.$2,
       );
       if (!isCurrent()) return;
-      if (value.errorResult?.key == 'do_success') {
+      if (forumMessageKey(value.errorResult?.key ?? '') == 'do_success') {
         setState(() {
           _pendingMessageIds.remove(localId);
           _messages.removeWhere((entry) => entry.plid == localId);
@@ -433,10 +434,26 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
         await _refreshMessages(discuz, supersede: true);
       } else {
         _markMessageFailed(localId, message);
+        final strings = S.of(context);
+        await showForumActionError(
+          context,
+          forumResponseError(strings, value) ??
+              forumRequestError(
+                strings,
+                const FormatException(),
+                submitted: true,
+              ),
+        );
       }
     } catch (error) {
-      log('Unable to send private message: $error');
-      if (isCurrent()) _markMessageFailed(localId, message);
+      if (isCurrent()) {
+        _markMessageFailed(localId, message);
+        final strings = S.of(context);
+        await showForumActionError(
+          context,
+          forumRequestError(strings, error, submitted: true),
+        );
+      }
     } finally {
       if (isCurrent()) setState(() => _sending = false);
     }

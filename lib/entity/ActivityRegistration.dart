@@ -1,10 +1,19 @@
 import 'dart:convert';
+
 import '../utility/discuz_json.dart';
+import 'SpecialThread.dart';
 
 class ActivityJoinField {
   final String id, title, type;
   final List<String> choices;
-  const ActivityJoinField(this.id, this.title, this.type, this.choices);
+  final bool isRequired;
+  const ActivityJoinField(
+    this.id,
+    this.title,
+    this.type,
+    this.choices, {
+    required this.isRequired,
+  });
 }
 
 class ActivityRegistration {
@@ -31,7 +40,13 @@ class ActivityRegistration {
     final fields = <ActivityJoinField>[];
     var supported = raw.isNotEmpty;
     final keys = <String>{};
-    void add(String id, String title, String type, Object? choices) {
+    void add(
+      String id,
+      String title,
+      String type,
+      Object? choices, {
+      required bool isRequired,
+    }) {
       if (id.isEmpty ||
           reserved.contains(id) ||
           id.contains(RegExp(r'[\[\]&=]')) ||
@@ -44,13 +59,20 @@ class ActivityRegistration {
           ? choices.values.map(discuzString).toList()
           : choices is List
           ? choices.map(discuzString).toList()
-          : discuzString(
-              choices,
-            ).split(RegExp(r'\r?\n')).where((s) => s.isNotEmpty).toList();
+          : discuzString(choices)
+                .split(RegExp(r'\r?\n'))
+                .where((s) => s.isNotEmpty)
+                .toList();
       if ({'select', 'radio', 'checkbox'}.contains(type) && options.isEmpty)
         supported = false;
       fields.add(
-        ActivityJoinField(id, title.isEmpty ? id : title, type, options),
+        ActivityJoinField(
+          id,
+          title.isEmpty ? id : title,
+          type,
+          options,
+          isRequired: isRequired,
+        ),
       );
     }
 
@@ -64,13 +86,14 @@ class ActivityRegistration {
         discuzString(field['title']),
         discuzString(field['formtype']),
         field['choices'],
+        isRequired: id != 'residedist' && id != 'residecommunity',
       );
     }
     final ufield = discuzMap(raw['ufield']);
     final expected = discuzIds(ufield['userfield']);
     if (expected.any((id) => !keys.contains(id))) supported = false;
     for (final name in discuzIds(ufield['extfield'])) {
-      add(name, name, 'text', null);
+      add(name, name, 'text', null, isRequired: false);
     }
     if (raw['ufield'] is String && discuzString(raw['ufield']).isNotEmpty)
       supported = false;
@@ -78,16 +101,28 @@ class ActivityRegistration {
   }
   String get button => discuzString(raw['button']);
   bool get closed => discuzPermission(raw['closed']) == true;
+  bool get joinBlockedByCapacity =>
+      button == 'join' &&
+      raw['status'] != 'complete' &&
+      ActivityInfo.isAtCapacity(
+        int.tryParse(discuzString(raw['number'])),
+        int.tryParse(discuzString(raw['applynumber'])),
+      );
+  bool get canSubmit =>
+      !closed &&
+      (button == 'cancel' ||
+          (button == 'join' && supported && !joinBlockedByCapacity));
   String get cost => discuzString(raw['cost']);
   String get creditCost => discuzString(raw['creditcost']);
   String get terms => jsonEncode([
     button,
     closed,
+    joinBlockedByCapacity,
     cost,
     creditCost,
     raw['expiration'],
     raw['number'],
-    fields.map((f) => [f.id, f.type, f.choices]).toList(),
+    fields.map((f) => [f.id, f.type, f.choices, f.isRequired]).toList(),
     supported,
   ]);
   Map<String, dynamic> form(
@@ -95,12 +130,9 @@ class ActivityRegistration {
     String message,
     String? contribution,
   ) {
-    if ((!supported && button != 'cancel') ||
-        closed ||
-        !{'join', 'cancel'}.contains(button))
-      throw const FormatException('Unavailable activity');
+    if (!canSubmit) throw const FormatException('Unavailable activity');
     if (button == 'join' &&
-        fields.any((f) => (values[f.id] ?? '').trim().isEmpty))
+        fields.any((f) => f.isRequired && (values[f.id] ?? '').trim().isEmpty))
       throw const FormatException('Required field');
     final amount = contribution == null ? null : int.tryParse(contribution);
     if (contribution != null && (amount == null || amount < 0))

@@ -7,7 +7,6 @@ import '../client/ForumInteractionClient.dart';
 
 import 'dart:developer';
 
-import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/NewThreadResult.dart';
 import 'package:discuz_flutter/utility/pane_navigation.dart';
 import 'package:easy_refresh/easy_refresh.dart';
@@ -134,18 +133,23 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
         baseUrl: discuz.baseURL,
       ).newThreadsResult(fids, (page - 1) * 20);
       if (!isCurrent()) return IndicatorResult.fail;
-      final apiError = value.getErrorString();
-      if (apiError != null) {
-        throw ForumApiException(value.errorResult?.key ?? '', apiError);
-      }
-      if (value.variables.member_uid != (user?.uid ?? 0)) {
+      final responseError = EasyRefreshUtils.responseError(
+        context,
+        value,
+        user,
+        value.variables.member_uid,
+      );
+      if (responseError != null ||
+          value.variables.member_uid != (user?.uid ?? 0)) {
         setState(() {
           _isFirstLoading = false;
-          _error = DiscuzError(
-            S.of(context).errorUserExpired,
-            S.of(context).userExpiredSubtitle,
-            errorType: ErrorType.userExpired,
-          );
+          _error =
+              responseError ??
+              DiscuzError(
+                S.of(context).errorUserExpired,
+                S.of(context).userExpiredSubtitle,
+                errorType: ErrorType.userExpired,
+              );
         });
         return IndicatorResult.fail;
       }
@@ -194,13 +198,7 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
       if (!isCurrent()) return IndicatorResult.fail;
       setState(() {
         _isFirstLoading = false;
-        _error = DiscuzError(
-          S.of(context).forumLoadFailed,
-          error is ForumApiException
-              ? error.toString()
-              : S.of(context).forumLoadFailed,
-          dioError: error is DioException ? error : null,
-        );
+        _error = EasyRefreshUtils.requestError(context, error);
       });
       return IndicatorResult.fail;
     } finally {

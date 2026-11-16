@@ -57,7 +57,7 @@ class ForumHomeTitle extends StatelessWidget {
           return PlatformTextButton(
             padding: EdgeInsets.zero,
             onPressed: () => PlatformPopupMenu(
-              icon: const Icon(Icons.expand_more),
+              icon: Icon(PlatformIcons(context).expandMore),
               options: [
                 for (final id in ids)
                   PopupMenuOption(
@@ -74,7 +74,7 @@ class ForumHomeTitle extends StatelessWidget {
                   child: title(label(DashboardPreferences.activeSection(ids))),
                 ),
                 const SizedBox(width: 4),
-                const Icon(Icons.expand_more, size: 18),
+                Icon(PlatformIcons(context).expandMore, size: 18),
               ],
             ),
           );

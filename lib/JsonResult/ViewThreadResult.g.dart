@@ -220,22 +220,16 @@ Poll _$PollFromJson(Map<String, dynamic> json) => Poll()
   ..expiredAt = const SecondToDateTimeConverter().fromJson(json['expirations'])
   ..multipleChoice = const StringToBoolConverter().fromJson(json['multiple'])
   ..maxChoice = const StringToIntConverter().fromJson(json['maxchoices'])
-  ..isResultVisible = const StringToBoolConverter().fromJson(
-    json['visiblepoll'],
-  )
+  ..isResultVisible = Poll._pollResultsVisible(json['visiblepoll'])
   ..allowVote = const StringToBoolConverter().fromJson(json['allowvote'])
   ..votersCount = const StringToIntConverter().fromJson(json['voterscount'])
-  ..pollOptionsMap =
-      (json['polloptions'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, PollOption.fromJson(e as Map<String, dynamic>)),
-      ) ??
-      {};
+  ..pollOptionsMap = Poll._pollOptions(json['polloptions']);
 
 Map<String, dynamic> _$PollToJson(Poll instance) => <String, dynamic>{
   'expirations': const SecondToDateTimeConverter().toJson(instance.expiredAt),
   'multiple': const StringToBoolConverter().toJson(instance.multipleChoice),
   'maxchoices': const StringToIntConverter().toJson(instance.maxChoice),
-  'visiblepoll': const StringToBoolConverter().toJson(instance.isResultVisible),
+  'visiblepoll': Poll._pollVisibilityToJson(instance.isResultVisible),
   'allowvote': const StringToBoolConverter().toJson(instance.allowVote),
   'voterscount': const StringToIntConverter().toJson(instance.votersCount),
   'polloptions': instance.pollOptionsMap.map((k, e) => MapEntry(k, e.toJson())),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../database/AppDatabase.dart';
 import '../entity/Discuz.dart';
 import '../generated/l10n.dart';
@@ -108,9 +109,9 @@ class _DashboardOrderPageState extends State<DashboardOrderPage> {
                     trailing: ReorderableDragStartListener(
                       index: index,
                       enabled: !saving,
-                      child: const Padding(
-                        padding: EdgeInsets.all(12),
-                        child: Icon(Icons.drag_handle),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Icon(PlatformIcons(context).reorder),
                       ),
                     ),
                   ),

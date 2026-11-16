@@ -1,4 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
+
+import '../utility/forum_voice.dart';
+import 'forum_voice_message.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
@@ -100,7 +104,7 @@ class PostTextFieldState extends State<PostTextField> {
       if (path != null) return path;
     }
     final box = AppDatabase.imageAttachmentBox;
-    if (token.isAttachment && box != null && box.isOpen) {
+    if (token.isAttachment && !token.isPending && box != null && box.isOpen) {
       for (final attachment in box.values) {
         if (attachment.discuz == _discuz && attachment.aid == token.content) {
           return attachment.path;
@@ -127,6 +131,12 @@ class PostTextFieldState extends State<PostTextField> {
         _discuz,
         manageEdits: true,
         imagePathFor: _imagePathFor,
+        fileNameFor: _controller is PostEditorController
+            ? (_controller as PostEditorController).fileNameFor
+            : null,
+        filePathFor: _controller is PostEditorController
+            ? (_controller as PostEditorController).filePathFor
+            : null,
         onRemoveImage: (token) => removePostEditorImage(_controller, token),
         editingValue: () => _controller.value,
         compactImages: expanded == null,
@@ -290,6 +300,8 @@ class PostSpecialTextSpanBuilder extends SpecialTextSpanBuilder {
   final Discuz _discuz;
   final bool manageEdits;
   final String? Function(PostEditorToken token)? imagePathFor;
+  final String? Function(String aid)? fileNameFor;
+  final String? Function(String aid)? filePathFor;
   final void Function(PostEditorToken token)? onRemoveImage;
   final TextEditingValue Function()? editingValue;
   final bool compactImages;
@@ -299,6 +311,8 @@ class PostSpecialTextSpanBuilder extends SpecialTextSpanBuilder {
     this._discuz, {
     this.manageEdits = false,
     this.imagePathFor,
+    this.fileNameFor,
+    this.filePathFor,
     this.onRemoveImage,
     this.editingValue,
     this.compactImages = false,
@@ -339,7 +353,7 @@ class PostSpecialTextSpanBuilder extends SpecialTextSpanBuilder {
     int imageNumber = sourceOffset == 0
         ? 0
         : PostEditorToken.inText(value!.text.substring(0, sourceOffset))
-              .where((token) => !token.isSmiley)
+              .where((token) => !token.isSmiley && !token.isFile)
               .length;
     for (final localToken in PostEditorToken.inText(data)) {
       final token = PostEditorToken(
@@ -377,6 +391,22 @@ class PostSpecialTextSpanBuilder extends SpecialTextSpanBuilder {
         } on TypeError {
           spans.add(TextSpan(text: token.text));
         }
+      } else if (token.isFile) {
+        spans.add(
+          ExtendedWidgetSpan(
+            start: token.start,
+            actualText: token.text,
+            alignment: PlaceholderAlignment.middle,
+            deleteAll: !manageEdits,
+            child: _PostFilePreview(
+              filename: fileNameFor?.call(token.content),
+              localPath: filePathFor?.call(token.content),
+              onRemove: onRemoveImage == null
+                  ? null
+                  : () => onRemoveImage!(token),
+            ),
+          ),
+        );
       } else {
         imageNumber++;
         spans.add(
@@ -405,5 +435,95 @@ class PostSpecialTextSpanBuilder extends SpecialTextSpanBuilder {
       spans.add(TextSpan(text: data.substring(offset)));
     }
     return TextSpan(children: spans, style: textStyle);
+  }
+}
+
+class _PostFilePreview extends StatelessWidget {
+  final String? filename;
+  final String? localPath;
+  final VoidCallback? onRemove;
+
+  const _PostFilePreview({this.filename, this.localPath, this.onRemove});
+
+  @override
+  Widget build(BuildContext context) {
+    final s = S.of(context);
+    final icons = PlatformIcons(context);
+    final apple = isCupertino(context);
+    final theme = Theme.of(context);
+    final fill = apple
+        ? CupertinoColors.tertiarySystemFill.resolveFrom(context)
+        : theme.colorScheme.surfaceContainerHighest;
+    final voice = forumVoiceDuration(filename ?? '');
+    final path = localPath;
+    final remove = onRemove == null
+        ? const SizedBox(width: 10)
+        : PlatformIconButton(
+            liquidGlassSymbol: 'xmark.circle',
+            padding: EdgeInsets.zero,
+            liquidGlassButtonSize: 36,
+            icon: Icon(
+              icons.closeCircled,
+              size: 17,
+              semanticLabel: s.removeComposerAttachment,
+            ),
+            onPressed: onRemove,
+          );
+    if (voice != null && path != null) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 3),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 248),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: ForumVoiceMessage(
+                  key: ValueKey(path),
+                  localFile: File(path),
+                  durationHint: voice,
+                  load: null,
+                ),
+              ),
+              remove,
+            ],
+          ),
+        ),
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 3),
+      child: Container(
+        decoration: BoxDecoration(
+          color: fill,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: const EdgeInsetsDirectional.only(start: 10),
+        constraints: const BoxConstraints(maxWidth: 248, minHeight: 44),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              voice == null
+                  ? icons.document
+                  : icons.pick(Icons.mic_rounded, CupertinoIcons.mic_fill),
+              size: 18,
+            ),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                voice == null
+                    ? filename ?? s.composerAttachmentLabel
+                    : '${s.voiceMessage} ${voiceTime(voice)}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall,
+              ),
+            ),
+            remove,
+          ],
+        ),
+      ),
+    );
   }
 }

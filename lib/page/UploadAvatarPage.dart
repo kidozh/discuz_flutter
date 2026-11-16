@@ -1,15 +1,20 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+
 import '../client/ForumInteractionClient.dart';
 import '../entity/Discuz.dart';
+import '../entity/DiscuzError.dart';
 import '../entity/User.dart';
 import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../utility/NetworkUtils.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
+import '../utility/forum_error.dart';
+import '../widget/ErrorCard.dart';
 
 /// Convert picker formats to PNG accepted by Discuz, with a bounded resolution.
 Future<Uint8List> prepareAvatar(Uint8List source) async {
@@ -67,7 +72,7 @@ class UploadAvatarPage extends StatefulWidget {
 class _UploadAvatarPageState extends State<UploadAvatarPage> {
   Uint8List? preview;
   bool busy = false;
-  String? error;
+  DiscuzError? error;
   bool get sameAccount {
     final state = context.read<DiscuzAndUserNotifier>();
     return state.discuz?.baseURL == widget.discuz.baseURL &&
@@ -98,7 +103,14 @@ class _UploadAvatarPageState extends State<UploadAvatarPage> {
       final image = await prepareAvatar(bytes);
       if (mounted && sameAccount) setState(() => preview = image);
     } catch (_) {
-      if (mounted) setState(() => error = S.of(context).avatarImageInvalid);
+      if (mounted) {
+        setState(
+          () => error = DiscuzError(
+            'invalid_avatar',
+            S.of(context).avatarImageInvalid,
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -133,14 +145,17 @@ class _UploadAvatarPageState extends State<UploadAvatarPage> {
       await client.uploadAvatar(preview!, hash);
       if (mounted && sameAccount) Navigator.pop(context, true);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
+        final strings = S.of(context);
         setState(
-          () => error = e is ForumApiException
-              ? '${S.of(context).avatarUploadFailed} (${e.code})'
-              : submitted
-              ? S.of(context).forumSubmissionUnknown
-              : S.of(context).forumLoadFailed,
+          () => error = forumRequestError(
+            strings,
+            e,
+            fallback: strings.avatarUploadFailed,
+            submitted: submitted,
+          ),
         );
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -166,11 +181,8 @@ class _UploadAvatarPageState extends State<UploadAvatarPage> {
                       fit: BoxFit.contain,
                     ),
                   Text(s.avatarPreviewHint),
-                  if (error != null)
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(error!),
-                    ),
+                  if (error case final failure?)
+                    ErrorCard(failure, null, largeSize: false),
                   PlatformTextButton(
                     onPressed: busy ? null : pick,
                     child: Text(s.chooseAvatar),

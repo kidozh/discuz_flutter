@@ -1,6 +1,10 @@
+import '../utility/forum_error.dart';
+import 'ErrorCard.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+
 import '../client/ForumInteractionClient.dart';
 import '../entity/Discuz.dart';
 import '../entity/User.dart';
@@ -141,14 +145,13 @@ class _ForumActionButtonState extends State<ForumActionButton> {
         widget.onChanged();
         return;
       }
-      await showPlatformAlert(
-        context: context,
-        title: s.forumActionFailed,
-        message: error is ForumApiException
-            ? error.toString()
-            : (submitted ? s.forumSubmissionUnknown : s.forumLoadFailed),
-        actions: [PlatformAlertAction(label: s.forumConfirm)],
+      final failure = forumRequestError(
+        s,
+        error,
+        fallback: s.forumLoadFailed,
+        submitted: submitted,
       );
+      await showForumActionError(context, failure, dialog: true);
     } finally {
       if (mounted) {
         setState(() => busy = false);
@@ -268,8 +271,22 @@ class _ThreadFeedbackBarState extends State<ThreadFeedbackBar> {
                         !widget.voted &&
                         acceptedDirection == null,
                     icon: positive
-                        ? CupertinoIcons.hand_thumbsup
-                        : CupertinoIcons.hand_thumbsdown,
+                        ? PlatformIcons(context).pick(
+                            acceptedDirection == true
+                                ? Icons.thumb_up
+                                : Icons.thumb_up_outlined,
+                            acceptedDirection == true
+                                ? CupertinoIcons.hand_thumbsup_fill
+                                : CupertinoIcons.hand_thumbsup,
+                          )
+                        : PlatformIcons(context).pick(
+                            acceptedDirection == false
+                                ? Icons.thumb_down
+                                : Icons.thumb_down_outlined,
+                            acceptedDirection == false
+                                ? CupertinoIcons.hand_thumbsdown_fill
+                                : CupertinoIcons.hand_thumbsdown,
+                          ),
                     label: acceptedDirection != null
                         ? (positive
                               ? s.forumRecommended

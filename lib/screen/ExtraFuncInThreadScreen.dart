@@ -12,10 +12,13 @@ import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
+import 'package:discuz_flutter/utility/forum_attachment_upload.dart';
+import 'package:discuz_flutter/utility/forum_error.dart';
 import 'package:discuz_flutter/utility/forum_image_upload_utils.dart';
 import 'package:discuz_flutter/utility/PictureBedUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
@@ -24,15 +27,24 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../entity/ImageAttachment.dart';
+import '../client/ForumInteractionClient.dart';
+import '../widget/ErrorCard.dart';
 
 typedef ForumImageUpload = ({String response, File file});
 
 typedef StringToVoidFunc = void Function(String, String);
+typedef SaveDraftAttachment = Future<void> Function(
+  String name,
+  Stream<List<int>> bytes,
+  bool image,
+);
 
 class ExtraFuncInThreadScreen extends StatefulWidget {
   int tid = 0;
   int fid = 0;
   StringToVoidFunc onReplyWithImage;
+  final StringToVoidFunc onAttachFile;
+  final SaveDraftAttachment? saveDraftAttachment;
   StringToVoidFunc? onReplyWithHostedImage;
   Discuz discuz;
   bool? showHistoricalAttachment;
@@ -42,6 +54,8 @@ class ExtraFuncInThreadScreen extends StatefulWidget {
     this.tid,
     this.fid, {
     required this.onReplyWithImage,
+    required this.onAttachFile,
+    this.saveDraftAttachment,
     this.onReplyWithHostedImage,
     this.showHistoricalAttachment,
     super.key,
@@ -68,23 +82,113 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
   Discuz get discuz => widget.discuz;
   Map<ChevertoPictureBed, String> chevertoPictureBedTokens = {};
 
-  void pickImageFromGallery() => _triggerMediaAction(0);
+  void pickImageFromGallery() => _triggerMediaAction(ImageSource.gallery);
 
-  void takePicture() => _triggerMediaAction(1);
+  void takePicture() => _triggerMediaAction(ImageSource.camera);
 
-  void _triggerMediaAction(int index) {
+  Future<void> pickFile() async {
+    if (_uploading) return;
+    final s = S.of(context);
+    final account = context.read<DiscuzAndUserNotifier>();
+    final user = account.userFor(discuz);
+    if (user == null) {
+      EasyLoading.showError(s.forumSignInRequired);
+      return;
+    }
+    final session = account.sessionIdentity;
+    bool isCurrent() => mounted && identical(session, account.sessionIdentity);
+    _uploading = true;
+    var showingProgress = false;
+    String? error;
+    DiscuzError? failure;
+    try {
+      final file = await FilePicker.pickFile();
+      if (file == null || !isCurrent()) return;
+      if (widget.saveDraftAttachment case final save?) {
+        await save(file.name, file.readAsByteStream(), false);
+        return;
+      }
+      showingProgress = true;
+      await EasyLoading.show(
+        status: s.uploadingAttachment,
+        maskType: EasyLoadingMaskType.clear,
+      );
+      if (!isCurrent()) return;
+      final bytes = await file.length();
+      if (!isCurrent()) return;
+      if (bytes == null || bytes <= 0) {
+        error = s.attachmentFileUnreadable;
+        return;
+      }
+
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      if (!isCurrent()) return;
+      final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
+      final result = await client.checkPost(fid, tid > 0 ? tid : null);
+      if (!isCurrent()) return;
+      final permission = result.variables.allowPerm;
+      final canPost = tid > 0 ? permission.allowReply : permission.allowPost;
+      failure = forumResponseError(s, result);
+      if (failure != null) return;
+      if (result.variables.member_uid != user.uid || canPost == null) {
+        error = s.postPermissionUnknown;
+        return;
+      }
+      if (!canPost) {
+        error = tid > 0 ? s.replyPermissionDenied : s.postPermissionDenied;
+        return;
+      }
+      setState(() => _checkPostResult = result);
+      final restriction = permission.validateUpload(file.name, bytes);
+      if (restriction != null) {
+        error = _restrictionMessage(restriction);
+        return;
+      }
+
+      final response = await client.uploadAttachment(
+        fid,
+        user.uid,
+        permission.uploadHash,
+        MultipartFile.fromStream(
+          file.readAsByteStream,
+          bytes,
+          filename: Uri.encodeComponent(file.name),
+        ),
+      );
+      if (!isCurrent()) return;
+      final upload = ForumUploadResult.parse(response);
+      _loadCheckPostInfo();
+      if (upload.aid case final aid?) {
+        widget.onAttachFile('$aid', file.name);
+      } else {
+        failure = _uploadFailure(s, response, upload.errorCode);
+      }
+    } catch (error) {
+      failure = forumRequestError(s, error, fallback: s.attachmentUploadFailed);
+    } finally {
+      if (showingProgress) await EasyLoading.dismiss();
+      _uploading = false;
+      if (isCurrent()) {
+        if (failure != null) {
+          await showForumActionError(context, failure);
+        } else if (error != null) {
+          EasyLoading.showError(error);
+        }
+      }
+    }
+  }
+
+  void _triggerMediaAction(ImageSource source) {
+    if (_uploading) return;
     if (_discuzError != null) {
-      EasyLoading.showError(_discuzError!.content);
+      showForumActionError(context, _discuzError!);
       return;
     }
     if (!_permissionLoaded) {
       EasyLoading.showInfo(S.of(context).preparingPage);
       return;
     }
-    final actions = extraFuncListWidget();
-    if (index >= actions.length) return;
-    final action = actions[index];
-    if (action is ExtraFuncBlockButton) action.onPressed();
+    _pickAndUpload(source);
   }
 
   @override
@@ -123,13 +227,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
   @override
   Widget build(BuildContext context) {
     if (_discuzError != null) {
-      return Container(
-        height: MediaQuery.of(context).size.height * 0.25,
-        child: PlatformListTile(
-          leading: Icon(PlatformIcons(context).errorOutline, color: Colors.red),
-          title: Text(_discuzError!.content),
-        ),
-      );
+      return ErrorCard(_discuzError!, _loadCheckPostInfo, largeSize: false);
     } else if (!_permissionLoaded) {
       return Container(
         height: MediaQuery.of(context).size.height * 0.25,
@@ -152,7 +250,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
             ),
             Expanded(
               child: GridView.count(
-                crossAxisCount: 4,
+                crossAxisCount: showHistoricalAttachment == false ? 3 : 4,
                 padding: const EdgeInsets.all(4),
                 children: extraFuncListWidget(),
               ),
@@ -176,15 +274,17 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
   String _quotaSummary() {
     final s = S.of(context);
     final permission = _checkPostResult.variables.allowPerm;
-    String quota(int? value, {bool bytes = false}) => value == null
-        ? s.uploadQuotaUnknown
-        : value < 0
-        ? s.uploadUnlimited
-        : bytes
-        ? '${(value / 1024 / 1024).toStringAsFixed(1)} MB'
-        : '$value';
+    String quota(int? value, {bool bytes = false}) {
+      if (value == null) return s.uploadQuotaUnknown;
+      if (value == -1) return s.uploadUnlimited;
+      final remaining = value < 0 ? 0 : value;
+      return bytes
+          ? '${(remaining / 1024 / 1024).toStringAsFixed(1)} MB'
+          : '$remaining';
+    }
+
     final types = permission.allowUpload.limits.entries
-        .where((e) => e.value != 0)
+        .where((e) => e.value == -1 || e.value > 0)
         .map(
           (e) => e.value > 0
               ? '${e.key} ≤${(e.value / 1024 / 1024).toStringAsFixed(1)} MB'
@@ -225,11 +325,31 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
           ),
           actions: [
             PlatformDialogAction(
-              child: Text(S.of(dialogContext).uploadImageToServerDialogTitle),
+              child: Text(
+                widget.saveDraftAttachment == null
+                    ? S.of(dialogContext).uploadImageToServerDialogTitle
+                    : S.of(dialogContext).addAPhoto,
+              ),
               onPressed: isUploading
                   ? null
                   : () async {
                       updateDialog(() => isUploading = true);
+                      if (widget.saveDraftAttachment case final save?) {
+                        try {
+                          await save(image.name, original.openRead(), true);
+                          if (dialogContext.mounted)
+                            Navigator.of(dialogContext).pop();
+                        } catch (error) {
+                          if (dialogContext.mounted) {
+                            updateDialog(() => isUploading = false);
+                            await showForumActionError(
+                              dialogContext,
+                              forumRequestError(S.of(dialogContext), error),
+                            );
+                          }
+                        }
+                        return;
+                      }
                       final uploaded = await uploadPhotoToDiscuzServer(
                         dialogContext,
                         original,
@@ -289,12 +409,17 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
       ExtraFuncBlockButton(
         PlatformIcons(context).collectionsSolid,
         S.of(context).addAPhoto,
-        onPressed: () => _pickAndUpload(ImageSource.gallery),
+        onPressed: pickImageFromGallery,
       ),
       ExtraFuncBlockButton(
         PlatformIcons(context).photoCameraSolid,
         S.of(context).takeAPicture,
-        onPressed: () => _pickAndUpload(ImageSource.camera),
+        onPressed: takePicture,
+      ),
+      ExtraFuncBlockButton(
+        PlatformIcons(context).attachment,
+        S.of(context).selectAttachmentFile,
+        onPressed: pickFile,
       ),
     ];
 
@@ -405,10 +530,13 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
           result.errorMessage ?? S.of(context).uploadImageFailed,
         );
       }
-    } on DioException catch (e) {
-      EasyLoading.showError(e.message ?? S.of(context).uploadImageFailed);
-    } catch (e) {
-      EasyLoading.showError(S.of(context).uploadImageFailed);
+    } catch (error) {
+      if (!context.mounted) return;
+      final strings = S.of(context);
+      await showForumActionError(
+        context,
+        forumRequestError(strings, error, fallback: strings.uploadImageFailed),
+      );
     }
   }
 
@@ -422,10 +550,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
     final session = discuzAndUserNotifier.sessionIdentity;
     bool isCurrent() =>
         mounted && identical(session, discuzAndUserNotifier.sessionIdentity);
-    if (user == null ||
-        _checkPostResult.variables.allowPerm.uploadHash.isEmpty) {
-      return null;
-    } else {
+    if (user != null) {
       if (_uploading) return null;
       _uploading = true;
       try {
@@ -435,9 +560,9 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
         // Refresh quota before each upload; other devices may have consumed it.
         final permission = await client.checkPost(fid, tid > 0 ? tid : null);
         if (!isCurrent()) return null;
-        final error = permission.getErrorString();
+        final error = forumResponseError(S.of(context), permission);
         if (error != null) {
-          EasyLoading.showError(error);
+          await showForumActionError(context, error);
           return null;
         }
         setState(() => _checkPostResult = permission);
@@ -466,169 +591,51 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
         if (!isCurrent()) return null;
         _loadCheckPostInfo();
         return (response: uploadedString, file: prepared);
-      } catch (_) {
-        if (isCurrent()) EasyLoading.showError(S.of(context).uploadImageFailed);
+      } catch (error) {
+        if (isCurrent() && context.mounted) {
+          final strings = S.of(context);
+          await showForumActionError(
+            context,
+            forumRequestError(
+              strings,
+              error,
+              fallback: strings.uploadImageFailed,
+            ),
+          );
+        }
         return null;
       } finally {
         _uploading = false;
       }
     }
+    return null;
   }
 
-  String getAidFromDiscuzUploadResponse(
-    BuildContext context,
-    String respString,
-  ) {
-    if (respString.isEmpty) return '';
-    // like DISCUZUPLOAD|0|8|1|0
-    // or DISCUZUPLOAD|0|9|1|0
-    // or DISCUZUPLOAD|0|10|1|0
-    // or in keylol DISCUZUPLOAD|0|1475238|1|0
-    try {
-      int code = int.parse(respString);
-      switch (code) {
-        case -1:
-          {
-            EasyLoading.showError(S.of(context).uploadImageError1);
-            return "";
-          }
-        case -2:
-          {
-            EasyLoading.showError(S.of(context).uploadImageError2);
-            return "";
-          }
-        case -3:
-          {
-            EasyLoading.showError(S.of(context).uploadImageError3);
-            return "";
-          }
-        case -4:
-          {
-            EasyLoading.showError(S.of(context).uploadImageError4);
-            return "";
-          }
-        case -5:
-          {
-            EasyLoading.showError(S.of(context).uploadImageError5);
-            return "";
-          }
-        case -6:
-          {
-            EasyLoading.showError(S.of(context).uploadImageError6);
-            return "";
-          }
-        case -7:
-          {
-            EasyLoading.showError(S.of(context).uploadImageError7);
-            return "";
-          }
-        case -8:
-          {
-            EasyLoading.showError(S.of(context).uploadImageError8);
-            return "";
-          }
-        case -9:
-          {
-            EasyLoading.showError(S.of(context).uploadImageError9);
-            return "";
-          }
-        case -10:
-          {
-            EasyLoading.showError(S.of(context).uploadImageError10);
-            return "";
-          }
-        case -11:
-          {
-            EasyLoading.showError(S.of(context).uploadImageError11);
-            return "";
-          }
-      }
-      if (code > 0) {
-        return respString;
-      } else {
-        return "";
-      }
-    } catch (e) {
-      print("response ${respString} is not a integer");
-    }
-    ;
+  String getAidFromDiscuzUploadResponse(BuildContext context, String response) {
+    final upload = ForumUploadResult.parse(response);
+    if (upload.aid case final aid?) return '$aid';
+    showForumActionError(
+      context,
+      _uploadFailure(S.of(context), response, upload.errorCode),
+    );
+    return '';
+  }
 
-    List<String> splitedVariables = respString.split("|");
-    if (splitedVariables.length == 5 &&
-        splitedVariables[0] == "DISCUZUPLOAD" &&
-        splitedVariables[1] == "0") {
-      // a sucessful submit, return the aid
-      return splitedVariables[2];
-    } else if (splitedVariables.length > 1) {
-      // a further error
-      if (splitedVariables[1] != "0") {
-        // need to trigger the warning
-        switch (splitedVariables[1]) {
-          case "-1":
-            {
-              EasyLoading.showError(S.of(context).uploadImageErrorNegative1);
-              return "";
-            }
-          case "1":
-            {
-              EasyLoading.showError(S.of(context).uploadImageError1);
-              return "";
-            }
-          case "2":
-            {
-              EasyLoading.showError(S.of(context).uploadImageError2);
-              return "";
-            }
-          case "3":
-            {
-              EasyLoading.showError(S.of(context).uploadImageError3);
-              return "";
-            }
-          case "4":
-            {
-              EasyLoading.showError(S.of(context).uploadImageError4);
-              return "";
-            }
-          case "5":
-            {
-              EasyLoading.showError(S.of(context).uploadImageError5);
-              return "";
-            }
-          case "6":
-            {
-              EasyLoading.showError(S.of(context).uploadImageError6);
-              return "";
-            }
-          case "7":
-            {
-              EasyLoading.showError(S.of(context).uploadImageError7);
-              return "";
-            }
-          case "8":
-            {
-              EasyLoading.showError(S.of(context).uploadImageError8);
-              return "";
-            }
-          case "9":
-            {
-              EasyLoading.showError(S.of(context).uploadImageError9);
-              return "";
-            }
-          case "10":
-            {
-              EasyLoading.showError(S.of(context).uploadImageError10);
-              return "";
-            }
-          case "11":
-            {
-              EasyLoading.showError(S.of(context).uploadImageError11);
-              return "";
-            }
-        }
-      }
+  DiscuzError _uploadFailure(S strings, String response, int? code) {
+    final serverError = ForumReply.tryServerError(response);
+    if (serverError != null) return forumRequestError(strings, serverError);
+    if (ForumReply.isSecurityChallenge(response)) {
+      return DiscuzError(
+        'forum_security_challenge',
+        strings.forumSecurityChallenge,
+      );
     }
-    EasyLoading.showError(S.of(context).uploadImageUnknownError);
-    return "";
+    return code == null
+        ? forumRequestError(strings, const FormatException())
+        : DiscuzError(
+            'forum_upload_$code',
+            forumUploadErrorText(strings, code, strings.attachmentUploadFailed),
+          );
   }
 
   void _loadCheckPostInfo() async {
@@ -648,34 +655,22 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
           );
         });
       return;
-    } else {
+    }
+    try {
       final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
       if (!isCurrent()) return;
       final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
-      client
-          .checkPost(fid, tid > 0 ? tid : null)
-          .then((value) {
-            if (!isCurrent()) return;
-            print("Did get the value ${value}");
-            setState(() {
-              _checkPostResult = value;
-              _permissionLoaded = true;
-              _discuzError = value.getErrorString() == null
-                  ? null
-                  : DiscuzError('checkpost', value.getErrorString()!);
-            });
-          })
-          .catchError((e, s) {
-            if (!isCurrent()) return;
-            print("${e} ${s}");
-            setState(() {
-              _discuzError = DiscuzError(
-                "network_fail",
-                S.of(context).networkFail,
-              );
-            });
-          });
+      final value = await client.checkPost(fid, tid > 0 ? tid : null);
+      if (!isCurrent()) return;
+      setState(() {
+        _checkPostResult = value;
+        _permissionLoaded = true;
+        _discuzError = forumResponseError(S.of(context), value);
+      });
+    } catch (error) {
+      if (isCurrent())
+        setState(() => _discuzError = forumRequestError(S.of(context), error));
     }
   }
 }

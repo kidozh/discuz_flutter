@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:html/parser.dart' as html;
+
 import '../utility/discuz_json.dart';
 import 'ForumInteractionClient.dart';
 
@@ -36,13 +37,12 @@ class RatingForm {
       }
       final cells = row?.querySelectorAll('td') ?? [];
       if (cells.length != 4)
-        throw const ForumApiException('rating_unavailable', '');
-      final range = RegExp(
-        r'^\s*(-?\d+)\s*~\s*(-?\d+)\s*$',
-      ).firstMatch(cells[2].text);
+        throw const FormatException('Invalid rating form row');
+      final range = RegExp(r'^\s*(-?\d+)\s*~\s*(-?\d+)\s*$')
+          .firstMatch(cells[2].text);
       final remaining = int.tryParse(cells[3].text.trim());
       if (range == null || remaining == null || remaining < 0)
-        throw const ForumApiException('rating_unavailable', '');
+        throw const FormatException('Invalid rating form limits');
       credits.add(
         RatingCredit(
           name,

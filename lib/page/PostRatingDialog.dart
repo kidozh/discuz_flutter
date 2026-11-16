@@ -1,10 +1,14 @@
-import '../utility/rating_allowance_cache.dart';
-import '../utility/rating_failure.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import '../client/PostReviewClient.dart';
+import '../entity/DiscuzError.dart';
 import '../generated/l10n.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
+import '../utility/forum_error.dart';
+import '../utility/rating_allowance_cache.dart';
+import '../utility/rating_failure.dart';
+import '../widget/ErrorCard.dart';
 
 class PostRatingDialog extends StatefulWidget {
   final PostReviewClient client;
@@ -29,7 +33,7 @@ class _PostRatingDialogState extends State<PostRatingDialog> {
   final controllers = <String, TextEditingController>{};
   final reason = TextEditingController();
   bool busy = true, notify = false;
-  String? error;
+  DiscuzError? error;
   @override
   void initState() {
     super.initState();
@@ -57,7 +61,12 @@ class _PostRatingDialogState extends State<PostRatingDialog> {
     } catch (e) {
       debugPrint('[PostRating] $stage: ${ratingFailureCode(e)}');
       if (mounted) {
-        error = ratingFailureMessage(e, S.of(context).postRatingUnavailable);
+        final strings = S.of(context);
+        error = forumRequestError(
+          strings,
+          e,
+          fallback: strings.postRatingUnavailable,
+        );
       }
     } finally {
       if (mounted) setState(() => busy = false);
@@ -66,19 +75,25 @@ class _PostRatingDialogState extends State<PostRatingDialog> {
 
   Future<void> submit() async {
     if (busy || form == null) return;
+    final strings = S.of(context);
+    const invalidScore = 'invalid_rating';
     final scores = <String, int>{};
     for (final c in form!.credits) {
       final score = int.tryParse(controllers[c.field]!.text.trim());
       if (score == null ||
           (score != 0 &&
               (score < c.min || score > c.max || score.abs() > c.remaining))) {
-        setState(() => error = S.of(context).postRatingInvalid);
+        setState(
+          () => error = DiscuzError(invalidScore, strings.postRatingInvalid),
+        );
         return;
       }
       scores[c.field] = score;
     }
     if (!scores.values.any((v) => v != 0)) {
-      setState(() => error = S.of(context).postRatingInvalid);
+      setState(
+        () => error = DiscuzError(invalidScore, strings.postRatingInvalid),
+      );
       return;
     }
     setState(() {
@@ -107,7 +122,7 @@ class _PostRatingDialogState extends State<PostRatingDialog> {
         }
         setState(() {
           form = fresh;
-          error = S.of(context).postRatingChanged;
+          error = DiscuzError('rating_changed', strings.postRatingChanged);
         });
         return;
       }
@@ -129,11 +144,11 @@ class _PostRatingDialogState extends State<PostRatingDialog> {
       debugPrint('[PostRating] $stage: ${ratingFailureCode(e)}');
       if (mounted) {
         setState(() {
-          error = ratingFailureMessage(
+          error = forumRequestError(
+            strings,
             e,
-            stage == 'submit'
-                ? S.of(context).forumSubmissionUnknown
-                : S.of(context).postRatingUnavailable,
+            fallback: strings.postRatingUnavailable,
+            submitted: stage == 'submit',
           );
         });
       }
@@ -209,11 +224,8 @@ class _PostRatingDialogState extends State<PostRatingDialog> {
                 ],
               ),
             ],
-            if (error != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(error!),
-              ),
+            if (error case final failure?)
+              ErrorCard(failure, null, largeSize: false),
           ],
         ),
         actions: [

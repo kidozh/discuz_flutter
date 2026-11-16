@@ -284,8 +284,7 @@ class Poll{
   @JsonKey(name: "maxchoices")
   @StringToIntConverter()
   int maxChoice = 1;
-  @JsonKey(name:"visiblepoll")
-  @StringToBoolConverter()
+  @JsonKey(name: 'visiblepoll', fromJson: _pollResultsVisible, toJson: _pollVisibilityToJson)
   bool isResultVisible = true;
   @JsonKey(name: "allowvote")
   @StringToBoolConverter()
@@ -294,10 +293,21 @@ class Poll{
   @StringToIntConverter()
   int votersCount = 0;
 
-  @JsonKey(name: "polloptions", defaultValue: {})
+  @JsonKey(name: "polloptions", fromJson: _pollOptions)
   Map<String, PollOption> pollOptionsMap = {};
 
   Poll();
+  // Discuz sends 1 when results are hidden until the user votes.
+  static bool _pollResultsVisible(Object? value) =>
+      !const StringToBoolConverter().fromJson(value);
+  static String _pollVisibilityToJson(bool visible) => visible ? '0' : '1';
+  static Map<String, PollOption> _pollOptions(Object? value) {
+    final options = value is List ? value : discuzMap(value).values;
+    return {
+      for (final option in options.whereType<Map>().map((row) => PollOption.fromJson(discuzMap(row))))
+        if (option.id > 0) '${option.id}': option,
+    };
+  }
   factory Poll.fromJson(Map<String, dynamic> json) => _$PollFromJson(json);
   Map<String, dynamic> toJson() => _$PollToJson(this);
 }

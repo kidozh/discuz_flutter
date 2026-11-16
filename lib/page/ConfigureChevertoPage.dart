@@ -10,6 +10,8 @@ import 'package:settings_ui/settings_ui.dart';
 import '../generated/l10n.dart';
 import '../utility/URLUtils.dart';
 import '../utility/VibrationUtils.dart';
+import '../utility/forum_error.dart';
+import '../widget/ErrorCard.dart';
 
 class ConfigureChevertoPage extends StatefulWidget {
   final ChevertoPictureBed chevertoPictureBed;
@@ -119,10 +121,20 @@ class ConfigureChevertoState extends State<ConfigureChevertoPage> {
       await _tryDeleteTestImage(dio, result);
       await PictureBedUtils.setChevertoApiToken(chevertoPictureBed, token);
       EasyLoading.showSuccess(savedAfterTestText);
-    } on DioException catch (error) {
-      EasyLoading.showError(_formatDioError(error));
     } catch (error) {
-      EasyLoading.showError(error.toString());
+      if (!mounted) return;
+      final data = error is DioException ? error.response?.data : null;
+      final message = data is Map<String, dynamic>
+          ? ChevertoUploadResult.fromJson(data).errorMessage
+          : null;
+      if (message != null && message.isNotEmpty) {
+        EasyLoading.showError(message);
+      } else {
+        await showForumActionError(
+          context,
+          forumRequestError(S.of(context), error, fallback: testingTokenFailedText),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -147,14 +159,6 @@ class ConfigureChevertoState extends State<ConfigureChevertoPage> {
     } catch (_) {
       // Cleaning up the test upload is best-effort and should not block saving.
     }
-  }
-
-  String _formatDioError(DioException error) {
-    final responseData = error.response?.data;
-    if (responseData != null) {
-      return responseData.toString();
-    }
-    return error.message ?? error.type.name;
   }
 
   Widget _buildApiKeyGuide(BuildContext context) {

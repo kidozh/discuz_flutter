@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart' as html;
 import 'package:intl/intl.dart';
+
 import '../entity/SpecialThread.dart';
 import '../generated/l10n.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
 import '../utility/best_answer_style.dart';
 
-/// Only server-returned public fields are shown; forms are handled by the site.
+/// Thread details and actions based on the current forum response.
 class SpecialThreadCard extends StatelessWidget {
   final RewardInfo? reward;
   final ActivityInfo? activity;
   final ThreadSortInfo? threadSort;
   final ValueChanged<int> onSelectPost;
   final VoidCallback onOpenWebsite;
-  final VoidCallback? onActivityRegistration;
+  final VoidCallback? onActivityRegistration, onActivityReview;
   const SpecialThreadCard({
     super.key,
     this.reward,
@@ -22,6 +23,7 @@ class SpecialThreadCard extends StatelessWidget {
     required this.onSelectPost,
     required this.onOpenWebsite,
     this.onActivityRegistration,
+    this.onActivityReview,
   });
 
   String _text(String value) => html.parseFragment(value).text ?? '';
@@ -84,9 +86,11 @@ class SpecialThreadCard extends StatelessWidget {
       );
     final activity = this.activity;
     if (activity != null) {
+      final joinBlockedByCapacity = activity.status == 'join' && activity.full;
       final status = switch (activity.status) {
         'wait' => s.activityWaiting,
         'joined' => s.activityJoined,
+        'join' when joinBlockedByCapacity => s.activityFull,
         'join' => s.activityCanJoin,
         'complete' => s.activityComplete,
         _ => '',
@@ -103,10 +107,17 @@ class SpecialThreadCard extends StatelessWidget {
           if (activity.cost.isNotEmpty) line(s.activityCost, activity.cost),
           if (status.isNotEmpty) Text(status),
           if (activity.closed) Text(s.activityClosed),
-          if (onActivityRegistration != null && !activity.closed)
+          if (onActivityRegistration != null &&
+              !activity.closed &&
+              !joinBlockedByCapacity)
             PlatformTextButton(
               onPressed: onActivityRegistration,
               child: Text(s.activityRegistration),
+            ),
+          if (onActivityReview != null)
+            PlatformTextButton(
+              onPressed: onActivityReview,
+              child: Text(s.activityReview),
             ),
           PlatformTextButton(
             onPressed: onOpenWebsite,

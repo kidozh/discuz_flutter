@@ -9,6 +9,11 @@ import "package:ios_utsname_ext/extension.dart";
 import "../generated/l10n.dart";
 
 class PostTextFieldUtils {
+  static final _attachmentTag = RegExp(
+    r'\[(attach(?:img)?)\]([1-9]\d*)\[/\1\]',
+    caseSensitive: false,
+  );
+
   static String getPostMessage(String message) {
     // filter smiley tag first [smiley].*?[/smiley]
     //String replaceRegexString = SmileyText.smileyStartFlag.replaceAll("", replace)+"(.*?)"+SmileyText.smileyEndFlag;
@@ -40,28 +45,11 @@ class PostTextFieldUtils {
     return message;
   }
 
-  static List<String> getAttachmentAidList(String message) {
-    List<String> aidList = [];
-    RegExp replaceRegex = RegExp(
-      r"\[attachimg\](\d+)\[/attachimg\]",
-      multiLine: true,
-      caseSensitive: false,
-    );
-    if (replaceRegex.hasMatch(message)) {
-      // contain
-      log("contains attach aid regex ${message}");
-      for (var matchCase in replaceRegex.allMatches(message)) {
-        log("Match Case -> ${matchCase}");
-        if (matchCase.groupCount == 1) {
-          //String actualString = matchCase.group(0)!;
-          String aid = matchCase.group(1)!;
-          log("Obtain aid -> ${aid}");
-          aidList.add(aid);
-        }
-      }
-    }
-    return aidList;
-  }
+  static List<String> getAttachmentAidList(String message) => _attachmentTag
+      .allMatches(message)
+      .map((match) => match.group(2)!)
+      .toSet()
+      .toList();
 
   /// Background registration can read device metadata without a widget tree.
   /// Capture optional UI labels before awaiting the native device query.

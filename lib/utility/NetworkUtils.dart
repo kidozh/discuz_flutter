@@ -6,15 +6,18 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:random_user_agents/random_user_agents.dart';
 
+import '../client/ForumInteractionClient.dart';
+
 class NetworkUtils {
   static final ua = RandomUserAgents.random();
   static final DiscuzCookieSessionManager _cookieSessions =
       DiscuzCookieSessionManager(
-    documentsDirectoryProvider: getApplicationDocumentsDirectory,
-  );
+        documentsDirectoryProvider: getApplicationDocumentsDirectory,
+      );
 
   static Future<PersistCookieJar> getPersistentCookieJarByUser(
-      User user) async {
+    User user,
+  ) async {
     return _cookieSessions.getJar(user);
   }
 
@@ -41,22 +44,26 @@ class NetworkUtils {
     // Some Discuz installations send malformed analytics or legacy cookies.
     // Ignoring only those invalid Set-Cookie entries keeps the valid session
     // cookies and response instead of turning the whole request into an error.
-    dio.interceptors.add(
-      CookieManager(cookieJar, ignoreInvalidCookies: true),
-    );
+    dio.interceptors.add(CookieManager(cookieJar, ignoreInvalidCookies: true));
   }
 
   static Dio getDio() {
-    return Dio(BaseOptions(
-        headers: {'Accept-Language': "zh-CN,zh;q=0.9,zh-TW;q=0.8,en;q=0.6"}));
+    return Dio(
+      BaseOptions(
+        headers: {'Accept-Language': "zh-CN,zh;q=0.9,zh-TW;q=0.8,en;q=0.6"},
+      ),
+    )..transformer = _ForumResponseTransformer();
   }
 
   static Dio getDioInUserAgent() {
-    return Dio(BaseOptions(headers: {
-      'Accept-Language': "zh-CN,zh;q=0.9,zh-TW;q=0.8,en;q=0.6",
-      'User-Agent':
-          'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0',
-    }));
+    return Dio(
+      BaseOptions(
+        headers: {
+          'Accept-Language': "zh-CN,zh;q=0.9,zh-TW;q=0.8,en;q=0.6",
+          'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0',
+        },
+      ),
+    );
   }
 
   static Future<Dio> getDioWithTempCookieJar() async {
@@ -75,5 +82,54 @@ class NetworkUtils {
     final cookieJar = await getPersistentCookieJarByUser(user);
     addCookieManager(dio, cookieJar);
     return dio;
+  }
+}
+
+class _ForumResponseTransformer extends FusedTransformer {
+  @override
+  Future<dynamic> transformResponse(
+    RequestOptions options,
+    ResponseBody body,
+  ) async {
+    if (options.responseType != ResponseType.json ||
+        !options.uri.path.endsWith('/api/mobile/index.php')) {
+      return super.transformResponse(options, body);
+    }
+
+    if (!options.validateStatus(body.statusCode)) {
+      // Keep the error body and let Dio throw with its original HTTP status.
+      return super.transformResponse(
+        options.copyWith(responseType: ResponseType.plain),
+        body,
+      );
+    }
+    final destination =
+        body.redirects?.fold(
+          options.uri,
+          (uri, redirect) => uri.resolveUri(redirect.location),
+        ) ??
+        options.uri;
+    final redirectedAwayFromApi = !destination.path.endsWith(
+      '/api/mobile/index.php',
+    );
+    final data = await super.transformResponse(
+      redirectedAwayFromApi
+          ? options.copyWith(responseType: ResponseType.plain)
+          : options,
+      body,
+    );
+    if (data is! String) return data;
+    try {
+      return ForumReply.decodePayload(data);
+    } on ForumApiException catch (error) {
+      if (redirectedAwayFromApi && error.code == 'unexpected_markup_response') {
+        throw const ForumApiException(
+          'forum_webpage_redirect',
+          '',
+          fromForum: true,
+        );
+      }
+      rethrow;
+    }
   }
 }

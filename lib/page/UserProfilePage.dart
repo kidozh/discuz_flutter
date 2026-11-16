@@ -1,3 +1,4 @@
+import 'credit_page.dart';
 import 'UploadAvatarPage.dart';
 import 'ForumListsPage.dart';
 
@@ -855,17 +856,25 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                   ),
                 ),
 
-                // credit
-                Container(
-                  width: double.infinity,
-                  color: Colors.transparent,
-                  padding: EdgeInsets.all(4),
-                  child: PlatformCard(
-                    color: Colors.purple,
-                    child: Container(
-                      padding: EdgeInsets.all(4.0),
-                      child: Column(children: getCreditList()),
-                    ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: CreditOverviewCard(
+                    _userProfileResult!.variables,
+                    onHistory: switch (account.userFor(discuz)) {
+                      final current? when current.uid == uid =>
+                        () => Navigator.push<void>(
+                          context,
+                          platformPageRoute(
+                            context: context,
+                            builder: (_) => CreditPage(
+                              discuz,
+                              current,
+                              _userProfileResult!.variables,
+                            ),
+                          ),
+                        ),
+                      _ => null,
+                    },
                   ),
                 ),
                 // medal list
@@ -970,133 +979,6 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
         ),
       ),
     );
-  }
-
-  List<UserProfileListItem> getCreditList() {
-    List<UserProfileListItem> extendCreditList = [];
-
-    if (_userProfileResult == null ||
-        _userProfileResult!.variables.space == null) {
-      return [];
-    }
-    extendCreditList.add(
-      UserProfileListItem(
-        icon: Icon(PlatformIcons(context).credits, color: Colors.white),
-        title: S.of(context).credit,
-        titleColor: Colors.white,
-        describe: _userProfileResult!.variables.getSpace().credits.toString(),
-        describeColor: Colors.white,
-      ),
-    );
-    SpaceVariables spaceVariables = _userProfileResult!.variables.space!;
-    Map<String, ExtendCredit> extendCreditMap =
-        _userProfileResult!.variables.extendCreditMap;
-    print(extendCreditMap);
-    if (extendCreditMap.containsKey("1")) {
-      extendCreditList.add(
-        UserProfileListItem(
-          icon: Icon(PlatformIcons(context).work, color: Colors.white),
-          title: extendCreditMap["1"]!.title,
-          titleColor: Colors.white,
-          describe:
-              spaceVariables.extcredits1.toString() +
-              extendCreditMap["1"]!.unit,
-          describeColor: Colors.white,
-        ),
-      );
-    }
-    if (extendCreditMap.containsKey("2")) {
-      extendCreditList.add(
-        UserProfileListItem(
-          icon: Icon(PlatformIcons(context).work, color: Colors.white),
-          title: extendCreditMap["2"]!.title,
-          titleColor: Colors.white,
-          describe:
-              spaceVariables.extcredits2.toString() +
-              extendCreditMap["2"]!.unit,
-          describeColor: Colors.white,
-        ),
-      );
-    }
-    if (extendCreditMap.containsKey("3")) {
-      extendCreditList.add(
-        UserProfileListItem(
-          icon: Icon(PlatformIcons(context).work, color: Colors.white),
-          title: extendCreditMap["3"]!.title,
-          titleColor: Colors.white,
-          describe:
-              spaceVariables.extcredits3.toString() +
-              extendCreditMap["3"]!.unit,
-          describeColor: Colors.white,
-        ),
-      );
-    }
-    if (extendCreditMap.containsKey("4")) {
-      extendCreditList.add(
-        UserProfileListItem(
-          icon: Icon(PlatformIcons(context).work, color: Colors.white),
-          title: extendCreditMap["4"]!.title,
-          titleColor: Colors.white,
-          describe:
-              spaceVariables.extcredits4.toString() +
-              extendCreditMap["4"]!.unit,
-          describeColor: Colors.white,
-        ),
-      );
-    }
-    if (extendCreditMap.containsKey("5")) {
-      extendCreditList.add(
-        UserProfileListItem(
-          icon: Icon(PlatformIcons(context).work, color: Colors.white),
-          title: extendCreditMap["5"]!.title,
-          titleColor: Colors.white,
-          describe:
-              spaceVariables.extcredits5.toString() +
-              extendCreditMap["5"]!.unit,
-          describeColor: Colors.white,
-        ),
-      );
-    }
-    if (extendCreditMap.containsKey("6")) {
-      extendCreditList.add(
-        UserProfileListItem(
-          icon: Icon(PlatformIcons(context).work, color: Colors.white),
-          title: extendCreditMap["6"]!.title,
-          titleColor: Colors.white,
-          describe:
-              spaceVariables.extcredits6.toString() +
-              extendCreditMap["6"]!.unit,
-          describeColor: Colors.white,
-        ),
-      );
-    }
-    if (extendCreditMap.containsKey("7")) {
-      extendCreditList.add(
-        UserProfileListItem(
-          icon: Icon(PlatformIcons(context).work, color: Colors.white),
-          title: extendCreditMap["7"]!.title,
-          titleColor: Colors.white,
-          describe:
-              spaceVariables.extcredits7.toString() +
-              extendCreditMap["7"]!.unit,
-          describeColor: Colors.white,
-        ),
-      );
-    }
-    if (extendCreditMap.containsKey("8")) {
-      extendCreditList.add(
-        UserProfileListItem(
-          icon: Icon(PlatformIcons(context).work, color: Colors.white),
-          title: extendCreditMap["8"]!.title,
-          titleColor: Colors.white,
-          describe:
-              spaceVariables.extcredits8.toString() +
-              extendCreditMap["8"]!.unit,
-          describeColor: Colors.white,
-        ),
-      );
-    }
-    return extendCreditList;
   }
 }
 

@@ -600,9 +600,12 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
             if (_error != null)
               SliverList(
                 delegate: SliverChildBuilderDelegate((context, _) {
-                  return ErrorCard(_error!, () {
-                    _controller.callRefresh();
-                  }, errorType: _error!.errorType);
+                  return ErrorCard(
+                    _error!,
+                    () => _controller.callRefresh(),
+                    errorType: _error!.errorType,
+                    webpageUrl: URLUtils.getForumDisplayURL(discuz, fid),
+                  );
                 }, childCount: 1),
               ),
             // check with sub forum

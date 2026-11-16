@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 /// the API continue to use the original forum markup.
 class PostEditorToken {
   static final pattern = RegExp(
-    r'\[attachimg\]\d+\[/attachimg\]|\[img(?:=\d+,\d+)?\][^\r\n]*?\[/img\]|\[smiley\].*?\[/smiley\]',
+    r'\[draftimg\][a-f0-9]{32}\[/draftimg\]|\[draftfile\][a-f0-9]{32}\[/draftfile\]|\[attachimg\]\d+\[/attachimg\]|\[attach\]\d+\[/attach\]|\[img(?:=\d+,\d+)?\][^\r\n]*?\[/img\]|\[smiley\].*?\[/smiley\]',
     caseSensitive: false,
     dotAll: true,
   );
@@ -17,7 +17,15 @@ class PostEditorToken {
 
   int get end => start + text.length;
   bool get isSmiley => text.toLowerCase().startsWith('[smiley]');
-  bool get isAttachment => text.toLowerCase().startsWith('[attachimg]');
+  bool get isPending =>
+      text.toLowerCase().startsWith('[draftimg]') ||
+      text.toLowerCase().startsWith('[draftfile]');
+  bool get isAttachment =>
+      text.toLowerCase().startsWith('[attachimg]') ||
+      text.toLowerCase().startsWith('[draftimg]');
+  bool get isFile =>
+      text.toLowerCase().startsWith('[attach]') ||
+      text.toLowerCase().startsWith('[draftfile]');
   String get content =>
       text.substring(text.indexOf(']') + 1, text.lastIndexOf('['));
 
@@ -179,10 +187,27 @@ TextSelection postEditorSelection(
 /// history is disabled. Paths never become part of the posted message.
 class PostEditorController extends TextEditingController {
   final Map<String, String> _imagePaths = {};
+  final Map<String, String> _fileNames = {};
+  final Map<String, String> _filePaths = {};
 
   PostEditorController({super.text});
 
   String? imagePathFor(String token) => _imagePaths[token];
+  String? fileNameFor(String aid) => _fileNames[aid];
+  String? filePathFor(String aid) => _filePaths[aid];
+
+  Map<String, String> get attachedFileNames => {
+    for (final token in PostEditorToken.inText(
+      text,
+    ).where((token) => token.isFile))
+      if (_fileNames[token.content] case final name?) token.content: name,
+  };
+
+  void restoreFileNames(Map<String, String> fileNames) =>
+      _fileNames.addAll(fileNames);
+
+  void restoreImagePath(String token, String path) => _imagePaths[token] = path;
+  void restoreFilePath(String aid, String path) => _filePaths[aid] = path;
 
   void insertText(String inserted, {bool image = false}) {
     final selected = postEditorSelection(text, selection);
@@ -202,6 +227,12 @@ class PostEditorController extends TextEditingController {
   void insertAttachment(String aid, String path) {
     if (!RegExp(r'^\d+$').hasMatch(aid)) return;
     _insertImage('[attachimg]$aid[/attachimg]', path);
+  }
+
+  void insertFile(String aid, String name) {
+    if (!RegExp(r'^[1-9]\d*$').hasMatch(aid)) return;
+    _fileNames[aid] = name;
+    insertText('[attach]$aid[/attach]', image: true);
   }
 
   void insertHostedImage(String url, String path) {

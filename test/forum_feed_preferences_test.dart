@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -45,6 +46,63 @@ void main() {
     await ForumFeedPreferences.forums('site:1', client, refresh: true);
     expect(await ForumFeedPreferences.resolveFids('site:1', client), '1,3,7');
     dio.close();
+  });
+  test('nested forums refresh older catalogs, deduplicate and keep independent choices', () async {
+    const scope = 'site:1';
+    SharedPreferences.setMockInitialValues({
+      'forum_feed_v1:$scope:selection': ['9'],
+      'forum_feed_v1:$scope:forums': jsonEncode({
+        'time': DateTime.now().millisecondsSinceEpoch,
+        'rows': [
+          {'fid': '1', 'name': 'Parent'},
+          {'fid': '9', 'name': 'Other'},
+        ],
+      }),
+    });
+    final dio = Dio()
+      ..interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (request, handler) {
+            handler.resolve(
+              Response(
+                requestOptions: request,
+                data: {
+                  'Variables': {
+                    'forumlist': [
+                      {'fid': 2, 'name': 'Child'},
+                      {
+                        'fid': '1',
+                        'name': 'Parent',
+                        'sublist': {
+                          '2': {
+                            'fid': '2',
+                            'name': 'Child',
+                            'sublist': [
+                              {'fid': 3, 'name': 'Grandchild'},
+                            ],
+                          },
+                        },
+                      },
+                      {'fid': 9, 'name': 'Other'},
+                    ],
+                  },
+                },
+              ),
+            );
+          },
+        ),
+      );
+    addTearDown(dio.close);
+    final client = ForumInteractionClient(dio, 'https://forum.test');
+    expect(await ForumFeedPreferences.forums(scope, client), [
+      {'fid': '1', 'name': 'Parent'},
+      {'fid': '2', 'name': 'Child', 'depth': 1},
+      {'fid': '3', 'name': 'Grandchild', 'depth': 2},
+      {'fid': '9', 'name': 'Other'},
+    ]);
+    expect(await ForumFeedPreferences.resolveFids(scope, client), '2,3,9');
+    await ForumFeedPreferences.saveSelection(scope, ['1', '3', '9']);
+    expect(await ForumFeedPreferences.resolveFids(scope, client), '1,3,9');
   });
   test(
     'feed cache is scoped by account and exact selection and cleared on edit',

@@ -1,6 +1,8 @@
 PODS:
   - adaptive_platform_ui (0.1.0):
     - Flutter
+  - almanacinc_record_mp3 (1.0.6):
+    - Flutter
   - apple_post_translation (0.1.0):
     - Flutter
     - FlutterMacOS
@@ -8,6 +10,9 @@ PODS:
     - Flutter
   - device_info_plus (0.0.1):
     - Flutter
+  - file_picker_darwin (1.0.0):
+    - Flutter
+    - FlutterMacOS
   - Firebase/CoreOnly (12.19.0):
     - FirebaseCore (~> 12.19.0)
   - Firebase/Messaging (12.19.0):
@@ -179,6 +184,9 @@ PODS:
   - push (0.0.1):
     - Flutter
     - FlutterMacOS
+  - record_darwin (2.0.0):
+    - Flutter
+    - FlutterMacOS
   - saver_gallery (0.0.1):
     - Flutter
   - SDWebImage (5.21.7):
@@ -210,9 +218,11 @@ PODS:
 
 DEPENDENCIES:
   - adaptive_platform_ui (from `.symlinks/plugins/adaptive_platform_ui/ios`)
+  - almanacinc_record_mp3 (from `.symlinks/plugins/almanacinc_record_mp3/ios`)
   - apple_post_translation (from `.symlinks/plugins/apple_post_translation/darwin`)
   - audio_session (from `.symlinks/plugins/audio_session/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
+  - file_picker_darwin (from `.symlinks/plugins/file_picker_darwin/darwin`)
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
@@ -232,6 +242,7 @@ DEPENDENCIES:
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - push (from `.symlinks/plugins/push/darwin`)
+  - record_darwin (from `.symlinks/plugins/record_darwin/darwin`)
   - saver_gallery (from `.symlinks/plugins/saver_gallery/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
@@ -265,12 +276,16 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   adaptive_platform_ui:
     :path: ".symlinks/plugins/adaptive_platform_ui/ios"
+  almanacinc_record_mp3:
+    :path: ".symlinks/plugins/almanacinc_record_mp3/ios"
   apple_post_translation:
     :path: ".symlinks/plugins/apple_post_translation/darwin"
   audio_session:
     :path: ".symlinks/plugins/audio_session/ios"
   device_info_plus:
     :path: ".symlinks/plugins/device_info_plus/ios"
+  file_picker_darwin:
+    :path: ".symlinks/plugins/file_picker_darwin/darwin"
   firebase_analytics:
     :path: ".symlinks/plugins/firebase_analytics/ios"
   firebase_core:
@@ -309,6 +324,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   push:
     :path: ".symlinks/plugins/push/darwin"
+  record_darwin:
+    :path: ".symlinks/plugins/record_darwin/darwin"
   saver_gallery:
     :path: ".symlinks/plugins/saver_gallery/ios"
   share_plus:
@@ -330,9 +347,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   adaptive_platform_ui: ab03506952565d36830bd5b41746bb94a4e9f25b
+  almanacinc_record_mp3: 018a6549a4441961b7baaa76668103548edea295
   apple_post_translation: 26a8e82b4cf72f61c907216b9a745fd90602da88
   audio_session: 19e9480dbdd4e5f6c4543826b2e8b0e4ab6145fe
   device_info_plus: bf2e3232933866d73fe290f2942f2156cdd10342
+  file_picker_darwin: 27e043831d68462d54f1c40e724b1f53c9d1e8be
   Firebase: 7ca191e43724142f79fae653547b3382c45413cc
   firebase_analytics: 1977ed5e29a1687f5bb5468adda4ba53fb08ae22
   firebase_core: 93f6135537819637fa0c56d1d76bf665edde1b17
@@ -367,6 +386,7 @@ SPEC CHECKSUMS:
   permission_handler_apple: ee2fe0fd04551b304eb002714ff067c371c822ed
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
   push: dab402f84bedfc62b8e5f6d81db808a7502025f7
+  record_darwin: 41fe82171e943cd04ae52e55663e620c5b16f193
   saver_gallery: d0a6db42d96be3048140ef50209651ae5c2d053a
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageWebPCoder: 0e06e365080397465cc73a7a9b472d8a3bd0f377

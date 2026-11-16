@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,7 @@ class ForumDisplaySettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final icons = PlatformIcons(context);
     final preference = context.watch<UserPreferenceNotifierProvider>();
     final display = preference.forumDisplay;
     final strings = S.of(context);
@@ -84,7 +86,7 @@ class ForumDisplaySettingsPage extends StatelessWidget {
                     title: wrappingText(cookiePolicyLabel(policy)),
                     subtitle: wrappingText(cookiePolicyDescription(policy)),
                     trailing: policy == display.imageCookiePolicy
-                        ? const Icon(Icons.check)
+                        ? Icon(PlatformIcons(sheetContext).checkMark)
                         : null,
                     onTap: () => Navigator.of(sheetContext).pop(policy),
                   ),
@@ -111,7 +113,10 @@ class ForumDisplaySettingsPage extends StatelessWidget {
               switchTile(
                 title: strings.mergeHomeNavigation,
                 description: strings.mergeHomeNavigationDescription,
-                icon: Icons.tab_unselected,
+                icon: icons.pick(
+                  Icons.tab_unselected,
+                  CupertinoIcons.rectangle_on_rectangle,
+                ),
                 value: display.mergeHomeNavigation,
                 update: (value) => preference.forumDisplay.copyWith(
                   mergeHomeNavigation: value,
@@ -119,21 +124,21 @@ class ForumDisplaySettingsPage extends StatelessWidget {
               ),
               switchTile(
                 title: strings.showForumName,
-                icon: Icons.public,
+                icon: icons.globe,
                 value: display.showForumName,
                 update: (value) =>
                     preference.forumDisplay.copyWith(showForumName: value),
               ),
               switchTile(
                 title: strings.showAccountInfo,
-                icon: Icons.person_outline,
+                icon: icons.person,
                 value: display.showAccountInfo,
                 update: (value) =>
                     preference.forumDisplay.copyWith(showAccountInfo: value),
               ),
               switchTile(
                 title: strings.showThreadStats,
-                icon: Icons.bar_chart,
+                icon: icons.chart,
                 value: display.showThreadStats,
                 update: (value) =>
                     preference.forumDisplay.copyWith(showThreadStats: value),
@@ -144,20 +149,28 @@ class ForumDisplaySettingsPage extends StatelessWidget {
                   subtitle: wrappingText(
                     cookiePolicyLabel(display.imageCookiePolicy),
                   ),
-                  leading: const Icon(Icons.image_outlined),
-                  trailing: const Icon(Icons.chevron_right),
+                  leading: Icon(icons.photo),
+                  trailing: Icon(
+                    icons.pick(
+                      Icons.chevron_right,
+                      CupertinoIcons.chevron_right,
+                    ),
+                  ),
                   onTap: chooseCookiePolicy,
                 ),
               switchTile(
                 title: strings.showForumCarousel,
-                icon: Icons.view_carousel_outlined,
+                icon: icons.pick(
+                  Icons.view_carousel_outlined,
+                  CupertinoIcons.rectangle_on_rectangle,
+                ),
                 value: display.showCarousel,
                 update: (value) =>
                     preference.forumDisplay.copyWith(showCarousel: value),
               ),
               switchTile(
                 title: strings.compactForumCarousel,
-                icon: Icons.view_compact_outlined,
+                icon: icons.category,
                 value: display.compactCarousel,
                 update: (value) =>
                     preference.forumDisplay.copyWith(compactCarousel: value),

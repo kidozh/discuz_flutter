@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +6,7 @@ import '../JsonResult/BaseResult.dart';
 import '../entity/DiscuzError.dart';
 import '../entity/User.dart';
 import '../generated/l10n.dart';
+import 'forum_error.dart';
 
 class EasyRefreshUtils {
   static DiscuzError? responseError(
@@ -15,13 +15,8 @@ class EasyRefreshUtils {
     User? user,
     int memberUid,
   ) {
-    final apiError = result.getErrorString();
-    if (apiError != null) {
-      return DiscuzError(
-        result.errorResult?.key ?? S.of(context).error,
-        result.errorResult?.content ?? apiError,
-      );
-    }
+    final apiError = forumResponseError(S.of(context), result);
+    if (apiError != null) return apiError;
     if (user != null && memberUid != user.uid) {
       return DiscuzError(
         S.of(context).userExpiredTitle(user.username),
@@ -32,16 +27,8 @@ class EasyRefreshUtils {
     return null;
   }
 
-  static DiscuzError requestError(BuildContext context, Object error) {
-    if (error is DioException) {
-      return DiscuzError(
-        error.message ?? S.of(context).error,
-        error.type.name,
-        dioError: error,
-      );
-    }
-    return DiscuzError(error.runtimeType.toString(), error.toString());
-  }
+  static DiscuzError requestError(BuildContext context, Object error) =>
+      forumRequestError(S.of(context), error);
 
   static Header i18nClassicHeader(
     BuildContext context, {

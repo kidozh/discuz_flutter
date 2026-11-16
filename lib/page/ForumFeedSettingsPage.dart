@@ -1,13 +1,19 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart' show parseFragment;
+
 import '../client/ForumInteractionClient.dart';
 import '../database/AppDatabase.dart';
 import '../entity/Discuz.dart';
+import '../entity/DiscuzError.dart';
 import '../entity/User.dart';
 import '../generated/l10n.dart';
 import '../utility/ForumFeedPreferences.dart';
 import '../utility/NetworkUtils.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
+import '../utility/discuz_json.dart';
+import '../utility/forum_error.dart';
+import '../widget/ErrorCard.dart';
 
 class ForumFeedSettingsPage extends StatefulWidget {
   final Discuz discuz;
@@ -35,7 +41,7 @@ class _ForumFeedSettingsPageState extends State<ForumFeedSettingsPage> {
   List<Map<String, dynamic>> rows = [];
   Set<String> selected = {};
   bool loading = true, saving = false;
-  String? error;
+  DiscuzError? error;
   int generation = 0;
   String get scope => ForumFeedPreferences.scope(site, user);
   Iterable<String> get knownIds => rows.map((row) => '${row['fid']}');
@@ -115,9 +121,9 @@ class _ForumFeedSettingsPageState extends State<ForumFeedSettingsPage> {
           rows = fresh;
           selected = selection;
         });
-    } catch (_) {
+    } catch (failure) {
       if (mounted && run == generation)
-        setState(() => error = S.of(context).forumLoadFailed);
+        setState(() => error = forumRequestError(S.of(context), failure));
     } finally {
       if (mounted && run == generation) setState(() => loading = false);
     }
@@ -138,11 +144,11 @@ class _ForumFeedSettingsPageState extends State<ForumFeedSettingsPage> {
         all ? null : next.toList(),
         knownIds: knownIds,
       );
-    } catch (_) {
+    } catch (failure) {
       if (mounted)
         setState(() {
           selected = previous;
-          error = S.of(context).forumActionFailed;
+          error = forumRequestError(S.of(context), failure);
         });
     } finally {
       if (mounted) setState(() => saving = false);
@@ -198,7 +204,7 @@ class _ForumFeedSettingsPageState extends State<ForumFeedSettingsPage> {
     final menu = PlatformPopupMenu(
       key: key,
       liquidGlassSymbol: 'chevron.down',
-      icon: const Icon(Icons.keyboard_arrow_down),
+      icon: const Icon(CupertinoIcons.chevron_down),
       options: [
         for (final entry in labels.entries)
           PopupMenuOption(
@@ -224,6 +230,7 @@ class _ForumFeedSettingsPageState extends State<ForumFeedSettingsPage> {
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
+    final icons = PlatformIcons(context);
     final accounts = users
         .where((item) => item.discuz.baseURL == site.baseURL)
         .toList();
@@ -289,7 +296,10 @@ class _ForumFeedSettingsPageState extends State<ForumFeedSettingsPage> {
                         liquidGlassSymbol: 'checkmark.circle',
                         liquidGlassIconSize: 20,
                         icon: Icon(
-                          Icons.select_all,
+                          icons.pick(
+                            Icons.select_all,
+                            CupertinoIcons.check_mark_circled,
+                          ),
                           semanticLabel: s.feedSelectAll,
                         ),
                         onPressed: loading || saving
@@ -300,7 +310,7 @@ class _ForumFeedSettingsPageState extends State<ForumFeedSettingsPage> {
                         liquidGlassSymbol: 'circle',
                         liquidGlassIconSize: 20,
                         icon: Icon(
-                          Icons.deselect,
+                          icons.pick(Icons.deselect, CupertinoIcons.circle),
                           semanticLabel: s.feedSelectNone,
                         ),
                         onPressed: loading || saving ? null : () => save({}),
@@ -316,12 +326,10 @@ class _ForumFeedSettingsPageState extends State<ForumFeedSettingsPage> {
                 child: Center(child: PlatformCircularProgressIndicator()),
               ),
             if (error != null)
-              PlatformListTile(
-                title: Text(error!),
-                trailing: PlatformTextButton(
-                  onPressed: loading || saving ? null : load,
-                  child: Text(s.refresh),
-                ),
+              ErrorCard(
+                error!,
+                loading || saving ? null : load,
+                largeSize: false,
               ),
             PlatformCard(
               child: Column(
@@ -330,11 +338,21 @@ class _ForumFeedSettingsPageState extends State<ForumFeedSettingsPage> {
                     Semantics(
                       checked: selected.contains(row['fid']),
                       child: PlatformListTile(
-                        title: Text(parseFragment('${row['name']}').text ?? ''),
+                        title: Padding(
+                          padding: EdgeInsetsDirectional.only(
+                            start: 16.0 * discuzInt(row['depth']).clamp(0, 3),
+                          ),
+                          child: Text(
+                            parseFragment('${row['name']}').text ?? '',
+                          ),
+                        ),
                         trailing: Icon(
                           selected.contains(row['fid'])
-                              ? Icons.check_circle
-                              : Icons.radio_button_unchecked,
+                              ? icons.checkMarkCircledSolid
+                              : icons.pick(
+                                  Icons.radio_button_unchecked,
+                                  CupertinoIcons.circle,
+                                ),
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         onTap: loading || saving

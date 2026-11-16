@@ -158,12 +158,12 @@ class _PostImagePreviewState extends State<PostImagePreview> {
                           ? CupertinoButton(
                               padding: EdgeInsets.zero,
                               onPressed: widget.onRemove,
-                              child: _removeIcon(),
+                              child: _removeIcon(CupertinoIcons.xmark),
                             )
                           : IconButton(
                               padding: EdgeInsets.zero,
                               onPressed: widget.onRemove,
-                              icon: _removeIcon(),
+                              icon: _removeIcon(Icons.close),
                             ),
                     ),
                   ),
@@ -175,13 +175,13 @@ class _PostImagePreviewState extends State<PostImagePreview> {
     );
   }
 
-  Widget _removeIcon() => Container(
+  Widget _removeIcon(IconData icon) => Container(
     width: 24,
     height: 24,
     decoration: BoxDecoration(
       color: Colors.black.withValues(alpha: .55),
       shape: BoxShape.circle,
     ),
-    child: const Icon(Icons.close, size: 16, color: Colors.white),
+    child: Icon(icon, size: 16, color: Colors.white),
   );
 }

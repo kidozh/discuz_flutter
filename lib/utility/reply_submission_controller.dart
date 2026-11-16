@@ -10,7 +10,7 @@ class ReplyDraftSnapshot {
   final List<String> attachmentIds;
 
   ReplyDraftSnapshot(this.text, List<String> attachmentIds)
-      : attachmentIds = List.unmodifiable(attachmentIds);
+    : attachmentIds = List.unmodifiable(attachmentIds);
 }
 
 /// Owns submission state, not the editor. Late replies and feedback timers must
@@ -25,7 +25,7 @@ class ReplySubmissionController extends ChangeNotifier {
   String _lastText;
 
   ReplySubmissionController(this.editor, this.attachmentIds)
-      : _lastText = editor.text {
+    : _lastText = editor.text {
     editor.addListener(_onEdited);
   }
 
@@ -53,6 +53,7 @@ class ReplySubmissionController extends ChangeNotifier {
   Future<T?> submit<T>({
     required Future<T> Function(ReplyDraftSnapshot draft) request,
     required bool Function(T response) succeeded,
+    bool Function()? canClear,
   }) async {
     if (_disposed ||
         status == SendReplyStatus.loading ||
@@ -68,7 +69,8 @@ class ReplySubmissionController extends ChangeNotifier {
       final response = await request(draft);
       if (_disposed) return null;
       if (succeeded(response)) {
-        if (_revision == revision &&
+        if ((canClear?.call() ?? true) &&
+            _revision == revision &&
             editor.text == draft.text &&
             listEquals(attachmentIds, draft.attachmentIds)) {
           // Clear immediately, never from the delayed success indicator.

@@ -47,11 +47,11 @@ void main() {
     expect(value.sameTerms(PurchaseQuote.fromJson(quote(price: 6))), false);
     expect(
       () => PurchaseQuote.fromJson(quote(price: 0)),
-      throwsA(isA<ForumApiException>()),
+      throwsFormatException,
     );
     expect(
       () => PurchaseQuote.fromJson({...quote(), 'balance': 'unknown'}),
-      throwsA(isA<ForumApiException>()),
+      throwsFormatException,
     );
   });
   test(

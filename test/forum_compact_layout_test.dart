@@ -5,6 +5,7 @@ import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/widget/compact_thread_list_tile.dart';
 import 'package:discuz_flutter/widget/forum_home_title.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -184,7 +185,7 @@ void main() {
     expect(
       find.descendant(
         of: preview,
-        matching: find.byIcon(Icons.chat_bubble_outline),
+        matching: find.byIcon(CupertinoIcons.chat_bubble),
       ),
       findsOneWidget,
     );

@@ -1,5 +1,7 @@
 import 'package:discuz_flutter/utility/pane_navigation.dart';
+
 import '../utility/DashboardPreferences.dart';
+import '../utility/EasyRefreshUtils.dart';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +9,6 @@ import 'package:provider/provider.dart';
 
 import '../JsonResult/DisplayForumResult.dart';
 import '../entity/DiscuzError.dart';
-import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../screen/EmptyScreen.dart';
 import '../utility/KeylolPortalParser.dart';
@@ -75,11 +76,7 @@ class _KeylolMobileTopicState extends State<KeylolMobileTopicWidget> {
       if (!isCurrent()) return;
       setState(() {
         _isLoading = false;
-        _error = DiscuzError(
-          'keylol_portal_load_failed',
-          S.of(context).loadFailed,
-          dioError: error is DioException ? error : null,
-        );
+        _error = EasyRefreshUtils.requestError(context, error);
       });
     }
   }

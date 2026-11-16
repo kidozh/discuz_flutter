@@ -1,11 +1,10 @@
-import 'dart:developer';
-
 import 'package:discuz_flutter/utility/BugReportUtils.dart';
 
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:provider/provider.dart';
 
@@ -15,24 +14,56 @@ import '../entity/User.dart';
 import '../page/InternalWebviewBrowserPage.dart';
 import '../page/LoginPage.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
+import '../utility/forum_error.dart';
+
+Future<void> showForumActionError(
+  BuildContext context,
+  DiscuzError failure, {
+  bool dialog = false,
+}) async {
+  final strings = S.of(context);
+  if (!failure.reportable && !dialog) {
+    await EasyLoading.showError(failure.content);
+    return;
+  }
+  await showPlatformDialog<void>(
+    context: context,
+    builder: (dialogContext) => PlatformAlertDialog(
+      title: Text(strings.forumActionFailed),
+      content: Text(failure.content),
+      actions: [
+        if (failure.reportable)
+          PlatformDialogAction(
+            child: Text(strings.reportIssue),
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              if (context.mounted) await BugReportUtils.openIssuePage(context);
+            },
+          ),
+        PlatformDialogAction(
+          child: Text(strings.forumConfirm),
+          onPressed: () => Navigator.pop(dialogContext),
+        ),
+      ],
+    ),
+  );
+}
 
 class ErrorCard extends StatelessWidget {
-  DiscuzError discuzError;
-  ErrorType? errorType;
+  final DiscuzError discuzError;
+  final ErrorType? errorType;
 
   final VoidCallback? onRefreshCallback;
-  bool? largeSize = true;
-  String? webpageUrl = null;
+  final bool? largeSize;
+  final String? webpageUrl;
 
-  bool _canReportIssue(BuildContext context) {
-    final strings = S.of(context);
-    return !discuzError.isNetworkError &&
-        discuzError.key != 'mobile_template_no_found' &&
-        errorType != ErrorType.userExpired &&
-        discuzError.errorType != ErrorType.userExpired &&
-        discuzError.key != strings.networkFailed &&
-        discuzError.key != strings.networkFail;
-  }
+  bool get _canReportIssue =>
+      discuzError.reportable && errorType != ErrorType.userExpired;
+
+  bool get _needsWebPage => switch (forumMessageKey(discuzError.key)) {
+    'mobile_template_no_found' || 'forum_webpage_redirect' => true,
+    _ => false,
+  };
 
   Widget _reportIssueAction(BuildContext context) => Padding(
     padding: const EdgeInsets.only(top: 12),
@@ -52,14 +83,6 @@ class ErrorCard extends StatelessWidget {
       ],
     ),
   );
-
-  String getTranslatedMessage(BuildContext context, String string) {
-    switch (string) {
-      case "Not Found":
-        return S.of(context).responseStatusError404;
-    }
-    return string;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,8 +110,7 @@ class ErrorCard extends StatelessWidget {
         ),
       );
     }
-    if ((largeSize == null || largeSize == true) &&
-        (discuzError.key != "mobile_template_no_found")) {
+    if (largeSize != false && !_needsWebPage) {
       return Padding(
         padding: EdgeInsets.symmetric(vertical: 32.0, horizontal: 8.0),
         child: Container(
@@ -110,10 +132,9 @@ class ErrorCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    getTranslatedMessage(context, discuzError.content),
+                    discuzError.content,
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  //Text(getErrorLocalizedKey(context), style: Theme.of(context).textTheme.bodyMedium,),
                 ],
               ),
               if (errorType == ErrorType.userExpired) SizedBox(height: 64.0),
@@ -149,7 +170,7 @@ class ErrorCard extends StatelessWidget {
                     },
                   ),
                 ),
-              if (_canReportIssue(context)) _reportIssueAction(context),
+              if (_canReportIssue) _reportIssueAction(context),
             ],
           ),
         ),
@@ -206,8 +227,7 @@ class ErrorCard extends StatelessWidget {
                       ),
                       onPressed: () => _loginAgain(context),
                     ),
-                  if (discuzError.key == "mobile_template_no_found" &&
-                      this.webpageUrl != null)
+                  if (_needsWebPage && webpageUrl != null)
                     PlatformTextButton(
                       child: Text(
                         S.of(context).navigateToWebPage,
@@ -245,6 +265,7 @@ class ErrorCard extends StatelessWidget {
                 ],
               ),
             ),
+            if (_canReportIssue) _reportIssueAction(context),
           ],
         ),
       );
@@ -273,43 +294,9 @@ class ErrorCard extends StatelessWidget {
     this.discuzError,
     this.onRefreshCallback, {
     this.largeSize,
-    this.errorType,
+    ErrorType? errorType,
     this.webpageUrl,
-  }) {
-    errorType ??= discuzError.errorType;
-  }
-
-  String getErrorLocalizedKey(BuildContext context) {
-    log("GET Dio ERROR ${discuzError.dioError} ${discuzError.key}");
-    if (errorType == ErrorType.userExpired) {
-      return S.of(context).errorUserExpired;
-    } else if (discuzError.dioError != null) {
-      switch (discuzError.dioError!.type) {
-        case DioExceptionType.transformTimeout:
-          return S.of(context).dioErrorOther;
-        case DioExceptionType.sendTimeout:
-          return S.of(context).dioErrorSendTimeout;
-        case DioExceptionType.receiveTimeout:
-          return S.of(context).dioErrorReceiveTimeout;
-        case DioExceptionType.cancel:
-          return S.of(context).dioErrorCancel;
-        case DioExceptionType.connectionTimeout:
-          return S.of(context).dioErrorConnectionTimeout;
-        case DioExceptionType.badCertificate:
-          return S.of(context).dioErrorBadCertificate;
-        case DioExceptionType.badResponse:
-          return S.of(context).dioErrorBadResponse;
-        case DioExceptionType.connectionError:
-          return S.of(context).dioErrorConnectionError;
-        case DioExceptionType.unknown:
-          return S.of(context).dioErrorOther;
-      }
-    } else if (discuzError.key == "mobile_template_no_found") {
-      return S.of(context).mobileTemplateNotFound;
-    } else {
-      return discuzError.key;
-    }
-  }
+  }) : errorType = errorType ?? discuzError.errorType;
 
   IconData getErrorIcon(BuildContext buildContext) {
     final icons = PlatformIcons(buildContext);
@@ -336,7 +323,7 @@ class ErrorCard extends StatelessWidget {
         case DioExceptionType.unknown:
           return icons.errorOutline;
       }
-    } else if (discuzError.key == "mobile_template_no_found") {
+    } else if (_needsWebPage) {
       return icons.globe;
     } else {
       return icons.errorOutline;

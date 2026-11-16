@@ -22,6 +22,7 @@ import '../screen/NullDiscuzScreen.dart';
 import '../utility/NetworkUtils.dart';
 import '../utility/PushServiceUtils.dart';
 import '../widget/ErrorCard.dart';
+import '../utility/forum_error.dart';
 
 class SubscribeChannelPage extends StatelessWidget {
   @override
@@ -80,10 +81,10 @@ class SubscribeChannelState extends State<SubscribeChannelStatefulWidget> {
             }
           });
         }).catchError((onError) {
+          if (!mounted) return;
           setState(() {
             isRefreshing = false;
-            discuzError =
-                DiscuzError(S.of(context).networkFail, onError.toString());
+            discuzError = forumRequestError(S.of(context), onError);
           });
         });
       }

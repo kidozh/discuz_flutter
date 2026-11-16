@@ -1,24 +1,23 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:discuz_flutter/client/ForumInteractionClient.dart';
+import 'package:discuz_flutter/generated/l10n.dart';
+import 'package:discuz_flutter/utility/forum_error.dart';
 import 'package:discuz_flutter/utility/rating_failure.dart';
+import 'package:flutter/widgets.dart';
 
 void main() {
-  test('preserves a server rejection and code without inventing a cause', () {
-    expect(
-      ratingFailureMessage(
-        const ForumApiException('thread_rate_ctrl', '今日评分额度不足'),
-        '结果未知',
-      ),
-      '今日评分额度不足\n[thread_rate_ctrl]',
+  test('keeps rating rejection codes in diagnostics', () async {
+    final strings = await S.load(const Locale('zh', 'CN'));
+    const error = ForumApiException(
+      'thread_rate_ctrl',
+      '今日评分额度不足',
+      fromForum: true,
     );
-    expect(
-      ratingFailureMessage(
-        const ForumApiException('post_review_unavailable', ''),
-        '提交前检查失败',
-      ),
-      '提交前检查失败\n[post_review_unavailable]',
-    );
+    final failure = forumRequestError(strings, error, submitted: true);
+    expect(failure.content, '今日评分额度不足');
+    expect(failure.reportable, isFalse);
+    expect(ratingFailureCode(error), 'thread_rate_ctrl');
   });
 
   test('network diagnostics do not expose request or response contents', () {

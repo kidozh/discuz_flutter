@@ -65,7 +65,10 @@ class PostTextUtils{
     return string;
   }
 
-  static String wrapLinksInHtml(String htmlContent) {
+  static String wrapLinksInHtml(
+    String htmlContent, {
+    bool styleAppSignature = false,
+  }) {
     Document document = parse(htmlContent);
 
     void processNode(Node node) {
@@ -115,11 +118,62 @@ class PostTextUtils{
       }
     }
 
-    document.body?.nodes.toList().forEach(processNode);
-    return document.body?.innerHtml ?? htmlContent;
+    final body = document.body;
+    if (body == null) return htmlContent;
+    body.nodes.toList().forEach(processNode);
+    if (styleAppSignature) _styleAppSignature(body);
+    return body.innerHtml;
   }
 
-  static String getDecodedString(String html, bool useCompactParagraph){
+  static final _englishSignaturePrefix = RegExp(r"^- Sent (via|by .+'s)$");
+  static final _englishSignatureSuffix = RegExp(r'^v\d[\w.+-]*\.$');
+  static final _chineseSignaturePrefix = RegExp(r'^--- 消息由(?: .+ 的)?$');
+
+  static void _styleAppSignature(Element body) {
+    final tail = body.nodes.reversed
+        .where((node) => node is! Text || node.text.trim().isNotEmpty)
+        .take(3)
+        .toList();
+    if (tail.length != 3) return;
+    final [suffix, link, prefix] = tail;
+    if (prefix is! Text ||
+        link is! Element ||
+        link.localName != 'a' ||
+        link.attributes['href'] != 'https://discuzhub.kidozh.com/' ||
+        suffix is! Text) {
+      return;
+    }
+    final start = prefix.text.trim();
+    final end = suffix.text.trim();
+    final isSignature =
+        (link.text.trim() == 'DisFly' &&
+            _englishSignaturePrefix.hasMatch(start) &&
+            _englishSignatureSuffix.hasMatch(end)) ||
+        (link.text.trim().startsWith('谈坛（v') &&
+            _chineseSignaturePrefix.hasMatch(start) &&
+            end == '发出。');
+    if (!isSignature) return;
+
+    final nodes = body.nodes;
+    var index = nodes.indexOf(prefix) - 1;
+    while (index >= 0) {
+      final node = nodes[index];
+      if (node is! Text || node.text.trim().isNotEmpty) {
+        if (node is! Element || node.localName != 'br') break;
+      }
+      node.remove();
+      index--;
+    }
+    final signature = Element.tag('p')..classes.add('disfly-post-signature');
+    signature.nodes.addAll([prefix, link, suffix]);
+    nodes.add(signature);
+  }
+
+  static String getDecodedString(
+    String html,
+    bool useCompactParagraph, {
+    bool styleAppSignature = false,
+  }) {
     String decodedString = replaceCollapseTag(html);
     decodedString = replaceSpoilTag(decodedString);
     decodedString = replaceCountDownTag(decodedString);
@@ -134,7 +188,10 @@ class PostTextUtils{
     //   decodedString = decodedString.replaceAll(RegExp(r"<br.*?/>"), "");
     // }
 
-    decodedString = wrapLinksInHtml(decodedString);
+    decodedString = wrapLinksInHtml(
+      decodedString,
+      styleAppSignature: styleAppSignature,
+    );
 
     return decodedString;
   }

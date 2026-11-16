@@ -1,5 +1,9 @@
+import '../utility/forum_error.dart';
+import 'ErrorCard.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../client/ForumInteractionClient.dart';
 import '../JsonResult/ViewThreadResult.dart';
 import '../entity/Discuz.dart';
@@ -127,16 +131,14 @@ class _BestAnswerButtonState extends State<BestAnswerButton> {
       widget.onChanged();
     } catch (error) {
       if (!mounted || !sameAccount(user)) return;
-      await showPlatformAlert(
-        context: context,
-        title: S.of(context).forumActionFailed,
-        message: error is ForumApiException && error.message.isNotEmpty
-            ? error.message
-            : submitted
-            ? S.of(context).forumSubmissionUnknown
-            : S.of(context).bestAnswerChanged,
-        actions: [PlatformAlertAction(label: S.of(context).forumConfirm)],
+      final s = S.of(context);
+      final failure = forumRequestError(
+        s,
+        error,
+        fallback: s.bestAnswerChanged,
+        submitted: submitted,
       );
+      await showForumActionError(context, failure, dialog: true);
     } finally {
       _inFlight.remove(operation);
       if (mounted) setState(() => busy = false);

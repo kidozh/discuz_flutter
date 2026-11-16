@@ -1,12 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+
 import '../client/ForumInteractionClient.dart';
 import '../entity/Discuz.dart';
+import '../entity/DiscuzError.dart';
 import '../entity/User.dart';
 import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../utility/NetworkUtils.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
+import '../utility/forum_error.dart';
+import '../widget/ErrorCard.dart';
 import 'InternalWebviewBrowserPage.dart';
 
 class PostCommentDialog extends StatefulWidget {
@@ -27,7 +31,7 @@ class PostCommentDialog extends StatefulWidget {
 class _PostCommentDialogState extends State<PostCommentDialog> {
   final text = TextEditingController();
   bool busy = false;
-  String? error;
+  DiscuzError? error;
   bool sameAccount() {
     if (!mounted) return false;
     final account = context.read<DiscuzAndUserNotifier>();
@@ -46,11 +50,16 @@ class _PostCommentDialogState extends State<PostCommentDialog> {
     if (busy) return;
     final strings = S.of(context);
     if (text.text.trim().isEmpty || text.text.trim().runes.length > 200) {
-      setState(() => error = strings.postCommentHint);
+      setState(
+        () => error = DiscuzError('invalid_comment', strings.postCommentHint),
+      );
       return;
     }
     if (!sameAccount()) {
-      setState(() => error = strings.forumSignInRequired);
+      setState(
+        () =>
+            error = DiscuzError('login_required', strings.forumSignInRequired),
+      );
       return;
     }
     setState(() {
@@ -71,12 +80,16 @@ class _PostCommentDialogState extends State<PostCommentDialog> {
       );
       if (mounted && sameAccount()) Navigator.pop(context, true);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(
-          () => error = e is ForumApiException
-              ? (e.message.isEmpty ? strings.postCommentUnavailable : e.message)
-              : strings.forumSubmissionUnknown,
+          () => error = forumRequestError(
+            strings,
+            e,
+            fallback: strings.postCommentUnavailable,
+            submitted: true,
+          ),
         );
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -104,11 +117,8 @@ class _PostCommentDialogState extends State<PostCommentDialog> {
                 enabled: !busy,
                 autofocus: true,
               ),
-              if (error != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(error!),
-                ),
+              if (error case final failure?)
+                ErrorCard(failure, null, largeSize: false),
             ],
           ),
         ),

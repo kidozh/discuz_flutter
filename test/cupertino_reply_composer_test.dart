@@ -78,6 +78,33 @@ void main() {
   final send = find.byKey(const ValueKey('cupertino-composer-send'));
   final bubble = find.byKey(const ValueKey('cupertino-composer-bubble'));
 
+  testWidgets('the right action switches between recording and sending',
+      (tester) async {
+    var recorded = 0;
+    await tester.pumpWidget(_host(CupertinoMessageComposer(
+      controller: controller,
+      editor: CupertinoTextField(controller: controller),
+      panelVisible: false,
+      sendStatus: SendReplyStatus.idle,
+      onTogglePanel: () {},
+      onRecordVoice: () => recorded++,
+      onSend: () => sent++,
+    )));
+    final voice = find.byIcon(CupertinoIcons.waveform);
+    expect(voice, findsOneWidget);
+    expect(send, findsNothing);
+    await tester.tap(voice);
+    expect(recorded, 1);
+    await tester.enterText(find.byType(CupertinoTextField), '回复');
+    await tester.pump();
+    expect(voice, findsNothing);
+    await tester.tap(send);
+    expect(sent, 1);
+    controller.clear();
+    await tester.pump();
+    expect(voice, findsOneWidget);
+  });
+
   for (final brightness in Brightness.values) {
     testWidgets(
         'message composer has one bubble and an inset send button ($brightness)',

@@ -1,22 +1,44 @@
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
+
 import 'DisplayForumSliverPage.dart';
 import 'UserProfilePage.dart';
 import '../widget/PostCommentWidget.dart';
 import '../JsonResult/ViewThreadResult.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:html/parser.dart' show parseFragment;
+
 import '../client/ForumInteractionClient.dart';
 import '../entity/Discuz.dart';
+import '../entity/DiscuzError.dart';
 import '../entity/User.dart';
 import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../utility/NetworkUtils.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
 import '../utility/discuz_json.dart';
+import '../utility/forum_error.dart';
+import '../widget/ErrorCard.dart';
+import '../widget/forum_image.dart';
 import 'ViewThreadSliverPage.dart';
 
 enum ForumDirectory { friends, hotForums, pinnedThreads }
+
+enum ForumGuideSection {
+  digest('dz_digest'),
+  replies('dz_newreply'),
+  photos('dz_newpic');
+
+  const ForumGuideSection(this.identifier);
+  final String identifier;
+
+  String title(S strings) => switch (this) {
+    digest => strings.guideDigest,
+    replies => strings.guideRecentReplies,
+    photos => strings.guidePhotos,
+  };
+}
 
 /// mythread exposes thread summaries, including for type=reply; it has no PID.
 class ForumListsPage extends StatefulWidget {
@@ -25,6 +47,7 @@ class ForumListsPage extends StatefulWidget {
   final String type;
   final int? tid, pid, fid;
   final ForumDirectory? directory;
+  final ForumGuideSection? guide;
   final Future<void> Function()? onAddComment;
   final Future<ForumInteractionClient> Function()? createClient;
   const ForumListsPage({
@@ -34,6 +57,7 @@ class ForumListsPage extends StatefulWidget {
     this.createClient,
     this.type = 'thread',
     this.directory,
+    this.guide,
     this.onAddComment,
     this.fid,
     this.tid,
@@ -48,7 +72,7 @@ class _ForumListsPageState extends State<ForumListsPage> {
   int page = 1, generation = 0;
   bool loading = false, more = true;
   bool composing = false;
-  String? error;
+  DiscuzError? error;
   bool get comments => widget.pid != null;
   bool get sameAccount {
     final state = context.read<DiscuzAndUserNotifier>();
@@ -78,6 +102,7 @@ class _ForumListsPageState extends State<ForumListsPage> {
     try {
       if (!sameAccount ||
           (!comments &&
+              widget.guide == null &&
               widget.user == null &&
               (widget.directory == null ||
                   widget.directory == ForumDirectory.friends)))
@@ -90,7 +115,32 @@ class _ForumListsPageState extends State<ForumListsPage> {
             );
       List<Map<String, dynamic>> batch;
       int? total;
-      if (widget.directory != null) {
+      if (widget.guide case final guide?) {
+        final result = await client.request('extends', {
+          'identifier': guide.identifier,
+          'page': page,
+        });
+        result.requireData(guide.identifier);
+        final data = discuzMap(result.variables[guide.identifier]);
+        if (!data.containsKey('list')) throw const FormatException();
+        batch = forumRows(data['list'])
+            .map(discuzMap)
+            .map((row) {
+              final fields = {
+                for (final field in forumRows(row['fields']).map(discuzMap))
+                  discuzString(field['id']): field['value'],
+              };
+              return <String, dynamic>{
+                'tid': row['clickvalue'],
+                'subject': row['title'],
+                'image': row['image'],
+                'author': fields['author'],
+                'replies': fields['replies'],
+              };
+            })
+            .where((row) => discuzInt(row['tid']) > 0)
+            .toList();
+      } else if (widget.directory != null) {
         final module = switch (widget.directory!) {
           ForumDirectory.friends => 'friend',
           ForumDirectory.hotForums => 'hotforum',
@@ -126,6 +176,7 @@ class _ForumListsPageState extends State<ForumListsPage> {
           ? 'id'
           : 'tid';
       final ids = rows.map((r) => discuzString(r[idKey])).toSet();
+      final previous = rows.length;
       for (final row in batch) {
         final id = discuzString(row[idKey]);
         if (id.isNotEmpty && ids.add(id)) rows.add(row);
@@ -133,15 +184,14 @@ class _ForumListsPageState extends State<ForumListsPage> {
       // Reply results group posts into threads, so a short batch isn't the end.
       more =
           batch.isNotEmpty &&
+          (widget.guide == null || rows.length > previous) &&
           (total == null || rows.length < total) &&
           widget.directory != ForumDirectory.hotForums &&
           widget.directory != ForumDirectory.pinnedThreads;
       page++;
     } catch (e) {
       if (mounted && ticket == generation)
-        error = e is ForumApiException && e.message.isNotEmpty
-            ? e.message
-            : S.of(context).forumLoadFailed;
+        error = forumRequestError(S.of(context), e);
     } finally {
       if (mounted && ticket == generation) setState(() => loading = false);
     }
@@ -159,7 +209,10 @@ class _ForumListsPageState extends State<ForumListsPage> {
             ? [
                 PlatformIconButton(
                   liquidGlassSymbol: 'arrow.clockwise',
-                  icon: Icon(Icons.refresh, semanticLabel: s.forumRefresh),
+                  icon: Icon(
+                    PlatformIcons(context).refresh,
+                    semanticLabel: s.forumRefresh,
+                  ),
                   onPressed: loading ? null : () => load(refresh: true),
                 ),
                 if (sameAccount &&
@@ -189,7 +242,9 @@ class _ForumListsPageState extends State<ForumListsPage> {
               ]
             : null,
         title: Text(
-          widget.directory != null
+          widget.guide != null
+              ? widget.guide!.title(s)
+              : widget.directory != null
               ? switch (widget.directory!) {
                   ForumDirectory.friends => s.friendList,
                   ForumDirectory.hotForums => s.hotForums,
@@ -213,6 +268,7 @@ class _ForumListsPageState extends State<ForumListsPage> {
                   ),
                 if (!comments &&
                     widget.directory == null &&
+                    widget.guide == null &&
                     widget.type == 'reply')
                   Padding(
                     padding: const EdgeInsets.all(12),
@@ -232,15 +288,7 @@ class _ForumListsPageState extends State<ForumListsPage> {
                             child: loading
                                 ? const CircularProgressIndicator()
                                 : error != null
-                                ? Column(
-                                    children: [
-                                      Text(error!),
-                                      PlatformTextButton(
-                                        onPressed: load,
-                                        child: Text(s.retry),
-                                      ),
-                                    ],
-                                  )
+                                ? ErrorCard(error!, load, largeSize: false)
                                 : more
                                 ? PlatformTextButton(
                                     onPressed: load,
@@ -296,6 +344,23 @@ class _ForumListsPageState extends State<ForumListsPage> {
                         );
                       }
                       return PlatformListTile(
+                        leading:
+                            widget.guide == ForumGuideSection.photos &&
+                                discuzString(row['image']).isNotEmpty
+                            ? SizedBox(
+                                height: 48,
+                                width: 64,
+                                child: ForumImage(
+                                  url: discuzString(row['image']),
+                                  forum: widget.discuz,
+                                  fit: BoxFit.cover,
+                                  loading: (_, _) => const SizedBox.shrink(),
+                                  error: (_) => Icon(
+                                    PlatformIcons(context).unavailableImage,
+                                  ),
+                                ),
+                              )
+                            : null,
                         title: Text(plain(row['subject'])),
                         subtitle: Text(
                           '${plain(row['author'])} · ${plain(row['replies'])} ${s.forumReplies}',

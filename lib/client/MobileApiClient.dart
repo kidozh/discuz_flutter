@@ -23,13 +23,18 @@ import 'package:retrofit/retrofit.dart';
 
 import '../JsonResult/NewThreadResult.dart';
 import '../JsonResult/PushTokenListResult.dart';
+import 'ForumInteractionClient.dart';
 
 part 'MobileApiClient.g.dart';
 
 @RestApi(baseUrl: "https://keylol.com/")
 abstract class MobileApiClient {
-  factory MobileApiClient(Dio dio, {required String baseUrl}) =
-      _MobileApiClient;
+  factory MobileApiClient(Dio dio, {required String baseUrl}) =>
+      _MobileApiClient(
+        dio,
+        baseUrl: baseUrl,
+        errorLogger: const _ForumParseErrorLogger(),
+      );
 
   @GET("/api/mobile/index.php?version=4&module=check")
   @Headers(<String, dynamic>{"Content-Type": "application/json"})
@@ -202,6 +207,15 @@ abstract class MobileApiClient {
   Future<String> uploadImage(@Part(name: "uid") int uid,
       @Part(name: "hash") String uploadHash, @Part(name: "Filedata") File file);
 
+  @MultiPart()
+  @POST("/api/mobile/index.php?version=4&module=forumupload&simple=1")
+  Future<String> uploadAttachment(
+    @Query('fid') int fid,
+    @Part(name: 'uid') int uid,
+    @Part(name: 'hash') String uploadHash,
+    @Part(name: 'Filedata') MultipartFile file,
+  );
+
   @GET("/api/mobile/index.php?version=4&module=checkpost")
   Future<CheckPostResult> checkPost(
       @Query("fid") int? fid, @Query("tid") int? tid);
@@ -271,19 +285,9 @@ abstract class MobileApiClient {
 
   @POST(
       "/api/mobile/index.php?version=4&module=newthread&topicsubmit=yes&usesig=1")
-  @FormUrlEncoded()
+  @Headers(<String, dynamic>{"Content-Type": "application/x-www-form-urlencoded"})
   Future<ApiResult> postNewThread(
-      @Field("formhash") String formhash,
-      @Field("fid") int fid,
-      @Field("typeid") String typeId,
-      @Field("subject") String subject,
-      @Field("message") String message,
-      // for captcha services
-      @Field("seccodehash") String captchaHash,
-      @Field("seccodemodid") String captchaType,
-      @Field("seccodeverify") String verification,
-      @Field("unused[]") List<String> attachAid,
-      @Queries() Map<String, dynamic> formMap);
+      @Body() Map<String, dynamic> fields);
 
   @POST(
       "/api/mobile/index.php?version=4&module=mobilesign&type=thread&ac=favorite&deletesubmit=true&op=delete")
@@ -327,4 +331,19 @@ abstract class MobileApiClient {
       @Field("warned") int warned,
       @Field("reason") String reason,
       );
+}
+
+class _ForumParseErrorLogger implements ParseErrorLogger {
+  const _ForumParseErrorLogger();
+
+  @override
+  void logError(
+    Object error,
+    StackTrace stackTrace,
+    RequestOptions options, {
+    Response? response,
+  }) {
+    final forumError = ForumReply.tryServerError(response?.data);
+    if (forumError != null) throw forumError;
+  }
 }

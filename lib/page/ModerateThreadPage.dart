@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../client/ForumInteractionClient.dart';
 import '../entity/Discuz.dart';
+import '../entity/DiscuzError.dart';
 import '../entity/User.dart';
 import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../utility/NetworkUtils.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
 import '../utility/discuz_json.dart';
+import '../utility/forum_error.dart';
+import '../utility/forum_navigation.dart';
+import '../widget/ErrorCard.dart';
 
 Map<String, dynamic> moderationFields(
   String action,
@@ -65,7 +70,7 @@ class _ModerateThreadPageState extends State<ModerateThreadPage> {
   String action = 'stick', type = '0';
   int? destination;
   bool busy = false, typeRequired = false;
-  String? error;
+  DiscuzError? error;
   List<Map<String, dynamic>> forums = [];
   Map<String, dynamic> types = {};
   final reason = TextEditingController();
@@ -94,47 +99,27 @@ class _ModerateThreadPageState extends State<ModerateThreadPage> {
       error = null;
     });
     try {
-      final response = await (await client()).request('forumindex', {});
-      response.requireData('forumlist');
-      if (mounted && sameAccount)
-        setState(
-          () => forums = forumRows(
-            response.variables['forumlist'],
-          ).map(discuzMap).where((f) => discuzInt(f['fid']) > 0).toList(),
-        );
-    } catch (_) {
-      if (mounted) setState(() => error = S.of(context).forumLoadFailed);
+      final result = await loadForumNavigation(await client());
+      if (mounted && sameAccount) setState(() => forums = result);
+    } catch (e) {
+      if (mounted) setState(() => error = forumRequestError(S.of(context), e));
     } finally {
       if (mounted) setState(() => busy = false);
     }
   }
 
   Future<void> selectDestination(int? fid) async {
+    final row = forums.where((row) => discuzInt(row['fid']) == fid).firstOrNull;
+    final threadTypes = discuzMap(row?['threadtypes']);
     setState(() {
-      destination = null;
-      types = {};
-      type = '0';
-      busy = true;
+      destination = fid;
+      types = discuzMap(threadTypes['types']);
+      typeRequired = discuzPermission(threadTypes['required']) == true;
+      type = typeRequired
+          ? types.keys.where((key) => key != '0').firstOrNull ?? '0'
+          : '0';
       error = null;
     });
-    try {
-      final response = await (await client()).request('forumdisplay', {
-        'fid': fid,
-      });
-      response.requireData('forum');
-      final threadTypes = discuzMap(response.variables['threadtypes']);
-      if (mounted && sameAccount)
-        setState(() {
-          destination = fid;
-          types = discuzMap(threadTypes['types']);
-          typeRequired = discuzPermission(threadTypes['required']) == true;
-          if (typeRequired && types.isNotEmpty) type = types.keys.first;
-        });
-    } catch (_) {
-      if (mounted) setState(() => error = S.of(context).forumLoadFailed);
-    } finally {
-      if (mounted) setState(() => busy = false);
-    }
   }
 
   Future<void> submit(String label) async {
@@ -148,7 +133,12 @@ class _ModerateThreadPageState extends State<ModerateThreadPage> {
         type: type,
       );
     } catch (_) {
-      setState(() => error = S.of(context).moderationRequired);
+      setState(
+        () => error = DiscuzError(
+          'moderation_required',
+          S.of(context).moderationRequired,
+        ),
+      );
       return;
     }
     setState(() {
@@ -198,14 +188,12 @@ class _ModerateThreadPageState extends State<ModerateThreadPage> {
       result.requireSuccess({'admin_succeed'});
       if (mounted && sameAccount) Navigator.pop(context, true);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(
-          () => error = e is ForumApiException
-              ? (e.message.isEmpty ? e.code : e.message)
-              : submitted
-              ? S.of(context).forumSubmissionUnknown
-              : S.of(context).forumLoadFailed,
+          () =>
+              error = forumRequestError(S.of(context), e, submitted: submitted),
         );
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -265,7 +253,14 @@ class _ModerateThreadPageState extends State<ModerateThreadPage> {
                             .map(
                               (f) => DropdownMenuItem(
                                 value: discuzInt(f['fid']),
-                                child: Text(discuzString(f['name'])),
+                                child: Padding(
+                                  padding: EdgeInsetsDirectional.only(
+                                    start:
+                                        12.0 *
+                                        discuzInt(f['depth']).clamp(0, 5),
+                                  ),
+                                  child: Text(discuzString(f['name'])),
+                                ),
                               ),
                             )
                             .toList(),
@@ -305,7 +300,8 @@ class _ModerateThreadPageState extends State<ModerateThreadPage> {
                       hintText: s.moderationReason,
                       maxLines: 3,
                     ),
-                    if (error != null) Text(error!),
+                    if (error case final failure?)
+                      ErrorCard(failure, null, largeSize: false),
                     PlatformTextButton(
                       onPressed: busy ? null : () => submit(actions[action]!),
                       child: Text(busy ? s.forumWorking : s.forumConfirm),

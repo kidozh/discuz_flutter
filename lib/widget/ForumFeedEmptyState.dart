@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../entity/Discuz.dart';
 import '../entity/User.dart';
 import '../generated/l10n.dart';
@@ -19,7 +20,7 @@ class ForumFeedEmptyState extends StatelessWidget {
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Icon(Icons.filter_list, size: 32),
+        Icon(PlatformIcons(context).filter, size: 32),
         const SizedBox(height: 12),
         Text(S.of(context).feedNoForums, textAlign: TextAlign.center),
         PlatformTextButton(

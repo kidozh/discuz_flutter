@@ -6,13 +6,11 @@ import '../widget/ForumFeedEmptyState.dart';
 
 import 'dart:developer';
 
-import 'package:dio/dio.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/HotThread.dart';
 import 'package:discuz_flutter/entity/User.dart';
-import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/screen/NullDiscuzScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
@@ -118,26 +116,17 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
         baseUrl: discuz.baseURL,
       ).hotThreadResult(page);
       if (!isCurrent()) return IndicatorResult.fail;
-      final apiError = value.getErrorString();
-      if (apiError != null) {
-        setState(() {
-          _isFirstLoading = false;
-          _error = DiscuzError(
-            value.errorResult?.key ?? S.of(context).error,
-            value.errorResult?.content ?? apiError,
-          );
-        });
-        return IndicatorResult.fail;
-      }
       final variables = value.variables;
-      if (user != null && variables.member_uid != user.uid) {
+      final error = EasyRefreshUtils.responseError(
+        context,
+        value,
+        user,
+        variables.member_uid,
+      );
+      if (error != null) {
         setState(() {
           _isFirstLoading = false;
-          _error = DiscuzError(
-            S.of(context).userExpiredTitle(user.username),
-            S.of(context).userExpiredSubtitle,
-            errorType: ErrorType.userExpired,
-          );
+          _error = error;
         });
         return IndicatorResult.fail;
       }
@@ -175,13 +164,7 @@ class _HotThreadState extends State<HotThreadStatefulWidget> {
       if (!isCurrent()) return IndicatorResult.fail;
       setState(() {
         _isFirstLoading = false;
-        _error = error is DioException
-            ? DiscuzError(
-                error.message ?? S.of(context).error,
-                error.type.name,
-                dioError: error,
-              )
-            : DiscuzError(error.runtimeType.toString(), error.toString());
+        _error = EasyRefreshUtils.requestError(context, error);
       });
       return IndicatorResult.fail;
     } finally {

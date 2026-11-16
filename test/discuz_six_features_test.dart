@@ -44,8 +44,7 @@ final discuz = Discuz(
 );
 final user = User('auth', 'salt', 'test', '', 1, 1, 10, discuz);
 Widget host(Widget child, {bool login = true}) => ChangeNotifierProvider.value(
-  value: DiscuzAndUserNotifier()
-    ..initDiscuz(discuz, user: login ? user : null),
+  value: DiscuzAndUserNotifier()..initDiscuz(discuz, user: login ? user : null),
   child: MaterialApp(localizationsDelegates: const [S.delegate], home: child),
 );
 Map<String, dynamic> activity({String cost = '5', String button = 'join'}) => {
@@ -88,21 +87,16 @@ void main() {
         },
         requests,
       );
-      await MobileApiClient(dio, baseUrl: discuz.baseURL).postNewThread(
-        'hash',
-        3,
-        '',
-        'title',
-        'body',
-        '',
-        '',
-        '',
-        [],
-        const PollDraft(['A', 'B'], 1, 0).fields,
-      );
-      expect(requests.single.uri.queryParameters['special'], '1');
-      expect(requests.single.uri.queryParameters['tpolloption'], '2');
-      expect(requests.single.uri.queryParameters['polloptions'], 'A\nB');
+      await MobileApiClient(dio, baseUrl: discuz.baseURL).postNewThread({
+        ...const PollDraft(['A', 'B'], 1, 0).fields,
+        'formhash': 'hash',
+        'fid': 3,
+        'subject': 'title',
+        'message': 'body',
+      });
+      expect(requests.single.data['special'], '1');
+      expect(requests.single.data['tpolloption'], '2');
+      expect(requests.single.data['polloptions'], 'A\nB');
       expect(requests.single.data['formhash'], 'hash');
       dio.close();
     },
@@ -144,7 +138,9 @@ void main() {
         },
       });
       expect(spec.supported, true);
+      expect(spec.fields.map((field) => field.isRequired), [true, false]);
       expect(() => spec.form({}, '', null), throwsFormatException);
+      expect(spec.form({'realname': 'Tester'}, '', null)['Contact'], '');
       final form = spec.form(
         {'realname': 'Tester', 'Contact': '123'},
         'hello',
@@ -166,25 +162,50 @@ void main() {
       );
     },
   );
+  test('unsupported file fields and parameter collisions require website, but cancellation is available', () {
+    for (final field in [
+      {'fieldid': 'proof', 'formtype': 'file'},
+      {'fieldid': 'formhash', 'formtype': 'text'},
+    ]) {
+      final spec = ActivityRegistration.fromJson({
+        ...activity(),
+        'joinfield': {'proof': field},
+      });
+      expect(spec.supported, false);
+      expect(() => spec.form({}, '', null), throwsFormatException);
+      final cancel = ActivityRegistration.fromJson({
+        ...spec.raw,
+        'button': 'cancel',
+      });
+      expect(cancel.form({}, 'cancel', null)['activitycancel'], 'yes');
+    }
+  });
   test(
-    'unsupported file fields and parameter collisions require website, but cancellation is available',
+    'activity capacity counts approved applications and preserves updates',
     () {
-      for (final field in [
-        {'fieldid': 'proof', 'formtype': 'file'},
-        {'fieldid': 'formhash', 'formtype': 'text'},
-      ]) {
-        final spec = ActivityRegistration.fromJson({
-          ...activity(),
-          'joinfield': {'proof': field},
-        });
-        expect(spec.supported, false);
-        expect(() => spec.form({}, '', null), throwsFormatException);
-        final cancel = ActivityRegistration.fromJson({
-          ...spec.raw,
-          'button': 'cancel',
-        });
-        expect(cancel.form({}, 'cancel', null)['activitycancel'], 'yes');
-      }
+      final pending = {
+        ...activity(),
+        'status': 'join',
+        'number': '2',
+        'applynumber': '1',
+        'allapplynum': '4',
+      };
+      final full = {...pending, 'applynumber': '2'};
+      expect(ActivityRegistration.fromJson(pending).canSubmit, isTrue);
+      expect(ActivityRegistration.fromJson(full).canSubmit, isFalse);
+      expect(
+        ActivityRegistration.fromJson({...full, 'status': 'complete'})
+            .canSubmit,
+        isTrue,
+      );
+      expect(
+        ActivityRegistration.fromJson({...full, 'button': 'cancel'}).canSubmit,
+        isTrue,
+      );
+      expect(
+        ActivityRegistration.fromJson({...full, 'number': '0'}).canSubmit,
+        isTrue,
+      );
     },
   );
   testWidgets('hot forums work for guests and finish without another page', (
@@ -330,7 +351,7 @@ void main() {
       await tester.tap(find.text(S.current.forumConfirm).last);
       await tester.pumpAndSettle();
       expect(requests.where((r) => r.method == 'POST'), isEmpty);
-      expect(find.text('no_privilege'), findsOneWidget);
+      expect(find.text(S.current.forumPermissionDenied), findsOneWidget);
       dio.close();
     },
   );
@@ -476,6 +497,7 @@ void main() {
       final request = requests.singleWhere((r) => r.method == 'POST');
       expect(request.uri.queryParameters['module'], 'forummisc');
       expect(request.uri.queryParameters['action'], 'activityapplies');
+      expect(request.uri.queryParameters['t'], 'output');
       expect(request.data['activitysubmit'], 'yes');
       expect(request.data['formhash'], 'fresh');
       expect(request.data['payment'], '0');

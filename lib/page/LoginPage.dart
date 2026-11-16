@@ -27,8 +27,8 @@ import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:provider/provider.dart';
 
-import '../dao/DiscuzAuthenticationDao.dart';
 import '../entity/DiscuzAuthentication.dart';
+import '../utility/forum_error.dart';
 
 class LoginPage extends StatelessWidget {
   late final Discuz discuz;
@@ -304,8 +304,8 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
       // check if the
       log('Login response received from ${discuz.host}');
       // if user is validated
-      final user = value.loginVariables.getUser(discuz);
-      if (value.errorResult!.key == "login_succeed") {
+      if (forumMessageKey(value.errorResult?.key ?? '') == 'login_succeed') {
+        final user = value.loginVariables.getUser(discuz);
         if (discuz.isSameSite(selection.discuz) &&
             !identical(session, selection.sessionIdentity)) {
           setState(() => _loginState = LoginResultStatus.idle);
@@ -353,48 +353,27 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
           log("${e},${s}");
         }
       } else {
-        if (captchaHash.isNotEmpty ||
-            value.errorResult?.key == 'submit_seccode_invalid') {
+        final failure = forumResponseError(S.of(context), value) ??
+            forumRequestError(S.of(context), const FormatException());
+        if (captchaHash.isNotEmpty || failure.key == 'submit_seccode_invalid') {
           _captchaController.reloadCaptcha(requiredByServer: true);
         }
         setState(() {
-          error =
-              DiscuzError(value.errorResult!.key, value.errorResult!.content);
+          error = failure;
           _loginState = LoginResultStatus.idle;
         });
       }
     }).catchError((onError) {
       if (!mounted) return;
       VibrationUtils.vibrateErrorIfPossible();
-      if (captchaHash.isNotEmpty) {
+      final failure = forumRequestError(S.of(context), onError);
+      if (captchaHash.isNotEmpty || failure.key == 'submit_seccode_invalid') {
         _captchaController.reloadCaptcha(requiredByServer: true);
       }
       setState(() {
         _loginState = LoginResultStatus.idle;
+        error = failure;
       });
-
-      switch (onError.runtimeType) {
-        case DioException:
-          {
-            DioException dioError = onError;
-            setState(() {
-              error = DiscuzError(
-                  dioError.message == null
-                      ? S.of(context).error
-                      : dioError.message!,
-                  dioError.type.name,
-                  dioError: dioError);
-            });
-            break;
-          }
-        default:
-          {
-            setState(() {
-              error = DiscuzError(
-                  onError.runtimeType.toString(), onError.toString());
-            });
-          }
-      }
     });
   }
 

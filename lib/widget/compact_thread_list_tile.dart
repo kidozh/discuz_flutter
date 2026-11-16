@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../generated/l10n.dart';
+import '../utility/PlatformAdaptiveWidgets.dart';
 
 /// Full-width titles; posts with text receive a two-line editorial preview.
 class CompactThreadListTile extends StatelessWidget {
@@ -137,7 +139,7 @@ class ThreadReplyPreview extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
           child: Row(
             children: [
-              Icon(Icons.chat_bubble_outline, size: 12, color: color),
+              Icon(PlatformIcons(context).chatBubble, size: 12, color: color),
               const SizedBox(width: 6),
               Expanded(
                 child: Text.rich(
@@ -179,6 +181,7 @@ class ThreadListStatistics extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final strings = S.of(context);
+    final icons = PlatformIcons(context);
     final format = NumberFormat.compact(
       locale: Localizations.localeOf(context).toString(),
     );
@@ -195,7 +198,7 @@ class ThreadListStatistics extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.visibility_outlined),
+              Icon(icons.pick(Icons.visibility_outlined, CupertinoIcons.eye)),
               const SizedBox(width: 3),
               Flexible(
                 child: Text(
@@ -206,7 +209,7 @@ class ThreadListStatistics extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 7),
-              const Icon(Icons.chat_bubble_outline),
+              Icon(icons.chatBubble),
               const SizedBox(width: 3),
               Flexible(
                 child: Text(

@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.0.19+177
+version: 2.0.20+178
 
 environment:
   sdk: ">=3.13.0 <4.0.0"
@@ -67,6 +67,7 @@ dependencies:
   image_picker: ^1.2.4
   image_picker_android: ^0.8.13+25
   image_picker_platform_interface: ^2.11.2
+  file_picker: ^13.3.3
   flutter_image_compress: ^2.5.1
 
   package_info_plus: ^10.2.2
@@ -86,7 +87,10 @@ dependencies:
   # v4 requires material_ui/cupertino_ui themes; this app uses Flutter themes.
   easy_refresh: ^3.5.1
   open_filex: ^5.0.0
-  flutter_polls: ^0.1.6
+  video_player: ^2.14.1
+  almanacinc_record_mp3: ^1.0.6
+  record: ^7.2.0
+  just_audio: ^0.10.6
   push: ^3.3.3
   google_mobile_ads: ^9.2.0
   dynamic_color: ^2.1.0

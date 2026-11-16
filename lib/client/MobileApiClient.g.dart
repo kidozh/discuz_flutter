@@ -1012,6 +1012,46 @@ class _MobileApiClient implements MobileApiClient {
   }
 
   @override
+  Future<String> uploadAttachment(
+    int fid,
+    int uid,
+    String uploadHash,
+    MultipartFile file,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'fid': fid};
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry('uid', uid.toString()));
+    _data.fields.add(MapEntry('hash', uploadHash));
+    _data.files.add(MapEntry('Filedata', file));
+    final _options = _setStreamType<String>(
+      Options(
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'multipart/form-data',
+          )
+          .compose(
+            _dio.options,
+            '/api/mobile/index.php?version=4&module=forumupload&simple=1',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<String>(_options);
+    late String _value;
+    try {
+      _value = _result.data!;
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<CheckPostResult> checkPost(int? fid, int? tid) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'fid': fid, r'tid': tid};
@@ -1343,33 +1383,15 @@ class _MobileApiClient implements MobileApiClient {
   }
 
   @override
-  Future<ApiResult> postNewThread(
-    String formhash,
-    int fid,
-    String typeId,
-    String subject,
-    String message,
-    String captchaHash,
-    String captchaType,
-    String verification,
-    List<String> attachAid,
-    Map<String, dynamic> formMap,
-  ) async {
+  Future<ApiResult> postNewThread(Map<String, dynamic> fields) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    queryParameters.addAll(formMap);
-    final _headers = <String, dynamic>{};
-    final _data = {
-      'formhash': formhash,
-      'fid': fid,
-      'typeid': typeId,
-      'subject': subject,
-      'message': message,
-      'seccodehash': captchaHash,
-      'seccodemodid': captchaType,
-      'seccodeverify': verification,
-      'unused[]': attachAid,
+    final _headers = <String, dynamic>{
+      r'Content-Type': 'application/x-www-form-urlencoded',
     };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    _data.addAll(fields);
     final _options = _setStreamType<ApiResult>(
       Options(
             method: 'POST',

@@ -30,6 +30,7 @@ final _site = Discuz(
   '0',
 );
 const _attachment = '[attachimg]42[/attachimg]';
+const _fileAttachment = '[attach]73[/attach]';
 const _hosted = '[img]https://example.com/photo.jpg[/img]';
 
 Widget _host(
@@ -82,6 +83,7 @@ void main() {
   const formatter = PostEditorInputFormatter();
   for (final token in [
     _attachment,
+    _fileAttachment,
     _hosted,
     '[IMG=200,100]https://example.com/p.jpg[/IMG]',
     '[smiley]{"code":":)","image":"smile.gif"}[/smiley]',
@@ -223,6 +225,42 @@ void main() {
     // A button left over from an earlier frame must not delete unrelated text.
     removePostEditorImage(controller, PostEditorToken(3, _attachment));
     expect(controller.text, '前文\n后文');
+  });
+
+  testWidgets('file attachments show the restored name and can be removed', (
+    tester,
+  ) async {
+    final initial = PostEditorController(text: _attachment)
+      ..insertFile('73', '指南.pdf');
+    addTearDown(initial.dispose);
+    expect(initial.text, isNot(contains('指南')));
+    expect(
+      PostTextFieldUtils.getAttachmentAidList(
+        '${initial.text}$_fileAttachment',
+      ),
+      ['42', '73'],
+    );
+    final controller = PostEditorController(text: initial.text)
+      ..restoreFileNames(initial.attachedFileNames);
+    final focus = FocusNode();
+    addTearDown(controller.dispose);
+    addTearDown(focus.dispose);
+    await tester.pumpWidget(
+      _host(controller, focus, expanded: true, style: AppVisualStyle.cupertino),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('指南.pdf'), findsOneWidget);
+    expect(find.byIcon(CupertinoIcons.doc_text), findsOneWidget);
+    final remove = find.byIcon(CupertinoIcons.xmark_circle);
+    expect(
+      tester.widget<Icon>(remove).semanticLabel,
+      S.current.removeComposerAttachment,
+    );
+    await tester.tap(remove);
+    await tester.pumpAndSettle();
+    expect(find.text('指南.pdf'), findsNothing);
+    expect(controller.attachedFileNames, isEmpty);
+    expect(PostTextFieldUtils.getAttachmentAidList(controller.text), ['42']);
   });
 
   testWidgets(

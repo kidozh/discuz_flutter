@@ -1,3 +1,5 @@
+import '../page/post_edit_page.dart';
+
 import 'package:flutter/gestures.dart' show PointerDeviceKind;
 
 import 'post_action_row.dart';
@@ -6,6 +8,8 @@ import 'post_translation_button.dart';
 import 'google_translation_controls.dart';
 import '../utility/rating_allowance_cache.dart';
 import '../utility/DashboardPreferences.dart';
+import '../utility/forum_error.dart';
+import 'ErrorCard.dart';
 import '../page/PostRatingsPage.dart';
 
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
@@ -18,6 +22,7 @@ import '../page/ForumListsPage.dart';
 
 import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/JsonResult/BaseResult.dart';
@@ -427,16 +432,14 @@ class PostState extends State<PostStatefulWidget> {
       }
     } catch (e) {
       if (!sameAccount()) return;
-      if (e is ForumApiException && e.code == 'noreply_voted_error') {
+      if (e is ForumApiException &&
+          forumMessageKey(e.code) == 'noreply_voted_error') {
         (_reviews[account] ??= {})[key] = 0;
       } else {
-        await showPlatformAlert(
-          context: context,
-          title: S.of(context).forumActionFailed,
-          message: e is ForumApiException && e.message.isNotEmpty
-              ? e.message
-              : S.of(context).forumSubmissionUnknown,
-          actions: [PlatformAlertAction(label: S.of(context).forumConfirm)],
+        await showForumActionError(
+          context,
+          forumRequestError(S.of(context), e, submitted: true),
+          dialog: true,
         );
       }
     } finally {
@@ -755,11 +758,14 @@ class PostState extends State<PostStatefulWidget> {
         html: _post.message,
       ),
     ];
+    const bodyPadding = EdgeInsets.symmetric(horizontal: 6, vertical: 4);
     final body = DiscuzHtmlWidget(
       _discuz,
       _html,
       tid: this.tid,
       callback: jumpToPidCallback,
+      padding: bodyPadding,
+      styleAppSignature: true,
       asSliver: asSliver,
       onBodyReady: widget.onBodyReady,
       onContentChanged: widget.onContentChanged,
@@ -771,23 +777,24 @@ class PostState extends State<PostStatefulWidget> {
           translated: _translation.showingTranslation,
         ),
       if (attachments.isNotEmpty)
-        ListView.builder(
-          padding: EdgeInsets.zero,
-          itemBuilder: (context, index) {
-            final entry = attachments[index];
-            return AttachmentWidget(
-              _discuz,
-              entry.value,
-              threadId: tid,
-              isListedImage:
-                  _post.imageIdList.contains(entry.key) ||
-                  _post.imageIdList.contains('${entry.value.aid}'),
-              onContentChanged: widget.onContentChanged,
-            );
-          },
-          itemCount: attachments.length,
-          physics: new NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
+        Padding(
+          padding: bodyPadding.copyWith(top: 8, bottom: 6),
+          child: Column(
+            spacing: 6,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final entry in attachments)
+                AttachmentWidget(
+                  _discuz,
+                  entry.value,
+                  threadId: tid,
+                  isListedImage:
+                      _post.imageIdList.contains(entry.key) ||
+                      _post.imageIdList.contains('${entry.value.aid}'),
+                  onContentChanged: widget.onContentChanged,
+                ),
+            ],
+          ),
         ),
       if (getCommentList().length != 0)
         Container(
@@ -910,7 +917,10 @@ class PostState extends State<PostStatefulWidget> {
     BuildContext context, {
     List<PopupMenuOption> extraOptions = const [],
   }) {
-    final session = context.read<DiscuzAndUserNotifier>().sessionIdentity;
+    final account = context.read<DiscuzAndUserNotifier>();
+    final session = account.sessionIdentity;
+    final user = account.userFor(_discuz);
+    final strings = S.of(context);
     return PlatformPopupMenu(
       icon: Icon(
         PlatformIcons(context).ellipsis,
@@ -925,6 +935,41 @@ class PostState extends State<PostStatefulWidget> {
               : _post.message,
         ),
         ...extraOptions,
+        if (user != null &&
+            user.uid == _post.authorId &&
+            _post.pid > 0 &&
+            (widget.fid ?? 0) > 0)
+          PopupMenuOption(
+            label: strings.editPostTitle,
+            onTap: (_) async {
+              final changed = await Navigator.push<bool>(
+                context,
+                platformPageRoute(
+                  context: context,
+                  builder: (_) => PostEditPage(
+                    _discuz,
+                    user,
+                    widget.fid!,
+                    _post.tid,
+                    _post.pid,
+                  ),
+                ),
+              );
+              if (changed == true &&
+                  mounted &&
+                  identical(session, account.sessionIdentity)) {
+                widget.onContentChanged?.call();
+              }
+            },
+          ),
+        if (user != null &&
+            user.uid == _authorId &&
+            !_post.first &&
+            _post.pid > 0)
+          PopupMenuOption(
+            label: strings.manageReplyPin,
+            onTap: (_) => _changeReplyPin(user),
+          ),
         if (DashboardPreferences.isKeylol(_discuz.baseURL))
           PopupMenuOption(
             label: S.of(context).postViewRatings,
@@ -1066,6 +1111,78 @@ class PostState extends State<PostStatefulWidget> {
           ),
       ],
     );
+  }
+
+  bool _changingReplyPin = false;
+
+  Future<void> _changeReplyPin(User user) async {
+    if (_changingReplyPin) return;
+    _changingReplyPin = true;
+    final account = context.read<DiscuzAndUserNotifier>();
+    final session = account.sessionIdentity;
+    final post = _post;
+    final strings = S.of(context);
+    bool isCurrent() =>
+        mounted &&
+        identical(session, account.sessionIdentity) &&
+        _post.tid == post.tid &&
+        _post.pid == post.pid;
+    Dio? dio;
+    bool submitted = false;
+    try {
+      dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      final client = ForumInteractionClient(dio, _discuz.baseURL);
+      bool? pinned;
+      try {
+        pinned = await client.replyPinStatus(post.tid, post.pid);
+      } catch (_) {
+        // Custom templates can omit the per-reply marker.
+      }
+      if (!isCurrent()) return;
+      final choice = await showPlatformDialog<bool>(
+        context: context,
+        builder: (dialogContext) => PlatformAlertDialog(
+          title: Text(strings.manageReplyPin),
+          actions: [
+            PlatformDialogAction(
+              child: Text(strings.cancel),
+              onPressed: () => Navigator.pop(dialogContext),
+            ),
+            for (final target in [true, false])
+              if (pinned != target)
+                PlatformDialogAction(
+                  child: Text(
+                    target ? strings.stickReply : strings.unstickReply,
+                  ),
+                  onPressed: () => Navigator.pop(dialogContext, target),
+                ),
+          ],
+        ),
+      );
+      if (!isCurrent() || choice == null) return;
+      submitted = true;
+      await client.setReplyPinned(
+        tid: post.tid,
+        pid: post.pid,
+        uid: user.uid,
+        pinned: choice,
+        sameAccount: isCurrent,
+      );
+      if (isCurrent()) {
+        EasyLoading.showSuccess(strings.ok);
+        widget.onContentChanged?.call();
+      }
+    } catch (failure) {
+      if (isCurrent()) {
+        await showForumActionError(
+          context,
+          forumRequestError(strings, failure, submitted: submitted),
+        );
+      }
+    } finally {
+      dio?.close();
+      _changingReplyPin = false;
+    }
   }
 
   Widget getUserAvatar(BuildContext context) {
@@ -1475,14 +1592,28 @@ class PostState extends State<PostStatefulWidget> {
       );
       if (!isCurrent()) return;
       final message = result.errorResult;
-      if (message?.key == 'admin_succeed') {
+      final strings = S.of(context);
+      if (forumMessageKey(message?.key ?? '') == 'admin_succeed') {
         setState(() => post.status ^= statusFlag);
-        EasyLoading.showSuccess(message?.content ?? S.of(context).ok);
+        EasyLoading.showSuccess(message?.content ?? strings.ok);
       } else {
-        EasyLoading.showError(message?.content ?? S.of(context).error);
+        await showForumActionError(
+          context,
+          forumResponseError(strings, result) ??
+              forumRequestError(
+                strings,
+                const FormatException(),
+                submitted: true,
+              ),
+        );
       }
-    } catch (_) {
-      if (isCurrent()) EasyLoading.showError(S.of(context).networkFail);
+    } catch (error) {
+      if (isCurrent()) {
+        await showForumActionError(
+          context,
+          forumRequestError(S.of(context), error, submitted: true),
+        );
+      }
     } finally {
       if (mounted) setState(() => isSendingAdminRequest = false);
     }

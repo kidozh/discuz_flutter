@@ -6,6 +6,10 @@ import 'package:discuz_flutter/utility/reply_submission_controller.dart';
 import 'package:discuz_flutter/widget/PostTextField.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../utility/forum_voice.dart';
+import 'PostPermissionGate.dart';
+import 'forum_voice_recorder.dart';
+
 export 'package:discuz_flutter/utility/reply_submission_controller.dart'
     show SendReplyStatus;
 
@@ -16,22 +20,24 @@ class CupertinoComposerViewport extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
-        builder: (context, constraints) => _ComposerViewportHeight(
-          height: constraints.maxHeight,
-          keyboardInset:
-              MediaQueryData.fromView(View.of(context)).viewInsets.bottom,
-          child: child,
-        ),
-      );
+    builder: (context, constraints) => _ComposerViewportHeight(
+      height: constraints.maxHeight,
+      keyboardInset: MediaQueryData.fromView(View.of(context))
+          .viewInsets
+          .bottom,
+      child: child,
+    ),
+  );
 }
 
 class _ComposerViewportHeight extends InheritedWidget {
   final double height;
   final double keyboardInset;
-  const _ComposerViewportHeight(
-      {required this.height,
-      required this.keyboardInset,
-      required super.child});
+  const _ComposerViewportHeight({
+    required this.height,
+    required this.keyboardInset,
+    required super.child,
+  });
 
   @override
   bool updateShouldNotify(_ComposerViewportHeight oldWidget) =>
@@ -43,13 +49,16 @@ class _ComposerViewportHeight extends InheritedWidget {
 class CupertinoKeyboardAccessory extends StatelessWidget {
   final bool enabled;
   final Widget child;
-  const CupertinoKeyboardAccessory(
-      {required this.enabled, required this.child, super.key});
+  const CupertinoKeyboardAccessory({
+    required this.enabled,
+    required this.child,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final viewport =
-        context.dependOnInheritedWidgetOfExactType<_ComposerViewportHeight>();
+    final viewport = context
+        .dependOnInheritedWidgetOfExactType<_ComposerViewportHeight>();
     final inset =
         viewport?.keyboardInset ?? MediaQuery.viewInsetsOf(context).bottom;
     return enabled && inset > 0 ? const SizedBox.shrink() : child;
@@ -66,6 +75,7 @@ class CupertinoThreadReplyComposer extends StatelessWidget {
   final SendReplyStatus sendStatus;
   final VoidCallback onTogglePanel;
   final VoidCallback onSend;
+  final ValueChanged<ForumVoiceOptions>? onVoice;
 
   const CupertinoThreadReplyComposer({
     required this.discuz,
@@ -76,20 +86,31 @@ class CupertinoThreadReplyComposer extends StatelessWidget {
     required this.sendStatus,
     required this.onTogglePanel,
     required this.onSend,
+    this.onVoice,
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) => CupertinoMessageComposer(
-        controller: controller,
-        editor: PostTextField(discuz, controller,
-            focusNode: focusNode, embeddedInComposer: true),
-        replyTarget: replyTarget,
-        panelVisible: panelVisible,
-        sendStatus: sendStatus,
-        onTogglePanel: onTogglePanel,
-        onSend: onSend,
-      );
+  Widget build(BuildContext context) {
+    final voice = PostPermissionGate.voiceOptionsOf(context);
+    return CupertinoMessageComposer(
+      controller: controller,
+      editor: PostTextField(
+        discuz,
+        controller,
+        focusNode: focusNode,
+        embeddedInComposer: true,
+      ),
+      replyTarget: replyTarget,
+      panelVisible: panelVisible,
+      sendStatus: sendStatus,
+      onTogglePanel: onTogglePanel,
+      onSend: onSend,
+      onRecordVoice: voice == null || onVoice == null
+          ? null
+          : () => onVoice!(voice),
+    );
+  }
 }
 
 class CupertinoPrivateMessageComposer extends StatelessWidget {
@@ -114,29 +135,29 @@ class CupertinoPrivateMessageComposer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => CupertinoMessageComposer(
-        controller: controller,
-        editor: CupertinoTextField(
-          key: const ValueKey('cupertino-private-message-input'),
-          controller: controller,
-          focusNode: focusNode,
-          decoration: null,
-          padding: const EdgeInsetsDirectional.fromSTEB(12, 10, 0, 10),
-          placeholder: S.of(context).sendReplyHint,
-          minLines: 1,
-          maxLines: 5,
-          textInputAction: TextInputAction.newline,
-          onSubmitted: (_) {
-            if (canSend) onSend();
-          },
-          keyboardAppearance: CupertinoTheme.brightnessOf(context),
-          cursorColor: CupertinoColors.systemBlue.resolveFrom(context),
-        ),
-        panelVisible: panelVisible,
-        sendStatus: sending ? SendReplyStatus.loading : SendReplyStatus.idle,
-        enabled: canSend,
-        onTogglePanel: onTogglePanel,
-        onSend: onSend,
-      );
+    controller: controller,
+    editor: CupertinoTextField(
+      key: const ValueKey('cupertino-private-message-input'),
+      controller: controller,
+      focusNode: focusNode,
+      decoration: null,
+      padding: const EdgeInsetsDirectional.fromSTEB(12, 10, 0, 10),
+      placeholder: S.of(context).sendReplyHint,
+      minLines: 1,
+      maxLines: 5,
+      textInputAction: TextInputAction.newline,
+      onSubmitted: (_) {
+        if (canSend) onSend();
+      },
+      keyboardAppearance: CupertinoTheme.brightnessOf(context),
+      cursorColor: CupertinoColors.systemBlue.resolveFrom(context),
+    ),
+    panelVisible: panelVisible,
+    sendStatus: sending ? SendReplyStatus.loading : SendReplyStatus.idle,
+    enabled: canSend,
+    onTogglePanel: onTogglePanel,
+    onSend: onSend,
+  );
 }
 
 /// Shared iMessage-shaped chrome; each page keeps its own editor and protocol.
@@ -149,6 +170,7 @@ class CupertinoMessageComposer extends StatelessWidget {
   final bool enabled;
   final VoidCallback onTogglePanel;
   final VoidCallback onSend;
+  final VoidCallback? onRecordVoice;
 
   const CupertinoMessageComposer({
     required this.controller,
@@ -159,6 +181,7 @@ class CupertinoMessageComposer extends StatelessWidget {
     this.enabled = true,
     required this.onTogglePanel,
     required this.onSend,
+    this.onRecordVoice,
     super.key,
   });
 
@@ -171,29 +194,36 @@ class CupertinoMessageComposer extends StatelessWidget {
     final availableHeight = viewport != null && viewport.isFinite
         ? viewport
         : media.size.height -
-            MediaQueryData.fromView(View.of(context)).viewInsets.bottom -
-            media.padding.top;
+              MediaQueryData.fromView(View.of(context)).viewInsets.bottom -
+              media.padding.top;
     final bottomPadding = panelVisible ? 0.0 : media.padding.bottom;
     final line = TextPainter(
       text: TextSpan(
-          text: 'M', style: CupertinoTheme.of(context).textTheme.textStyle),
+        text: 'M',
+        style: CupertinoTheme.of(context).textTheme.textStyle,
+      ),
       textDirection: Directionality.of(context),
       textScaler: media.textScaler,
     )..layout();
     // Include the editor's 20pt padding plus a rounding allowance for the caret.
     // An exactly one-line viewport can defeat the editor's reveal calculation.
-    final minimumEditorHeight =
-        math.max(44.0, line.preferredLineHeight.ceilToDouble() + 22);
+    final minimumEditorHeight = math.max(
+      44.0,
+      line.preferredLineHeight.ceilToDouble() + 22,
+    );
     line.dispose();
     // Keep at least one complete line at accessibility sizes; the quote gets
     // the remaining space and can scroll independently on very small screens.
     final maxContentHeight = math.max(
-        44.0,
-        math.min(
-          availableHeight - bottomPadding - 10,
-          math.max(math.min(280.0, availableHeight * .55) - bottomPadding - 10,
-              minimumEditorHeight + 54),
-        ));
+      44.0,
+      math.min(
+        availableHeight - bottomPadding - 10,
+        math.max(
+          math.min(280.0, availableHeight * .55) - bottomPadding - 10,
+          minimumEditorHeight + 54,
+        ),
+      ),
+    );
     return ColoredBox(
       color: CupertinoColors.systemBackground.resolveFrom(context),
       child: SafeArea(
@@ -208,72 +238,82 @@ class CupertinoMessageComposer extends StatelessWidget {
               children: [
                 ConstrainedBox(
                   constraints: BoxConstraints(
-                      maxHeight:
-                          math.max(0, maxContentHeight - minimumEditorHeight)),
-                  child:
-                      SingleChildScrollView(primary: false, child: replyTarget),
+                    maxHeight: math.max(
+                      0,
+                      maxContentHeight - minimumEditorHeight,
+                    ),
+                  ),
+                  child: SingleChildScrollView(
+                    primary: false,
+                    child: replyTarget,
+                  ),
                 ),
                 Flexible(
-                    child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    CupertinoButton(
-                      key: const ValueKey('cupertino-composer-add'),
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(44, 44),
-                      onPressed: onTogglePanel,
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: CupertinoColors.tertiarySystemFill
-                              .resolveFrom(context),
-                        ),
-                        child: Icon(
-                          panelVisible
-                              ? CupertinoIcons.keyboard
-                              : CupertinoIcons.add,
-                          size: panelVisible ? 20 : 24,
-                          color: CupertinoColors.secondaryLabel
-                              .resolveFrom(context),
-                          semanticLabel: panelVisible
-                              ? S.of(context).showKeyboardTooltip
-                              : S.of(context).extraFuncButtonTooltip,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: DecoratedBox(
-                        key: const ValueKey('cupertino-composer-bubble'),
-                        decoration: BoxDecoration(
-                          color: CupertinoColors.systemBackground
-                              .resolveFrom(context),
-                          borderRadius: BorderRadius.circular(22),
-                          border: Border.all(
-                            color: CupertinoColors.systemGrey4
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      CupertinoButton(
+                        key: const ValueKey('cupertino-composer-add'),
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(44, 44),
+                        onPressed: onTogglePanel,
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: CupertinoColors.tertiarySystemFill
                                 .resolveFrom(context),
-                            width: 1 / MediaQuery.devicePixelRatioOf(context),
+                          ),
+                          child: Icon(
+                            panelVisible
+                                ? CupertinoIcons.keyboard
+                                : CupertinoIcons.add,
+                            size: panelVisible ? 20 : 24,
+                            color: CupertinoColors.secondaryLabel.resolveFrom(
+                              context,
+                            ),
+                            semanticLabel: panelVisible
+                                ? S.of(context).showKeyboardTooltip
+                                : S.of(context).extraFuncButtonTooltip,
                           ),
                         ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Expanded(child: editor),
-                            // Only the send affordance listens to each keystroke.
-                            ValueListenableBuilder<TextEditingValue>(
-                              valueListenable: controller,
-                              builder: (context, value, _) => _sendButton(
-                                  context,
-                                  hasText: value.text.isNotEmpty),
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: DecoratedBox(
+                          key: const ValueKey('cupertino-composer-bubble'),
+                          decoration: BoxDecoration(
+                            color: CupertinoColors.systemBackground.resolveFrom(
+                              context,
                             ),
-                          ],
+                            borderRadius: BorderRadius.circular(22),
+                            border: Border.all(
+                              color: CupertinoColors.systemGrey4.resolveFrom(
+                                context,
+                              ),
+                              width: 1 / MediaQuery.devicePixelRatioOf(context),
+                            ),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Expanded(child: editor),
+                              // Only the send affordance listens to each keystroke.
+                              ValueListenableBuilder<TextEditingValue>(
+                                valueListenable: controller,
+                                builder: (context, value, _) => _sendButton(
+                                  context,
+                                  hasText: value.text.isNotEmpty,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                )),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -286,19 +326,22 @@ class CupertinoMessageComposer extends StatelessWidget {
     final busy = sendStatus == SendReplyStatus.loading;
     final succeeded = sendStatus == SendReplyStatus.success;
     final failed = sendStatus == SendReplyStatus.fail;
+    if (!hasText && !busy && !succeeded && !failed && onRecordVoice != null) {
+      return ForumVoiceButton(onPressed: onRecordVoice!);
+    }
     final enabled = this.enabled && hasText && !busy && !succeeded;
     final label = busy
         ? S.of(context).progressButtonReplySending
         : failed
-            ? S.of(context).retry
-            : succeeded
-                ? S.of(context).progressButtonReplySuccess
-                : S.of(context).send;
+        ? S.of(context).retry
+        : succeeded
+        ? S.of(context).progressButtonReplySuccess
+        : S.of(context).send;
     final color = failed
         ? CupertinoColors.systemRed.resolveFrom(context)
         : enabled || succeeded
-            ? CupertinoColors.systemBlue.resolveFrom(context)
-            : CupertinoColors.systemGrey4.resolveFrom(context);
+        ? CupertinoColors.systemBlue.resolveFrom(context)
+        : CupertinoColors.systemGrey4.resolveFrom(context);
     return Semantics(
       label: label,
       value: failed ? S.of(context).progressButtonReplyFailed : null,
@@ -319,8 +362,8 @@ class CupertinoMessageComposer extends StatelessWidget {
                   succeeded
                       ? CupertinoIcons.check_mark
                       : failed
-                          ? CupertinoIcons.arrow_clockwise
-                          : CupertinoIcons.arrow_up,
+                      ? CupertinoIcons.arrow_clockwise
+                      : CupertinoIcons.arrow_up,
                   size: 21,
                   color: enabled || succeeded
                       ? CupertinoColors.white

@@ -3897,6 +3897,8 @@ class PlatformIcons {
       pick(Icons.brightness_low, CupertinoIcons.brightness);
   IconData get category =>
       pick(Icons.category_outlined, CupertinoIcons.rectangle_grid_2x2);
+  IconData get chatBubble =>
+      pick(Icons.chat_bubble_outline, CupertinoIcons.chat_bubble);
   IconData get family => pick(Icons.child_care, CupertinoIcons.person_2);
   IconData get chart => pick(Icons.query_stats, CupertinoIcons.chart_bar);
   IconData get checkMark => pick(Icons.check, CupertinoIcons.check_mark);
@@ -3927,6 +3929,8 @@ class PlatformIcons {
       pick(Icons.error, CupertinoIcons.exclamationmark_circle_fill);
   IconData get errorOutline =>
       pick(Icons.error_outline, CupertinoIcons.exclamationmark_circle);
+  IconData get expandMore =>
+      pick(Icons.expand_more, CupertinoIcons.chevron_down);
   IconData get expiredSession =>
       pick(Icons.lock_clock, CupertinoIcons.lock_rotation);
   IconData get failedMessage =>
@@ -3940,6 +3944,8 @@ class PlatformIcons {
   IconData get favoriteOutline =>
       pick(Icons.favorite_border, CupertinoIcons.heart);
   IconData get favoriteSolid => pick(Icons.favorite, CupertinoIcons.heart_fill);
+  IconData get filter =>
+      pick(Icons.filter_list, CupertinoIcons.line_horizontal_3_decrease);
   IconData get folderSolid => pick(Icons.folder, CupertinoIcons.folder_fill);
   IconData get forumOutline =>
       pick(Icons.forum_outlined, CupertinoIcons.chat_bubble_2);
@@ -3981,6 +3987,8 @@ class PlatformIcons {
   IconData get refresh => pick(Icons.refresh, CupertinoIcons.refresh);
   IconData get removeCircledSolid =>
       pick(Icons.remove_circle, CupertinoIcons.minus_circle_fill);
+  IconData get reorder =>
+      pick(Icons.drag_handle, CupertinoIcons.line_horizontal_3);
   IconData get settings =>
       pick(Icons.settings_outlined, CupertinoIcons.settings);
   IconData get settingsSolid =>

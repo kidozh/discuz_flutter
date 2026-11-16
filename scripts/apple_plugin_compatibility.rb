@@ -65,6 +65,19 @@ module ApplePluginCompatibility
   def apply(installer, sdk_version:)
     modern_sampling = Gem::Version.new(sdk_version) >= Gem::Version.new('27.0')
     installer.pods_project.targets.each do |target|
+      if target.name == 'almanacinc_record_mp3'
+        # CocoaPods generates the same umbrella as the plugin's SPM layout.
+        # Keep the generated header and its import of the public LAME wrapper.
+        umbrella = 'almanacinc_record_mp3-umbrella.h'
+        target.headers_build_phase.files.select do |file|
+          path = file.file_ref&.real_path
+          path && path.basename.to_s == umbrella && path.to_s.include?('/Sources/')
+        end.each(&:remove_from_project)
+        header = installer.sandbox.root.join('Target Support Files', target.name, umbrella)
+        if header.file?
+          header.write(header.read.lines.reject { |line| line.strip == "#import \"#{umbrella}\"" }.join)
+        end
+      end
       next unless %w[foundation_models_framework audio_session flutter_image_compress_macos].include?(target.name)
 
       target.source_build_phase.files_references.each do |reference|

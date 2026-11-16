@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+
 import 'BaseResult.dart';
 import 'ErrorResult.dart';
 import '../converter/StringToIntConverter.dart';
@@ -56,15 +57,19 @@ class AllowPerm {
   };
 
   UploadRestriction? validateUpload(String filename, int bytes) {
-    final extension = filename.split('.').last.toLowerCase();
+    final dot = filename.lastIndexOf('.');
+    final extension = dot > 0 ? filename.substring(dot + 1).toLowerCase() : '';
     final limit = allowUpload.limits[extension];
-    if (uploadHash.isEmpty || limit == null || limit == 0 || limit < -1)
+    if (attachRemain.count == 0 || (attachRemain.count ?? -1) < -1) {
+      return UploadRestriction.count;
+    }
+    if (uploadHash.isEmpty || limit == null || limit == 0 || limit < -1) {
       return UploadRestriction.type;
-    if (attachRemain.count == 0) return UploadRestriction.count;
-    if (attachRemain.size != null &&
-        attachRemain.size! >= 0 &&
-        bytes > attachRemain.size!)
+    }
+    final remaining = attachRemain.size;
+    if (remaining != null && remaining != -1 && bytes > remaining) {
       return UploadRestriction.dailySize;
+    }
     if (limit > 0 && bytes > limit) return UploadRestriction.fileSize;
     return null;
   }

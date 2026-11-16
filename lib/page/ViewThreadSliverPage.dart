@@ -1,9 +1,12 @@
 import '../utility/post_signature_service.dart';
 import '../utility/post_editor_controller.dart';
+import '../utility/reply_draft_store.dart';
+import '../utility/forum_pending_upload.dart';
 import '../widget/cupertino_separated_item.dart';
 import '../widget/PostRatingsInline.dart';
 import 'PostCommentDialog.dart';
 import 'ActivityRegistrationPage.dart';
+import 'forum_web_pages.dart';
 import 'ModerateThreadPage.dart';
 import '../widget/BestAnswerButton.dart';
 import '../widget/ForumInteractionWidgets.dart';
@@ -12,7 +15,6 @@ import 'package:discuz_flutter/utility/app_motion.dart';
 import 'package:discuz_flutter/widget/message_composer_surface.dart';
 
 import 'dart:async';
-import 'dart:collection';
 import 'dart:convert';
 import 'dart:developer';
 
@@ -61,6 +63,10 @@ import 'package:discuz_flutter/widget/PostTextField.dart';
 import 'package:discuz_flutter/widget/PostWidget.dart';
 import 'package:discuz_flutter/widget/ThreadReplyTargetBanner.dart';
 import 'package:discuz_flutter/widget/thread_reply_composer.dart';
+
+import '../utility/forum_voice.dart';
+import '../widget/forum_voice_recorder.dart';
+
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -76,6 +82,7 @@ import 'package:share_plus/share_plus.dart';
 import '../provider/DiscuzNotificationProvider.dart';
 import '../provider/UserPreferenceNotifierProvider.dart';
 import '../utility/EasyRefreshUtils.dart';
+import '../utility/forum_error.dart';
 import '../widget/AppBannerAdWidget.dart';
 import '../widget/DiscuzNotificationAppbarIconWidget.dart';
 import 'InternalWebviewBrowserPage.dart';
@@ -162,6 +169,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   List<Post> _postList = [];
   int _page = 1;
   final _replyController = PostEditorController();
+  ReplyDraftStore? _draftStore;
+  LatestValueWriter<ReplyDraft>? _draftWriter;
+  ReplyPostNotifierProvider? _replyTarget;
+  final _draftAttachments = <String, ReplyDraftAttachment>{};
+  ForumVoiceOptions? _replyVoice;
+  String _observedDraftText = '';
+  bool _draftReady = false, _draftEdited = false, _restoringDraft = false;
+
   final CaptchaController _captchaController = new CaptchaController(
     new CaptchaFields("", "post", ""),
   );
@@ -264,7 +279,170 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     _loadPreference();
     //_invalidateContent();
     bindFocusNode();
+    _loadReplyDraft();
     _loadDao();
+  }
+
+  Future<void> _loadReplyDraft() async {
+    final current = user;
+    if (current == null || current.uid <= 0 || tid <= 0) return;
+    final store = ReplyDraftStore(discuz.siteIdentity, current.uid, tid);
+    _draftStore = store;
+    _replyTarget = context.read<ReplyPostNotifierProvider?>();
+    _draftWriter = LatestValueWriter<ReplyDraft>(
+      interval: Duration.zero,
+      write: store.write,
+      onError: (error, _) => _showDraftError(restoring: false),
+    );
+    _replyController.addListener(_onDraftTextChanged);
+    _replyTarget?.addListener(_saveReplyDraft);
+    try {
+      final saved = await store.read();
+      if (!mounted || saved == null || _draftEdited) return;
+      final paths = <String, String>{};
+      for (final attachment in saved.attachments) {
+        paths[attachment.id] = (await store.file(attachment)).path;
+      }
+      if (!mounted || _draftEdited) return;
+      _restoringDraft = true;
+      _draftAttachments.addEntries(
+        saved.attachments.map((item) => MapEntry(item.id, item)),
+      );
+      _replyController.restoreFileNames({
+        ...saved.names,
+        for (final item in saved.attachments.where((item) => !item.image))
+          item.id: item.name,
+      });
+      for (final attachment in saved.attachments) {
+        final path = paths[attachment.id]!;
+        if (attachment.image) {
+          _replyController.restoreImagePath(attachment.token, path);
+        } else {
+          _replyController.restoreFilePath(attachment.id, path);
+        }
+      }
+      _observedDraftText = saved.text;
+      _replyController.value = TextEditingValue(
+        text: saved.text,
+        selection: TextSelection.collapsed(offset: saved.text.length),
+      );
+      _replyTarget?.setPost(saved.quote);
+    } catch (_) {
+      if (mounted) _showDraftError(restoring: true);
+    } finally {
+      _restoringDraft = false;
+      _draftReady = true;
+      if (mounted && _draftEdited) _saveReplyDraft();
+    }
+  }
+
+  void _showDraftError({required bool restoring}) {
+    if (!mounted) return;
+    final strings = S.of(context);
+    unawaited(
+      EasyLoading.showError(
+        restoring
+            ? strings.replyDraftRestoreFailed
+            : strings.replyDraftSaveFailed,
+      ),
+    );
+  }
+
+  void _onDraftTextChanged() {
+    if (_observedDraftText == _replyController.text) return;
+    _observedDraftText = _replyController.text;
+    _saveReplyDraft();
+  }
+
+  void _saveReplyDraft() {
+    if (_restoringDraft) return;
+    _draftEdited = true;
+    if (!_draftReady) return;
+    final source = _replyController.text;
+    final ids = PostEditorToken.inText(source)
+        .where((token) => token.isPending)
+        .map((token) => token.content)
+        .toSet();
+    _draftWriter?.schedule(
+      ReplyDraft(
+        text: source,
+        quote: _replyTarget?.post,
+        names: _replyController.attachedFileNames,
+        attachments: [
+          for (final id in ids)
+            if (_draftAttachments[id] case final item?) item,
+        ],
+      ),
+    );
+  }
+
+  Future<void> _addDraftAttachment(
+    String name,
+    Stream<List<int>> bytes,
+    bool image,
+  ) async {
+    final store = _draftStore;
+    if (store == null) return;
+    final account = context.read<DiscuzAndUserNotifier>();
+    final item = await store.add(name: name, bytes: bytes, image: image);
+    final file = await store.file(item);
+    if (!mounted || !identical(_session, account.sessionIdentity)) {
+      if (await file.exists()) await file.delete();
+      return;
+    }
+    _draftAttachments[item.id] = item;
+    if (image) {
+      _replyController.restoreImagePath(item.token, file.path);
+    } else {
+      _replyController.restoreFileNames({item.id: item.name});
+      _replyController.restoreFilePath(item.id, file.path);
+    }
+    _replyController.insertText(item.token, image: true);
+    await _draftWriter?.flush();
+  }
+
+  Future<String> _resolveDraftAttachments(
+    String text,
+    MobileApiClient api,
+    S strings,
+    int fid,
+    int threadId,
+    int uid,
+    bool Function() isCurrent,
+  ) async {
+    final tokens = PostEditorToken.inText(text)
+        .where((token) => token.isPending);
+    final store = _draftStore;
+    final uploaded = <String, String>{};
+    for (final token in tokens) {
+      if (uploaded.containsKey(token.text)) continue;
+      final entry = _draftAttachments[token.content];
+      if (entry == null || store == null || entry.image != token.isAttachment) {
+        throw DiscuzError(
+          'attachment_unreadable',
+          strings.replyDraftUploadMissing,
+        );
+      }
+      final aid = await uploadPendingForumAttachment(
+        api: api,
+        strings: strings,
+        fid: fid,
+        tid: threadId,
+        uid: uid,
+        file: await store.file(entry),
+        name: entry.name,
+        image: entry.image,
+        isCurrent: isCurrent,
+      );
+      final tag = entry.image ? 'attachimg' : 'attach';
+      uploaded[token.text] = '[$tag]$aid[/$tag]';
+    }
+    return uploaded.isEmpty
+        ? text
+        : text.replaceAllMapped(
+            PostEditorToken.pattern,
+            (match) => uploaded[match.group(0)] ?? match.group(0)!,
+          );
   }
 
   void _onReplySubmissionChanged() {
@@ -351,6 +529,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     _postAutoScrollController.dispose();
     _showNavigationTitle.dispose();
     _focusNode.dispose();
+    _replyTarget?.removeListener(_saveReplyDraft);
+    _replyController.removeListener(_onDraftTextChanged);
+    unawaited(_draftWriter?.close());
     _replySubmission.dispose();
     _replyController.dispose();
     _captchaController.dispose();
@@ -391,6 +572,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed) {
       unawaited(_positionWriter.flush());
+      unawaited(_draftWriter?.flush());
     }
   }
 
@@ -582,12 +764,26 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
       '${discuz.baseURL}:$tid:${_viewThreadResult.threadVariables.fid}:${user.uid}',
     ),
     reply: true,
+    voiceScope: (
+      site: discuz.siteIdentity,
+      uid: user.uid,
+      fid: _viewThreadResult.threadVariables.fid,
+    ),
     load: () async => MobileApiClient(
       await NetworkUtils.getDioWithPersistCookieJar(user),
       baseUrl: discuz.baseURL,
     ).checkPost(_viewThreadResult.threadVariables.fid, tid),
     child: child,
   );
+
+  void _recordReplyVoice(BuildContext context, ForumVoiceOptions options) {
+    if (_draftStore == null || _replyVoice != null) return;
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _replyVoice = options;
+      dialogStatus = SHOW_NONE_DIALOG;
+    });
+  }
 
   Future<void> _sendReply() async {
     final account = context.read<DiscuzAndUserNotifier>();
@@ -635,72 +831,102 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
       final value = await _replySubmission.submit(
         request: (draft) async {
           final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-          if (!isCurrent()) return null;
-          final permission = await MobileApiClient(
-            dio,
-            baseUrl: discuz.baseURL,
-          ).checkPost(fid, threadId);
-          if (!isCurrent()) return null;
-          if (permission.variables.member_uid != 0 &&
-              permission.variables.member_uid != user.uid)
-            return null;
-          if (permission.getErrorString() != null ||
-              permission.variables.allowPerm.allowReply != true) {
-            throw StateError(
-              permission.getErrorString() ??
-                  (permission.variables.allowPerm.allowReply == false
-                      ? strings.replyPermissionDenied
-                      : strings.postPermissionUnknown),
-            );
-          }
-          final message = await PostSignatureService.append(
-            context,
-            PostTextFieldUtils.getPostMessage(draft.text),
-          );
-          if (!isCurrent()) return null;
-          final attachImgMap = HashMap<String, String>.from({
-            for (final aid in PostTextFieldUtils.getAttachmentAidList(
+          try {
+            if (!isCurrent()) return null;
+            final api = MobileApiClient(dio, baseUrl: discuz.baseURL);
+            final permission = await api.checkPost(fid, threadId);
+            if (!isCurrent()) return null;
+            if (permission.variables.member_uid != 0 &&
+                permission.variables.member_uid != user.uid)
+              return null;
+            final failure = forumResponseError(strings, permission);
+            if (failure != null) throw failure;
+            if (permission.variables.allowPerm.allowReply != true) {
+              throw DiscuzError(
+                'reply_permission',
+                permission.variables.allowPerm.allowReply == false
+                    ? strings.replyPermissionDenied
+                    : strings.postPermissionUnknown,
+              );
+            }
+            final source = await _resolveDraftAttachments(
               draft.text,
-            ).toSet())
-              'attachnew[$aid][description]': aid,
-          });
-          return MobileApiClient(dio, baseUrl: discuz.baseURL).sendReplyResult(
-            fid,
-            threadId,
-            formhash,
-            replyPid,
-            replyPid,
-            notifyAuthorMessage,
-            message,
-            captchaHash,
-            captchaMod,
-            verification,
-            attachImgMap,
-          );
+              api,
+              strings,
+              fid,
+              threadId,
+              user.uid,
+              isCurrent,
+            );
+            if (!isCurrent()) return null;
+            final message = await PostSignatureService.append(
+              context,
+              PostTextFieldUtils.getPostMessage(source),
+            );
+            if (!isCurrent()) return null;
+            final attachments = {
+              for (final aid in PostTextFieldUtils.getAttachmentAidList(source))
+                'attachnew[$aid][description]': '',
+            };
+            return await api.sendReplyResult(
+              fid,
+              threadId,
+              formhash,
+              replyPid,
+              replyPid,
+              notifyAuthorMessage,
+              message,
+              captchaHash,
+              captchaMod,
+              verification,
+              attachments,
+            );
+          } finally {
+            dio.close();
+          }
         },
-        succeeded: (value) => value?.errorResult?.key == 'post_reply_succeed',
+        canClear: () => identical(_replyTarget?.post, replyPost),
+        succeeded: (value) =>
+            forumMessageKey(value?.errorResult?.key ?? '') ==
+            'post_reply_succeed',
       );
       if (!isCurrent() || value == null) return;
       final result = value.errorResult;
-      if (result?.key == 'post_reply_succeed') {
+      final code = forumMessageKey(result?.key ?? '');
+      if (code == 'post_reply_succeed') {
+        if (_replyController.text.isEmpty &&
+            identical(_replyTarget?.post, replyPost)) {
+          _replyTarget?.setPost(null);
+          await _draftWriter?.flush();
+          if (!isCurrent()) return;
+        }
         if (captchaHash.isNotEmpty || _captchaController.requiredByServer) {
           _captchaController.reloadCaptcha(requiredByServer: false);
         }
-        EasyLoading.showSuccess('${result!.content}(${result.key})');
+        EasyLoading.showSuccess(result!.content);
       } else {
-        if (result?.key == 'submit_seccode_invalid') {
+        if (code == 'submit_seccode_invalid') {
           _captchaController.reloadCaptcha(requiredByServer: true);
         }
-        EasyLoading.showError(
-          result == null
-              ? strings.progressButtonReplyFailed
-              : '${result.content}(${result.key})',
+        final failure = forumResponseError(strings, value);
+        await showForumActionError(
+          context,
+          failure ??
+              forumRequestError(
+                strings,
+                const FormatException(),
+                submitted: true,
+              ),
         );
       }
     } catch (error) {
       if (!isCurrent()) return;
       VibrationUtils.vibrateErrorIfPossible();
-      EasyLoading.showError(error is DioException ? error.type.name : '$error');
+      final failure = forumRequestError(strings, error, submitted: true);
+      if (failure.key == 'submit_seccode_invalid') {
+        _captchaController.reloadCaptcha(requiredByServer: true);
+      }
+      await showForumActionError(context, failure);
     }
   }
 
@@ -868,7 +1094,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
         });
       }
       if (error != null || update == null) {
-        final displayError = error ?? DiscuzError(S.of(context).error, '');
+        final displayError =
+            error ?? forumRequestError(S.of(context), const FormatException());
         setState(() {
           _isFirstLoading = false;
           if (_postList.isEmpty ||
@@ -1217,6 +1444,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   @override
   Widget build(BuildContext context) {
     ModalRoute<Object?>? route = ModalRoute.of(context);
+    final user = this.user;
+    final variables = _viewThreadResult.threadVariables;
+    final canReviewActivity =
+        user != null &&
+        variables.member_uid == user.uid &&
+        (variables.threadInfo.authorId == user.uid ||
+            variables.isModerator > 0 ||
+            {1, 2}.contains(variables.groupId));
     final loadedSubject = _viewThreadResult.threadVariables.threadInfo.subject;
     final passedSubject = widget.passedSubject?.trim() ?? '';
     final initialSubject = passedSubject.isEmpty
@@ -1488,6 +1723,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                   _viewThreadResult.threadVariables.formHash,
                                   tid,
                                   _viewThreadResult.threadVariables.fid,
+                                  onVoted: () => _controller.callRefresh(),
                                 );
                               },
                               childCount:
@@ -1517,6 +1753,23 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                         ),
                         SliverToBoxAdapter(
                           child: SpecialThreadCard(
+                            onActivityReview: canReviewActivity
+                                ? () => Navigator.push<void>(
+                                    context,
+                                    platformPageRoute(
+                                      context: context,
+                                      builder: (_) => ActivityReviewPage(
+                                        discuz,
+                                        user!,
+                                        tid,
+                                        onChanged: () {
+                                          if (mounted)
+                                            _controller.callRefresh();
+                                        },
+                                      ),
+                                    ),
+                                  )
+                                : null,
                             onActivityRegistration: user == null
                                 ? null
                                 : () async {
@@ -1686,7 +1939,44 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                       "post",
                                       captchaController: _captchaController,
                                     ),
-                                  if (visualStyle(context) ==
+                                  if (_replyVoice case final options?)
+                                    SafeArea(
+                                      top: false,
+                                      child: MessageComposerSurface(
+                                        margin: const EdgeInsets.fromLTRB(
+                                          8,
+                                          4,
+                                          8,
+                                          4,
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4,
+                                        ),
+                                        borderRadius: BorderRadius.circular(24),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            _buildReplyTargetBanner(context),
+                                            ForumVoiceRecorder(
+                                              options: options,
+                                              onRecorded: (voice) async {
+                                                await _addDraftAttachment(
+                                                  voice.name,
+                                                  voice.file.openRead(),
+                                                  false,
+                                                );
+                                                return false;
+                                              },
+                                              onClosed: () => setState(
+                                                () => _replyVoice = null,
+                                              ),
+                                              onSend: () => _sendReply(),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  else if (visualStyle(context) ==
                                       AppVisualStyle.cupertino)
                                     CupertinoThreadReplyComposer(
                                       key: const ValueKey(
@@ -1701,6 +1991,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                       panelVisible: showReplyPanel,
                                       sendStatus: _sendReplyStatus,
                                       onTogglePanel: _toggleReplyPanel,
+                                      onVoice: (options) =>
+                                          _recordReplyVoice(context, options),
                                       onSend: () {
                                         VibrationUtils.vibrateWithClickIfPossible();
                                         _sendReply();
@@ -1859,6 +2151,20 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                                         onPressed: null,
                                                       );
                                                     }
+                                                    final voice =
+                                                        PostPermissionGate.voiceOptionsOf(
+                                                          context,
+                                                        );
+                                                    if (!canSend &&
+                                                        voice != null) {
+                                                      return ForumVoiceButton(
+                                                        onPressed: () =>
+                                                            _recordReplyVoice(
+                                                              context,
+                                                              voice,
+                                                            ),
+                                                      );
+                                                    }
                                                     if (!isCupertino(context)) {
                                                       return MaterialMessageSendButton(
                                                         onPressed: canSend
@@ -1970,6 +2276,17 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                                             .currentState
                                                             ?.takePicture(),
                                                   ),
+                                                  SmileyPanelAction(
+                                                    icon: PlatformIcons(context)
+                                                        .attachment,
+                                                    label: S
+                                                        .of(context)
+                                                        .selectAttachmentFile,
+                                                    onPressed: () =>
+                                                        _extraFunctionsKey
+                                                            .currentState
+                                                            ?.pickFile(),
+                                                  ),
                                                 ],
                                               ),
                                             )
@@ -1988,6 +2305,16 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                       _viewThreadResult.threadVariables.fid,
                                       key: _extraFunctionsKey,
                                       showHistoricalAttachment: false,
+                                      saveDraftAttachment: _addDraftAttachment,
+                                      onAttachFile: (aid, name) {
+                                        if (mounted) {
+                                          _replyController.insertFile(
+                                            aid,
+                                            name,
+                                          );
+                                          insertedAidList.add(aid);
+                                        }
+                                      },
                                       onReplyWithImage: (aid, path) =>
                                           _handleReplyWithImage(
                                             discuz,

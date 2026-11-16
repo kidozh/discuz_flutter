@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import '../utility/post_signature_service.dart';
 import '../utility/post_editor_controller.dart';
 import 'PollComposerPage.dart';
+import 'SpecialThreadComposerPage.dart';
+import 'InternalWebviewBrowserPage.dart';
 import '../entity/PollDraft.dart';
 import '../client/ForumInteractionClient.dart';
+import '../client/SpecialThreadForm.dart';
 
 import 'package:dio/dio.dart';
 import 'package:discuz_flutter/client/MobileApiClient.dart';
@@ -20,6 +25,7 @@ import '../JsonResult/DisplayForumResult.dart';
 import '../widget/PostPermissionGate.dart';
 import '../database/AppDatabase.dart';
 import '../entity/Discuz.dart';
+import '../entity/DiscuzError.dart';
 import '../entity/Draft.dart';
 import '../entity/ImageAttachment.dart';
 import '../entity/Smiley.dart';
@@ -29,14 +35,27 @@ import '../screen/ExtraFuncInThreadScreen.dart';
 import '../utility/NetworkUtils.dart';
 import '../utility/PostTextFieldUtils.dart';
 import '../utility/UserPreferencesUtils.dart';
+import '../utility/forum_error.dart';
+import '../utility/forum_pending_upload.dart';
+import '../utility/forum_voice.dart';
+import '../utility/discuz_json.dart';
+import '../widget/ErrorCard.dart';
+import '../widget/forum_voice_recorder.dart';
 
 class PostThreadPage extends StatelessWidget {
   int fid;
   int tid;
   Discuz discuz;
   Draft? draft;
+  final Map<String, dynamic>? navigationTypes;
 
-  PostThreadPage(this.discuz, this.fid, this.tid, {this.draft});
+  PostThreadPage(
+    this.discuz,
+    this.fid,
+    this.tid, {
+    this.draft,
+    this.navigationTypes,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,11 +65,20 @@ class PostThreadPage extends StatelessWidget {
       key: ValueKey((discuz.siteIdentity, fid, account.sessionIdentity)),
       reply: false,
       fullPage: true,
+      voiceScope: user == null
+          ? null
+          : (site: discuz.siteIdentity, uid: user.uid, fid: fid),
       load: () async => MobileApiClient(
         await NetworkUtils.getDioWithPersistCookieJar(user),
         baseUrl: discuz.baseURL,
       ).checkPost(fid, null),
-      child: PostThreadStatefulWidget(discuz, fid, tid, draft: draft),
+      child: PostThreadStatefulWidget(
+        discuz,
+        fid,
+        tid,
+        draft: draft,
+        navigationTypes: navigationTypes,
+      ),
     );
   }
 }
@@ -60,8 +88,15 @@ class PostThreadStatefulWidget extends StatefulWidget {
   Discuz discuz;
   int tid;
   Draft? draft;
+  final Map<String, dynamic>? navigationTypes;
 
-  PostThreadStatefulWidget(this.discuz, this.fid, this.tid, {this.draft});
+  PostThreadStatefulWidget(
+    this.discuz,
+    this.fid,
+    this.tid, {
+    this.draft,
+    this.navigationTypes,
+  });
 
   @override
   PostThreadState createState() {
@@ -81,12 +116,60 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   FocusNode focusNode = FocusNode();
   Draft? draft;
   PollDraft? _pollDraft;
+  SpecialThreadDraft? _specialDraft;
   bool _sending = false;
+  bool _configuring = false;
+  bool _confirming = false;
+  ForumVoiceOptions? _recordingVoice;
+  final _voicePreviews = <RecordedForumVoice>[];
   Future<void> _draftWrite = Future.value();
   // dropdown menu status
   String? selectedTypeId;
 
   PostThreadState(this.discuz, this.fid, this.tid, {this.draft});
+
+  void _recordVoice(ForumVoiceOptions options) {
+    if (_sending || _confirming || _recordingVoice != null) return;
+    FocusScope.of(context).unfocus();
+    setState(() => _recordingVoice = options);
+  }
+
+  Future<bool> _attachVoice(RecordedForumVoice voice) async {
+    final account = context.read<DiscuzAndUserNotifier>();
+    final user = account.userFor(discuz);
+    if (user == null) return false;
+    final session = account.sessionIdentity;
+    bool current() => mounted && identical(session, account.sessionIdentity);
+    final s = S.of(context);
+    final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    try {
+      if (!current()) return false;
+      await EasyLoading.show(
+        status: s.uploadingAttachment,
+        maskType: EasyLoadingMaskType.clear,
+      );
+      final aid = await uploadPendingForumAttachment(
+        api: MobileApiClient(dio, baseUrl: discuz.baseURL),
+        strings: s,
+        fid: fid,
+        tid: 0,
+        uid: user.uid,
+        file: voice.file,
+        name: voice.name,
+        image: false,
+        isCurrent: current,
+        replying: false,
+      );
+      if (!current()) return false;
+      _controller.restoreFilePath(aid, voice.file.path);
+      _controller.insertFile(aid, voice.name);
+      _voicePreviews.add(voice);
+      return true;
+    } finally {
+      dio.close();
+      await EasyLoading.dismiss();
+    }
+  }
 
   @override
   void initState() {
@@ -94,10 +177,12 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     if (draft != null) {
       _titleEditingController.text = draft!.title;
       _controller.text = draft!.text;
+      _controller.restoreFileNames(draft!.attachmentNames);
       selectedTypeId = draft!.typeid;
       _pollDraft = PollDraft.decode(draft!.pollJson);
+      _specialDraft = SpecialThreadDraft.decode(draft!.specialThreadJson);
     }
-    _loadForumInfo();
+    if (widget.navigationTypes == null) _loadForumInfo();
     // add backup option
     backupDraftIfPossible();
   }
@@ -105,12 +190,14 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   Future<void> _configurePoll() async {
     final account = context.read<DiscuzAndUserNotifier>();
     final user = account.userFor(discuz);
-    if (user == null) return;
+    if (user == null || _configuring) return;
+    final session = account.sessionIdentity;
+    bool isCurrent() => mounted && identical(session, account.sessionIdentity);
+    setState(() => _configuring = true);
+    Dio? dio;
     try {
-      final api = ForumInteractionClient(
-        await NetworkUtils.getDioWithPersistCookieJar(user),
-        discuz.baseURL,
-      );
+      dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      final api = ForumInteractionClient(dio, discuz.baseURL);
       final permission = await api.request('newthread', {
         'fid': fid,
         'special': 1,
@@ -118,7 +205,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       permission.requireData('formhash');
       if ('${permission.variables['member_uid']}' != '${user.uid}')
         throw const ForumApiException('account_changed', '');
-      if (!mounted || account.user != user) return;
+      if (!isCurrent()) return;
       final value = await Navigator.push<PollDraft>(
         context,
         platformPageRoute(
@@ -126,17 +213,111 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
           builder: (_) => PollComposerPage(initial: _pollDraft),
         ),
       );
-      if (mounted && value != null) {
-        setState(() => _pollDraft = value);
+      if (isCurrent() && value != null) {
+        setState(() {
+          _pollDraft = value;
+          _specialDraft = null;
+        });
         await backupDraft();
       }
     } catch (e) {
-      if (mounted)
-        EasyLoading.showError(
-          e is ForumApiException && e.message.isNotEmpty
-              ? e.message
-              : S.of(context).pollUnavailable,
+      if (isCurrent()) {
+        final strings = S.of(context);
+        await showForumActionError(
+          context,
+          forumRequestError(strings, e, fallback: strings.pollUnavailable),
         );
+      }
+    } finally {
+      dio?.close();
+      if (mounted) setState(() => _configuring = false);
+    }
+  }
+
+  Future<void> _configureSpecial(SpecialThreadKind kind) async {
+    final account = context.read<DiscuzAndUserNotifier>();
+    final user = account.userFor(discuz);
+    if (user == null || _configuring) return;
+    final session = account.sessionIdentity;
+    bool isCurrent() => mounted && identical(session, account.sessionIdentity);
+    setState(() => _configuring = true);
+    Dio? dio;
+    try {
+      dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      final form = await SpecialThreadForm.load(
+        ForumInteractionClient(dio, discuz.baseURL),
+        fid,
+        user.uid,
+        kind,
+      );
+      if (!isCurrent()) return;
+      final value = await Navigator.push<SpecialThreadDraft>(
+        context,
+        platformPageRoute(
+          context: context,
+          builder: (_) => SpecialThreadComposerPage(
+            kind: kind,
+            form: form,
+            initial: _specialDraft?.kind == kind ? _specialDraft : null,
+          ),
+        ),
+      );
+      if (!isCurrent() || value == null) return;
+      setState(() {
+        _specialDraft = value;
+        _pollDraft = null;
+      });
+      await backupDraft();
+    } catch (error) {
+      if (isCurrent()) {
+        final strings = S.of(context);
+        if (error is ForumApiException &&
+            error.code == 'special_post_form_unavailable') {
+          final open = await showPlatformDialog<bool>(
+            context: context,
+            builder: (dialogContext) => PlatformAlertDialog(
+              content: Text(strings.specialPostFormUnavailable),
+              actions: [
+                PlatformDialogAction(
+                  child: Text(strings.cancel),
+                  onPressed: () => Navigator.pop(dialogContext),
+                ),
+                PlatformDialogAction(
+                  child: Text(strings.navigateToWebPage),
+                  onPressed: () => Navigator.pop(dialogContext, true),
+                ),
+              ],
+            ),
+          );
+          if (open == true && isCurrent()) {
+            final uri = SpecialThreadForm.website(
+              Uri.parse(discuz.getBaseURLWithAfterfix()),
+              fid,
+              kind,
+            );
+            await Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                builder: (_) =>
+                    InternalWebviewBrowserPage(discuz, user, '$uri'),
+              ),
+            );
+          }
+          return;
+        }
+        await showForumActionError(
+          context,
+          forumRequestError(
+            strings,
+            error,
+            fallback: strings.specialPostFormUnavailable,
+          ),
+        );
+      }
+    } finally {
+      dio?.close();
+      if (mounted) setState(() => _configuring = false);
     }
   }
 
@@ -146,20 +327,11 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       return PlatformScaffold(
         appBar: PlatformAppBar(title: Text(S.of(context).pushThreadTitle)),
         body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(_forumLoadError!),
-              PlatformTextButton(
-                onPressed: _loadForumInfo,
-                child: Text(S.of(context).refresh),
-              ),
-            ],
-          ),
+          child: ErrorCard(_forumLoadError!, _loadForumInfo, largeSize: false),
         ),
       );
     }
-    if (_displayForumResult == null) {
+    if (_displayForumResult == null && widget.navigationTypes == null) {
       return Container(
         width: 64,
         padding: EdgeInsets.all(32),
@@ -192,7 +364,11 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
               size: 20,
               semanticLabel: S.of(context).pushThreadTitle,
             ),
-            onPressed: _sending
+            onPressed:
+                _sending ||
+                    _configuring ||
+                    _confirming ||
+                    _recordingVoice != null
                 ? null
                 : () {
                     VibrationUtils.vibrateWithClickIfPossible();
@@ -252,27 +428,49 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                       ),
                       const SizedBox(height: 8),
                     ],
-                    Row(
+                    Wrap(
                       children: [
-                        Expanded(
-                          child: PlatformTextButton(
-                            onPressed: _sending ? null : _configurePoll,
-                            child: Text(
-                              _pollDraft == null
-                                  ? S.of(context).createPoll
-                                  : S.of(context).editPoll,
-                            ),
+                        PlatformTextButton(
+                          onPressed: _sending || _configuring
+                              ? null
+                              : _configurePoll,
+                          child: Text(
+                            _pollDraft == null
+                                ? S.of(context).createPoll
+                                : S.of(context).editPoll,
                           ),
                         ),
-                        if (_pollDraft != null)
+                        for (final kind in SpecialThreadKind.values)
+                          PlatformTextButton(
+                            onPressed: _sending || _configuring
+                                ? null
+                                : () => _configureSpecial(kind),
+                            child: Text(switch ((
+                              kind,
+                              _specialDraft?.kind == kind,
+                            )) {
+                              (SpecialThreadKind.reward, false) =>
+                                S.of(context).createReward,
+                              (SpecialThreadKind.reward, true) =>
+                                S.of(context).editReward,
+                              (SpecialThreadKind.activity, false) =>
+                                S.of(context).createActivity,
+                              (SpecialThreadKind.activity, true) =>
+                                S.of(context).editActivity,
+                            }),
+                          ),
+                        if (_pollDraft != null || _specialDraft != null)
                           PlatformTextButton(
                             onPressed: _sending
                                 ? null
                                 : () {
-                                    setState(() => _pollDraft = null);
+                                    setState(() {
+                                      _pollDraft = null;
+                                      _specialDraft = null;
+                                    });
                                     backupDraft();
                                   },
-                            child: Text(S.of(context).removePoll),
+                            child: Text(S.of(context).removeSpecialPost),
                           ),
                       ],
                     ),
@@ -299,83 +497,109 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                 top: false,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: PlatformLiquidGlassToolbarGroup(
-                      children: [
-                        PlatformIconButton(
-                          liquidGlassSymbol: 'bold',
-                          icon: Icon(PlatformIcons(context).bold),
-                          onPressed: () {
-                            VibrationUtils.vibrateWithClickIfPossible();
-                            String insertedText = "[b][/b]";
-                            insertString(insertedText);
-                          },
-                        ),
-                        PlatformIconButton(
-                          liquidGlassSymbol: 'italic',
-                          icon: Icon(PlatformIcons(context).italic),
-                          onPressed: () {
-                            VibrationUtils.vibrateWithClickIfPossible();
-                            String insertedText = "[i][/i]";
-                            insertString(insertedText);
-                          },
-                        ),
-                        PlatformIconButton(
-                          liquidGlassSymbol: 'quote.bubble',
-                          icon: Icon(PlatformIcons(context).formatQuote),
-                          onPressed: () {
-                            VibrationUtils.vibrateWithClickIfPossible();
-                            String insertedText = "[quote][/quote]";
-                            insertString(insertedText);
-                          },
-                        ),
-                        PlatformIconButton(
-                          liquidGlassSymbol: 'face.smiling',
-                          icon: Icon(PlatformIcons(context).smiley),
-                          onPressed: () {
-                            VibrationUtils.vibrateWithClickIfPossible();
-                            // popup a smiley dialog
-                            showPlatformModalSheet(
-                              context: context,
-                              builder: (context) => SmileyListScreen(
-                                insertSmiley,
-                                onAttachmentPressed: _handleReplyWithImage,
-                              ),
-                            );
-                          },
-                        ),
-                        PlatformIconButton(
-                          liquidGlassSymbol: 'photo',
-                          icon: Icon(PlatformIcons(context).photo),
-                          onPressed: () {
-                            VibrationUtils.vibrateWithClickIfPossible();
-                            showPlatformModalSheet(
-                              context: context,
-                              builder: (context) => ExtraFuncInThreadScreen(
-                                discuz,
-                                tid,
-                                fid,
-                                onReplyWithImage: _handleReplyWithImage,
-                                onReplyWithHostedImage: (imageUrl, path) {
-                                  if (mounted && imageUrl.isNotEmpty) {
-                                    _controller.insertHostedImage(
-                                      imageUrl,
-                                      path,
-                                    );
-                                  }
+                  child: _recordingVoice != null
+                      ? ForumVoiceRecorder(
+                          options: _recordingVoice!,
+                          onRecorded: _attachVoice,
+                          onClosed: () =>
+                              setState(() => _recordingVoice = null),
+                        )
+                      : SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: PlatformLiquidGlassToolbarGroup(
+                            children: [
+                              PlatformIconButton(
+                                liquidGlassSymbol: 'bold',
+                                icon: Icon(PlatformIcons(context).bold),
+                                onPressed: () {
+                                  VibrationUtils.vibrateWithClickIfPossible();
+                                  String insertedText = "[b][/b]";
+                                  insertString(insertedText);
                                 },
-                                showHistoricalAttachment: false,
                               ),
-                            );
-                          },
+                              PlatformIconButton(
+                                liquidGlassSymbol: 'italic',
+                                icon: Icon(PlatformIcons(context).italic),
+                                onPressed: () {
+                                  VibrationUtils.vibrateWithClickIfPossible();
+                                  String insertedText = "[i][/i]";
+                                  insertString(insertedText);
+                                },
+                              ),
+                              PlatformIconButton(
+                                liquidGlassSymbol: 'quote.bubble',
+                                icon: Icon(PlatformIcons(context).formatQuote),
+                                onPressed: () {
+                                  VibrationUtils.vibrateWithClickIfPossible();
+                                  String insertedText = "[quote][/quote]";
+                                  insertString(insertedText);
+                                },
+                              ),
+                              PlatformIconButton(
+                                liquidGlassSymbol: 'face.smiling',
+                                icon: Icon(PlatformIcons(context).smiley),
+                                onPressed: () {
+                                  VibrationUtils.vibrateWithClickIfPossible();
+                                  // popup a smiley dialog
+                                  showPlatformModalSheet(
+                                    context: context,
+                                    builder: (context) => SmileyListScreen(
+                                      insertSmiley,
+                                      onAttachmentPressed:
+                                          _handleReplyWithImage,
+                                    ),
+                                  );
+                                },
+                              ),
+                              PlatformIconButton(
+                                liquidGlassSymbol: 'paperclip',
+                                icon: Icon(
+                                  PlatformIcons(context).attachment,
+                                  semanticLabel: S
+                                      .of(context)
+                                      .composerAttachmentLabel,
+                                ),
+                                onPressed: () {
+                                  VibrationUtils.vibrateWithClickIfPossible();
+                                  showPlatformModalSheet(
+                                    context: context,
+                                    builder: (context) =>
+                                        ExtraFuncInThreadScreen(
+                                          discuz,
+                                          tid,
+                                          fid,
+                                          onReplyWithImage:
+                                              _handleReplyWithImage,
+                                          onAttachFile: (aid, name) {
+                                            if (mounted)
+                                              _controller.insertFile(aid, name);
+                                          },
+                                          onReplyWithHostedImage:
+                                              (imageUrl, path) {
+                                                if (mounted &&
+                                                    imageUrl.isNotEmpty) {
+                                                  _controller.insertHostedImage(
+                                                    imageUrl,
+                                                    path,
+                                                  );
+                                                }
+                                              },
+                                          showHistoricalAttachment: false,
+                                        ),
+                                  );
+                                },
+                              ),
+                              if (PostPermissionGate.voiceOptionsOf(context)
+                                  case final voice?)
+                                ForumVoiceButton(
+                                  onPressed: () => _recordVoice(voice),
+                                ),
+                              // PlatformIconButton(
+                              //   icon: Icon(Icons.settings_backup_restore),
+                              // ),
+                            ],
+                          ),
                         ),
-                        // PlatformIconButton(
-                        //   icon: Icon(Icons.settings_backup_restore),
-                        // ),
-                      ],
-                    ),
-                  ),
                 ),
               ),
             ],
@@ -386,30 +610,36 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   }
 
   DisplayForumResult? _displayForumResult = null;
-  String? _forumLoadError;
+  DiscuzError? _forumLoadError;
 
   Future<void> _loadForumInfo() async {
     final user = context.read<DiscuzAndUserNotifier>().userFor(discuz);
-    Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
     try {
       if (mounted) setState(() => _forumLoadError = null);
       final value = await client.displayForumResult(fid.toString(), 1, {});
       if (!mounted) return;
       setState(() {
-        _forumLoadError = value.getErrorString();
+        _forumLoadError = forumResponseError(S.of(context), value);
         if (_forumLoadError == null) _displayForumResult = value;
       });
-    } catch (_) {
-      if (mounted) setState(() => _forumLoadError = S.of(context).networkFail);
+    } catch (error) {
+      if (mounted)
+        setState(
+          () => _forumLoadError = forumRequestError(S.of(context), error),
+        );
+    } finally {
+      dio.close();
     }
   }
 
   List<MapEntry<String, String>> get _threadTypeEntries =>
-      _displayForumResult?.discuzIndexVariables.threadType?.idNameMap.entries
+      (_displayForumResult?.discuzIndexVariables.threadType?.idNameMap ??
+              discuzMap(widget.navigationTypes?['types']))
+          .entries
           .map((entry) => MapEntry(entry.key, entry.value.toString()))
-          .toList() ??
-      const <MapEntry<String, String>>[];
+          .toList();
 
   String get _selectedThreadTypeLabel {
     for (final entry in _threadTypeEntries) {
@@ -508,6 +738,9 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
 
   @override
   void dispose() {
+    for (final clip in _voicePreviews) {
+      unawaited(clip.delete());
+    }
     _controller.dispose();
     _titleEditingController.dispose();
     focusNode.dispose();
@@ -536,6 +769,8 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     final content = _controller.text;
     final category = selectedTypeId ?? '';
     final poll = _pollDraft?.encode() ?? '';
+    final special = _specialDraft?.encode() ?? '';
+    final attachmentNames = _controller.attachedFileNames;
     _draftWrite = _draftWrite.catchError((Object _) {}).then((_) async {
       draft ??= Draft(title, content, fid, category, DateTime.now(), discuz);
       draft!
@@ -543,7 +778,9 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
         ..text = content
         ..typeid = category
         ..updateTime = DateTime.now()
-        ..pollJson = poll;
+        ..pollJson = poll
+        ..specialThreadJson = special
+        ..attachmentNames = attachmentNames;
       final dao = await AppDatabase.getDraftDao();
       draft = await dao.insertDraftAndReturnInsertObj(draft!);
     });
@@ -551,13 +788,31 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   }
 
   Future<void> _confirmPost() async {
-    do {
-      final confirmed = await _showPostConfirmation();
-      if (!mounted || confirmed != true) {
-        if (mounted) captchaController.reloadCaptcha(requiredByServer: false);
-        return;
-      }
-    } while (await _postThread());
+    if (_confirming || _sending || _configuring) return;
+    final selected = selectedTypeId;
+    final typeRequired =
+        _displayForumResult?.discuzIndexVariables.threadType?.typeRequired() ==
+            true ||
+        discuzPermission(widget.navigationTypes?['required']) == true;
+    if (typeRequired &&
+        (selected == null ||
+            selected == '0' ||
+            !_threadTypeEntries.any((type) => type.key == selected))) {
+      EasyLoading.showError(S.of(context).forumFilterTypeIdTitle);
+      return;
+    }
+    setState(() => _confirming = true);
+    try {
+      do {
+        final confirmed = await _showPostConfirmation();
+        if (!mounted || confirmed != true) {
+          if (mounted) captchaController.reloadCaptcha(requiredByServer: false);
+          return;
+        }
+      } while (await _postThread());
+    } finally {
+      if (mounted) setState(() => _confirming = false);
+    }
   }
 
   Future<bool?> _showPostConfirmation() async {
@@ -625,8 +880,14 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     setState(() => _sending = true);
     try {
       return await _submitThread();
-    } catch (_) {
-      if (mounted) EasyLoading.showError(S.of(context).forumSubmissionUnknown);
+    } catch (error) {
+      if (!mounted) return false;
+      final strings = S.of(context);
+      final failure = forumRequestError(strings, error, submitted: true);
+      if (failure.key == 'submit_seccode_invalid') {
+        captchaController.reloadCaptcha(requiredByServer: true);
+      }
+      await showForumActionError(context, failure);
       return false;
     } finally {
       if (mounted) setState(() => _sending = false);
@@ -640,7 +901,15 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     final user = account.userFor(discuz);
     if (user == null) return false;
     bool isCurrent() => mounted && identical(session, account.sessionIdentity);
-    Dio dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    try {
+      return await _sendThread(dio, user.uid, isCurrent);
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<bool> _sendThread(Dio dio, int uid, bool Function() isCurrent) async {
     MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
     String submitHash = '';
@@ -648,21 +917,30 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       final permission = await client.checkPost(fid, null);
       if (!isCurrent()) return false;
       if (permission.variables.member_uid != 0 &&
-          permission.variables.member_uid != user.uid)
+          permission.variables.member_uid != uid)
         return false;
       submitHash = permission.variables.formHash;
-      if (permission.getErrorString() != null ||
-          permission.variables.allowPerm.allowPost != true) {
-        EasyLoading.showError(
-          permission.getErrorString() ??
-              (permission.variables.allowPerm.allowPost == false
-                  ? S.of(context).postPermissionDenied
-                  : S.of(context).postPermissionUnknown),
+      final strings = S.of(context);
+      final failure = forumResponseError(strings, permission);
+      if (failure != null || permission.variables.allowPerm.allowPost != true) {
+        await showForumActionError(
+          context,
+          failure ??
+              DiscuzError(
+                'post_permission',
+                permission.variables.allowPerm.allowPost == false
+                    ? strings.postPermissionDenied
+                    : strings.postPermissionUnknown,
+              ),
         );
         return false;
       }
-    } catch (_) {
-      if (mounted) EasyLoading.showError(S.of(context).postPermissionUnknown);
+    } catch (error) {
+      if (isCurrent())
+        await showForumActionError(
+          context,
+          forumRequestError(S.of(context), error),
+        );
       return false;
     }
     if (!isCurrent()) return false;
@@ -676,12 +954,84 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     List<String> aidList = PostTextFieldUtils.getAttachmentAidList(
       _controller.text,
     );
-    Map<String, String> dataMap = {...?_pollDraft?.fields};
+    final dataMap = <String, dynamic>{...?_pollDraft?.fields};
+    final special = _specialDraft;
+    if (special != null) {
+      if (!isCurrent()) return false;
+      final strings = S.of(context);
+      try {
+        final form = await SpecialThreadForm.load(
+          ForumInteractionClient(dio, discuz.baseURL),
+          fid,
+          uid,
+          special.kind,
+        );
+        if (!isCurrent()) return false;
+        if (!form.accepts(special)) {
+          throw ForumApiException(
+            'special_post_rules',
+            strings.specialPostRulesChanged,
+          );
+        }
+        submitHash = form.formhash;
+        if (form.reward case final reward?) {
+          final amount = int.parse(special.fields['rewardprice']!);
+          final confirmed = await showPlatformDialog<bool>(
+            context: context,
+            builder: (dialogContext) => PlatformAlertDialog(
+              title: Text(strings.createReward),
+              content: Text(
+                strings.rewardTotal(
+                  '${reward.total(amount)} ${reward.credit}'.trim(),
+                ),
+              ),
+              actions: [
+                PlatformDialogAction(
+                  child: Text(strings.cancel),
+                  onPressed: () => Navigator.pop(dialogContext),
+                ),
+                PlatformDialogAction(
+                  child: Text(strings.forumConfirm),
+                  onPressed: () => Navigator.pop(dialogContext, true),
+                ),
+              ],
+            ),
+          );
+          if (!isCurrent() || confirmed != true) return false;
+          final fresh = await SpecialThreadForm.load(
+            ForumInteractionClient(dio, discuz.baseURL),
+            fid,
+            uid,
+            special.kind,
+          );
+          if (!isCurrent()) return false;
+          if (fresh.reward?.rules != reward.rules || !fresh.accepts(special)) {
+            throw ForumApiException(
+              'special_post_rules',
+              strings.specialPostRulesChanged,
+            );
+          }
+          submitHash = fresh.formhash;
+        }
+        dataMap.addAll(form.submissionFields(special));
+      } catch (error) {
+        if (isCurrent()) {
+          await showForumActionError(
+            context,
+            forumRequestError(
+              strings,
+              error,
+              fallback: strings.specialPostFormUnavailable,
+            ),
+          );
+        }
+        return false;
+      }
+    }
     for (var aid in aidList) {
       String key = "attachnew[${aid}][description]";
       dataMap[key] = "";
     }
-    print("Get Aids ${aidList} ${dataMap}");
 
     String typeId = selectedTypeId == null ? "" : selectedTypeId!;
     CaptchaFields? captchaFields = captchaController.value;
@@ -694,36 +1044,42 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       captchaMod = "forum::post";
     }
 
-    if (_displayForumResult == null) return false;
-    final value = await client.postNewThread(
-      submitHash,
-      fid,
-      typeId,
-      title,
-      content,
-      captchaHash,
-      captchaMod,
-      verification,
-      aidList,
-      dataMap,
-    );
+    final value = await client.postNewThread({
+      ...dataMap,
+      'formhash': submitHash,
+      'fid': fid,
+      'typeid': typeId,
+      'subject': title,
+      'message': content,
+      'seccodehash': captchaHash,
+      'seccodemodid': captchaMod,
+      'seccodeverify': verification,
+    });
     if (!isCurrent()) return false;
     final result = value.errorResult;
-    if (result?.key == 'submit_seccode_invalid') {
+    final strings = S.of(context);
+    final code = forumMessageKey(result?.key ?? '');
+    if (code == 'submit_seccode_invalid') {
       captchaController.reloadCaptcha(requiredByServer: true);
       if (captchaHash.isNotEmpty) {
-        EasyLoading.showError('${result!.content}(${result.key})');
+        EasyLoading.showError(forumResponseError(strings, value)!.content);
       }
       return true;
     }
-    if (result?.key == 'post_newthread_succeed') {
-      EasyLoading.showSuccess('${result!.content}(${result.key})');
+    if (code == 'post_newthread_succeed' ||
+        code == 'post_newthread_mod_succeed') {
+      EasyLoading.showSuccess(result!.content);
       Navigator.of(context).pop();
     } else {
-      EasyLoading.showError(
-        result == null
-            ? S.of(context).forumSubmissionUnknown
-            : '${result.content}(${result.key})',
+      final failure = forumResponseError(strings, value);
+      await showForumActionError(
+        context,
+        failure ??
+            forumRequestError(
+              strings,
+              const FormatException(),
+              submitted: true,
+            ),
       );
     }
     return false;

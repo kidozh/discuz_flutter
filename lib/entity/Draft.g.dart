@@ -25,13 +25,17 @@ class DraftAdapter extends TypeAdapter<Draft> {
         fields[5] as Discuz,
       )
       ..insertTime = fields[3] as DateTime
-      ..pollJson = fields[8] == null ? '' : fields[8] as String;
+      ..pollJson = fields[8] == null ? '' : fields[8] as String
+      ..attachmentNames = fields[9] == null
+          ? {}
+          : (fields[9] as Map).cast<String, String>()
+      ..specialThreadJson = fields[10] == null ? '' : fields[10] as String;
   }
 
   @override
   void write(BinaryWriter writer, Draft obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(10)
       ..writeByte(1)
       ..write(obj.title)
       ..writeByte(2)
@@ -47,7 +51,11 @@ class DraftAdapter extends TypeAdapter<Draft> {
       ..writeByte(7)
       ..write(obj.typeid)
       ..writeByte(8)
-      ..write(obj.pollJson);
+      ..write(obj.pollJson)
+      ..writeByte(9)
+      ..write(obj.attachmentNames)
+      ..writeByte(10)
+      ..write(obj.specialThreadJson);
   }
 
   @override

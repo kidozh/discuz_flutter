@@ -24,6 +24,12 @@ class Draft extends HiveObject{
   @HiveField(8, defaultValue: '')
   String pollJson = '';
 
+  @HiveField(9, defaultValue: <String, String>{})
+  Map<String, String> attachmentNames = {};
+
+  @HiveField(10, defaultValue: '')
+  String specialThreadJson = '';
+
   @HiveField(7)
   String typeid;
 

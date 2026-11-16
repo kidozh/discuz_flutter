@@ -175,7 +175,7 @@ class _SettingPageState extends State<SettingPage> {
             if (BackgroundNewPosts.instance.supported)
               _GlassNavigationTile(
                 title: S.of(context).backgroundNewPostsTitle,
-                leading: const Icon(Icons.notifications_active_outlined),
+                leading: Icon(PlatformIcons(context).notificationOutline),
                 onTap: () => _open(
                   context,
                   S.of(context).backgroundNewPostsTitle,
@@ -207,7 +207,7 @@ class _SettingPageState extends State<SettingPage> {
             ),
             _GlassSwitchTile(
               title: S.of(context).autoTranslateTitle,
-              leading: const Icon(Icons.translate),
+              leading: Icon(PlatformIcons(context).translate),
               value: preference.autoTranslateEnabled,
               onChanged: (value) {
                 preference.setAutoTranslateEnabled(value);
@@ -221,7 +221,7 @@ class _SettingPageState extends State<SettingPage> {
           children: [
             _GlassNavigationTile(
               title: S.of(context).forumDisplaySettingsTitle,
-              leading: const Icon(Icons.view_quilt_outlined),
+              leading: Icon(PlatformIcons(context).dashboard),
               onTap: () => _open(
                 context,
                 S.of(context).forumDisplaySettingsTitle,

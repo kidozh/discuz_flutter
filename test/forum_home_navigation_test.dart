@@ -5,6 +5,7 @@ import 'package:discuz_flutter/utility/DashboardPreferences.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/widget/dashboard_tabs.dart';
 import 'package:discuz_flutter/widget/forum_home_title.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -116,7 +117,12 @@ void main() {
         );
         await tester.pumpAndSettle();
         final strings = S.current;
-        expect(find.byIcon(Icons.expand_more), findsNothing);
+        final expand = find.byIcon(
+          style == AppVisualStyle.material
+              ? Icons.expand_more
+              : CupertinoIcons.chevron_down,
+        );
+        expect(expand, findsNothing);
         expect(find.text(strings.appName), findsOneWidget);
         if (style == AppVisualStyle.material) {
           await tester.tap(find.byIcon(Icons.whatshot));
@@ -136,7 +142,7 @@ void main() {
         );
         expect(find.text('body-hot'), findsOneWidget);
         expect(find.textContaining('Private'), findsNothing);
-        await tester.tap(find.byIcon(Icons.expand_more));
+        await tester.tap(expand);
         await tester.pumpAndSettle();
         await tester.tap(find.text(strings.keylolPortal));
         await tester.pumpAndSettle();
@@ -165,7 +171,7 @@ void main() {
           find.text('${strings.appName} · ${strings.hotThread}'),
           findsOneWidget,
         );
-        await tester.tap(find.byIcon(Icons.expand_more));
+        await tester.tap(expand);
         await tester.pumpAndSettle();
         expect(find.text(strings.keylolPortal), findsNothing);
         expect(
@@ -178,7 +184,7 @@ void main() {
 
         update(() => display = display.copyWith(mergeHomeNavigation: false));
         await tester.pumpAndSettle();
-        expect(find.byIcon(Icons.expand_more), findsNothing);
+        expect(expand, findsNothing);
         expect(find.text('body-new'), findsOneWidget);
         expect(
           style == AppVisualStyle.material
@@ -191,13 +197,13 @@ void main() {
           dashboard = false;
         });
         await tester.pumpAndSettle();
-        expect(find.byIcon(Icons.expand_more), findsNothing);
+        expect(expand, findsNothing);
         update(() {
           dashboard = true;
           discuz = null;
         });
         await tester.pumpAndSettle();
-        expect(find.byIcon(Icons.expand_more), findsNothing);
+        expect(expand, findsNothing);
         expect(tester.takeException(), isNull);
       },
     );

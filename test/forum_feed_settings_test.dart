@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -59,6 +60,12 @@ void main() {
                                   {
                                     'fid': '1',
                                     'name': '${discuz.siteName} Forum 1',
+                                    'sublist': [
+                                      {
+                                        'fid': '3',
+                                        'name': '${discuz.siteName} Subforum',
+                                      },
+                                    ],
                                   },
                                   {
                                     'fid': '2',
@@ -86,32 +93,34 @@ void main() {
       expect(
         await ForumFeedPreferences.selectedFor(
           ForumFeedPreferences.scope(a, null),
-          ['1', '2'],
+          ['1', '2', '3'],
         ),
-        {'2'},
+        {'2', '3'},
       );
       await tester.tap(find.byKey(const ValueKey('feed-site-selector')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('B').last);
       await tester.pumpAndSettle();
       expect(find.text('B Forum 1'), findsOneWidget);
-      await tester.tap(find.byIcon(Icons.deselect));
+      expect(find.text('B Subforum'), findsOneWidget);
+      await tester.tap(find.bySemanticsLabel(S.current.feedSelectNone));
       await tester.pumpAndSettle();
       expect(
         await ForumFeedPreferences.selectedFor(
           ForumFeedPreferences.scope(b, null),
-          ['1', '2'],
+          ['1', '2', '3'],
         ),
         isEmpty,
       );
       expect(
         await ForumFeedPreferences.selectedFor(
           ForumFeedPreferences.scope(a, null),
-          ['1', '2'],
+          ['1', '2', '3'],
         ),
-        {'2'},
+        {'2', '3'},
       );
-      await tester.tap(find.byIcon(Icons.select_all));
+      expect(find.byIcon(CupertinoIcons.circle), findsWidgets);
+      await tester.tap(find.bySemanticsLabel(S.current.feedSelectAll));
       await tester.pumpAndSettle();
       expect(
         await ForumFeedPreferences.selectedFor(

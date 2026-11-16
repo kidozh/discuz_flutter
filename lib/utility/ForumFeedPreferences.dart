@@ -1,6 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../client/ForumInteractionClient.dart';
 import '../entity/Discuz.dart';
 import '../entity/User.dart';
@@ -22,9 +24,8 @@ class ForumFeedPreferences {
       return raw == null
           ? []
           : ids(
-              forumRows(
-                discuzMap(jsonDecode(raw))['rows'],
-              ).map((row) => discuzString(discuzMap(row)['fid'])),
+              forumRows(discuzMap(jsonDecode(raw))['rows'])
+                  .map((row) => discuzString(discuzMap(row)['fid'])),
             );
     } catch (_) {
       return [];
@@ -129,22 +130,62 @@ class ForumFeedPreferences {
   }) async {
     if (!refresh) {
       final data = await _read(scope, 'forums', const Duration(minutes: 10));
-      if (data != null) return forumRows(data['rows']).map(discuzMap).toList();
+      if (data?['includesSubforums'] == true) {
+        return forumRows(data?['rows']).map(discuzMap).toList();
+      }
     }
     final reply = await client.request('forumindex', {});
     reply.requireData('forumlist');
-    final rows = forumRows(reply.variables['forumlist'])
-        .map(discuzMap)
-        .where((row) => discuzInt(row['fid']) > 0)
-        .map(
-          (row) => <String, dynamic>{
-            'fid': discuzString(row['fid']),
-            'name': discuzString(row['name']),
-          },
-        )
-        .toList();
+    final rows = _forumDirectory(reply.variables['forumlist']);
     await _excluded(scope, rows.map((row) => discuzString(row['fid'])));
-    await _write(scope, 'forums', {'rows': rows});
+    await _write(scope, 'forums', {'rows': rows, 'includesSubforums': true});
+    return rows;
+  }
+
+  static List<Map<String, dynamic>> _forumDirectory(Object? directory) {
+    final entries = <String, String>{};
+    final parents = <String, String>{};
+
+    void collect(Object? list, [String? parent]) {
+      for (final item in forumRows(list)) {
+        final row = discuzMap(item);
+        final fid = discuzInt(row['fid']);
+        if (fid <= 0) continue;
+        final id = '$fid';
+        entries.putIfAbsent(id, () => discuzString(row['name']));
+        if (parent != null && parent != id) {
+          parents.putIfAbsent(id, () => parent);
+        }
+        collect(row['sublist'], id);
+      }
+    }
+
+    collect(directory);
+    final children = <String, List<String>>{};
+    for (final entry in parents.entries) {
+      (children[entry.value] ??= []).add(entry.key);
+    }
+    final rows = <Map<String, dynamic>>[];
+    final visited = <String>{};
+
+    void append(String id, int depth) {
+      if (!visited.add(id)) return;
+      rows.add({
+        'fid': id,
+        'name': entries[id]!,
+        if (depth > 0) 'depth': depth,
+      });
+      for (final child in children[id] ?? const <String>[]) {
+        append(child, depth + 1);
+      }
+    }
+
+    for (final id in entries.keys.where((id) => !parents.containsKey(id))) {
+      append(id, 0);
+    }
+    for (final id in entries.keys.where((id) => !visited.contains(id))) {
+      append(id, 0);
+    }
     return rows;
   }
 

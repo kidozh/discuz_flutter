@@ -26,14 +26,17 @@ import 'package:flutter/material.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:html/parser.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:slide_countdown/slide_countdown.dart';
 
 import '../utility/URLUtils.dart';
 import '../utility/forum_image_session.dart';
 import '../utility/forum_image_url.dart';
+import '../utility/forum_voice.dart';
 import 'forum_attachment_download.dart';
 import 'forum_image.dart';
+import 'forum_voice_message.dart';
 
 typedef void JumpToPidCallback(int pid);
 
@@ -45,6 +48,9 @@ class DiscuzHtmlWidget extends StatelessWidget {
   int? tid;
   final ThreadSelectionCallback? onSelectTid;
   final Color? textColor;
+  final EdgeInsetsGeometry padding;
+  final bool styleAppSignature;
+  final bool inQuote;
 
   /// Use only as a direct sliver in the page's existing CustomScrollView.
   final bool asSliver;
@@ -60,6 +66,9 @@ class DiscuzHtmlWidget extends StatelessWidget {
     this.tid,
     this.onSelectTid,
     this.textColor,
+    this.padding = const EdgeInsets.all(4),
+    this.styleAppSignature = false,
+    this.inQuote = false,
     this.asSliver = false,
     this.onBodyReady,
     this.onContentChanged,
@@ -84,7 +93,14 @@ class DiscuzHtmlWidget extends StatelessWidget {
           session: imageSession,
         );
       } else {
-        URLUtils.openURL(context, onSelectTid, url, callback, tid, forum: discuz);
+        URLUtils.openURL(
+          context,
+          onSelectTid,
+          url,
+          callback,
+          tid,
+          forum: discuz,
+        );
       }
       return true;
     }
@@ -94,6 +110,9 @@ class DiscuzHtmlWidget extends StatelessWidget {
         final colorScheme = Theme.of(context).colorScheme;
         final darkMode = Theme.of(context).brightness == Brightness.dark;
         final effectiveTextColor = textColor ?? colorScheme.onSurface;
+        final linkColor = darkMode
+            ? Color.lerp(colorScheme.primary, colorScheme.onSurface, 0.65)!
+            : colorScheme.primary;
         String cssColor(Color color) =>
             color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2);
         double scalingParameter = typesetting.scalingParameter;
@@ -154,7 +173,9 @@ class DiscuzHtmlWidget extends StatelessWidget {
             : defaultTextStyle.fontSize == null
             ? 14
             : defaultTextStyle.fontSize!;
-        final paragraphLineHeight = useCompactParagraph ? 1.34 : 1.52;
+        final paragraphLineHeight = useCompactParagraph || inQuote
+            ? 1.34
+            : 1.52;
         final paragraphSpacing = useCompactParagraph ? 0.46 : 0.82;
         final subtleSurface = Color.alphaBlend(
           colorScheme.primary.withValues(alpha: darkMode ? 0.12 : 0.07),
@@ -173,7 +194,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
             : effectiveTextColor;
         final htmlTextStyle = TextStyle(
           color: effectiveTextColor,
-          fontSize: themeFontSize * scalingParameter,
+          fontSize: themeFontSize * scalingParameter * (inQuote ? 0.92 : 1),
           fontWeight: useThinFont ? FontWeight.w300 : FontWeight.normal,
           wordSpacing: defaultTextStyle?.wordSpacing,
           letterSpacing: defaultTextStyle?.letterSpacing,
@@ -189,6 +210,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
           () => PostTextUtils.getDecodedString(
             repairedSourceHtml,
             useCompactParagraph,
+            styleAppSignature: styleAppSignature,
           ),
         );
         if (normalizedHtml.trim().isEmpty && onBodyReady != null) {
@@ -290,20 +312,9 @@ class DiscuzHtmlWidget extends StatelessWidget {
                 styles['font-weight'] = '600';
               case 'a':
                 styles.addAll({
-                  'color': '#${cssColor(colorScheme.primary)}',
+                  'color': '#${cssColor(linkColor)}',
                   'font-weight': '500',
                   'text-decoration': 'underline',
-                });
-              case 'blockquote':
-                styles.addAll({
-                  'border-left':
-                      '0.22em solid #${cssColor(colorScheme.primary)}',
-                  'border-radius': '0.45em',
-                  'background-color': '#${cssColor(subtleSurface)}',
-                  'color': '#${cssColor(mutedText)}',
-                  'padding': '0.55em 0.8em',
-                  'margin': '0.8em 0',
-                  'line-height': '1.48',
                 });
               case 'pre':
                 styles.addAll({
@@ -396,15 +407,14 @@ class DiscuzHtmlWidget extends StatelessWidget {
                 styles.addAll({'margin': '0.08em 0', 'display': 'block'});
             }
 
-            if (element.className == "reply_wrap") {
+            if (styleAppSignature &&
+                tag == 'p' &&
+                element.classes.contains('disfly-post-signature')) {
               styles.addAll({
-                "border": "0.05em solid #${cssColor(subtleBorder)}",
-                "border-left": "0.22em solid #${cssColor(colorScheme.primary)}",
-                "border-radius": "0.65em",
-                "background-color": "#${cssColor(subtleSurface)}",
-                "color": "#${cssColor(effectiveTextColor)}",
-                "padding": "0.65em 0.8em",
-                "margin": "0.7em 0",
+                'color': '#${cssColor(mutedText)}',
+                'font-size': '0.82em',
+                'line-height': '1.35',
+                'margin': '0.55em 0 0',
               });
             } else if (element.className == "blockcode") {
               styles.addAll({
@@ -422,6 +432,31 @@ class DiscuzHtmlWidget extends StatelessWidget {
             return styles.isEmpty ? null : styles;
           },
           customWidgetBuilder: (element) {
+            if (!kIsWeb && baseUrl != null) {
+              final tag = element.localName;
+              final href = element.attributes['href'];
+              final source = tag == 'audio'
+                  ? element.attributes['src'] ??
+                        element.querySelector('source[src]')?.attributes['src']
+                  : tag == 'a' &&
+                        (element.text.trim() == href ||
+                            element.classes.contains('media'))
+                  ? href
+                  : null;
+              final audio = resolveForumImageUri(baseUrl, source ?? '');
+              if (audio != null &&
+                  (tag == 'audio' || isForumAudioFile(audio.path))) {
+                return ForumVoiceMessage(
+                  key: ValueKey((audio, imageSession?.cacheKey)),
+                  foreground: textColor,
+                  load: () async {
+                    final temp = await getTemporaryDirectory();
+                    return imageSession?.downloadAttachment(audio, temp) ??
+                        downloadForumAttachment(audio, temp, forum: baseUrl);
+                  },
+                );
+              }
+            }
             if (element.localName == 'a' && onContentChanged != null) {
               final target = ForumPurchaseTarget.parse(
                 discuz.baseURL,
@@ -470,7 +505,8 @@ class DiscuzHtmlWidget extends StatelessWidget {
                 textStyle: htmlTextStyle,
               );
             } else if (element.localName == 'blockquote' ||
-                element.classes.contains('quote')) {
+                element.classes.contains('quote') ||
+                element.classes.contains('reply_wrap')) {
               var quoteHtml = element.innerHtml;
               if (element.classes.contains('quote') &&
                   element.children.length == 1 &&
@@ -484,7 +520,10 @@ class DiscuzHtmlWidget extends StatelessWidget {
                   callback: callback,
                   tid: tid,
                   onSelectTid: onSelectTid,
+                  onContentChanged: onContentChanged,
                   textColor: mutedText,
+                  padding: EdgeInsets.zero,
+                  inQuote: true,
                 ),
               );
             } else if (element.localName == 'table') {
@@ -606,11 +645,11 @@ class DiscuzHtmlWidget extends StatelessWidget {
     // Sliver bodies share the thread page's selection region so selection can
     // span lazily built paragraphs without introducing a nested scroll view.
     if (asSliver) {
-      return SliverPadding(padding: const EdgeInsets.all(4), sliver: content);
+      return SliverPadding(padding: padding, sliver: content);
     }
     final body = Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(4),
+      padding: padding,
       child: content,
     );
     // Reuse an outer region for quotes and replies; standalone HTML (such as

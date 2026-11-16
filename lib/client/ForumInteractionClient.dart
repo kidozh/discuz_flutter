@@ -1,5 +1,8 @@
 import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:html/parser.dart' show parse;
+
 import '../utility/discuz_json.dart';
 
 Iterable<dynamic> forumRows(Object? value) => value is Map
@@ -11,7 +14,8 @@ Iterable<dynamic> forumRows(Object? value) => value is Map
 class ForumApiException implements Exception {
   final String code;
   final String message;
-  const ForumApiException(this.code, this.message);
+  final bool fromForum;
+  const ForumApiException(this.code, this.message, {this.fromForum = false});
   @override
   String toString() => message.isEmpty ? code : message;
 }
@@ -19,7 +23,9 @@ class ForumApiException implements Exception {
 class ForumReply {
   final Map<String, dynamic> variables;
   final String code, message;
-  static ForumReply decode(Object? data) {
+  static ForumReply decode(Object? data) => ForumReply(decodePayload(data));
+
+  static Map<String, dynamic> decodePayload(Object? data) {
     if (data is String) {
       var source = data.trim().replaceFirst(RegExp(r'^\uFEFF'), '').trim();
       // Some installations wrap the mobile result in Discuz's AJAX envelope.
@@ -30,6 +36,13 @@ class ForumReply {
       try {
         data = jsonDecode(source);
       } on FormatException {
+        if (isSecurityChallenge(source)) {
+          throw const ForumApiException(
+            'forum_security_challenge',
+            '',
+            fromForum: true,
+          );
+        }
         // Never infer success from HTML text or repeat a write after a bad reply.
         throw ForumApiException(
           source.isEmpty
@@ -42,33 +55,60 @@ class ForumReply {
       }
     }
     if (data is! Map) throw const ForumApiException('invalid_response', '');
-    return ForumReply(data);
+    return discuzMap(data);
   }
 
-  ForumReply(Object? data)
-    : variables = discuzMap(discuzMap(data)['Variables']),
-      code = discuzString(
-        discuzMap(discuzMap(data)['Message'])['messageval'] ??
-            discuzMap(data)['error'],
-      ),
-      message = discuzString(
-        discuzMap(discuzMap(data)['Message'])['messagestr'],
-      );
+  ForumReply._(this.variables, this.code, this.message);
+
+  factory ForumReply(Object? data) {
+    final response = discuzMap(data);
+    final message = discuzMap(response['Message']);
+    final code = discuzString(message['messageval']).trim();
+    return ForumReply._(
+      discuzMap(response['Variables']),
+      code.isEmpty ? discuzString(response['error']).trim() : code,
+      discuzString(message['messagestr']),
+    );
+  }
+
+  ForumApiException? get serverError =>
+      code.isEmpty ? null : ForumApiException(code, message, fromForum: true);
+
+  static ForumApiException? tryServerError(Object? data) {
+    if (data == null) return null;
+    try {
+      final payload = decodePayload(data);
+      final code = discuzString(discuzMap(payload['Message'])['messageval'])
+          .split('//')
+          .first
+          .trim()
+          .toLowerCase();
+      // A success message cannot explain a model decoding failure.
+      if (code.endsWith('_succeed') || code.endsWith('_success')) return null;
+      return ForumReply(payload).serverError;
+    } on ForumApiException {
+      return null;
+    }
+  }
+
+  static bool isSecurityChallenge(Object? data) {
+    if (data is! String) return false;
+    final page = data.toLowerCase();
+    return page.contains('eo_bot_ssid') ||
+        page.contains('/cdn-cgi/challenge-platform/') ||
+        page.contains('请求已被站点的安全策略拦截') ||
+        (page.trimLeft().startsWith('<') && page.contains('tencentedgeone'));
+  }
+
   void requireSuccess(Set<String> codes) {
     if (!codes.contains(code)) {
-      throw ForumApiException(
-        code.isEmpty ? 'invalid_response' : code,
-        message,
-      );
+      throw serverError ?? const ForumApiException('invalid_response', '');
     }
   }
 
   void requireData(String field) {
     if (code.isNotEmpty || !variables.containsKey(field)) {
-      throw ForumApiException(
-        code.isEmpty ? 'invalid_response' : code,
-        message,
-      );
+      throw serverError ?? const ForumApiException('invalid_response', '');
     }
   }
 }
@@ -92,7 +132,7 @@ class PurchaseQuote {
         price <= 0 ||
         balance == null ||
         discuzString(credit['title']).isEmpty) {
-      throw const ForumApiException('invalid_quote', '');
+      throw const FormatException('Invalid purchase quote');
     }
     return PurchaseQuote._(
       price,
@@ -116,9 +156,8 @@ class ForumInteractionClient {
   final Dio dio;
   final Uri endpoint;
   ForumInteractionClient(this.dio, String baseUrl)
-    : endpoint = Uri.parse(
-        '${baseUrl.replaceAll(RegExp(r'/+$'), '')}/',
-      ).resolve('api/mobile/index.php');
+    : endpoint = Uri.parse('${baseUrl.replaceAll(RegExp(r'/+$'), '')}/')
+          .resolve('api/mobile/index.php');
 
   Future<ForumReply> request(
     String module,
@@ -204,6 +243,7 @@ class ForumInteractionClient {
       throw ForumApiException(
         discuzString(result.variables['uploadavatar']),
         result.message,
+        fromForum: true,
       );
     }
   }
@@ -219,14 +259,56 @@ class ForumInteractionClient {
     result.requireSuccess({'reward_completion'});
   }
 
+  Future<void> setReplyPinned({
+    required int tid,
+    required int pid,
+    required int uid,
+    required bool pinned,
+    required bool Function() sameAccount,
+  }) async {
+    final fresh = await request('viewthread', {'tid': tid, 'viewpid': pid});
+    fresh.requireData('postlist');
+    final thread = discuzMap(fresh.variables['thread']);
+    final hash = discuzString(fresh.variables['formhash']);
+    final fid = discuzInt(fresh.variables['fid']);
+    final validReply = forumRows(fresh.variables['postlist']).map(discuzMap).any(
+      (post) => discuzInt(post['pid']) == pid &&
+          discuzInt(post['tid']) == tid &&
+          discuzPermission(post['first']) == false,
+    );
+    if (!sameAccount() || uid <= 0 || discuzInt(fresh.variables['member_uid']) != uid ||
+        discuzInt(thread['authorid']) != uid || !validReply || hash.isEmpty || fid <= 0) {
+      throw const ForumApiException('no_privilege_stickreply', '');
+    }
+    final result = await request('topicadmin', {
+      'action': 'stickreply', 'tid': tid, 'fid': fid,
+    }, body: {
+      'formhash': hash, 'modsubmit': 'yes', 'topiclist[]': [pid],
+      'stickreply': pinned ? '1' : '0',
+    });
+    result.requireSuccess({'admin_succeed'});
+  }
+
+  Future<bool?> replyPinStatus(int tid, int pid) async {
+    final url = endpoint.resolve('../../forum.php').replace(queryParameters: {
+      'mod': 'viewthread', 'tid': '$tid', 'page': '1', 'mobile': 'no',
+    });
+    final response = await dio.getUri<String>(url, options: Options(responseType: ResponseType.plain));
+    final document = parse(response.data);
+    if (document.querySelector('#postlist') == null) return null;
+    final header = document.querySelector('#postnum$pid');
+    return header == null ? null : header.querySelector('.replystick') != null;
+  }
+
   Future<List<Map<String, dynamic>>> myThreads(String type, int page) async {
     if (!{'thread', 'reply'}.contains(type) || page < 1)
       throw ArgumentError('Invalid list');
     final reply = await request('mythread', {'type': type, 'page': page});
     reply.requireData('data');
-    return forumRows(
-      reply.variables['data'],
-    ).map(discuzMap).where((row) => discuzInt(row['tid']) > 0).toList();
+    return forumRows(reply.variables['data'])
+        .map(discuzMap)
+        .where((row) => discuzInt(row['tid']) > 0)
+        .toList();
   }
 
   Future<ForumReply> comments(int tid, int pid, int page) async {

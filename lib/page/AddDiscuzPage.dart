@@ -29,6 +29,8 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../entity/DiscuzError.dart';
+import '../client/ForumInteractionClient.dart';
+import '../utility/forum_error.dart';
 import '../utility/AppPlatformIcons.dart';
 import '../utility/URLUtils.dart';
 
@@ -153,14 +155,19 @@ class _AddDiscuzFormFieldState
   /// Discuz JSON response.
   bool _isSecurityChallengeResponse(String response) {
     if (DiscuzCheckResponseUtils.tryDecode(response) != null) return false;
-    final trimmed = response.trimLeft();
-    // HTML without an embedded Discuz check response is a challenge/error page.
-    if (trimmed.startsWith('<')) return true;
-    // Specific EdgeOne markers in non-HTML responses.
-    return response.contains('TencentEdgeOne') ||
-        response.contains('EO_Bot_Ssid') ||
-        response.contains(
-            '\u8bf7\u6c42\u5df2\u88ab\u7ad9\u70b9\u7684\u5b89\u5168\u7b56\u7565\u62e6\u622a'); // 请求已被站点的安全策略拦截
+    return ForumReply.isSecurityChallenge(response);
+  }
+
+  DiscuzError _checkResponseError(String rawValue) {
+    final strings = S.of(context);
+    final forumError = ForumReply.tryServerError(rawValue);
+    return forumError == null
+        ? DiscuzError(
+            'AddDiscuzParseError',
+            strings.addDiscuzApiParseUnsuccessfully,
+            reportable: true,
+          )
+        : forumRequestError(strings, forumError);
   }
 
   /// Builds the `module=check` URL from [discuzUrl].
@@ -210,7 +217,6 @@ class _AddDiscuzFormFieldState
         _isLoading = false;
       });
       VibrationUtils.vibrateErrorIfPossible();
-      log('GET ADD discuz DioException $dioError');
 
       // HTTP 567 is the EdgeOne "blocked by security policy" status code.
       final statusCode = dioError.response?.statusCode;
@@ -220,12 +226,7 @@ class _AddDiscuzFormFieldState
       } else {
         if (!mounted) return;
         setState(() {
-          error = DiscuzError(
-            'AddDiscuzDioException',
-            S.of(context).addDiscuzApiBrowseUnsuccessfully,
-            errorURL: discuzUrl,
-            dioError: dioError,
-          );
+          error = forumRequestError(S.of(context), dioError);
         });
       }
       return;
@@ -233,11 +234,7 @@ class _AddDiscuzFormFieldState
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        error = DiscuzError(
-          'AddDiscuzParseError',
-          S.of(context).addDiscuzApiParseUnsuccessfully,
-          errorURL: discuzUrl,
-        );
+        error = forumRequestError(S.of(context), e);
       });
       VibrationUtils.vibrateErrorIfPossible();
       return;
@@ -259,11 +256,7 @@ class _AddDiscuzFormFieldState
     if (!await _tryParseAndSave(rawValue, discuzUrl)) {
       VibrationUtils.vibrateErrorIfPossible();
       setState(() {
-        error = DiscuzError(
-          'AddDiscuzParseError',
-          S.of(context).addDiscuzApiParseUnsuccessfully,
-          errorURL: discuzUrl,
-        );
+        error = _checkResponseError(rawValue);
       });
     }
   }
@@ -341,11 +334,7 @@ class _AddDiscuzFormFieldState
       if (!await _tryParseAndSave(rawValue, discuzUrl)) {
         VibrationUtils.vibrateErrorIfPossible();
         setState(() {
-          error = DiscuzError(
-            'AddDiscuzParseError',
-            S.of(context).addDiscuzApiParseUnsuccessfully,
-            errorURL: discuzUrl,
-          );
+          error = _checkResponseError(rawValue);
         });
       }
     } on DioException catch (dioError) {
@@ -366,23 +355,14 @@ class _AddDiscuzFormFieldState
       } else {
         VibrationUtils.vibrateErrorIfPossible();
         setState(() {
-          error = DiscuzError(
-            'AddDiscuzDioException',
-            S.of(context).addDiscuzApiBrowseUnsuccessfully,
-            errorURL: discuzUrl,
-            dioError: dioError,
-          );
+          error = forumRequestError(S.of(context), dioError);
         });
       }
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        error = DiscuzError(
-          'AddDiscuzParseError',
-          S.of(context).addDiscuzApiParseUnsuccessfully,
-          errorURL: discuzUrl,
-        );
+        error = forumRequestError(S.of(context), e);
       });
       VibrationUtils.vibrateErrorIfPossible();
     }

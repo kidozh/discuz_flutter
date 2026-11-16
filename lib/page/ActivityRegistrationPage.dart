@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../entity/ActivityRegistration.dart';
 import '../entity/Discuz.dart';
+import '../entity/DiscuzError.dart';
 import '../entity/User.dart';
 import '../client/ForumInteractionClient.dart';
 import '../generated/l10n.dart';
@@ -9,6 +11,8 @@ import '../provider/DiscuzAndUserNotifier.dart';
 import '../utility/NetworkUtils.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
 import '../utility/discuz_json.dart';
+import '../utility/forum_error.dart';
+import '../widget/ErrorCard.dart';
 import 'InternalWebviewBrowserPage.dart';
 
 class ActivityRegistrationPage extends StatefulWidget {
@@ -31,7 +35,7 @@ class ActivityRegistrationPage extends StatefulWidget {
 class _ActivityRegistrationPageState extends State<ActivityRegistrationPage> {
   ActivityRegistration? spec;
   bool busy = false, contribute = false;
-  String? error;
+  DiscuzError? error;
   final values = <String, String>{};
   final message = TextEditingController(),
       amount = TextEditingController(text: '0');
@@ -93,20 +97,17 @@ class _ActivityRegistrationPageState extends State<ActivityRegistrationPage> {
         }
       });
     } catch (e) {
-      if (mounted)
-        setState(
-          () => error = e is ForumApiException && e.message.isNotEmpty
-              ? e.message
-              : S.of(context).forumLoadFailed,
-        );
+      if (mounted) {
+        setState(() => error = forumRequestError(S.of(context), e));
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }
   }
 
   Future<void> submit() async {
-    if (busy || spec == null || !sameAccount) return;
-    final original = spec!;
+    final original = spec;
+    if (busy || original == null || !original.canSubmit || !sameAccount) return;
     Map<String, dynamic> fields;
     try {
       fields = original.form(
@@ -115,7 +116,12 @@ class _ActivityRegistrationPageState extends State<ActivityRegistrationPage> {
         contribute ? amount.text : null,
       );
     } catch (_) {
-      setState(() => error = S.of(context).activityRequired);
+      setState(
+        () => error = DiscuzError(
+          'activity_required',
+          S.of(context).activityRequired,
+        ),
+      );
       return;
     }
     setState(() {
@@ -154,7 +160,7 @@ class _ActivityRegistrationPageState extends State<ActivityRegistrationPage> {
       submitted = true;
       final result = await api.request(
         'forummisc',
-        {'action': 'activityapplies', 'tid': widget.tid},
+        {'action': 'activityapplies', 'tid': widget.tid, 't': 'output'},
         body: {...fields, 'formhash': fresh.variables['formhash']},
       );
       result.requireSuccess({
@@ -164,14 +170,12 @@ class _ActivityRegistrationPageState extends State<ActivityRegistrationPage> {
       });
       if (mounted && sameAccount) Navigator.pop(context, true);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(
-          () => error = e is ForumApiException && e.message.isNotEmpty
-              ? e.message
-              : submitted
-              ? S.of(context).forumSubmissionUnknown
-              : S.of(context).forumLoadFailed,
+          () =>
+              error = forumRequestError(S.of(context), e, submitted: submitted),
         );
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -237,17 +241,16 @@ class _ActivityRegistrationPageState extends State<ActivityRegistrationPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (error != null) Text(error!),
+                    if (error case final failure?)
+                      ErrorCard(failure, null, largeSize: false),
                     if (current != null) ...[
                       Text('${s.activityCost}: ${current.cost}'),
                       if (current.creditCost.isNotEmpty)
                         Text('${s.activityCredits}: ${current.creditCost}'),
-                      if ((current.supported || current.button == 'cancel') &&
-                          !current.closed &&
-                          {'join', 'cancel'}.contains(current.button)) ...[
+                      if (current.canSubmit) ...[
                         if (current.button == 'join') ...[
                           for (final f in current.fields) ...[
-                            Text('${f.title} *'),
+                            Text(f.isRequired ? '${f.title} *' : f.title),
                             field(f),
                             const SizedBox(height: 8),
                           ],
@@ -280,7 +283,11 @@ class _ActivityRegistrationPageState extends State<ActivityRegistrationPage> {
                                 : s.joinActivity,
                           ),
                         ),
-                      ] else
+                      ] else if (current.joinBlockedByCapacity)
+                        Text(s.activityFull)
+                      else if (current.closed)
+                        Text(s.activityClosed)
+                      else
                         Text(s.activityWebsiteRequired),
                       PlatformTextButton(
                         onPressed: () => Navigator.push(

@@ -19,7 +19,7 @@ class RewardInfo {
 
 class ActivityInfo {
   final String place, startsAt, endsAt, cost, status;
-  final int? applicants;
+  final int? applicants, capacity, approvedApplicants;
   final bool closed;
   ActivityInfo({
     required this.place,
@@ -29,7 +29,18 @@ class ActivityInfo {
     required this.status,
     required this.applicants,
     required this.closed,
+    this.capacity,
+    this.approvedApplicants,
   });
+
+  static bool isAtCapacity(int? capacity, int? approvedApplicants) =>
+      capacity != null &&
+      capacity > 0 &&
+      approvedApplicants != null &&
+      approvedApplicants >= capacity;
+
+  bool get full => isAtCapacity(capacity, approvedApplicants);
+
   static ActivityInfo? parse(Object? value) {
     final json = discuzMap(value);
     if (json.isEmpty) return null;
@@ -43,6 +54,8 @@ class ActivityInfo {
           ? null
           : discuzInt(json['allapplynum']),
       closed: discuzPermission(json['closed']) == true,
+      capacity: int.tryParse(discuzString(json['number'])),
+      approvedApplicants: int.tryParse(discuzString(json['applynumber'])),
     );
   }
 
@@ -54,6 +67,8 @@ class ActivityInfo {
     'status': status,
     'allapplynum': applicants,
     'closed': closed,
+    if (capacity != null) 'number': capacity,
+    if (approvedApplicants != null) 'applynumber': approvedApplicants,
   };
 }
 

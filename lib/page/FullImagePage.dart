@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/forum_display_preferences.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
@@ -12,10 +13,13 @@ import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:saver_gallery/saver_gallery.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:video_player/video_player.dart';
 
 import '../utility/AppPlatformIcons.dart';
 import '../utility/forum_image_session.dart';
 import '../utility/forum_image_url.dart';
+import '../utility/motion_photo.dart';
 
 class FullImagePage extends StatefulWidget {
   final String imageUrl;
@@ -42,6 +46,7 @@ class FullImagePage extends StatefulWidget {
 class FullImagePageState extends State<FullImagePage> {
   late final PageController pageController;
   late int currentPage;
+  bool _loadingMotion = false;
   List<String> get imageUrlList => widget.imageUrlList;
 
   @override
@@ -63,6 +68,20 @@ class FullImagePageState extends State<FullImagePage> {
       appBar: PlatformAppBar(
         title: Text("${currentPage + 1} / ${imageUrlList.length}", maxLines: 1),
         trailingActions: [
+          if (Platform.isIOS || Platform.isAndroid || Platform.isMacOS)
+            PlatformIconButton(
+              liquidGlassSymbol: 'livephoto.play',
+              icon: Icon(
+                PlatformIcons(context).pick(
+                  Icons.motion_photos_on_outlined,
+                  CupertinoIcons.play_circle,
+                ),
+                semanticLabel: S.of(context).motionPhotoPlay,
+              ),
+              onPressed: _loadingMotion
+                  ? null
+                  : () => _playMotionPhoto(imageSession),
+            ),
           PlatformIconButton(
             liquidGlassSymbol: 'square.and.arrow.down',
             icon: Icon(
@@ -102,12 +121,12 @@ class FullImagePageState extends State<FullImagePage> {
             initialScale: PhotoViewComputedScale.contained * 0.8,
             heroAttributes: PhotoViewHeroAttributes(tag: index),
             errorBuilder: (context, _, _) => fallback == null || fallback == url
-                ? const Icon(Icons.broken_image_outlined)
+                ? Icon(PlatformIcons(context).unavailableImage)
                 : PhotoView(
                     imageProvider: _imageProvider(fallback, imageSession),
                     initialScale: PhotoViewComputedScale.contained * 0.8,
-                    errorBuilder: (_, _, _) =>
-                        const Icon(Icons.broken_image_outlined),
+                    errorBuilder: (context, _, _) =>
+                        Icon(PlatformIcons(context).unavailableImage),
                   ),
           );
         },
@@ -146,6 +165,59 @@ class FullImagePageState extends State<FullImagePage> {
     );
   }
 
+  Future<void> _playMotionPhoto(ForumImageSession? session) async {
+    if (_loadingMotion || currentPage >= imageUrlList.length) return;
+    final page = currentPage;
+    final url = imageUrlList[page];
+    final strings = S.of(context);
+    Directory? temporary;
+    setState(() => _loadingMotion = true);
+    try {
+      Uint8List? clip;
+      for (final source in {url, ?widget.fallbackUrls[url]}) {
+        try {
+          clip = motionPhotoVideo(await _imageBytes(source, session));
+        } on ForumResourceSessionChanged {
+          rethrow;
+        } catch (_) {
+          // An attachment thumbnail can be available when the original is not.
+        }
+        if (clip != null) break;
+      }
+      if (!mounted || currentPage != page) return;
+      if (clip == null) {
+        EasyLoading.showInfo(strings.motionPhotoUnavailable);
+        return;
+      }
+      temporary = await (await getTemporaryDirectory()).createTemp(
+        'motion_photo_',
+      );
+      final file = await File('${temporary.path}/motion.mp4')
+          .writeAsBytes(clip);
+      if (!mounted || currentPage != page) return;
+      await Navigator.push(
+        context,
+        platformPageRoute(
+          context: context,
+          builder: (_) => _MotionPhotoPlayer(file),
+        ),
+      );
+    } catch (_) {
+      if (mounted && currentPage == page) {
+        EasyLoading.showError(strings.loadFailed);
+      }
+    } finally {
+      if (temporary != null) {
+        try {
+          await temporary.delete(recursive: true);
+        } on FileSystemException {
+          // The OS also cleans up the app's temporary directory.
+        }
+      }
+      if (mounted) setState(() => _loadingMotion = false);
+    }
+  }
+
   Future<void> _save(ForumImageSession? imageSession) async {
     if ((!Platform.isIOS && !Platform.isAndroid) ||
         currentPage >= imageUrlList.length) {
@@ -182,5 +254,56 @@ class FullImagePageState extends State<FullImagePage> {
     } catch (_) {
       if (mounted) EasyLoading.showError(strings.loadFailed);
     }
+  }
+}
+
+class _MotionPhotoPlayer extends StatefulWidget {
+  const _MotionPhotoPlayer(this.file);
+  final File file;
+
+  @override
+  State<_MotionPhotoPlayer> createState() => _MotionPhotoPlayerState();
+}
+
+class _MotionPhotoPlayerState extends State<_MotionPhotoPlayer> {
+  late final VideoPlayerController _player = VideoPlayerController.file(
+    widget.file,
+  );
+  late final Future<void> _ready = _play();
+
+  Future<void> _play() async {
+    await _player.initialize();
+    if (!mounted) return;
+    await _player.setLooping(true);
+    if (mounted) await _player.play();
+  }
+
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final strings = S.of(context);
+    return PlatformScaffold(
+      appBar: PlatformAppBar(title: Text(strings.motionPhotoPlay)),
+      body: Center(
+        child: FutureBuilder<void>(
+          future: _ready,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) return Text(strings.motionPhotoUnavailable);
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const PlatformCircularProgressIndicator();
+            }
+            return AspectRatio(
+              aspectRatio: _player.value.aspectRatio,
+              child: VideoPlayer(_player),
+            );
+          },
+        ),
+      ),
+    );
   }
 }
