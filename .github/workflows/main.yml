@@ -220,7 +220,7 @@ jobs:
     name: iOS
     needs: release_version
     if: ${{ !cancelled() && (github.event_name != 'release' || needs.release_version.result == 'success') }}
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 60
     env:
       # This job deliberately validates compatibility with the runner's SDK.
