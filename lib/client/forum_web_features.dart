@@ -9,27 +9,141 @@ typedef ForumSearchHit = ({
   String board,
   String details,
   String excerpt,
+  String attribution,
 });
 typedef ForumSearchBatch = ({List<ForumSearchHit> hits, Uri? next});
+
+class ForumSearchOptions {
+  const ForumSearchOptions({
+    this.author = '',
+    this.fullText = false,
+    this.since = '0',
+    this.order = 'lastpost',
+    this.ascending = false,
+    this.older = false,
+  });
+  final String author, since, order;
+  final bool fullText, ascending, older;
+  Map<String, String> get fields => {
+    'srchtype': fullText ? 'fulltext' : 'title',
+    if (author.trim().isNotEmpty) 'srchuname': author.trim(),
+    'srchfrom': since,
+    'orderby': order,
+    'ascdesc': ascending ? 'asc' : 'desc',
+    'before': older ? '1' : '0',
+  };
+}
+
+class ForumSearchForm {
+  const ForumSearchForm(
+    this.hash,
+    this.fullText,
+    this.times,
+    this.orders,
+    this.notice,
+  );
+  final String hash, notice;
+  final bool fullText;
+  final Map<String, String> times, orders;
+}
 
 class ForumSearchClient {
   ForumSearchClient(this.web);
 
   final DiscuzWebClient web;
 
-  static Uri website(Uri base, String keyword, int? fid) => base
+  static Uri website(
+    Uri base,
+    String keyword,
+    int? fid, {
+    ForumSearchOptions options = const ForumSearchOptions(),
+  }) => base
       .resolve('search.php')
       .replace(
         queryParameters: {
           'mod': 'forum',
           'adv': '1',
+          ...options.fields,
           'mobile': 'no',
           if (keyword.trim().isNotEmpty) 'srchtxt': keyword.trim(),
           if (fid != null) 'srchfid': '$fid',
         },
       );
 
-  Future<ForumSearchBatch> search(String keyword, int? fid, {Uri? next}) async {
+  void _checkCaptcha(Document document) {
+    final notice = document.querySelector('#messagetext > p')?.text ?? '';
+    if (DiscuzWebClient.hasCaptcha(document.body) ||
+        RegExp(
+          r'验证码|驗證碼|captcha|verification code|security question|验证问答|驗證問答',
+          caseSensitive: false,
+        ).hasMatch(notice)) {
+      throw const ForumApiException(
+        'forum_search_captcha',
+        '',
+        fromForum: true,
+      );
+    }
+  }
+
+  Future<ForumSearchForm> loadForm() async {
+    final response = await web.read(
+      web.page('search.php', {'mod': 'forum', 'adv': '1'}),
+    );
+    _checkCaptcha(response.document);
+    final form = response.document
+        .querySelector('input[name="srchuname"]')
+        ?.parent;
+    Element? parent = form;
+    while (parent != null && parent.localName != 'form') {
+      parent = parent.parent;
+    }
+    final action = web.siteLink(
+      response.uri,
+      parent?.attributes['action'],
+      'search.php',
+    );
+    final hash =
+        parent?.querySelector('input[name="formhash"]')?.attributes['value'] ??
+        '';
+    if (parent == null ||
+        action?.queryParameters['mod'] != 'forum' ||
+        hash.isEmpty) {
+      web.rejected(response.document, 'forum_webpage_redirect');
+    }
+    Map<String, String> choices(String name, Set<String> allowed) => {
+      for (final option in parent!.querySelectorAll(
+        'select[name="$name"]:not([disabled]) option:not([disabled])',
+      ))
+        if (allowed.contains(option.attributes['value']))
+          option.attributes['value']!: option.text.trim(),
+    };
+    return ForumSearchForm(
+      hash,
+      parent.querySelector(
+            'input[name="srchtype"][value="fulltext"]:not([disabled])',
+          ) !=
+          null,
+      choices('srchfrom', {
+        '0',
+        '86400',
+        '172800',
+        '604800',
+        '2592000',
+        '7776000',
+        '15552000',
+        '31536000',
+      }),
+      choices('orderby', {'lastpost', 'dateline', 'replies', 'views'}),
+      response.document.querySelector('form.searchform > p')?.text.trim() ?? '',
+    );
+  }
+
+  Future<ForumSearchBatch> search(
+    String keyword,
+    int? fid, {
+    Uri? next,
+    ForumSearchOptions options = const ForumSearchOptions(),
+  }) async {
     final query = keyword.trim();
     final start = web.page('search.php', {'mod': 'forum'});
     if (next != null && !_resultsLink(next)) {
@@ -39,12 +153,25 @@ class ForumSearchClient {
         fromForum: true,
       );
     }
+    final form = next == null ? await loadForm() : null;
+    if (form != null &&
+        ((options.fullText && !form.fullText) ||
+            (options.since != '0' && !form.times.containsKey(options.since)) ||
+            (options.order != 'lastpost' &&
+                !form.orders.containsKey(options.order)))) {
+      throw const ForumApiException(
+        'search_forum_invalid',
+        '',
+        fromForum: true,
+      );
+    }
     final response = await web.read(
       next ?? start,
       body: next == null
           ? {
               'searchsubmit': 'yes',
-              'srchtype': 'title',
+              'formhash': form!.hash,
+              ...options.fields,
               'srchtxt': query,
               if (fid != null) 'srchfid': '$fid',
             }
@@ -85,6 +212,18 @@ class ForumSearchClient {
         board: board?.text.trim() ?? '',
         details: paragraphs.firstOrNull?.text.trim() ?? '',
         excerpt: paragraphs.length > 1 ? paragraphs[1].text.trim() : '',
+        attribution: paragraphs.length > 2
+            ? paragraphs[2].children
+                  .where(
+                    (element) =>
+                        element.localName == 'span' &&
+                        element.querySelector('a[href*="mod=forumdisplay"]') ==
+                            null,
+                  )
+                  .map((element) => element.text.trim())
+                  .where((text) => text.isNotEmpty)
+                  .join(' · ')
+            : '',
       ));
     }
     if (results != null && hits.isEmpty)
@@ -253,6 +392,10 @@ typedef CreditEntry = ({
   Uri? rule,
 });
 typedef CreditBatch = ({List<CreditEntry> entries, Uri? next});
+typedef CreditRulesBatch = ({
+  List<CreditEntry> entries,
+  Map<int, String> boards,
+});
 
 class CreditHistoryClient {
   CreditHistoryClient(this.web, this.uid);
@@ -271,6 +414,77 @@ class CreditHistoryClient {
           if (rewards) 'suboperation': 'creditrulelog',
         },
       );
+
+  static Uri rulesWebsite(Uri base, {int? fid}) => base
+      .resolve('home.php')
+      .replace(
+        queryParameters: {
+          'mod': 'spacecp',
+          'ac': 'credit',
+          'op': 'rule',
+          'mobile': 'no',
+          if (fid != null) 'fid': '$fid',
+        },
+      );
+
+  Future<CreditRulesBatch> loadRules({int? fid}) async {
+    final hash = await web.accountHash(uid);
+    final response = await web.read(rulesWebsite(web.base, fid: fid));
+    final doc = response.document;
+    final actual = response.uri.queryParameters;
+    final accountLink = web.siteLink(
+      response.uri,
+      doc.querySelector('#um a[href*="action=logout"]')?.attributes['href'],
+      'member.php',
+    );
+    if (actual['mod'] != 'spacecp' ||
+        actual['ac'] != 'credit' ||
+        actual['op'] != 'rule' ||
+        actual['fid'] != fid?.toString() ||
+        accountLink?.queryParameters['formhash'] != hash) {
+      web.rejected(doc, 'forum_webpage_redirect');
+    }
+    final table = doc.querySelector('#ct .mn table.dt.valt');
+    if (table == null) web.rejected(doc, 'forum_webpage_redirect');
+    final headers = table
+        .querySelectorAll('tr th')
+        .map((cell) => cell.text.trim())
+        .toList();
+    if (headers.length < 3) web.rejected(doc, 'forum_webpage_redirect');
+    final entries = <CreditEntry>[];
+    for (final row in table.querySelectorAll('tr')) {
+      final cells = row.children
+          .where((cell) => cell.localName == 'td')
+          .toList();
+      if (cells.length != headers.length || cells.first.text.trim().isEmpty)
+        continue;
+      entries.add((
+        label: cells.first.text.trim(),
+        details: [
+          for (var i = 1; i <= 2; i++)
+            if (cells[i].text.trim().isNotEmpty)
+              '${headers[i]} ${cells[i].text.trim()}',
+        ].join(' · '),
+        amounts: [
+          for (var i = 3; i < cells.length; i++)
+            if (cells[i].text.trim().isNotEmpty &&
+                int.tryParse(cells[i].text.trim()) != 0)
+              '${headers[i]} ${cells[i].text.trim()}',
+        ],
+        date: '',
+        thread: null,
+        rule: null,
+      ));
+    }
+    final boards = <int, String>{
+      for (final option in doc.querySelectorAll(
+        '#ct .mn select[onchange*="op=rule"] option[value]',
+      ))
+        if (int.tryParse(option.attributes['value']!) case final id?)
+          if (id > 0 && option.text.trim().isNotEmpty) id: option.text.trim(),
+    };
+    return (entries: entries, boards: boards);
+  }
 
   Future<CreditBatch> load({bool rewards = false, Uri? next}) async {
     final hash = await web.accountHash(uid);

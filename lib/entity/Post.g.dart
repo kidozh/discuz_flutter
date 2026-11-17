@@ -21,6 +21,7 @@ Post _$PostFromJson(Map<String, dynamic> json) => Post()
   ..replycredit = const StringToIntConverter().fromJson(json['replycredit'])
   ..number = const StringToIntConverter().fromJson(json['number'])
   ..position = const StringToIntConverter().fromJson(json['position'])
+  ..rewardFloor = const StringToBoolConverter().fromJson(json['rewardfloor'])
   ..groupId = const StringToIntConverter().fromJson(json['groupid'])
   ..memberStatus = const StringToIntConverter().fromJson(json['memberstatus'])
   ..publishAt = const SecondToDateTimeConverter().fromJson(json['dbdateline'])
@@ -46,6 +47,7 @@ Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
   'replycredit': const StringToIntConverter().toJson(instance.replycredit),
   'number': const StringToIntConverter().toJson(instance.number),
   'position': const StringToIntConverter().toJson(instance.position),
+  'rewardfloor': const StringToBoolConverter().toJson(instance.rewardFloor),
   'groupid': const StringToIntConverter().toJson(instance.groupId),
   'memberstatus': const StringToIntConverter().toJson(instance.memberStatus),
   'dbdateline': const SecondToDateTimeConverter().toJson(instance.publishAt),

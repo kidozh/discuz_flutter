@@ -130,7 +130,7 @@ class ConfigurationUserState extends State<ConfigurationUserStatefulWidget> {
                   imageUrl: URLUtils.getLargeAvatarURL(discuzAndUser.discuz!,
                       discuzAndUser.user!.uid.toString()),
                   progressIndicatorBuilder: (context, url, downloadProgress) =>
-                      CircularProgressIndicator(
+                      PlatformCircularProgressIndicator(
                           value: downloadProgress.progress),
                   errorWidget: (context, url, error) => Container(
                     width: 100.0,

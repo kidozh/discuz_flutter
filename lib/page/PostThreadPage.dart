@@ -1,4 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
+
+import '../utility/reply_draft_store.dart';
+import '../utility/forum_composer_capabilities.dart';
 
 import '../utility/post_signature_service.dart';
 import '../utility/post_editor_controller.dart';
@@ -61,6 +65,13 @@ class PostThreadPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final account = context.watch<DiscuzAndUserNotifier>();
     final user = account.userFor(discuz);
+    if (draft != null &&
+        (draft!.uid != user?.uid || !draft!.discuz.isSameSite(discuz))) {
+      return PlatformScaffold(
+        appBar: PlatformAppBar(title: Text(S.of(context).draftInbox)),
+        body: Center(child: Text(S.of(context).forumAccountChanged)),
+      );
+    }
     return PostPermissionGate(
       key: ValueKey((discuz.siteIdentity, fid, account.sessionIdentity)),
       reply: false,
@@ -122,6 +133,17 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   bool _confirming = false;
   ForumVoiceOptions? _recordingVoice;
   final _voicePreviews = <RecordedForumVoice>[];
+  final _pending = <String, ReplyDraftAttachment>{};
+  late final int _draftUid;
+  late final Object _draftSession;
+  bool _restoringAssets = false, _draftCompleted = false;
+  ReplyDraftStore? _assetStore;
+  bool get _draftCurrent =>
+      mounted &&
+      identical(
+        _draftSession,
+        context.read<DiscuzAndUserNotifier>().sessionIdentity,
+      );
   Future<void> _draftWrite = Future.value();
   // dropdown menu status
   String? selectedTypeId;
@@ -135,45 +157,120 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   }
 
   Future<bool> _attachVoice(RecordedForumVoice voice) async {
-    final account = context.read<DiscuzAndUserNotifier>();
-    final user = account.userFor(discuz);
-    if (user == null) return false;
-    final session = account.sessionIdentity;
-    bool current() => mounted && identical(session, account.sessionIdentity);
-    final s = S.of(context);
-    final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    if (!_draftCurrent) return false;
+    await _addDraftAttachment(voice.name, voice.file.openRead(), false);
+    if (!_draftCurrent) return false;
+    _voicePreviews.add(voice);
+    return true;
+  }
+
+  Future<ReplyDraftStore> _assets() async {
+    if (_assetStore != null) return _assetStore!;
+    await backupDraft();
+    return _assetStore ??= ReplyDraftStore(
+      discuz.siteIdentity,
+      _draftUid,
+      -(draft!.key as int) - 1,
+    );
+  }
+
+  Future<void> _restoreAssets() async {
     try {
-      if (!current()) return false;
-      await EasyLoading.show(
-        status: s.uploadingAttachment,
-        maskType: EasyLoadingMaskType.clear,
-      );
+      final items = jsonDecode(draft!.pendingAttachmentsJson);
+      if (items is! List)
+        throw const FormatException('Invalid draft attachments');
+      final store = await _assets();
+      for (final raw in items) {
+        final item = ReplyDraftAttachment.fromJson(raw);
+        if (item == null)
+          throw const FormatException('Invalid draft attachment');
+        final file = await store.file(item);
+        if (!_draftCurrent) return;
+        _pending[item.id] = item;
+        if (item.image) {
+          _controller.restoreImagePath(item.token, file.path);
+        } else {
+          _controller.restoreFileNames({item.id: item.name});
+          _controller.restoreFilePath(item.id, file.path);
+        }
+      }
+    } catch (_) {
+      if (mounted) EasyLoading.showError(S.of(context).replyDraftRestoreFailed);
+    } finally {
+      if (mounted) setState(() => _restoringAssets = false);
+    }
+  }
+
+  Future<void> _addDraftAttachment(
+    String name,
+    Stream<List<int>> bytes,
+    bool image,
+  ) async {
+    if (!_draftCurrent) return;
+    final store = await _assets();
+    final item = await store.add(name: name, bytes: bytes, image: image);
+    final file = await store.file(item);
+    if (!_draftCurrent) {
+      await file.delete();
+      return;
+    }
+    _pending[item.id] = item;
+    if (image) {
+      _controller.restoreImagePath(item.token, file.path);
+    } else {
+      _controller.restoreFileNames({item.id: name});
+      _controller.restoreFilePath(item.id, file.path);
+    }
+    _controller.insertText(item.token, image: true);
+    await backupDraft();
+  }
+
+  Future<String> _resolveAttachments(
+    MobileApiClient api,
+    int uid,
+    bool Function() isCurrent,
+  ) async {
+    var source = _controller.text;
+    final uploaded = <String, String>{};
+    for (final token in PostEditorToken.inText(
+      source,
+    ).where((t) => t.isPending)) {
+      if (uploaded.containsKey(token.text)) continue;
+      final item = _pending[token.content];
+      if (item == null || item.image != token.isAttachment) {
+        throw DiscuzError(
+          'attachment_unreadable',
+          S.of(context).replyDraftUploadMissing,
+        );
+      }
       final aid = await uploadPendingForumAttachment(
-        api: MobileApiClient(dio, baseUrl: discuz.baseURL),
-        strings: s,
+        api: api,
+        strings: S.of(context),
         fid: fid,
         tid: 0,
-        uid: user.uid,
-        file: voice.file,
-        name: voice.name,
-        image: false,
-        isCurrent: current,
+        uid: uid,
+        file: await (await _assets()).file(item),
+        name: item.name,
+        image: item.image,
+        isCurrent: isCurrent,
         replying: false,
+        capabilityScope: (site: discuz.siteIdentity, uid: uid, fid: fid),
       );
-      if (!current()) return false;
-      _controller.restoreFilePath(aid, voice.file.path);
-      _controller.insertFile(aid, voice.name);
-      _voicePreviews.add(voice);
-      return true;
-    } finally {
-      dio.close();
-      await EasyLoading.dismiss();
+      final tag = item.image ? 'attachimg' : 'attach';
+      uploaded[token.text] = '[$tag]$aid[/$tag]';
     }
+    return source.replaceAllMapped(
+      PostEditorToken.pattern,
+      (match) => uploaded[match[0]] ?? match[0]!,
+    );
   }
 
   @override
   void initState() {
     super.initState();
+    final account = context.read<DiscuzAndUserNotifier>();
+    _draftUid = account.userFor(discuz)?.uid ?? 0;
+    _draftSession = account.sessionIdentity;
     if (draft != null) {
       _titleEditingController.text = draft!.title;
       _controller.text = draft!.text;
@@ -185,6 +282,10 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     if (widget.navigationTypes == null) _loadForumInfo();
     // add backup option
     backupDraftIfPossible();
+    if (draft?.pendingAttachmentsJson.isNotEmpty == true) {
+      _restoringAssets = true;
+      Future.microtask(_restoreAssets);
+    }
   }
 
   Future<void> _configurePoll() async {
@@ -323,6 +424,12 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (_restoringAssets)
+      return PlatformScaffold(
+        appBar: PlatformAppBar(title: Text(S.of(context).draftInbox)),
+        body: const Center(child: PlatformCircularProgressIndicator()),
+      );
+
     if (_forumLoadError != null) {
       return PlatformScaffold(
         appBar: PlatformAppBar(title: Text(S.of(context).pushThreadTitle)),
@@ -377,232 +484,246 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
           ),
         ],
       ),
-      body: PlatformLiquidGlassPageBackdrop(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 6, bottom: 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (_threadTypeEntries.isNotEmpty) ...[
-                      Builder(
-                        builder: (buttonContext) {
-                          final button = PlatformTextButton(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
-                            onPressed: _showThreadTypePicker,
-                            child: Row(
-                              children: [
-                                Icon(PlatformIcons(context).tagSolid, size: 16),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    _selectedThreadTypeLabel,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.start,
+      body: AbsorbPointer(
+        absorbing: _sending,
+        child: PlatformLiquidGlassPageBackdrop(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 6, bottom: 4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (_threadTypeEntries.isNotEmpty) ...[
+                        Builder(
+                          builder: (buttonContext) {
+                            final button = PlatformTextButton(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              onPressed: _showThreadTypePicker,
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    PlatformIcons(context).tagSolid,
+                                    size: 16,
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-                                Icon(
-                                  PlatformIcons(context).downArrow,
-                                  size: 14,
-                                ),
-                              ],
-                            ),
-                          );
-                          if (usesAppleTranslucentSurface(buttonContext) &&
-                              !usesLiquidGlass(buttonContext)) {
-                            return PlatformLiquidGlassCard(
-                              borderRadius: BorderRadius.circular(22),
-                              child: button,
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      _selectedThreadTypeLabel,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.start,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Icon(
+                                    PlatformIcons(context).downArrow,
+                                    size: 14,
+                                  ),
+                                ],
+                              ),
                             );
-                          }
-                          return button;
-                        },
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-                    Wrap(
-                      children: [
-                        PlatformTextButton(
-                          onPressed: _sending || _configuring
-                              ? null
-                              : _configurePoll,
-                          child: Text(
-                            _pollDraft == null
-                                ? S.of(context).createPoll
-                                : S.of(context).editPoll,
-                          ),
+                            if (usesAppleTranslucentSurface(buttonContext) &&
+                                !usesLiquidGlass(buttonContext)) {
+                              return PlatformLiquidGlassCard(
+                                borderRadius: BorderRadius.circular(22),
+                                child: button,
+                              );
+                            }
+                            return button;
+                          },
                         ),
-                        for (final kind in SpecialThreadKind.values)
+                        const SizedBox(height: 8),
+                      ],
+                      Wrap(
+                        children: [
                           PlatformTextButton(
                             onPressed: _sending || _configuring
                                 ? null
-                                : () => _configureSpecial(kind),
-                            child: Text(switch ((
-                              kind,
-                              _specialDraft?.kind == kind,
-                            )) {
-                              (SpecialThreadKind.reward, false) =>
-                                S.of(context).createReward,
-                              (SpecialThreadKind.reward, true) =>
-                                S.of(context).editReward,
-                              (SpecialThreadKind.activity, false) =>
-                                S.of(context).createActivity,
-                              (SpecialThreadKind.activity, true) =>
-                                S.of(context).editActivity,
-                            }),
+                                : _configurePoll,
+                            child: Text(
+                              _pollDraft == null
+                                  ? S.of(context).createPoll
+                                  : S.of(context).editPoll,
+                            ),
                           ),
-                        if (_pollDraft != null || _specialDraft != null)
-                          PlatformTextButton(
-                            onPressed: _sending
-                                ? null
-                                : () {
-                                    setState(() {
-                                      _pollDraft = null;
-                                      _specialDraft = null;
-                                    });
-                                    backupDraft();
-                                  },
-                            child: Text(S.of(context).removeSpecialPost),
-                          ),
-                      ],
-                    ),
-                    PlatformTextField(
-                      controller: _titleEditingController,
-                      textInputAction: TextInputAction.next,
-                      hintText: S.of(context).pushThreadTitle,
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(4.0),
-                  child: PostTextField(
-                    discuz,
-                    _controller,
-                    focusNode: focusNode,
-                    expanded: true,
+                          for (final kind in SpecialThreadKind.values)
+                            PlatformTextButton(
+                              onPressed: _sending || _configuring
+                                  ? null
+                                  : () => _configureSpecial(kind),
+                              child: Text(switch ((
+                                kind,
+                                _specialDraft?.kind == kind,
+                              )) {
+                                (SpecialThreadKind.reward, false) =>
+                                  S.of(context).createReward,
+                                (SpecialThreadKind.reward, true) =>
+                                  S.of(context).editReward,
+                                (SpecialThreadKind.activity, false) =>
+                                  S.of(context).createActivity,
+                                (SpecialThreadKind.activity, true) =>
+                                  S.of(context).editActivity,
+                              }),
+                            ),
+                          if (_pollDraft != null || _specialDraft != null)
+                            PlatformTextButton(
+                              onPressed: _sending
+                                  ? null
+                                  : () {
+                                      setState(() {
+                                        _pollDraft = null;
+                                        _specialDraft = null;
+                                      });
+                                      backupDraft();
+                                    },
+                              child: Text(S.of(context).removeSpecialPost),
+                            ),
+                        ],
+                      ),
+                      PlatformTextField(
+                        controller: _titleEditingController,
+                        textInputAction: TextInputAction.next,
+                        hintText: S.of(context).pushThreadTitle,
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: _recordingVoice != null
-                      ? ForumVoiceRecorder(
-                          options: _recordingVoice!,
-                          onRecorded: _attachVoice,
-                          onClosed: () =>
-                              setState(() => _recordingVoice = null),
-                        )
-                      : SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: PlatformLiquidGlassToolbarGroup(
-                            children: [
-                              PlatformIconButton(
-                                liquidGlassSymbol: 'bold',
-                                icon: Icon(PlatformIcons(context).bold),
-                                onPressed: () {
-                                  VibrationUtils.vibrateWithClickIfPossible();
-                                  String insertedText = "[b][/b]";
-                                  insertString(insertedText);
-                                },
-                              ),
-                              PlatformIconButton(
-                                liquidGlassSymbol: 'italic',
-                                icon: Icon(PlatformIcons(context).italic),
-                                onPressed: () {
-                                  VibrationUtils.vibrateWithClickIfPossible();
-                                  String insertedText = "[i][/i]";
-                                  insertString(insertedText);
-                                },
-                              ),
-                              PlatformIconButton(
-                                liquidGlassSymbol: 'quote.bubble',
-                                icon: Icon(PlatformIcons(context).formatQuote),
-                                onPressed: () {
-                                  VibrationUtils.vibrateWithClickIfPossible();
-                                  String insertedText = "[quote][/quote]";
-                                  insertString(insertedText);
-                                },
-                              ),
-                              PlatformIconButton(
-                                liquidGlassSymbol: 'face.smiling',
-                                icon: Icon(PlatformIcons(context).smiley),
-                                onPressed: () {
-                                  VibrationUtils.vibrateWithClickIfPossible();
-                                  // popup a smiley dialog
-                                  showPlatformModalSheet(
-                                    context: context,
-                                    builder: (context) => SmileyListScreen(
-                                      insertSmiley,
-                                      onAttachmentPressed:
-                                          _handleReplyWithImage,
-                                    ),
-                                  );
-                                },
-                              ),
-                              PlatformIconButton(
-                                liquidGlassSymbol: 'paperclip',
-                                icon: Icon(
-                                  PlatformIcons(context).attachment,
-                                  semanticLabel: S
-                                      .of(context)
-                                      .composerAttachmentLabel,
-                                ),
-                                onPressed: () {
-                                  VibrationUtils.vibrateWithClickIfPossible();
-                                  showPlatformModalSheet(
-                                    context: context,
-                                    builder: (context) =>
-                                        ExtraFuncInThreadScreen(
-                                          discuz,
-                                          tid,
-                                          fid,
-                                          onReplyWithImage:
-                                              _handleReplyWithImage,
-                                          onAttachFile: (aid, name) {
-                                            if (mounted)
-                                              _controller.insertFile(aid, name);
-                                          },
-                                          onReplyWithHostedImage:
-                                              (imageUrl, path) {
-                                                if (mounted &&
-                                                    imageUrl.isNotEmpty) {
-                                                  _controller.insertHostedImage(
-                                                    imageUrl,
-                                                    path,
-                                                  );
-                                                }
-                                              },
-                                          showHistoricalAttachment: false,
-                                        ),
-                                  );
-                                },
-                              ),
-                              if (PostPermissionGate.voiceOptionsOf(context)
-                                  case final voice?)
-                                ForumVoiceButton(
-                                  onPressed: () => _recordVoice(voice),
-                                ),
-                              // PlatformIconButton(
-                              //   icon: Icon(Icons.settings_backup_restore),
-                              // ),
-                            ],
-                          ),
-                        ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(4.0),
+                    child: PostTextField(
+                      discuz,
+                      _controller,
+                      focusNode: focusNode,
+                      expanded: true,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+                SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: _recordingVoice != null
+                        ? ForumVoiceRecorder(
+                            options: _recordingVoice!,
+                            onRecorded: _attachVoice,
+                            onClosed: () =>
+                                setState(() => _recordingVoice = null),
+                          )
+                        : SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: PlatformLiquidGlassToolbarGroup(
+                              children: [
+                                PlatformIconButton(
+                                  liquidGlassSymbol: 'bold',
+                                  icon: Icon(PlatformIcons(context).bold),
+                                  onPressed: () {
+                                    VibrationUtils.vibrateWithClickIfPossible();
+                                    String insertedText = "[b][/b]";
+                                    insertString(insertedText);
+                                  },
+                                ),
+                                PlatformIconButton(
+                                  liquidGlassSymbol: 'italic',
+                                  icon: Icon(PlatformIcons(context).italic),
+                                  onPressed: () {
+                                    VibrationUtils.vibrateWithClickIfPossible();
+                                    String insertedText = "[i][/i]";
+                                    insertString(insertedText);
+                                  },
+                                ),
+                                PlatformIconButton(
+                                  liquidGlassSymbol: 'quote.bubble',
+                                  icon: Icon(
+                                    PlatformIcons(context).formatQuote,
+                                  ),
+                                  onPressed: () {
+                                    VibrationUtils.vibrateWithClickIfPossible();
+                                    String insertedText = "[quote][/quote]";
+                                    insertString(insertedText);
+                                  },
+                                ),
+                                PlatformIconButton(
+                                  liquidGlassSymbol: 'face.smiling',
+                                  icon: Icon(PlatformIcons(context).smiley),
+                                  onPressed: () {
+                                    VibrationUtils.vibrateWithClickIfPossible();
+                                    // popup a smiley dialog
+                                    showPlatformModalSheet(
+                                      context: context,
+                                      builder: (context) => SmileyListScreen(
+                                        insertSmiley,
+                                        onAttachmentPressed:
+                                            _handleReplyWithImage,
+                                      ),
+                                    );
+                                  },
+                                ),
+                                PlatformIconButton(
+                                  liquidGlassSymbol: 'paperclip',
+                                  icon: Icon(
+                                    PlatformIcons(context).attachment,
+                                    semanticLabel: S
+                                        .of(context)
+                                        .composerAttachmentLabel,
+                                  ),
+                                  onPressed: () {
+                                    VibrationUtils.vibrateWithClickIfPossible();
+                                    showPlatformModalSheet(
+                                      context: context,
+                                      builder: (context) =>
+                                          ExtraFuncInThreadScreen(
+                                            discuz,
+                                            tid,
+                                            fid,
+                                            onReplyWithImage:
+                                                _handleReplyWithImage,
+                                            onAttachFile: (aid, name) {
+                                              if (mounted)
+                                                _controller.insertFile(
+                                                  aid,
+                                                  name,
+                                                );
+                                            },
+                                            onReplyWithHostedImage:
+                                                (imageUrl, path) {
+                                                  if (mounted &&
+                                                      imageUrl.isNotEmpty) {
+                                                    _controller
+                                                        .insertHostedImage(
+                                                          imageUrl,
+                                                          path,
+                                                        );
+                                                  }
+                                                },
+                                            saveDraftAttachment:
+                                                _addDraftAttachment,
+                                            showHistoricalAttachment: false,
+                                          ),
+                                    );
+                                  },
+                                ),
+                                if (PostPermissionGate.voiceOptionsOf(context)
+                                    case final voice?)
+                                  ForumVoiceButton(
+                                    onPressed: () => _recordVoice(voice),
+                                  ),
+                                // PlatformIconButton(
+                                //   icon: Icon(Icons.settings_backup_restore),
+                                // ),
+                              ],
+                            ),
+                          ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -757,7 +878,12 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       if (title == previousTitle && text == previousText) return;
       previousTitle = title;
       previousText = text;
-      backupDraft();
+      unawaited(
+        backupDraft().catchError((Object error) {
+          if (mounted)
+            EasyLoading.showError(S.of(context).replyDraftSaveFailed);
+        }),
+      );
     }
 
     _titleEditingController.addListener(saveChangedText);
@@ -765,6 +891,14 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   }
 
   Future<void> backupDraft() {
+    if (_draftCompleted || _draftUid <= 0 || _restoringAssets)
+      return _draftWrite;
+    final pendingJson = jsonEncode([
+      for (final token in PostEditorToken.inText(
+        _controller.text,
+      ).where((t) => t.isPending))
+        if (_pending[token.content] case final item?) item.toJson(),
+    ]);
     final title = _titleEditingController.text;
     final content = _controller.text;
     final category = selectedTypeId ?? '';
@@ -774,6 +908,8 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     _draftWrite = _draftWrite.catchError((Object _) {}).then((_) async {
       draft ??= Draft(title, content, fid, category, DateTime.now(), discuz);
       draft!
+        ..uid = _draftUid
+        ..pendingAttachmentsJson = pendingJson
         ..title = title
         ..text = content
         ..typeid = category
@@ -788,7 +924,12 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   }
 
   Future<void> _confirmPost() async {
-    if (_confirming || _sending || _configuring) return;
+    if (_confirming ||
+        _sending ||
+        _configuring ||
+        _restoringAssets ||
+        !_draftCurrent)
+      return;
     final selected = selectedTypeId;
     final typeRequired =
         _displayForumResult?.discuzIndexVariables.threadType?.typeRequired() ==
@@ -877,6 +1018,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
 
   Future<bool> _postThread() async {
     if (_sending) return false;
+    FocusScope.of(context).unfocus();
     setState(() => _sending = true);
     try {
       return await _submitThread();
@@ -899,7 +1041,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     final account = context.read<DiscuzAndUserNotifier>();
     final session = account.sessionIdentity;
     final user = account.userFor(discuz);
-    if (user == null) return false;
+    if (user == null || user.uid != _draftUid || !_draftCurrent) return false;
     bool isCurrent() => mounted && identical(session, account.sessionIdentity);
     final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     try {
@@ -915,6 +1057,12 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     String submitHash = '';
     try {
       final permission = await client.checkPost(fid, null);
+      if (!isCurrent()) return false;
+      await ForumComposerCapabilityCache.remember((
+        site: discuz.siteIdentity,
+        uid: uid,
+        fid: fid,
+      ), permission);
       if (!isCurrent()) return false;
       if (permission.variables.member_uid != 0 &&
           permission.variables.member_uid != uid)
@@ -945,15 +1093,15 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     }
     if (!isCurrent()) return false;
     String title = _titleEditingController.text;
+    final source = await _resolveAttachments(client, uid, isCurrent);
+    if (!isCurrent()) return false;
     final content = await PostSignatureService.append(
       context,
-      PostTextFieldUtils.getPostMessage(_controller.text),
+      PostTextFieldUtils.getPostMessage(source),
     );
     if (!isCurrent()) return false;
     // need to process aid
-    List<String> aidList = PostTextFieldUtils.getAttachmentAidList(
-      _controller.text,
-    );
+    List<String> aidList = PostTextFieldUtils.getAttachmentAidList(source);
     final dataMap = <String, dynamic>{...?_pollDraft?.fields};
     final special = _specialDraft;
     if (special != null) {
@@ -1068,6 +1216,11 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     }
     if (code == 'post_newthread_succeed' ||
         code == 'post_newthread_mod_succeed') {
+      _draftCompleted = true;
+      await _draftWrite;
+      if (draft?.key != null)
+        await (await AppDatabase.getDraftDao()).deleteDraft(draft!);
+      if (!mounted) return false;
       EasyLoading.showSuccess(result!.content);
       Navigator.of(context).pop();
     } else {

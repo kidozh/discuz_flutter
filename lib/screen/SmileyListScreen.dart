@@ -671,7 +671,7 @@ class SavedSmileyTabViewState extends State<SavedSmileyTabViewStatefulWidget> {
                         smiley.relativePath,
                     progressIndicatorBuilder:
                         (context, url, downloadProgress) =>
-                            CircularProgressIndicator(
+                            PlatformCircularProgressIndicator(
                               value: downloadProgress.progress,
                             ),
                     errorWidget: (context, url, error) =>

@@ -132,7 +132,10 @@ DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) =>
       ..digest = json['digest'] as String? ?? '0'
       ..closed = const StringToBoolConverter().fromJson(json['closed'])
       ..allreplies = const StringToIntConverter().fromJson(json['allreplies'])
-      ..freeMessage = json['freemessage'] as String? ?? '';
+      ..freeMessage = json['freemessage'] as String? ?? ''
+      ..replyCredit = discuzInt(json['replycredit'])
+      ..creditRule = ReplyCreditRule.parse(json['replycredit_rule'])
+      ..rushReply = RushReplyInfo.parse(json['rushresult']);
 
 Map<String, dynamic> _$DetailedThreadInfoToJson(
   DetailedThreadInfo instance,
@@ -163,13 +166,10 @@ Map<String, dynamic> _$DetailedThreadInfoToJson(
   'closed': const StringToBoolConverter().toJson(instance.closed),
   'allreplies': const StringToIntConverter().toJson(instance.allreplies),
   'freemessage': instance.freeMessage,
+  'replycredit': instance.replyCredit,
+  'replycredit_rule': instance.creditRule?.toJson(),
+  'rushresult': instance.rushReply?.toJson(),
 };
-
-ReplyCreditRule _$ReplyCreditRuleFromJson(Map<String, dynamic> json) =>
-    ReplyCreditRule();
-
-Map<String, dynamic> _$ReplyCreditRuleToJson(ReplyCreditRule instance) =>
-    <String, dynamic>{};
 
 Comment _$CommentFromJson(Map<String, dynamic> json) => Comment()
   ..id = const StringToIntConverter().fromJson(json['id'])

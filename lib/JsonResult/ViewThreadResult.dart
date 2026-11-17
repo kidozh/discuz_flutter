@@ -1,3 +1,4 @@
+import '../entity/reply_benefits.dart';
 import 'package:discuz_flutter/converter/RewriteRuleConverter.dart';
 import 'package:discuz_flutter/converter/SecondToDateTimeConverter.dart';
 import 'package:discuz_flutter/converter/StringToBoolConverter.dart';
@@ -194,31 +195,16 @@ class DetailedThreadInfo {
   @JsonKey(name:"freemessage",defaultValue: "")
   String freeMessage = "";
 
-  //
-  // @JsonKey(name:"replycredit_rule")
-  // ReplyCreditRule? creditRule = ReplyCreditRule();
+  @JsonKey(name: 'replycredit', fromJson: discuzInt)
+  int replyCredit = 0;
+  @JsonKey(name: 'replycredit_rule', fromJson: ReplyCreditRule.parse)
+  ReplyCreditRule? creditRule;
+  @JsonKey(name: 'rushresult', fromJson: RushReplyInfo.parse)
+  RushReplyInfo? rushReply;
 
   DetailedThreadInfo();
   factory DetailedThreadInfo.fromJson(Map<String, dynamic> json) => _$DetailedThreadInfoFromJson(discuzScalars(json));
   Map<String, dynamic> toJson() => _$DetailedThreadInfoToJson(this);
-}
-
-@JsonSerializable(ignoreUnannotated: true, disallowUnrecognizedKeys: false, explicitToJson: true)
-class ReplyCreditRule{
-
-  final String tid = "0";
-  @JsonKey(name:"extcredits",defaultValue: "0")
-  final String extCredits = "0";
-  @JsonKey(name:"extcreditstype",defaultValue: "0")
-  final String extCreditsType = "0";
-
-  final String times = "0", membertimes = "0";
-  final String random = "0";
-  final String remaining = "0";
-
-  const ReplyCreditRule();
-  factory ReplyCreditRule.fromJson(Map<String, dynamic> json) => _$ReplyCreditRuleFromJson(json);
-  Map<String, dynamic> toJson() => _$ReplyCreditRuleToJson(this);
 }
 
 @JsonSerializable(explicitToJson: true)

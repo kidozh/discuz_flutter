@@ -474,19 +474,12 @@ class _PostFilePreview extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 3),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 248),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: ForumVoiceMessage(
-                  key: ValueKey(path),
-                  localFile: File(path),
-                  durationHint: voice,
-                  load: null,
-                ),
-              ),
-              remove,
-            ],
+          child: ForumVoiceMessage(
+            key: ValueKey(path),
+            localFile: File(path),
+            durationHint: voice,
+            load: null,
+            onRemove: onRemove,
           ),
         ),
       );

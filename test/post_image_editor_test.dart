@@ -6,6 +6,7 @@ import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/utility/PostTextFieldUtils.dart';
 import 'package:discuz_flutter/utility/post_editor_controller.dart';
 import 'package:discuz_flutter/widget/PostTextField.dart';
+import 'package:discuz_flutter/widget/forum_voice_message.dart';
 import 'package:discuz_flutter/widget/post_image_preview.dart';
 import 'package:extended_text_field/extended_text_field.dart';
 import 'package:flutter/cupertino.dart';
@@ -262,6 +263,52 @@ void main() {
     expect(controller.attachedFileNames, isEmpty);
     expect(PostTextFieldUtils.getAttachmentAidList(controller.text), ['42']);
   });
+
+  for (final style in [AppVisualStyle.material, AppVisualStyle.cupertino]) {
+    testWidgets(
+      'voice preview keeps removal aligned and removes only its token ($style)',
+      (tester) async {
+        final controller =
+            PostEditorController(text: 'Before\n[attach]73[/attach]\nAfter')
+              ..restoreFileNames({'73': 'disfly-voice-1794900000000-3s.mp3'})
+              ..restoreFilePath('73', '/tmp/voice-preview-layout.mp3');
+        final focus = FocusNode();
+        addTearDown(controller.dispose);
+        addTearDown(focus.dispose);
+        await tester.pumpWidget(
+          _host(
+            controller,
+            focus,
+            style: style,
+            brightness: Brightness.dark,
+            textScale: 1.5,
+          ),
+        );
+        await tester.pumpAndSettle();
+        final voice = find.byType(ForumVoiceMessage);
+        final remove = find.descendant(
+          of: voice,
+          matching: find.byIcon(
+            style == AppVisualStyle.material
+                ? Icons.close_rounded
+                : CupertinoIcons.xmark,
+          ),
+        );
+        expect(remove, findsOneWidget);
+        expect(tester.getSize(voice).height, lessThanOrEqualTo(56));
+        expect(
+          tester.getCenter(remove).dy,
+          closeTo(tester.getCenter(voice).dy, 1),
+        );
+        // Removing does not invoke playback or lose text around the attachment.
+        await tester.tap(remove);
+        await tester.pumpAndSettle();
+        expect(controller.text, 'Before\nAfter');
+        expect(find.byType(ForumVoiceMessage), findsNothing);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 
   testWidgets(
     'backspace, forward delete, selection replacement and undo never expose markup',

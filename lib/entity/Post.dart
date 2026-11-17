@@ -39,6 +39,9 @@ class Post{
   int attachment = 0;
   @StringToIntConverter()
   int status = 0,replycredit = 0, number = 0, position = 0;
+  @JsonKey(name: 'rewardfloor')
+  @StringToBoolConverter()
+  bool rewardFloor = false;
 
   bool get warned => status & POST_WARNED != 0;
   bool get blocked => status & POST_BLOCKED != 0;

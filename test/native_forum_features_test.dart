@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/client/ForumInteractionClient.dart';
+import 'package:discuz_flutter/client/classified_filters.dart';
 import 'package:discuz_flutter/client/discuz_web_client.dart';
 import 'package:discuz_flutter/client/forum_web_features.dart';
 import 'package:discuz_flutter/entity/Post.dart';
@@ -12,15 +14,106 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test(
+    'classified form fields are posted while board and page stay in the URL',
+    () async {
+      final dio = Dio();
+      addTearDown(dio.close);
+      dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (request, handler) {
+            final isSchema = request.uri.path == '/community/forum.php';
+            if (!isSchema) {
+              expect(request.method, 'POST');
+              expect(request.uri.queryParameters['fid'], '3');
+              expect(request.uri.queryParameters['page'], '2');
+              expect(request.uri.queryParameters['sortid'], '95');
+              expect(
+                request.uri.queryParameters.keys,
+                isNot(contains('searchoption[95][value]')),
+              );
+              expect(request.data, {
+                'searchoption[95][type]': 'radio',
+                'searchoption[95][value]': '2',
+              });
+            }
+            handler.resolve(
+              Response(
+                requestOptions: request,
+                statusCode: 200,
+                data: isSchema
+                    ? '''
+<form id="searhsort" action="forum.php?mod=forumdisplay&amp;fid=3&amp;filter=sortid&amp;sortid=95">
+  <div><span>Region:</span><span>
+    <select name="searchoption[95][value]"><option value="0">All</option>
+    <option value="1">Alpine</option><option value="2">Coastal</option></select>
+    <input name="searchoption[95][type]" type="hidden" value="radio">
+  </span></div>
+</form>'''
+                    : '{"Version":"4","Variables":{"forum":{"picstyle":true},"group":{"groupid":"7"},"tpp":"20","forum_threadlist":[]}}',
+              ),
+            );
+          },
+        ),
+      );
+      final client = ClassifiedFilters(
+        DiscuzWebClient(
+          ForumInteractionClient(dio, 'https://forum.test/community'),
+        ),
+      );
+      final field = (await client.load(3, 95)).single;
+      expect(field.title, 'Region');
+      expect(field.choices.map((choice) => choice.title), [
+        'Alpine',
+        'Coastal',
+      ]);
+      final query = {'filter': 'sortid', 'sortid': '95'};
+      field.addQuery(query, {'2', 'not a forum choice'});
+      final response = await client.display(3, 2, query);
+      expect(response.discuzIndexVariables.forum.pictureMode, isTrue);
+    },
+  );
+
+  test('reply reward and rush deadline survive a cache round trip', () {
+    final info = DetailedThreadInfo.fromJson({
+      'replycredit': '6',
+      'replycredit_rule': {
+        'extcredits': '2',
+        'extcreditstype': '2',
+        'remaining': '3',
+        'membertimes': '1',
+      },
+      'rushresult': {
+        'timer': '120',
+        'timertype': 'end',
+        'rewardfloor': '2,5',
+        'stopfloor': '20',
+        'creditlimit': '-996',
+        'replylimit': '2',
+      },
+    });
+    final result = DetailedThreadInfo.fromJson(jsonDecode(jsonEncode(info)));
+    expect(result.replyCredit, 6);
+    expect(result.creditRule?.remaining, 3);
+    expect(result.creditRule?.creditType, 2);
+    expect(result.rushReply?.rewardFloors, '2,5');
+    expect(result.rushReply?.perMember, 2);
+    expect(result.rushReply?.creditLimit, isEmpty);
+    expect(result.rushReply?.deadline, info.rushReply?.deadline);
+    expect(
+      Post.fromJson({'rewardfloor': 1, 'replycredit': '2'}).rewardFloor,
+      isTrue,
+    );
+  });
+
+  test(
     'forum search identifies a verification form before parsing results',
     () async {
       final dio = Dio()
         ..interceptors.add(
           InterceptorsWrapper(
             onRequest: (options, handler) {
-              expect(options.method, 'POST');
-              expect(options.data['srchfid'], '17');
-              expect(options.data['srchtxt'], 'quiz');
+              expect(options.method, 'GET');
+              expect(options.uri.queryParameters['adv'], '1');
               handler.resolve(
                 Response(
                   requestOptions: options,

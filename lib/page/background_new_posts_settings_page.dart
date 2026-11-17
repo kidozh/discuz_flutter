@@ -193,7 +193,7 @@ class _BackgroundNewPostsSettingsPageState
             const Center(
               child: Padding(
                 padding: EdgeInsets.all(12),
-                child: CircularProgressIndicator(),
+                child: PlatformCircularProgressIndicator(),
               ),
             ),
           Padding(

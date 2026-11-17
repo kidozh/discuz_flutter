@@ -1,6 +1,7 @@
 import '../utility/post_signature_service.dart';
 import '../utility/post_editor_controller.dart';
 import '../utility/reply_draft_store.dart';
+import '../utility/forum_composer_capabilities.dart';
 import '../utility/forum_pending_upload.dart';
 import '../widget/cupertino_separated_item.dart';
 import '../widget/PostRatingsInline.dart';
@@ -10,6 +11,7 @@ import 'forum_web_pages.dart';
 import 'ModerateThreadPage.dart';
 import '../widget/BestAnswerButton.dart';
 import '../widget/ForumInteractionWidgets.dart';
+import '../widget/reply_benefits_card.dart';
 
 import 'package:discuz_flutter/utility/app_motion.dart';
 import 'package:discuz_flutter/widget/message_composer_surface.dart';
@@ -164,6 +166,7 @@ class ViewThreadStatefulSliverWidget extends StatefulWidget {
 class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     with WidgetsBindingObserver {
   ViewThreadResult _viewThreadResult = ViewThreadResult();
+  Future<Map<int, String>>? _replyCreditNames;
   bool _isFirstLoading = true;
   DiscuzError? _error;
   List<Post> _postList = [];
@@ -286,7 +289,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   Future<void> _loadReplyDraft() async {
     final current = user;
     if (current == null || current.uid <= 0 || tid <= 0) return;
-    final store = ReplyDraftStore(discuz.siteIdentity, current.uid, tid);
+    final store = ReplyDraftStore(
+      discuz.siteIdentity,
+      current.uid,
+      tid,
+      title: widget.passedSubject ?? '',
+    );
     _draftStore = store;
     _replyTarget = context.read<ReplyPostNotifierProvider?>();
     _draftWriter = LatestValueWriter<ReplyDraft>(
@@ -358,6 +366,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     if (_restoringDraft) return;
     _draftEdited = true;
     if (!_draftReady) return;
+    _draftStore?.title =
+        _viewThreadResult.threadVariables.threadInfo.subject.isNotEmpty
+        ? _viewThreadResult.threadVariables.threadInfo.subject
+        : widget.passedSubject ?? '';
     final source = _replyController.text;
     final ids = PostEditorToken.inText(source)
         .where((token) => token.isPending)
@@ -430,6 +442,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
         tid: threadId,
         uid: uid,
         file: await store.file(entry),
+        capabilityScope: (site: discuz.siteIdentity, uid: uid, fid: fid),
         name: entry.name,
         image: entry.image,
         isCurrent: isCurrent,
@@ -836,6 +849,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
             final api = MobileApiClient(dio, baseUrl: discuz.baseURL);
             final permission = await api.checkPost(fid, threadId);
             if (!isCurrent()) return null;
+            await ForumComposerCapabilityCache.remember((
+              site: discuz.siteIdentity,
+              uid: user.uid,
+              fid: fid,
+            ), permission);
+            if (!isCurrent()) return null;
             if (permission.variables.member_uid != 0 &&
                 permission.variables.member_uid != user.uid)
               return null;
@@ -904,6 +923,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
           _captchaController.reloadCaptcha(requiredByServer: false);
         }
         EasyLoading.showSuccess(result!.content);
+        final thread = _viewThreadResult.threadVariables.threadInfo;
+        if (thread.replyCredit > 0 || thread.rushReply != null) {
+          _controller.callRefresh();
+        }
       } else {
         if (code == 'submit_seccode_invalid') {
           _captchaController.reloadCaptcha(requiredByServer: true);
@@ -1041,6 +1064,22 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
 
   Future<void> checkWithCacheResponse() async {}
 
+  Future<Map<int, String>> _loadReplyCreditNames(int uid) async {
+    final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    try {
+      final profile = await MobileApiClient(
+        dio,
+        baseUrl: discuz.baseURL,
+      ).userProfileResult(uid);
+      return {
+        for (final entry in profile.variables.extendCreditMap.entries)
+          if (int.tryParse(entry.key) case final type?) type: entry.value.title,
+      };
+    } finally {
+      dio.close();
+    }
+  }
+
   Future<IndicatorResult> _loadForumContent({
     int? refreshPage,
     bool clearCache = false,
@@ -1111,6 +1150,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
       final replies = variables.threadInfo.replies;
       setState(() {
         _viewThreadResult = value;
+        final profileUid = user?.uid ?? variables.threadInfo.authorId;
+        if (profileUid > 0 &&
+            variables.threadInfo.replyCredit > 0 &&
+            (variables.threadInfo.creditRule?.creditType ?? 0) > 0) {
+          _replyCreditNames ??= _loadReplyCreditNames(profileUid)
+              .catchError((Object _) => <int, String>{});
+        }
         _isFirstLoading = false;
         _error = null;
         _postList = update.posts;
@@ -1749,6 +1795,23 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                   },
                                 ),
                             ],
+                          ),
+                        ),
+                        SliverToBoxAdapter(
+                          child: FutureBuilder<Map<int, String>>(
+                            future: _replyCreditNames,
+                            builder: (context, names) {
+                              final thread =
+                                  _viewThreadResult.threadVariables.threadInfo;
+                              return ReplyBenefitsCard(
+                                pool: thread.replyCredit,
+                                credit: thread.creditRule,
+                                rush: thread.rushReply,
+                                closed: threadClosed,
+                                creditName:
+                                    names.data?[thread.creditRule?.creditType],
+                              );
+                            },
                           ),
                         ),
                         SliverToBoxAdapter(

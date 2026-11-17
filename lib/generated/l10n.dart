@@ -685,6 +685,66 @@ class S {
     );
   }
 
+  /// `Hold to talk`
+  String get voiceHoldToTalk {
+    return Intl.message(
+      'Hold to talk',
+      name: 'voiceHoldToTalk',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Release to send`
+  String get voiceReleaseSend {
+    return Intl.message(
+      'Release to send',
+      name: 'voiceReleaseSend',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Release to finish`
+  String get voiceReleaseFinish {
+    return Intl.message(
+      'Release to finish',
+      name: 'voiceReleaseFinish',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Slide up to cancel`
+  String get voiceSlideCancel {
+    return Intl.message(
+      'Slide up to cancel',
+      name: 'voiceSlideCancel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Release to cancel`
+  String get voiceReleaseCancel {
+    return Intl.message(
+      'Release to cancel',
+      name: 'voiceReleaseCancel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Use keyboard`
+  String get voiceUseKeyboard {
+    return Intl.message(
+      'Use keyboard',
+      name: 'voiceUseKeyboard',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Record voice`
   String get voiceRecord {
     return Intl.message(
@@ -2261,6 +2321,16 @@ class S {
     return Intl.message(
       'Open Website in webview',
       name: 'openViaInternalBrowser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You’ve left this forum`
+  String get browserOutsideForum {
+    return Intl.message(
+      'You’ve left this forum',
+      name: 'browserOutsideForum',
       desc: '',
       args: [],
     );
@@ -7336,6 +7406,161 @@ class S {
     );
   }
 
+  /// `Global rules`
+  String get creditGlobalRules {
+    return Intl.message(
+      'Global rules',
+      name: 'creditGlobalRules',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Maximum replies per member: {count}`
+  String rushReplyPerMember(int count) {
+    return Intl.message(
+      'Maximum replies per member: $count',
+      name: 'rushReplyPerMember',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Rules`
+  String get creditRules {
+    return Intl.message('Rules', name: 'creditRules', desc: '', args: []);
+  }
+
+  /// `Reply rewards`
+  String get replyCreditTitle {
+    return Intl.message(
+      'Reply rewards',
+      name: 'replyCreditTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reward per eligible reply: {amount} {credit}`
+  String replyCreditEach(int amount, String credit) {
+    return Intl.message(
+      'Reward per eligible reply: $amount $credit',
+      name: 'replyCreditEach',
+      desc: '',
+      args: [amount, credit],
+    );
+  }
+
+  /// `Rewards remaining: {count}`
+  String replyCreditRemaining(int count) {
+    return Intl.message(
+      'Rewards remaining: $count',
+      name: 'replyCreditRemaining',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Maximum per member: {count}`
+  String replyCreditPerMember(int count) {
+    return Intl.message(
+      'Maximum per member: $count',
+      name: 'replyCreditPerMember',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Chance of receiving a reward: {percent}%`
+  String replyCreditChance(int percent) {
+    return Intl.message(
+      'Chance of receiving a reward: $percent%',
+      name: 'replyCreditChance',
+      desc: '',
+      args: [percent],
+    );
+  }
+
+  /// `Reply reward +{amount}`
+  String replyCreditReceived(int amount) {
+    return Intl.message(
+      'Reply reward +$amount',
+      name: 'replyCreditReceived',
+      desc: '',
+      args: [amount],
+    );
+  }
+
+  /// `Rush replies`
+  String get rushReplyTitle {
+    return Intl.message(
+      'Rush replies',
+      name: 'rushReplyTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Winning floor`
+  String get rushReplyWinningFloor {
+    return Intl.message(
+      'Winning floor',
+      name: 'rushReplyWinningFloor',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Winning floors`
+  String get rushReplyRewardFloors {
+    return Intl.message(
+      'Winning floors',
+      name: 'rushReplyRewardFloors',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Closes at floor {floor}`
+  String rushReplyStopFloor(int floor) {
+    return Intl.message(
+      'Closes at floor $floor',
+      name: 'rushReplyStopFloor',
+      desc: '',
+      args: [floor],
+    );
+  }
+
+  /// `Minimum credits`
+  String get rushReplyMinimum {
+    return Intl.message(
+      'Minimum credits',
+      name: 'rushReplyMinimum',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Starts in {time}`
+  String rushReplyStartsIn(String time) {
+    return Intl.message(
+      'Starts in $time',
+      name: 'rushReplyStartsIn',
+      desc: '',
+      args: [time],
+    );
+  }
+
+  /// `Ends in {time}`
+  String rushReplyEndsIn(String time) {
+    return Intl.message(
+      'Ends in $time',
+      name: 'rushReplyEndsIn',
+      desc: '',
+      args: [time],
+    );
+  }
+
   /// `Classified information`
   String get specialClassified {
     return Intl.message(
@@ -9608,6 +9833,386 @@ class S {
       name: 'editPostAttachmentPartial',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Author username`
+  String get searchAuthor {
+    return Intl.message(
+      'Author username',
+      name: 'searchAuthor',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search full text`
+  String get searchFullText {
+    return Intl.message(
+      'Search full text',
+      name: 'searchFullText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Time range`
+  String get searchTime {
+    return Intl.message('Time range', name: 'searchTime', desc: '', args: []);
+  }
+
+  /// `Any time`
+  String get searchAnyTime {
+    return Intl.message('Any time', name: 'searchAnyTime', desc: '', args: []);
+  }
+
+  /// `Older than selected time`
+  String get searchOlder {
+    return Intl.message(
+      'Older than selected time',
+      name: 'searchOlder',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sort by`
+  String get searchOrder {
+    return Intl.message('Sort by', name: 'searchOrder', desc: '', args: []);
+  }
+
+  /// `Last reply`
+  String get searchLastPost {
+    return Intl.message(
+      'Last reply',
+      name: 'searchLastPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ascending order`
+  String get searchAscending {
+    return Intl.message(
+      'Ascending order',
+      name: 'searchAscending',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{credits} credits to next level`
+  String creditUpgradeRemaining(String credits) {
+    return Intl.message(
+      '$credits credits to next level',
+      name: 'creditUpgradeRemaining',
+      desc: '',
+      args: [credits],
+    );
+  }
+
+  /// `Drafts`
+  String get draftInbox {
+    return Intl.message('Drafts', name: 'draftInbox', desc: '', args: []);
+  }
+
+  /// `Choose the original account for this older draft. The forum checks attachment permissions when sending.`
+  String get draftChooseAccount {
+    return Intl.message(
+      'Choose the original account for this older draft. The forum checks attachment permissions when sending.',
+      name: 'draftChooseAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Older drafts, account unknown`
+  String get draftUnknownAccount {
+    return Intl.message(
+      'Older drafts, account unknown',
+      name: 'draftUnknownAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete draft`
+  String get draftDelete {
+    return Intl.message(
+      'Delete draft',
+      name: 'draftDelete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Untitled draft`
+  String get draftUntitled {
+    return Intl.message(
+      'Untitled draft',
+      name: 'draftUntitled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No drafts yet`
+  String get draftEmpty {
+    return Intl.message(
+      'No drafts yet',
+      name: 'draftEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reply`
+  String get draftReply {
+    return Intl.message('Reply', name: 'draftReply', desc: '', args: []);
+  }
+
+  /// `Quoting {author}`
+  String draftQuote(String author) {
+    return Intl.message(
+      'Quoting $author',
+      name: 'draftQuote',
+      desc: '',
+      args: [author],
+    );
+  }
+
+  /// `Keyword`
+  String get searchKeyword {
+    return Intl.message('Keyword', name: 'searchKeyword', desc: '', args: []);
+  }
+
+  /// `Search scope`
+  String get searchScope {
+    return Intl.message(
+      'Search scope',
+      name: 'searchScope',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Match in`
+  String get searchMatchIn {
+    return Intl.message('Match in', name: 'searchMatchIn', desc: '', args: []);
+  }
+
+  /// `Titles only`
+  String get searchTitleOnly {
+    return Intl.message(
+      'Titles only',
+      name: 'searchTitleOnly',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Titles and post text`
+  String get searchTitleAndBody {
+    return Intl.message(
+      'Titles and post text',
+      name: 'searchTitleAndBody',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Filters and sorting`
+  String get searchFiltersSort {
+    return Intl.message(
+      'Filters and sorting',
+      name: 'searchFiltersSort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Narrow the results`
+  String get searchNarrowResults {
+    return Intl.message(
+      'Narrow the results',
+      name: 'searchNarrowResults',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Arrange the results`
+  String get searchArrangeResults {
+    return Intl.message(
+      'Arrange the results',
+      name: 'searchArrangeResults',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Any author, or enter a username`
+  String get searchAuthorHint {
+    return Intl.message(
+      'Any author, or enter a username',
+      name: 'searchAuthorHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter words to find`
+  String get searchKeywordHint {
+    return Intl.message(
+      'Enter words to find',
+      name: 'searchKeywordHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search`
+  String get searchSubmit {
+    return Intl.message('Search', name: 'searchSubmit', desc: '', args: []);
+  }
+
+  /// `Search on the forum website`
+  String get searchWebsite {
+    return Intl.message(
+      'Search on the forum website',
+      name: 'searchWebsite',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search results`
+  String get searchResults {
+    return Intl.message(
+      'Search results',
+      name: 'searchResults',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Filters changed. Tap Search to update these results.`
+  String get searchConditionsChanged {
+    return Intl.message(
+      'Filters changed. Tap Search to update these results.',
+      name: 'searchConditionsChanged',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter keywords, or filter by an author or time range.`
+  String get searchStartHint {
+    return Intl.message(
+      'Enter keywords, or filter by an author or time range.',
+      name: 'searchStartHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No posts match these conditions. Try other keywords or broader filters.`
+  String get searchNoMatches {
+    return Intl.message(
+      'No posts match these conditions. Try other keywords or broader filters.',
+      name: 'searchNoMatches',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Direction`
+  String get searchDirection {
+    return Intl.message(
+      'Direction',
+      name: 'searchDirection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Newest first`
+  String get searchNewestFirst {
+    return Intl.message(
+      'Newest first',
+      name: 'searchNewestFirst',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Oldest first`
+  String get searchOldestFirst {
+    return Intl.message(
+      'Oldest first',
+      name: 'searchOldestFirst',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Highest first`
+  String get searchMostFirst {
+    return Intl.message(
+      'Highest first',
+      name: 'searchMostFirst',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Lowest first`
+  String get searchFewestFirst {
+    return Intl.message(
+      'Lowest first',
+      name: 'searchFewestFirst',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Time boundary`
+  String get searchTimeRelation {
+    return Intl.message(
+      'Time boundary',
+      name: 'searchTimeRelation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Within the last {period}`
+  String searchRecentPeriod(String period) {
+    return Intl.message(
+      'Within the last $period',
+      name: 'searchRecentPeriod',
+      desc: '',
+      args: [period],
+    );
+  }
+
+  /// `More than {period} ago`
+  String searchBeforePeriod(String period) {
+    return Intl.message(
+      'More than $period ago',
+      name: 'searchBeforePeriod',
+      desc: '',
+      args: [period],
+    );
+  }
+
+  /// `{count} loaded`
+  String searchLoadedResults(int count) {
+    return Intl.message(
+      '$count loaded',
+      name: 'searchLoadedResults',
+      desc: '',
+      args: [count],
     );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show mapEquals;
+import 'package:flutter/services.dart' show LengthLimitingTextInputFormatter;
 import 'package:provider/provider.dart';
 
 import '../client/ForumInteractionClient.dart';
@@ -16,6 +18,7 @@ import '../utility/discuz_json.dart';
 import '../utility/forum_error.dart';
 import '../utility/forum_navigation.dart';
 import '../widget/ErrorCard.dart';
+import '../widget/forum_search_result_card.dart';
 import 'InternalWebviewBrowserPage.dart';
 import 'ViewThreadSliverPage.dart';
 
@@ -71,6 +74,24 @@ class ForumSearchPage extends StatefulWidget {
 
 class _ForumSearchPageState extends State<ForumSearchPage> {
   final query = TextEditingController();
+  final author = TextEditingController();
+  ForumSearchForm? form;
+  bool fullText = false, ascending = false, older = false, didSearch = false;
+  String since = '0', order = 'lastpost';
+  bool filtersExpanded = false;
+  String submittedDescription = '';
+  final resultsAnchor = GlobalKey();
+  ForumSearchOptions? submittedOptions;
+  int? submittedBoard;
+  ForumSearchOptions get options => ForumSearchOptions(
+    author: author.text,
+    fullText: fullText,
+    since: since,
+    order: order,
+    ascending: ascending,
+    older: older,
+  );
+
   final hits = <ForumSearchHit>[];
   late final DiscuzAndUserNotifier account;
   late final Object session;
@@ -90,15 +111,80 @@ class _ForumSearchPageState extends State<ForumSearchPage> {
     account = context.read<DiscuzAndUserNotifier>();
     session = account.sessionIdentity;
     user = account.userFor(widget.discuz);
+    Future.microtask(loadForm);
   }
 
   @override
   void dispose() {
     query.dispose();
+    author.dispose();
     super.dispose();
   }
 
+  Future<void> loadForm() async {
+    setState(() => busy = true);
+    try {
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      try {
+        final value = await ForumSearchClient(
+          DiscuzWebClient(ForumInteractionClient(dio, widget.discuz.baseURL)),
+        ).loadForm();
+        if (current)
+          setState(() {
+            form = value;
+            error = null;
+          });
+      } finally {
+        dio.close();
+      }
+    } catch (failure) {
+      if (current)
+        setState(() => error = forumRequestError(S.of(context), failure));
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
+  Future<void> chooseSearchValue(
+    String title,
+    Map<String, String> choices,
+    String value,
+    void Function(String) changed,
+  ) async {
+    FocusScope.of(context).unfocus();
+    final selected = await showPlatformModalSheet<String>(
+      context: context,
+      builder: (sheet) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Semantics(
+                header: true,
+                child: Text(
+                  title,
+                  style: Theme.of(sheet).textTheme.titleMedium,
+                ),
+              ),
+            ),
+            for (final entry in choices.entries)
+              PlatformListTile(
+                title: Text(entry.value),
+                trailing: entry.key == value
+                    ? Icon(PlatformIcons(sheet).checkMark)
+                    : null,
+                onTap: () => Navigator.pop(sheet, entry.key),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (selected != null && current) setState(() => changed(selected));
+  }
+
   Future<void> selectBoard() async {
+    FocusScope.of(context).unfocus();
     setState(() => busy = true);
     try {
       final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
@@ -145,9 +231,6 @@ class _ForumSearchPageState extends State<ForumSearchPage> {
         setState(() {
           board = selection.id;
           boardName = selection.name;
-          submitted = '';
-          hits.clear();
-          next = null;
           error = null;
         });
       } finally {
@@ -165,18 +248,38 @@ class _ForumSearchPageState extends State<ForumSearchPage> {
     Uri.parse(widget.discuz.getBaseURLWithAfterfix()),
     keyword ?? query.text,
     board,
+    options: options,
   );
 
   Future<void> search({bool more = false}) async {
     final keyword = more ? submitted : query.text.trim();
-    if (!current || busy || keyword.isEmpty || (more && next == null)) return;
+    final selectedOptions = more ? submittedOptions! : options;
+    final selectedBoard = more ? submittedBoard : board;
+    if (!current ||
+        busy ||
+        (keyword.isEmpty &&
+            selectedOptions.author.trim().isEmpty &&
+            selectedOptions.since == '0') ||
+        (more && next == null))
+      return;
     final page = more ? next : null;
     FocusScope.of(context).unfocus();
     setState(() {
       busy = true;
       submitted = keyword;
+      didSearch = true;
+      submittedOptions = selectedOptions;
+      submittedBoard = selectedBoard;
       error = null;
       if (!more) {
+        filtersExpanded = false;
+        final s = S.of(context);
+        submittedDescription = [
+          if (keyword.isNotEmpty) '“$keyword”',
+          '${s.forumSearchBoard}: ${boardName ?? s.forumSearchAllBoards}',
+          selectedOptions.fullText ? s.searchTitleAndBody : s.searchTitleOnly,
+          filterSummary(selectedOptions),
+        ].join(' · ');
         next = null;
         hits.clear();
       }
@@ -187,7 +290,12 @@ class _ForumSearchPageState extends State<ForumSearchPage> {
         final client = ForumSearchClient(
           DiscuzWebClient(ForumInteractionClient(dio, widget.discuz.baseURL)),
         );
-        final result = await client.search(keyword, board, next: page);
+        final result = await client.search(
+          keyword,
+          selectedBoard,
+          next: page,
+          options: selectedOptions,
+        );
         if (!current) return;
         final seen = hits.map((hit) => hit.tid).toSet();
         setState(() {
@@ -213,20 +321,145 @@ class _ForumSearchPageState extends State<ForumSearchPage> {
             s.forumSearchVerification,
           ),
         );
-        await _openWebsite(context, widget.discuz, user, website(keyword));
+        await _openWebsite(
+          context,
+          widget.discuz,
+          user,
+          ForumSearchClient.website(
+            Uri.parse(widget.discuz.getBaseURLWithAfterfix()),
+            keyword,
+            selectedBoard,
+            options: selectedOptions,
+          ),
+        );
       } else {
         setState(() => error = display);
       }
     } finally {
       if (mounted) setState(() => busy = false);
+      if (current && !more && error == null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final target = resultsAnchor.currentContext;
+          if (current && target != null) {
+            Scrollable.ensureVisible(
+              target,
+              alignment: .05,
+              duration: const Duration(milliseconds: 250),
+            );
+          }
+        });
+      }
     }
   }
+
+  String directionLabel(ForumSearchOptions value) {
+    final s = S.of(context);
+    final counts = value.order == 'replies' || value.order == 'views';
+    return counts
+        ? (value.ascending ? s.searchFewestFirst : s.searchMostFirst)
+        : (value.ascending ? s.searchOldestFirst : s.searchNewestFirst);
+  }
+
+  String timeLabel(ForumSearchOptions value) {
+    final s = S.of(context);
+    if (value.since == '0') return s.searchAnyTime;
+    final period = form?.times[value.since] ?? value.since;
+    return value.older
+        ? s.searchBeforePeriod(period)
+        : s.searchRecentPeriod(period);
+  }
+
+  String filterSummary(ForumSearchOptions value) {
+    final s = S.of(context);
+    return [
+      if (value.author.trim().isNotEmpty)
+        '${s.searchAuthor}: ${value.author.trim()}',
+      timeLabel(value),
+      '${form?.orders[value.order] ?? s.searchLastPost} · ${directionLabel(value)}',
+    ].join(' · ');
+  }
+
+  bool get changedSinceSearch =>
+      didSearch &&
+      submittedOptions != null &&
+      (query.text.trim() != submitted ||
+          board != submittedBoard ||
+          !mapEquals(options.fields, submittedOptions!.fields));
+
+  Widget group(List<Widget> children) => PlatformCard(
+    margin: const EdgeInsets.only(bottom: 12),
+    elevation: 0,
+    clipBehavior: Clip.antiAlias,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: children,
+    ),
+  );
+
+  Widget sectionLabel(String label) => Padding(
+    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+    child: Semantics(
+      header: true,
+      child: Text(label, style: Theme.of(context).textTheme.titleSmall),
+    ),
+  );
+
+  Widget setting(
+    String label,
+    String value,
+    VoidCallback? action, {
+    IconData? icon,
+  }) {
+    final theme = Theme.of(context);
+    return PlatformListTile(
+      leading: icon == null ? null : Icon(icon, size: 22),
+      title: Text(
+        label,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
+      subtitle: Text(value, style: theme.textTheme.titleSmall),
+      isThreeLine: isCupertino(context),
+      trailing: action == null
+          ? null
+          : Icon(
+              PlatformIcons(context)
+                  .pick(Icons.chevron_right, CupertinoIcons.chevron_right),
+              size: 18,
+            ),
+      onTap: busy ? null : action,
+    );
+  }
+
+  Widget field(String label, String hint, TextEditingController controller) =>
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(label, style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 8),
+            PlatformTextField(
+              controller: controller,
+              inputFormatters: [LengthLimitingTextInputFormatter(40)],
+              enabled: !busy,
+              hintText: hint,
+              textInputAction: TextInputAction.search,
+              onChanged: (_) => setState(() {}),
+              onSubmitted: (_) => search(),
+            ),
+          ],
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
     context.watch<DiscuzAndUserNotifier>();
     final s = S.of(context);
     final icons = PlatformIcons(context);
+    final theme = Theme.of(context);
+    final available = form;
     return PlatformScaffold(
       iosContentPadding: true,
       iosContentBottomPadding: true,
@@ -234,61 +467,233 @@ class _ForumSearchPageState extends State<ForumSearchPage> {
       body: !current
           ? Center(child: Text(s.forumAccountChanged))
           : ListView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               padding: const EdgeInsets.all(16),
               children: [
-                PlatformTextField(
-                  controller: query,
-                  maxLength: 40,
-                  hintText: s.forumSearchKeyword,
-                  textInputAction: TextInputAction.search,
-                  onSubmitted: (_) => search(),
-                ),
-                PlatformListTile(
-                  leading: Icon(
-                    icons.pick(
-                      Icons.filter_list,
-                      CupertinoIcons.line_horizontal_3_decrease,
+                group([
+                  field(s.searchKeyword, s.searchKeywordHint, query),
+                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  sectionLabel(s.searchScope),
+                  setting(
+                    s.forumSearchBoard,
+                    boardName ?? s.forumSearchAllBoards,
+                    selectBoard,
+                    icon: icons.pick(
+                      Icons.folder_outlined,
+                      CupertinoIcons.folder,
                     ),
                   ),
-                  title: Text(boardName ?? s.forumSearchAllBoards),
-                  onTap: busy ? null : selectBoard,
-                ),
-                Wrap(
-                  children: [
-                    PlatformTextButton(
-                      onPressed: busy ? null : () => search(),
-                      child: Text(s.forumSearchWeb),
+                  if (available != null)
+                    setting(
+                      s.searchMatchIn,
+                      fullText ? s.searchTitleAndBody : s.searchTitleOnly,
+                      available.fullText
+                          ? () => chooseSearchValue(
+                              s.searchMatchIn,
+                              {
+                                'title': s.searchTitleOnly,
+                                'fulltext': s.searchTitleAndBody,
+                              },
+                              fullText ? 'fulltext' : 'title',
+                              (v) => fullText = v == 'fulltext',
+                            )
+                          : null,
+                      icon: icons.pick(
+                        Icons.manage_search,
+                        CupertinoIcons.doc_text_search,
+                      ),
                     ),
-                    PlatformTextButton(
-                      onPressed: busy
-                          ? null
-                          : () => _openWebsite(
-                              context,
-                              widget.discuz,
-                              user,
-                              website(),
+                ]),
+                if (available != null)
+                  group([
+                    PlatformListTile(
+                      key: const ValueKey('search-filters-toggle'),
+                      leading: Icon(
+                        icons.pick(
+                          Icons.tune,
+                          CupertinoIcons.slider_horizontal_3,
+                        ),
+                      ),
+                      title: Text(
+                        s.searchFiltersSort,
+                        style: theme.textTheme.titleMedium,
+                      ),
+                      subtitle: Text(filterSummary(options)),
+                      isThreeLine: true,
+                      trailing: Icon(
+                        icons.pick(
+                          filtersExpanded
+                              ? Icons.expand_less
+                              : Icons.expand_more,
+                          filtersExpanded
+                              ? CupertinoIcons.chevron_up
+                              : CupertinoIcons.chevron_down,
+                        ),
+                      ),
+                      onTap: () {
+                        FocusScope.of(context).unfocus();
+                        setState(() => filtersExpanded = !filtersExpanded);
+                      },
+                    ),
+                    if (filtersExpanded) ...[
+                      const Divider(height: 1, indent: 16, endIndent: 16),
+                      sectionLabel(s.searchNarrowResults),
+                      field(s.searchAuthor, s.searchAuthorHint, author),
+                      setting(
+                        s.searchTime,
+                        timeLabel(options),
+                        () => chooseSearchValue(
+                          s.searchTime,
+                          available.times,
+                          since,
+                          (v) {
+                            since = v;
+                            if (v == '0') older = false;
+                          },
+                        ),
+                      ),
+                      if (since != '0')
+                        setting(
+                          s.searchTimeRelation,
+                          timeLabel(options),
+                          () => chooseSearchValue(
+                            s.searchTimeRelation,
+                            {
+                              'recent': s.searchRecentPeriod(
+                                available.times[since] ?? since,
+                              ),
+                              'older': s.searchBeforePeriod(
+                                available.times[since] ?? since,
+                              ),
+                            },
+                            older ? 'older' : 'recent',
+                            (v) => older = v == 'older',
+                          ),
+                        ),
+                      const Divider(height: 1, indent: 16, endIndent: 16),
+                      sectionLabel(s.searchArrangeResults),
+                      setting(
+                        s.searchOrder,
+                        available.orders[order] ?? s.searchLastPost,
+                        () => chooseSearchValue(
+                          s.searchOrder,
+                          available.orders,
+                          order,
+                          (v) => order = v,
+                        ),
+                      ),
+                      setting(
+                        s.searchDirection,
+                        directionLabel(options),
+                        () => chooseSearchValue(
+                          s.searchDirection,
+                          {
+                            'desc': directionLabel(
+                              ForumSearchOptions(order: order),
                             ),
-                      child: Text(s.specialOpenWebsite),
+                            'asc': directionLabel(
+                              ForumSearchOptions(order: order, ascending: true),
+                            ),
+                          },
+                          ascending ? 'asc' : 'desc',
+                          (v) => ascending = v == 'asc',
+                        ),
+                      ),
+                    ],
+                  ]),
+                if (available != null && available.notice.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Text(
+                      available.notice,
+                      style: theme.textTheme.bodySmall,
                     ),
-                  ],
+                  ),
+                PlatformElevatedButton(
+                  widgetKey: const ValueKey('search-submit'),
+                  color: theme.colorScheme.primary,
+                  onPressed:
+                      busy ||
+                          (query.text.trim().isEmpty &&
+                              author.text.trim().isEmpty &&
+                              since == '0')
+                      ? null
+                      : () => search(),
+                  child: Text(
+                    s.searchSubmit,
+                    style: TextStyle(color: theme.colorScheme.onPrimary),
+                  ),
+                ),
+                PlatformTextButton(
+                  onPressed: busy
+                      ? null
+                      : () => _openWebsite(
+                          context,
+                          widget.discuz,
+                          user,
+                          website(),
+                        ),
+                  child: Text(s.searchWebsite),
                 ),
                 if (error case final failure?)
                   ErrorCard(failure, null, largeSize: false),
-                if (submitted.isNotEmpty &&
-                    !busy &&
-                    error == null &&
-                    hits.isEmpty)
-                  Text(s.forumEmpty),
-                for (final hit in hits)
-                  PlatformListTile(
-                    title: Text(hit.title),
-                    subtitle: Text(
-                      [
-                        hit.board,
-                        hit.details,
-                        hit.excerpt,
-                      ].where((part) => part.isNotEmpty).join('\n'),
+                if (didSearch) ...[
+                  const SizedBox(height: 16),
+                  Semantics(
+                    key: resultsAnchor,
+                    header: true,
+                    child: Text(
+                      s.searchResults,
+                      style: theme.textTheme.titleLarge,
                     ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    submittedDescription,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  if (changedSinceSearch)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        s.searchConditionsChanged,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 12),
+                  if (hits.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(
+                        s.searchLoadedResults(hits.length),
+                        style: theme.textTheme.labelMedium,
+                      ),
+                    ),
+                  if (!busy && error == null && hits.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      child: Text(s.searchNoMatches),
+                    ),
+                ] else if (!busy && error == null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    child: Text(
+                      s.searchStartHint,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                for (final hit in hits)
+                  ForumSearchResultCard(
+                    key: ValueKey('search-hit-${hit.tid}'),
+                    hit: hit,
+                    keyword: submitted,
                     onTap: () => _openThread(context, widget.discuz, user, (
                       tid: hit.tid,
                       pid: null,

@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../JsonResult/CheckPostResult.dart';
 
@@ -46,47 +44,6 @@ ForumVoiceOptions? forumVoiceOptions(AllowPerm permission) {
     }
   }
   return preferred;
-}
-
-/// Reuses the posting permission response already needed to open the composer.
-/// Does not save an upload hash, authentication data or a recorder file.
-Future<ForumVoiceOptions?> rememberForumVoice(
-  String scope,
-  AllowPerm permission, {
-  DateTime? now,
-}) async {
-  final fresh = forumVoiceOptions(permission);
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final key = 'forum_voice.${base64Url.encode(utf8.encode(scope))}';
-    final time = (now ?? DateTime.now()).millisecondsSinceEpoch;
-    final entry = prefs.getString(key);
-    final parts = entry?.split(':');
-    final checked = int.tryParse(parts?.first ?? '');
-    final valid =
-        checked != null &&
-        time >= checked &&
-        time - checked < const Duration(days: 1).inMilliseconds;
-    if (valid && parts!.length == 3) {
-      final format = ForumVoiceFormat.values
-          .where((format) => format.name == parts[1])
-          .firstOrNull;
-      final max = int.tryParse(parts[2]);
-      final cached = format != null && max != null && max >= 1 && max <= 60
-          ? (format: format, maxSeconds: max)
-          : null;
-      if (cached == fresh) return cached;
-    }
-    // Existing server replies also invalidate an older grant or lower the cap
-    // when the board changes its rules during the day.
-    await prefs.setString(
-      key,
-      '$time:${fresh?.format.name ?? ''}:${fresh?.maxSeconds ?? 0}',
-    );
-  } catch (_) {
-    // Availability still follows the server if preferences cannot be read.
-  }
-  return fresh;
 }
 
 bool isForumAudioFile(String name) => const {

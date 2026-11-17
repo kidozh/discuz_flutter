@@ -17,6 +17,7 @@ class ForumVoiceMessage extends StatefulWidget {
     this.localFile,
     this.foreground,
     this.save,
+    this.onRemove,
     super.key,
   });
 
@@ -25,6 +26,7 @@ class ForumVoiceMessage extends StatefulWidget {
   final Duration? durationHint;
   final Color? foreground;
   final VoidCallback? save;
+  final VoidCallback? onRemove;
 
   static Future<void> pausePlayback() async {
     final previous = _ForumVoiceMessageState.active;
@@ -123,16 +125,25 @@ class _ForumVoiceMessageState extends State<ForumVoiceMessage> {
         ? widget.foreground!.withValues(alpha: 0.12)
         : ios
         ? CupertinoColors.tertiarySystemFill.resolveFrom(context)
+        : widget.onRemove != null
+        ? colors.surfaceContainerHighest
         : colors.secondaryContainer;
     final foreground =
         widget.foreground ??
-        (ios ? colors.onSurface : colors.onSecondaryContainer);
+        (ios || widget.onRemove != null
+            ? colors.onSurface
+            : colors.onSecondaryContainer);
     final seconds = (duration ?? widget.durationHint)?.inSeconds ?? 0;
     return Align(
+      heightFactor: 1,
+      widthFactor: 1,
       alignment: AlignmentDirectional.centerStart,
       child: SizedBox(
         width:
-            144.0 + seconds.clamp(0, 60) * 1.5 + (widget.save == null ? 0 : 44),
+            144.0 +
+            seconds.clamp(0, 60) * 1.5 +
+            (widget.save == null ? 0 : 44) +
+            (widget.onRemove == null ? 0 : 44),
         child: Row(
           children: [
             Flexible(
@@ -160,97 +171,178 @@ class _ForumVoiceMessageState extends State<ForumVoiceMessage> {
                                     length.inMilliseconds)
                                 .clamp(0.0, 1.0);
                       final radius = BorderRadius.circular(ios ? 22 : 16);
-                      final content = ConstrainedBox(
-                        constraints: const BoxConstraints(minHeight: 48),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          child: Row(
-                            children: [
-                              if (loading)
-                                const SizedBox.square(
-                                  dimension: 20,
-                                  child: PlatformCircularProgressIndicator(),
-                                )
-                              else
-                                Icon(
-                                  failed
-                                      ? PlatformIcons(context).error
-                                      : playing
-                                      ? ios
-                                            ? CupertinoIcons.pause_fill
-                                            : Icons.pause_rounded
-                                      : ios
-                                      ? CupertinoIcons.play_fill
-                                      : Icons.play_arrow_rounded,
-                                  size: 21,
-                                  color: foreground,
-                                ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: failed
-                                    ? Text(
-                                        strings.voicePlaybackFailed,
-                                        style: TextStyle(
-                                          color: foreground,
-                                          fontSize: 12,
-                                        ),
-                                      )
-                                    : SizedBox(
-                                        height: 20,
-                                        child: CustomPaint(
-                                          painter: _VoiceProgress(
-                                            foreground,
-                                            progress,
-                                            Directionality.of(context),
+                      final content = LayoutBuilder(
+                        builder: (context, constraints) {
+                          final compact =
+                              constraints.maxWidth <
+                              120 +
+                                  (MediaQuery.textScalerOf(context).scale(13) -
+                                          13) *
+                                      4;
+                          return ConstrainedBox(
+                            constraints: const BoxConstraints(minHeight: 48),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: compact ? 6 : 12,
+                                vertical: 6,
+                              ),
+                              child: Row(
+                                children: [
+                                  if (loading)
+                                    const SizedBox.square(
+                                      dimension: 20,
+                                      child:
+                                          PlatformCircularProgressIndicator(),
+                                    )
+                                  else
+                                    Icon(
+                                      failed
+                                          ? PlatformIcons(context).error
+                                          : playing
+                                          ? ios
+                                                ? CupertinoIcons.pause_fill
+                                                : Icons.pause_rounded
+                                          : ios
+                                          ? CupertinoIcons.play_fill
+                                          : Icons.play_arrow_rounded,
+                                      size: 21,
+                                      color: foreground,
+                                    ),
+                                  if (compact && !failed) ...[
+                                    const SizedBox(width: 6),
+                                    Expanded(
+                                      child: Align(
+                                        alignment:
+                                            AlignmentDirectional.centerEnd,
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Text(
+                                            count,
+                                            style: TextStyle(
+                                              color: foreground,
+                                              fontSize: 13,
+                                              fontFeatures: const [
+                                                FontFeature.tabularFigures(),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
-                              ),
-                              if (!failed) ...[
-                                const SizedBox(width: 8),
-                                Text(
-                                  count,
-                                  style: TextStyle(
-                                    color: foreground,
-                                    fontSize: 13,
-                                    fontFeatures: const [
-                                      FontFeature.tabularFigures(),
+                                    ),
+                                  ] else ...[
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: failed
+                                          ? Text(
+                                              strings.voicePlaybackFailed,
+                                              style: TextStyle(
+                                                color: foreground,
+                                                fontSize: 12,
+                                              ),
+                                            )
+                                          : SizedBox(
+                                              height: 20,
+                                              child: CustomPaint(
+                                                painter: _VoiceProgress(
+                                                  foreground,
+                                                  progress,
+                                                  Directionality.of(context),
+                                                ),
+                                              ),
+                                            ),
+                                    ),
+                                    if (!failed) ...[
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        count,
+                                        style: TextStyle(
+                                          color: foreground,
+                                          fontSize: 13,
+                                          fontFeatures: const [
+                                            FontFeature.tabularFigures(),
+                                          ],
+                                        ),
+                                      ),
                                     ],
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          );
+                        },
                       );
-                      return Semantics(
+                      final playback = Semantics(
                         label:
                             '${strings.voiceMessage}, $count, ${failed ? strings.retry : action}',
                         button: true,
                         onTap: loading ? null : _toggle,
                         excludeSemantics: true,
                         child: ios
-                            ? DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: background,
-                                  borderRadius: radius,
-                                ),
-                                child: CupertinoButton(
-                                  padding: EdgeInsets.zero,
-                                  onPressed: _toggle,
-                                  child: content,
-                                ),
+                            ? CupertinoButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: loading ? null : _toggle,
+                                child: content,
                               )
-                            : Material(
-                                color: background,
-                                borderRadius: radius,
-                                clipBehavior: Clip.antiAlias,
-                                child: InkWell(onTap: _toggle, child: content),
+                            : InkWell(
+                                onTap: loading ? null : _toggle,
+                                child: content,
                               ),
                       );
+                      final bubble = Row(
+                        children: [
+                          Expanded(child: playback),
+                          if (widget.onRemove != null) ...[
+                            SizedBox(
+                              height: 20,
+                              child: VerticalDivider(
+                                width: 1,
+                                thickness: 1,
+                                color: colors.onSurface.withValues(alpha: .12),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 44,
+                              height: 48,
+                              child: ios
+                                  ? CupertinoButton(
+                                      padding: EdgeInsets.zero,
+                                      onPressed: widget.onRemove,
+                                      child: Icon(
+                                        CupertinoIcons.xmark,
+                                        size: 17,
+                                        color: colors.onSurfaceVariant,
+                                        semanticLabel:
+                                            strings.removeComposerAttachment,
+                                      ),
+                                    )
+                                  : IconButton(
+                                      padding: EdgeInsets.zero,
+                                      onPressed: widget.onRemove,
+                                      tooltip: strings.removeComposerAttachment,
+                                      icon: Icon(
+                                        Icons.close_rounded,
+                                        size: 18,
+                                        color: colors.onSurfaceVariant,
+                                      ),
+                                    ),
+                            ),
+                          ],
+                        ],
+                      );
+                      return ios
+                          ? ClipRRect(
+                              borderRadius: radius,
+                              child: ColoredBox(
+                                color: background,
+                                child: bubble,
+                              ),
+                            )
+                          : Material(
+                              color: background,
+                              borderRadius: radius,
+                              clipBehavior: Clip.antiAlias,
+                              child: bubble,
+                            );
                     },
                   );
                 },

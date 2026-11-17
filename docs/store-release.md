@@ -1,6 +1,6 @@
 # 发布正式版
 
-1. 更新 `pubspec.yaml` 的版本和构建号，填写 `docs/releases/<版本>.md` 和 `docs/testflight-release-notes.txt`。正式版说明的标题以 `版本号 (构建号)` 结尾，正文开头的 Markdown 列表会用作两个商店的简体中文更新说明。Google Play 限制为 500 字符。
+1. 更新 `pubspec.yaml` 的版本和构建号，填写 `docs/releases/<版本>.md` 和 `docs/testflight-release-notes.txt`。正式版说明的标题以 `版本号 (构建号)` 结尾。标题下的 Markdown 列表用作共通说明，`## iOS` 下的条目只给 App Store，`## Android` 下的条目只给 Google Play。Google Play 的共通条目和 Android 条目合计最多 500 字符。TestFlight 说明只写 iOS 测试内容及适用的共通变化。
 2. 把改动合入 `master`，等普通 CI 通过。在 GitHub Releases 选中该提交对应的 `v版本+构建号` tag，然后发布正式 Release。例如 `v2.0.19+177`。可先保存草稿。
 3. 检查 GitHub Actions 的 `Build & Release` 和 `Upload iOS to App Store Connect`。前者附上 GitHub 下载文件并提交 Google Play 正式版，后者上传 iOS、核对 TestFlight 说明、提交现有外测组和 App Store 正式版。预发行版、草稿、普通 commit 和单独推送 tag 都不触发商店提交。
 

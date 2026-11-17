@@ -50,6 +50,11 @@ import '../provider/DiscuzNotificationProvider.dart';
 import '../provider/UserPreferenceNotifierProvider.dart';
 import '../screen/TwoPaneEmptyScreen.dart';
 import '../utility/EasyRefreshUtils.dart';
+import '../utility/discuz_json.dart';
+import '../widget/classified_filter_fields.dart';
+import '../client/classified_filters.dart';
+import '../client/discuz_web_client.dart';
+import '../client/ForumInteractionClient.dart';
 import 'SettingPage.dart';
 
 class DisplayForumSliverPage extends StatelessWidget {
@@ -334,10 +339,19 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         identical(_session, account.sessionIdentity);
     try {
       final dio = await NetworkUtils.getDioWithPersistCookieJar(currentUser);
-      final response = await MobileApiClient(
-        dio,
-        baseUrl: discuz.baseURL,
-      ).displayForumResult(fid.toString(), page, query);
+      final DisplayForumResult response;
+      try {
+        response = query.keys.any((key) => key.startsWith('searchoption['))
+            ? await ClassifiedFilters(
+                DiscuzWebClient(ForumInteractionClient(dio, discuz.baseURL)),
+              ).display(fid, page, query)
+            : await MobileApiClient(
+                dio,
+                baseUrl: discuz.baseURL,
+              ).displayForumResult(fid.toString(), page, query);
+      } finally {
+        dio.close();
+      }
       if (!isCurrent()) return IndicatorResult.fail;
       final variables = response.discuzIndexVariables;
       final error = EasyRefreshUtils.responseError(
@@ -677,35 +691,58 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 }, childCount: 1),
               ),
 
-            SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ForumThreadWidget(
-                      discuz,
-                      user,
-                      _forumThreadList[index],
-                      _displayForumResult.discuzIndexVariables.threadType,
-                      onSelectTid,
-                      afterTid: index < _forumThreadList.length - 1
-                          ? _forumThreadList[index + 1].getTid()
-                          : null,
-                    ),
-                    if (index % 15 == 0 && index != 0)
-                      Consumer<UserPreferenceNotifierProvider>(
-                        builder: (context, value, child) {
-                          if (value.signature.includesApp && index > 10) {
-                            return Container();
-                          } else {
-                            return const AppBannerAdWidget();
-                          }
-                        },
+            if (_displayForumResult.discuzIndexVariables.forum.pictureMode)
+              SliverPadding(
+                padding: const EdgeInsets.all(10),
+                sliver: SliverGrid.builder(
+                  key: const ValueKey('forum-cover-grid'),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 240,
+                    mainAxisExtent: 184,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                  ),
+                  itemCount: _forumThreadList.length,
+                  itemBuilder: (context, index) => ForumThreadWidget(
+                    discuz,
+                    user,
+                    _forumThreadList[index],
+                    _displayForumResult.discuzIndexVariables.threadType,
+                    onSelectTid,
+                    pictureTile: true,
+                  ),
+                ),
+              )
+            else
+              SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ForumThreadWidget(
+                        discuz,
+                        user,
+                        _forumThreadList[index],
+                        _displayForumResult.discuzIndexVariables.threadType,
+                        onSelectTid,
+                        afterTid: index < _forumThreadList.length - 1
+                            ? _forumThreadList[index + 1].getTid()
+                            : null,
                       ),
-                  ],
-                );
-              }, childCount: _forumThreadList.length),
-            ),
+                      if (index % 15 == 0 && index != 0)
+                        Consumer<UserPreferenceNotifierProvider>(
+                          builder: (context, value, child) {
+                            if (value.signature.includesApp && index > 10) {
+                              return Container();
+                            } else {
+                              return const AppBannerAdWidget();
+                            }
+                          },
+                        ),
+                    ],
+                  );
+                }, childCount: _forumThreadList.length),
+              ),
           ],
         ),
       ),
@@ -780,6 +817,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   }
 
   void _showForumFilterBottomSheet(BuildContext context) {
+    final sortConfig = _displayForumResult.discuzIndexVariables.threadSorts;
+    final categories = discuzMap(sortConfig['types']);
+    final defaultSort = discuzInt(sortConfig['defaultshow']);
     List<ThreadTypeInfo> threadTypeList = [];
     if (_displayForumResult.discuzIndexVariables.threadType != null) {
       ThreadType threadType =
@@ -794,6 +834,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
             final colors = Theme.of(context).colorScheme;
+            final sortId = _displayForumQuery.sortId ?? defaultSort;
 
             Widget filterSection(
               IconData icon,
@@ -849,6 +890,52 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
             return ListView(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
               children: [
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: PlatformTextButton(
+                    onPressed: () => Navigator.pop(sheetContext),
+                    child: Text(S.of(context).forumConfirm),
+                  ),
+                ),
+                if (categories.isNotEmpty) ...[
+                  filterSection(
+                    PlatformIcons(context).category,
+                    S.of(context).specialClassified,
+                    [
+                      PlatformChoiceChip(
+                        label: Text(S.of(context).forumFilterStatusAll),
+                        selected: sortId == 0,
+                        onSelected: (_) => setModalState(
+                          () => _displayForumQuery.setSortId(0),
+                        ),
+                      ),
+                      for (final category in categories.entries)
+                        if (discuzInt(category.key) > 0)
+                          PlatformChoiceChip(
+                            label: Text(discuzString(category.value)),
+                            selected: sortId == discuzInt(category.key),
+                            onSelected: (selected) => setModalState(
+                              () => _displayForumQuery.setSortId(
+                                selected ? discuzInt(category.key) : 0,
+                              ),
+                            ),
+                          ),
+                    ],
+                  ),
+                  if (sortId > 0 && categories.containsKey('$sortId'))
+                    ClassifiedFilterFields(
+                      key: ValueKey(sortId),
+                      discuz: discuz,
+                      user: user,
+                      fid: fid,
+                      sortId: sortId,
+                      selection: _displayForumQuery.classifiedSelection,
+                      onChanged: (values) {
+                        _displayForumQuery.sortId = sortId;
+                        _displayForumQuery.classifiedQuery = values;
+                      },
+                    ),
+                ],
                 if (threadTypeList.isNotEmpty)
                   filterSection(
                     PlatformIcons(context).category,
@@ -1100,6 +1187,9 @@ class DisplayForumActionControls extends StatelessWidget {
 
 class DisplayForumQuery {
   int typeId = 0, dateline = 0;
+  int? sortId;
+  final classifiedSelection = <String, Set<String>>{};
+  Map<String, String> classifiedQuery = {};
   String specialType = "", orderBy = "lastpost";
   String filter = "";
 
@@ -1109,6 +1199,8 @@ class DisplayForumQuery {
       other is DisplayForumQuery &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId &&
+          sortId == other.sortId &&
+          mapEquals(classifiedQuery, other.classifiedQuery) &&
           dateline == other.dateline &&
           specialType == other.specialType &&
           orderBy == other.orderBy &&
@@ -1117,6 +1209,10 @@ class DisplayForumQuery {
   @override
   int get hashCode =>
       typeId.hashCode ^
+      sortId.hashCode ^
+      Object.hashAllUnordered(
+        classifiedQuery.entries.map((e) => Object.hash(e.key, e.value)),
+      ) ^
       dateline.hashCode ^
       specialType.hashCode ^
       orderBy.hashCode ^
@@ -1165,9 +1261,18 @@ class DisplayForumQuery {
   void setHot(bool selected) {
     if (selected) {
       this.filter = "hot";
+      if (sortId != null) setSortId(0);
     } else {
       this.filter = "";
     }
+  }
+
+  void setSortId(int id) {
+    if (sortId == id) return;
+    sortId = id;
+    classifiedSelection.clear();
+    classifiedQuery = {};
+    if (id > 0 && filter == 'hot') filter = '';
   }
 
   void setDigest(bool selected) {
@@ -1206,6 +1311,15 @@ class DisplayForumQuery {
       }
     }
 
+    if (sortId case final category?) {
+      if (category == 0) {
+        forumQueriesMap['sortall'] = '1';
+      } else {
+        forumQueriesMap['filter'] = 'sortid';
+        forumQueriesMap['sortid'] = '$category';
+        forumQueriesMap.addAll(classifiedQuery);
+      }
+    }
     return forumQueriesMap;
   }
 }

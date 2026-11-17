@@ -1,7 +1,6 @@
 import 'package:discuz_flutter/JsonResult/CheckPostResult.dart';
 import 'package:discuz_flutter/utility/forum_voice.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   AllowPerm permission({int? mp3, int? remaining, int count = -1}) =>
@@ -32,46 +31,6 @@ void main() {
       maxSeconds: 60,
     ));
   });
-
-  test(
-    'daily capability is scoped and a server refusal invalidates it',
-    () async {
-      SharedPreferences.setMockInitialValues({});
-      final now = DateTime.utc(2026, 1, 1);
-      final enabled = permission(mp3: -1);
-      const primary = 'https://example.test|1|2';
-      const secondary = 'https://example.test|1|3';
-      expect(await rememberForumVoice(primary, enabled, now: now), isNotNull);
-      final prefs = await SharedPreferences.getInstance();
-      final key = prefs.getKeys().single;
-      final first = prefs.getString(key);
-      expect(
-        await rememberForumVoice(secondary, permission(mp3: 0), now: now),
-        isNull,
-      );
-      expect(prefs.getKeys().length, 2);
-      await rememberForumVoice(
-        primary,
-        enabled,
-        now: now.add(const Duration(hours: 23)),
-      );
-      expect(prefs.getString(key), first);
-      await rememberForumVoice(
-        primary,
-        enabled,
-        now: now.add(const Duration(days: 1)),
-      );
-      expect(prefs.getString(key), isNot(first));
-      expect(
-        await rememberForumVoice(
-          primary,
-          permission(mp3: 0),
-          now: now.add(const Duration(days: 1)),
-        ),
-        isNull,
-      );
-    },
-  );
 
   test('recording requires permission to upload MP3 and a remaining slot', () {
     expect(seconds(permission()), 0);

@@ -8,7 +8,7 @@ from pathlib import Path
 from prepare_testflight_notes import prepare_notes, read_version
 
 
-def prepare_release(tag):
+def prepare_release(tag, platform='android'):
     version, build = read_version(Path('pubspec.yaml'))
     expected_tag = f'v{version}+{build}'
     if tag != expected_tag:
@@ -20,25 +20,30 @@ def prepare_release(tag):
     heading, _, body = notes_file.read_text(encoding='utf-8').partition('\n')
     if not heading.rstrip().endswith(f'{version} ({build})'):
         raise ValueError(f'{notes_file} must have a heading ending with {version} ({build}).')
-    lines = []
+    sections = {'shared': [], 'ios': [], 'android': []}
+    section = 'shared'
     for line in body.splitlines():
         if line.startswith('## '):
-            break
-        if line.startswith('- '):
-            lines.append(f'• {line[2:].strip()}')
-    notes = '\n'.join(lines)
-    if not notes or len(notes) > 500:
-        raise ValueError(f'{notes_file} must contain 1–500 characters of user-facing release notes.')
+            heading = line[3:].strip().lower()
+            section = heading if heading in ('ios', 'android') else None
+        elif section and line.startswith('- ') and (entry := line[2:].strip()):
+            sections[section].append(f'• {entry}')
+    notes = '\n'.join(sections['shared'] + sections[platform])
+    if not notes:
+        raise ValueError(f'{notes_file} has no release notes for {platform}.')
+    if platform == 'android' and len(notes) > 500:
+        raise ValueError(f'{notes_file} must contain at most 500 characters of Google Play release notes.')
     return {'version': version, 'build': build, 'notes': notes}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--tag', required=True)
+    parser.add_argument('--platform', choices=('ios', 'android'), default='android')
     parser.add_argument('--output', type=Path)
     args = parser.parse_args()
     try:
-        release = prepare_release(args.tag)
+        release = prepare_release(args.tag, args.platform)
         if args.output:
             args.output.parent.mkdir(parents=True, exist_ok=True)
             args.output.write_text(json.dumps(release, ensure_ascii=False) + '\n', encoding='utf-8')

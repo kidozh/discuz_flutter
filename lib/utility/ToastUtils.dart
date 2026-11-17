@@ -94,19 +94,20 @@ class ToastUtils {
 
   static void _configureEasyLoading(BuildContext context) {
     final glass = usesAppleTranslucentSurface(context);
+    final ios = isCupertino(context);
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final labelColor = glass
+    final labelColor = ios
         ? CupertinoColors.label.resolveFrom(context)
         : colors.onInverseSurface;
-    final indicatorColor = glass ? labelColor : colors.onInverseSurface;
-    final successColor = glass
+    final indicatorColor = labelColor;
+    final successColor = ios
         ? CupertinoColors.systemGreen.resolveFrom(context)
         : colors.primary;
-    final errorColor = glass
+    final errorColor = ios
         ? CupertinoColors.systemRed.resolveFrom(context)
         : colors.error;
-    final infoColor = glass
+    final infoColor = ios
         ? CupertinoColors.systemBlue.resolveFrom(context)
         : colors.primary;
 
@@ -127,8 +128,12 @@ class ToastUtils {
       ..textPadding = const EdgeInsets.only(bottom: 10)
       ..fontSize = 15
       ..textAlign = TextAlign.center
-      ..backgroundColor = glass ? Colors.transparent : colors.inverseSurface
-      ..boxShadow = glass
+      ..backgroundColor = glass
+          ? Colors.transparent
+          : ios
+          ? CupertinoColors.secondarySystemBackground.resolveFrom(context)
+          : colors.inverseSurface
+      ..boxShadow = ios
           ? const []
           : [
               BoxShadow(
@@ -147,23 +152,23 @@ class ToastUtils {
         height: 1.25,
         fontWeight: glass ? FontWeight.w600 : FontWeight.w500,
       )
-      ..indicatorWidget = glass
+      ..indicatorWidget = ios
           ? CupertinoActivityIndicator(radius: 14, color: indicatorColor)
           : CircularProgressIndicator(strokeWidth: 2.4, color: indicatorColor)
       ..successWidget = Icon(
-        glass ? CupertinoIcons.check_mark_circled_solid : Icons.check_circle,
+        ios ? CupertinoIcons.check_mark_circled_solid : Icons.check_circle,
         color: successColor,
         size: glass ? 30 : 32,
       )
       ..errorWidget = Icon(
-        glass
+        ios
             ? CupertinoIcons.exclamationmark_triangle_fill
             : Icons.error_rounded,
         color: errorColor,
         size: glass ? 30 : 32,
       )
       ..infoWidget = Icon(
-        glass ? CupertinoIcons.info_circle_fill : Icons.info_rounded,
+        ios ? CupertinoIcons.info_circle_fill : Icons.info_rounded,
         color: infoColor,
         size: glass ? 30 : 32,
       );

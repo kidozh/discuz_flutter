@@ -92,7 +92,7 @@ Future<void> showGoogleTranslationInfo(BuildContext context) =>
                           onPressed: () => launchUrl(Uri.parse(_policyUrl)),
                           child: Text(S.of(context).googleTranslationPolicy),
                         )
-                      : const CircularProgressIndicator(),
+                      : const PlatformCircularProgressIndicator(),
                 ),
                 const SizedBox(height: 8),
                 TextButton(

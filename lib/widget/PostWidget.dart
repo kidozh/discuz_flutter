@@ -752,6 +752,19 @@ class PostState extends State<PostStatefulWidget> {
         isBestAnswer: widget.isBestAnswer,
         onSelectPost: jumpToPidCallback,
       ),
+      if (_post.replycredit > 0 || _post.rewardFloor)
+        Padding(
+          padding: const EdgeInsets.only(top: 4, bottom: 4),
+          child: Text(
+            [
+              if (_post.replycredit > 0)
+                S.of(context).replyCreditReceived(_post.replycredit),
+              if (_post.rewardFloor) S.of(context).rushReplyWinningFloor,
+            ].join(' · '),
+            style: Theme.of(context).textTheme.labelMedium
+                ?.copyWith(color: Theme.of(context).colorScheme.primary),
+          ),
+        ),
       const SizedBox(height: 8),
       PostSummaryWidget(
         key: ValueKey((_discuz.baseURL, _post.pid, widget.sessionUid)),

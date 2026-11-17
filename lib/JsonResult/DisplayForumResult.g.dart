@@ -51,6 +51,7 @@ ForumVariables _$ForumVariablesFromJson(Map<String, dynamic> json) =>
       ..threadType = json['threadtypes'] == null
           ? null
           : ThreadType.fromJson(json['threadtypes'] as Map<String, dynamic>)
+      ..threadSorts = discuzMap(json['threadsorts'])
       ..subForumList =
           (json['sublist'] as List<dynamic>?)
               ?.map((e) => SubForum.fromJson(e as Map<String, dynamic>))
@@ -77,6 +78,7 @@ Map<String, dynamic> _$ForumVariablesToJson(ForumVariables instance) =>
       'page': instance.page,
       'reward_unit': instance.rewardUnit,
       'threadtypes': instance.threadType,
+      'threadsorts': instance.threadSorts,
       'sublist': instance.subForumList,
     };
 
@@ -89,7 +91,7 @@ ForumDetail _$ForumDetailFromJson(Map<String, dynamic> json) => ForumDetail()
   ..rules = json['rules'] as String? ?? ''
   ..name = json['name'] as String? ?? ''
   ..password = json['password'] as String? ?? ''
-  ..picStyle = json['picstyle'] as String? ?? ''
+  ..pictureMode = ForumDetail._pictureMode(json['picstyle'])
   ..autoClose = json['autoclose'] as String? ?? ''
   ..threadCount = json['threadcount'] as String? ?? '0'
   ..iconUrl = json['icon'] as String? ?? ''
@@ -106,7 +108,7 @@ Map<String, dynamic> _$ForumDetailToJson(ForumDetail instance) =>
       'rules': instance.rules,
       'name': instance.name,
       'password': instance.password,
-      'picstyle': instance.picStyle,
+      'picstyle': instance.pictureMode,
       'autoclose': instance.autoClose,
       'threadcount': instance.threadCount,
       'icon': instance.iconUrl,

@@ -1,4 +1,3 @@
-
 import 'package:hive_ce/hive.dart';
 
 import '../utility/ConstUtils.dart';
@@ -7,7 +6,7 @@ import 'Discuz.dart';
 part 'Draft.g.dart';
 
 @HiveType(typeId: ConstUtils.HIVE_TYPE_ID_DRAFT)
-class Draft extends HiveObject{
+class Draft extends HiveObject {
   @HiveField(1)
   String title;
   @HiveField(2)
@@ -30,9 +29,20 @@ class Draft extends HiveObject{
   @HiveField(10, defaultValue: '')
   String specialThreadJson = '';
 
+  @HiveField(11, defaultValue: 0)
+  int uid = 0;
+  @HiveField(12, defaultValue: '')
+  String pendingAttachmentsJson = '';
+
   @HiveField(7)
   String typeid;
 
-
-  Draft(this.title, this.text, this.fid, this.typeid, this.updateTime, this.discuz);
+  Draft(
+    this.title,
+    this.text,
+    this.fid,
+    this.typeid,
+    this.updateTime,
+    this.discuz,
+  );
 }

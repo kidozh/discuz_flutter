@@ -1558,11 +1558,19 @@ class PlatformBackButton extends StatelessWidget {
 
 class PlatformCircularProgressIndicator extends StatelessWidget {
   final Key? widgetKey;
+  final double? value;
+  final Color? color;
+  final double strokeWidth;
+  final double radius;
   final PlatformBuilder<adaptive.MaterialProgressIndicatorData>? material;
   final PlatformBuilder<adaptive.CupertinoProgressIndicatorData>? cupertino;
 
   const PlatformCircularProgressIndicator({
     this.widgetKey,
+    this.value,
+    this.color,
+    this.strokeWidth = 4,
+    this.radius = 10,
     this.material,
     this.cupertino,
     super.key,
@@ -1573,20 +1581,33 @@ class PlatformCircularProgressIndicator extends StatelessWidget {
     final target = platform(context);
     if (isCupertino(context)) {
       final data = cupertino?.call(context, target);
+      final progress = value;
+      if (progress != null && progress.isFinite) {
+        final fraction = progress.clamp(0.0, 1.0);
+        return Semantics(
+          value: '${(fraction * 100).round()}%',
+          child: CupertinoActivityIndicator.partiallyRevealed(
+            key: widgetKey,
+            color: data?.color ?? color,
+            radius: data?.radius ?? radius,
+            progress: fraction,
+          ),
+        );
+      }
       return CupertinoActivityIndicator(
         key: widgetKey,
-        color: data?.color,
+        color: data?.color ?? color,
         animating: data?.animating ?? true,
-        radius: data?.radius ?? 10,
+        radius: data?.radius ?? radius,
       );
     }
     final data = material?.call(context, target);
     return CircularProgressIndicator(
       key: widgetKey,
-      color: data?.color,
-      value: data?.value,
+      color: data?.color ?? color,
+      value: data?.value ?? value,
       backgroundColor: data?.backgroundColor,
-      strokeWidth: data?.strokeWidth ?? 4,
+      strokeWidth: data?.strokeWidth ?? strokeWidth,
       valueColor: data?.valueColor,
       semanticsLabel: data?.semanticsLabel,
       semanticsValue: data?.semanticsValue,

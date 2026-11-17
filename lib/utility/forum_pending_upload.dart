@@ -10,6 +10,7 @@ import '../generated/l10n.dart';
 import 'forum_attachment_upload.dart';
 import 'forum_error.dart';
 import 'forum_image_upload_utils.dart';
+import 'forum_composer_capabilities.dart';
 
 Future<String> uploadPendingForumAttachment({
   required MobileApiClient api,
@@ -22,11 +23,15 @@ Future<String> uploadPendingForumAttachment({
   required bool image,
   required bool Function() isCurrent,
   bool replying = true,
+  ForumComposerScope? capabilityScope,
 }) async {
   if (!await file.exists() || await file.length() <= 0) {
     throw DiscuzError('attachment_unreadable', strings.replyDraftUploadMissing);
   }
   final post = await api.checkPost(fid, tid > 0 ? tid : null);
+  if (isCurrent() && capabilityScope != null) {
+    await ForumComposerCapabilityCache.remember(capabilityScope, post);
+  }
   final error = forumResponseError(strings, post);
   if (error != null) throw error;
   final permission = post.variables.allowPerm;

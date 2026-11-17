@@ -364,5 +364,5 @@ jobs:
         env:
           PLAY_ACCESS_TOKEN: ${{ steps.play_auth.outputs.access_token }}
         run: |
-          python3 scripts/prepare_store_release.py --tag "$GITHUB_REF_NAME" --output dist/store-release.json
+          python3 scripts/prepare_store_release.py --tag "$GITHUB_REF_NAME" --platform android --output dist/store-release.json
           node scripts/submit_google_play.mjs dist/store-release.json dist/app-release.aab

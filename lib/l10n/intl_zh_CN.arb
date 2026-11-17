@@ -109,6 +109,12 @@
   "openInBrowser": "在浏览器中打开",
   "writeStorageDenied": "无法获得写入权限。",
   "saveImageSuccessfully": "成功保存图片至此设备中.",
+  "voiceHoldToTalk": "按住说话",
+  "voiceReleaseSend": "松开发送",
+  "voiceReleaseFinish": "松开完成录音",
+  "voiceSlideCancel": "手指上滑，取消录音",
+  "voiceReleaseCancel": "松开取消",
+  "voiceUseKeyboard": "切回键盘",
   "voiceRecord": "录制语音",
   "voiceStart": "开始录音",
   "voiceStop": "停止录音",
@@ -423,6 +429,7 @@
   "brightnessLight": "浅色",
   "brightnessDark": "深色",
   "openViaInternalBrowser": "在内置浏览器打开",
+  "browserOutsideForum": "已离开当前论坛",
   "smileyLabel": "表情 {index}",
   "@smileyLabel": {
     "placeholders": {
@@ -714,9 +721,27 @@
   "unstickReply": "取消置顶这条回复",
   "motionPhotoPlay": "播放动态照片",
   "motionPhotoUnavailable": "这张图片没有可播放的动态照片视频。",
-  "@pollSelectUpTo": {"placeholders": {"count": {"type": "int"}}},
-  "@activityCustomFields": {"placeholders": {"count": {"type": "int"}}},
-  "@rewardTotal": {"placeholders": {"amount": {"type": "String"}}},
+  "@pollSelectUpTo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@activityCustomFields": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@rewardTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "pollTitle": "投票",
   "pollNotAllowed": "目前您无法参与投票。(显示的投中的选项与真实结果不符合)",
   "contactUsViaEmail": "邮件联系我们",
@@ -737,13 +762,31 @@
   "forumHttpForbidden": "服务器拒绝访问（HTTP 403）。请确认访问权限，或在浏览器中打开站点。",
   "forumHttpMissing": "请求的页面或资源不存在。请检查地址，或从论坛重新打开。",
   "forumHttpTimeout": "服务器处理请求超时（HTTP {status}）。请稍后重试。",
-  "@forumHttpTimeout": {"placeholders": {"status": {"type": "String"}}},
+  "@forumHttpTimeout": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
   "forumHttpTooLarge": "请求超过服务器大小限制（HTTP 413）。请尝试上传更小的文件。",
   "forumHttpRateLimited": "请求过于频繁（HTTP 429）。请稍等片刻再试。",
   "forumHttpServerError": "服务器暂时无法处理请求（HTTP {status}）。请稍后重试。",
-  "@forumHttpServerError": {"placeholders": {"status": {"type": "String"}}},
+  "@forumHttpServerError": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
   "forumHttpRejected": "服务器拒绝了请求（HTTP {status}）。可以在浏览器中确认站点是否可访问。",
-  "@forumHttpRejected": {"placeholders": {"status": {"type": "String"}}},
+  "@forumHttpRejected": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
   "forumResponseProcessingTimeout": "App 处理服务器返回的数据时超时。",
   "forumUnexpectedResponse": "App 无法读取服务器返回的数据。请刷新后重试。",
   "forumUnexpectedError": "操作遇到了意外错误。请重试。",
@@ -1158,6 +1201,22 @@
   "specialRewardAmount": "悬赏金额",
   "specialBestAnswer": "查看最佳答案",
   "specialActivity": "活动",
+  "creditGlobalRules": "全局规则",
+  "rushReplyPerMember": "每人最多回帖 {count} 次",
+  "creditRules": "积分规则",
+  "replyCreditTitle": "回帖奖励",
+  "replyCreditEach": "每次可获 {amount} {credit}",
+  "replyCreditRemaining": "剩余 {count} 份",
+  "replyCreditPerMember": "每人最多 {count} 次",
+  "replyCreditChance": "奖励概率 {percent}%",
+  "replyCreditReceived": "回帖奖励 +{amount}",
+  "rushReplyTitle": "抢楼",
+  "rushReplyWinningFloor": "中奖楼层",
+  "rushReplyRewardFloors": "中奖楼层",
+  "rushReplyStopFloor": "到第 {floor} 楼结束",
+  "rushReplyMinimum": "积分门槛",
+  "rushReplyStartsIn": "距离开始 {time}",
+  "rushReplyEndsIn": "距离结束 {time}",
   "specialClassified": "分类信息",
   "specialOpenWebsite": "在网页中查看详情",
   "activityPlace": "地点",
@@ -1312,7 +1371,11 @@
   "backgroundNewPostsSelectSites": "请选择至少一个论坛站点。",
   "backgroundNewPostsWaiting": "等待设备空闲后检查",
   "backgroundNewPostsLastCheck": "上次成功检查：{time}",
-  "@backgroundNewPostsLastCheck": {"placeholders": {"time": {}}},
+  "@backgroundNewPostsLastCheck": {
+    "placeholders": {
+      "time": {}
+    }
+  },
   "backgroundNewPostsCheckFailed": "最近检查失败，将在下次满足条件时重试",
   "backgroundNewPostsPermissionRequired": "请在系统设置中允许新帖通知。",
   "backgroundNewPostsSystemSettings": "系统通知设置",
@@ -1379,9 +1442,21 @@
   "postTextCopied": "正文已复制",
   "postCopyEmpty": "这条帖子没有可复制的文字。",
   "composerImageLabel": "图片 {number}",
-  "@composerImageLabel": {"placeholders": {"number": {"type": "int"}}},
+  "@composerImageLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "removeComposerImage": "移除图片 {number}",
-  "@removeComposerImage": {"placeholders": {"number": {"type": "int"}}},
+  "@removeComposerImage": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "forumSearchKeyword": "帖子标题关键词",
   "forumSearchAllBoards": "全部版块",
   "forumSearchBoard": "搜索版块",
@@ -1392,7 +1467,13 @@
   "activityReviewNotify": "通知报名者",
   "activityReviewReject": "拒绝报名",
   "activityReviewConfirm": "确认对选中的 {count} 位报名者执行此操作？",
-  "@activityReviewConfirm": {"placeholders": {"count": {"type": "int"}}},
+  "@activityReviewConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "activityReviewReason": "理由或通知内容",
   "activityReviewReasonRequired": "请填写通知内容。",
   "activityReviewChanged": "报名状态已变化，请刷新后重新选择。",
@@ -1412,13 +1493,84 @@
   "editPostEmpty": "请输入正文和必填标题。",
   "editPostSubject": "标题",
   "editPostRemoveConfirm": "保存修改并移除 {count} 个现有附件？",
-  "@editPostRemoveConfirm": {"placeholders": {"count": {"type": "int"}}},
+  "@editPostRemoveConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "editPostPollOption": "投票选项 {number}",
-  "@editPostPollOption": {"placeholders": {"number": {"type": "int"}}},
+  "@editPostPollOption": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "editPostPollMaximum": "每人最多选几项",
   "editPostPollDays": "距离投票结束的天数",
   "editPostPollVisibility": "投票后才显示结果",
   "editPostPollVoterList": "公开投票参与人",
   "editPostModeration": "修改已提交，等待论坛审核。",
-  "editPostAttachmentPartial": "论坛可能已移除部分附件。请打开论坛网页核对帖子和附件状态。"
+  "editPostAttachmentPartial": "论坛可能已移除部分附件。请打开论坛网页核对帖子和附件状态。",
+  "searchAuthor": "作者用户名",
+  "searchFullText": "搜索正文",
+  "searchTime": "时间范围",
+  "searchAnyTime": "不限时间",
+  "searchOlder": "搜索所选时间之前",
+  "searchOrder": "排序方式",
+  "searchLastPost": "最后回复",
+  "searchAscending": "升序排列",
+  "creditUpgradeRemaining": "升级还需 {credits} 积分",
+  "draftInbox": "草稿箱",
+  "draftChooseAccount": "请选择这份旧草稿原来使用的账号。附件权限会在发送时由论坛检查。",
+  "draftUnknownAccount": "旧草稿，账号未记录",
+  "draftDelete": "删除草稿",
+  "draftUntitled": "未命名草稿",
+  "draftEmpty": "还没有草稿",
+  "draftReply": "回帖",
+  "draftQuote": "引用 {author}",
+  "@creditUpgradeRemaining": {
+    "placeholders": {
+      "credits": {
+        "type": "String"
+      }
+    }
+  },
+  "@draftQuote": {
+    "placeholders": {
+      "author": {
+        "type": "String"
+      }
+    }
+  },
+  "searchKeyword": "关键词",
+  "searchScope": "搜索范围",
+  "searchMatchIn": "匹配内容",
+  "searchTitleOnly": "仅标题",
+  "searchTitleAndBody": "标题和正文",
+  "searchFiltersSort": "筛选与排序",
+  "searchNarrowResults": "缩小结果范围",
+  "searchArrangeResults": "排列搜索结果",
+  "searchAuthorHint": "不限作者，可填写用户名",
+  "searchKeywordHint": "输入要查找的关键词",
+  "searchSubmit": "搜索",
+  "searchWebsite": "在论坛网页搜索",
+  "searchResults": "搜索结果",
+  "searchConditionsChanged": "条件已修改，点击“搜索”更新结果。",
+  "searchStartHint": "输入关键词，或在筛选中指定作者、时间。",
+  "searchNoMatches": "没有符合这些条件的帖子，试试更换关键词或放宽筛选。",
+  "searchDirection": "排列顺序",
+  "searchNewestFirst": "从新到旧",
+  "searchOldestFirst": "从旧到新",
+  "searchMostFirst": "从多到少",
+  "searchFewestFirst": "从少到多",
+  "searchTimeRelation": "时间关系",
+  "searchRecentPeriod": "最近 {period}",
+  "@searchRecentPeriod": {"placeholders": {"period": {"type": "String"}}},
+  "searchBeforePeriod": "{period}以前",
+  "@searchBeforePeriod": {"placeholders": {"period": {"type": "String"}}},
+  "searchLoadedResults": "已加载 {count} 条",
+  "@searchLoadedResults": {"placeholders": {"count": {"type": "int"}}}
 }

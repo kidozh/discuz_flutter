@@ -20,10 +20,16 @@ import 'InternalWebviewBrowserPage.dart';
 import 'ViewThreadSliverPage.dart';
 
 class CreditOverviewCard extends StatelessWidget {
-  const CreditOverviewCard(this.profile, {this.onHistory, super.key});
+  const CreditOverviewCard(
+    this.profile, {
+    this.onHistory,
+    this.showUpgrade = false,
+    super.key,
+  });
 
   final UserProfileVariables profile;
   final VoidCallback? onHistory;
+  final bool showUpgrade;
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +90,39 @@ class CreditOverviewCard extends StatelessWidget {
                     ),
                   ],
                 ),
+                if (space.upgrade case final upgrade? when showUpgrade) ...[
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          space.groupInfo.groupTitle,
+                          style: theme.textTheme.titleSmall,
+                        ),
+                      ),
+                      Text('${upgrade.percent}%'),
+                    ],
+                  ),
+                  Semantics(
+                    label: strings.creditUpgradeRemaining(
+                      numbers.format(upgrade.remaining),
+                    ),
+                    value: '${upgrade.percent}%',
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: LinearProgressIndicator(
+                        value: upgrade.percent / 100,
+                        minHeight: 6,
+                        backgroundColor: colors.surfaceContainerHighest,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    strings.creditUpgradeRemaining(
+                      numbers.format(upgrade.remaining),
+                    ),
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ],
                 if (profile.extendCreditMap.isNotEmpty)
                   SizedBox(
                     width: double.infinity,
@@ -168,7 +207,11 @@ class _CreditPageState extends State<CreditPage> {
   Uri? next;
   DiscuzError? error;
   bool busy = true;
-  bool rewards = false;
+  int selectedTab = 0;
+  bool get rewards => selectedTab == 1;
+  bool get rules => selectedTab == 2;
+  int? ruleBoard;
+  Map<int, String> ruleBoards = {};
   int requestNumber = 0;
 
   bool get current =>
@@ -194,6 +237,8 @@ class _CreditPageState extends State<CreditPage> {
     if (!current || (more && (busy || next == null))) return;
     final page = more ? next : null;
     final selectedRewards = rewards;
+    final selectedRules = rules;
+    final selectedBoard = ruleBoard;
     final request = ++requestNumber;
     bool isActive() => current && request == requestNumber;
     setState(() {
@@ -212,10 +257,16 @@ class _CreditPageState extends State<CreditPage> {
           DiscuzWebClient(ForumInteractionClient(dio, widget.discuz.baseURL)),
           widget.user.uid,
         );
-        final result = await client.load(rewards: selectedRewards, next: page);
+        final ruleResult = selectedRules
+            ? await client.loadRules(fid: selectedBoard)
+            : null;
+        final CreditBatch result = ruleResult == null
+            ? await client.load(rewards: selectedRewards, next: page)
+            : (entries: ruleResult.entries, next: null);
         if (!isActive()) return;
         setState(() {
           entries.addAll(result.entries);
+          if (ruleResult != null) ruleBoards = ruleResult.boards;
           next = result.next == page ? null : result.next;
         });
       } finally {
@@ -231,11 +282,42 @@ class _CreditPageState extends State<CreditPage> {
   }
 
   void selectTab(int index) {
-    final selection = index == 1;
-    if (selection == rewards) return;
-    rewards = selection;
+    if (index == selectedTab) return;
+    selectedTab = index;
     if (scrollController.hasClients) scrollController.jumpTo(0);
     load();
+  }
+
+  Future<void> chooseRuleBoard() async {
+    final chosen = await showPlatformModalSheet<int>(
+      context: context,
+      builder: (sheet) => SafeArea(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(sheet).height * 0.6,
+          ),
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              PlatformListTile(
+                title: Text(S.of(sheet).creditGlobalRules),
+                onTap: () => Navigator.pop(sheet, 0),
+              ),
+              for (final board in ruleBoards.entries)
+                PlatformListTile(
+                  title: Text(board.value),
+                  onTap: () => Navigator.pop(sheet, board.key),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (!current || !rules || chosen == null || chosen == (ruleBoard ?? 0))
+      return;
+    ruleBoard = chosen == 0 ? null : chosen;
+    if (scrollController.hasClients) scrollController.jumpTo(0);
+    await load();
   }
 
   void openWebsite(Uri uri) {
@@ -274,6 +356,7 @@ class _CreditPageState extends State<CreditPage> {
     context.watch<DiscuzAndUserNotifier>();
     final s = S.of(context);
     final theme = Theme.of(context);
+    final base = Uri.parse(widget.discuz.getBaseURLWithAfterfix());
     return PlatformScaffold(
       iosContentPadding: true,
       iosContentBottomPadding: true,
@@ -288,10 +371,9 @@ class _CreditPageState extends State<CreditPage> {
             liquidGlassSymbol: 'globe',
             onPressed: current
                 ? () => openWebsite(
-                    CreditHistoryClient.website(
-                      Uri.parse(widget.discuz.getBaseURLWithAfterfix()),
-                      rewards: rewards,
-                    ),
+                    rules
+                        ? CreditHistoryClient.rulesWebsite(base, fid: ruleBoard)
+                        : CreditHistoryClient.website(base, rewards: rewards),
                   )
                 : null,
           ),
@@ -304,11 +386,20 @@ class _CreditPageState extends State<CreditPage> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                   child: PlatformSegmentedControl(
-                    labels: [s.creditTransactions, s.creditRewards],
-                    selectedIndex: rewards ? 1 : 0,
+                    labels: [
+                      s.creditTransactions,
+                      s.creditRewards,
+                      s.creditRules,
+                    ],
+                    selectedIndex: selectedTab,
                     onValueChanged: selectTab,
                   ),
                 ),
+                if (rules && ruleBoards.isNotEmpty)
+                  PlatformTextButton(
+                    onPressed: chooseRuleBoard,
+                    child: Text(ruleBoards[ruleBoard] ?? s.creditGlobalRules),
+                  ),
                 Expanded(
                   child: CustomScrollView(
                     controller: scrollController,
@@ -316,7 +407,10 @@ class _CreditPageState extends State<CreditPage> {
                       SliverPadding(
                         padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                         sliver: SliverToBoxAdapter(
-                          child: CreditOverviewCard(widget.profile),
+                          child: CreditOverviewCard(
+                            widget.profile,
+                            showUpgrade: true,
+                          ),
                         ),
                       ),
                       SliverPadding(

@@ -6,9 +6,10 @@ import '../generated/l10n.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
 import '../utility/forum_error.dart';
 import '../utility/forum_voice.dart';
+import '../utility/forum_composer_capabilities.dart';
 import 'ErrorCard.dart';
 
-/// Keeps the editor out of reach until the server confirms this operation.
+/// Uses a recent board capability for editing. Sending rechecks the server.
 /// Changing account/forum must provide a new key to discard the old grant.
 class PostPermissionGate extends StatefulWidget {
   final Future<CheckPostResult> Function() load;
@@ -39,35 +40,50 @@ class _PostPermissionGateState extends State<PostPermissionGate> {
   @override
   void initState() {
     super.initState();
-    _load();
+    _load(useCache: true);
   }
 
-  Future<void> _load() async {
+  Future<void> _load({bool useCache = false}) async {
     setState(() {
       _loading = true;
       _serverError = null;
     });
     try {
+      final scope = widget.voiceScope;
+      if (useCache && scope != null) {
+        final cached = await ForumComposerCapabilityCache.read(scope);
+        if (!mounted) return;
+        if (cached != null) {
+          setState(() {
+            _allowed = widget.reply
+                ? cached.permission.allowReply
+                : cached.permission.allowPost;
+            _voice = canRecordForumVoice ? cached.voice : null;
+          });
+          return;
+        }
+      }
       final result = await widget.load();
       if (!mounted) return;
       final error = forumResponseError(S.of(context), result);
-      final scope = widget.voiceScope;
+      if (scope != null) {
+        await ForumComposerCapabilityCache.remember(scope, result);
+      }
       final allow = result.variables.allowPerm;
       final options =
           error == null &&
               canRecordForumVoice &&
               scope != null &&
               result.variables.member_uid == scope.uid
-          ? await rememberForumVoice(
-              '${scope.site}|${scope.uid}|${scope.fid}',
-              allow,
-            )
+          ? forumVoiceOptions(allow)
           : null;
       if (!mounted) return;
       setState(() {
         _serverError = error;
         _voice = options;
-        _allowed = error == null
+        _allowed =
+            error == null &&
+                (scope == null || result.variables.member_uid == scope.uid)
             ? (widget.reply ? allow.allowReply : allow.allowPost)
             : null;
       });

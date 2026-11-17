@@ -96,18 +96,36 @@ class ReplyDraft {
   }
 }
 
+class ReplyDraftSummary {
+  const ReplyDraftSummary(
+    this.site,
+    this.uid,
+    this.tid,
+    this.title,
+    this.updated,
+    this.draft,
+  );
+  final String site, title;
+  final int uid, tid;
+  final DateTime updated;
+  final ReplyDraft draft;
+}
+
 class ReplyDraftStore {
   ReplyDraftStore(
-    String site,
-    int uid,
+    this.site,
+    this.uid,
     this.tid, {
     Future<Directory> Function()? root,
+    this.title = '',
   }) : _root = root ?? getApplicationSupportDirectory,
        _key = sha256
            .convert(utf8.encode(jsonEncode([site, uid, tid])))
            .toString();
 
-  final int tid;
+  final int tid, uid;
+  final String site;
+  String title;
   final Future<Directory> Function() _root;
   final String _key;
   static final _random = Random.secure();
@@ -178,6 +196,124 @@ class ReplyDraftStore {
     }
   }
 
+  Future<void> delete() async {
+    await write(const ReplyDraft(text: ''));
+    // Files use a grace period, so an editor or in-flight upload still holding
+    // a snapshot cannot lose its attachment underneath it.
+  }
+
+  static Future<Map<String, Set<int>>> indexedAccounts({
+    Future<Directory> Function()? root,
+  }) async {
+    final base = await (root ?? getApplicationSupportDirectory)();
+    final folder = Directory('${base.path}/reply-drafts');
+    final accounts = <String, Set<int>>{};
+    if (!await folder.exists()) return accounts;
+    await for (final item in folder.list(followLinks: false)) {
+      if (item is! Directory) continue;
+      try {
+        final record = File('${item.path}/draft.json');
+        if (!await record.exists()) continue;
+        final data = discuzMap(jsonDecode(await record.readAsString()));
+        final site = discuzString(data['site']);
+        final uid = discuzInt(data['uid']), tid = discuzInt(data['tid']);
+        if (site.isEmpty || uid <= 0 || tid <= 0) continue;
+        final store = ReplyDraftStore(site, uid, tid);
+        if (item.uri.pathSegments.where((s) => s.isNotEmpty).last != store._key)
+          continue;
+        (accounts[site] ??= {}).add(uid);
+      } on FileSystemException {
+        continue;
+      } on FormatException {
+        continue;
+      }
+    }
+    return accounts;
+  }
+
+  static Future<List<ReplyDraftSummary>> listFor(
+    String site,
+    int uid, {
+    Map<int, String> knownThreads = const {},
+    Future<Directory> Function()? root,
+  }) async {
+    final base = await (root ?? getApplicationSupportDirectory)();
+    final directory = Directory('${base.path}/reply-drafts');
+    if (!await directory.exists()) return [];
+    final result = <ReplyDraftSummary>[];
+    final found = <int>{};
+    await for (final item in directory.list(followLinks: false)) {
+      if (item is! Directory) continue;
+      try {
+        final record = File('${item.path}/draft.json');
+        if (!await record.exists()) continue;
+        final data = discuzMap(jsonDecode(await record.readAsString()));
+        final indexed = data.containsKey('site');
+        final tid = discuzInt(
+          indexed ? data['tid'] : discuzMap(data['quote'])['tid'],
+        );
+        if (tid <= 0 ||
+            (indexed &&
+                (data['site'] != site || discuzInt(data['uid']) != uid)))
+          continue;
+        final store = ReplyDraftStore(site, uid, tid, root: () async => base);
+        if (item.uri.pathSegments.where((s) => s.isNotEmpty).last != store._key)
+          continue;
+        final saved = await store.read();
+        if (saved == null || saved.empty) continue;
+        found.add(tid);
+        result.add(
+          ReplyDraftSummary(
+            site,
+            uid,
+            tid,
+            discuzString(data['title']).isNotEmpty
+                ? discuzString(data['title'])
+                : knownThreads[tid] ?? '',
+            await record.lastModified(),
+            saved,
+          ),
+        );
+      } on FileSystemException {
+        continue;
+      } on FormatException {
+        continue;
+      }
+    }
+    // Pre-index drafts were addressed only by a hash. Recover their IDs from
+    // locally known threads without assigning them to another account.
+    for (final thread in knownThreads.entries) {
+      if (thread.key <= 0 || found.contains(thread.key)) continue;
+      final store = ReplyDraftStore(
+        site,
+        uid,
+        thread.key,
+        root: () async => base,
+      );
+      try {
+        final saved = await store.read();
+        if (saved == null || saved.empty) continue;
+        final record = File('${(await store._folder).path}/draft.json');
+        result.add(
+          ReplyDraftSummary(
+            site,
+            uid,
+            thread.key,
+            thread.value,
+            await record.lastModified(),
+            saved,
+          ),
+        );
+      } on FileSystemException {
+        continue;
+      } on FormatException {
+        continue;
+      }
+    }
+    result.sort((a, b) => b.updated.compareTo(a.updated));
+    return result;
+  }
+
   Future<void> _write(Directory folder, ReplyDraft draft) async {
     final record = File('${folder.path}/draft.json');
     if (draft.empty && !await record.exists()) return;
@@ -186,7 +322,17 @@ class ReplyDraftStore {
     } else {
       await folder.create(recursive: true);
       final temp = File('${folder.path}/draft.tmp');
-      await temp.writeAsString(jsonEncode(draft.toJson()), flush: true);
+      await temp.writeAsString(
+        jsonEncode({
+          ...draft.toJson(),
+          'site': site,
+          'uid': uid,
+          'tid': tid,
+          'title': title,
+          'updated': DateTime.now().millisecondsSinceEpoch,
+        }),
+        flush: true,
+      );
       await temp.rename(record.path);
     }
     if (!draft.empty) return;

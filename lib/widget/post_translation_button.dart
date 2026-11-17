@@ -38,7 +38,7 @@ class PostTranslationButton extends StatelessWidget {
             icon: busy
                 ? const SizedBox.square(
                     dimension: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                    child: PlatformCircularProgressIndicator(strokeWidth: 2),
                   )
                 : Icon(
                     translated ? Icons.undo : PlatformIcons(context).translate,

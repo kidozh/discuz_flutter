@@ -25,6 +25,7 @@ ForumThread _$ForumThreadFromJson(Map<String, dynamic> json) => ForumThread()
   ..digest = json['digest'] as String? ?? '0'
   ..special = json['special'] as String? ?? '0'
   ..attachment = json['attachment'] as String? ?? '0'
+  ..coverPath = discuzString(json['coverpath'])
   ..replyCredit = json['replycredit'] as String? ?? '0'
   ..dbdatelineMinutes = const SecondToDateTimeConverter().fromJson(
     json['dbdateline'],
@@ -64,6 +65,7 @@ Map<String, dynamic> _$ForumThreadToJson(ForumThread instance) =>
       'digest': instance.digest,
       'special': instance.special,
       'attachment': instance.attachment,
+      'coverpath': instance.coverPath,
       'replycredit': instance.replyCredit,
       'dbdateline': const SecondToDateTimeConverter().toJson(
         instance.dbdatelineMinutes,

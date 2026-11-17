@@ -321,7 +321,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                                     fit: BoxFit.cover,
                                     progressIndicatorBuilder:
                                         (context, url, downloadProgress) =>
-                                            CircularProgressIndicator(
+                                            PlatformCircularProgressIndicator(
                                               value: downloadProgress.progress,
                                             ),
                                     errorWidget: (context, url, error) =>

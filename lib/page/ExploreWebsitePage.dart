@@ -17,6 +17,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../utility/DiscuzWebviewCookieManager.dart';
 import '../utility/forum_image_url.dart';
+import '../widget/forum_web_location_banner.dart';
 
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -185,6 +186,7 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
   String? webTitle;
 
   bool cookieLoaded = false;
+  late String _pageUrl;
 
   InnerWebviewState(
     this._discuz,
@@ -197,6 +199,10 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
     final account = context.read<DiscuzAndUserNotifier>();
     final session = account.sessionIdentity;
     bool isCurrent() => mounted && identical(session, account.sessionIdentity);
+    void updateLocation(String? url) {
+      if (!isCurrent() || url == null || url.isEmpty || url == _pageUrl) return;
+      setState(() => _pageUrl = url);
+    }
     final cookies = _user != null && _discuz.isSameSite(_user.discuz)
         ? await (await NetworkUtils.getPersistentCookieJarByUser(_user))
               .loadForRequest(Uri.parse(_discuz.getBaseURLWithAfterfix()))
@@ -216,7 +222,9 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
           onNavigationRequest: (NavigationRequest request) {
             return NavigationDecision.navigate;
           },
+          onUrlChange: (change) => updateLocation(change.url),
           onPageStarted: (String url) {
+            updateLocation(url);
             VibrationUtils.vibrateWithClickIfPossible();
             print('Page started loading: $url');
           },
@@ -256,6 +264,7 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
     if (initialURL == null) {
       initialURL = _discuz.baseURL;
     }
+    _pageUrl = initialURL!;
     loadCookieByUser(_discuz, _user, initialURL!);
   }
 
@@ -266,6 +275,10 @@ class InnerWebviewState extends State<InnerWebviewScreen> {
     } else {
       return Column(
         children: [
+          ForumWebLocationBanner(
+            forumUrl: _discuz.baseURL,
+            pageUrl: _pageUrl,
+          ),
           if (progress != 0 && progress != 100)
             LinearProgressIndicator(value: progress / 100),
           Expanded(child: WebViewWidget(controller: _controller)),

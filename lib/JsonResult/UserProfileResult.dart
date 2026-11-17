@@ -9,58 +9,87 @@ import 'ErrorResult.dart';
 
 part 'UserProfileResult.g.dart';
 
-@JsonSerializable(disallowUnrecognizedKeys: false, ignoreUnannotated:true)
-class UserProfileResult extends BaseResult{
-
+@JsonSerializable(disallowUnrecognizedKeys: false, ignoreUnannotated: true)
+class UserProfileResult extends BaseResult {
   @JsonKey(name: "Variables")
   UserProfileVariables variables = UserProfileVariables();
 
   UserProfileResult();
 
-  factory UserProfileResult.fromJson(Map<String, dynamic> json) => _$UserProfileResultFromJson(json);
+  factory UserProfileResult.fromJson(Map<String, dynamic> json) =>
+      _$UserProfileResultFromJson(json);
 }
 
 @JsonSerializable(ignoreUnannotated: true)
-class UserProfileVariables extends BaseVariableResult{
+class UserProfileVariables extends BaseVariableResult {
   @JsonKey(name: "space")
   SpaceVariables? space = SpaceVariables();
 
-  @JsonKey(name: "extcredits",defaultValue: {})
-  Map<String,ExtendCredit> extendCreditMap = {};
+  @JsonKey(name: "extcredits", defaultValue: {})
+  Map<String, ExtendCredit> extendCreditMap = {};
 
-  SpaceVariables getSpace(){
-    return space == null? SpaceVariables() : space!;
+  SpaceVariables getSpace() {
+    return space == null ? SpaceVariables() : space!;
   }
 
   UserProfileVariables();
-  factory UserProfileVariables.fromJson(Map<String, dynamic> json) => _$UserProfileVariablesFromJson(json);
+  factory UserProfileVariables.fromJson(Map<String, dynamic> json) =>
+      _$UserProfileVariablesFromJson(json);
+}
 
+class CreditUpgrade {
+  const CreditUpgrade(this.remaining, this.percent);
+  final int remaining, percent;
+  static CreditUpgrade? parse(Map<String, dynamic> data) {
+    final group = discuzMap(data['group']);
+    final remaining = int.tryParse(discuzString(data['upgradecredit']));
+    final percent = int.tryParse(discuzString(data['upgradeprogress']));
+    if (group['type'] != 'member' ||
+        discuzInt(group['creditslower']) >= 999999999 ||
+        discuzInt(group['groupcreditslower']) >= 999999999 ||
+        remaining == null ||
+        remaining < 0 ||
+        percent == null ||
+        percent < 0 ||
+        percent > 100)
+      return null;
+    return CreditUpgrade(remaining, percent);
+  }
 }
 
 @JsonSerializable()
-class SpaceVariables{
-
+class SpaceVariables {
   @StringToIntConverter()
   int uid = 0;
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  CreditUpgrade? upgrade;
   String username = "";
   @StringToIntConverter()
   int status = 0;
-  @JsonKey(name: "regdate",defaultValue: "")
+  @JsonKey(name: "regdate", defaultValue: "")
   String registerDateString = "";
   @StringToIntConverter()
-  int credits = 0, extcredits1 = 0, extcredits2 = 0, extcredits3 = 0, extcredits4 = 0, extcredits5 = 0, extcredits6 = 0, extcredits7 = 0, extcredits8 = 0;
+  int credits = 0,
+      extcredits1 = 0,
+      extcredits2 = 0,
+      extcredits3 = 0,
+      extcredits4 = 0,
+      extcredits5 = 0,
+      extcredits6 = 0,
+      extcredits7 = 0,
+      extcredits8 = 0;
   @StringToIntConverter()
   int friends = 0, posts = 0, threads = 0, digestposts = 0, oltime = 0;
-  @JsonKey(name: "recentnote",defaultValue: "")
+  @JsonKey(name: "recentnote", defaultValue: "")
   String recentNote = "";
-  @JsonKey(name: "customstatus",defaultValue: "")
+  @JsonKey(name: "customstatus", defaultValue: "")
   String customStatus = "";
   @JsonKey(name: "medals")
   @MedalListConverter()
   List<Medal> medalList = [];
-  @JsonKey(name: "sightml",defaultValue: "")
+  @JsonKey(name: "sightml", defaultValue: "")
   String signatureHtml = "";
-  @JsonKey(name:"gender")
+  @JsonKey(name: "gender")
   @StringToIntConverter()
   int gender = 0;
   @JsonKey(name: "birthyear")
@@ -75,42 +104,56 @@ class SpaceVariables{
   @JsonKey(name: "groupid")
   @StringToIntConverter()
   int groupId = 0;
-  String getBirthDay(){
+  String getBirthDay() {
     return "${birthYear} / ${birthMonth} / ${birthDay}";
-  }
-  @JsonKey(defaultValue: "")
-  String constellation = "", zodiac = "", nationality = "";
-  @JsonKey(defaultValue: "")
-  String birthprovince = "", birthcity = "", birthdist="", birthcommunity = "";
-  String getBirthPlace(){
-    if(birthdist.startsWith("汉川") || birthdist.endsWith("市")){
-      return birthprovince+birthdist+birthcommunity;
-    }
-    else{
-      return birthprovince+birthcity+birthdist+birthcommunity;
-    }
-    
   }
 
   @JsonKey(defaultValue: "")
-  String resideprovince = "", residecity = "", residedist="", residecommunity = "", residesuite = "";
-  String getResidentPlace(){
-    if(residedist.startsWith("汉川") || residedist.endsWith("市")){
-      return resideprovince+residedist+residecommunity+residesuite;
+  String constellation = "", zodiac = "", nationality = "";
+  @JsonKey(defaultValue: "")
+  String birthprovince = "",
+      birthcity = "",
+      birthdist = "",
+      birthcommunity = "";
+  String getBirthPlace() {
+    if (birthdist.startsWith("汉川") || birthdist.endsWith("市")) {
+      return birthprovince + birthdist + birthcommunity;
+    } else {
+      return birthprovince + birthcity + birthdist + birthcommunity;
     }
-    else{
-      return resideprovince+residecity+residedist+residecommunity+residesuite;
-    }
-    
   }
+
   @JsonKey(defaultValue: "")
-  String graduateschool = "", education = "", company = "", occupation = "", position = "", revenue = "";
+  String resideprovince = "",
+      residecity = "",
+      residedist = "",
+      residecommunity = "",
+      residesuite = "";
+  String getResidentPlace() {
+    if (residedist.startsWith("汉川") || residedist.endsWith("市")) {
+      return resideprovince + residedist + residecommunity + residesuite;
+    } else {
+      return resideprovince +
+          residecity +
+          residedist +
+          residecommunity +
+          residesuite;
+    }
+  }
+
   @JsonKey(defaultValue: "")
-  String lookingfor = "", bloodtype="", height = "", weight = "", site="";
+  String graduateschool = "",
+      education = "",
+      company = "",
+      occupation = "",
+      position = "",
+      revenue = "";
   @JsonKey(defaultValue: "")
-  String lastvisit = "", lastactivity="", lastpost="", lastsendmail = "";
+  String lookingfor = "", bloodtype = "", height = "", weight = "", site = "";
+  @JsonKey(defaultValue: "")
+  String lastvisit = "", lastactivity = "", lastpost = "", lastsendmail = "";
   @StringToIntConverter()
-  int favtimes = 0, sharetimes = 0, profileprogress=0;
+  int favtimes = 0, sharetimes = 0, profileprogress = 0;
 
   @JsonKey(name: "admingroup")
   AdminGroupInfo adminGroupInfo = AdminGroupInfo();
@@ -119,25 +162,23 @@ class SpaceVariables{
 
   String bio = "", interest = "";
 
-
   SpaceVariables();
-  factory SpaceVariables.fromJson(Map<String, dynamic> json){
+  factory SpaceVariables.fromJson(Map<String, dynamic> json) {
     return _$SpaceVariablesFromJson({
       ...discuzScalars(json),
       'username': discuzString(json['username']),
-      'bio': discuzString(json['bio']), 'interest': discuzString(json['interest']),
+      'bio': discuzString(json['bio']),
+      'interest': discuzString(json['interest']),
       'admingroup': discuzMap(json['admingroup']),
       'group': discuzMap(json['group']),
-    });
+    })..upgrade = CreditUpgrade.parse(json);
   }
-
-
 }
 
 @JsonSerializable()
-class Medal{
+class Medal {
   String name = "";
-  String image = "",description="";
+  String image = "", description = "";
   @JsonKey(name: "medalid")
   @StringToIntConverter()
   int medalId = 0;
@@ -147,10 +188,10 @@ class Medal{
 }
 
 @JsonSerializable()
-class AdminGroupInfo{
+class AdminGroupInfo {
   @JsonKey(defaultValue: "")
   String type = "";
-  @JsonKey(name: "grouptitle",defaultValue: "")
+  @JsonKey(name: "grouptitle", defaultValue: "")
   String groupTitle = "";
   @StringToIntConverter()
   int stars = 0;
@@ -163,11 +204,12 @@ class AdminGroupInfo{
   int readAccess = 0;
 
   AdminGroupInfo();
-  factory AdminGroupInfo.fromJson(Map<String, dynamic> json) => _$AdminGroupInfoFromJson(json);
+  factory AdminGroupInfo.fromJson(Map<String, dynamic> json) =>
+      _$AdminGroupInfoFromJson(json);
 }
 
 @JsonSerializable()
-class GroupInfo{
+class GroupInfo {
   @JsonKey(defaultValue: "")
   String type = "";
   @JsonKey(name: "grouptitle", defaultValue: "")
@@ -183,12 +225,12 @@ class GroupInfo{
   int readAccess = 0;
 
   GroupInfo();
-  factory GroupInfo.fromJson(Map<String, dynamic> json) => _$GroupInfoFromJson(json);
+  factory GroupInfo.fromJson(Map<String, dynamic> json) =>
+      _$GroupInfoFromJson(json);
 }
 
-
 @JsonSerializable(ignoreUnannotated: true)
-class ExtendCredit{
+class ExtendCredit {
   @JsonKey(defaultValue: "")
   String img = "";
   @JsonKey(defaultValue: "")
@@ -197,14 +239,14 @@ class ExtendCredit{
   String unit = "";
   @JsonKey(defaultValue: "")
   String ratio = "";
-  @JsonKey(name:"showinthread",defaultValue: "")
+  @JsonKey(name: "showinthread", defaultValue: "")
   String showInThread = "";
-  @JsonKey(name:"allowexchangein",defaultValue: "")
+  @JsonKey(name: "allowexchangein", defaultValue: "")
   String allowExchangeIn = "";
-  @JsonKey(name:"allowexchangeout",defaultValue: "")
+  @JsonKey(name: "allowexchangeout", defaultValue: "")
   String allowExchangeOut = "";
 
-
   ExtendCredit();
-  factory ExtendCredit.fromJson(Map<String, dynamic> json) => _$ExtendCreditFromJson(json);
+  factory ExtendCredit.fromJson(Map<String, dynamic> json) =>
+      _$ExtendCreditFromJson(json);
 }

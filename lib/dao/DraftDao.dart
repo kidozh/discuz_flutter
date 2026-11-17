@@ -33,7 +33,7 @@ class DraftDao{
   }
 
   Future<void> deleteDraft(Draft draft){
-    return draftBox.delete(draft);
+    return draftBox.delete(draft.key);
 
   }
 }

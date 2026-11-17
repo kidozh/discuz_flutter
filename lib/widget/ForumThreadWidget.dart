@@ -5,6 +5,7 @@ import 'compact_thread_list_tile.dart';
 import 'dart:developer';
 
 import '../utility/thread_selection_colors.dart';
+import '../utility/forum_image_url.dart';
 import 'thread_list_surface.dart';
 
 import 'package:discuz_flutter/JsonResult/DisplayForumResult.dart';
@@ -21,6 +22,7 @@ import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/TimeDisplayUtils.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/UserAvatar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:discuz_flutter/widget/cupertino_separated_item.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
@@ -38,6 +40,7 @@ class ForumThreadWidget extends StatelessWidget {
   final ThreadType? threadType;
   final ThreadSelectionCallback? onSelectTid;
   final int? afterTid;
+  final bool pictureTile;
 
   ForumThreadWidget(
     this._discuz,
@@ -46,6 +49,7 @@ class ForumThreadWidget extends StatelessWidget {
     this.threadType,
     this.onSelectTid, {
     this.afterTid,
+    this.pictureTile = false,
   });
 
   @override
@@ -57,6 +61,7 @@ class ForumThreadWidget extends StatelessWidget {
       this.threadType,
       onSelectTid,
       afterTid: afterTid,
+      pictureTile: pictureTile,
       key: ValueKey((
         _discuz.baseURL,
         _user?.uid,
@@ -74,6 +79,7 @@ class ForumThreadStatefulWidget extends StatefulWidget {
   final ThreadType? threadType;
   final ThreadSelectionCallback? onSelectTid;
   final int? afterTid;
+  final bool pictureTile;
 
   ForumThreadStatefulWidget(
     this._discuz,
@@ -83,6 +89,7 @@ class ForumThreadStatefulWidget extends StatefulWidget {
     this.onSelectTid, {
     super.key,
     this.afterTid,
+    this.pictureTile = false,
   });
 
   @override
@@ -143,6 +150,25 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
       builder: (context, selectedTid, child) {
         final tid = selectedTid.tidFor(_discuz);
         bool selected = tid == _forumThread.getTid();
+        if (widget.pictureTile) {
+          return Semantics(
+            button: true,
+            selected: selected,
+            label: _forumThread.decodedSubject,
+            onTap: triggerTapFunction,
+            onLongPress: triggerLongPressFunction,
+            excludeSemantics: true,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: ThreadListSurface(
+                selected: selected,
+                onTap: triggerTapFunction,
+                onLongPress: triggerLongPressFunction,
+                child: _coverTile(viewed, selected),
+              ),
+            ),
+          );
+        }
         bool lastSelected = tid == afterTid;
         log(
           "Select changed ${_forumThread.tid} ${selected} ${afterTid} ${lastSelected}",
@@ -160,6 +186,60 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
           ),
         );
       },
+    );
+  }
+
+  Widget _coverTile(bool viewed, bool selected) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final foreground = selected
+        ? ThreadSelectionColors(colors).foreground
+        : viewed
+        ? colors.onSurfaceVariant
+        : colors.onSurface;
+    final restricted =
+        _forumThread.readPerm > (_user?.readPerm ?? 0) ||
+        _forumThread.getPrice() > 0 && _forumThread.special == '0';
+    final source = restricted
+        ? null
+        : resolveForumImageUri(forumBaseUri(_discuz), _forumThread.coverPath);
+    Widget placeholder(BuildContext context) => ColoredBox(
+      color: colors.surfaceContainerHighest,
+      child: Center(
+        child: Icon(
+          restricted
+              ? PlatformIcons(context)
+                    .pick(Icons.lock_outline, CupertinoIcons.lock)
+              : AppPlatformIcons(context).imageSolid,
+          color: colors.onSurfaceVariant,
+        ),
+      ),
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: source == null
+              ? placeholder(context)
+              : ForumImage(
+                  forum: _discuz,
+                  threadId: _forumThread.getTid(),
+                  url: source.toString(),
+                  fit: BoxFit.cover,
+                  loading: (context, _) => placeholder(context),
+                  error: placeholder,
+                ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 8, 10, 9),
+          child: Text(
+            _forumThread.decodedSubject,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.titleSmall?.copyWith(color: foreground),
+          ),
+        ),
+      ],
     );
   }
 

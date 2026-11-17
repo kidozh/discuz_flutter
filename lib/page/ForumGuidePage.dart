@@ -3,21 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../client/ForumInteractionClient.dart';
+import '../client/forum_guide.dart';
 import '../entity/Discuz.dart';
 import '../entity/DiscuzError.dart';
 import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
 import '../utility/NetworkUtils.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
-import '../utility/discuz_json.dart';
 import '../utility/forum_error.dart';
 import '../widget/ErrorCard.dart';
 import 'ForumListsPage.dart';
 import 'InternalWebviewBrowserPage.dart';
 
 class ForumGuidePage extends StatefulWidget {
-  const ForumGuidePage(this.discuz, {super.key});
+  const ForumGuidePage(this.discuz, {this.createClient, super.key});
   final Discuz discuz;
+  final Future<ForumInteractionClient> Function()? createClient;
   @override
   State<ForumGuidePage> createState() => _ForumGuidePageState();
 }
@@ -26,6 +27,7 @@ class _ForumGuidePageState extends State<ForumGuidePage> {
   Set<String>? supported;
   DiscuzError? error;
   Object? _session;
+  int _generation = 0;
 
   @override
   void initState() {
@@ -36,25 +38,30 @@ class _ForumGuidePageState extends State<ForumGuidePage> {
   Future<void> load() async {
     final account = context.read<DiscuzAndUserNotifier>();
     final session = account.sessionIdentity;
+    final ticket = ++_generation;
     _session = session;
-    bool isCurrent() => mounted && identical(session, account.sessionIdentity);
-    setState(() => error = null);
+    bool isCurrent() =>
+        mounted &&
+        ticket == _generation &&
+        identical(session, account.sessionIdentity);
+    setState(() {
+      error = null;
+      supported = null;
+    });
     try {
-      final dio = await NetworkUtils.getDioWithPersistCookieJar(
-        account.userFor(widget.discuz),
-      );
+      final client = widget.createClient != null
+          ? await widget.createClient!()
+          : ForumInteractionClient(
+              await NetworkUtils.getDioWithPersistCookieJar(
+                account.userFor(widget.discuz),
+              ),
+              widget.discuz.baseURL,
+            );
       try {
-        final reply = await ForumInteractionClient(
-          dio,
-          widget.discuz.baseURL,
-        ).request('extends', {'check': 1});
-        reply.requireData('extends');
-        final tabs = forumRows(
-          discuzMap(reply.variables['extends'])['extendlist'],
-        ).map(discuzMap).map((row) => discuzString(row['identifier'])).toSet();
+        final tabs = await client.guideSections();
         if (isCurrent()) setState(() => supported = tabs);
       } finally {
-        dio.close();
+        if (widget.createClient == null) client.dio.close();
       }
     } catch (failure) {
       if (isCurrent()) {
@@ -72,6 +79,7 @@ class _ForumGuidePageState extends State<ForumGuidePage> {
       (section) => available?.contains(section.identifier) == true,
     );
     return PlatformScaffold(
+      iosContentPadding: true,
       appBar: PlatformAppBar(title: Text(strings.forumGuide)),
       body: switch (error) {
         _ when !identical(_session, account.sessionIdentity) => Center(
@@ -104,7 +112,27 @@ class _ForumGuidePageState extends State<ForumGuidePage> {
           child: PlatformCircularProgressIndicator(),
         ),
         _ when sections.isEmpty => Center(
-          child: Text(strings.forumApiUnavailable),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(strings.forumApiUnavailable),
+              PlatformTextButton(onPressed: load, child: Text(strings.refresh)),
+              PlatformTextButton(
+                child: Text(strings.navigateToWebPage),
+                onPressed: () => Navigator.push(
+                  context,
+                  platformPageRoute(
+                    context: context,
+                    builder: (_) => InternalWebviewBrowserPage(
+                      widget.discuz,
+                      account.userFor(widget.discuz),
+                      '${widget.discuz.getBaseURLWithAfterfix()}forum.php?mod=guide',
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         _ => ListView(
           children: [
@@ -124,6 +152,7 @@ class _ForumGuidePageState extends State<ForumGuidePage> {
                       discuz: widget.discuz,
                       user: account.userFor(widget.discuz),
                       guide: section,
+                      createClient: widget.createClient,
                     ),
                   ),
                 ),

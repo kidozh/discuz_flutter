@@ -407,7 +407,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                         imageUrl: discuz.getDiscuzAvatarURL(),
                         progressIndicatorBuilder:
                             (context, url, downloadProgress) =>
-                                CircularProgressIndicator(
+                                PlatformCircularProgressIndicator(
                                   value: downloadProgress.progress,
                                 ),
                         errorWidget: (context, url, error) => PlatformListTile(

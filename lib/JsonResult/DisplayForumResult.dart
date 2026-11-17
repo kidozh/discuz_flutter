@@ -3,6 +3,7 @@ import 'dart:core';
 import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:discuz_flutter/converter/ThreadTypesConverter.dart';
 import 'package:discuz_flutter/entity/ForumThread.dart';
+import 'package:discuz_flutter/utility/discuz_json.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'BaseResult.dart';
@@ -52,6 +53,8 @@ class ForumVariables extends BaseVariableResult{
 
   @JsonKey(name: "threadtypes")
   ThreadType? threadType = ThreadType();
+  @JsonKey(name: 'threadsorts', fromJson: discuzMap)
+  Map<String, dynamic> threadSorts = {};
   @JsonKey(name:"sublist",defaultValue: [])
   List<SubForum> subForumList = [];
 
@@ -77,8 +80,9 @@ class ForumDetail{
   int fid = 0, fup=0, threads = 0, posts = 0;
   @JsonKey(defaultValue: "")
   String description = "", rules = "", name = "", password="";
-  @JsonKey(name:"picstyle",defaultValue: "")
-  String picStyle= "";
+  @JsonKey(name: 'picstyle', fromJson: _pictureMode)
+  bool pictureMode = false;
+  static bool _pictureMode(Object? value) => discuzPermission(value) == true;
   @JsonKey(name:"autoclose",defaultValue: "")
   String autoClose = "";
 

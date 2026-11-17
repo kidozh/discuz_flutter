@@ -95,7 +95,7 @@ jobs:
 
       - name: Determine release version
         id: version
-        run: python3 scripts/prepare_store_release.py --tag "$GITHUB_REF_NAME" --output build/ios/store-release.json
+        run: python3 scripts/prepare_store_release.py --tag "$GITHUB_REF_NAME" --platform ios --output build/ios/store-release.json
 
       - name: Validate TestFlight release notes
         id: testflight_notes

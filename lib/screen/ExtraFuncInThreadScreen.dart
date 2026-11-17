@@ -29,6 +29,7 @@ import 'package:provider/provider.dart';
 import '../entity/ImageAttachment.dart';
 import '../client/ForumInteractionClient.dart';
 import '../widget/ErrorCard.dart';
+import '../utility/forum_composer_capabilities.dart';
 
 typedef ForumImageUpload = ({String response, File file});
 
@@ -194,7 +195,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
   @override
   void initState() {
     super.initState();
-    _loadCheckPostInfo();
+    _loadCheckPostInfo(useCache: true);
     _loadAllSavedImageAttachment();
     _loadCheveretoPictureBedTokens();
   }
@@ -638,7 +639,7 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
           );
   }
 
-  void _loadCheckPostInfo() async {
+  void _loadCheckPostInfo({bool useCache = false}) async {
     DiscuzAndUserNotifier discuzAndUserNotifier =
         Provider.of<DiscuzAndUserNotifier>(context, listen: false);
     final user = discuzAndUserNotifier.userFor(discuz);
@@ -657,11 +658,27 @@ class ExtraFuncInThreadState extends State<ExtraFuncInThreadScreen> {
       return;
     }
     try {
+      final scope = (site: discuz.siteIdentity, uid: user.uid, fid: fid);
+      if (useCache) {
+        final cached = await ForumComposerCapabilityCache.read(scope);
+        if (!isCurrent()) return;
+        if (cached != null) {
+          setState(() {
+            _checkPostResult = CheckPostResult()
+              ..variables.allowPerm = cached.permission;
+            _permissionLoaded = true;
+            _discuzError = null;
+          });
+          return;
+        }
+      }
       final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
       if (!isCurrent()) return;
       final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
       final value = await client.checkPost(fid, tid > 0 ? tid : null);
+      if (!isCurrent()) return;
+      await ForumComposerCapabilityCache.remember(scope, value);
       if (!isCurrent()) return;
       setState(() {
         _checkPostResult = value;

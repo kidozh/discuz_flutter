@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:html/parser.dart' show parseFragment;
 
 import '../client/ForumInteractionClient.dart';
+import '../client/forum_guide.dart';
 import '../entity/Discuz.dart';
 import '../entity/DiscuzError.dart';
 import '../entity/User.dart';
@@ -116,30 +117,7 @@ class _ForumListsPageState extends State<ForumListsPage> {
       List<Map<String, dynamic>> batch;
       int? total;
       if (widget.guide case final guide?) {
-        final result = await client.request('extends', {
-          'identifier': guide.identifier,
-          'page': page,
-        });
-        result.requireData(guide.identifier);
-        final data = discuzMap(result.variables[guide.identifier]);
-        if (!data.containsKey('list')) throw const FormatException();
-        batch = forumRows(data['list'])
-            .map(discuzMap)
-            .map((row) {
-              final fields = {
-                for (final field in forumRows(row['fields']).map(discuzMap))
-                  discuzString(field['id']): field['value'],
-              };
-              return <String, dynamic>{
-                'tid': row['clickvalue'],
-                'subject': row['title'],
-                'image': row['image'],
-                'author': fields['author'],
-                'replies': fields['replies'],
-              };
-            })
-            .where((row) => discuzInt(row['tid']) > 0)
-            .toList();
+        batch = await client.guideThreads(guide.identifier, page);
       } else if (widget.directory != null) {
         final module = switch (widget.directory!) {
           ForumDirectory.friends => 'friend',
@@ -286,7 +264,7 @@ class _ForumListsPageState extends State<ForumListsPage> {
                           padding: const EdgeInsets.all(16),
                           child: Center(
                             child: loading
-                                ? const CircularProgressIndicator()
+                                ? const PlatformCircularProgressIndicator()
                                 : error != null
                                 ? ErrorCard(error!, load, largeSize: false)
                                 : more

@@ -1,5 +1,6 @@
 import 'package:discuz_flutter/converter/SecondToDateTimeConverter.dart';
 import 'package:discuz_flutter/converter/StringToIntConverter.dart';
+import 'package:discuz_flutter/utility/discuz_json.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'ForumThread.g.dart';
@@ -68,6 +69,8 @@ class ForumThread{
   String special = "0";
   @JsonKey(defaultValue: "0")
   String attachment = "0";
+  @JsonKey(name: 'coverpath', fromJson: discuzString)
+  String coverPath = '';
   @JsonKey(name: "replycredit", defaultValue: "0")
   String replyCredit = "0";
   @JsonKey(name: "dbdateline")

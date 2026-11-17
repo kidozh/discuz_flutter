@@ -109,6 +109,12 @@
   "openInBrowser": "Open in browser",
   "writeStorageDenied": "Write storage permission denied.",
   "saveImageSuccessfully": "Save Image to device successfully.",
+  "voiceHoldToTalk": "Hold to talk",
+  "voiceReleaseSend": "Release to send",
+  "voiceReleaseFinish": "Release to finish",
+  "voiceSlideCancel": "Slide up to cancel",
+  "voiceReleaseCancel": "Release to cancel",
+  "voiceUseKeyboard": "Use keyboard",
   "voiceRecord": "Record voice",
   "voiceStart": "Start recording",
   "voiceStop": "Stop recording",
@@ -423,6 +429,7 @@
   "brightnessLight": "Light",
   "brightnessDark": "Dark",
   "openViaInternalBrowser": "Open Website in webview",
+  "browserOutsideForum": "You’ve left this forum",
   "smileyLabel": "Smiley #{index}",
   "@smileyLabel": {
     "placeholders": {
@@ -713,9 +720,27 @@
   "unstickReply": "Unpin this reply",
   "motionPhotoPlay": "Play motion photo",
   "motionPhotoUnavailable": "This image has no playable motion photo video.",
-  "@pollSelectUpTo": {"placeholders": {"count": {"type": "int"}}},
-  "@activityCustomFields": {"placeholders": {"count": {"type": "int"}}},
-  "@rewardTotal": {"placeholders": {"amount": {"type": "String"}}},
+  "@pollSelectUpTo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@activityCustomFields": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@rewardTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "pollTitle": "Poll",
   "pollNotAllowed": "You can't join in the polls.",
   "contactUsViaEmail": "Contact us (Email)",
@@ -736,13 +761,31 @@
   "forumHttpForbidden": "The server refused access (HTTP 403). Check your permissions or open the site in a browser.",
   "forumHttpMissing": "The requested page or resource is unavailable. Check the address or try again from the forum.",
   "forumHttpTimeout": "The server timed out (HTTP {status}). Try again later.",
-  "@forumHttpTimeout": {"placeholders": {"status": {"type": "String"}}},
+  "@forumHttpTimeout": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
   "forumHttpTooLarge": "The server rejected the request because it was too large (HTTP 413). Try a smaller file.",
   "forumHttpRateLimited": "The server is receiving too many requests (HTTP 429). Wait a moment before trying again.",
   "forumHttpServerError": "The server is temporarily unavailable (HTTP {status}). Try again later.",
-  "@forumHttpServerError": {"placeholders": {"status": {"type": "String"}}},
+  "@forumHttpServerError": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
   "forumHttpRejected": "The server rejected the request (HTTP {status}). Try opening the site in a browser.",
-  "@forumHttpRejected": {"placeholders": {"status": {"type": "String"}}},
+  "@forumHttpRejected": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
   "forumResponseProcessingTimeout": "The app took too long to process the server response.",
   "forumUnexpectedResponse": "The app could not read the server response. Try refreshing.",
   "forumUnexpectedError": "An unexpected error interrupted the operation. Please try again.",
@@ -1157,6 +1200,88 @@
   "specialRewardAmount": "Reward amount",
   "specialBestAnswer": "View best answer",
   "specialActivity": "Activity",
+  "creditGlobalRules": "Global rules",
+  "rushReplyPerMember": "Maximum replies per member: {count}",
+  "@rushReplyPerMember": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "creditRules": "Rules",
+  "replyCreditTitle": "Reply rewards",
+  "replyCreditEach": "Reward per eligible reply: {amount} {credit}",
+  "@replyCreditEach": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      },
+      "credit": {
+        "type": "String"
+      }
+    }
+  },
+  "replyCreditRemaining": "Rewards remaining: {count}",
+  "@replyCreditRemaining": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "replyCreditPerMember": "Maximum per member: {count}",
+  "@replyCreditPerMember": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "replyCreditChance": "Chance of receiving a reward: {percent}%",
+  "@replyCreditChance": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "replyCreditReceived": "Reply reward +{amount}",
+  "@replyCreditReceived": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "rushReplyTitle": "Rush replies",
+  "rushReplyWinningFloor": "Winning floor",
+  "rushReplyRewardFloors": "Winning floors",
+  "rushReplyStopFloor": "Closes at floor {floor}",
+  "@rushReplyStopFloor": {
+    "placeholders": {
+      "floor": {
+        "type": "int"
+      }
+    }
+  },
+  "rushReplyMinimum": "Minimum credits",
+  "rushReplyStartsIn": "Starts in {time}",
+  "@rushReplyStartsIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "rushReplyEndsIn": "Ends in {time}",
+  "@rushReplyEndsIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "specialClassified": "Classified information",
   "specialOpenWebsite": "View details on website",
   "activityPlace": "Location",
@@ -1311,7 +1436,11 @@
   "backgroundNewPostsSelectSites": "Select at least one forum site.",
   "backgroundNewPostsWaiting": "Waiting for an idle-device check",
   "backgroundNewPostsLastCheck": "Last successful check: {time}",
-  "@backgroundNewPostsLastCheck": {"placeholders": {"time": {}}},
+  "@backgroundNewPostsLastCheck": {
+    "placeholders": {
+      "time": {}
+    }
+  },
   "backgroundNewPostsCheckFailed": "Last check failed; waiting for the next eligible run",
   "backgroundNewPostsPermissionRequired": "Allow new-post notifications in system settings.",
   "backgroundNewPostsSystemSettings": "System notification settings",
@@ -1378,9 +1507,21 @@
   "postTextCopied": "Post text copied",
   "postCopyEmpty": "This post has no text to copy.",
   "composerImageLabel": "Image {number}",
-  "@composerImageLabel": {"placeholders": {"number": {"type": "int"}}},
+  "@composerImageLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "removeComposerImage": "Remove image {number}",
-  "@removeComposerImage": {"placeholders": {"number": {"type": "int"}}},
+  "@removeComposerImage": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "forumSearchKeyword": "Title keyword",
   "forumSearchAllBoards": "All boards",
   "forumSearchBoard": "Search board",
@@ -1391,7 +1532,13 @@
   "activityReviewNotify": "Notify applicants",
   "activityReviewReject": "Reject applications",
   "activityReviewConfirm": "Apply this action to {count} selected applicants?",
-  "@activityReviewConfirm": {"placeholders": {"count": {"type": "int"}}},
+  "@activityReviewConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "activityReviewReason": "Reason or message",
   "activityReviewReasonRequired": "Enter a message to notify the selected applicants.",
   "activityReviewChanged": "The selected applications changed. Refresh and review them again.",
@@ -1411,13 +1558,84 @@
   "editPostEmpty": "Enter the post text and a title when required.",
   "editPostSubject": "Title",
   "editPostRemoveConfirm": "Save the post and remove {count} existing attachment(s)?",
-  "@editPostRemoveConfirm": {"placeholders": {"count": {"type": "int"}}},
+  "@editPostRemoveConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "editPostPollOption": "Poll option {number}",
-  "@editPostPollOption": {"placeholders": {"number": {"type": "int"}}},
+  "@editPostPollOption": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "editPostPollMaximum": "Maximum votes per person",
   "editPostPollDays": "Days until the poll closes",
   "editPostPollVisibility": "Show results after voting",
   "editPostPollVoterList": "Show voter names",
   "editPostModeration": "The edited post is pending forum moderation.",
-  "editPostAttachmentPartial": "The forum may have removed attachments before the edit finished. Open the forum page to verify the current post."
+  "editPostAttachmentPartial": "The forum may have removed attachments before the edit finished. Open the forum page to verify the current post.",
+  "searchAuthor": "Author username",
+  "searchFullText": "Search full text",
+  "searchTime": "Time range",
+  "searchAnyTime": "Any time",
+  "searchOlder": "Older than selected time",
+  "searchOrder": "Sort by",
+  "searchLastPost": "Last reply",
+  "searchAscending": "Ascending order",
+  "creditUpgradeRemaining": "{credits} credits to next level",
+  "draftInbox": "Drafts",
+  "draftChooseAccount": "Choose the original account for this older draft. The forum checks attachment permissions when sending.",
+  "draftUnknownAccount": "Older drafts, account unknown",
+  "draftDelete": "Delete draft",
+  "draftUntitled": "Untitled draft",
+  "draftEmpty": "No drafts yet",
+  "draftReply": "Reply",
+  "draftQuote": "Quoting {author}",
+  "@creditUpgradeRemaining": {
+    "placeholders": {
+      "credits": {
+        "type": "String"
+      }
+    }
+  },
+  "@draftQuote": {
+    "placeholders": {
+      "author": {
+        "type": "String"
+      }
+    }
+  },
+  "searchKeyword": "Keyword",
+  "searchScope": "Search scope",
+  "searchMatchIn": "Match in",
+  "searchTitleOnly": "Titles only",
+  "searchTitleAndBody": "Titles and post text",
+  "searchFiltersSort": "Filters and sorting",
+  "searchNarrowResults": "Narrow the results",
+  "searchArrangeResults": "Arrange the results",
+  "searchAuthorHint": "Any author, or enter a username",
+  "searchKeywordHint": "Enter words to find",
+  "searchSubmit": "Search",
+  "searchWebsite": "Search on the forum website",
+  "searchResults": "Search results",
+  "searchConditionsChanged": "Filters changed. Tap Search to update these results.",
+  "searchStartHint": "Enter keywords, or filter by an author or time range.",
+  "searchNoMatches": "No posts match these conditions. Try other keywords or broader filters.",
+  "searchDirection": "Direction",
+  "searchNewestFirst": "Newest first",
+  "searchOldestFirst": "Oldest first",
+  "searchMostFirst": "Highest first",
+  "searchFewestFirst": "Lowest first",
+  "searchTimeRelation": "Time boundary",
+  "searchRecentPeriod": "Within the last {period}",
+  "@searchRecentPeriod": {"placeholders": {"period": {"type": "String"}}},
+  "searchBeforePeriod": "More than {period} ago",
+  "@searchBeforePeriod": {"placeholders": {"period": {"type": "String"}}},
+  "searchLoadedResults": "{count} loaded",
+  "@searchLoadedResults": {"placeholders": {"count": {"type": "int"}}}
 }

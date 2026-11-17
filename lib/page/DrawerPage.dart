@@ -1,3 +1,4 @@
+import 'draft_inbox_page.dart';
 import 'dart:developer';
 
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
@@ -65,6 +66,10 @@ class DrawerState extends State<DrawerStatefulWidget> {
     final icons = PlatformIcons(context);
     return ListView(
       children: [
+        PlatformListTile(title: Text(strings.draftInbox),
+          leading: Icon(icons.pick(Icons.drafts_outlined, CupertinoIcons.doc_text)),
+          onTap: () => Navigator.push(context, platformPageRoute(context: context,
+            builder: (_) => const DraftInboxPage()))),
         if (forum != null) ...[
           PlatformListTile(
             title: Text(strings.forumSearchWeb),

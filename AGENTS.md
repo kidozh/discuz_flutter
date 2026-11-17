@@ -1,5 +1,10 @@
 # 发布约定
 
+## 按平台写更新说明
+
+- App Store 和 TestFlight 只写本次 iOS 构建包含的变化及适用的共通变化。Google Play 只写本次 Android 构建包含的变化及适用的共通变化。手动提交或覆盖更新说明时也遵循同一规则。
+- 正式版在 `docs/releases/<版本>.md` 的标题下列出共通变化。只影响一个平台的条目放到 `## iOS` 或 `## Android` 下。提交前分别核对生成的 App Store 和 Google Play 文案。TestFlight 的测试说明单独维护。
+
 ## TestFlight 更新说明
 
 - 每次已获用户授权的 iOS / TestFlight 发布，都必须为该构建填写 TestFlight 的“测试内容 / What to Test”更新说明。这是发布任务的一部分，无需另行请求确认文案。
