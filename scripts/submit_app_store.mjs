@@ -1,6 +1,7 @@
 import {appendFile, readFile} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
 import {appStoreApi} from './verify_testflight_release.mjs';
+import {supersedeAppStoreRelease} from './supersede_app_store_release.mjs';
 
 const relation = (type, id) => ({data: {type, id}});
 const submittedStates = new Set([
@@ -33,7 +34,7 @@ export async function submitAppStore(api, {version, notes}, {appId, buildId}) {
   const state = record.attributes.appVersionState;
   if (linked && linked !== buildId) throw new Error(`App Store ${version} is linked to a different build.`);
   if (linked === buildId && submittedStates.has(state)) return state;
-  if (!['PREPARE_FOR_SUBMISSION', 'READY_FOR_REVIEW'].includes(state)) {
+  if (!['PREPARE_FOR_SUBMISSION', 'READY_FOR_REVIEW', 'DEVELOPER_REJECTED'].includes(state)) {
     throw new Error(`App Store ${version} requires attention in App Store Connect (${state}).`);
   }
   if (!linked) await api(buildPath, 'PATCH', relation('builds', buildId));
@@ -112,6 +113,9 @@ async function main() {
     throw new Error('TestFlight verification must match the release version and build.');
   }
   const api = appStoreApi();
+  if (process.env.SUPERSEDE_APPSTORE_RELEASE) {
+    await supersedeAppStoreRelease(api, release, receipt, process.env.SUPERSEDE_APPSTORE_RELEASE);
+  }
   const group = process.env.TESTFLIGHT_EXTERNAL_GROUP_ID || 'd309f462-a5ed-4cbf-bbbe-1e92d6ccb731';
   const results = await Promise.allSettled([
     submitAppStore(api, release, receipt),

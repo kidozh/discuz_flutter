@@ -10,11 +10,13 @@ const active = [];
 for (const submission of submissions) {
   if (['COMPLETE', 'CANCELED'].includes(submission.attributes.state)) continue;
   const {data: items} = await api(`/reviewSubmissions/${submission.id}/items?include=appStoreVersion`);
-  active.push({id: submission.id, ...submission.attributes, items: items.map(item => ({
-    id: item.id, attributes: item.attributes, relationships: item.relationships,
+  active.push({id: submission.id, state: submission.attributes.state, items: items.map(item => ({
+    id: item.id, relationships: item.relationships,
   }))});
 }
-console.log(JSON.stringify({appId: app.id, versions: versions.map(version => ({
-  id: version.id, ...version.attributes,
-  build: included.find(item => item.type === 'builds' && item.id === version.relationships?.build?.data?.id),
-})), submissions: active}, null, 2));
+console.log(JSON.stringify({appId: app.id, versions: versions.map(version => {
+  const build = included.find(item => item.type === 'builds' && item.id === version.relationships?.build?.data?.id);
+  return {id: version.id, version: version.attributes.versionString,
+    state: version.attributes.appVersionState, releaseType: version.attributes.releaseType,
+    buildId: build?.id, buildNumber: build?.attributes.version};
+}), submissions: active}, null, 2));

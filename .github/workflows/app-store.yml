@@ -17,6 +17,15 @@ on:
         description: Optional older build whose notes were misplaced by an uploader
         required: false
         type: string
+      submit_reviews:
+        description: Submit the verified existing build to App Store and external TestFlight review
+        required: false
+        default: false
+        type: boolean
+      supersede_release:
+        description: Optional exact older pending App Store version+build to withdraw and replace
+        required: false
+        type: string
 
 concurrency:
   group: app-store-upload
@@ -318,7 +327,7 @@ jobs:
           BUILD_NUMBER: ${{ steps.version.outputs.build_number }}
         run: |
           python3 scripts/prepare_testflight_notes.py --version "$BUILD_NAME" --build-number "$BUILD_NUMBER"
-          node --test test/testflight_release_verification_test.mjs
+          node --test test/*release*_test.mjs
 
       - name: Verify TestFlight notes after Apple processing
         env:
@@ -345,3 +354,20 @@ jobs:
           APPSTORE_API_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
           APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
         run: node scripts/inspect_app_store_release.mjs
+
+      - name: Prepare existing build for store review
+        if: inputs.submit_reviews
+        env:
+          BUILD_NAME: ${{ steps.version.outputs.build_name }}
+          BUILD_NUMBER: ${{ steps.version.outputs.build_number }}
+        run: python3 scripts/prepare_store_release.py --tag "v${BUILD_NAME}+${BUILD_NUMBER}" --platform ios --output build/ios/store-release.json
+
+      - name: Submit verified existing build for review
+        if: inputs.submit_reviews
+        env:
+          APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
+          APPSTORE_API_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
+          APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+          TESTFLIGHT_EXTERNAL_GROUP_ID: ${{ vars.TESTFLIGHT_EXTERNAL_GROUP_ID }}
+          SUPERSEDE_APPSTORE_RELEASE: ${{ inputs.supersede_release }}
+        run: node scripts/submit_app_store.mjs build/ios/store-release.json build/ios/testflight-verification.json

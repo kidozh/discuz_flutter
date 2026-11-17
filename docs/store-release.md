@@ -45,4 +45,8 @@ gcloud iam service-accounts add-iam-policy-binding "$PLAY_ACCOUNT" --project "$P
 
 复用现有的 `APPSTORE_ISSUER_ID`、`APPSTORE_API_KEY_ID`、`APPSTORE_API_PRIVATE_KEY` 及签名证书。默认使用带 iOS 27.1+ SDK 的 `xcode-27` 托管 runner。若需使用自托管 runner，设置仓库变量 `APPSTORE_RUNNER` 为对应标签。`APPSTORE_XCODE_VERSION` 可指定托管 runner 的 Xcode 版本。若调整 TestFlight 外测组，在仓库设置 `TESTFLIGHT_EXTERNAL_GROUP_ID` 为同一应用的组 ID。
 
-App Store Connect 工作流还可以手动运行以重新核对已有构建的 TestFlight 更新说明。此入口只处理已有构建的说明。
+## 重试已有 iOS 构建的审核提交
+
+App Store Connect 工作流手动运行时，默认核对已有构建的 TestFlight 更新说明，并读取当前 App Store 审核状态。启用 `submit_reviews` 可使用该构建重试提审，无需重新打包或上传 IPA。源码中的版本号、构建号和 iOS 更新说明必须与该构建一致。
+
+已获授权的新版本需要替换仍在等待审核的旧版本时，将 `supersede_release` 设置为旧版本的准确 `版本号+构建号`，例如 `2.0.20+178`。流程核对旧构建和唯一审核项目后，撤回待审提交，更新原版本记录并提交已验证的新构建；Apple 会重新排队审核。已进入审核、构建不符或包含其他审核项目时停止。普通 Release 不会自动撤回其他待审版本。
