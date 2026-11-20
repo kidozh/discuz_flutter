@@ -4031,6 +4031,10 @@ class PlatformIcons {
       pick(Icons.image_not_supported, CupertinoIcons.photo_on_rectangle);
   IconData get verified =>
       pick(Icons.check_circle_outline, CupertinoIcons.checkmark_seal);
+  IconData get bounty =>
+      pick(Icons.monetization_on_outlined, CupertinoIcons.money_dollar_circle);
+  IconData get replyReward =>
+      pick(Icons.card_giftcard_outlined, CupertinoIcons.gift);
   IconData get bestAnswerSeal =>
       pick(Icons.verified_rounded, CupertinoIcons.checkmark_seal_fill);
   IconData get verifiedUser =>

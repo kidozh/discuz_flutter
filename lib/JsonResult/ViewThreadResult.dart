@@ -74,6 +74,8 @@ class ThreadVariables extends BaseVariableResult{
   @JsonKey(name: "special_poll",defaultValue: null)
   Poll? poll;
 
+  @JsonKey(name: 'special_debate', fromJson: DebateInfo.parse)
+  DebateInfo? debate;
   @JsonKey(name: 'special_reward', fromJson: RewardInfo.parse)
   RewardInfo? reward;
   @JsonKey(name: 'special_activity', fromJson: ActivityInfo.parse)
@@ -308,6 +310,13 @@ class PollOption{
   @JsonKey(name: "votes")
   @StringToIntConverter()
   int voteNumber = 0;
+  @JsonKey(name: 'imginfo', fromJson: _imageUrls)
+  Map<String,String> images = {};
+  static Map<String,String> _imageUrls(Object? raw) => {
+    for (final key in ['small','big'])
+      if (discuzString(discuzMap(raw)[key]).trim().isNotEmpty)
+        key: discuzString(discuzMap(raw)[key]).trim(),
+  };
   @JsonKey(defaultValue: "EEEEEE")
   String color = "";
   PollOption();

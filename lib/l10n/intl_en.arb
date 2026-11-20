@@ -457,6 +457,15 @@
   "dataBackupInTestTitle": "Data backup",
   "dataBackupInTestSubtitle": "The version is not permanent and your data may get lost in upgrading process.",
   "welcomeTitle": "Welcome",
+  "welcomeWhatsNew": "What’s new",
+  "welcomeNewComposerTitle": "More ways to post",
+  "welcomeNewComposerDetail": "Use Post settings to add a picture poll, fill in a classified listing, or set up rush replies and reply rewards.",
+  "welcomeNewPollTitle": "Images stay with your poll draft",
+  "welcomeNewPollDetail": "Resume a draft with its option images, and tap a picture in a published poll to view the original.",
+  "welcomeNewReplyTitle": "Find your reply right away",
+  "welcomeNewReplyDetail": "Jump to your new reply after sending. Type @ to pick a forum friend in a topic or reply.",
+  "welcomeNewDebateTitle": "Debate details at a glance",
+  "welcomeNewDebateDetail": "See each side’s argument and vote count together.",
   "welcomeVersionTitle": "Welcome to version {version}",
   "@welcomeVersionTitle": {
     "placeholders": {
@@ -671,6 +680,52 @@
   "insertItalicText": "Italic",
   "insertQuoteText": "Quote",
   "loadingForumInformation": "Loading configuration for publish a thread in the forum.",
+  "pollOptionLimit": "The forum allows 2–{count} options.",
+  "pollOptionPicture": "Choose image for option {count}",
+  "removePollOption": "Remove option {count}",
+  "addPollOption": "Add option",
+  "pollHideResults": "Show results after voting",
+  "pollPictureRejected": "The poll image is missing or does not meet the forum’s size or format rules.",
+  "classifiedFieldInvalid": "Check the value for {name}.",
+  "classifiedExpiration": "Listing duration",
+  "classifiedRequired": "Choose a listing type and fill in its required fields.",
+  "classifiedUnsupported": "This listing has fields that need the forum’s web form.",
+  "rushStopFloorInput": "Closing floor",
+  "rushReplyLimitInput": "Replies per member",
+  "rushFloorsHint": "Separate floors with commas. Use * as a wildcard, for example 8,88,*88.",
+  "rushSettingsInvalid": "Check the dates, floor numbers and credit limit.",
+  "rushSettingsUnavailable": "Rush replies are unavailable for this account or post type.",
+  "removeRushSettings": "Remove rush reply settings",
+  "rushForumTimeHint": "Times use the forum’s time zone. Leave optional limits blank.",
+  "@pollOptionLimit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@pollOptionPicture": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@removePollOption": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@classifiedFieldInvalid": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "postSettings": "Post settings",
   "pushThreadTitleHint": "Title",
   "loadingCaptchaInformation": "Loading captcha information.",
   "noCaptachaRequired": "No captcha needed.",
@@ -1210,6 +1265,23 @@
     }
   },
   "creditRules": "Rules",
+  "debateAffirm": "In favor",
+  "debateAgainst": "Against",
+  "debateVoteCount": "{count, plural, =1{1 vote} other{{count} votes}}",
+  "debateVerdict": "Judge’s verdict",
+  "mentionFriend": "Mention a friend",
+  "rewardPerReply": "Reward per reply",
+  "rewardPortions": "Number of rewards",
+  "rewardFee": "Fee",
+  "removeReplyReward": "Remove reply rewards",
+  "replyRewardUnavailable": "Reply rewards are unavailable for this account or forum.",
+  "@debateVoteCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "replyCreditTitle": "Reply rewards",
   "replyCreditEach": "Reward per eligible reply: {amount} {credit}",
   "@replyCreditEach": {

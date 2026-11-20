@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../client/SpecialThreadForm.dart';
 import '../generated/l10n.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
+import '../widget/post_settings_sheet.dart';
 
 class SpecialThreadComposerPage extends StatefulWidget {
   const SpecialThreadComposerPage({
@@ -169,107 +170,94 @@ class _SpecialThreadComposerState extends State<SpecialThreadComposerPage> {
     final rewardInput = reward == null
         ? null
         : controller('rewardprice', initial: '${reward.minimum}');
-    return PlatformScaffold(
-      appBar: PlatformAppBar(
-        title: Text(
-          reward == null ? strings.createActivity : strings.createReward,
-        ),
-      ),
-      body: Material(
-        type: MaterialType.transparency,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            if (reward != null) ...[
-              field('rewardprice', strings.specialRewardAmount, number: true),
-              if (reward.hint.isNotEmpty) Text(reward.hint),
-              ValueListenableBuilder(
-                valueListenable: rewardInput!,
-                builder: (context, value, _) {
-                  final amount = int.tryParse(value.text);
-                  return amount != null && reward.allows(amount)
-                      ? Text(
-                          strings.rewardTotal(
-                            '${reward.total(amount)} ${reward.credit}'.trim(),
-                          ),
-                        )
-                      : const SizedBox.shrink();
-                },
-              ),
-            ] else ...[
-              dateField('starttime', strings.activityStartsAt),
-              dateField('starttimeto', strings.activityEndsAt),
-              dateField('activityexpiration', strings.activityDeadline),
-              field('activityplace', strings.activityLocation),
-              field('activityclass', strings.activityCategory),
-              if (widget.form.activityCategories.isNotEmpty)
-                Wrap(
-                  spacing: 8,
-                  children: [
-                    for (final name in widget.form.activityCategories)
-                      PlatformTextButton(
-                        onPressed: () =>
-                            controller('activityclass').text = name,
-                        child: Text(name),
+    return PostSettingsSheet(
+      title: reward == null ? strings.createActivity : strings.createReward,
+      hasSave: true,
+      onSave: save,
+      children: [
+        if (reward != null) ...[
+          field('rewardprice', strings.specialRewardAmount, number: true),
+          if (reward.hint.isNotEmpty) Text(reward.hint),
+          ValueListenableBuilder(
+            valueListenable: rewardInput!,
+            builder: (context, value, _) {
+              final amount = int.tryParse(value.text);
+              return amount != null && reward.allows(amount)
+                  ? Text(
+                      strings.rewardTotal(
+                        '${reward.total(amount)} ${reward.credit}'.trim(),
                       ),
-                  ],
-                ),
-              field('activitynumber', strings.activityCapacity, number: true),
-              Text(strings.activityGender),
-              for (final (id, label) in [
-                ('0', strings.activityAnyone),
-                ('1', strings.activityMen),
-                ('2', strings.activityWomen),
-              ])
-                PlatformListTile(
-                  title: Text(label),
-                  selected: gender == id,
-                  trailing: gender == id
-                      ? Icon(PlatformIcons(context).checkMarkCircledSolid)
-                      : null,
-                  onTap: () => setState(() => gender = id),
-                ),
-              field('cost', strings.activityCost, number: true),
-              if (widget.form.credit.isNotEmpty)
-                field(
-                  'activitycredit',
-                  '${strings.activityCredits} · ${widget.form.credit}',
-                  number: true,
-                ),
-              if (widget.form.registrationFields.isNotEmpty)
-                Text(strings.activityRegistrationFields),
-              for (final entry in widget.form.registrationFields.entries)
-                PlatformListTile(
-                  title: Text(entry.value),
-                  trailing: PlatformSwitch(
-                    value: profileFields.contains(entry.key),
-                    onChanged: (selected) => setState(() {
-                      selected
-                          ? profileFields.add(entry.key)
-                          : profileFields.remove(entry.key);
-                    }),
+                    )
+                  : const SizedBox.shrink();
+            },
+          ),
+        ] else ...[
+          dateField('starttime', strings.activityStartsAt),
+          dateField('starttimeto', strings.activityEndsAt),
+          dateField('activityexpiration', strings.activityDeadline),
+          field('activityplace', strings.activityLocation),
+          field('activityclass', strings.activityCategory),
+          if (widget.form.activityCategories.isNotEmpty)
+            Wrap(
+              spacing: 8,
+              children: [
+                for (final name in widget.form.activityCategories)
+                  PlatformTextButton(
+                    onPressed: () => controller('activityclass').text = name,
+                    child: Text(name),
                   ),
-                ),
-              if (widget.form.customFieldLimit > 0)
-                field(
-                  'extfield',
-                  strings.activityCustomFields(widget.form.customFieldLimit),
-                  lines: 3,
-                ),
-            ],
-            if (invalid)
-              Text(
-                reward == null
-                    ? strings.activityDraftInvalid
-                    : strings.rewardAmountInvalid,
-              ),
-            PlatformElevatedButton(
-              onPressed: save,
-              child: Text(strings.forumConfirm),
+              ],
             ),
-          ],
-        ),
-      ),
+          field('activitynumber', strings.activityCapacity, number: true),
+          Text(strings.activityGender),
+          for (final (id, label) in [
+            ('0', strings.activityAnyone),
+            ('1', strings.activityMen),
+            ('2', strings.activityWomen),
+          ])
+            PlatformListTile(
+              title: Text(label),
+              selected: gender == id,
+              trailing: gender == id
+                  ? Icon(PlatformIcons(context).checkMarkCircledSolid)
+                  : null,
+              onTap: () => setState(() => gender = id),
+            ),
+          field('cost', strings.activityCost, number: true),
+          if (widget.form.credit.isNotEmpty)
+            field(
+              'activitycredit',
+              '${strings.activityCredits} · ${widget.form.credit}',
+              number: true,
+            ),
+          if (widget.form.registrationFields.isNotEmpty)
+            Text(strings.activityRegistrationFields),
+          for (final entry in widget.form.registrationFields.entries)
+            PlatformListTile(
+              title: Text(entry.value),
+              trailing: PlatformSwitch(
+                value: profileFields.contains(entry.key),
+                onChanged: (selected) => setState(() {
+                  selected
+                      ? profileFields.add(entry.key)
+                      : profileFields.remove(entry.key);
+                }),
+              ),
+            ),
+          if (widget.form.customFieldLimit > 0)
+            field(
+              'extfield',
+              strings.activityCustomFields(widget.form.customFieldLimit),
+              lines: 3,
+            ),
+        ],
+        if (invalid)
+          Text(
+            reward == null
+                ? strings.activityDraftInvalid
+                : strings.rewardAmountInvalid,
+          ),
+      ],
     );
   }
 }

@@ -6,10 +6,12 @@ import '../entity/SpecialThread.dart';
 import '../generated/l10n.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
 import '../utility/best_answer_style.dart';
+import 'post_status_badges.dart';
 
 /// Thread details and actions based on the current forum response.
 class SpecialThreadCard extends StatelessWidget {
   final RewardInfo? reward;
+  final DebateInfo? debate;
   final ActivityInfo? activity;
   final ThreadSortInfo? threadSort;
   final ValueChanged<int> onSelectPost;
@@ -18,6 +20,7 @@ class SpecialThreadCard extends StatelessWidget {
   const SpecialThreadCard({
     super.key,
     this.reward,
+    this.debate,
     this.activity,
     this.threadSort,
     required this.onSelectPost,
@@ -84,6 +87,35 @@ class SpecialThreadCard extends StatelessWidget {
             ),
         ]),
       );
+    if (debate case final d?) {
+      sections.add(
+        section(s.forumFilterSpecialTypeDebate, [
+          for (final (label, point, votes) in [
+            (s.debateAffirm, d.affirm, d.affirmVotes),
+            (s.debateAgainst, d.against, d.againstVotes),
+          ])
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    [
+                      label,
+                      if (votes != null) s.debateVoteCount(votes),
+                    ].join(' · '),
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  Text(_text(point)),
+                ],
+              ),
+            ),
+          if (d.end.isNotEmpty && d.end != '0')
+            line(s.activityEnds, _time(d.end)),
+          if (d.verdict.isNotEmpty) line(s.debateVerdict, d.verdict),
+        ]),
+      );
+    }
     final activity = this.activity;
     if (activity != null) {
       final joinBlockedByCapacity = activity.status == 'join' && activity.full;
@@ -163,7 +195,6 @@ class ThreadRewardPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     final amount = (html.parseFragment(reward.price).text ?? '').trim();
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -174,38 +205,10 @@ class ThreadRewardPill extends StatelessWidget {
           runSpacing: 6,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            DecoratedBox(
-              decoration: ShapeDecoration(
-                color: colors.tertiaryContainer.withValues(alpha: 0.65),
-                shape: const StadiumBorder(),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 7,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.monetization_on_outlined,
-                      size: 16,
-                      color: colors.onTertiaryContainer,
-                    ),
-                    const SizedBox(width: 6),
-                    Flexible(
-                      child: Text(
-                        '${S.of(context).specialReward}${amount.isEmpty ? '' : ' · $amount'}',
-                        style: Theme.of(context).textTheme.labelMedium
-                            ?.copyWith(
-                              color: colors.onTertiaryContainer,
-                              fontWeight: FontWeight.w600,
-                            ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            ForumRewardBadge(
+              label:
+                  '${S.of(context).specialReward}${amount.isEmpty ? '' : ' · $amount'}',
+              icon: PlatformIcons(context).bounty,
             ),
             if (reward.bestPid > 0)
               PlatformTextButton(

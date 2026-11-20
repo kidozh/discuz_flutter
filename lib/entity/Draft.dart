@@ -34,6 +34,15 @@ class Draft extends HiveObject {
   @HiveField(12, defaultValue: '')
   String pendingAttachmentsJson = '';
 
+  @HiveField(13, defaultValue: '')
+  String replyRewardJson = '';
+
+  @HiveField(14, defaultValue: '')
+  String classifiedJson = '';
+
+  @HiveField(15, defaultValue: '')
+  String rushJson = '';
+
   @HiveField(7)
   String typeid;
 

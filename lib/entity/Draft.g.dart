@@ -31,13 +31,16 @@ class DraftAdapter extends TypeAdapter<Draft> {
           : (fields[9] as Map).cast<String, String>()
       ..specialThreadJson = fields[10] == null ? '' : fields[10] as String
       ..uid = fields[11] == null ? 0 : (fields[11] as num).toInt()
-      ..pendingAttachmentsJson = fields[12] == null ? '' : fields[12] as String;
+      ..pendingAttachmentsJson = fields[12] == null ? '' : fields[12] as String
+      ..replyRewardJson = fields[13] == null ? '' : fields[13] as String
+      ..classifiedJson = fields[14] == null ? '' : fields[14] as String
+      ..rushJson = fields[15] == null ? '' : fields[15] as String;
   }
 
   @override
   void write(BinaryWriter writer, Draft obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(15)
       ..writeByte(1)
       ..write(obj.title)
       ..writeByte(2)
@@ -61,7 +64,13 @@ class DraftAdapter extends TypeAdapter<Draft> {
       ..writeByte(11)
       ..write(obj.uid)
       ..writeByte(12)
-      ..write(obj.pendingAttachmentsJson);
+      ..write(obj.pendingAttachmentsJson)
+      ..writeByte(13)
+      ..write(obj.replyRewardJson)
+      ..writeByte(14)
+      ..write(obj.classifiedJson)
+      ..writeByte(15)
+      ..write(obj.rushJson);
   }
 
   @override

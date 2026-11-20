@@ -69,6 +69,9 @@ class _DraftInboxPageState extends State<DraftInboxPage> {
         for (final draft in topics)
           if (draft.title.trim().isNotEmpty ||
               draft.text.trim().isNotEmpty ||
+              draft.replyRewardJson.isNotEmpty ||
+              draft.classifiedJson.isNotEmpty ||
+              draft.rushJson.isNotEmpty ||
               draft.pollJson.isNotEmpty ||
               draft.specialThreadJson.isNotEmpty)
             DraftInboxEntry(

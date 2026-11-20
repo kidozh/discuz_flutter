@@ -61,6 +61,7 @@ ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) =>
       ..poll = json['special_poll'] == null
           ? null
           : Poll.fromJson(json['special_poll'] as Map<String, dynamic>)
+      ..debate = DebateInfo.parse(json['special_debate'])
       ..reward = RewardInfo.parse(json['special_reward'])
       ..activity = ActivityInfo.parse(json['special_activity'])
       ..threadSort = ThreadSortInfo.parse(json['threadsortshow'])
@@ -94,6 +95,7 @@ Map<String, dynamic> _$ThreadVariablesToJson(
   'ppp': instance.ppp,
   'page': instance.page,
   'special_poll': instance.poll?.toJson(),
+  'special_debate': instance.debate?.toJson(),
   'special_reward': instance.reward?.toJson(),
   'special_activity': instance.activity?.toJson(),
   'threadsortshow': instance.threadSort?.toJson(),
@@ -239,6 +241,7 @@ PollOption _$PollOptionFromJson(Map<String, dynamic> json) => PollOption()
   ..id = const StringToIntConverter().fromJson(json['polloptionid'])
   ..name = json['polloption'] as String? ?? ''
   ..voteNumber = const StringToIntConverter().fromJson(json['votes'])
+  ..images = PollOption._imageUrls(json['imginfo'])
   ..color = json['color'] as String? ?? 'EEEEEE';
 
 Map<String, dynamic> _$PollOptionToJson(PollOption instance) =>
@@ -246,5 +249,6 @@ Map<String, dynamic> _$PollOptionToJson(PollOption instance) =>
       'polloptionid': const StringToIntConverter().toJson(instance.id),
       'polloption': instance.name,
       'votes': const StringToIntConverter().toJson(instance.voteNumber),
+      'imginfo': instance.images,
       'color': instance.color,
     };

@@ -2531,6 +2531,96 @@ class S {
     return Intl.message('Welcome', name: 'welcomeTitle', desc: '', args: []);
   }
 
+  /// `What’s new`
+  String get welcomeWhatsNew {
+    return Intl.message(
+      'What’s new',
+      name: 'welcomeWhatsNew',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `More ways to post`
+  String get welcomeNewComposerTitle {
+    return Intl.message(
+      'More ways to post',
+      name: 'welcomeNewComposerTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Use Post settings to add a picture poll, fill in a classified listing, or set up rush replies and reply rewards.`
+  String get welcomeNewComposerDetail {
+    return Intl.message(
+      'Use Post settings to add a picture poll, fill in a classified listing, or set up rush replies and reply rewards.',
+      name: 'welcomeNewComposerDetail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Images stay with your poll draft`
+  String get welcomeNewPollTitle {
+    return Intl.message(
+      'Images stay with your poll draft',
+      name: 'welcomeNewPollTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Resume a draft with its option images, and tap a picture in a published poll to view the original.`
+  String get welcomeNewPollDetail {
+    return Intl.message(
+      'Resume a draft with its option images, and tap a picture in a published poll to view the original.',
+      name: 'welcomeNewPollDetail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Find your reply right away`
+  String get welcomeNewReplyTitle {
+    return Intl.message(
+      'Find your reply right away',
+      name: 'welcomeNewReplyTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Jump to your new reply after sending. Type @ to pick a forum friend in a topic or reply.`
+  String get welcomeNewReplyDetail {
+    return Intl.message(
+      'Jump to your new reply after sending. Type @ to pick a forum friend in a topic or reply.',
+      name: 'welcomeNewReplyDetail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Debate details at a glance`
+  String get welcomeNewDebateTitle {
+    return Intl.message(
+      'Debate details at a glance',
+      name: 'welcomeNewDebateTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `See each side’s argument and vote count together.`
+  String get welcomeNewDebateDetail {
+    return Intl.message(
+      'See each side’s argument and vote count together.',
+      name: 'welcomeNewDebateDetail',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Welcome to version {version}`
   String welcomeVersionTitle(Object version) {
     return Intl.message(
@@ -3841,6 +3931,186 @@ class S {
     return Intl.message(
       'Loading configuration for publish a thread in the forum.',
       name: 'loadingForumInformation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The forum allows 2–{count} options.`
+  String pollOptionLimit(int count) {
+    return Intl.message(
+      'The forum allows 2–$count options.',
+      name: 'pollOptionLimit',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Choose image for option {count}`
+  String pollOptionPicture(int count) {
+    return Intl.message(
+      'Choose image for option $count',
+      name: 'pollOptionPicture',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Remove option {count}`
+  String removePollOption(int count) {
+    return Intl.message(
+      'Remove option $count',
+      name: 'removePollOption',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Add option`
+  String get addPollOption {
+    return Intl.message(
+      'Add option',
+      name: 'addPollOption',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show results after voting`
+  String get pollHideResults {
+    return Intl.message(
+      'Show results after voting',
+      name: 'pollHideResults',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The poll image is missing or does not meet the forum’s size or format rules.`
+  String get pollPictureRejected {
+    return Intl.message(
+      'The poll image is missing or does not meet the forum’s size or format rules.',
+      name: 'pollPictureRejected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check the value for {name}.`
+  String classifiedFieldInvalid(String name) {
+    return Intl.message(
+      'Check the value for $name.',
+      name: 'classifiedFieldInvalid',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Listing duration`
+  String get classifiedExpiration {
+    return Intl.message(
+      'Listing duration',
+      name: 'classifiedExpiration',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose a listing type and fill in its required fields.`
+  String get classifiedRequired {
+    return Intl.message(
+      'Choose a listing type and fill in its required fields.',
+      name: 'classifiedRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This listing has fields that need the forum’s web form.`
+  String get classifiedUnsupported {
+    return Intl.message(
+      'This listing has fields that need the forum’s web form.',
+      name: 'classifiedUnsupported',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Closing floor`
+  String get rushStopFloorInput {
+    return Intl.message(
+      'Closing floor',
+      name: 'rushStopFloorInput',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Replies per member`
+  String get rushReplyLimitInput {
+    return Intl.message(
+      'Replies per member',
+      name: 'rushReplyLimitInput',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Separate floors with commas. Use * as a wildcard, for example 8,88,*88.`
+  String get rushFloorsHint {
+    return Intl.message(
+      'Separate floors with commas. Use * as a wildcard, for example 8,88,*88.',
+      name: 'rushFloorsHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check the dates, floor numbers and credit limit.`
+  String get rushSettingsInvalid {
+    return Intl.message(
+      'Check the dates, floor numbers and credit limit.',
+      name: 'rushSettingsInvalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rush replies are unavailable for this account or post type.`
+  String get rushSettingsUnavailable {
+    return Intl.message(
+      'Rush replies are unavailable for this account or post type.',
+      name: 'rushSettingsUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove rush reply settings`
+  String get removeRushSettings {
+    return Intl.message(
+      'Remove rush reply settings',
+      name: 'removeRushSettings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Times use the forum’s time zone. Leave optional limits blank.`
+  String get rushForumTimeHint {
+    return Intl.message(
+      'Times use the forum’s time zone. Leave optional limits blank.',
+      name: 'rushForumTimeHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Post settings`
+  String get postSettings {
+    return Intl.message(
+      'Post settings',
+      name: 'postSettings',
       desc: '',
       args: [],
     );
@@ -7429,6 +7699,93 @@ class S {
   /// `Rules`
   String get creditRules {
     return Intl.message('Rules', name: 'creditRules', desc: '', args: []);
+  }
+
+  /// `In favor`
+  String get debateAffirm {
+    return Intl.message('In favor', name: 'debateAffirm', desc: '', args: []);
+  }
+
+  /// `Against`
+  String get debateAgainst {
+    return Intl.message('Against', name: 'debateAgainst', desc: '', args: []);
+  }
+
+  /// `{count, plural, =1{1 vote} other{{count} votes}}`
+  String debateVoteCount(int count) {
+    return Intl.plural(
+      count,
+      one: '1 vote',
+      other: '$count votes',
+      name: 'debateVoteCount',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Judge’s verdict`
+  String get debateVerdict {
+    return Intl.message(
+      'Judge’s verdict',
+      name: 'debateVerdict',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mention a friend`
+  String get mentionFriend {
+    return Intl.message(
+      'Mention a friend',
+      name: 'mentionFriend',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reward per reply`
+  String get rewardPerReply {
+    return Intl.message(
+      'Reward per reply',
+      name: 'rewardPerReply',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Number of rewards`
+  String get rewardPortions {
+    return Intl.message(
+      'Number of rewards',
+      name: 'rewardPortions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fee`
+  String get rewardFee {
+    return Intl.message('Fee', name: 'rewardFee', desc: '', args: []);
+  }
+
+  /// `Remove reply rewards`
+  String get removeReplyReward {
+    return Intl.message(
+      'Remove reply rewards',
+      name: 'removeReplyReward',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reply rewards are unavailable for this account or forum.`
+  String get replyRewardUnavailable {
+    return Intl.message(
+      'Reply rewards are unavailable for this account or forum.',
+      name: 'replyRewardUnavailable',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Reply rewards`

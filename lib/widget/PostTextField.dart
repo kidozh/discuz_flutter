@@ -1,6 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:provider/provider.dart';
+
+import '../provider/DiscuzAndUserNotifier.dart';
+import '../page/ForumListsPage.dart';
 import '../utility/forum_voice.dart';
 import 'forum_voice_message.dart';
 
@@ -13,6 +17,7 @@ import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/utility/post_editor_controller.dart';
 import 'package:discuz_flutter/widget/post_image_preview.dart';
 import 'package:extended_text_field/extended_text_field.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -53,6 +58,7 @@ class PostTextFieldState extends State<PostTextField> {
     super.initState();
     _controller.addListener(_keepSelectionOutsideTokens);
     _previousSelection = _controller.selection;
+    _lastText = _controller.text;
   }
 
   @override
@@ -97,6 +103,68 @@ class PostTextFieldState extends State<PostTextField> {
     super.dispose();
   }
 
+  bool _pickingFriend = false;
+  String _lastText = '';
+  void _offerMention(String text) {
+    final previous = _lastText;
+    _lastText = text;
+    final value = _controller.value;
+    final cursor = value.selection.extentOffset;
+    if (_pickingFriend ||
+        !focusNode.hasFocus ||
+        !value.selection.isCollapsed ||
+        !value.composing.isCollapsed ||
+        cursor <= 0 ||
+        cursor > text.length ||
+        text[cursor - 1] != '@' ||
+        (cursor > 1 && RegExp(r'[\w.@+-]').hasMatch(text[cursor - 2])) ||
+        text.length != previous.length + 1 ||
+        previous != text.replaceRange(cursor - 1, cursor, ''))
+      return;
+    final account = context.read<DiscuzAndUserNotifier?>();
+    final user = account?.userFor(_discuz);
+    if (user == null || account == null) return;
+    final session = account.sessionIdentity;
+    _pickingFriend = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        if (!mounted ||
+            _controller.text != text ||
+            !identical(session, account.sessionIdentity))
+          return;
+        final name = await Navigator.push<String>(
+          context,
+          platformPageRoute(
+            context: context,
+            builder: (_) => ForumListsPage(
+              discuz: _discuz,
+              user: user,
+              directory: ForumDirectory.friends,
+              pickFriend: true,
+            ),
+          ),
+        );
+        if (!mounted ||
+            !identical(session, account.sessionIdentity) ||
+            _controller.text != text)
+          return;
+        if (name != null) {
+          final updated = text.replaceRange(cursor, cursor, '$name ');
+          _controller.value = TextEditingValue(
+            text: updated,
+            selection: TextSelection.collapsed(
+              offset: cursor + name.length + 1,
+            ),
+          );
+          _lastText = updated;
+        }
+        focusNode.requestFocus();
+      } finally {
+        _pickingFriend = false;
+      }
+    });
+  }
+
   String? _imagePathFor(PostEditorToken token) {
     final controller = _controller;
     if (controller is PostEditorController) {
@@ -127,6 +195,7 @@ class PostTextFieldState extends State<PostTextField> {
     );
     final textField = ExtendedTextField(
       controller: _controller,
+      onChanged: _offerMention,
       specialTextSpanBuilder: PostSpecialTextSpanBuilder(
         _discuz,
         manageEdits: true,
@@ -141,7 +210,13 @@ class PostTextFieldState extends State<PostTextField> {
         editingValue: () => _controller.value,
         compactImages: expanded == null,
       ),
-      inputFormatters: const [PostEditorInputFormatter()],
+      inputFormatters: [
+        TextInputFormatter.withFunction((oldValue, newValue) {
+          _lastText = oldValue.text;
+          return newValue;
+        }),
+        const PostEditorInputFormatter(),
+      ],
       strutStyle: const StrutStyle(forceStrutHeight: false),
       selectionControls: classicCupertino
           ? cupertinoTextSelectionHandleControls

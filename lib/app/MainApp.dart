@@ -522,7 +522,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     String version = packageInfo.version;
     log("get version ${version} and flag: ${flag}");
-    if (flag != version) {
+    if (mounted && flag != version) {
       // shown
       Navigator.push(
         context,

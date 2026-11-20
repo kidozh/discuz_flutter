@@ -115,3 +115,38 @@ class ThreadSortOption {
     'unit': unit,
   };
 }
+
+class DebateInfo {
+  const DebateInfo(
+    this.affirm,
+    this.against,
+    this.affirmVotes,
+    this.againstVotes,
+    this.end,
+    this.verdict,
+  );
+  final String affirm, against, end, verdict;
+  final int? affirmVotes, againstVotes;
+  static DebateInfo? parse(Object? value) {
+    final data = discuzMap(value);
+    if (data.isEmpty) return null;
+    String field(String key) => discuzString(data[key]).trim();
+    return DebateInfo(
+      field('affirmpoint'),
+      field('negapoint'),
+      int.tryParse(field('affirmvotes')),
+      int.tryParse(field('negavotes')),
+      field('endtime'),
+      field('umpirepoint'),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'affirmpoint': affirm,
+    'negapoint': against,
+    'affirmvotes': affirmVotes,
+    'negavotes': againstVotes,
+    'endtime': end,
+    'umpirepoint': verdict,
+  };
+}

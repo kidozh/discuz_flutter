@@ -13,6 +13,8 @@ class PostStatusBadges extends StatelessWidget {
   final bool warned;
   final bool revised;
   final RewardInfo? reward;
+  final int replyCredit;
+  final bool winningFloor;
   final bool isBestAnswer;
   final ValueChanged<int>? onSelectPost;
 
@@ -21,6 +23,8 @@ class PostStatusBadges extends StatelessWidget {
     required this.warned,
     required this.revised,
     this.reward,
+    this.replyCredit = 0,
+    this.winningFloor = false,
     this.isBestAnswer = false,
     this.onSelectPost,
     super.key,
@@ -28,8 +32,15 @@ class PostStatusBadges extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!blocked && !warned && !revised && reward == null && !isBestAnswer)
+    if (!blocked &&
+        !warned &&
+        !revised &&
+        reward == null &&
+        !isBestAnswer &&
+        replyCredit <= 0 &&
+        !winningFloor) {
       return const SizedBox.shrink();
+    }
     final strings = S.of(context);
     final amount = parseFragment(reward?.price ?? '').text?.trim() ?? '';
     final rewardLabel =
@@ -55,12 +66,22 @@ class PostStatusBadges extends StatelessWidget {
                 background: bestBackground,
               ),
             if (reward != null)
-              _StatusBadge(
+              ForumRewardBadge(
                 label: rewardLabel,
-                description: rewardLabel,
-                icon: Icons.monetization_on_outlined,
-                foreground: colors.onTertiaryContainer,
-                background: colors.tertiaryContainer,
+                icon: PlatformIcons(context).bounty,
+              ),
+            if (replyCredit > 0)
+              ForumRewardBadge(
+                label: strings.replyCreditReceived(replyCredit),
+                icon: PlatformIcons(context).replyReward,
+              ),
+            if (winningFloor)
+              _StatusBadge(
+                label: strings.rushReplyWinningFloor,
+                description: strings.rushReplyWinningFloor,
+                icon: PlatformIcons(context).flag,
+                foreground: colors.onSurfaceVariant,
+                background: colors.surfaceContainerHighest,
               ),
             if (reward != null && reward!.bestPid > 0 && onSelectPost != null)
               Semantics(
@@ -110,6 +131,32 @@ class PostStatusBadges extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The same passive, wrapping badge for a bounty, a reply offer or earned credit.
+class ForumRewardBadge extends StatelessWidget {
+  const ForumRewardBadge({
+    super.key,
+    required this.label,
+    required this.icon,
+    this.description,
+  });
+
+  final String label;
+  final String? description;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return _StatusBadge(
+      label: label,
+      description: description ?? label,
+      icon: icon,
+      foreground: colors.onTertiaryContainer,
+      background: colors.tertiaryContainer,
     );
   }
 }

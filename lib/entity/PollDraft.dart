@@ -1,12 +1,22 @@
 import 'dart:convert';
 
+import '../utility/reply_draft_store.dart';
+
 class PollDraft {
   final List<String> options;
   final int maxChoices, days;
-  const PollDraft(this.options, this.maxChoices, this.days);
+  final Map<int, ReplyDraftAttachment> images;
+  final bool hideResults;
+  const PollDraft(
+    this.options,
+    this.maxChoices,
+    this.days, {
+    this.images = const {},
+    this.hideResults = false,
+  });
   bool get valid =>
       options.length >= 2 &&
-      options.length <= 20 &&
+      images.keys.every((i) => i >= 0 && i < options.length) &&
       options.every((s) => s.trim().isNotEmpty && s.length <= 80) &&
       options.toSet().length == options.length &&
       maxChoices >= 1 &&
@@ -20,9 +30,15 @@ class PollDraft {
     'maxchoices': '$maxChoices',
     'expiration': '$days',
     'overt': '0',
+    if (hideResults) 'visibilitypoll': '1',
   };
-  String encode() =>
-      jsonEncode({'options': options, 'maxChoices': maxChoices, 'days': days});
+  String encode() => jsonEncode({
+    'options': options,
+    'maxChoices': maxChoices,
+    'days': days,
+    'hideResults': hideResults,
+    'images': {for (final e in images.entries) '${e.key}': e.value.toJson()},
+  });
   static PollDraft? decode(String value) {
     if (value.isEmpty) return null;
     try {
@@ -31,6 +47,15 @@ class PollDraft {
         List<String>.from(json['options']),
         json['maxChoices'],
         json['days'],
+        hideResults: json['hideResults'] == true,
+        images: {
+          if (json['images'] is Map)
+            for (final entry in (json['images'] as Map).entries)
+              if (int.tryParse('${entry.key}') case final index?)
+                if (ReplyDraftAttachment.fromJson(entry.value)
+                    case final image?)
+                  if (image.image) index: image,
+        },
       );
       return draft.valid ? draft : null;
     } catch (_) {

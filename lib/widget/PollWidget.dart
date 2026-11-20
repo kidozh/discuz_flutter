@@ -4,6 +4,10 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:html/parser.dart' show parseFragment;
 import 'package:provider/provider.dart';
 
+import '../entity/Discuz.dart';
+import '../page/FullImagePage.dart';
+import '../utility/forum_image_url.dart';
+import 'forum_image.dart';
 import '../JsonResult/ViewThreadResult.dart';
 import '../client/MobileApiClient.dart';
 import '../generated/l10n.dart';
@@ -161,7 +165,7 @@ class _PollState extends State<PollWidget> {
                 TimeDisplayUtils.getLocaledTimeDisplay(context, poll.expiredAt),
               ),
             ),
-          for (final option in options)
+          for (final option in options) ...[
             PlatformListTile(
               title: Text(parseFragment(option.name).text ?? option.name),
               selected: selected.contains(option.id),
@@ -193,6 +197,9 @@ class _PollState extends State<PollWidget> {
                       selected.add(option.id);
                     }),
             ),
+            if (account?.discuz case final forum?)
+              _PollImage(forum: forum, option: option, tid: widget.tid),
+          ],
           if (canVote)
             PlatformElevatedButton(
               onPressed: sending || selected.isEmpty ? null : () => vote(limit),
@@ -201,6 +208,67 @@ class _PollState extends State<PollWidget> {
           else if (!poll.isResultVisible)
             Text(voted ? strings.pollVoted : strings.pollResultsHidden),
         ],
+      ),
+    );
+  }
+}
+
+class _PollImage extends StatelessWidget {
+  const _PollImage({
+    required this.forum,
+    required this.option,
+    required this.tid,
+  });
+  final Discuz forum;
+  final PollOption option;
+  final int tid;
+  @override
+  Widget build(BuildContext context) {
+    final base = forumBaseUri(forum);
+    final big = resolveForumImageUri(base, option.images['big'] ?? '');
+    final thumb =
+        resolveForumImageUri(base, option.images['small'] ?? '') ?? big;
+    if (thumb == null) return const SizedBox.shrink();
+    final image = ForumImage(
+      forum: forum,
+      threadId: tid,
+      url: '$thumb',
+      fallbackUrl: big?.toString(),
+      loading: (_, __) =>
+          const Center(child: PlatformCircularProgressIndicator()),
+      error: (ctx) => Icon(PlatformIcons(ctx).error),
+      fit: BoxFit.contain,
+    );
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 8),
+        child: Semantics(
+          button: big != null,
+          label:
+              '${S.of(context).viewPicture} · ${parseFragment(option.name).text ?? ''}',
+          child: InkWell(
+            onTap: big == null
+                ? null
+                : () => Navigator.push(
+                    context,
+                    platformPageRoute(
+                      context: context,
+                      iosTitle: S.of(context).viewPicture,
+                      builder: (_) => FullImagePage(
+                        '$big',
+                        ['$big'],
+                        forum: forum,
+                        threadId: tid,
+                      ),
+                    ),
+                  ),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 220, maxHeight: 140),
+              child: image,
+            ),
+          ),
+        ),
       ),
     );
   }

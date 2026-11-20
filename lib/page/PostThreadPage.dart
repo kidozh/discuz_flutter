@@ -1,11 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import '../utility/reply_draft_store.dart';
 import '../utility/forum_composer_capabilities.dart';
 
 import '../utility/post_signature_service.dart';
 import '../utility/post_editor_controller.dart';
+import '../client/reply_reward_form.dart';
+import '../client/thread_post_options.dart';
+import 'thread_post_options_sheets.dart';
+import '../widget/post_settings_sheet.dart';
+import 'reply_reward_page.dart';
 import 'PollComposerPage.dart';
 import 'SpecialThreadComposerPage.dart';
 import 'InternalWebviewBrowserPage.dart';
@@ -20,6 +26,7 @@ import 'package:discuz_flutter/utility/AppPlatformIcons.dart';
 import 'package:discuz_flutter/utility/VibrationUtils.dart';
 import 'package:discuz_flutter/widget/CaptchaWidget.dart';
 import 'package:discuz_flutter/widget/PostTextField.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
@@ -115,6 +122,19 @@ class PostThreadStatefulWidget extends StatefulWidget {
   }
 }
 
+enum _PostSetting {
+  category,
+  poll,
+  bounty,
+  activity,
+  replyReward,
+  clearType,
+  clearReward,
+  classified,
+  rush,
+  clearRush,
+}
+
 class PostThreadState extends State<PostThreadStatefulWidget> {
   Discuz discuz;
   int fid;
@@ -128,6 +148,57 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   Draft? draft;
   PollDraft? _pollDraft;
   SpecialThreadDraft? _specialDraft;
+  ReplyRewardDraft? _replyReward;
+  ClassifiedPostDraft? _classified;
+  RushPostDraft? _rush;
+  Map<String, dynamic> _sortConfig = {};
+  int get _specialId => _specialDraft?.kind.id ?? (_pollDraft == null ? 0 : 1);
+  Future<ReplyRewardForm?> _rewardForm() async {
+    final user = context.read<DiscuzAndUserNotifier>().userFor(discuz);
+    if (user == null || !_draftCurrent)
+      throw const ForumApiException('account_changed', '');
+    final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    try {
+      return await ReplyRewardForm.load(
+        ForumInteractionClient(dio, discuz.baseURL),
+        fid,
+        user.uid,
+        _specialId,
+      );
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<void> _configureReplyReward() async {
+    if (_configuring || !_draftCurrent) return;
+    setState(() => _configuring = true);
+    try {
+      final form = await _rewardForm();
+      if (!_draftCurrent) return;
+      if (form == null) {
+        EasyLoading.showError(S.of(context).replyRewardUnavailable);
+        return;
+      }
+      final value = await showPostSettingsSheet<ReplyRewardDraft>(
+        context,
+        (_) => ReplyRewardPage(form, _replyReward),
+      );
+      if (value != null && _draftCurrent) {
+        setState(() => _replyReward = value);
+        await backupDraft();
+      }
+    } catch (e) {
+      if (_draftCurrent)
+        await showForumActionError(
+          context,
+          forumRequestError(S.of(context), e),
+        );
+    } finally {
+      if (mounted) setState(() => _configuring = false);
+    }
+  }
+
   bool _sending = false;
   bool _configuring = false;
   bool _confirming = false;
@@ -276,10 +347,13 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       _controller.text = draft!.text;
       _controller.restoreFileNames(draft!.attachmentNames);
       selectedTypeId = draft!.typeid;
+      _classified = ClassifiedPostDraft.decode(draft!.classifiedJson);
+      _rush = RushPostDraft.decode(draft!.rushJson);
+      _replyReward = ReplyRewardDraft.decode(draft!.replyRewardJson);
       _pollDraft = PollDraft.decode(draft!.pollJson);
       _specialDraft = SpecialThreadDraft.decode(draft!.specialThreadJson);
     }
-    if (widget.navigationTypes == null) _loadForumInfo();
+    _loadForumInfo();
     // add backup option
     backupDraftIfPossible();
     if (draft?.pendingAttachmentsJson.isNotEmpty == true) {
@@ -299,25 +373,21 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     try {
       dio = await NetworkUtils.getDioWithPersistCookieJar(user);
       final api = ForumInteractionClient(dio, discuz.baseURL);
-      final permission = await api.request('newthread', {
-        'fid': fid,
-        'special': 1,
-      });
-      permission.requireData('formhash');
-      if ('${permission.variables['member_uid']}' != '${user.uid}')
-        throw const ForumApiException('account_changed', '');
+      final form = await loadThreadPostForm(api, fid, user.uid, special: 1);
+      final rules = PollPostingRules.parse(form, fid, user.uid);
       if (!isCurrent()) return;
-      final value = await Navigator.push<PollDraft>(
+      final store = await _assets();
+      if (!isCurrent()) return;
+      final value = await showPostSettingsSheet<PollDraft>(
         context,
-        platformPageRoute(
-          context: context,
-          builder: (_) => PollComposerPage(initial: _pollDraft),
-        ),
+        (_) =>
+            PollComposerPage(initial: _pollDraft, rules: rules, store: store),
       );
       if (isCurrent() && value != null) {
         setState(() {
           _pollDraft = value;
           _specialDraft = null;
+          _classified = null;
         });
         await backupDraft();
       }
@@ -352,21 +422,19 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
         kind,
       );
       if (!isCurrent()) return;
-      final value = await Navigator.push<SpecialThreadDraft>(
+      final value = await showPostSettingsSheet<SpecialThreadDraft>(
         context,
-        platformPageRoute(
-          context: context,
-          builder: (_) => SpecialThreadComposerPage(
-            kind: kind,
-            form: form,
-            initial: _specialDraft?.kind == kind ? _specialDraft : null,
-          ),
+        (_) => SpecialThreadComposerPage(
+          kind: kind,
+          form: form,
+          initial: _specialDraft?.kind == kind ? _specialDraft : null,
         ),
       );
       if (!isCurrent() || value == null) return;
       setState(() {
         _specialDraft = value;
         _pollDraft = null;
+        _classified = null;
       });
       await backupDraft();
     } catch (error) {
@@ -419,6 +487,285 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     } finally {
       dio?.close();
       if (mounted) setState(() => _configuring = false);
+    }
+  }
+
+  Map<String, dynamic> get _classifications => discuzMap(_sortConfig['types']);
+
+  Future<int?> _chooseClassification() =>
+      showPostSettingsSheet<int>(context, (sheet) {
+        final strings = S.of(sheet);
+        return PostSettingsSheet(
+          title: strings.specialClassified,
+          children: [
+            for (final e in _classifications.entries)
+              if (int.tryParse(e.key) case final int sortId)
+                PlatformListTile(
+                  title: Text(discuzString(e.value)),
+                  onTap: () => Navigator.pop(sheet, sortId),
+                ),
+          ],
+        );
+      });
+
+  Future<void> _configurePostingForm({int? sortId}) async {
+    final user = context.read<DiscuzAndUserNotifier>().userFor(discuz);
+    if (!_draftCurrent || user == null || _configuring) return;
+    setState(() => _configuring = true);
+    Dio? dio;
+    try {
+      dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      if (!_draftCurrent) return;
+      final api = ForumInteractionClient(dio, discuz.baseURL);
+      final form = await loadThreadPostForm(
+        api,
+        fid,
+        user.uid,
+        special: sortId == null ? _specialId : 0,
+        sortId: sortId ?? _classified?.sortId ?? 0,
+      );
+      if (!_draftCurrent) return;
+      if (sortId != null) {
+        final config = ClassifiedPostingForm.parse(form, sortId);
+        final value = await showPostSettingsSheet<ClassifiedPostDraft>(
+          context,
+          (_) => ClassifiedPostSheet(
+            sortId,
+            discuzString(_classifications['$sortId']),
+            config,
+            _classified?.sortId == sortId ? _classified : null,
+          ),
+        );
+        if (!_draftCurrent || value == null) return;
+        setState(() {
+          _classified = value;
+          _pollDraft = null;
+          _specialDraft = null;
+        });
+      } else {
+        if (!RushPostDraft.supported(form)) {
+          EasyLoading.showError(S.of(context).rushSettingsUnavailable);
+          return;
+        }
+        final value = await showPostSettingsSheet<RushPostDraft>(
+          context,
+          (_) => RushPostSheet(
+            _rush,
+            form.querySelector('label[for=creditlimit]')?.text.trim() ?? '',
+          ),
+        );
+        if (!_draftCurrent || value == null) return;
+        setState(() => _rush = value);
+      }
+      await backupDraft();
+    } catch (error) {
+      if (!_draftCurrent) return;
+      final strings = S.of(context);
+      if (sortId != null &&
+          error is ForumApiException &&
+          error.code == 'classified_post_unsupported') {
+        final open = await showPlatformDialog<bool>(
+          context: context,
+          builder: (dialog) => PlatformAlertDialog(
+            content: Text(strings.classifiedUnsupported),
+            actions: [
+              PlatformDialogAction(
+                child: Text(strings.cancel),
+                onPressed: () => Navigator.pop(dialog),
+              ),
+              PlatformDialogAction(
+                child: Text(strings.navigateToWebPage),
+                onPressed: () => Navigator.pop(dialog, true),
+              ),
+            ],
+          ),
+        );
+        if (open == true && _draftCurrent) {
+          final uri = Uri.parse(discuz.getBaseURLWithAfterfix())
+              .resolve('forum.php')
+              .replace(
+                queryParameters: {
+                  'mod': 'post',
+                  'action': 'newthread',
+                  'fid': '$fid',
+                  'sortid': '$sortId',
+                  'mobile': 'no',
+                },
+              );
+          await Navigator.push(
+            context,
+            platformPageRoute(
+              context: context,
+              builder: (_) => InternalWebviewBrowserPage(discuz, user, '$uri'),
+            ),
+          );
+        }
+        return;
+      }
+      await showForumActionError(
+        context,
+        forumRequestError(
+          strings,
+          error,
+          fallback: strings.specialPostFormUnavailable,
+        ),
+      );
+    } finally {
+      dio?.close();
+      if (mounted) setState(() => _configuring = false);
+    }
+  }
+
+  Widget _buildSettingsEntry(BuildContext context) {
+    final s = S.of(context);
+    final icons = PlatformIcons(context);
+    final summary = [
+      if (_threadTypeEntries.isNotEmpty &&
+          selectedTypeId != null &&
+          selectedTypeId != '0')
+        _selectedThreadTypeLabel,
+      if (_pollDraft != null) s.pollTitle,
+      if (_specialDraft?.kind == SpecialThreadKind.reward) s.createReward,
+      if (_specialDraft?.kind == SpecialThreadKind.activity) s.createActivity,
+      if (_classified case final classified?)
+        discuzString(_classifications['${classified.sortId}']).isEmpty
+            ? s.specialClassified
+            : discuzString(_classifications['${classified.sortId}']),
+      if (_replyReward != null) s.replyCreditTitle,
+      if (_rush != null) s.rushReplyTitle,
+    ];
+    return PlatformListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      title: Text(s.postSettings),
+      subtitle: summary.isEmpty ? null : Text(summary.join(' · ')),
+      leading: Icon(icons.settings, size: 20),
+      trailing: _configuring
+          ? const SizedBox.square(
+              dimension: 18,
+              child: PlatformCircularProgressIndicator(),
+            )
+          : Icon(
+              icons.pick(Icons.chevron_right, CupertinoIcons.chevron_forward),
+              size: 18,
+            ),
+      onTap: _configuring || _sending || _confirming || _recordingVoice != null
+          ? null
+          : _showPostSettings,
+    );
+  }
+
+  Future<void> _showPostSettings() async {
+    FocusScope.of(context).unfocus();
+    final selected = await showPostSettingsSheet<_PostSetting>(context, (
+      sheet,
+    ) {
+      final s = S.of(sheet);
+      final icons = PlatformIcons(sheet);
+      Widget entry(
+        _PostSetting action,
+        IconData icon,
+        String label, {
+        bool active = false,
+      }) => PlatformListTile(
+        leading: Icon(icon, size: 20),
+        title: Text(label),
+        trailing: Icon(active ? icons.checkMark : icons.forward, size: 17),
+        onTap: () => Navigator.pop(sheet, action),
+      );
+      return PostSettingsSheet(
+        title: s.postSettings,
+        children: [
+          if (_threadTypeEntries.isNotEmpty)
+            entry(
+              _PostSetting.category,
+              icons.tagSolid,
+              _selectedThreadTypeLabel,
+            ),
+          entry(
+            _PostSetting.poll,
+            icons.chart,
+            s.pollTitle,
+            active: _pollDraft != null,
+          ),
+          entry(
+            _PostSetting.bounty,
+            icons.bounty,
+            s.createReward,
+            active: _specialDraft?.kind == SpecialThreadKind.reward,
+          ),
+          entry(
+            _PostSetting.activity,
+            icons.pick(Icons.event_outlined, CupertinoIcons.calendar),
+            s.createActivity,
+            active: _specialDraft?.kind == SpecialThreadKind.activity,
+          ),
+          entry(
+            _PostSetting.replyReward,
+            icons.replyReward,
+            s.replyCreditTitle,
+            active: _replyReward != null,
+          ),
+          if (_classifications.isNotEmpty)
+            entry(
+              _PostSetting.classified,
+              icons.category,
+              s.specialClassified,
+              active: _classified != null,
+            ),
+          entry(
+            _PostSetting.rush,
+            icons.flag,
+            s.rushReplyTitle,
+            active: _rush != null,
+          ),
+          if (_pollDraft != null ||
+              _specialDraft != null ||
+              _classified != null ||
+              _replyReward != null ||
+              _rush != null)
+            const Divider(),
+          if (_pollDraft != null ||
+              _specialDraft != null ||
+              _classified != null)
+            entry(_PostSetting.clearType, icons.delete, s.removeSpecialPost),
+          if (_replyReward != null)
+            entry(_PostSetting.clearReward, icons.delete, s.removeReplyReward),
+          if (_rush != null)
+            entry(_PostSetting.clearRush, icons.delete, s.removeRushSettings),
+        ],
+      );
+    });
+    if (!_draftCurrent || selected == null) return;
+    switch (selected) {
+      case _PostSetting.category:
+        await _showThreadTypePicker();
+      case _PostSetting.poll:
+        await _configurePoll();
+      case _PostSetting.bounty:
+        await _configureSpecial(SpecialThreadKind.reward);
+      case _PostSetting.activity:
+        await _configureSpecial(SpecialThreadKind.activity);
+      case _PostSetting.replyReward:
+        await _configureReplyReward();
+      case _PostSetting.classified:
+        final sortId = await _chooseClassification();
+        if (sortId != null && _draftCurrent)
+          await _configurePostingForm(sortId: sortId);
+      case _PostSetting.rush:
+        await _configurePostingForm();
+      case _PostSetting.clearRush:
+        setState(() => _rush = null);
+        await backupDraft();
+      case _PostSetting.clearType:
+        setState(() {
+          _pollDraft = null;
+          _specialDraft = null;
+          _classified = null;
+        });
+        await backupDraft();
+      case _PostSetting.clearReward:
+        setState(() => _replyReward = null);
+        await backupDraft();
     }
   }
 
@@ -485,7 +832,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
         ],
       ),
       body: AbsorbPointer(
-        absorbing: _sending,
+        absorbing: _sending || _confirming || _configuring,
         child: PlatformLiquidGlassPageBackdrop(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -496,101 +843,13 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      if (_threadTypeEntries.isNotEmpty) ...[
-                        Builder(
-                          builder: (buttonContext) {
-                            final button = PlatformTextButton(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 10,
-                              ),
-                              onPressed: _showThreadTypePicker,
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    PlatformIcons(context).tagSolid,
-                                    size: 16,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      _selectedThreadTypeLabel,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.start,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Icon(
-                                    PlatformIcons(context).downArrow,
-                                    size: 14,
-                                  ),
-                                ],
-                              ),
-                            );
-                            if (usesAppleTranslucentSurface(buttonContext) &&
-                                !usesLiquidGlass(buttonContext)) {
-                              return PlatformLiquidGlassCard(
-                                borderRadius: BorderRadius.circular(22),
-                                child: button,
-                              );
-                            }
-                            return button;
-                          },
-                        ),
-                        const SizedBox(height: 8),
-                      ],
-                      Wrap(
-                        children: [
-                          PlatformTextButton(
-                            onPressed: _sending || _configuring
-                                ? null
-                                : _configurePoll,
-                            child: Text(
-                              _pollDraft == null
-                                  ? S.of(context).createPoll
-                                  : S.of(context).editPoll,
-                            ),
-                          ),
-                          for (final kind in SpecialThreadKind.values)
-                            PlatformTextButton(
-                              onPressed: _sending || _configuring
-                                  ? null
-                                  : () => _configureSpecial(kind),
-                              child: Text(switch ((
-                                kind,
-                                _specialDraft?.kind == kind,
-                              )) {
-                                (SpecialThreadKind.reward, false) =>
-                                  S.of(context).createReward,
-                                (SpecialThreadKind.reward, true) =>
-                                  S.of(context).editReward,
-                                (SpecialThreadKind.activity, false) =>
-                                  S.of(context).createActivity,
-                                (SpecialThreadKind.activity, true) =>
-                                  S.of(context).editActivity,
-                              }),
-                            ),
-                          if (_pollDraft != null || _specialDraft != null)
-                            PlatformTextButton(
-                              onPressed: _sending
-                                  ? null
-                                  : () {
-                                      setState(() {
-                                        _pollDraft = null;
-                                        _specialDraft = null;
-                                      });
-                                      backupDraft();
-                                    },
-                              child: Text(S.of(context).removeSpecialPost),
-                            ),
-                        ],
-                      ),
                       PlatformTextField(
                         controller: _titleEditingController,
                         textInputAction: TextInputAction.next,
-                        hintText: S.of(context).pushThreadTitle,
+                        hintText: S.of(context).pushThreadTitleHint,
                       ),
+                      const SizedBox(height: 4),
+                      _buildSettingsEntry(context),
                     ],
                   ),
                 ),
@@ -743,7 +1002,10 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       if (!mounted) return;
       setState(() {
         _forumLoadError = forumResponseError(S.of(context), value);
-        if (_forumLoadError == null) _displayForumResult = value;
+        if (_forumLoadError == null) {
+          _displayForumResult = value;
+          _sortConfig = value.discuzIndexVariables.threadSorts;
+        }
       });
     } catch (error) {
       if (mounted)
@@ -903,6 +1165,9 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     final content = _controller.text;
     final category = selectedTypeId ?? '';
     final poll = _pollDraft?.encode() ?? '';
+    final replyReward = _replyReward?.encode() ?? '';
+    final classified = _classified?.encode() ?? '';
+    final rush = _rush?.encode() ?? '';
     final special = _specialDraft?.encode() ?? '';
     final attachmentNames = _controller.attachedFileNames;
     _draftWrite = _draftWrite.catchError((Object _) {}).then((_) async {
@@ -915,6 +1180,9 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
         ..typeid = category
         ..updateTime = DateTime.now()
         ..pollJson = poll
+        ..replyRewardJson = replyReward
+        ..classifiedJson = classified
+        ..rushJson = rush
         ..specialThreadJson = special
         ..attachmentNames = attachmentNames;
       final dao = await AppDatabase.getDraftDao();
@@ -930,6 +1198,12 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
         _restoringAssets ||
         !_draftCurrent)
       return;
+    if (_specialId == 0 &&
+        _classified == null &&
+        discuzPermission(_sortConfig['required']) == true) {
+      EasyLoading.showError(S.of(context).classifiedRequired);
+      return;
+    }
     final selected = selectedTypeId;
     final typeRequired =
         _displayForumResult?.discuzIndexVariables.threadType?.typeRequired() ==
@@ -945,18 +1219,37 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     setState(() => _confirming = true);
     try {
       do {
-        final confirmed = await _showPostConfirmation();
+        ReplyRewardForm? quote;
+        if (_replyReward case final d?) {
+          try {
+            quote = await _rewardForm();
+            if (!_draftCurrent) return;
+            if (quote == null || !quote.accepts(d)) {
+              EasyLoading.showError(S.of(context).specialPostRulesChanged);
+              return;
+            }
+          } catch (e) {
+            if (_draftCurrent)
+              await showForumActionError(
+                context,
+                forumRequestError(S.of(context), e),
+              );
+            return;
+          }
+        }
+        final confirmed = await _showPostConfirmation(quote);
         if (!mounted || confirmed != true) {
           if (mounted) captchaController.reloadCaptcha(requiredByServer: false);
           return;
         }
-      } while (await _postThread());
+        if (!await _postThread(quote)) break;
+      } while (_draftCurrent);
     } finally {
       if (mounted) setState(() => _confirming = false);
     }
   }
 
-  Future<bool?> _showPostConfirmation() async {
+  Future<bool?> _showPostConfirmation(ReplyRewardForm? quote) async {
     final requiresCaptcha = captchaController.requiredByServer;
     final user = context.read<DiscuzAndUserNotifier>().userFor(discuz);
     final dio = requiresCaptcha
@@ -972,16 +1265,28 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
         builder: (context) {
           return PlatformAlertDialog(
             title: Text(S.of(context).pushThreadTitle),
-            content: dio == null
+            content: dio == null && quote == null
                 ? null
-                : Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: CaptchaWidget(
-                      dio,
-                      discuz,
-                      user,
-                      'post',
-                      captchaController: captchaController,
+                : SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (quote != null && _replyReward != null)
+                          Text(
+                            '${S.of(context).replyCreditTitle} · ${_replyReward!.amount} × ${_replyReward!.times}\n${S.of(context).rewardFee}: ${quote.total(_replyReward!) - _replyReward!.pool} ${quote.unit}\n${S.of(context).rewardTotal("${quote.total(_replyReward!)} ${quote.unit}")}',
+                          ),
+                        if (dio != null)
+                          Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: CaptchaWidget(
+                              dio,
+                              discuz,
+                              user,
+                              'post',
+                              captchaController: captchaController,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
             actions: [
@@ -1016,12 +1321,12 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     }
   }
 
-  Future<bool> _postThread() async {
+  Future<bool> _postThread(ReplyRewardForm? quote) async {
     if (_sending) return false;
     FocusScope.of(context).unfocus();
     setState(() => _sending = true);
     try {
-      return await _submitThread();
+      return await _submitThread(quote);
     } catch (error) {
       if (!mounted) return false;
       final strings = S.of(context);
@@ -1036,7 +1341,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     }
   }
 
-  Future<bool> _submitThread() async {
+  Future<bool> _submitThread(ReplyRewardForm? quote) async {
     // prepare client
     final account = context.read<DiscuzAndUserNotifier>();
     final session = account.sessionIdentity;
@@ -1045,13 +1350,18 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     bool isCurrent() => mounted && identical(session, account.sessionIdentity);
     final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     try {
-      return await _sendThread(dio, user.uid, isCurrent);
+      return await _sendThread(dio, user.uid, isCurrent, quote);
     } finally {
       dio.close();
     }
   }
 
-  Future<bool> _sendThread(Dio dio, int uid, bool Function() isCurrent) async {
+  Future<bool> _sendThread(
+    Dio dio,
+    int uid,
+    bool Function() isCurrent,
+    ReplyRewardForm? quote,
+  ) async {
     MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
     String submitHash = '';
@@ -1092,6 +1402,72 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       return false;
     }
     if (!isCurrent()) return false;
+    final api = ForumInteractionClient(dio, discuz.baseURL);
+    final poll = _pollDraft;
+    final classified = _classified;
+    final rush = _rush;
+    final dataMap = <String, dynamic>{};
+    if (poll != null || classified != null || rush != null) {
+      final form = await loadThreadPostForm(
+        api,
+        fid,
+        uid,
+        special: _specialId,
+        sortId: classified?.sortId ?? 0,
+      );
+      if (!isCurrent()) return false;
+      submitHash = form
+          .querySelector('input[name=formhash]')!
+          .attributes['value']!;
+      const changed = ForumApiException(
+        'post_options_changed',
+        '',
+        fromForum: true,
+      );
+      if (rush != null) {
+        if (!rush.valid || !RushPostDraft.supported(form)) throw changed;
+        dataMap.addAll(rush.submission);
+      }
+      if (classified != null) {
+        final rules = ClassifiedPostingForm.parse(form, classified.sortId);
+        if (!rules.accepts(classified)) throw changed;
+        dataMap.addAll(rules.submission(classified));
+      }
+      if (poll != null) {
+        final rules = PollPostingRules.parse(form, fid, uid);
+        if (!rules.accepts(poll)) throw changed;
+        dataMap.addAll(poll.fields);
+        if (poll.images.isNotEmpty) {
+          final store = await _assets();
+          final files = <int, (ReplyDraftAttachment, String)>{};
+          for (final e in poll.images.entries) {
+            final file = await store.file(e.value);
+            if (!await file.exists() ||
+                !rules.acceptsImage(e.value.name, await file.length())) {
+              throw const ForumApiException(
+                'poll_picture_rejected',
+                '',
+                fromForum: true,
+              );
+            }
+            files[e.key] = (e.value, file.path);
+          }
+          for (final e in files.entries) {
+            if (!isCurrent()) return false;
+            final (image, path) = e.value;
+            final aid = await rules.upload(
+              api,
+              fid,
+              uid,
+              File(path),
+              image.name,
+            );
+            dataMap['pollimage[${e.key}]'] = '$aid';
+          }
+        }
+      }
+    }
+    if (!isCurrent()) return false;
     String title = _titleEditingController.text;
     final source = await _resolveAttachments(client, uid, isCurrent);
     if (!isCurrent()) return false;
@@ -1102,7 +1478,6 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     if (!isCurrent()) return false;
     // need to process aid
     List<String> aidList = PostTextFieldUtils.getAttachmentAidList(source);
-    final dataMap = <String, dynamic>{...?_pollDraft?.fields};
     final special = _specialDraft;
     if (special != null) {
       if (!isCurrent()) return false;
@@ -1192,6 +1567,25 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       captchaMod = "forum::post";
     }
 
+    if (_replyReward case final d?) {
+      final fresh = await ReplyRewardForm.load(
+        ForumInteractionClient(dio, discuz.baseURL),
+        fid,
+        uid,
+        _specialId,
+      );
+      if (!isCurrent()) return false;
+      if (quote == null ||
+          fresh == null ||
+          !fresh.accepts(d) ||
+          fresh.tax != quote.tax ||
+          fresh.unit != quote.unit) {
+        EasyLoading.showError(S.of(context).specialPostRulesChanged);
+        return false;
+      }
+      submitHash = fresh.hash;
+      dataMap.addAll(d.fields);
+    }
     final value = await client.postNewThread({
       ...dataMap,
       'formhash': submitHash,

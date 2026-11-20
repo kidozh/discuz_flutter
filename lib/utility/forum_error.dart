@@ -197,6 +197,7 @@ DiscuzError _forumMessage(
           'module_not_exists' ||
           'identifier_not_exists' ||
           'identifier_file_not_exists' => strings.forumApiUnavailable,
+          'friend_status_off' ||
           'mobile_is_closed' ||
           'board_closed' ||
           'action_closed' => strings.forumFeatureDisabled,
@@ -231,7 +232,11 @@ DiscuzError _forumMessage(
           'credits_policy_lowerlimit' ||
           'credits_policy_lowerlimit_fid' ||
           'credits_policy_lowerlimit_norule' ||
+          'replycredit_morethan_self' ||
           'reward_credits_shortage' => strings.forumCreditsInsufficient,
+          'poll_picture_rejected' => strings.pollPictureRejected,
+          'post_options_changed' => strings.specialPostRulesChanged,
+          'post_rushreply_timewrong' => strings.rushSettingsInvalid,
           'activity_is_not_manager' => strings.forumPermissionDenied,
           'activity_review_changed' => strings.activityReviewChanged,
           'post_edit_timelimit' ||

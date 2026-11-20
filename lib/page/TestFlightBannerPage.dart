@@ -44,12 +44,11 @@ class _TestFlightBannerPageState extends State<TestFlightBannerPage> {
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
-        iosContentBottomPadding: true,
-        iosContentPadding: true,
-        appBar: PlatformAppBar(
-          title: Text(_pageTitle(context)),
-        ),
-        body: TestFlightBannerContent(version: _version));
+      iosContentBottomPadding: true,
+      iosContentPadding: true,
+      appBar: PlatformAppBar(title: Text(_pageTitle(context))),
+      body: TestFlightBannerContent(version: _version),
+    );
   }
 }
 
@@ -64,8 +63,10 @@ class TestFlightBannerContent extends StatefulWidget {
 }
 
 class TestFlightBannerContentState extends State<TestFlightBannerContent> {
-  static const _featureContentPadding =
-      EdgeInsets.symmetric(horizontal: 16, vertical: 12);
+  static const _featureContentPadding = EdgeInsets.symmetric(
+    horizontal: 16,
+    vertical: 12,
+  );
 
   String _pageTitle(BuildContext context) => widget.version == null
       ? S.of(context).welcomeTitle
@@ -130,24 +131,29 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent> {
   Future<void> triggerNotification() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     NotificationSettings settings = await messaging.requestPermission(
-        alert: true,
-        announcement: false,
-        badge: true,
-        carPlay: false,
-        criticalAlert: false,
-        provisional: false,
-        sound: true,
-        providesAppNotificationSettings: true);
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+      providesAppNotificationSettings: true,
+    );
     if (!mounted) return;
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized ||
         settings.authorizationStatus == AuthorizationStatus.provisional) {
-      Provider.of<UserPreferenceNotifierProvider>(context, listen: false)
-          .allowPush = true;
+      Provider.of<UserPreferenceNotifierProvider>(
+        context,
+        listen: false,
+      ).allowPush = true;
       await UserPreferencesUtils.putPushPreference(true);
     } else {
-      Provider.of<UserPreferenceNotifierProvider>(context, listen: false)
-          .allowPush = false;
+      Provider.of<UserPreferenceNotifierProvider>(
+        context,
+        listen: false,
+      ).allowPush = false;
       await UserPreferencesUtils.putPushPreference(false);
       if (!mounted) return;
       await showPlatformAlert(
@@ -155,10 +161,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent> {
         title: _pageTitle(context),
         message: S.of(context).pushNotificationPermissionNotAuthorized,
         actions: [
-          PlatformAlertAction(
-            label: S.of(context).ok,
-            isDefaultAction: true,
-          ),
+          PlatformAlertAction(label: S.of(context).ok, isDefaultAction: true),
         ],
       );
     }
@@ -167,197 +170,238 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-        child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  height: 64,
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(width: double.infinity, height: 64),
+            PlatformLiquidGlassAvatar(
+              size: 128,
+              child: CircleAvatar(
+                backgroundColor: Colors.blue,
+                child: Icon(
+                  PlatformIcons(context).cube,
+                  color: Colors.white,
+                  size: 72,
                 ),
-                PlatformLiquidGlassAvatar(
-                  size: 128,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.blue,
-                    child: Icon(
-                      PlatformIcons(context).cube,
-                      color: Colors.white,
-                      size: 72,
+              ),
+            ),
+            SizedBox(height: 16),
+            Text(
+              _pageTitle(context),
+              style: Theme.of(context).textTheme.titleLarge!
+                  .copyWith(fontSize: 30),
+            ),
+            SizedBox(height: 6),
+            Text(
+              S.of(context).welcomeSubtitle,
+              style: Theme.of(context).textTheme.bodyMedium!
+                  .copyWith(fontSize: 18),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 30),
+            if (widget.version == '2.0.22') ...[
+              const _WelcomeWhatsNew(),
+              const SizedBox(height: 16),
+            ],
+            PlatformListTile(
+              leading: _featureLeading(
+                backgroundColor: Colors.redAccent,
+                icon: CupertinoIcons.hand_raised_fill,
+                foregroundColor: Colors.white,
+              ),
+              title: Text(S.of(context).preventAbuseUser),
+              subtitle: Text(
+                S.of(context).preventAbuseUserDescription,
+                softWrap: true,
+              ),
+              isThreeLine: true,
+              contentPadding: _featureContentPadding,
+            ),
+            PlatformListTile(
+              leading: _featureLeading(
+                backgroundColor: Colors.green,
+                icon: PlatformIcons(context).secure,
+                foregroundColor: Colors.white,
+              ),
+              title: Text(S.of(context).privacyProtectTitle),
+              subtitle: Text(
+                S.of(context).privacyProtectSubtitle,
+                softWrap: true,
+              ),
+              isThreeLine: true,
+              contentPadding: _featureContentPadding,
+              onTap: () {
+                VibrationUtils.vibrateWithClickIfPossible();
+                URLUtils.launchURL(
+                  "https://discuzhub.kidozh.com/privacy_policy/",
+                );
+              },
+            ),
+            PlatformListTile(
+              leading: _featureLeading(
+                backgroundColor: Colors.amber,
+                icon: PlatformIcons(context).chart,
+                foregroundColor: Colors.black,
+              ),
+              title: Text(S.of(context).useGoogleAnalyticsTitle),
+              subtitle: Text(
+                S.of(context).useGoogleAnalyticsContent,
+                softWrap: true,
+              ),
+              isThreeLine: true,
+              contentPadding: _featureContentPadding,
+              onTap: () {
+                VibrationUtils.vibrateWithClickIfPossible();
+                URLUtils.launchURL("https://policies.google.com/privacy");
+              },
+            ),
+            PlatformListTile(
+              leading: _featureLeading(
+                backgroundColor: Colors.indigo,
+                icon: PlatformIcons(context).checkMark,
+                foregroundColor: Colors.white,
+              ),
+              title: Text(S.of(context).termsOfService),
+              subtitle: Text(
+                S.of(context).termsOfUseDescription,
+                softWrap: true,
+              ),
+              isThreeLine: true,
+              contentPadding: _featureContentPadding,
+              onTap: () {
+                VibrationUtils.vibrateWithClickIfPossible();
+                URLUtils.launchURL(
+                  "https://discuzhub.kidozh.com/zh/term_of_use/",
+                );
+              },
+            ),
+            //Divider(),
+            // PlatformListTile(
+            //   leading: CircleAvatar(
+            //     backgroundColor: Colors.purple,
+            //     child: Icon(Icons.menu_open,color: Colors.white,),
+            //   ),
+            //   title: Text(S.of(context).openSoftwareTitle),
+            //   subtitle: Text(S.of(context).openSoftwareSubtitle),
+            //   onTap: (){
+            //     VibrationUtils.vibrateWithClickIfPossible();
+            //     URLUtils.launchURL("https://github.com/kidozh/discuz_flutter");
+            //   },
+            // ),
+            SizedBox(height: 24),
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  child: PlatformElevatedButton(
+                    onPressed: () async {
+                      final version =
+                          widget.version ??
+                          (await PackageInfo.fromPlatform()).version;
+                      await UserPreferencesUtils.putAcceptVersionCodeFlag(
+                        version,
+                      );
+                      if (context.mounted) Navigator.pop(context);
+                    },
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    child: Text(
+                      S.of(context).continueToDo,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ),
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 16,
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _WelcomeWhatsNew extends StatelessWidget {
+  const _WelcomeWhatsNew();
+
+  @override
+  Widget build(BuildContext context) {
+    final s = S.of(context);
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final icons = PlatformIcons(context);
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 600),
+      child: SizedBox(
+        width: double.infinity,
+        child: PlatformCard(
+          elevation: 0,
+          padding: const EdgeInsets.all(16),
+          color: colors.surfaceContainer,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 12,
+            children: [
+              Semantics(
+                header: true,
+                child: Text(
+                  s.welcomeWhatsNew,
+                  style: theme.textTheme.titleLarge,
                 ),
-                Text(
-                  _pageTitle(context),
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(fontSize: 30),
+              ),
+              for (final (icon, title, detail) in [
+                (
+                  icons.settings,
+                  s.welcomeNewComposerTitle,
+                  s.welcomeNewComposerDetail,
                 ),
-                SizedBox(
-                  height: 6,
+                (
+                  icons.pick(Icons.photo_outlined, CupertinoIcons.photo),
+                  s.welcomeNewPollTitle,
+                  s.welcomeNewPollDetail,
                 ),
-                Text(
-                  S.of(context).welcomeSubtitle,
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        fontSize: 18,
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                // PlatformCard(
-                //
-                //   color: Colors.indigo,
-                //   child: Padding(
-                //     padding: EdgeInsets.symmetric(vertical: 8.0,horizontal: 4.0),
-                //     child: PlatformListTile(
-                //       leading: Icon(Icons.stop_circle_rounded,color: Colors.white, size: 40,),
-                //       // leading: CircleAvatar(
-                //       //   backgroundColor: Colors.white,
-                //       //   child: Icon(PlatformIcons(context).checkMarkCircled,color: Colors.green),
-                //       // ),
-                //       title: Text(S.of(context).upgrade_notification_title,
-                //         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                //       ),
-                //       subtitle: Text(S.of(context).upgrade_notification_subtitle,
-                //           style: TextStyle(color: Colors.white, fontWeight: FontWeight.normal)
-                //       ),
-                //       onTap: (){
-                //         VibrationUtils.vibrateWithClickIfPossible();
-                //         Discuz? discuz =
-                //             Provider.of<DiscuzAndUserNotifier>(context, listen: false).discuz;
-                //         bool allowPush =
-                //             Provider.of<UserPreferenceNotifierProvider>(context, listen: false).allowPush;
-                //         if(discuz != null){
-                //           if(allowPush){
-                //             Navigator.push(context,platformPageRoute(context:context,builder: (context) => SubscribeChannelPage()));
-                //           }
-                //           else{
-                //             EasyLoading.showError(S.of(context).pushServiceOff);
-                //           }
-                //         }
-                //         else{
-                //           EasyLoading.showError(S.of(context).noDiscuzNotFound);
-                //         }
-                //       },
-                //     ),
-                //   ),
-                // ),
-                PlatformListTile(
-                  leading: _featureLeading(
-                    backgroundColor: Colors.redAccent,
-                    icon: CupertinoIcons.hand_raised_fill,
-                    foregroundColor: Colors.white,
+                (
+                  icons.pick(
+                    Icons.chat_bubble_outline,
+                    CupertinoIcons.bubble_left,
                   ),
-                  title: Text(S.of(context).preventAbuseUser),
-                  subtitle: Text(
-                    S.of(context).preventAbuseUserDescription,
-                    softWrap: true,
-                  ),
-                  isThreeLine: true,
-                  contentPadding: _featureContentPadding,
+                  s.welcomeNewReplyTitle,
+                  s.welcomeNewReplyDetail,
                 ),
-                PlatformListTile(
-                  leading: _featureLeading(
-                    backgroundColor: Colors.green,
-                    icon: PlatformIcons(context).secure,
-                    foregroundColor: Colors.white,
-                  ),
-                  title: Text(S.of(context).privacyProtectTitle),
-                  subtitle: Text(
-                    S.of(context).privacyProtectSubtitle,
-                    softWrap: true,
-                  ),
-                  isThreeLine: true,
-                  contentPadding: _featureContentPadding,
-                  onTap: () {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    URLUtils.launchURL(
-                        "https://discuzhub.kidozh.com/privacy_policy/");
-                  },
+                (
+                  icons.chart,
+                  s.welcomeNewDebateTitle,
+                  s.welcomeNewDebateDetail,
                 ),
-                PlatformListTile(
-                  leading: _featureLeading(
-                    backgroundColor: Colors.amber,
-                    icon: PlatformIcons(context).chart,
-                    foregroundColor: Colors.black,
-                  ),
-                  title: Text(S.of(context).useGoogleAnalyticsTitle),
-                  subtitle: Text(
-                    S.of(context).useGoogleAnalyticsContent,
-                    softWrap: true,
-                  ),
-                  isThreeLine: true,
-                  contentPadding: _featureContentPadding,
-                  onTap: () {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    URLUtils.launchURL("https://policies.google.com/privacy");
-                  },
-                ),
-                PlatformListTile(
-                  leading: _featureLeading(
-                    backgroundColor: Colors.indigo,
-                    icon: PlatformIcons(context).checkMark,
-                    foregroundColor: Colors.white,
-                  ),
-                  title: Text(S.of(context).termsOfService),
-                  subtitle: Text(
-                    S.of(context).termsOfUseDescription,
-                    softWrap: true,
-                  ),
-                  isThreeLine: true,
-                  contentPadding: _featureContentPadding,
-                  onTap: () {
-                    VibrationUtils.vibrateWithClickIfPossible();
-                    URLUtils.launchURL(
-                        "https://discuzhub.kidozh.com/zh/term_of_use/");
-                  },
-                ),
-                //Divider(),
-                // PlatformListTile(
-                //   leading: CircleAvatar(
-                //     backgroundColor: Colors.purple,
-                //     child: Icon(Icons.menu_open,color: Colors.white,),
-                //   ),
-                //   title: Text(S.of(context).openSoftwareTitle),
-                //   subtitle: Text(S.of(context).openSoftwareSubtitle),
-                //   onTap: (){
-                //     VibrationUtils.vibrateWithClickIfPossible();
-                //     URLUtils.launchURL("https://github.com/kidozh/discuz_flutter");
-                //   },
-                // ),
-                SizedBox(
-                  height: 24,
-                ),
+              ])
                 Row(
-                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 12,
                   children: [
+                    Icon(icon, size: 20, color: colors.primary),
                     Expanded(
-                        child: PlatformElevatedButton(
-                      onPressed: () async {
-                        final version = widget.version ??
-                            (await PackageInfo.fromPlatform()).version;
-                        await UserPreferencesUtils.putAcceptVersionCodeFlag(
-                            version);
-                        if (context.mounted) Navigator.pop(context);
-                      },
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                      child: Text(
-                        S.of(context).continueToDo,
-                        style: TextStyle(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 3,
+                        children: [
+                          Text(title, style: theme.textTheme.titleSmall),
+                          Text(
+                            detail,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colors.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ),
-                    ))
+                    ),
                   ],
                 ),
-              ],
-            )));
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

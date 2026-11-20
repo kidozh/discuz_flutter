@@ -923,10 +923,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
           _captchaController.reloadCaptcha(requiredByServer: false);
         }
         EasyLoading.showSuccess(result!.content);
-        final thread = _viewThreadResult.threadVariables.threadInfo;
-        if (thread.replyCredit > 0 || thread.rushReply != null) {
-          _controller.callRefresh();
+        // Fetch the server's copy, including its final floor number and any
+        // reward. Older interfaces may omit the PID.
+        if (value.postedTid == threadId && value.postedPid > 0) {
+          if (await scrollToPid(value.postedPid) || !isCurrent()) return;
         }
+        _controller.callRefresh();
       } else {
         if (code == 'submit_seccode_invalid') {
           _captchaController.reloadCaptcha(requiredByServer: true);
@@ -1263,7 +1265,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
         final generation = ++_contentGeneration;
         setState(() => _locatingPost = true);
         final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-        final located = await PostLocator.locate(dio, discuz.baseURL, tid, pid);
+        final LocatedPostPage located;
+        try {
+          located = await PostLocator.locate(dio, discuz.baseURL, tid, pid);
+        } finally {
+          dio.close();
+        }
         if (!isCurrent() || generation != _contentGeneration) return false;
         final variables = located.result.threadVariables;
         final error = EasyRefreshUtils.responseError(
@@ -1816,6 +1823,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                         ),
                         SliverToBoxAdapter(
                           child: SpecialThreadCard(
+                            debate: _viewThreadResult.threadVariables.debate,
                             onActivityReview: canReviewActivity
                                 ? () => Navigator.push<void>(
                                     context,

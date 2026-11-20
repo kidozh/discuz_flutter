@@ -47,6 +47,7 @@ class ForumListsPage extends StatefulWidget {
   final User? user;
   final String type;
   final int? tid, pid, fid;
+  final bool pickFriend;
   final ForumDirectory? directory;
   final ForumGuideSection? guide;
   final Future<void> Function()? onAddComment;
@@ -57,6 +58,7 @@ class ForumListsPage extends StatefulWidget {
     required this.user,
     this.createClient,
     this.type = 'thread',
+    this.pickFriend = false,
     this.directory,
     this.guide,
     this.onAddComment,
@@ -134,6 +136,10 @@ class _ForumListsPageState extends State<ForumListsPage> {
           if (widget.fid != null) 'fid': widget.fid,
         });
         result.requireData(field);
+        if (widget.pickFriend &&
+            discuzInt(result.variables['member_uid']) != widget.user?.uid) {
+          throw const ForumApiException('account_changed', '');
+        }
         batch = forumRows(result.variables[field]).map(discuzMap).toList();
         total = int.tryParse(discuzString(result.variables['count']));
       } else if (comments) {
@@ -162,7 +168,7 @@ class _ForumListsPageState extends State<ForumListsPage> {
       // Reply results group posts into threads, so a short batch isn't the end.
       more =
           batch.isNotEmpty &&
-          (widget.guide == null || rows.length > previous) &&
+          ((widget.guide == null && !widget.pickFriend) || rows.length > previous) &&
           (total == null || rows.length < total) &&
           widget.directory != ForumDirectory.hotForums &&
           widget.directory != ForumDirectory.pinnedThreads;
@@ -224,7 +230,8 @@ class _ForumListsPageState extends State<ForumListsPage> {
               ? widget.guide!.title(s)
               : widget.directory != null
               ? switch (widget.directory!) {
-                  ForumDirectory.friends => s.friendList,
+                  ForumDirectory.friends =>
+                    widget.pickFriend ? s.mentionFriend : s.friendList,
                   ForumDirectory.hotForums => s.hotForums,
                   ForumDirectory.pinnedThreads => s.pinnedThreads,
                 }
@@ -278,6 +285,16 @@ class _ForumListsPageState extends State<ForumListsPage> {
                           ),
                         );
                       final row = rows[index];
+                      if (widget.pickFriend &&
+                          widget.directory == ForumDirectory.friends) {
+                        final name = plain(row['username']);
+                        return PlatformListTile(
+                          title: Text(name),
+                          onTap: name.isEmpty || !sameAccount
+                              ? null
+                              : () => Navigator.pop(context, name),
+                        );
+                      }
                       if (widget.directory == ForumDirectory.friends)
                         return PlatformListTile(
                           title: Text(plain(row['username'])),
