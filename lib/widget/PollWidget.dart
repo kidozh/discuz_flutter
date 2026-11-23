@@ -473,6 +473,19 @@ class _PollChoiceRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final radius = BorderRadius.circular(16);
+    final tile = Semantics(
+      button: true,
+      selected: selected,
+      enabled: onTap != null,
+      child: PlatformListTile(
+        title: Text(label, textAlign: TextAlign.center),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+        selectedColor: colors.onSurface,
+        selected: selected,
+        shape: RoundedRectangleBorder(borderRadius: radius),
+        onTap: onTap,
+      ),
+    );
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: radius,
@@ -483,22 +496,14 @@ class _PollChoiceRow extends StatelessWidget {
           ),
         ),
       ),
-      child: Semantics(
-        button: true,
-        selected: selected,
-        enabled: onTap != null,
-        child: PlatformListTile(
-          title: Text(label, textAlign: TextAlign.center),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 2,
-          ),
-          selectedColor: colors.onSurface,
-          selected: selected,
-          shape: RoundedRectangleBorder(borderRadius: radius),
-          onTap: onTap,
-        ),
-      ),
+      child: isMaterial(context)
+          ? Material(
+              type: MaterialType.transparency,
+              borderRadius: radius,
+              clipBehavior: Clip.antiAlias,
+              child: tile,
+            )
+          : tile,
     );
   }
 }
