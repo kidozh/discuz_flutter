@@ -96,9 +96,17 @@ Map<String, dynamic> _$ShortReplyToJson(ShortReply instance) =>
 
 AttachmentPreview _$AttachmentPreviewFromJson(Map<String, dynamic> json) =>
     AttachmentPreview()
+      ..aid = const StringToIntConverter().fromJson(json['aid'])
+      ..tid = const StringToIntConverter().fromJson(json['tid'])
+      ..pid = const StringToIntConverter().fromJson(json['pid'])
+      ..uid = const StringToIntConverter().fromJson(json['uid'])
       ..dateline = json['dateline'] as String? ?? ''
       ..filename = json['filename'] as String? ?? ''
       ..attachment = json['attachment'] as String? ?? ''
+      ..url = discuzString(json['url'])
+      ..aidEncode = discuzString(json['aidencode'])
+      ..remote = const StringToBoolConverter().fromJson(json['remote'])
+      ..price = const StringToIntConverter().fromJson(json['price'])
       ..fileSize = json['filesize'] == null
           ? 0
           : const StringToIntConverter().fromJson(json['filesize'])
@@ -115,9 +123,17 @@ AttachmentPreview _$AttachmentPreviewFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$AttachmentPreviewToJson(AttachmentPreview instance) =>
     <String, dynamic>{
+      'aid': const StringToIntConverter().toJson(instance.aid),
+      'tid': const StringToIntConverter().toJson(instance.tid),
+      'pid': const StringToIntConverter().toJson(instance.pid),
+      'uid': const StringToIntConverter().toJson(instance.uid),
       'dateline': instance.dateline,
       'filename': instance.filename,
       'attachment': instance.attachment,
+      'url': instance.url,
+      'aidencode': instance.aidEncode,
+      'remote': const StringToBoolConverter().toJson(instance.remote),
+      'price': const StringToIntConverter().toJson(instance.price),
       'filesize': const StringToIntConverter().toJson(instance.fileSize),
       'description': instance.description,
       'readperm': const StringToIntConverter().toJson(instance.readPerm),

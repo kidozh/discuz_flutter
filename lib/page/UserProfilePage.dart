@@ -1,3 +1,4 @@
+import '../page/forum_community_page.dart';
 import 'credit_page.dart';
 import 'UploadAvatarPage.dart';
 import 'ForumListsPage.dart';
@@ -313,6 +314,14 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                                     onPressed: _editAvatar,
                                     child: Text(S.of(context).changeAvatar),
                                   ),
+                                if (account.userFor(discuz) case final viewer?)
+                                  if (viewer.uid != uid)
+                                    ForumRelationshipActions(
+                                      discuz,
+                                      viewer,
+                                      uid,
+                                      key: ValueKey((viewer.uid, uid)),
+                                    ),
                                 PlatformLiquidGlassAvatar(
                                   size: 100,
                                   child: CachedNetworkImage(

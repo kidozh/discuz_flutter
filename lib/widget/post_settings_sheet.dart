@@ -67,9 +67,16 @@ class PostSettingsSheet extends StatelessWidget {
             ),
             if (hasSave)
               if (isCupertino(context))
-                PlatformElevatedButton(
-                  onPressed: onSave,
-                  child: Text(strings.forumConfirm),
+                Semantics(
+                  button: true,
+                  enabled: onSave != null,
+                  label: strings.forumConfirm,
+                  onTap: onSave,
+                  excludeSemantics: true,
+                  child: PlatformElevatedButton(
+                    onPressed: onSave,
+                    child: Text(strings.forumConfirm),
+                  ),
                 )
               else
                 FilledButton(

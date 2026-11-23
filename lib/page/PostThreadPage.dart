@@ -7,7 +7,9 @@ import '../utility/forum_composer_capabilities.dart';
 
 import '../utility/post_signature_service.dart';
 import '../utility/post_editor_controller.dart';
+import '../client/paid_post.dart';
 import '../client/reply_reward_form.dart';
+import 'paid_post_sheet.dart';
 import '../client/thread_post_options.dart';
 import 'thread_post_options_sheets.dart';
 import '../widget/post_settings_sheet.dart';
@@ -122,12 +124,18 @@ class PostThreadStatefulWidget extends StatefulWidget {
   }
 }
 
+typedef _Pricing = ({PaidPostRules rules, PaidPostDraft draft});
+
 enum _PostSetting {
   category,
   poll,
   bounty,
   activity,
+  debate,
+  extra,
   replyReward,
+  pricing,
+  clearPricing,
   clearType,
   clearReward,
   classified,
@@ -148,11 +156,62 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
   Draft? draft;
   PollDraft? _pollDraft;
   SpecialThreadDraft? _specialDraft;
+  Map<String, String> _extraSettings = {};
+  PaidPostDraft _paidPost = const PaidPostDraft();
   ReplyRewardDraft? _replyReward;
   ClassifiedPostDraft? _classified;
   RushPostDraft? _rush;
   Map<String, dynamic> _sortConfig = {};
   int get _specialId => _specialDraft?.kind.id ?? (_pollDraft == null ? 0 : 1);
+  Map<String, String> get _saleFiles => {
+    for (final token in PostEditorToken.inText(_controller.text))
+      if (token.isPending && token.isFile)
+        if (_pending[token.content] case final file? when !file.image)
+          file.id: file.name,
+  };
+
+  PaidPostDraft get _currentPricing => _paidPost.retainFiles(_saleFiles.keys.toSet());
+
+  Future<PaidPostRules?> _paidForm() async {
+    final user = context.read<DiscuzAndUserNotifier>().userFor(discuz);
+    if (user == null || !_draftCurrent) {
+      throw const ForumApiException('account_changed', '');
+    }
+    final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    try {
+      return PaidPostRules.parse(await loadThreadPostForm(
+        ForumInteractionClient(dio, discuz.baseURL), fid, user.uid,
+        sortId: _classified?.sortId ?? 0,
+      ));
+    } finally {
+      dio.close();
+    }
+  }
+
+  Future<void> _configurePricing() async {
+    if (_configuring || !_draftCurrent) return;
+    setState(() => _configuring = true);
+    try {
+      final rules = await _paidForm();
+      if (!_draftCurrent) return;
+      if (rules == null) {
+        EasyLoading.showInfo(S.of(context).paidPostUnavailable);
+        return;
+      }
+      final value = await showPostSettingsSheet<PaidPostDraft>(
+        context, (_) => PaidPostSheet(rules, _currentPricing, _saleFiles),
+      );
+      if (value != null && _draftCurrent) {
+        setState(() => _paidPost = value);
+        await backupDraft();
+      }
+    } catch (error) {
+      if (_draftCurrent) await showForumActionError(context, forumRequestError(S.of(context), error));
+    } finally {
+      if (mounted) setState(() => _configuring = false);
+    }
+  }
+
   Future<ReplyRewardForm?> _rewardForm() async {
     final user = context.read<DiscuzAndUserNotifier>().userFor(discuz);
     if (user == null || !_draftCurrent)
@@ -296,13 +355,14 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     await backupDraft();
   }
 
-  Future<String> _resolveAttachments(
+  Future<({String source, Map<String, int> fileIds})> _resolveAttachments(
     MobileApiClient api,
     int uid,
     bool Function() isCurrent,
   ) async {
     var source = _controller.text;
     final uploaded = <String, String>{};
+    final fileIds = <String, int>{};
     for (final token in PostEditorToken.inText(
       source,
     ).where((t) => t.isPending)) {
@@ -329,10 +389,14 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       );
       final tag = item.image ? 'attachimg' : 'attach';
       uploaded[token.text] = '[$tag]$aid[/$tag]';
+      if (token.isFile) fileIds[item.id] = int.parse(aid);
     }
-    return source.replaceAllMapped(
-      PostEditorToken.pattern,
-      (match) => uploaded[match[0]] ?? match[0]!,
+    return (
+      source: source.replaceAllMapped(
+        PostEditorToken.pattern,
+        (match) => uploaded[match[0]] ?? match[0]!,
+      ),
+      fileIds: fileIds,
     );
   }
 
@@ -352,6 +416,10 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       _replyReward = ReplyRewardDraft.decode(draft!.replyRewardJson);
       _pollDraft = PollDraft.decode(draft!.pollJson);
       _specialDraft = SpecialThreadDraft.decode(draft!.specialThreadJson);
+      _extraSettings = ExtraThreadOptions.restore(
+        draft!.extraThreadOptionsJson,
+      );
+      _paidPost = PaidPostDraft.restore(draft!.extraThreadOptionsJson);
     }
     _loadForumInfo();
     // add backup option
@@ -399,6 +467,45 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
           forumRequestError(strings, e, fallback: strings.pollUnavailable),
         );
       }
+    } finally {
+      dio?.close();
+      if (mounted) setState(() => _configuring = false);
+    }
+  }
+
+  Future<void> _configureExtraSettings() async {
+    final account = context.read<DiscuzAndUserNotifier>();
+    final user = account.userFor(discuz);
+    if (user == null || _configuring) return;
+    final session = account.sessionIdentity;
+    bool isCurrent() => mounted && identical(session, account.sessionIdentity);
+    setState(() => _configuring = true);
+    Dio? dio;
+    try {
+      dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      final form = ExtraThreadOptions.fromForm(
+        await loadThreadPostForm(
+          ForumInteractionClient(dio, discuz.baseURL),
+          fid,
+          user.uid,
+          special: _specialId,
+          sortId: _classified?.sortId ?? 0,
+        ),
+      );
+      if (!isCurrent()) return;
+      final selected = await showPostSettingsSheet<Map<String, String>>(
+        context,
+        (_) => ExtraThreadOptionsSheet(form, _extraSettings),
+      );
+      if (!isCurrent() || selected == null) return;
+      setState(() => _extraSettings = selected);
+      await backupDraft();
+    } catch (error) {
+      if (isCurrent())
+        await showForumActionError(
+          context,
+          forumRequestError(S.of(context), error),
+        );
     } finally {
       dio?.close();
       if (mounted) setState(() => _configuring = false);
@@ -627,6 +734,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       if (_pollDraft != null) s.pollTitle,
       if (_specialDraft?.kind == SpecialThreadKind.reward) s.createReward,
       if (_specialDraft?.kind == SpecialThreadKind.activity) s.createActivity,
+      if (_specialDraft?.kind == SpecialThreadKind.debate) s.debateCreate,
       if (_classified case final classified?)
         discuzString(_classifications['${classified.sortId}']).isEmpty
             ? s.specialClassified
@@ -700,11 +808,33 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
             active: _specialDraft?.kind == SpecialThreadKind.activity,
           ),
           entry(
+            _PostSetting.debate,
+            icons.pick(
+              Icons.forum_outlined,
+              CupertinoIcons.bubble_left_bubble_right,
+            ),
+            s.debateCreate,
+            active: _specialDraft?.kind == SpecialThreadKind.debate,
+          ),
+          entry(
+            _PostSetting.extra,
+            icons.settings,
+            s.morePostSettings,
+            active: _extraSettings.isNotEmpty,
+          ),
+          entry(
             _PostSetting.replyReward,
             icons.replyReward,
             s.replyCreditTitle,
             active: _replyReward != null,
           ),
+          if (_specialId == 0)
+            entry(
+              _PostSetting.pricing, icons.credits, s.paidPostSettings,
+              active: !_currentPricing.empty,
+            ),
+          if (!_currentPricing.empty && _specialId != 0)
+            entry(_PostSetting.clearPricing, icons.delete, s.paidPostClear),
           if (_classifications.isNotEmpty)
             entry(
               _PostSetting.classified,
@@ -745,8 +875,17 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
         await _configureSpecial(SpecialThreadKind.reward);
       case _PostSetting.activity:
         await _configureSpecial(SpecialThreadKind.activity);
+      case _PostSetting.debate:
+        await _configureSpecial(SpecialThreadKind.debate);
+      case _PostSetting.extra:
+        await _configureExtraSettings();
       case _PostSetting.replyReward:
         await _configureReplyReward();
+      case _PostSetting.pricing:
+        await _configurePricing();
+      case _PostSetting.clearPricing:
+        setState(() => _paidPost = const PaidPostDraft());
+        await backupDraft();
       case _PostSetting.classified:
         final sortId = await _chooseClassification();
         if (sortId != null && _draftCurrent)
@@ -1168,6 +1307,11 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     final replyReward = _replyReward?.encode() ?? '';
     final classified = _classified?.encode() ?? '';
     final rush = _rush?.encode() ?? '';
+    final pricing = _currentPricing;
+    final extraOptions = jsonEncode({
+      ..._extraSettings,
+      if (!pricing.empty) 'paid': pricing.toJson(),
+    });
     final special = _specialDraft?.encode() ?? '';
     final attachmentNames = _controller.attachedFileNames;
     _draftWrite = _draftWrite.catchError((Object _) {}).then((_) async {
@@ -1182,6 +1326,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
         ..pollJson = poll
         ..replyRewardJson = replyReward
         ..classifiedJson = classified
+        ..extraThreadOptionsJson = extraOptions
         ..rushJson = rush
         ..specialThreadJson = special
         ..attachmentNames = attachmentNames;
@@ -1216,9 +1361,24 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       EasyLoading.showError(S.of(context).forumFilterTypeIdTitle);
       return;
     }
+    final paid = _currentPricing;
+    if (!paid.empty && _specialId != 0) {
+      EasyLoading.showInfo(S.of(context).paidPostNeedsOrdinaryThread);
+      return;
+    }
     setState(() => _confirming = true);
     try {
       do {
+        _Pricing? pricing;
+        if (!paid.empty) {
+          final rules = await _paidForm();
+          if (!_draftCurrent) return;
+          if (rules == null || !rules.accepts(paid)) {
+            EasyLoading.showError(S.of(context).paidPostRulesChanged);
+            return;
+          }
+          pricing = (rules: rules, draft: paid);
+        }
         ReplyRewardForm? quote;
         if (_replyReward case final d?) {
           try {
@@ -1237,19 +1397,22 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
             return;
           }
         }
-        final confirmed = await _showPostConfirmation(quote);
+        final confirmed = await _showPostConfirmation(quote, pricing);
         if (!mounted || confirmed != true) {
           if (mounted) captchaController.reloadCaptcha(requiredByServer: false);
           return;
         }
-        if (!await _postThread(quote)) break;
+        if (!await _postThread(quote, pricing)) break;
       } while (_draftCurrent);
+    } catch (error) {
+      if (_draftCurrent)
+        await showForumActionError(context, forumRequestError(S.of(context), error));
     } finally {
       if (mounted) setState(() => _confirming = false);
     }
   }
 
-  Future<bool?> _showPostConfirmation(ReplyRewardForm? quote) async {
+  Future<bool?> _showPostConfirmation(ReplyRewardForm? quote, _Pricing? pricing) async {
     final requiresCaptcha = captchaController.requiredByServer;
     final user = context.read<DiscuzAndUserNotifier>().userFor(discuz);
     final dio = requiresCaptcha
@@ -1265,7 +1428,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
         builder: (context) {
           return PlatformAlertDialog(
             title: Text(S.of(context).pushThreadTitle),
-            content: dio == null && quote == null
+            content: dio == null && quote == null && pricing == null
                 ? null
                 : SingleChildScrollView(
                     child: Column(
@@ -1275,6 +1438,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
                           Text(
                             '${S.of(context).replyCreditTitle} · ${_replyReward!.amount} × ${_replyReward!.times}\n${S.of(context).rewardFee}: ${quote.total(_replyReward!) - _replyReward!.pool} ${quote.unit}\n${S.of(context).rewardTotal("${quote.total(_replyReward!)} ${quote.unit}")}',
                           ),
+                        if (pricing != null) ..._pricingSummary(pricing),
                         if (dio != null)
                           Padding(
                             padding: const EdgeInsets.all(8),
@@ -1321,12 +1485,31 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     }
   }
 
-  Future<bool> _postThread(ReplyRewardForm? quote) async {
+  List<Widget> _pricingSummary(_Pricing pricing) {
+    final s = S.of(context);
+    final rules = pricing.rules;
+    final files = _saleFiles;
+    Widget line(String label, int price, int? net) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Text([
+        '$label · $price ${rules.unit}',
+        if (net != null) s.paidPostIncome('$net ${rules.unit}'),
+      ].join('\n')),
+    );
+    return [
+      if (pricing.draft.thread > 0)
+        line(s.paidThreadPrice, pricing.draft.thread, rules.threadNet(pricing.draft.thread)),
+      for (final e in pricing.draft.files.entries)
+        line(files[e.key] ?? s.paidPostFilePrice, e.value, rules.fileNet(e.value)),
+    ];
+  }
+
+  Future<bool> _postThread(ReplyRewardForm? quote, _Pricing? pricing) async {
     if (_sending) return false;
     FocusScope.of(context).unfocus();
     setState(() => _sending = true);
     try {
-      return await _submitThread(quote);
+      return await _submitThread(quote, pricing);
     } catch (error) {
       if (!mounted) return false;
       final strings = S.of(context);
@@ -1341,7 +1524,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     }
   }
 
-  Future<bool> _submitThread(ReplyRewardForm? quote) async {
+  Future<bool> _submitThread(ReplyRewardForm? quote, _Pricing? pricing) async {
     // prepare client
     final account = context.read<DiscuzAndUserNotifier>();
     final session = account.sessionIdentity;
@@ -1350,7 +1533,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     bool isCurrent() => mounted && identical(session, account.sessionIdentity);
     final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
     try {
-      return await _sendThread(dio, user.uid, isCurrent, quote);
+      return await _sendThread(dio, user.uid, isCurrent, quote, pricing);
     } finally {
       dio.close();
     }
@@ -1361,6 +1544,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     int uid,
     bool Function() isCurrent,
     ReplyRewardForm? quote,
+    _Pricing? pricing,
   ) async {
     MobileApiClient client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
@@ -1407,7 +1591,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     final classified = _classified;
     final rush = _rush;
     final dataMap = <String, dynamic>{};
-    if (poll != null || classified != null || rush != null) {
+    if (poll != null || classified != null || rush != null || pricing != null) {
       final form = await loadThreadPostForm(
         api,
         fid,
@@ -1424,6 +1608,14 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
         '',
         fromForum: true,
       );
+      if (pricing != null) {
+        final fresh = PaidPostRules.parse(form);
+        if (fresh == null ||
+            !fresh.sameTerms(pricing.rules) ||
+            !fresh.accepts(pricing.draft)) {
+          throw const ForumApiException('paid_post_rules_changed', '', fromForum: true);
+        }
+      }
       if (rush != null) {
         if (!rush.valid || !RushPostDraft.supported(form)) throw changed;
         dataMap.addAll(rush.submission);
@@ -1469,7 +1661,7 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
     }
     if (!isCurrent()) return false;
     String title = _titleEditingController.text;
-    final source = await _resolveAttachments(client, uid, isCurrent);
+    final (source: source, fileIds: fileIds) = await _resolveAttachments(client, uid, isCurrent);
     if (!isCurrent()) return false;
     final content = await PostSignatureService.append(
       context,
@@ -1556,6 +1748,8 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       dataMap[key] = "";
     }
 
+    if (pricing != null) dataMap.addAll(pricing.draft.submission(fileIds));
+
     String typeId = selectedTypeId == null ? "" : selectedTypeId!;
     CaptchaFields? captchaFields = captchaController.value;
     String captchaHash = "";
@@ -1585,6 +1779,23 @@ class PostThreadState extends State<PostThreadStatefulWidget> {
       }
       submitHash = fresh.hash;
       dataMap.addAll(d.fields);
+    }
+    if (_extraSettings.isNotEmpty) {
+      final form = await loadThreadPostForm(
+        api,
+        fid,
+        uid,
+        special: _specialId,
+        sortId: _classified?.sortId ?? 0,
+      );
+      if (!isCurrent()) return false;
+      final values = ExtraThreadOptions.fromForm(form)
+          .submission(_extraSettings, DateTime.now());
+      if (values == null) {
+        EasyLoading.showError(S.of(context).postSettingsChanged);
+        return false;
+      }
+      dataMap.addAll(values);
     }
     final value = await client.postNewThread({
       ...dataMap,

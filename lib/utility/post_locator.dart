@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+
 import '../JsonResult/ViewThreadResult.dart';
+import '../entity/Post.dart';
 
 /// Resolve through Discuz: position/15 is wrong for deleted and trade posts.
 /// Both requests use the site's default ppp and explicit ascending order.
@@ -92,18 +94,18 @@ class PostLinkTarget {
   PostLinkTarget(this.tid, this.pid);
   static PostLinkTarget? parse(Uri uri) {
     final q = uri.queryParameters;
-    final rewrittenTid = RegExp(
-      r'(?:^|/)thread-(\d+)-\d+-\d+\.html$',
-    ).firstMatch(uri.path)?.group(1);
+    final rewrittenTid = RegExp(r'(?:^|/)thread-(\d+)-\d+-\d+\.html$')
+        .firstMatch(uri.path)
+        ?.group(1);
     if (q['mod'] != 'redirect' &&
         q['mod'] != 'viewthread' &&
         rewrittenTid == null)
       return null;
     final tid = int.tryParse(q['tid'] ?? q['ptid'] ?? rewrittenTid ?? '');
     if (tid == null || tid <= 0) return null;
-    final fragment = RegExp(
-      r'^(?:pid|post_)(\d+)$',
-    ).firstMatch(uri.fragment)?.group(1);
+    final fragment = RegExp(r'^(?:pid|post_)(\d+)$')
+        .firstMatch(uri.fragment)
+        ?.group(1);
     final pid = int.tryParse(q['pid'] ?? q['viewpid'] ?? fragment ?? '');
     return PostLinkTarget(tid, pid != null && pid > 0 ? pid : null);
   }
@@ -115,3 +117,20 @@ bool hasMoreThreadPages({
   required int postsPerPage,
   required int replies,
 }) => postsPerPage > 0 && page * postsPerPage < replies + 1;
+
+/// The descending page may contain a pinned older reply or the original post.
+int? latestVisiblePostPid(Iterable<Post> posts, {required int tid}) {
+  Post? latest;
+  int? original;
+  for (final post in posts) {
+    if (post.tid != tid || post.pid <= 0) continue;
+    if (post.first) {
+      original = post.pid;
+    } else if (latest == null ||
+        post.publishAt.isAfter(latest.publishAt) ||
+        (post.publishAt == latest.publishAt && post.pid > latest.pid)) {
+      latest = post;
+    }
+  }
+  return latest?.pid ?? original;
+}

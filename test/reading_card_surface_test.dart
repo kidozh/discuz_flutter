@@ -36,9 +36,10 @@ void main() {
                     scheme: FlexScheme.blueWhale,
                     useMaterial3: useMaterial3,
                   );
-            if (style == AppVisualStyle.material) {
-              theme = withNeutralMaterialSurfaces(theme);
-            }
+            theme = withForumColors(
+              theme,
+              material: style == AppVisualStyle.material,
+            );
             await tester.pumpWidget(
               PlatformProvider(
                 style: style,
@@ -109,6 +110,16 @@ void main() {
             }
             expect(
               _contrast(theme.colorScheme.onSurface, fill),
+              greaterThanOrEqualTo(4.5),
+            );
+            final colors = theme.colorScheme;
+            expect(_contrast(colors.primary, fill), greaterThanOrEqualTo(4.5));
+            expect(
+              _contrast(colors.primary, colors.surfaceContainerHighest),
+              greaterThanOrEqualTo(4.5),
+            );
+            expect(
+              _contrast(colors.onPrimary, colors.primary),
               greaterThanOrEqualTo(4.5),
             );
             expect(

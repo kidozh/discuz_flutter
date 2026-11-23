@@ -1,3 +1,6 @@
+import '../utility/forum_feed_filters.dart';
+import 'forum_feed_filters_page.dart';
+import 'forum_community_page.dart';
 import 'ForumListsPage.dart';
 
 import 'dart:async';
@@ -51,11 +54,16 @@ import '../provider/UserPreferenceNotifierProvider.dart';
 import '../screen/TwoPaneEmptyScreen.dart';
 import '../utility/EasyRefreshUtils.dart';
 import '../utility/discuz_json.dart';
+import '../utility/forum_error.dart';
 import '../widget/classified_filter_fields.dart';
+import '../widget/post_settings_sheet.dart';
 import '../client/classified_filters.dart';
 import '../client/discuz_web_client.dart';
 import '../client/ForumInteractionClient.dart';
+import '../client/favorite_sync.dart';
 import 'SettingPage.dart';
+import 'ModerateThreadPage.dart';
+import 'forum_feature_links.dart';
 
 class DisplayForumSliverPage extends StatelessWidget {
   late final Discuz discuz;
@@ -145,6 +153,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   int _page = 1;
   bool _hasMore = true;
   bool _loading = false;
+  bool _unlocking = false;
+  bool _recentlyUnlocked = false;
+  bool _openingBatchModeration = false;
   int _requestId = 0;
   late final Object _session;
   Map<String, String>? _appliedQuery;
@@ -180,7 +191,10 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
   }
 
   Future<void> _loadClient() async {
-    dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    dio = await NetworkUtils.getDioWithPersistCookieJar(
+      user,
+      guestForum: discuz.baseURL,
+    );
     client = MobileApiClient(dio, baseUrl: discuz.baseURL);
   }
 
@@ -198,91 +212,60 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     super.dispose();
   }
 
-  Future<void> favoriteForum() async {
-    FavoriteForumDao favoriteForumDao = await AppDatabase.getFavoriteForumDao();
-    await favoriteForumDao.insertFavoriteForum(
-      FavoriteForumInDatabase(
-        0,
-        user?.uid ?? _displayForumResult.discuzIndexVariables.member_uid,
-        fid,
-        "fid",
-        _displayForumResult.discuzIndexVariables.forum.name,
-        _displayForumResult.discuzIndexVariables.forum.description,
-        DateTime.now(),
-        discuz,
-      ),
-    );
-    if (mounted) setState(() {});
-    if (user == null) {
-      return;
-    }
-    client
-        .favoriteForumActionResult(
-          _displayForumResult.discuzIndexVariables.formHash,
-          fid,
-        )
-        .then((value) {
-          if (value.errorResult != null &&
-              value.errorResult!.key == "do_success") {
-            EasyLoading.showSuccess(
-              S
-                  .of(context)
-                  .discuzOperationMessage(
-                    value.errorResult!.key,
-                    value.errorResult!.content,
-                  ),
-            );
-          } else {
-            EasyLoading.showToast(
-              S
-                  .of(context)
-                  .discuzOperationMessage(
-                    value.errorResult!.key,
-                    value.errorResult!.content,
-                  ),
-            );
-          }
-        });
-  }
+  bool _changingFavorite = false;
 
-  Future<void> unfavoriteForum() async {
-    FavoriteForumDao favoriteForumDao = await AppDatabase.getFavoriteForumDao();
-
-    FavoriteForumInDatabase? favoriteForumInDatabase = favoriteForumDao
-        .getFavoriteForumByFid(fid, discuz, uid: user?.uid ?? 0);
-    if (favoriteForumInDatabase != null) {
-      await favoriteForumDao.removeFavoriteForum(favoriteForumInDatabase);
-      if (mounted) setState(() {});
-      if (user == null) {
-        return;
+  Future<void> _changeFavorite(bool add) async {
+    if (_changingFavorite) return;
+    final account = context.read<DiscuzAndUserNotifier>();
+    bool current() => mounted && identical(_session, account.sessionIdentity);
+    final uid = user?.uid ?? 0;
+    setState(() => _changingFavorite = true);
+    Dio? requestDio;
+    try {
+      final dao = await AppDatabase.getFavoriteForumDao();
+      if (!current()) return;
+      final previous = dao.getFavoriteForumByFid(fid, discuz, uid: uid);
+      if (add == (previous != null)) return;
+      final variables = _displayForumResult.discuzIndexVariables;
+      var favid = -1;
+      if (user != null && (add || (previous?.favid ?? -1) >= 0)) {
+        if (variables.member_uid != uid) {
+          throw const ForumApiException('not_loggedin', '', fromForum: true);
+        }
+        final activeDio = requestDio = await NetworkUtils.getDioWithPersistCookieJar(user);
+        favid = await changeServerFavorite(
+          ForumInteractionClient(activeDio, discuz.baseURL),
+          uid: uid,
+          threads: false,
+          target: fid,
+          add: add,
+          formhash: variables.formHash,
+          isCurrent: current,
+        );
       }
-      client
-          .unfavoriteForumActionResult(
-            _displayForumResult.discuzIndexVariables.formHash,
-            favoriteForumInDatabase.favid,
-          )
-          .then((value) {
-            if (value.errorResult != null &&
-                value.errorResult!.key == "do_success") {
-              EasyLoading.showSuccess(
-                S
-                    .of(context)
-                    .discuzOperationMessage(
-                      value.errorResult!.key,
-                      value.errorResult!.content,
-                    ),
-              );
-            } else {
-              EasyLoading.showToast(
-                S
-                    .of(context)
-                    .discuzOperationMessage(
-                      value.errorResult!.key,
-                      value.errorResult!.content,
-                    ),
-              );
-            }
-          });
+      if (!current()) return;
+      final latest = dao.getFavoriteForumByFid(fid, discuz, uid: uid);
+      if (add && latest == null) {
+        await dao.insertFavoriteForum(FavoriteForumInDatabase(
+          favid,
+          uid,
+          fid,
+          'fid',
+          variables.forum.name,
+          variables.forum.description,
+          DateTime.now(),
+          discuz,
+        ));
+      } else if (!add && latest != null) {
+        await dao.removeFavoriteForum(latest);
+      }
+    } catch (e) {
+      if (current()) {
+        EasyLoading.showError(forumRequestError(S.of(context), e).content);
+      }
+    } finally {
+      requestDio?.close();
+      if (mounted) setState(() => _changingFavorite = false);
     }
   }
 
@@ -297,7 +280,10 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     } else {
       ViewHistory? viewHistory = dao.forumExistInDatabase(discuz, fid);
       print("Found forum $viewHistory");
-      if (viewHistory == null && mounted) {
+      if (viewHistory == null &&
+          mounted &&
+          (forumDetail.description.trim().isNotEmpty ||
+              forumDetail.rules.trim().isNotEmpty)) {
         // show rule
         _showInformationBottomSheet(context);
       }
@@ -338,7 +324,10 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         request == _requestId &&
         identical(_session, account.sessionIdentity);
     try {
-      final dio = await NetworkUtils.getDioWithPersistCookieJar(currentUser);
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(
+        currentUser,
+        guestForum: discuz.baseURL,
+      );
       final DisplayForumResult response;
       try {
         response = query.keys.any((key) => key.startsWith('searchoption['))
@@ -354,6 +343,19 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       }
       if (!isCurrent()) return IndicatorResult.fail;
       final variables = response.discuzIndexVariables;
+      final board = variables.forum;
+      if (page == 1 &&
+          !_recentlyUnlocked &&
+          board.password == '1' &&
+          !board.threadCountReported &&
+          variables.forumThreadList.isEmpty &&
+          response.errorResult == null) {
+        throw const ForumApiException(
+          'forum_passwd_required',
+          '',
+          fromForum: true,
+        );
+      }
       final error = EasyRefreshUtils.responseError(
         context,
         response,
@@ -410,10 +412,198 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
     }
   }
 
+  Future<void> _unlockBoard() async {
+    if (_unlocking) return;
+    final account = context.read<DiscuzAndUserNotifier>();
+    bool isCurrent() => mounted && identical(_session, account.sessionIdentity);
+    if (!isCurrent()) return;
+    setState(() => _unlocking = true);
+    var candidate = '';
+    final strings = S.of(context);
+    try {
+      final password = await showPostSettingsSheet<String>(context, (sheet) {
+        void submit(String value) {
+          if (value.isNotEmpty) Navigator.pop(sheet, value);
+        }
+
+        return PostSettingsSheet(
+          title: strings.boardUnlock,
+          hasSave: true,
+          onSave: () => submit(candidate),
+          children: [
+            Text(strings.boardPasswordPrompt),
+            const SizedBox(height: 8),
+            PlatformTextField(
+              autofocus: true,
+              obscureText: true,
+              textInputAction: TextInputAction.done,
+              autocorrect: false,
+              hintText: strings.boardPasswordInput,
+              onChanged: (value) => candidate = value,
+              onSubmitted: submit,
+            ),
+          ],
+        );
+      });
+      if (!isCurrent() || password == null || password.isEmpty) return;
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(
+        user,
+        guestForum: discuz.baseURL,
+      );
+      try {
+        if (!isCurrent()) return;
+        final result = await ForumInteractionClient(
+          dio,
+          discuz.baseURL,
+        ).request('forumdisplay', {'fid': fid}, body: {'pw': password});
+        result.requireSuccess({'forum_passwd_correct'});
+      } finally {
+        dio.close();
+      }
+      if (isCurrent()) {
+        _recentlyUnlocked = true;
+        await _loadForumContent(refresh: true, filterChanged: true);
+      }
+    } on ForumApiException catch (error) {
+      if (!isCurrent()) return;
+      setState(
+        () => _error = DiscuzError(
+          'forum_passwd_required',
+          forumMessageKey(error.code) == 'forum_passwd_incorrect'
+              ? strings.boardPasswordWrong
+              : strings.boardPasswordPrompt,
+        ),
+      );
+    } on DioException catch (error) {
+      if (isCurrent())
+        setState(
+          () => _error = DiscuzError(
+            'forum_passwd_required',
+            forumRequestError(strings, error).content,
+          ),
+        );
+    } finally {
+      if (mounted) setState(() => _unlocking = false);
+    }
+  }
+
   FavoriteForumDao? favoriteForumDao;
 
+  Future<void> _openBatchModeration(User moderator) async {
+    if (_openingBatchModeration) return;
+    final account = context.read<DiscuzAndUserNotifier>();
+    bool current() => mounted && identical(_session, account.sessionIdentity);
+    final variables = _displayForumResult.discuzIndexVariables;
+    final limit = int.tryParse(variables.tpp) ?? 0;
+    final threads = <int, ForumThread>{};
+    final visible = List<ForumThread>.of(_forumThreadList);
+    _openingBatchModeration = true;
+    Dio? requestDio;
+    try {
+      for (final thread in visible) {
+        if (!current()) return;
+        final id = int.tryParse(thread.tid) ?? 0;
+        if (id <= 0) continue;
+        // Announcements and cross-board sticky threads can appear in this list.
+        if ((int.tryParse(thread.displayOrder) ?? 0) > 1) {
+          requestDio ??= await NetworkUtils.getDioWithPersistCookieJar(moderator);
+          if (!current()) return;
+          try {
+            await loadModerationScope(
+              ForumInteractionClient(requestDio, discuz.baseURL),
+              tid: id,
+              uid: moderator.uid,
+              expectedForum: fid,
+            );
+          } on ForumApiException {
+            continue;
+          }
+        }
+        threads[id] = thread;
+      }
+      if (!current()) return;
+      final s = S.of(context);
+      if (threads.isEmpty) {
+        EasyLoading.showInfo(s.forumContentUnavailable);
+        return;
+      }
+      final selected = <int>{};
+      final ids = await showPostSettingsSheet<List<int>>(
+        context,
+        (_) => StatefulBuilder(
+          builder: (sheet, update) => PostSettingsSheet(
+            title: s.batchModeration,
+            hasSave: true,
+            onSave: selected.isEmpty
+                ? null
+                : () => Navigator.pop(sheet, selected.toList()),
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Text(limit > 0
+                    ? s.modSelectionLimit(selected.length, limit)
+                    : s.modSelected(selected.length)),
+              ),
+              for (final entry in threads.entries)
+                PlatformListTile(
+                  title: Text(entry.value.decodedSubject),
+                  selected: selected.contains(entry.key),
+                  trailing: selected.contains(entry.key)
+                      ? Icon(PlatformIcons(sheet).checkMark)
+                      : null,
+                  onTap: selected.contains(entry.key) ||
+                          limit == 0 ||
+                          selected.length < limit
+                      ? () => update(() {
+                          if (!selected.remove(entry.key)) {
+                            selected.add(entry.key);
+                          }
+                        })
+                      : null,
+                ),
+            ],
+          ),
+        ),
+      );
+      if (ids == null || !current()) return;
+      final threadTypes = variables.getThreadType();
+      final changed = await pushDetailPage<bool>(
+        context,
+        platformPageRoute(
+          context: context,
+          iosTitle: s.batchModeration,
+          builder: (_) => ModerateThreadPage.batch(
+            discuz: discuz,
+            user: moderator,
+            boardId: fid,
+            batchIds: ids,
+            boardTypes: threadTypes.idNameMap,
+            boardTypeRequired: threadTypes.typeRequired(),
+          ),
+        ),
+      );
+      if (changed == true && current()) await _controller.callRefresh();
+    } catch (e) {
+      if (current()) {
+        EasyLoading.showError(forumRequestError(S.of(context), e).content);
+      }
+    } finally {
+      requestDio?.close();
+      _openingBatchModeration = false;
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      withForumFeedFilters(discuz, user, (context, rules) {
+        final visibleThreads = _forumThreadList.where(
+          (thread) => !hidesForumThread(rules, thread.getTid(), thread.decodedSubject,
+              fid: fid, excerpt: thread.message),
+        ).toList();
+        return _buildForum(context, visibleThreads);
+      });
+
+  Widget _buildForum(BuildContext context, List<ForumThread> visibleThreads) {
     ModalRoute<Object?>? route = ModalRoute.of(context);
     final favoriteForumInDatabase = favoriteForumDao?.getFavoriteForumByFid(
       fid,
@@ -447,9 +637,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
             onPressed: () async {
               VibrationUtils.vibrateWithClickIfPossible();
               if (favoriteForumInDatabase == null) {
-                await favoriteForum();
+                await _changeFavorite(true);
               } else {
-                await unfavoriteForum();
+                await _changeFavorite(false);
               }
             },
           ),
@@ -513,6 +703,40 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 _showForumFilterBottomSheet(context);
               },
             ),
+            if (user != null &&
+                _displayForumResult.discuzIndexVariables.member_uid == user!.uid &&
+                _displayForumResult.discuzIndexVariables.isModerator > 0 &&
+                _forumThreadList.isNotEmpty)
+              PopupMenuOption(
+                label: S.of(context).batchModeration,
+                onTap: (_) => _openBatchModeration(user!),
+              ),
+            if (user != null &&
+                _displayForumResult.discuzIndexVariables.member_uid == user!.uid &&
+                _displayForumResult.discuzIndexVariables.isModerator > 0)
+              PopupMenuOption(
+                label: S.of(context).forumModerationCenter,
+                onTap: (_) => openForumModeration(context, discuz, user!, fid),
+              ),
+            if (fid > 0)
+              PopupMenuOption(
+                label: S.of(context).forumContentFilters,
+                onTap: (_) => Navigator.push(
+                  context,
+                  platformPageRoute(
+                    context: context,
+                    builder: (_) => ForumFeedFiltersPage(
+                      discuz, fid: fid,
+                      board: _displayForumResult.discuzIndexVariables.forum.name,
+                    ),
+                  ),
+                ),
+              ),
+            if (fid > 0)
+              PopupMenuOption(
+                label: S.of(context).communityRss,
+                onTap: (_) => copyForumRss(context, discuz, fid),
+              ),
             PopupMenuOption(
               label: S.of(context).openViaInternalBrowser,
               onTap: (option) {
@@ -563,7 +787,9 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 .watch<UserPreferenceNotifierProvider>()
                 .forumDisplay
                 .showForumName
-            ? _displayForumResult.discuzIndexVariables.forum.name
+            ? (_displayForumResult.discuzIndexVariables.forum.name.isEmpty
+                  ? widget.forumTitle ?? S.of(context).appName
+                  : _displayForumResult.discuzIndexVariables.forum.name)
             : S.of(context).appName,
         overflow: TextOverflow.ellipsis,
       ),
@@ -587,6 +813,14 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
       ),
     );
 
+    final error = _error;
+    final boardLocked =
+        error != null &&
+        const {
+          'forum_passwd',
+          'forum_passwd_required',
+          'forum_passwd_incorrect',
+        }.contains(forumMessageKey(error.key));
     return PlatformScaffold(
       body: EasyRefresh(
         controller: _controller,
@@ -598,7 +832,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
         footer: EasyRefreshUtils.i18nClassicFooter(context),
         refreshOnStart: true,
         onRefresh: () => _loadForumContent(refresh: true),
-        onLoad: _loadForumContent,
+        onLoad: boardLocked ? null : _loadForumContent,
         child: CustomScrollView(
           slivers: <Widget>[
             AppPlatformSliverAppBar(
@@ -611,22 +845,28 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                   .previousPageTitle,
             ),
             const HeaderLocator.sliver(),
-            if (_error != null)
-              SliverList(
-                delegate: SliverChildBuilderDelegate((context, _) {
-                  return ErrorCard(
-                    _error!,
-                    () => _controller.callRefresh(),
-                    errorType: _error!.errorType,
-                    webpageUrl: URLUtils.getForumDisplayURL(discuz, fid),
-                  );
-                }, childCount: 1),
+            if (error != null)
+              SliverToBoxAdapter(
+                child: boardLocked
+                    ? ErrorCard(
+                        error,
+                        _unlocking ? null : _unlockBoard,
+                        largeSize: false,
+                        icon: PlatformIcons(context).secure,
+                        actionLabel: S.of(context).boardUnlock,
+                      )
+                    : ErrorCard(
+                        error,
+                        () => _controller.callRefresh(),
+                        webpageUrl: URLUtils.getForumDisplayURL(discuz, fid),
+                      ),
               ),
             // check with sub forum
-            if (_displayForumResult
-                .discuzIndexVariables
-                .subForumList
-                .isNotEmpty)
+            if (!boardLocked &&
+                _displayForumResult
+                    .discuzIndexVariables
+                    .subForumList
+                    .isNotEmpty)
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
@@ -682,7 +922,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       .length,
                 ),
               ),
-            if (_forumThreadList.isEmpty)
+            if (!boardLocked && visibleThreads.isEmpty)
               SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
                   return _isFirstLoading
@@ -691,7 +931,8 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                 }, childCount: 1),
               ),
 
-            if (_displayForumResult.discuzIndexVariables.forum.pictureMode)
+            if (!boardLocked &&
+                _displayForumResult.discuzIndexVariables.forum.pictureMode)
               SliverPadding(
                 padding: const EdgeInsets.all(10),
                 sliver: SliverGrid.builder(
@@ -702,18 +943,18 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                     mainAxisSpacing: 10,
                     crossAxisSpacing: 10,
                   ),
-                  itemCount: _forumThreadList.length,
+                  itemCount: visibleThreads.length,
                   itemBuilder: (context, index) => ForumThreadWidget(
                     discuz,
                     user,
-                    _forumThreadList[index],
+                    visibleThreads[index],
                     _displayForumResult.discuzIndexVariables.threadType,
                     onSelectTid,
                     pictureTile: true,
                   ),
                 ),
               )
-            else
+            else if (!boardLocked)
               SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
                   return Column(
@@ -722,11 +963,11 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                       ForumThreadWidget(
                         discuz,
                         user,
-                        _forumThreadList[index],
+                        visibleThreads[index],
                         _displayForumResult.discuzIndexVariables.threadType,
                         onSelectTid,
-                        afterTid: index < _forumThreadList.length - 1
-                            ? _forumThreadList[index + 1].getTid()
+                        afterTid: index < visibleThreads.length - 1
+                            ? visibleThreads[index + 1].getTid()
                             : null,
                       ),
                       if (index % 15 == 0 && index != 0)
@@ -741,7 +982,7 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                         ),
                     ],
                   );
-                }, childCount: _forumThreadList.length),
+                }, childCount: visibleThreads.length),
               ),
           ],
         ),
@@ -1053,8 +1294,34 @@ class _DisplayForumSliverState extends State<DisplayForumSliverStatefulWidget> {
                         );
                       },
                     ),
+                    PlatformChoiceChip(
+                      label: Text(S.of(context).specialReward),
+                      selected: _displayForumQuery.specialType == 'reward',
+                      onSelected: (selected) => setModalState(
+                        () => _displayForumQuery.setSpecialType('reward', selected),
+                      ),
+                    ),
                   ],
                 ),
+                if (_displayForumQuery.specialType == 'reward')
+                  filterSection(
+                    PlatformIcons(context).checkMarkCircled,
+                    S.of(context).forumRewardStatus,
+                    [
+                      for (final (value, title) in [
+                        (0, S.of(context).forumAll),
+                        (1, S.of(context).forumRewardUnsolved),
+                        (2, S.of(context).forumRewardSolved),
+                      ])
+                        PlatformChoiceChip(
+                          label: Text(title),
+                          selected: _displayForumQuery.rewardStatus == value,
+                          onSelected: (selected) => setModalState(
+                            () => _displayForumQuery.rewardStatus = selected ? value : 0,
+                          ),
+                        ),
+                    ],
+                  ),
                 filterSection(
                   PlatformIcons(context).timeout,
                   S.of(context).forumFilterTimeTitle,
@@ -1187,6 +1454,7 @@ class DisplayForumActionControls extends StatelessWidget {
 
 class DisplayForumQuery {
   int typeId = 0, dateline = 0;
+  int rewardStatus = 0;
   int? sortId;
   final classifiedSelection = <String, Set<String>>{};
   Map<String, String> classifiedQuery = {};
@@ -1202,6 +1470,7 @@ class DisplayForumQuery {
           sortId == other.sortId &&
           mapEquals(classifiedQuery, other.classifiedQuery) &&
           dateline == other.dateline &&
+          rewardStatus == other.rewardStatus &&
           specialType == other.specialType &&
           orderBy == other.orderBy &&
           filter == other.filter;
@@ -1214,6 +1483,7 @@ class DisplayForumQuery {
         classifiedQuery.entries.map((e) => Object.hash(e.key, e.value)),
       ) ^
       dateline.hashCode ^
+      rewardStatus.hashCode ^
       specialType.hashCode ^
       orderBy.hashCode ^
       filter.hashCode;
@@ -1221,6 +1491,7 @@ class DisplayForumQuery {
   void setTypeId(int typeId, bool selected) {
     if (selected) {
       this.typeId = typeId;
+      if (filter == 'hot') filter = '';
     } else {
       this.typeId = 0;
     }
@@ -1229,14 +1500,17 @@ class DisplayForumQuery {
   void setDateline(int dateline, bool selected) {
     if (selected) {
       this.dateline = dateline;
+      if (filter == 'hot') filter = '';
     } else {
       this.dateline = 0;
     }
   }
 
   void setSpecialType(String specialType, bool selected) {
+    rewardStatus = 0;
     if (selected) {
       this.specialType = specialType;
+      if (filter == 'hot') filter = '';
     } else {
       this.specialType = "";
     }
@@ -1261,6 +1535,8 @@ class DisplayForumQuery {
   void setHot(bool selected) {
     if (selected) {
       this.filter = "hot";
+      typeId = dateline = rewardStatus = 0;
+      specialType = '';
       if (sortId != null) setSortId(0);
     } else {
       this.filter = "";
@@ -1293,6 +1569,9 @@ class DisplayForumQuery {
     if (specialType != "") {
       forumQueriesMap["filter"] = "specialtype";
       forumQueriesMap["specialtype"] = specialType;
+      if (specialType == 'reward' && (rewardStatus == 1 || rewardStatus == 2)) {
+        forumQueriesMap['rewardtype'] = '$rewardStatus';
+      }
     }
 
     if (dateline != 0) {

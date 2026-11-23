@@ -123,14 +123,44 @@ class DebateInfo {
     this.affirmVotes,
     this.againstVotes,
     this.end,
-    this.verdict,
-  );
+    this.verdict, {
+    this.affirmUsers = const {},
+    this.againstUsers = const {},
+    this.affirmPosts = const {},
+    this.againstPosts = const {},
+    this.ended = false,
+    this.voted = false,
+  });
   final String affirm, against, end, verdict;
   final int? affirmVotes, againstVotes;
-  static DebateInfo? parse(Object? value) {
+  final Set<int> affirmUsers, againstUsers, affirmPosts, againstPosts;
+  final bool ended, voted;
+
+  DebateSide? sideForAuthor(int uid) => _side(uid, affirmUsers, againstUsers);
+
+  DebateSide? sideForPost(int pid) => _side(pid, affirmPosts, againstPosts);
+
+  static DebateSide? _side(int id, Set<int> affirm, Set<int> against) {
+    if (id <= 0 || affirm.contains(id) == against.contains(id)) return null;
+    return affirm.contains(id) ? DebateSide.affirm : DebateSide.against;
+  }
+
+  static DebateInfo? parse(Object? value, {int viewer = 0}) {
     final data = discuzMap(value);
     if (data.isEmpty) return null;
     String field(String key) => discuzString(data[key]).trim();
+    Set<int> ids(String key, String field, String cached) {
+      final rows = data[key];
+      return {
+        for (final row in rows is List ? rows : discuzMap(rows).values)
+          if (discuzInt(discuzMap(row)[field]) case final id when id > 0) id,
+        for (final uid in discuzIds(data[cached]).map(discuzInt))
+          if (uid > 0) uid,
+      };
+    }
+
+    bool votedFor(String key) =>
+        viewer > 0 && field(key).split(RegExp(r'\s+')).contains('$viewer');
     return DebateInfo(
       field('affirmpoint'),
       field('negapoint'),
@@ -138,6 +168,19 @@ class DebateInfo {
       int.tryParse(field('negavotes')),
       field('endtime'),
       field('umpirepoint'),
+      affirmUsers: ids('affirmavatars', 'authorid', 'appAffirmUsers'),
+      affirmPosts: ids('affirmavatars', 'pid', 'appAffirmPosts'),
+      againstUsers: ids('negaavatars', 'authorid', 'appAgainstUsers'),
+      againstPosts: ids('negaavatars', 'pid', 'appAgainstPosts'),
+      ended:
+          data['appEnded'] == true ||
+          (discuzInt(data['dbendtime']) > 0 &&
+              discuzInt(data['dbendtime']) <=
+                  DateTime.now().millisecondsSinceEpoch ~/ 1000),
+      voted:
+          data['appVoted'] == true ||
+          votedFor('affirmvoterids') ||
+          votedFor('negavoterids'),
     );
   }
 
@@ -148,5 +191,77 @@ class DebateInfo {
     'negavotes': againstVotes,
     'endtime': end,
     'umpirepoint': verdict,
+    'appAffirmUsers': affirmUsers.toList(),
+    'appAgainstUsers': againstUsers.toList(),
+    'appAffirmPosts': affirmPosts.toList(),
+    'appAgainstPosts': againstPosts.toList(),
+    'appEnded': ended,
+    'appVoted': voted,
+  };
+}
+
+enum DebateSide {
+  neutral(0),
+  affirm(1),
+  against(2);
+
+  const DebateSide(this.wire);
+  final int wire;
+}
+
+class TradeItem {
+  const TradeItem(
+    this.pid,
+    this.title,
+    this.price,
+    this.credit,
+    this.stock,
+    this.days,
+    this.hours,
+  );
+
+  final int pid;
+  final String title, price, credit;
+  final int? stock, days, hours;
+
+  static List<TradeItem> parse(Object? source) => [
+    for (final value
+        in source is Map
+            ? source.values
+            : source is List
+            ? source
+            : const [])
+      if (_parseOne(discuzMap(value)) case final item?) item,
+  ];
+
+  static TradeItem? _parseOne(Map<String, dynamic> data) {
+    final pid = discuzInt(data['pid']);
+    final title = discuzString(data['subject']).trim();
+    if (pid <= 0 || title.isEmpty) return null;
+    int? count(String name) => int.tryParse(discuzString(data[name]));
+    String positive(String name) {
+      final value = discuzString(data[name]);
+      return (double.tryParse(value) ?? 0) > 0 ? value : '';
+    }
+
+    return TradeItem(
+      pid,
+      title,
+      positive('price'),
+      positive('credit'),
+      count('amount'),
+      count('expiration'),
+      count('expirationhour'),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'pid': pid,
+    'subject': title,
+    'price': price,
+    'credit': credit,
+    'amount': stock,
+    'expiration': days,
+    'expirationhour': hours,
   };
 }

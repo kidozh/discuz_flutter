@@ -134,14 +134,16 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
                 ),
           useMaterial3: themeColorEntity.useMaterial3,
         );
-        if (themeColorEntity.visualStyle.effective == AppVisualStyle.material) {
-          materialThemeDataLight = withNeutralMaterialSurfaces(
-            materialThemeDataLight,
-          );
-          materialThemeDataDark = withNeutralMaterialSurfaces(
-            materialThemeDataDark,
-          );
-        }
+        final materialStyle =
+            themeColorEntity.visualStyle.effective == AppVisualStyle.material;
+        materialThemeDataLight = withForumColors(
+          materialThemeDataLight,
+          material: materialStyle,
+        );
+        materialThemeDataDark = withForumColors(
+          materialThemeDataDark,
+          material: materialStyle,
+        );
         const darkDefaultCupertinoTheme = CupertinoThemeData(
           brightness: Brightness.dark,
         );
@@ -151,11 +153,11 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
               brightness: Brightness.dark,
               barBackgroundColor: darkDefaultCupertinoTheme.barBackgroundColor,
               textTheme: CupertinoTextThemeData(
-                primaryColor: Colors.white,
+                primaryColor: materialThemeDataDark.colorScheme.primary,
                 navActionTextStyle: darkDefaultCupertinoTheme
                     .textTheme
                     .navActionTextStyle
-                    .copyWith(color: const Color(0xF0F9F9F9)),
+                    .copyWith(color: materialThemeDataDark.colorScheme.primary),
                 navLargeTitleTextStyle: darkDefaultCupertinoTheme
                     .textTheme
                     .navLargeTitleTextStyle

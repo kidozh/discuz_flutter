@@ -1,6 +1,9 @@
+import '../utility/forum_feed_filters.dart';
+import '../client/forum_community.dart';
+import '../page/forum_community_page.dart';
+
 import 'dart:async';
 
-import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
 import 'package:discuz_flutter/entity/DiscuzNotification.dart';
@@ -20,7 +23,37 @@ import 'package:provider/provider.dart';
 
 import '../utility/EasyRefreshUtils.dart';
 import '../utility/MobileSignUtils.dart';
+import '../client/MobileApiClient.dart';
+import '../JsonResult/UserDiscuzNotificationResult.dart';
+import '../page/ViewThreadSliverPage.dart';
 import 'EmptyListScreen.dart';
+
+enum _NoticeFilter {
+  all('all'),
+  reply('mypost', 'post'),
+  mention('mypost', 'at'),
+  comment('mypost', 'pcomment'),
+  rating('mypost', 'rate'),
+  activity('mypost', 'activity'),
+  friend('interactive', 'friend'),
+  group('interactive', 'group'),
+  system('system');
+
+  const _NoticeFilter(this.view, [this.type]);
+  final String view;
+  final String? type;
+  String label(S s) => switch (this) {
+    all => s.forumAll,
+    reply => s.noticeReplies,
+    mention => s.noticeMentions,
+    comment => s.noticeReviews,
+    rating => s.noticeRatings,
+    activity => s.noticeActivities,
+    friend => s.friendRequests,
+    group => s.communityGroups,
+    system => s.noticeSystem,
+  };
+}
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({this.onSelectTid, super.key});
@@ -51,7 +84,9 @@ class _NotificationState extends State<NotificationStatefulWidget> {
   DiscuzError? _error;
   int _page = 1;
   bool _hasMore = true;
-  bool _loading = false;
+  int _generation = 0;
+  int? _loading;
+  _NoticeFilter _filter = _NoticeFilter.all;
   List<DiscuzNotification> _noteList = [];
   bool _isFirstLoading = true;
 
@@ -66,20 +101,32 @@ class _NotificationState extends State<NotificationStatefulWidget> {
     User user, {
     bool refresh = false,
   }) async {
-    if (_loading) return IndicatorResult.fail;
+    final generation = _generation;
+    final filter = _filter;
+    if (_loading == generation) return IndicatorResult.fail;
     if (!refresh && !_hasMore) return IndicatorResult.noMore;
     final account = context.read<DiscuzAndUserNotifier>();
     final session = account.sessionIdentity;
-    bool isCurrent() => mounted && identical(session, account.sessionIdentity);
+    bool isCurrent() =>
+        mounted &&
+        generation == _generation &&
+        identical(session, account.sessionIdentity);
     if (!identical(user, account.user)) return IndicatorResult.fail;
-    _loading = true;
+    _loading = generation;
     final page = refresh ? 1 : _page;
     try {
       final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-      final response = await MobileApiClient(
-        dio,
-        baseUrl: discuz.baseURL,
-      ).userNotificationResult(page);
+      final UserDiscuzNotificationResult response;
+      try {
+        response = await MobileApiClient(dio, baseUrl: discuz.baseURL)
+            .userNotificationResult(
+              page,
+              view: filter == _NoticeFilter.all ? null : filter.view,
+              type: filter.type,
+            );
+      } finally {
+        dio.close();
+      }
       if (!isCurrent()) return IndicatorResult.fail;
       final variables = response.variables;
       final error = EasyRefreshUtils.responseError(
@@ -107,6 +154,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
           variables.formHash,
         ),
       );
+      if (refresh) _controller.resetFooter();
       return refresh || _hasMore
           ? IndicatorResult.success
           : IndicatorResult.noMore;
@@ -118,7 +166,7 @@ class _NotificationState extends State<NotificationStatefulWidget> {
       });
       return IndicatorResult.fail;
     } finally {
-      _loading = false;
+      if (_loading == generation) _loading = null;
     }
   }
 
@@ -134,6 +182,42 @@ class _NotificationState extends State<NotificationStatefulWidget> {
           return PlatformLiquidGlassPageBackdrop(
             child: Column(
               children: [
+                SafeArea(
+                  bottom: false,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Row(
+                      spacing: 8,
+                      children: [
+                        for (final item in _NoticeFilter.values)
+                          PlatformChoiceChip(
+                            label: Text(item.label(S.of(context))),
+                            selected: item == _filter,
+                            onSelected: (_) {
+                              if (item == _filter) return;
+                              setState(() {
+                                _generation++;
+                                _filter = item;
+                                _page = 1;
+                                _hasMore = true;
+                                _isFirstLoading = true;
+                                _error = null;
+                                _noteList = [];
+                              });
+                              unawaited(
+                                _loadPage(
+                                  discuzAndUser.discuz!,
+                                  discuzAndUser.user!,
+                                  refresh: true,
+                                ),
+                              );
+                            },
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
                 if (_error != null)
                   PlatformCard(
                     margin: const EdgeInsets.fromLTRB(8, 8, 8, 4),
@@ -158,48 +242,82 @@ class _NotificationState extends State<NotificationStatefulWidget> {
   }
 
   Widget getEasyRefreshWidget(Discuz discuz, User user) {
-    return EasyRefresh(
-      header: EasyRefreshUtils.i18nClassicHeader(context),
-      footer: EasyRefreshUtils.i18nClassicFooter(context),
-      refreshOnStart: true,
-      controller: _controller,
-      onRefresh: () => _loadPage(discuz, user, refresh: true),
-      onLoad: () => _loadPage(discuz, user),
-      child: CustomScrollView(
-        slivers: [
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) => SafeArea(child: Container(), bottom: false),
-              childCount: 1,
-            ),
-          ),
-          if (_noteList.isEmpty)
+    return withForumFeedFilters(discuz, user, (context, rules) {
+      final muted = rules.map((rule) => rule['tid']).whereType<int>().toSet();
+      final visibleNotes = muted.isEmpty
+          ? _noteList
+          : _noteList
+                .where(
+                  (row) => !muted.contains(
+                    row.threadId ?? row.replyTarget(discuz)?.$1,
+                  ),
+                )
+                .toList();
+      return EasyRefresh(
+        header: EasyRefreshUtils.i18nClassicHeader(context),
+        footer: EasyRefreshUtils.i18nClassicFooter(context),
+        refreshOnStart: true,
+        controller: _controller,
+        onRefresh: () => _loadPage(discuz, user, refresh: true),
+        onLoad: () => _loadPage(discuz, user),
+        child: CustomScrollView(
+          slivers: [
             SliverList(
               delegate: SliverChildBuilderDelegate(
-                (context, index) => _isFirstLoading
-                    ? LoadingStateWidget(hintText: S.of(context).notification)
-                    : EmptyListScreen(EmptyItemType.notification),
-                childCount: 1,
+                (context, index) => PlatformTextButton(
+                  onPressed: () async {
+                    await openCommunity(
+                      context,
+                      discuz,
+                      CommunitySection.friendRequests,
+                    );
+                    if (mounted) await _loadPage(discuz, user, refresh: true);
+                  },
+                  child: Text(S.of(context).friendRequests),
+                ),
+                childCount: _filter == _NoticeFilter.friend ? 1 : 0,
               ),
             ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) => DiscuzNotificationWidget(
-                discuz,
-                _noteList[index],
-                onSelectTid: widget.onSelectTid,
+            if (visibleNotes.isEmpty)
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => _isFirstLoading
+                      ? LoadingStateWidget(hintText: S.of(context).notification)
+                      : EmptyListScreen(EmptyItemType.notification),
+                  childCount: 1,
+                ),
               ),
-              childCount: _noteList.length,
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => DiscuzNotificationWidget(
+                  discuz,
+                  visibleNotes[index],
+                  onSelectTid: widget.onSelectTid,
+                  onOpenReply: (tid, pid) => pushDetailPage(
+                    context,
+                    platformPageRoute(
+                      context: context,
+                      builder: (_) => ViewThreadSliverPage(
+                        discuz,
+                        user,
+                        tid,
+                        initialPid: pid,
+                      ),
+                    ),
+                  ),
+                ),
+                childCount: visibleNotes.length,
+              ),
             ),
-          ),
-          const SliverSafeArea(
-            top: false,
-            left: false,
-            right: false,
-            sliver: SliverToBoxAdapter(),
-          ),
-        ],
-      ),
-    );
+            const SliverSafeArea(
+              top: false,
+              left: false,
+              right: false,
+              sliver: SliverToBoxAdapter(),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }

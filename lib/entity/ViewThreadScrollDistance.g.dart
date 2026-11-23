@@ -23,13 +23,16 @@ class ViewThreadScrollDistanceAdapter
       fields[4] as Discuz,
       fields[2] as DateTime,
       fields[3] as bool,
+      uid: (fields[5] as num?)?.toInt(),
+      pid: (fields[6] as num?)?.toInt(),
+      repliesAtRead: (fields[7] as num?)?.toInt(),
     );
   }
 
   @override
   void write(BinaryWriter writer, ViewThreadScrollDistance obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.tid)
       ..writeByte(1)
@@ -39,7 +42,13 @@ class ViewThreadScrollDistanceAdapter
       ..writeByte(3)
       ..write(obj.isAscend)
       ..writeByte(4)
-      ..write(obj.discuz);
+      ..write(obj.discuz)
+      ..writeByte(5)
+      ..write(obj.uid)
+      ..writeByte(6)
+      ..write(obj.pid)
+      ..writeByte(7)
+      ..write(obj.repliesAtRead);
   }
 
   @override

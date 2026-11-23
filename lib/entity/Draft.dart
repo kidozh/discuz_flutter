@@ -43,6 +43,9 @@ class Draft extends HiveObject {
   @HiveField(15, defaultValue: '')
   String rushJson = '';
 
+  @HiveField(16, defaultValue: '')
+  String extraThreadOptionsJson = '';
+
   @HiveField(7)
   String typeid;
 

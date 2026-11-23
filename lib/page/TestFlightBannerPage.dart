@@ -201,7 +201,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent> {
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 30),
-            if (widget.version == '2.0.22') ...[
+            if (widget.version == '2.0.23') ...[
               const _WelcomeWhatsNew(),
               const SizedBox(height: 16),
             ],
@@ -353,27 +353,30 @@ class _WelcomeWhatsNew extends StatelessWidget {
               ),
               for (final (icon, title, detail) in [
                 (
-                  icons.settings,
-                  s.welcomeNewComposerTitle,
-                  s.welcomeNewComposerDetail,
-                ),
-                (
-                  icons.pick(Icons.photo_outlined, CupertinoIcons.photo),
-                  s.welcomeNewPollTitle,
-                  s.welcomeNewPollDetail,
+                  icons.pick(Icons.history, CupertinoIcons.clock),
+                  s.savedSearches,
+                  s.welcomeSavedSearchesDetail,
                 ),
                 (
                   icons.pick(
-                    Icons.chat_bubble_outline,
-                    CupertinoIcons.bubble_left,
+                    Icons.filter_list,
+                    CupertinoIcons.line_horizontal_3_decrease,
                   ),
-                  s.welcomeNewReplyTitle,
-                  s.welcomeNewReplyDetail,
+                  s.forumContentFilters,
+                  s.welcomeContentFiltersDetail,
                 ),
                 (
-                  icons.chart,
-                  s.welcomeNewDebateTitle,
-                  s.welcomeNewDebateDetail,
+                  icons.pick(Icons.event_outlined, CupertinoIcons.calendar),
+                  s.forumMyActivities,
+                  s.welcomeMyActivitiesDetail,
+                ),
+                (
+                  icons.pick(
+                    Icons.download_for_offline_outlined,
+                    CupertinoIcons.arrow_down_circle,
+                  ),
+                  s.attachmentDownloadHistory,
+                  s.welcomeAttachmentDownloadsDetail,
                 ),
               ])
                 Row(

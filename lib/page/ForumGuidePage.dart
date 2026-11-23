@@ -1,3 +1,6 @@
+import '../client/forum_community.dart';
+import '../page/forum_community_page.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +11,7 @@ import '../entity/Discuz.dart';
 import '../entity/DiscuzError.dart';
 import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
+import '../utility/EasyRefreshUtils.dart';
 import '../utility/NetworkUtils.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
 import '../utility/forum_error.dart';
@@ -35,10 +39,11 @@ class _ForumGuidePageState extends State<ForumGuidePage> {
     load();
   }
 
-  Future<void> load() async {
+  Future<IndicatorResult> load() async {
     final account = context.read<DiscuzAndUserNotifier>();
     final session = account.sessionIdentity;
     final ticket = ++_generation;
+    final sameSession = identical(_session, session);
     _session = session;
     bool isCurrent() =>
         mounted &&
@@ -46,7 +51,7 @@ class _ForumGuidePageState extends State<ForumGuidePage> {
         identical(session, account.sessionIdentity);
     setState(() {
       error = null;
-      supported = null;
+      if (!sameSession) supported = null;
     });
     try {
       final client = widget.createClient != null
@@ -59,7 +64,9 @@ class _ForumGuidePageState extends State<ForumGuidePage> {
             );
       try {
         final tabs = await client.guideSections();
-        if (isCurrent()) setState(() => supported = tabs);
+        if (!isCurrent()) return IndicatorResult.fail;
+        setState(() => supported = tabs);
+        return IndicatorResult.success;
       } finally {
         if (widget.createClient == null) client.dio.close();
       }
@@ -67,6 +74,7 @@ class _ForumGuidePageState extends State<ForumGuidePage> {
       if (isCurrent()) {
         setState(() => error = forumRequestError(S.of(context), failure));
       }
+      return IndicatorResult.fail;
     }
   }
 
@@ -78,88 +86,79 @@ class _ForumGuidePageState extends State<ForumGuidePage> {
     final sections = ForumGuideSection.values.where(
       (section) => available?.contains(section.identifier) == true,
     );
+    final currentSession = identical(_session, account.sessionIdentity);
     return PlatformScaffold(
       iosContentPadding: true,
       appBar: PlatformAppBar(title: Text(strings.forumGuide)),
-      body: switch (error) {
-        _ when !identical(_session, account.sessionIdentity) => Center(
-          child: PlatformTextButton(
-            onPressed: load,
-            child: Text(strings.refresh),
-          ),
-        ),
-        final failure? => Column(
-          mainAxisSize: MainAxisSize.min,
+      body: EasyRefresh(
+        header: EasyRefreshUtils.i18nClassicHeader(context),
+        onRefresh: load,
+        child: ListView(
           children: [
-            ErrorCard(failure, load, largeSize: false),
-            PlatformTextButton(
-              child: Text(strings.navigateToWebPage),
-              onPressed: () => Navigator.push(
-                context,
-                platformPageRoute(
-                  context: context,
-                  builder: (_) => InternalWebviewBrowserPage(
-                    widget.discuz,
-                    account.userFor(widget.discuz),
-                    '${widget.discuz.getBaseURLWithAfterfix()}forum.php?mod=guide',
-                  ),
+            if (!currentSession)
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Center(child: Text(strings.forumAccountChanged)),
+              )
+            else ...[
+              if (error case final failure?)
+                ErrorCard(failure, load, largeSize: false)
+              else if (available == null)
+                const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Center(child: PlatformCircularProgressIndicator()),
+                )
+              else if (sections.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Center(child: Text(strings.forumApiUnavailable)),
                 ),
-              ),
-            ),
-          ],
-        ),
-        _ when available == null => const Center(
-          child: PlatformCircularProgressIndicator(),
-        ),
-        _ when sections.isEmpty => Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(strings.forumApiUnavailable),
-              PlatformTextButton(onPressed: load, child: Text(strings.refresh)),
-              PlatformTextButton(
-                child: Text(strings.navigateToWebPage),
-                onPressed: () => Navigator.push(
-                  context,
-                  platformPageRoute(
-                    context: context,
-                    builder: (_) => InternalWebviewBrowserPage(
-                      widget.discuz,
-                      account.userFor(widget.discuz),
-                      '${widget.discuz.getBaseURLWithAfterfix()}forum.php?mod=guide',
+              if (error != null || (available != null && sections.isEmpty))
+                Center(
+                  child: PlatformTextButton(
+                    child: Text(strings.navigateToWebPage),
+                    onPressed: () => Navigator.push(
+                      context,
+                      platformPageRoute(
+                        context: context,
+                        builder: (_) => InternalWebviewBrowserPage(
+                          widget.discuz,
+                          account.userFor(widget.discuz),
+                          '${widget.discuz.getBaseURLWithAfterfix()}forum.php?mod=guide',
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
-        _ => ListView(
-          children: [
-            for (final section in sections)
-              PlatformListTile(
-                title: Text(section.title(strings)),
-                trailing: Icon(
-                  PlatformIcons(
+              if (widget.createClient == null) ...[
+                ForumCommunityEntry(widget.discuz, CommunitySection.rankings),
+                ForumCommunityEntry(widget.discuz, CommunitySection.portal),
+              ],
+              for (final section in sections)
+                PlatformListTile(
+                  title: Text(section.title(strings)),
+                  trailing: Icon(
+                    PlatformIcons(
+                      context,
+                    ).pick(Icons.chevron_right, CupertinoIcons.chevron_forward),
+                  ),
+                  onTap: () => Navigator.push(
                     context,
-                  ).pick(Icons.chevron_right, CupertinoIcons.chevron_forward),
-                ),
-                onTap: () => Navigator.push(
-                  context,
-                  platformPageRoute(
-                    context: context,
-                    builder: (_) => ForumListsPage(
-                      discuz: widget.discuz,
-                      user: account.userFor(widget.discuz),
-                      guide: section,
-                      createClient: widget.createClient,
+                    platformPageRoute(
+                      context: context,
+                      builder: (_) => ForumListsPage(
+                        discuz: widget.discuz,
+                        user: account.userFor(widget.discuz),
+                        guide: section,
+                        createClient: widget.createClient,
+                      ),
                     ),
                   ),
                 ),
-              ),
+            ],
           ],
         ),
-      },
+      ),
     );
   }
 }

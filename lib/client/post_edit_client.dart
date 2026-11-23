@@ -5,6 +5,7 @@ import '../utility/PostTextFieldUtils.dart';
 import '../utility/post_editor_controller.dart';
 import 'ForumInteractionClient.dart';
 import 'discuz_web_client.dart';
+import 'thread_tags.dart';
 
 typedef PostEditField = ({String key, String value, bool toggle});
 typedef PostEditResult = ({bool moderated});
@@ -176,7 +177,7 @@ class PostEditClient {
         _ => <String>[],
       };
       final ranged = fields.containsKey('activitytime');
-      for (final name in names) {
+      for (final name in [...names, 'tags']) {
         if (name == 'starttimefrom[${ranged ? 0 : 1}]' ||
             (name == 'starttimeto' && !ranged))
           continue;
@@ -247,6 +248,13 @@ class PostEditClient {
         if (settings[setting.key] case final value? when value != setting.value)
           setting.key: value,
     };
+    if (patches['tags'] case final value?) {
+      final tags = forumThreadTags(value);
+      if (tags == null) {
+        throw const ForumApiException('thread_tags_invalid', '', fromForum: true);
+      }
+      patches['tags'] = tags;
+    }
     final edits = {...fresh.fields};
     for (final change in patches.entries) {
       if ({'visibilitypoll', 'overt'}.contains(change.key) &&
@@ -256,7 +264,9 @@ class PostEditClient {
         edits[change.key] = change.value;
       }
     }
-    if (fresh.special == 1 && patches.isEmpty) edits.remove('polls');
+    if (fresh.special == 1 && patches.keys.every((key) => key == 'tags')) {
+      edits.remove('polls');
+    }
     final message = stripAttachments(text, removeAttachments);
     edits.addAll({
       if (fresh.hasSubject) 'subject': subject.trim(),

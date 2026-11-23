@@ -32,11 +32,13 @@ import 'package:slide_countdown/slide_countdown.dart';
 
 import '../utility/URLUtils.dart';
 import '../utility/forum_image_session.dart';
+import '../utility/forum_attachment_history.dart';
 import '../utility/forum_image_url.dart';
 import '../utility/forum_voice.dart';
 import 'forum_attachment_download.dart';
 import 'forum_image.dart';
 import 'forum_voice_message.dart';
+import '../utility/material_surface_theme.dart';
 
 typedef void JumpToPidCallback(int pid);
 
@@ -46,6 +48,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
   Discuz discuz;
   JumpToPidCallback? callback;
   int? tid;
+  final int? pid;
   final ThreadSelectionCallback? onSelectTid;
   final Color? textColor;
   final EdgeInsetsGeometry padding;
@@ -64,6 +67,7 @@ class DiscuzHtmlWidget extends StatelessWidget {
     this.html, {
     this.callback,
     this.tid,
+    this.pid,
     this.onSelectTid,
     this.textColor,
     this.padding = const EdgeInsets.all(4),
@@ -89,8 +93,9 @@ class DiscuzHtmlWidget extends StatelessWidget {
         downloadAndOpenForumAttachment(
           context,
           target,
-          forum: baseUrl,
+          forum: discuz,
           session: imageSession,
+          reference: ForumAttachmentReference.fromUrl(target, tid: tid, pid: pid),
         );
       } else {
         URLUtils.openURL(
@@ -110,9 +115,10 @@ class DiscuzHtmlWidget extends StatelessWidget {
         final colorScheme = Theme.of(context).colorScheme;
         final darkMode = Theme.of(context).brightness == Brightness.dark;
         final effectiveTextColor = textColor ?? colorScheme.onSurface;
-        final linkColor = darkMode
-            ? Color.lerp(colorScheme.primary, colorScheme.onSurface, 0.65)!
-            : colorScheme.primary;
+        final linkColor = readableForumForeground(
+          colorScheme.primary,
+          inQuote ? colorScheme.surfaceContainerHighest : colorScheme.surface,
+        );
         String cssColor(Color color) =>
             color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2);
         double scalingParameter = typesetting.scalingParameter;

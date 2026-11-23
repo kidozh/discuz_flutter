@@ -55,6 +55,361 @@ class S {
     return Localizations.of<S>(context, S);
   }
 
+  /// `Replies`
+  String get noticeReplies {
+    return Intl.message('Replies', name: 'noticeReplies', desc: '', args: []);
+  }
+
+  /// `Mentions`
+  String get noticeMentions {
+    return Intl.message('Mentions', name: 'noticeMentions', desc: '', args: []);
+  }
+
+  /// `Comments`
+  String get noticeReviews {
+    return Intl.message('Comments', name: 'noticeReviews', desc: '', args: []);
+  }
+
+  /// `Ratings`
+  String get noticeRatings {
+    return Intl.message('Ratings', name: 'noticeRatings', desc: '', args: []);
+  }
+
+  /// `Activities`
+  String get noticeActivities {
+    return Intl.message(
+      'Activities',
+      name: 'noticeActivities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `System`
+  String get noticeSystem {
+    return Intl.message('System', name: 'noticeSystem', desc: '', args: []);
+  }
+
+  /// `Unread`
+  String get onlyUnreadMessages {
+    return Intl.message(
+      'Unread',
+      name: 'onlyUnreadMessages',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Message settings`
+  String get managePrivateMessages {
+    return Intl.message(
+      'Message settings',
+      name: 'managePrivateMessages',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage conversation on forum`
+  String get manageConversation {
+    return Intl.message(
+      'Manage conversation on forum',
+      name: 'manageConversation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Report message`
+  String get reportPrivateMessage {
+    return Intl.message(
+      'Report message',
+      name: 'reportPrivateMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add friend`
+  String get friendRequest {
+    return Intl.message(
+      'Add friend',
+      name: 'friendRequest',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Friend requests`
+  String get friendRequests {
+    return Intl.message(
+      'Friend requests',
+      name: 'friendRequests',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage friends`
+  String get friendManage {
+    return Intl.message(
+      'Manage friends',
+      name: 'friendManage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change group`
+  String get friendChangeGroup {
+    return Intl.message(
+      'Change group',
+      name: 'friendChangeGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit note`
+  String get friendEditNote {
+    return Intl.message(
+      'Edit note',
+      name: 'friendEditNote',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unlock board`
+  String get boardUnlock {
+    return Intl.message(
+      'Unlock board',
+      name: 'boardUnlock',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Board password`
+  String get boardPasswordInput {
+    return Intl.message(
+      'Board password',
+      name: 'boardPasswordInput',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter the password set by the forum.`
+  String get boardPasswordPrompt {
+    return Intl.message(
+      'Enter the password set by the forum.',
+      name: 'boardPasswordPrompt',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The board password is incorrect.`
+  String get boardPasswordWrong {
+    return Intl.message(
+      'The board password is incorrect.',
+      name: 'boardPasswordWrong',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Winning replies`
+  String get rushWinnerList {
+    return Intl.message(
+      'Winning replies',
+      name: 'rushWinnerList',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No winning replies yet`
+  String get rushNoWinners {
+    return Intl.message(
+      'No winning replies yet',
+      name: 'rushNoWinners',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create debate`
+  String get debateCreate {
+    return Intl.message(
+      'Create debate',
+      name: 'debateCreate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Judge`
+  String get debateJudge {
+    return Intl.message('Judge', name: 'debateJudge', desc: '', args: []);
+  }
+
+  /// `Neutral`
+  String get debateNeutral {
+    return Intl.message('Neutral', name: 'debateNeutral', desc: '', args: []);
+  }
+
+  /// `Support`
+  String get debateSupport {
+    return Intl.message('Support', name: 'debateSupport', desc: '', args: []);
+  }
+
+  /// `Reply as`
+  String get debateReplySide {
+    return Intl.message(
+      'Reply as',
+      name: 'debateReplySide',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Replies by side`
+  String get debateFilterReplies {
+    return Intl.message(
+      'Replies by side',
+      name: 'debateFilterReplies',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Submit your vote for this side?`
+  String get debateSupportConfirm {
+    return Intl.message(
+      'Submit your vote for this side?',
+      name: 'debateSupportConfirm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All`
+  String get forumAll {
+    return Intl.message('All', name: 'forumAll', desc: '', args: []);
+  }
+
+  /// `More posting options`
+  String get morePostSettings {
+    return Intl.message(
+      'More posting options',
+      name: 'morePostSettings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Notify me of replies`
+  String get postNotifyReplies {
+    return Intl.message(
+      'Notify me of replies',
+      name: 'postNotifyReplies',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Post anonymously`
+  String get postAnonymous {
+    return Intl.message(
+      'Post anonymously',
+      name: 'postAnonymous',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Minimum reading access`
+  String get postReadPermission {
+    return Intl.message(
+      'Minimum reading access',
+      name: 'postReadPermission',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Schedule publication`
+  String get postSchedule {
+    return Intl.message(
+      'Schedule publication',
+      name: 'postSchedule',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Publication time (YYYY-MM-DD HH:mm)`
+  String get postScheduleTime {
+    return Intl.message(
+      'Publication time (YYYY-MM-DD HH:mm)',
+      name: 'postScheduleTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `These posting options are no longer available or the values are invalid. Review the forum settings.`
+  String get postSettingsChanged {
+    return Intl.message(
+      'These posting options are no longer available or the values are invalid. Review the forum settings.',
+      name: 'postSettingsChanged',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Items for sale`
+  String get tradeItems {
+    return Intl.message(
+      'Items for sale',
+      name: 'tradeItems',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Stock`
+  String get tradeStock {
+    return Intl.message('Stock', name: 'tradeStock', desc: '', args: []);
+  }
+
+  /// `Availability`
+  String get tradeExpires {
+    return Intl.message(
+      'Availability',
+      name: 'tradeExpires',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Expired`
+  String get tradeExpired {
+    return Intl.message('Expired', name: 'tradeExpired', desc: '', args: []);
+  }
+
+  /// `View item on the forum`
+  String get tradeOpenItem {
+    return Intl.message(
+      'View item on the forum',
+      name: 'tradeOpenItem',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `DisFly`
   String get appName {
     return Intl.message('DisFly', name: 'appName', desc: '', args: []);
@@ -1160,6 +1515,16 @@ class S {
     );
   }
 
+  /// `The forum requires extra verification. Continue in the browser to sign in.`
+  String get loginBrowserVerificationRequired {
+    return Intl.message(
+      'The forum requires extra verification. Continue in the browser to sign in.',
+      name: 'loginBrowserVerificationRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Reload captcha`
   String get reloadCaptcha {
     return Intl.message(
@@ -1350,10 +1715,10 @@ class S {
     );
   }
 
-  /// `Time Filter`
+  /// `Recent activity`
   String get forumFilterTimeTitle {
     return Intl.message(
-      'Time Filter',
+      'Recent activity',
       name: 'forumFilterTimeTitle',
       desc: '',
       args: [],
@@ -2541,81 +2906,41 @@ class S {
     );
   }
 
-  /// `More ways to post`
-  String get welcomeNewComposerTitle {
+  /// `Save a preset and bring back its board, author, time and sorting.`
+  String get welcomeSavedSearchesDetail {
     return Intl.message(
-      'More ways to post',
-      name: 'welcomeNewComposerTitle',
+      'Save a preset and bring back its board, author, time and sorting.',
+      name: 'welcomeSavedSearchesDetail',
       desc: '',
       args: [],
     );
   }
 
-  /// `Use Post settings to add a picture poll, fill in a classified listing, or set up rush replies and reply rewards.`
-  String get welcomeNewComposerDetail {
+  /// `Mute a thread, or block a keyword across a forum or in a single board.`
+  String get welcomeContentFiltersDetail {
     return Intl.message(
-      'Use Post settings to add a picture poll, fill in a classified listing, or set up rush replies and reply rewards.',
-      name: 'welcomeNewComposerDetail',
+      'Mute a thread, or block a keyword across a forum or in a single board.',
+      name: 'welcomeContentFiltersDetail',
       desc: '',
       args: [],
     );
   }
 
-  /// `Images stay with your poll draft`
-  String get welcomeNewPollTitle {
+  /// `Find activities you organized or signed up for in the menu.`
+  String get welcomeMyActivitiesDetail {
     return Intl.message(
-      'Images stay with your poll draft',
-      name: 'welcomeNewPollTitle',
+      'Find activities you organized or signed up for in the menu.',
+      name: 'welcomeMyActivitiesDetail',
       desc: '',
       args: [],
     );
   }
 
-  /// `Resume a draft with its option images, and tap a picture in a published poll to view the original.`
-  String get welcomeNewPollDetail {
+  /// `Open downloaded files, retry failed downloads or return to the original reply.`
+  String get welcomeAttachmentDownloadsDetail {
     return Intl.message(
-      'Resume a draft with its option images, and tap a picture in a published poll to view the original.',
-      name: 'welcomeNewPollDetail',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Find your reply right away`
-  String get welcomeNewReplyTitle {
-    return Intl.message(
-      'Find your reply right away',
-      name: 'welcomeNewReplyTitle',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Jump to your new reply after sending. Type @ to pick a forum friend in a topic or reply.`
-  String get welcomeNewReplyDetail {
-    return Intl.message(
-      'Jump to your new reply after sending. Type @ to pick a forum friend in a topic or reply.',
-      name: 'welcomeNewReplyDetail',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Debate details at a glance`
-  String get welcomeNewDebateTitle {
-    return Intl.message(
-      'Debate details at a glance',
-      name: 'welcomeNewDebateTitle',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `See each side’s argument and vote count together.`
-  String get welcomeNewDebateDetail {
-    return Intl.message(
-      'See each side’s argument and vote count together.',
-      name: 'welcomeNewDebateDetail',
+      'Open downloaded files, retry failed downloads or return to the original reply.',
+      name: 'welcomeAttachmentDownloadsDetail',
       desc: '',
       args: [],
     );
@@ -4224,6 +4549,16 @@ class S {
   /// `Submit vote`
   String get pollSubmit {
     return Intl.message('Submit vote', name: 'pollSubmit', desc: '', args: []);
+  }
+
+  /// `Poll closed`
+  String get pollFinished {
+    return Intl.message(
+      'Poll closed',
+      name: 'pollFinished',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Vote submitted`
@@ -10570,6 +10905,1198 @@ class S {
       name: 'searchLoadedResults',
       desc: '',
       args: [count],
+    );
+  }
+
+  /// `All favorites`
+  String get favoriteAllThreads {
+    return Intl.message(
+      'All favorites',
+      name: 'favoriteAllThreads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Updated`
+  String get favoriteHasUpdates {
+    return Intl.message(
+      'Updated',
+      name: 'favoriteHasUpdates',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No new replies in favorites`
+  String get favoriteNoUpdates {
+    return Intl.message(
+      'No new replies in favorites',
+      name: 'favoriteNoUpdates',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Continue reading`
+  String get favoriteContinueReading {
+    return Intl.message(
+      'Continue reading',
+      name: 'favoriteContinueReading',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Latest reply`
+  String get favoriteLatestReply {
+    return Intl.message(
+      'Latest reply',
+      name: 'favoriteLatestReply',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Thread attachments`
+  String get threadAttachments {
+    return Intl.message(
+      'Thread attachments',
+      name: 'threadAttachments',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Load more attachments`
+  String get threadLoadMoreAttachments {
+    return Intl.message(
+      'Load more attachments',
+      name: 'threadLoadMoreAttachments',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No attachments available in this thread`
+  String get threadNoAttachments {
+    return Intl.message(
+      'No attachments available in this thread',
+      name: 'threadNoAttachments',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Jump to post`
+  String get threadJumpToAttachmentPost {
+    return Intl.message(
+      'Jump to post',
+      name: 'threadJumpToAttachmentPost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The forum returned an incomplete favorites list. Pull to retry.`
+  String get favoriteSyncIncomplete {
+    return Intl.message(
+      'The forum returned an incomplete favorites list. Pull to retry.',
+      name: 'favoriteSyncIncomplete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reward status`
+  String get forumRewardStatus {
+    return Intl.message(
+      'Reward status',
+      name: 'forumRewardStatus',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Solved`
+  String get forumRewardSolved {
+    return Intl.message(
+      'Solved',
+      name: 'forumRewardSolved',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unsolved`
+  String get forumRewardUnsolved {
+    return Intl.message(
+      'Unsolved',
+      name: 'forumRewardUnsolved',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My content`
+  String get myContentTitle {
+    return Intl.message(
+      'My content',
+      name: 'myContentTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Comments`
+  String get myContentComments {
+    return Intl.message(
+      'Comments',
+      name: 'myContentComments',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Thread status`
+  String get myContentStatus {
+    return Intl.message(
+      'Thread status',
+      name: 'myContentStatus',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Status: {status}`
+  String myContentStatusValue(String status) {
+    return Intl.message(
+      'Status: $status',
+      name: 'myContentStatusValue',
+      desc: '',
+      args: [status],
+    );
+  }
+
+  /// `Published`
+  String get myContentPublished {
+    return Intl.message(
+      'Published',
+      name: 'myContentPublished',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pending approval`
+  String get myContentPending {
+    return Intl.message(
+      'Pending approval',
+      name: 'myContentPending',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Closed`
+  String get myContentClosed {
+    return Intl.message('Closed', name: 'myContentClosed', desc: '', args: []);
+  }
+
+  /// `Forum drafts`
+  String get myContentServerDrafts {
+    return Intl.message(
+      'Forum drafts',
+      name: 'myContentServerDrafts',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This forum has not enabled the My content API.`
+  String get myContentUnavailable {
+    return Intl.message(
+      'This forum has not enabled the My content API.',
+      name: 'myContentUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage multiple threads`
+  String get batchModeration {
+    return Intl.message(
+      'Manage multiple threads',
+      name: 'batchModeration',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count} selected`
+  String modSelected(int count) {
+    return Intl.message(
+      '$count selected',
+      name: 'modSelected',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count} selected, up to {limit}`
+  String modSelectionLimit(int count, int limit) {
+    return Intl.message(
+      '$count selected, up to $limit',
+      name: 'modSelectionLimit',
+      desc: '',
+      args: [count, limit],
+    );
+  }
+
+  /// `Change thread category`
+  String get modChangeType {
+    return Intl.message(
+      'Change thread category',
+      name: 'modChangeType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Action`
+  String get modAction {
+    return Intl.message('Action', name: 'modAction', desc: '', args: []);
+  }
+
+  /// `Mark all as read`
+  String get markPrivateMessagesRead {
+    return Intl.message(
+      'Mark all as read',
+      name: 'markPrivateMessagesRead',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ignore list and messaging settings`
+  String get privateMessageIgnoreList {
+    return Intl.message(
+      'Ignore list and messaging settings',
+      name: 'privateMessageIgnoreList',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete conversation`
+  String get deletePrivateConversation {
+    return Intl.message(
+      'Delete conversation',
+      name: 'deletePrivateConversation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete your message history for this conversation?`
+  String get deletePrivateConversationConfirm {
+    return Intl.message(
+      'Delete your message history for this conversation?',
+      name: 'deletePrivateConversationConfirm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The forum could not complete the action. Refresh to check the conversation.`
+  String get privateMessageActionFailed {
+    return Intl.message(
+      'The forum could not complete the action. Refresh to check the conversation.',
+      name: 'privateMessageActionFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Thread collections`
+  String get forumCollections {
+    return Intl.message(
+      'Thread collections',
+      name: 'forumCollections',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My collections`
+  String get myForumCollections {
+    return Intl.message(
+      'My collections',
+      name: 'myForumCollections',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Browse collections`
+  String get browseForumCollections {
+    return Intl.message(
+      'Browse collections',
+      name: 'browseForumCollections',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create a collection`
+  String get createForumCollection {
+    return Intl.message(
+      'Create a collection',
+      name: 'createForumCollection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add to collection`
+  String get addToForumCollection {
+    return Intl.message(
+      'Add to collection',
+      name: 'addToForumCollection',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Forum tasks`
+  String get forumTasks {
+    return Intl.message('Forum tasks', name: 'forumTasks', desc: '', args: []);
+  }
+
+  /// `Available`
+  String get forumTasksAvailable {
+    return Intl.message(
+      'Available',
+      name: 'forumTasksAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `In progress`
+  String get forumTasksInProgress {
+    return Intl.message(
+      'In progress',
+      name: 'forumTasksInProgress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Completed`
+  String get forumTasksCompleted {
+    return Intl.message(
+      'Completed',
+      name: 'forumTasksCompleted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Forum medals`
+  String get forumMedals {
+    return Intl.message(
+      'Forum medals',
+      name: 'forumMedals',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Moderation center`
+  String get forumModerationCenter {
+    return Intl.message(
+      'Moderation center',
+      name: 'forumModerationCenter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Threads awaiting approval`
+  String get forumModerationThreads {
+    return Intl.message(
+      'Threads awaiting approval',
+      name: 'forumModerationThreads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Replies awaiting approval`
+  String get forumModerationReplies {
+    return Intl.message(
+      'Replies awaiting approval',
+      name: 'forumModerationReplies',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reported content`
+  String get forumModerationReports {
+    return Intl.message(
+      'Reported content',
+      name: 'forumModerationReports',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Thread recycle bin`
+  String get forumModerationRecycleBin {
+    return Intl.message(
+      'Thread recycle bin',
+      name: 'forumModerationRecycleBin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View voters`
+  String get pollVoterList {
+    return Intl.message(
+      'View voters',
+      name: 'pollVoterList',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The forum has not made the voter list available for this option.`
+  String get pollVotersUnavailable {
+    return Intl.message(
+      'The forum has not made the voter list available for this option.',
+      name: 'pollVotersUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pricing`
+  String get paidPostSettings {
+    return Intl.message(
+      'Pricing',
+      name: 'paidPostSettings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Thread price`
+  String get paidThreadPrice {
+    return Intl.message(
+      'Thread price',
+      name: 'paidThreadPrice',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Attachment price`
+  String get paidPostFilePrice {
+    return Intl.message(
+      'Attachment price',
+      name: 'paidPostFilePrice',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Maximum {maximum}. Leave blank or enter 0 to make it free.`
+  String paidPostRange(String maximum) {
+    return Intl.message(
+      'Maximum $maximum. Leave blank or enter 0 to make it free.',
+      name: 'paidPostRange',
+      desc: '',
+      args: [maximum],
+    );
+  }
+
+  /// `Estimated proceeds per purchase {amount}`
+  String paidPostIncome(String amount) {
+    return Intl.message(
+      'Estimated proceeds per purchase $amount',
+      name: 'paidPostIncome',
+      desc: '',
+      args: [amount],
+    );
+  }
+
+  /// `Enter whole numbers within the limit. A paid thread must earn credits after fees.`
+  String get paidPostInvalid {
+    return Intl.message(
+      'Enter whole numbers within the limit. A paid thread must earn credits after fees.',
+      name: 'paidPostInvalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pricing is unavailable for this board.`
+  String get paidPostUnavailable {
+    return Intl.message(
+      'Pricing is unavailable for this board.',
+      name: 'paidPostUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Clear pricing`
+  String get paidPostClear {
+    return Intl.message(
+      'Clear pricing',
+      name: 'paidPostClear',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Switch back to a regular thread or clear pricing in post settings.`
+  String get paidPostNeedsOrdinaryThread {
+    return Intl.message(
+      'Switch back to a regular thread or clear pricing in post settings.',
+      name: 'paidPostNeedsOrdinaryThread',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The forum pricing rules changed. Review the pricing settings again.`
+  String get paidPostRulesChanged {
+    return Intl.message(
+      'The forum pricing rules changed. Review the pricing settings again.',
+      name: 'paidPostRulesChanged',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My choice`
+  String get pollOwnVoteOption {
+    return Intl.message(
+      'My choice',
+      name: 'pollOwnVoteOption',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Vote submitted. The choices could not be saved on this device.`
+  String get pollVoteDeviceSaveFailed {
+    return Intl.message(
+      'Vote submitted. The choices could not be saved on this device.',
+      name: 'pollVoteDeviceSaveFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count, plural, one {1 voter} other {{count} voters}}`
+  String pollParticipantCount(int count) {
+    return Intl.plural(
+      count,
+      one: '1 voter',
+      other: '$count voters',
+      name: 'pollParticipantCount',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Forum announcements`
+  String get forumAnnouncements {
+    return Intl.message(
+      'Forum announcements',
+      name: 'forumAnnouncements',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The forum has no available announcements.`
+  String get forumAnnouncementsUnavailable {
+    return Intl.message(
+      'The forum has no available announcements.',
+      name: 'forumAnnouncementsUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Thread tags`
+  String get forumThreadTags {
+    return Intl.message(
+      'Thread tags',
+      name: 'forumThreadTags',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tags (comma-separated, up to 5)`
+  String get forumThreadTagsHint {
+    return Intl.message(
+      'Tags (comma-separated, up to 5)',
+      name: 'forumThreadTagsHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tags for this thread are unavailable.`
+  String get threadTagsUnavailable {
+    return Intl.message(
+      'Tags for this thread are unavailable.',
+      name: 'threadTagsUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Use up to 5 tags that meet the forum length and character rules.`
+  String get threadTagsInvalid {
+    return Intl.message(
+      'Use up to 5 tags that meet the forum length and character rules.',
+      name: 'threadTagsInvalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Thread moderation history`
+  String get threadModerationHistory {
+    return Intl.message(
+      'Thread moderation history',
+      name: 'threadModerationHistory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Thread purchase history`
+  String get threadBuyerHistory {
+    return Intl.message(
+      'Thread purchase history',
+      name: 'threadBuyerHistory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Groups`
+  String get communityGroups {
+    return Intl.message('Groups', name: 'communityGroups', desc: '', args: []);
+  }
+
+  /// `Joined groups`
+  String get communityJoinedGroups {
+    return Intl.message(
+      'Joined groups',
+      name: 'communityJoinedGroups',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Managed groups`
+  String get communityManagedGroups {
+    return Intl.message(
+      'Managed groups',
+      name: 'communityManagedGroups',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search groups`
+  String get communityGroupSearch {
+    return Intl.message(
+      'Search groups',
+      name: 'communityGroupSearch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group discussions`
+  String get communityGroupThreads {
+    return Intl.message(
+      'Group discussions',
+      name: 'communityGroupThreads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Members`
+  String get communityMembers {
+    return Intl.message(
+      'Members',
+      name: 'communityMembers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Membership requests`
+  String get communityGroupRequests {
+    return Intl.message(
+      'Membership requests',
+      name: 'communityGroupRequests',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group settings`
+  String get communityManageGroup {
+    return Intl.message(
+      'Group settings',
+      name: 'communityManageGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create a group`
+  String get communityCreateGroup {
+    return Intl.message(
+      'Create a group',
+      name: 'communityCreateGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Join group`
+  String get communityJoinGroup {
+    return Intl.message(
+      'Join group',
+      name: 'communityJoinGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Leave group`
+  String get communityLeaveGroup {
+    return Intl.message(
+      'Leave group',
+      name: 'communityLeaveGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Following feed`
+  String get communityFollowingFeed {
+    return Intl.message(
+      'Following feed',
+      name: 'communityFollowingFeed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Following`
+  String get communityFollowing {
+    return Intl.message(
+      'Following',
+      name: 'communityFollowing',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Followers`
+  String get communityFollowers {
+    return Intl.message(
+      'Followers',
+      name: 'communityFollowers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Follow`
+  String get communityFollowUser {
+    return Intl.message(
+      'Follow',
+      name: 'communityFollowUser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unfollow`
+  String get communityUnfollowUser {
+    return Intl.message(
+      'Unfollow',
+      name: 'communityUnfollowUser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Find users`
+  String get communityFindUsers {
+    return Intl.message(
+      'Find users',
+      name: 'communityFindUsers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request sent`
+  String get communityFriendSent {
+    return Intl.message(
+      'Request sent',
+      name: 'communityFriendSent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Accept`
+  String get communityAccept {
+    return Intl.message('Accept', name: 'communityAccept', desc: '', args: []);
+  }
+
+  /// `Ignore`
+  String get communityIgnore {
+    return Intl.message('Ignore', name: 'communityIgnore', desc: '', args: []);
+  }
+
+  /// `My medal history`
+  String get communityMyMedals {
+    return Intl.message(
+      'My medal history',
+      name: 'communityMyMedals',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rankings`
+  String get communityRankings {
+    return Intl.message(
+      'Rankings',
+      name: 'communityRankings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Portal articles`
+  String get communityPortal {
+    return Intl.message(
+      'Portal articles',
+      name: 'communityPortal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Copy RSS feed link`
+  String get communityRss {
+    return Intl.message(
+      'Copy RSS feed link',
+      name: 'communityRss',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `RSS feed link copied`
+  String get communityRssCopied {
+    return Intl.message(
+      'RSS feed link copied',
+      name: 'communityRssCopied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Only show original poster`
+  String get communityOnlyThreadAuthor {
+    return Intl.message(
+      'Only show original poster',
+      name: 'communityOnlyThreadAuthor',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Only show this author`
+  String get communityOnlyThisAuthor {
+    return Intl.message(
+      'Only show this author',
+      name: 'communityOnlyThisAuthor',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search history and presets`
+  String get savedSearches {
+    return Intl.message(
+      'Search history and presets',
+      name: 'savedSearches',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Presets`
+  String get searchPresets {
+    return Intl.message('Presets', name: 'searchPresets', desc: '', args: []);
+  }
+
+  /// `Recent searches`
+  String get searchHistory {
+    return Intl.message(
+      'Recent searches',
+      name: 'searchHistory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Clear search history`
+  String get clearSearchHistory {
+    return Intl.message(
+      'Clear search history',
+      name: 'clearSearchHistory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No search presets`
+  String get noSearchPresets {
+    return Intl.message(
+      'No search presets',
+      name: 'noSearchPresets',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No recent searches`
+  String get noSearchHistory {
+    return Intl.message(
+      'No recent searches',
+      name: 'noSearchHistory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save current search as a preset`
+  String get saveSearchPreset {
+    return Intl.message(
+      'Save current search as a preset',
+      name: 'saveSearchPreset',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Preset name`
+  String get searchPresetName {
+    return Intl.message(
+      'Preset name',
+      name: 'searchPresetName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove`
+  String get removeLocalRecord {
+    return Intl.message(
+      'Remove',
+      name: 'removeLocalRecord',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not save on this device`
+  String get forumLocalSaveFailed {
+    return Intl.message(
+      'Could not save on this device',
+      name: 'forumLocalSaveFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Content filters`
+  String get forumContentFilters {
+    return Intl.message(
+      'Content filters',
+      name: 'forumContentFilters',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Blocked keywords`
+  String get forumBlockedKeywords {
+    return Intl.message(
+      'Blocked keywords',
+      name: 'forumBlockedKeywords',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add blocked keyword`
+  String get forumAddBlockedKeyword {
+    return Intl.message(
+      'Add blocked keyword',
+      name: 'forumAddBlockedKeyword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Muted threads`
+  String get forumMutedThreads {
+    return Intl.message(
+      'Muted threads',
+      name: 'forumMutedThreads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No muted threads`
+  String get forumNoMutedThreads {
+    return Intl.message(
+      'No muted threads',
+      name: 'forumNoMutedThreads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mute thread`
+  String get forumMuteThread {
+    return Intl.message(
+      'Mute thread',
+      name: 'forumMuteThread',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unmute`
+  String get forumUnmuteThread {
+    return Intl.message(
+      'Unmute',
+      name: 'forumUnmuteThread',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My activities`
+  String get forumMyActivities {
+    return Intl.message(
+      'My activities',
+      name: 'forumMyActivities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Organized`
+  String get forumActivitiesOrganized {
+    return Intl.message(
+      'Organized',
+      name: 'forumActivitiesOrganized',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Signed up`
+  String get forumActivitiesJoined {
+    return Intl.message(
+      'Signed up',
+      name: 'forumActivitiesJoined',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Attachment downloads`
+  String get attachmentDownloadHistory {
+    return Intl.message(
+      'Attachment downloads',
+      name: 'attachmentDownloadHistory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No attachment downloads`
+  String get noAttachmentDownloads {
+    return Intl.message(
+      'No attachment downloads',
+      name: 'noAttachmentDownloads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Downloaded`
+  String get attachmentDownloadComplete {
+    return Intl.message(
+      'Downloaded',
+      name: 'attachmentDownloadComplete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `File is missing. Download it again.`
+  String get attachmentLocalFileMissing {
+    return Intl.message(
+      'File is missing. Download it again.',
+      name: 'attachmentLocalFileMissing',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save`
+  String get saveLocalRecord {
+    return Intl.message('Save', name: 'saveLocalRecord', desc: '', args: []);
+  }
+
+  /// `Could not open the file`
+  String get downloadedFileOpenFailed {
+    return Intl.message(
+      'Could not open the file',
+      name: 'downloadedFileOpenFailed',
+      desc: '',
+      args: [],
     );
   }
 }

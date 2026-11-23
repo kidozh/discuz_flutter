@@ -16,6 +16,7 @@ class ReplyBenefitsCard extends StatelessWidget {
     required this.rush,
     required this.closed,
     this.creditName,
+    this.onOpenWinners,
   });
 
   final int pool;
@@ -23,6 +24,7 @@ class ReplyBenefitsCard extends StatelessWidget {
   final RushReplyInfo? rush;
   final bool closed;
   final String? creditName;
+  final VoidCallback? onOpenWinners;
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +78,11 @@ class ReplyBenefitsCard extends StatelessWidget {
                 ),
             ],
             if (event != null) _RushRules(event: event, closed: closed),
+            if (event != null && onOpenWinners != null)
+              PlatformTextButton(
+                onPressed: onOpenWinners,
+                child: Text(strings.rushWinnerList),
+              ),
           ],
         ),
       ),

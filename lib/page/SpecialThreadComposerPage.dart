@@ -171,7 +171,11 @@ class _SpecialThreadComposerState extends State<SpecialThreadComposerPage> {
         ? null
         : controller('rewardprice', initial: '${reward.minimum}');
     return PostSettingsSheet(
-      title: reward == null ? strings.createActivity : strings.createReward,
+      title: switch (widget.kind) {
+        SpecialThreadKind.activity => strings.createActivity,
+        SpecialThreadKind.reward => strings.createReward,
+        SpecialThreadKind.debate => strings.debateCreate,
+      },
       hasSave: true,
       onSave: save,
       children: [
@@ -191,6 +195,13 @@ class _SpecialThreadComposerState extends State<SpecialThreadComposerPage> {
                   : const SizedBox.shrink();
             },
           ),
+        ] else if (widget.kind == SpecialThreadKind.debate) ...[
+          field('affirmpoint', strings.debateAffirm, lines: 3),
+          field('negapoint', strings.debateAgainst, lines: 3),
+          if (widget.form.debateFields.contains('endtime'))
+            dateField('endtime', strings.activityEndsAt),
+          if (widget.form.debateFields.contains('umpire'))
+            field('umpire', strings.debateJudge),
         ] else ...[
           dateField('starttime', strings.activityStartsAt),
           dateField('starttimeto', strings.activityEndsAt),

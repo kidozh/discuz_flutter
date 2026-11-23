@@ -20,6 +20,26 @@ String searchForm({bool fullText = true}) =>
 <select name="orderby" disabled><option value="price">Price</option></select></form>''';
 
 void main() {
+  test('profile accepts indexed or empty extension credits', () {
+    final withoutCredits = UserProfileVariables.fromJson({
+      'space': {'username': 'Reader'},
+      'extcredits': [
+        {'img': ''},
+      ],
+    });
+    expect(withoutCredits.getSpace().username, 'Reader');
+    expect(withoutCredits.extendCreditMap, isEmpty);
+
+    final indexedCredits = UserProfileVariables.fromJson({
+      'extcredits': [
+        null,
+        {'title': 'Coins', 'ratio': 2},
+      ],
+    });
+    expect(indexedCredits.extendCreditMap['1']?.title, 'Coins');
+    expect(indexedCredits.extendCreditMap['1']?.ratio, '2');
+  });
+
   test(
     'advanced search checks the form and sends all selected conditions once',
     () async {

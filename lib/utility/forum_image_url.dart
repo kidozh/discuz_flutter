@@ -39,3 +39,25 @@ bool isForumAttachmentUrl(Uri uri) {
     return false;
   }
 }
+
+/// Resolve the server's attachment directory or a URL for the file itself.
+Uri? resolveForumAttachmentUri(Uri? forum, String path, String url) {
+  final supplied = resolveForumImageUri(forum, url);
+  final reference = Uri.tryParse(path.trim());
+  final filename = reference?.pathSegments.lastOrNull;
+  if (supplied != null &&
+      (path.trim().isEmpty ||
+          isForumAttachmentUrl(supplied) ||
+          (filename != null && filename == supplied.pathSegments.lastOrNull))) {
+    return supplied;
+  }
+  if (reference != null &&
+      (reference.hasAuthority || isForumAttachmentUrl(reference))) {
+    return resolveForumImageUri(forum, path);
+  }
+  final base = supplied ?? forum;
+  final directory = base == null || base.path.endsWith('/')
+      ? base
+      : base.replace(path: '${base.path}/');
+  return resolveForumImageUri(directory, path);
+}

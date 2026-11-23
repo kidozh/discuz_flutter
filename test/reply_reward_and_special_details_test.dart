@@ -1,9 +1,31 @@
+import 'package:discuz_flutter/entity/SpecialThread.dart';
 import 'package:discuz_flutter/client/reply_reward_form.dart';
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/parser.dart';
 
 void main() {
+  test('debate settings label a known reply without assigning a side to unrelated replies', () {
+    final debate = DebateInfo.parse({
+      'affirmavatars': {
+        '7': {'pid': '20', 'authorid': '7'},
+      },
+      'negaavatars': {
+        '8': {'pid': '21', 'authorid': '8'},
+      },
+      'affirmvoterids': '7\t',
+    }, viewer: 7)!;
+    expect(debate.sideForAuthor(7), DebateSide.affirm);
+    expect(debate.sideForPost(20), DebateSide.affirm);
+    expect(debate.sideForPost(21), DebateSide.against);
+    expect(debate.sideForPost(19), isNull);
+    expect(debate.voted, isTrue);
+    expect(
+      DebateInfo.parse(debate.toJson())?.sideForPost(21),
+      DebateSide.against,
+    );
+  });
+
   const html =
       '<form id="postform"><input name="formhash" value="current"><label>Each<input name="replycredit_extcredits"> 金钱</label><input name="replycredit_times"><select name="replycredit_membertimes"><option value="1">1</option></select><select name="replycredit_random"><option value="100">100</option></select></form><script>var creditstax = 0.2; var userextcredit = 8;</script>';
   test(

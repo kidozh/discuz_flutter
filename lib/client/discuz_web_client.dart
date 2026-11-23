@@ -77,7 +77,10 @@ class DiscuzWebClient {
       final destination =
           siteLink(target, location, 'search.php') ??
           siteLink(target, location, 'forum.php') ??
-          siteLink(target, location, 'home.php');
+          siteLink(target, location, 'home.php') ??
+          siteLink(target, location, 'group.php') ??
+          siteLink(target, location, 'misc.php') ??
+          siteLink(target, location, 'portal.php');
       if (destination == null ||
           (data != null && !{301, 302, 303}.contains(response.statusCode))) {
         throw const ForumApiException(

@@ -34,13 +34,14 @@ class DraftAdapter extends TypeAdapter<Draft> {
       ..pendingAttachmentsJson = fields[12] == null ? '' : fields[12] as String
       ..replyRewardJson = fields[13] == null ? '' : fields[13] as String
       ..classifiedJson = fields[14] == null ? '' : fields[14] as String
-      ..rushJson = fields[15] == null ? '' : fields[15] as String;
+      ..rushJson = fields[15] == null ? '' : fields[15] as String
+      ..extraThreadOptionsJson = fields[16] == null ? '' : fields[16] as String;
   }
 
   @override
   void write(BinaryWriter writer, Draft obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(16)
       ..writeByte(1)
       ..write(obj.title)
       ..writeByte(2)
@@ -70,7 +71,9 @@ class DraftAdapter extends TypeAdapter<Draft> {
       ..writeByte(14)
       ..write(obj.classifiedJson)
       ..writeByte(15)
-      ..write(obj.rushJson);
+      ..write(obj.rushJson)
+      ..writeByte(16)
+      ..write(obj.extraThreadOptionsJson);
   }
 
   @override

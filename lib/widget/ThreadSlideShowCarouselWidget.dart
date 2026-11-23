@@ -1,4 +1,8 @@
+import '../utility/forum_feed_filters.dart';
+import '../utility/post_locator.dart';
+
 import 'package:discuz_flutter/utility/pane_navigation.dart';
+
 import '../provider/UserPreferenceNotifierProvider.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -139,21 +143,32 @@ class _ThreadSlideShowCarouselState
             // server doesn't have another site support
             return Container();
           } else {
-            if (keylolCarouselItemList.isEmpty && !isLoading) {
-              return const SizedBox.shrink();
-            }
-            return Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: ThreadCarouselLayout(
-                itemCount: keylolCarouselItemList.length,
-                itemBuilder: (context, index) => isLoading
-                    ? subscriptionSlide
-                    : getSlideShowItemWidget(index),
-                compact: compact,
-                isLoading: isLoading,
-                autoPlay: _imagesReady,
-              ),
-            );
+            return withForumFeedFilters(value.discuz!, value.user, (
+              context,
+              rules,
+            ) {
+              final slides = keylolCarouselItemList.where((item) {
+                final tid = item.tid > 0
+                    ? item.tid
+                    : PostLinkTarget.parse(uri.resolve(item.link))?.tid;
+                return !hidesForumThread(rules, tid ?? 0, item.title);
+              }).toList();
+              if (slides.isEmpty && !isLoading) {
+                return const SizedBox.shrink();
+              }
+              return Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: ThreadCarouselLayout(
+                  itemCount: slides.length,
+                  itemBuilder: (context, index) => isLoading
+                      ? subscriptionSlide
+                      : getSlideShowItemWidget(slides[index]),
+                  compact: compact,
+                  isLoading: isLoading,
+                  autoPlay: _imagesReady,
+                ),
+              );
+            });
           }
         }
       },
@@ -202,9 +217,7 @@ class _ThreadSlideShowCarouselState
     ),
   );
 
-  Widget getSlideShowItemWidget(int itemIndex) {
-    KeylolCarouselItem slideShow = keylolCarouselItemList[itemIndex];
-
+  Widget getSlideShowItemWidget(KeylolCarouselItem slideShow) {
     return ThreadCarouselCard(
       image: _imageProvider(slideShow.imageSource),
       forum: slideShow.forum,

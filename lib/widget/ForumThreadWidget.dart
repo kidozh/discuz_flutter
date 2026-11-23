@@ -32,6 +32,7 @@ import 'package:provider/provider.dart';
 import '../entity/ViewHistory.dart';
 import '../page/ViewThreadSliverPage.dart';
 import 'forum_image.dart';
+import 'thread_attachment_preview.dart';
 
 class ForumThreadWidget extends StatelessWidget {
   final ForumThread _forumThread;
@@ -246,12 +247,10 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
   Widget getAttachmentPreviewWidget(AttachmentPreview attachmentPreview) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8.0),
-      child: ForumImage(
+      child: ThreadAttachmentPreview(
         forum: _discuz,
         threadId: _forumThread.getTid(),
-        fit: BoxFit.cover,
-        url:
-            "${_discuz.getBaseURLWithAfterfix()}data/attachment/forum/${attachmentPreview.attachment}",
+        attachment: attachmentPreview,
         loading: (context, progress) => Container(
           color: Theme.of(context).colorScheme.secondaryContainer,
           child: PlatformCircularProgressIndicator(
@@ -301,7 +300,11 @@ class ForumThreadState extends State<ForumThreadStatefulWidget> {
         .forumDisplay
         .showThreadStats;
     final message = forumThreadPreview(_forumThread.message);
-    final attachments = _forumThread.attachmentImagePreviewList;
+    final attachments =
+        restricted ||
+            (_forumThread.getPrice() > 0 && _forumThread.special == '0')
+        ? const <AttachmentPreview>[]
+        : _forumThread.attachmentImagePreviewList;
     final reply = _forumThread.reply
         .map(
           (reply) => (reply.author.trim(), forumThreadPreview(reply.message)),

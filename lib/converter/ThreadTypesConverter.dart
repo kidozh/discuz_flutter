@@ -1,29 +1,15 @@
-
 import 'package:json_annotation/json_annotation.dart';
 
-class ThreadTypeConverter implements JsonConverter<Map<String,String>, Object?> {
+import '../utility/discuz_json.dart';
+
+class ThreadTypeConverter
+    implements JsonConverter<Map<String, String>, Object?> {
   const ThreadTypeConverter();
 
   @override
-  Map<String,String> fromJson(Object? json) {
-    if(json is Map<String, dynamic>){
-      Map<String, String> stringMap = {};
-
-      for(String key in json.keys){
-        stringMap[key] = json[key].toString();
-      }
-      return stringMap;
-
-    }
-
-    return {};
-
-  }
+  Map<String, String> fromJson(Object? json) =>
+      discuzMap(json).map((id, name) => MapEntry(id, discuzString(name)));
 
   @override
-  Object toJson(Map<String,String> object) {
-    return object.toString();
-  }
-
-  
+  Object toJson(Map<String, String> object) => object;
 }

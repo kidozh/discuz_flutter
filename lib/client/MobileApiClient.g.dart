@@ -530,9 +530,18 @@ class _MobileApiClient implements MobileApiClient {
   }
 
   @override
-  Future<UserDiscuzNotificationResult> userNotificationResult(int page) async {
+  Future<UserDiscuzNotificationResult> userNotificationResult(
+    int page, {
+    String? view,
+    String? type,
+  }) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'page': page};
+    final queryParameters = <String, dynamic>{
+      r'page': page,
+      r'view': view,
+      r'type': type,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<UserDiscuzNotificationResult>(
@@ -821,10 +830,12 @@ class _MobileApiClient implements MobileApiClient {
 
   @override
   Future<PrivateMessagePortalResult> privateMessagePortalResult(
-    int page,
-  ) async {
+    int page, {
+    String? filter,
+  }) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'page': page};
+    final queryParameters = <String, dynamic>{r'page': page, r'filter': filter};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<PrivateMessagePortalResult>(

@@ -7,6 +7,7 @@ import 'package:html/dom.dart';
 import '../entity/PollDraft.dart';
 import '../utility/discuz_json.dart';
 import 'discuz_web_client.dart';
+import 'thread_tags.dart';
 import 'ForumInteractionClient.dart';
 
 Future<Element> loadThreadPostForm(
@@ -407,5 +408,61 @@ Map<String, dynamic> _draftMap(String raw) {
     return discuzMap(jsonDecode(raw));
   } on FormatException {
     return {};
+  }
+}
+
+class ExtraThreadOptions {
+  const ExtraThreadOptions(this.available);
+
+  final Set<String> available;
+  static const flags = {'allownoticeauthor', 'isanonymous'};
+  static const names = {...flags, 'readperm', 'cronpublishdate', 'tags'};
+
+  factory ExtraThreadOptions.fromForm(Element form) => ExtraThreadOptions({
+    for (final name in names)
+      if (form.querySelector('[name="$name"]:not([disabled]):not([readonly])') != null &&
+          (name != 'cronpublishdate' ||
+              form.querySelector('[name=cronpublish]:not([disabled])') != null))
+        name,
+  });
+
+  Map<String, String>? submission(Map<String, String> values, DateTime now) {
+    if (!available.containsAll(values.keys)) return null;
+    final result = <String, String>{};
+    for (final entry in values.entries) {
+      final name = entry.key;
+      final value = entry.value;
+      if (name == 'cronpublishdate') {
+        final date = DateTime.tryParse(value);
+        if (date == null || !date.isAfter(now)) return null;
+        result['cronpublish'] = 'true';
+        result[name] = date.toUtc().toIso8601String();
+      } else if (name == 'tags') {
+        final tags = forumThreadTags(value);
+        if (tags == null) return null;
+        result[name] = tags;
+      } else if (name == 'readperm') {
+        final access = int.tryParse(value);
+        if (access == null || access < 0 || access > 255) return null;
+        result[name] = '$access';
+      } else {
+        if (value != '1' && value != '0') return null;
+        result[name] = value;
+      }
+    }
+    return result;
+  }
+
+  static Map<String, String> restore(String value) {
+    if (value.isEmpty) return {};
+    try {
+      final json = discuzMap(jsonDecode(value));
+      return {
+        for (final name in names)
+          if (json[name] is String) name: json[name] as String,
+      };
+    } on FormatException {
+      return {};
+    }
   }
 }

@@ -23,7 +23,11 @@ void main() {
           brightness: brightness,
         );
         final selected = ThreadSelectionColors(scheme);
-        expect(selected.background.computeLuminance(), lessThan(0.15));
+        expect(selected.background, isNot(scheme.surface));
+        expect(
+          selected.background.computeLuminance(),
+          brightness == Brightness.dark ? lessThan(0.20) : greaterThan(0.60),
+        );
         expect(
           contrast(selected.foreground, selected.background),
           greaterThanOrEqualTo(4.5),

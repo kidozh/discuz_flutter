@@ -26,6 +26,9 @@ class CaptchaVariable extends BaseVariableResult{
   @JsonKey(name:"seccode",defaultValue: "")
   String secCodeURL = "";
 
+  @JsonKey(name: 'secqaa', defaultValue: '')
+  String securityQuestion = '';
+
   CaptchaVariable();
 
   factory CaptchaVariable.fromJson(Map<String, dynamic> json) => _$CaptchaVariableFromJson(json);

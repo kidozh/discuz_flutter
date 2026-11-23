@@ -1,4 +1,8 @@
+import '../client/forum_community.dart';
+import '../page/forum_community_page.dart';
 import 'draft_inbox_page.dart';
+import 'forum_attachment_history_page.dart';
+import 'forum_feed_filters_page.dart';
 import 'dart:developer';
 
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
@@ -23,6 +27,7 @@ import 'BlockUserPage.dart';
 import 'FavoriteForumPage.dart';
 import 'ForumBoardPickerPage.dart';
 import 'ForumGuidePage.dart';
+import 'forum_browse_page.dart';
 import 'forum_web_pages.dart';
 import 'LoginPage.dart';
 import 'ManageAccountPage.dart';
@@ -60,7 +65,7 @@ class DrawerState extends State<DrawerStatefulWidget> {
   }
 
   Widget _buildFunctionNavWidgetList() {
-    final account = context.read<DiscuzAndUserNotifier>();
+    final account = context.watch<DiscuzAndUserNotifier>();
     final forum = account.discuz;
     final strings = S.of(context);
     final icons = PlatformIcons(context);
@@ -71,6 +76,39 @@ class DrawerState extends State<DrawerStatefulWidget> {
           onTap: () => Navigator.push(context, platformPageRoute(context: context,
             builder: (_) => const DraftInboxPage()))),
         if (forum != null) ...[
+          ForumCommunityEntry(forum, CommunitySection.groups, key: ValueKey(forum.siteIdentity)),
+          ForumCommunityEntry(forum, CommunitySection.followingFeed, key: ValueKey((forum.siteIdentity, CommunitySection.followingFeed))),
+          if (account.userFor(forum) != null)
+            PlatformListTile(
+              title: Text(strings.forumMyActivities),
+              leading: Icon(icons.pick(Icons.event_outlined, CupertinoIcons.calendar)),
+              onTap: () => openCommunity(context, forum, CommunitySection.myActivities),
+            ),
+          PlatformListTile(
+            title: Text(strings.attachmentDownloadHistory),
+            leading: Icon(icons.pick(
+              Icons.download_for_offline_outlined,
+              CupertinoIcons.arrow_down_circle,
+            )),
+            onTap: () => Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                builder: (_) => ForumAttachmentHistoryPage(forum),
+              ),
+            ),
+          ),
+          PlatformListTile(
+            title: Text(strings.forumContentFilters),
+            leading: Icon(icons.pick(Icons.filter_list, CupertinoIcons.line_horizontal_3_decrease)),
+            onTap: () => Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                builder: (_) => ForumFeedFiltersPage(forum),
+              ),
+            ),
+          ),
           PlatformListTile(
             title: Text(strings.forumSearchWeb),
             leading: Icon(icons.pick(Icons.search, CupertinoIcons.search)),
@@ -92,6 +130,17 @@ class DrawerState extends State<DrawerStatefulWidget> {
               platformPageRoute(
                 context: context,
                 builder: (_) => ForumGuidePage(forum),
+              ),
+            ),
+          ),
+          PlatformListTile(
+            title: Text(strings.forumAnnouncements),
+            leading: Icon(icons.pick(Icons.campaign_outlined, CupertinoIcons.bell)),
+            onTap: () => Navigator.push(
+              context,
+              platformPageRoute(
+                context: context,
+                builder: (_) => ForumBrowsePage(forum),
               ),
             ),
           ),

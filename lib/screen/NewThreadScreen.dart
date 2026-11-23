@@ -1,3 +1,5 @@
+import '../utility/forum_feed_filters.dart';
+
 import 'dart:async';
 
 import '../widget/ForumFeedEmptyState.dart';
@@ -232,64 +234,78 @@ class _NewThreadState extends State<NewThreadStatefulWidget> {
   }
 
   Widget getEasyRefreshWidget(Discuz discuz, User? user) {
-    return EasyRefresh(
-      header: EasyRefreshUtils.i18nClassicHeader(context),
-      footer: EasyRefreshUtils.i18nClassicFooter(context),
-      refreshOnStart: true,
-      controller: _controller,
-      onRefresh: () => _loadNewThreadContent(discuz, refresh: true),
-      onLoad: () => _loadNewThreadContent(discuz),
-      child: CustomScrollView(
-        slivers: [
-          if (_newThreadList.isEmpty)
+    return withForumFeedFilters(discuz, user, (context, rules) {
+      final singleBoard = int.tryParse(_activeFids ?? '');
+      final visibleThreads = _newThreadList
+          .where(
+            (thread) => !hidesForumThread(
+              rules,
+              thread.tid,
+              thread.subject,
+              fid: thread.fid > 0 ? thread.fid : singleBoard,
+              excerpt: thread.message,
+            ),
+          )
+          .toList();
+      return EasyRefresh(
+        header: EasyRefreshUtils.i18nClassicHeader(context),
+        footer: EasyRefreshUtils.i18nClassicFooter(context),
+        refreshOnStart: true,
+        controller: _controller,
+        onRefresh: () => _loadNewThreadContent(discuz, refresh: true),
+        onLoad: () => _loadNewThreadContent(discuz),
+        child: CustomScrollView(
+          slivers: [
+            if (visibleThreads.isEmpty)
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => _isFirstLoading
+                      ? LoadingStateWidget()
+                      : _activeFids == ''
+                      ? ForumFeedEmptyState(discuz: discuz, user: user)
+                      : EmptyListScreen(EmptyItemType.thread),
+                  childCount: 1,
+                ),
+              ),
             SliverList(
               delegate: SliverChildBuilderDelegate(
-                (context, index) => _isFirstLoading
-                    ? LoadingStateWidget()
-                    : _activeFids == ''
-                    ? ForumFeedEmptyState(discuz: discuz, user: user)
-                    : EmptyListScreen(EmptyItemType.thread),
-                childCount: 1,
+                (context, index) => Column(
+                  children: [
+                    if (index == 0 &&
+                        context
+                            .watch<UserPreferenceNotifierProvider>()
+                            .forumDisplay
+                            .showCarousel)
+                      ThreadSlideShowCarouselWidget(
+                        onSelectTid: widget.onSelectTid,
+                      ),
+                    NewThreadWidget(
+                      discuz,
+                      user,
+                      visibleThreads[index],
+                      widget.onSelectTid,
+                      afterTid: index < visibleThreads.length - 1
+                          ? visibleThreads[index + 1].tid
+                          : null,
+                    ),
+                    if (index % 15 == 0 && index != 0)
+                      Consumer<UserPreferenceNotifierProvider>(
+                        builder: (context, value, child) {
+                          if (value.signature.includesApp && index > 20) {
+                            return Container();
+                          } else {
+                            return const AppBannerAdWidget();
+                          }
+                        },
+                      ),
+                  ],
+                ),
+                childCount: visibleThreads.length,
               ),
             ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) => Column(
-                children: [
-                  if (index == 0 &&
-                      context
-                          .watch<UserPreferenceNotifierProvider>()
-                          .forumDisplay
-                          .showCarousel)
-                    ThreadSlideShowCarouselWidget(
-                      onSelectTid: widget.onSelectTid,
-                    ),
-                  NewThreadWidget(
-                    discuz,
-                    user,
-                    _newThreadList[index],
-                    widget.onSelectTid,
-                    afterTid: index < _newThreadList.length - 1
-                        ? _newThreadList[index + 1].tid
-                        : null,
-                  ),
-                  if (index % 15 == 0 && index != 0)
-                    Consumer<UserPreferenceNotifierProvider>(
-                      builder: (context, value, child) {
-                        if (value.signature.includesApp && index > 20) {
-                          return Container();
-                        } else {
-                          return const AppBannerAdWidget();
-                        }
-                      },
-                    ),
-                ],
-              ),
-              childCount: _newThreadList.length,
-            ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 }

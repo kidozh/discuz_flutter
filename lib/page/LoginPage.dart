@@ -9,7 +9,6 @@ import 'package:discuz_flutter/client/MobileApiClient.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
-import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/LoginByWebviewPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
@@ -61,7 +60,9 @@ class LoginForumFieldStatefulWidget extends StatefulWidget {
   late final Discuz discuz;
   String? accountName;
 
-  LoginForumFieldStatefulWidget(this.discuz, this.accountName);
+  final Dio? dio;
+
+  LoginForumFieldStatefulWidget(this.discuz, this.accountName, {this.dio});
   @override
   _LoginFormFieldState createState() {
     return _LoginFormFieldState(discuz, accountName);
@@ -84,7 +85,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
   bool canAuthenticate = false;
   bool _rememberPassword = true;
   bool _autofillInProgress = false;
-  bool _isAuthed = false;
+  bool _browserVerificationRequired = false;
 
   _LoginFormFieldState(this.discuz, this.accountName) {}
 
@@ -235,145 +236,176 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
             ));
   }
 
-  Future<void> _saveAuthentificationToSecureDatabase() async {
+  Future<void> _saveAuthentificationToSecureDatabase(
+    String account,
+    String password,
+  ) async {
     try {
-      String account = _accountController.text;
-      String password = _passwdController.text;
       if (!mounted) return;
-      final discuzAuthentificationDao = await openPasswordStoreWithRecovery(context);
+      final discuzAuthentificationDao = await openPasswordStoreWithRecovery(
+        context,
+      );
       if (discuzAuthentificationDao == null) return;
       DiscuzAuthentication discuzAuthentification = DiscuzAuthentication();
       discuzAuthentification.account = account;
       discuzAuthentification.password = password;
       discuzAuthentification.discuz_host = discuz.siteIdentity;
       discuzAuthentification.updateTime = DateTime.now();
-      await discuzAuthentificationDao
-          .insertDiscuzAuthentication(discuzAuthentification);
+      await discuzAuthentificationDao.insertDiscuzAuthentication(
+        discuzAuthentification,
+      );
     } catch (_) {
       if (mounted) EasyLoading.showError(S.of(context).passwordSaveFailed);
     }
   }
 
-  final Dio _dio = NetworkUtils.getDio();
+  late final Dio _dio = widget.dio ?? (NetworkUtils.getDio()
+    ..options.connectTimeout = const Duration(seconds: 20)
+    ..options.receiveTimeout = const Duration(seconds: 20));
   final CookieJar cookieJar = CookieJar();
 
   @override
   void dispose() {
     _captchaController.dispose();
-    _dio.close(force: true);
+    if (widget.dio == null) _dio.close(force: true);
     _accountController.dispose();
     _passwdController.dispose();
     super.dispose();
   }
 
-  void _verifyAccountAndPassword() async {
-    if (_loginState == LoginResultStatus.loading) return;
+  Future<void> _verifyAccountAndPassword() async {
+    if (_loginState == LoginResultStatus.loading ||
+        _browserVerificationRequired ||
+        _formKey.currentState?.validate() != true) {
+      return;
+    }
     final selection = context.read<DiscuzAndUserNotifier>();
     final session = selection.sessionIdentity;
+    final account = _accountController.text;
+    final password = _passwdController.text;
+    final loginOrigin = Uri.parse(discuz.getBaseURLWithAfterfix());
+    var submittedCaptcha = false;
+    setState(() {
+      _loginState = LoginResultStatus.loading;
+      error = null;
+    });
 
-    String account = _accountController.text;
-    String password = _passwdController.text;
-
-    log("Recv url " + discuz.baseURL);
-    final client = MobileApiClient(_dio, baseUrl: discuz.baseURL);
-
-    CaptchaFields? captchaFields = _captchaController.value;
-    String captchaHash = "";
-    String captchaMod = "";
-    String verification = "";
-    if (captchaFields != null && captchaFields.captchaFormHash.isNotEmpty) {
-      captchaHash = captchaFields.captchaFormHash;
-      verification = captchaFields.verification;
-      captchaMod = "member::logging";
-      if (verification.trim().isEmpty) {
+    try {
+      await _captchaController.waitForCheck();
+      if (!mounted ||
+          account != _accountController.text ||
+          password != _passwdController.text) {
+        return;
+      }
+      if (_captchaController.requiresBrowser) {
+        _requireBrowserVerification('forum_security_challenge');
+        return;
+      }
+      final fields = _captchaController.value;
+      final hash = fields?.captchaFormHash ?? '';
+      final verification = fields?.verification.trim() ?? '';
+      if (_captchaController.requiresVerification && hash.isEmpty) {
+        _requireBrowserVerification('forum_security_challenge');
+        return;
+      }
+      if (hash.isNotEmpty && verification.isEmpty) {
         EasyLoading.showError(S.of(context).captchaRequired);
         return;
       }
-    }
-    setState(() => _loginState = LoginResultStatus.loading);
 
-    final loginOrigin = Uri.parse(discuz.getBaseURLWithAfterfix());
-    client
-        .sendLoginRequest(
-            account, password, captchaHash, captchaMod, verification)
-        .then((value) async {
-      if (!mounted) return;
-      setState(() {
-        error = null;
-      });
-      // check if the
-      log('Login response received from ${discuz.host}');
-      // if user is validated
-      if (forumMessageKey(value.errorResult?.key ?? '') == 'login_succeed') {
-        final user = value.loginVariables.getUser(discuz);
-        if (discuz.isSameSite(selection.discuz) &&
-            !identical(session, selection.sessionIdentity)) {
-          setState(() => _loginState = LoginResultStatus.idle);
-          return;
-        }
-        _captchaController.reloadCaptcha(requiredByServer: false);
-        try {
-          final dao = await AppDatabase.getUserDao();
-
-          // search in database first
-          User? userInDataBase = dao.findUsersByDiscuzAndUid(discuz, user.uid);
-          if (userInDataBase != null) {
-            await dao.insertWithKey(userInDataBase.key, user);
-          } else {
-            await dao.insert(user);
-          }
-          // save it in cookiejar
-          List<Cookie> cookies =
-              await cookieJar.loadForRequest(loginOrigin);
-          log('Persisting ${cookies.length} login cookies for uid ${user.uid}');
-          await NetworkUtils.replacePersistentCookiesForUser(
-            user,
-            loginOrigin,
-            cookies,
+      submittedCaptcha = hash.isNotEmpty;
+      final result = await MobileApiClient(_dio, baseUrl: discuz.baseURL)
+          .sendLoginRequest(
+            account,
+            password,
+            hash,
+            submittedCaptcha ? 'member::logging' : '',
+            verification,
           );
-          if (!mounted) return;
-          // pop the activity
-          // set it
-          EasyLoading.showSuccess(
-              S.of(context).signInSuccessTitle(user.username, discuz.siteName));
-          // handle with security issue
-          if (_rememberPassword) {
-            log("Save authentification to secure storage");
-            await _saveAuthentificationToSecureDatabase();
-          }
-          if (!mounted) return;
-          selection.setUser(user, expectedSession: session);
-
-          Navigator.pop(context);
-        } catch (e, s) {
-          await cookieJar.deleteAll();
-          if (!mounted) return;
-          setState(() => _loginState = LoginResultStatus.idle);
-          VibrationUtils.vibrateErrorIfPossible();
-          log("${e},${s}");
-        }
-      } else {
-        final failure = forumResponseError(S.of(context), value) ??
-            forumRequestError(S.of(context), const FormatException());
-        if (captchaHash.isNotEmpty || failure.key == 'submit_seccode_invalid') {
-          _captchaController.reloadCaptcha(requiredByServer: true);
-        }
-        setState(() {
-          error = failure;
-          _loginState = LoginResultStatus.idle;
-        });
-      }
-    }).catchError((onError) {
       if (!mounted) return;
-      VibrationUtils.vibrateErrorIfPossible();
-      final failure = forumRequestError(S.of(context), onError);
-      if (captchaHash.isNotEmpty || failure.key == 'submit_seccode_invalid') {
-        _captchaController.reloadCaptcha(requiredByServer: true);
+      if (forumMessageKey(result.errorResult?.key ?? '') != 'login_succeed') {
+        final strings = S.of(context);
+        _showLoginFailure(
+          forumResponseError(strings, result) ??
+              forumRequestError(strings, const FormatException()),
+          submittedCaptcha,
+        );
+        return;
       }
-      setState(() {
-        _loginState = LoginResultStatus.idle;
-        error = failure;
-      });
+      if (discuz.isSameSite(selection.discuz) &&
+          !identical(session, selection.sessionIdentity)) {
+        return;
+      }
+
+      final user = result.loginVariables.getUser(discuz);
+      if (user.uid <= 0) {
+        throw const FormatException('Login response is missing the account');
+      }
+      _captchaController.reloadCaptcha(requiredByServer: false);
+      try {
+        final dao = await AppDatabase.getUserDao();
+        final stored = dao.findUsersByDiscuzAndUid(discuz, user.uid);
+        if (stored == null) {
+          await dao.insert(user);
+        } else {
+          await dao.insertWithKey(stored.key, user);
+        }
+        final cookies = await cookieJar.loadForRequest(loginOrigin);
+        await NetworkUtils.replacePersistentCookiesForUser(
+          user,
+          loginOrigin,
+          cookies,
+        );
+      } catch (_) {
+        await cookieJar.deleteAll();
+        rethrow;
+      }
+      if (!mounted) return;
+      EasyLoading.showSuccess(
+        S.of(context).signInSuccessTitle(user.username, discuz.siteName),
+      );
+      if (_rememberPassword) {
+        await _saveAuthentificationToSecureDatabase(account, password);
+      }
+      if (!mounted) return;
+      selection.setUser(user, expectedSession: session);
+      Navigator.pop(context);
+    } catch (failure) {
+      if (mounted) {
+        VibrationUtils.vibrateErrorIfPossible();
+        _showLoginFailure(
+          forumRequestError(S.of(context), failure),
+          submittedCaptcha,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _loginState = LoginResultStatus.idle);
+    }
+  }
+
+  void _showLoginFailure(DiscuzError failure, bool submittedCaptcha) {
+    final needsBrowser = {
+      'login_seccheck2',
+      'login_question_empty',
+      'login_question_invalid',
+      'submit_secqaa_invalid',
+      'forum_security_challenge',
+    }.contains(failure.key);
+    if (needsBrowser) {
+      _requireBrowserVerification(failure.key);
+      return;
+    }
+    if (submittedCaptcha || failure.key == 'submit_seccode_invalid') {
+      _captchaController.reloadCaptcha(requiredByServer: true);
+    }
+    setState(() => error = failure);
+  }
+
+  void _requireBrowserVerification(String key) {
+    _captchaController.reloadCaptcha(requiredByServer: false);
+    setState(() {
+      _browserVerificationRequired = true;
+      error = DiscuzError(key, S.of(context).loginBrowserVerificationRequired);
     });
   }
 
@@ -490,20 +522,25 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                     ),
                   ),
 
-                  CaptchaWidget(
-                    _dio,
-                    discuz,
-                    null,
-                    "login",
-                    captchaController: _captchaController,
-                    checkOnMount: true,
-                  ),
+                  if (!_browserVerificationRequired)
+                    CaptchaWidget(
+                      _dio,
+                      discuz,
+                      null,
+                      "login",
+                      captchaController: _captchaController,
+                      checkOnMount: true,
+                    ),
                   if (error != null)
                     Column(
                       children: [
-                        ErrorCard(error!, () {
-                          _verifyAccountAndPassword();
-                        }, largeSize: false),
+                        ErrorCard(
+                          error!,
+                          _browserVerificationRequired
+                              ? null
+                              : _verifyAccountAndPassword,
+                          largeSize: false,
+                        ),
                       ],
                     ),
                   // remember part
@@ -566,6 +603,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                       width: double.infinity,
                       child: Column(
                         children: [
+                          if (!_browserVerificationRequired)
                           ConstrainedBox(
                             constraints: const BoxConstraints(
                               minWidth: double.infinity,
@@ -621,8 +659,7 @@ class _LoginFormFieldState extends State<LoginForumFieldStatefulWidget> {
                                   : null,
                             ),
                           ),
-                          SizedBox(height: 24),
-                          //if (!Platform.isIOS)
+                          if (!_browserVerificationRequired) SizedBox(height: 24),
                           ConstrainedBox(
                             constraints: const BoxConstraints(
                               minWidth: double.infinity,

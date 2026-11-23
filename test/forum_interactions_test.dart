@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -349,7 +350,9 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.textContaining('first', findRichText: true), findsOneWidget);
-      await tester.tap(find.text(S.current.forumLoadMore));
+      final pagination = tester
+          .widget<EasyRefresh>(find.byType(EasyRefresh))
+          .onLoad!();
       await tester.pumpAndSettle();
       expect(find.textContaining('first', findRichText: true), findsOneWidget);
       expect(find.text('try again'), findsOneWidget);
@@ -360,7 +363,7 @@ void main() {
       expect(find.textContaining('second', findRichText: true), findsOneWidget);
       expect(find.byType(PostCommentWidget), findsNWidgets(2));
       expect(find.textContaining('<b>', findRichText: true), findsNothing);
-      expect(find.text(S.current.forumNoMore), findsOneWidget);
+      expect(await pagination, IndicatorResult.fail);
       expect(requests.map((r) => r.uri.queryParameters['page']), [
         '1',
         '2',

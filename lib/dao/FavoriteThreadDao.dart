@@ -13,7 +13,7 @@ class FavoriteThreadDao {
     required int uid,
   }) {
     return favoriteThreadBox.values
-        .where((entry) => entry.discuz == discuz && entry.uid == uid)
+        .where((entry) => entry.discuz.isSameSite(discuz) && entry.uid == uid)
         .toList();
   }
 
@@ -37,7 +37,7 @@ class FavoriteThreadDao {
   }) {
     for (final entry in favoriteThreadBox.values) {
       if (entry.idInServer == idInServer &&
-          entry.discuz == discuz &&
+          entry.discuz.isSameSite(discuz) &&
           entry.uid == uid) {
         return entry;
       }

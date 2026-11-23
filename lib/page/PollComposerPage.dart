@@ -46,6 +46,7 @@ class _PollComposerPageState extends State<PollComposerPage> {
   );
   late final days = TextEditingController(text: '${widget.initial?.days ?? 7}');
   late bool hideResults = widget.initial?.hideResults ?? false;
+  late bool publicVoters = widget.initial?.publicVoters ?? false;
   bool picking = false;
   String? error;
   final added = <ReplyDraftAttachment>{};
@@ -111,6 +112,7 @@ class _PollComposerPageState extends State<PollComposerPage> {
           if (o.image case final image?) i: image,
       },
       hideResults: hideResults,
+      publicVoters: publicVoters,
     );
     if (!widget.rules.accepts(draft)) {
       setState(() => error = S.of(context).pollInvalid);
@@ -237,6 +239,13 @@ class _PollComposerPageState extends State<PollComposerPage> {
           trailing: PlatformSwitch(
             value: hideResults,
             onChanged: (value) => setState(() => hideResults = value),
+          ),
+        ),
+        PlatformListTile(
+          title: Text(s.editPostPollVoterList),
+          trailing: PlatformSwitch(
+            value: publicVoters,
+            onChanged: (value) => setState(() => publicVoters = value),
           ),
         ),
         if (error != null)

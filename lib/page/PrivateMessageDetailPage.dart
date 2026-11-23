@@ -1,3 +1,11 @@
+import 'forum_account_actions.dart';
+import '../client/ForumInteractionClient.dart';
+import '../client/private_message_management.dart';
+import '../utility/UserPreferencesUtils.dart';
+import '../widget/post_settings_sheet.dart';
+
+import 'package:html/parser.dart' show parseFragment;
+
 import 'package:discuz_flutter/utility/app_motion.dart';
 import 'package:discuz_flutter/widget/message_composer_surface.dart';
 
@@ -85,6 +93,8 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
   int? _requestGeneration;
   int _requestId = 0;
   bool _sending = false;
+  bool _deleting = false;
+  Future<void>? _cacheWrite;
   bool _hasLoaded = false;
   (Object, int)? _accountIdentity;
   int _generation = 0;
@@ -94,7 +104,10 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
   final Map<int, String> _failedMessages = <int, String>{};
 
   bool get _canSend =>
-      _hasLoaded && !_sending && _textController.text.trim().isNotEmpty;
+      _hasLoaded &&
+      !_sending &&
+      !_deleting &&
+      _textController.text.trim().isNotEmpty;
 
   @override
   void initState() {
@@ -237,6 +250,7 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
     final account = context.read<DiscuzAndUserNotifier>();
     final user = account.userFor(discuz);
     if (user == null ||
+        _deleting ||
         generation != _generation ||
         _accountIdentity != (account.sessionIdentity, widget.toUid) ||
         (!supersede && _requestGeneration == generation)) {
@@ -272,7 +286,12 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
         return IndicatorResult.fail;
       }
 
-      await _cacheMessages(discuz, user, value.variables.pmList);
+      if (_deleting) return IndicatorResult.fail;
+      await (_cacheWrite = _cacheMessages(
+        discuz,
+        user,
+        value.variables.pmList,
+      ));
       if (!isCurrent()) return IndicatorResult.fail;
 
       final merged = <String, PrivateMessageDetail>{};
@@ -390,7 +409,7 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
 
   Future<void> _sendMessage(Discuz discuz, {String? retryMessage}) async {
     final message = (retryMessage ?? _textController.text).trim();
-    if ((_sending || !_hasLoaded) || message.isEmpty) return;
+    if (_sending || _deleting || !_hasLoaded || message.isEmpty) return;
     final account = context.read<DiscuzAndUserNotifier>();
     final user = account.userFor(discuz);
     final identity = (account.sessionIdentity, widget.toUid);
@@ -500,6 +519,131 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
     );
   }
 
+  Future<void> _showForumActions(Discuz discuz, User user) async {
+    final s = S.of(context);
+    final account = context.read<DiscuzAndUserNotifier>();
+    final session = account.sessionIdentity;
+    final target = await showPostSettingsSheet<({bool delete, int? report})>(
+      context,
+      (sheet) => PostSettingsSheet(
+        title: s.manageConversation,
+        children: [
+          PlatformListTile(
+            title: Text(s.manageConversation),
+            onTap: () => Navigator.pop(sheet, (delete: false, report: null)),
+          ),
+          if (_hasLoaded && _messages.any((message) => message.pmId > 0))
+            PlatformListTile(
+              leading: Icon(PlatformIcons(sheet).delete),
+              title: Text(s.deletePrivateConversation),
+              onTap: () => Navigator.pop(sheet, (delete: true, report: null)),
+            ),
+          for (final message in _messages)
+            if (message.pmId > 0 && message.msgFromId == widget.toUid)
+              PlatformListTile(
+                title: Text(s.reportPrivateMessage),
+                subtitle: Text(
+                  parseFragment(message.message).text?.trim() ?? '',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                onTap: () =>
+                    Navigator.pop(sheet, (delete: false, report: message.pmId)),
+              ),
+        ],
+      ),
+    );
+    if (!mounted ||
+        !identical(account.sessionIdentity, session) ||
+        target == null)
+      return;
+    if (target.delete) {
+      await _deleteConversation(discuz, user, session);
+      return;
+    }
+    await openForumAccountPage(
+      context,
+      discuz,
+      user,
+      target.report == null
+          ? {
+              'mod': 'space',
+              'do': 'pm',
+              'subop': 'view',
+              'touid': '${widget.toUid}',
+            }
+          : {
+              'mod': 'spacecp',
+              'ac': 'pm',
+              'op': 'pm_report',
+              'pmid': '${target.report}',
+            },
+    );
+    if (mounted && identical(account.sessionIdentity, session))
+      await _refreshMessages(discuz);
+  }
+
+  Future<void> _deleteConversation(
+    Discuz discuz,
+    User user,
+    Object session,
+  ) async {
+    if (_deleting || _sending) return;
+    final s = S.of(context);
+    final account = context.read<DiscuzAndUserNotifier>();
+    bool current() => mounted && identical(session, account.sessionIdentity);
+    var confirmed = false;
+    await showPlatformAlert(
+      context: context,
+      title: s.deletePrivateConversation,
+      message: s.deletePrivateConversationConfirm,
+      actions: [
+        PlatformAlertAction(label: s.cancel, isCancelAction: true),
+        PlatformAlertAction(
+          label: s.deletePrivateConversation,
+          isDestructiveAction: true,
+          onPressed: () => confirmed = true,
+        ),
+      ],
+    );
+    if (!confirmed || !current() || _sending || _deleting) return;
+    setState(() => _deleting = true);
+    try {
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      try {
+        await PrivateMessageManagement(
+          ForumInteractionClient(dio, discuz.baseURL),
+          user.uid,
+          current,
+        ).deleteConversation(widget.toUid);
+      } finally {
+        dio.close();
+      }
+      ++_requestId;
+      _requestGeneration = null;
+      if (current()) setState(() => _messages = []);
+      await _cacheWrite;
+      final dao = await AppDatabase.getPrivateMessageCacheDao();
+      await dao.removeConversation(
+        siteKey: discuz.baseURL,
+        ownerUid: user.uid,
+        peerUid: widget.toUid,
+      );
+      await UserPreferencesUtils.putDiscuzPrivateMessageResultCacheJson(
+        discuz,
+        user,
+        '',
+      );
+      if (current()) Navigator.of(context).pop();
+    } catch (error) {
+      if (current()) {
+        setState(() => _error = forumRequestError(s, error));
+      }
+    } finally {
+      if (mounted) setState(() => _deleting = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<DiscuzAndUserNotifier>(
@@ -525,6 +669,16 @@ class _PrivateMessageDetailState extends State<PrivateMessageDetailPage> {
           appBar: PlatformAppBar(
             title: Text(widget.toUsername),
             trailingActions: [
+              PlatformIconButton(
+                icon: Icon(
+                  PlatformIcons(context).ellipsis,
+                  semanticLabel: S.of(context).manageConversation,
+                ),
+                onPressed: _deleting
+                    ? null
+                    : () => _showForumActions(discuz, user),
+              ),
+
               PlatformIconButton(
                 liquidGlassSymbol: 'person.crop.circle',
                 icon: Icon(

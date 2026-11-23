@@ -9,7 +9,8 @@ import 'ForumInteractionClient.dart';
 
 enum SpecialThreadKind {
   reward(3),
-  activity(4);
+  activity(4),
+  debate(5);
 
   const SpecialThreadKind(this.id);
   final int id;
@@ -69,6 +70,7 @@ class SpecialThreadForm {
     this.registrationFields = const {},
     this.customFieldLimit = 0,
     this.credit = '',
+    this.debateFields = const {},
   });
 
   final String formhash;
@@ -77,11 +79,20 @@ class SpecialThreadForm {
   final Map<String, String> registrationFields;
   final int customFieldLimit;
   final String credit;
+  final Set<String> debateFields;
 
   Map<String, dynamic> submissionFields(SpecialThreadDraft draft) {
     final fields = draft.fields;
     if (draft.kind == SpecialThreadKind.reward) {
       return {'special': '3', 'rewardprice': fields['rewardprice']!};
+    }
+    if (draft.kind == SpecialThreadKind.debate) {
+      return {
+        'special': '5',
+        for (final key in debateFields)
+          if (fields[key]?.isNotEmpty == true)
+            key: key == 'endtime' ? _discuzDate(fields[key]!) : fields[key]!,
+      };
     }
     final hasEnd = fields['starttimeto']?.isNotEmpty == true;
     final profileFields = (fields['userfield'] ?? '')
@@ -198,6 +209,16 @@ class SpecialThreadForm {
       );
     }
 
+    if (kind == SpecialThreadKind.debate) {
+      final fields = {
+        for (final name in ['affirmpoint', 'negapoint', 'endtime', 'umpire'])
+          if (form.querySelector('[name="$name"]:not([disabled])') != null)
+            name,
+      };
+      if (!fields.containsAll({'affirmpoint', 'negapoint'})) throw unavailable;
+      return SpecialThreadForm(formhash: formhash, debateFields: fields);
+    }
+
     if (form.querySelector('#activityplace') == null ||
         form.querySelector('#activityclass') == null) {
       throw unavailable;
@@ -237,6 +258,18 @@ class SpecialThreadForm {
     if (draft.kind == SpecialThreadKind.reward) {
       return reward?.allows(int.tryParse(fields['rewardprice'] ?? '') ?? 0) ==
           true;
+    }
+    if (draft.kind == SpecialThreadKind.debate) {
+      final ending = fields['endtime'];
+      return debateFields.containsAll({'affirmpoint', 'negapoint'}) &&
+          fields['affirmpoint']?.trim().isNotEmpty == true &&
+          fields['negapoint']?.trim().isNotEmpty == true &&
+          fields.entries.every(
+            (entry) => entry.value.isEmpty || debateFields.contains(entry.key),
+          ) &&
+          (ending == null ||
+              ending.isEmpty ||
+              DateTime.tryParse(ending)?.isAfter(DateTime.now()) == true);
     }
     if (fields['activityclass']?.trim().isNotEmpty != true ||
         fields['activityplace']?.trim().isNotEmpty != true) {

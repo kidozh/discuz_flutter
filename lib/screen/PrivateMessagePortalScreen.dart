@@ -1,3 +1,10 @@
+import '../generated/l10n.dart';
+import '../page/forum_account_actions.dart';
+import '../client/ForumInteractionClient.dart';
+import '../client/private_message_management.dart';
+import '../utility/forum_error.dart';
+import '../widget/post_settings_sheet.dart';
+
 import 'dart:convert';
 import 'dart:developer';
 
@@ -38,6 +45,8 @@ class _PrivateMessagePortalState extends State<PrivateMessagePortalScreen>
   int _generation = 0;
   int? _requestGeneration;
   bool _hasMore = true;
+  bool _unreadOnly = false;
+  bool _markingRead = false;
 
   @override
   bool get wantKeepAlive => true;
@@ -51,6 +60,7 @@ class _PrivateMessagePortalState extends State<PrivateMessagePortalScreen>
   void _ensureInitialized(Discuz discuz, User user, Object identity) {
     if (_accountIdentity == identity) return;
     _accountIdentity = identity;
+    _unreadOnly = false;
     final generation = ++_generation;
     _page = 1;
     _hasMore = true;
@@ -121,10 +131,16 @@ class _PrivateMessagePortalState extends State<PrivateMessagePortalScreen>
     final page = refresh ? 1 : _page;
     try {
       final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-      final value = await MobileApiClient(
-        dio,
-        baseUrl: discuz.baseURL,
-      ).privateMessagePortalResult(page);
+      final unreadOnly = _unreadOnly;
+      final PrivateMessagePortalResult value;
+      try {
+        value = await MobileApiClient(
+          dio,
+          baseUrl: discuz.baseURL,
+        ).privateMessagePortalResult(page, filter: unreadOnly ? 'newpm' : null);
+      } finally {
+        dio.close();
+      }
       if (!isCurrent()) return IndicatorResult.fail;
       final variables = value.variables;
       final error = EasyRefreshUtils.responseError(
@@ -155,7 +171,7 @@ class _PrivateMessagePortalState extends State<PrivateMessagePortalScreen>
       context.read<DiscuzNotificationProvider>().setNotificationCount(
         variables.noticeCount,
       );
-      if (page == 1) {
+      if (page == 1 && !unreadOnly) {
         try {
           await UserPreferencesUtils.putDiscuzPrivateMessageResultCacheJson(
             discuz,
@@ -176,6 +192,82 @@ class _PrivateMessagePortalState extends State<PrivateMessagePortalScreen>
       return IndicatorResult.fail;
     } finally {
       if (_requestGeneration == generation) _requestGeneration = null;
+    }
+  }
+
+  Future<void> _showManagement(Discuz discuz, User user) async {
+    if (_markingRead) return;
+    final account = context.read<DiscuzAndUserNotifier>();
+    final session = account.sessionIdentity;
+    bool current() => mounted && identical(session, account.sessionIdentity);
+    final s = S.of(context);
+    final settings = await showPostSettingsSheet<bool>(
+      context,
+      (sheet) => PostSettingsSheet(
+        title: s.managePrivateMessages,
+        children: [
+          PlatformListTile(
+            leading: Icon(PlatformIcons(sheet).checkMarkCircled),
+            title: Text(s.markPrivateMessagesRead),
+            onTap: () => Navigator.pop(sheet, false),
+          ),
+          PlatformListTile(
+            leading: Icon(PlatformIcons(sheet).settings),
+            title: Text(s.privateMessageIgnoreList),
+            onTap: () => Navigator.pop(sheet, true),
+          ),
+        ],
+      ),
+    );
+    if (settings == null || !current()) return;
+    if (settings) {
+      await openForumAccountPage(context, discuz, user, {
+        'mod': 'space',
+        'do': 'pm',
+        'subop': 'setting',
+      });
+      if (current()) await _refreshPrivateMessages(discuz);
+      return;
+    }
+
+    setState(() => _markingRead = true);
+    try {
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      try {
+        final marked = await PrivateMessageManagement(
+          ForumInteractionClient(dio, discuz.baseURL),
+          user.uid,
+          current,
+        ).markAllRead();
+        if (!current()) return;
+        setState(() {
+          ++_generation;
+          _page = 1;
+          _hasMore = true;
+          _error = null;
+          if (_unreadOnly) {
+            _pmList.removeWhere((row) => marked.contains(row.plid));
+          } else {
+            for (final row in _pmList) {
+              if (marked.contains(row.plid)) row.isNew = false;
+            }
+          }
+        });
+        await UserPreferencesUtils.putDiscuzPrivateMessageResultCacheJson(
+          discuz,
+          user,
+          '',
+        );
+        if (current()) await _refreshPrivateMessages(discuz);
+      } finally {
+        dio.close();
+      }
+    } catch (error) {
+      if (current()) {
+        setState(() => _error = forumRequestError(s, error));
+      }
+    } finally {
+      if (mounted) setState(() => _markingRead = false);
     }
   }
 
@@ -229,6 +321,48 @@ class _PrivateMessagePortalState extends State<PrivateMessagePortalScreen>
         return PlatformLiquidGlassPageBackdrop(
           child: Column(
             children: [
+              SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Wrap(
+                    spacing: 8,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      for (final unread in [false, true])
+                        PlatformChoiceChip(
+                          label: Text(
+                            unread
+                                ? S.of(context).onlyUnreadMessages
+                                : S.of(context).forumAll,
+                          ),
+                          selected: unread == _unreadOnly,
+                          onSelected: (_) {
+                            if (unread == _unreadOnly) return;
+                            setState(() {
+                              _unreadOnly = unread;
+                              _generation++;
+                              _page = 1;
+                              _hasMore = true;
+                              _pmList = [];
+                              _error = null;
+                            });
+                            _refreshPrivateMessages(discuz);
+                          },
+                        ),
+                      PlatformIconButton(
+                        icon: Icon(
+                          PlatformIcons(context).settings,
+                          semanticLabel: S.of(context).managePrivateMessages,
+                        ),
+                        onPressed: _markingRead
+                            ? null
+                            : () => _showManagement(discuz, user),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               if (_error != null)
                 ErrorCard(
                   _error!,
@@ -246,18 +380,31 @@ class _PrivateMessagePortalState extends State<PrivateMessagePortalScreen>
                       _refreshPrivateMessages(discuz, generation: generation),
                   onLoad: () =>
                       _loadPrivateMessages(discuz, generation: generation),
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    itemCount: _pmList.length,
-                    itemBuilder: (context, index) => PrivateMessagePortalWidget(
-                      discuz,
-                      _pmList[index],
-                      onConversationClosed: () => _refreshPrivateMessages(
-                        discuz,
-                        generation: generation,
-                      ),
-                    ),
-                  ),
+                  child: _pmList.isEmpty && !_hasMore
+                      ? ListView(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Center(
+                                child: Text(S.of(context).forumEmpty),
+                              ),
+                            ),
+                          ],
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          itemCount: _pmList.length,
+                          itemBuilder: (context, index) =>
+                              PrivateMessagePortalWidget(
+                                discuz,
+                                _pmList[index],
+                                onConversationClosed: () =>
+                                    _refreshPrivateMessages(
+                                      discuz,
+                                      generation: generation,
+                                    ),
+                              ),
+                        ),
                 ),
               ),
             ],

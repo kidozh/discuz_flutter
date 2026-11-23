@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -235,7 +236,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Popular'), findsOneWidget);
-    expect(find.text(S.current.forumLoadMore), findsNothing);
+    expect(tester.widget<EasyRefresh>(find.byType(EasyRefresh)).onLoad, isNull);
     expect(requests.single.uri.queryParameters['module'], 'hotforum');
     dio.close();
   });
@@ -266,12 +267,14 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text(S.current.forumLoadMore));
+    final pagination = tester
+        .widget<EasyRefresh>(find.byType(EasyRefresh))
+        .onLoad!();
     await tester.pumpAndSettle();
     expect(find.text('Friend 1'), findsOneWidget);
     expect(find.text('Friend 2'), findsOneWidget);
     expect(requests.last.uri.queryParameters['page'], '2');
-    expect(find.text(S.current.forumNoMore), findsOneWidget);
+    expect(await pagination, IndicatorResult.noMore);
     dio.close();
   });
   testWidgets(

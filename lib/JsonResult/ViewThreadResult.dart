@@ -1,4 +1,5 @@
 import '../entity/reply_benefits.dart';
+
 import 'package:discuz_flutter/converter/RewriteRuleConverter.dart';
 import 'package:discuz_flutter/converter/SecondToDateTimeConverter.dart';
 import 'package:discuz_flutter/converter/StringToBoolConverter.dart';
@@ -8,41 +9,36 @@ import 'package:discuz_flutter/JsonResult/BaseVariableResult.dart';
 import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 import 'package:discuz_flutter/entity/Post.dart';
 
-
 import 'BaseResult.dart';
 import '../utility/discuz_json.dart';
 import '../entity/SpecialThread.dart';
 import 'ErrorResult.dart';
 
-
 part "ViewThreadResult.g.dart";
 
 @JsonSerializable(explicitToJson: true)
-class ViewThreadResult extends BaseResult{
-
+class ViewThreadResult extends BaseResult {
   @JsonKey(name: "Variables")
   ThreadVariables threadVariables = ThreadVariables();
 
   ViewThreadResult();
 
-  factory ViewThreadResult.fromJson(Map<String, dynamic> json) => _$ViewThreadResultFromJson({...discuzScalars(json), 'Variables': discuzMap(json['Variables'])});
+  factory ViewThreadResult.fromJson(Map<String, dynamic> json) =>
+      _$ViewThreadResultFromJson({
+        ...discuzScalars(json),
+        'Variables': discuzMap(json['Variables']),
+      });
   Map<String, dynamic> toJson() => _$ViewThreadResultToJson(this);
-
-
-
 }
 
 @JsonSerializable(explicitToJson: true)
-class ThreadVariables extends BaseVariableResult{
-
-  @JsonKey(name:"thread")
+class ThreadVariables extends BaseVariableResult {
+  @JsonKey(name: "thread")
   DetailedThreadInfo threadInfo = DetailedThreadInfo();
   @StringToIntConverter()
   int fid = 0;
-  @JsonKey(name:"postlist",defaultValue: [])
+  @JsonKey(name: "postlist", defaultValue: [])
   List<Post> postList = [];
-
-
 
   @JsonKey(name: 'allowpostcomment', fromJson: discuzIds)
   List<String> commentModes = [];
@@ -51,39 +47,41 @@ class ThreadVariables extends BaseVariableResult{
   @JsonKey(name: "comments")
   Map<String, List<Comment>> commentList = {};
 
-
   @RewriteRuleConverter()
   @JsonKey(name: "setting_rewriterule")
   RewriteRule rewriteRule = RewriteRule();
-
 
   @JsonKey(defaultValue: "0")
   String ppp = "0";
   @JsonKey(defaultValue: "1")
   String? page = "1";
-  int getPage(){
-    if(page == null){
+  int getPage() {
+    if (page == null) {
       return 1;
-    }
-    else{
+    } else {
       return int.parse(page!);
     }
-
   }
+
   // for poll
-  @JsonKey(name: "special_poll",defaultValue: null)
+  @JsonKey(name: "special_poll", defaultValue: null)
   Poll? poll;
 
-  @JsonKey(name: 'special_debate', fromJson: DebateInfo.parse)
+  @JsonKey(name: 'special_debate', includeFromJson: false)
   DebateInfo? debate;
+  @JsonKey(
+    name: 'special_trade',
+    fromJson: TradeItem.parse,
+    toJson: _tradeItemsJson,
+  )
+  List<TradeItem> tradeItems = [];
+
   @JsonKey(name: 'special_reward', fromJson: RewardInfo.parse)
   RewardInfo? reward;
   @JsonKey(name: 'special_activity', fromJson: ActivityInfo.parse)
   ActivityInfo? activity;
   @JsonKey(name: 'threadsortshow', fromJson: ThreadSortInfo.parse)
   ThreadSortInfo? threadSort;
-
-
 
   @JsonKey(name: 'forum_threadpay')
   @StringToBoolConverter()
@@ -92,9 +90,23 @@ class ThreadVariables extends BaseVariableResult{
   Map<String, dynamic> commentCounts = {};
   ThreadVariables();
 
-  factory ThreadVariables.fromJson(Map<String, dynamic> json) => _$ThreadVariablesFromJson({...discuzScalars(json), 'thread': discuzMap(json['thread']), 'ismoderator': json['ismoderator'] == true ? 1 : json['ismoderator']});
-  Map<String, dynamic> toJson() => _$ThreadVariablesToJson(this);
+  factory ThreadVariables.fromJson(Map<String, dynamic> json) =>
+      _$ThreadVariablesFromJson({
+          ...discuzScalars(json),
+          'thread': discuzMap(json['thread']),
+          'ismoderator': json['ismoderator'] == true ? 1 : json['ismoderator'],
+        })
+        ..debate = DebateInfo.parse(
+          json['special_debate'],
+          viewer: discuzInt(json['member_uid']),
+        );
+  static List<Map<String, dynamic>> _tradeItemsJson(List<TradeItem> items) =>
+      items.map((item) => item.toJson()).toList();
 
+  Map<String, dynamic> toJson() => {
+    ..._$ThreadVariablesToJson(this),
+    'special_debate': debate?.toJson(),
+  };
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -123,39 +135,41 @@ class DetailedThreadInfo {
   // @JsonKey(name:"typeid")
   // int typeId= 0;
   @JsonKey(defaultValue: "")
-  String author= "", subject= "";
+  String author = "", subject = "";
   @JsonKey(name: "readperm")
   @StringToIntConverter()
   int readPerm = 0;
   @StringToIntConverter()
   int price = 0;
-  @JsonKey(name:"authorid")
+  @JsonKey(name: "authorid")
   @StringToIntConverter()
   int authorId = 0;
-  @JsonKey(name:"sortid",defaultValue: "0")
+  @JsonKey(name: "sortid", defaultValue: "0")
   String sortId = "0";
   // @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="s")
   // public Date lastPostTime = new Date();
-  @JsonKey(name:"lastpost",defaultValue: "")
+  @JsonKey(name: "lastpost", defaultValue: "")
   String lastPostTimeString = "";
   @JsonKey(defaultValue: "")
-  String lastposter= "";
+  String lastposter = "";
 
-  @JsonKey(name:"displayorder", defaultValue: "0")
+  @JsonKey(name: "displayorder", defaultValue: "0")
   String displayOrder = "";
 
   @JsonKey(defaultValue: "0")
   String views = "";
-  @JsonKey(name:"replies")
+  @JsonKey(name: "replies")
   @StringToIntConverter()
   int replies = 0;
   @JsonKey(defaultValue: "")
   String highlight = "";
   // String special="0", moderated="0", is_archived="0";
   @JsonKey(defaultValue: "0")
-  String rate = "0", status = "0", digest= "0";
+  String rate = "0", status = "0", digest = "0";
   @StringToBoolConverter()
   bool closed = false;
+  @StringToBoolConverter()
+  bool moderated = false;
 
   // @JsonKey(defaultValue: "0")
   // String attachment = "0";
@@ -180,7 +194,7 @@ class DetailedThreadInfo {
   // @JsonKey(defaultValue: "0")
   // String hidden = "0";
   // String threadtable = "", threadtableid = "", posttable = "";
-  @JsonKey(name:"allreplies")
+  @JsonKey(name: "allreplies")
   @StringToIntConverter()
   int allreplies = 0;
 
@@ -194,7 +208,7 @@ class DetailedThreadInfo {
   // String recommendLevel = "0";
   // @JsonKey(name:"heatlevel",defaultValue: "0")
   // String heatLevel = "0";
-  @JsonKey(name:"freemessage",defaultValue: "")
+  @JsonKey(name: "freemessage", defaultValue: "")
   String freeMessage = "";
 
   @JsonKey(name: 'replycredit', fromJson: discuzInt)
@@ -205,12 +219,13 @@ class DetailedThreadInfo {
   RushReplyInfo? rushReply;
 
   DetailedThreadInfo();
-  factory DetailedThreadInfo.fromJson(Map<String, dynamic> json) => _$DetailedThreadInfoFromJson(discuzScalars(json));
+  factory DetailedThreadInfo.fromJson(Map<String, dynamic> json) =>
+      _$DetailedThreadInfoFromJson(discuzScalars(json));
   Map<String, dynamic> toJson() => _$DetailedThreadInfoToJson(this);
 }
 
 @JsonSerializable(explicitToJson: true)
-class Comment{
+class Comment {
   @StringToIntConverter()
   int id = 0;
   @StringToIntConverter()
@@ -223,47 +238,50 @@ class Comment{
   String comment = "";
   String avatar = "";
   @StringToIntConverter()
-  @JsonKey(name:"authorid")
+  @JsonKey(name: "authorid")
   int authorId = 0;
 
   Comment();
   factory Comment.fromJson(Map<String, dynamic> json) => _$CommentFromJson({
-    'author': '', 'dateline': '', 'comment': '', 'avatar': '',
+    'author': '',
+    'dateline': '',
+    'comment': '',
+    'avatar': '',
     ...discuzScalars(json).map((key, value) => MapEntry(key, value ?? '')),
   });
   Map<String, dynamic> toJson() => _$CommentToJson(this);
 }
 
 @JsonSerializable(explicitToJson: true)
-class RewriteRule{
-  @JsonKey(name: "portal_topic",defaultValue: "")
+class RewriteRule {
+  @JsonKey(name: "portal_topic", defaultValue: "")
   String portalTopic = "";
-  @JsonKey(name: "portal_article",defaultValue: "")
+  @JsonKey(name: "portal_article", defaultValue: "")
   String portalArticle = "";
-  @JsonKey(name:"forum_forumdisplay",defaultValue: "")
+  @JsonKey(name: "forum_forumdisplay", defaultValue: "")
   String forumDisplay = "";
-  @JsonKey(name:"forum_viewthread",defaultValue: "")
+  @JsonKey(name: "forum_viewthread", defaultValue: "")
   String viewThread = "";
-  @JsonKey(name:"group_group",defaultValue: "")
+  @JsonKey(name: "group_group", defaultValue: "")
   String group = "";
-  @JsonKey(name:"home_space",defaultValue: "")
+  @JsonKey(name: "home_space", defaultValue: "")
   String userSpace = "";
-  @JsonKey(name:"home_blog",defaultValue: "")
+  @JsonKey(name: "home_blog", defaultValue: "")
   String homeBlog = "";
-  @JsonKey(name:"forum_archiver",defaultValue: "")
+  @JsonKey(name: "forum_archiver", defaultValue: "")
   String forumArchiver = "";
-  @JsonKey(name:"plugin",defaultValue: "")
+  @JsonKey(name: "plugin", defaultValue: "")
   String plugin = "";
 
   RewriteRule();
-  factory RewriteRule.fromJson(Map<String, dynamic> json) => _$RewriteRuleFromJson(json);
+  factory RewriteRule.fromJson(Map<String, dynamic> json) =>
+      _$RewriteRuleFromJson(json);
   Map<String, dynamic> toJson() => _$RewriteRuleToJson(this);
-
 }
 
 @JsonSerializable(ignoreUnannotated: true, explicitToJson: true)
-class Poll{
-  @JsonKey(name:"expirations")
+class Poll {
+  @JsonKey(name: "expirations")
   @SecondToDateTimeConverter()
   DateTime expiredAt = DateTime.now();
   @JsonKey(name: "multiple")
@@ -272,7 +290,11 @@ class Poll{
   @JsonKey(name: "maxchoices")
   @StringToIntConverter()
   int maxChoice = 1;
-  @JsonKey(name: 'visiblepoll', fromJson: _pollResultsVisible, toJson: _pollVisibilityToJson)
+  @JsonKey(
+    name: 'visiblepoll',
+    fromJson: _pollResultsVisible,
+    toJson: _pollVisibilityToJson,
+  )
   bool isResultVisible = true;
   @JsonKey(name: "allowvote")
   @StringToBoolConverter()
@@ -292,28 +314,31 @@ class Poll{
   static Map<String, PollOption> _pollOptions(Object? value) {
     final options = value is List ? value : discuzMap(value).values;
     return {
-      for (final option in options.whereType<Map>().map((row) => PollOption.fromJson(discuzMap(row))))
+      for (final option in options.whereType<Map>().map(
+        (row) => PollOption.fromJson(discuzMap(row)),
+      ))
         if (option.id > 0) '${option.id}': option,
     };
   }
+
   factory Poll.fromJson(Map<String, dynamic> json) => _$PollFromJson(json);
   Map<String, dynamic> toJson() => _$PollToJson(this);
 }
 
 @JsonSerializable(ignoreUnannotated: true, explicitToJson: true)
-class PollOption{
+class PollOption {
   @JsonKey(name: "polloptionid")
   @StringToIntConverter()
   int id = 0;
-  @JsonKey(name: "polloption",defaultValue: "")
+  @JsonKey(name: "polloption", defaultValue: "")
   String name = "";
   @JsonKey(name: "votes")
   @StringToIntConverter()
   int voteNumber = 0;
   @JsonKey(name: 'imginfo', fromJson: _imageUrls)
-  Map<String,String> images = {};
-  static Map<String,String> _imageUrls(Object? raw) => {
-    for (final key in ['small','big'])
+  Map<String, String> images = {};
+  static Map<String, String> _imageUrls(Object? raw) => {
+    for (final key in ['small', 'big'])
       if (discuzString(discuzMap(raw)[key]).trim().isNotEmpty)
         key: discuzString(discuzMap(raw)[key]).trim(),
   };
@@ -321,7 +346,7 @@ class PollOption{
   String color = "";
   PollOption();
 
-  factory PollOption.fromJson(Map<String, dynamic> json) => _$PollOptionFromJson(json);
+  factory PollOption.fromJson(Map<String, dynamic> json) =>
+      _$PollOptionFromJson(json);
   Map<String, dynamic> toJson() => _$PollOptionToJson(this);
-
 }

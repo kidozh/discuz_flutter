@@ -8,6 +8,7 @@ part of 'NewThread.dart';
 
 NewThread _$NewThreadFromJson(Map<String, dynamic> json) => NewThread()
   ..tid = const StringToIntConverter().fromJson(json['tid'])
+  ..fid = const StringToIntConverter().fromJson(json['fid'])
   ..readPerm = const StringToIntConverter().fromJson(json['readperm'])
   ..author = json['author'] as String
   ..authorId = const StringToIntConverter().fromJson(json['authorid'])
@@ -35,6 +36,7 @@ NewThread _$NewThreadFromJson(Map<String, dynamic> json) => NewThread()
 
 Map<String, dynamic> _$NewThreadToJson(NewThread instance) => <String, dynamic>{
   'tid': const StringToIntConverter().toJson(instance.tid),
+      'fid': const StringToIntConverter().toJson(instance.fid),
   'readperm': const StringToIntConverter().toJson(instance.readPerm),
   'author': instance.author,
   'authorid': const StringToIntConverter().toJson(instance.authorId),

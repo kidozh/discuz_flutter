@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:discuz_flutter/JsonResult/ViewThreadResult.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
+import 'package:discuz_flutter/entity/DiscuzNotification.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
@@ -13,7 +14,9 @@ import 'package:discuz_flutter/provider/UserPreferenceNotifierProvider.dart';
 import 'package:discuz_flutter/screen/NotificationScreen.dart';
 import 'package:discuz_flutter/utility/NetworkUtils.dart';
 import 'package:discuz_flutter/utility/UserPreferencesUtils.dart';
+import 'package:discuz_flutter/widget/DiscuzNotificationWidget.dart';
 import 'package:discuz_flutter/widget/PollWidget.dart';
+import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -178,6 +181,93 @@ void main() {
     },
   );
 
+  for (final style in [AppVisualStyle.cupertino, AppVisualStyle.material]) {
+    testWidgets('tapping a notification card opens its reply on $style', (
+      tester,
+    ) async {
+      final site = Discuz(
+        'https://notify.example.test/forum',
+        'X3.5',
+        'utf-8',
+        4,
+        '',
+        '',
+        false,
+        '',
+        '',
+        'Example',
+        '1',
+        '',
+        '',
+      );
+      final account = DiscuzAndUserNotifier()..initDiscuz(site);
+      addTearDown(account.dispose);
+      final opened = <(int, int)>[];
+      final notes = [
+        DiscuzNotification.fromJson({
+          'type': 'post',
+          'note': '<a href="forum.php?mod=viewthread&amp;tid=1#pid2">Topic</a>',
+          'notevar': {'tid': '10', 'pid': '11'},
+          'dateline': '1700000000',
+        }),
+        DiscuzNotification.fromJson({
+          'type': 'at',
+          'note':
+              '<blockquote><a href="forum.php?mod=viewthread&amp;tid=1#pid2">Quote</a></blockquote>'
+              '<a href="/other/forum.php?mod=viewthread&amp;tid=2#pid3">Other site</a> '
+              '<a href="forum.php?mod=redirect&amp;goto=findpost&amp;ptid=20&amp;pid=21">Mention</a>',
+          'dateline': '1700000000',
+        }),
+        DiscuzNotification.fromJson({
+          'type': 'system',
+          'note': '<a href="https://other.example.test/forum/forum.php?mod=viewthread&amp;tid=6#pid7">External topic</a>',
+          'dateline': '1700000000',
+        }),
+      ];
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider.value(value: account),
+            ChangeNotifierProvider(
+              create: (_) => UserPreferenceNotifierProvider(),
+            ),
+            ChangeNotifierProvider(create: (_) => ThemeNotifierProvider()),
+            ChangeNotifierProvider(
+              create: (_) => TypeSettingNotifierProvider(),
+            ),
+          ],
+          child: PlatformProvider(
+            style: style,
+            builder: (_) => MaterialApp(
+              localizationsDelegates: const [
+                S.delegate,
+                ...GlobalMaterialLocalizations.delegates,
+              ],
+              home: Scaffold(
+                body: ListView(
+                  children: [
+                    for (final note in notes)
+                      DiscuzNotificationWidget(
+                        site,
+                        note,
+                        onOpenReply: (tid, pid) => opened.add((tid, pid)),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('POST'));
+      await tester.tap(find.text('AT'));
+      await tester.tap(find.text('SYSTEM'));
+      expect(opened, [(10, 11), (20, 21)]);
+      expect(find.text('Go to reply'), findsNothing);
+    });
+  }
+
   testWidgets('the same poll row displays refreshed options and vote totals', (
     tester,
   ) async {
@@ -216,6 +306,11 @@ void main() {
     expect(find.text('Original option'), findsNothing);
     expect(find.text('Updated option'), findsOneWidget);
     expect(find.text('66.7%'), findsOneWidget);
+    expect(
+      tester.widgetList<FractionallySizedBox>(find.byType(FractionallySizedBox))
+          .map((bar) => bar.widthFactor),
+      [2 / 3, 1 / 3],
+    );
   });
 }
 
@@ -254,6 +349,9 @@ class _TestClient extends Fake implements HttpClient {
 
   @override
   set connectionTimeout(Duration? value) {}
+
+  @override
+  void close({bool force = false}) {}
 
   @override
   Future<HttpClientRequest> openUrl(String method, Uri url) async =>

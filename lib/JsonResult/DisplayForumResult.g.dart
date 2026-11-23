@@ -48,9 +48,7 @@ ForumVariables _$ForumVariablesFromJson(Map<String, dynamic> json) =>
       ..tpp = json['tpp'] as String
       ..page = json['page'] as String? ?? '1'
       ..rewardUnit = json['reward_unit'] as String? ?? ''
-      ..threadType = json['threadtypes'] == null
-          ? null
-          : ThreadType.fromJson(json['threadtypes'] as Map<String, dynamic>)
+      ..threadType = ForumVariables._threadTypes(json['threadtypes'])
       ..threadSorts = discuzMap(json['threadsorts'])
       ..subForumList =
           (json['sublist'] as List<dynamic>?)
@@ -126,22 +124,16 @@ Map<String, dynamic> _$GroupToJson(Group instance) => <String, dynamic>{
 };
 
 ThreadType _$ThreadTypeFromJson(Map<String, dynamic> json) => ThreadType()
-  ..required = json['required'] as String
-  ..listable = json['listable'] as String
-  ..prefix = json['prefix'] as String? ?? ''
+  ..required = ThreadType._flag(json['required'])
+  ..listable = ThreadType._flag(json['listable'])
+  ..prefix = discuzString(json['prefix'])
   ..idNameMap = json['types'] == null
       ? {}
       : const ThreadTypeConverter().fromJson(json['types'])
-  ..idIconMap =
-      (json['icons'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, e as String),
-      ) ??
-      {}
-  ..idModeratorMap =
-      (json['moderators'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, e as String?),
-      ) ??
-      {};
+  ..idIconMap = json['icons'] == null
+      ? {}
+      : const ThreadTypeConverter().fromJson(json['icons'])
+  ..idModeratorMap = ThreadType._moderators(json['moderators']);
 
 Map<String, dynamic> _$ThreadTypeToJson(ThreadType instance) =>
     <String, dynamic>{
@@ -149,7 +141,7 @@ Map<String, dynamic> _$ThreadTypeToJson(ThreadType instance) =>
       'listable': instance.listable,
       'prefix': instance.prefix,
       'types': const ThreadTypeConverter().toJson(instance.idNameMap),
-      'icons': instance.idIconMap,
+      'icons': const ThreadTypeConverter().toJson(instance.idIconMap),
       'moderators': instance.idModeratorMap,
     };
 

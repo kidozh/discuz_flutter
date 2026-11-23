@@ -1,3 +1,4 @@
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -11,6 +12,7 @@ import '../entity/ViewHistory.dart';
 import '../entity/ViewThreadCache.dart';
 import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
+import '../utility/EasyRefreshUtils.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
 import '../utility/post_editor_controller.dart';
 import '../utility/reply_draft_store.dart';
@@ -56,7 +58,7 @@ class _DraftInboxPageState extends State<DraftInboxPage> {
     load();
   }
 
-  Future<void> load() async {
+  Future<IndicatorResult> load() async {
     setState(() {
       busy = true;
       failed = false;
@@ -131,8 +133,10 @@ class _DraftInboxPageState extends State<DraftInboxPage> {
           entries = result;
           users = accounts;
         });
+      return IndicatorResult.success;
     } catch (_) {
       if (mounted) setState(() => failed = true);
+      return IndicatorResult.fail;
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -257,89 +261,82 @@ class _DraftInboxPageState extends State<DraftInboxPage> {
     return PlatformScaffold(
       iosContentPadding: true,
       iosContentBottomPadding: true,
-      appBar: PlatformAppBar(
-        title: Text(s.draftInbox),
-        trailingActions: [
-          PlatformIconButton(
-            liquidGlassSymbol: 'arrow.clockwise',
-            icon: Icon(icons.pick(Icons.refresh, CupertinoIcons.refresh)),
-            onPressed: busy ? null : load,
-          ),
-        ],
-      ),
-      body: busy
-          ? const Center(child: PlatformCircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                if (failed) Text(s.replyDraftRestoreFailed),
-                if (!failed && entries.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text(s.draftEmpty),
-                  ),
-                for (final group in groups.values) ...[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Text(
-                      '${group.first.forum.siteName} · ${group.first.uid == 0 ? s.draftUnknownAccount : userFor(group.first)?.username ?? 'UID ${group.first.uid}'}',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ),
-                  PlatformCard(
-                    margin: EdgeInsets.zero,
-                    child: Column(
-                      children: [
-                        for (final entry in group)
-                          PlatformListTile(
-                            leading: Icon(
-                              icons.pick(
-                                entry.topic != null
-                                    ? Icons.edit_note
-                                    : Icons.reply,
-                                entry.topic != null
-                                    ? CupertinoIcons.doc_text
-                                    : CupertinoIcons.reply,
-                              ),
-                            ),
-                            title: Text(
-                              entry.title.isEmpty
-                                  ? entry.reply != null
-                                        ? '#${entry.reply!.tid}'
-                                        : s.draftUntitled
-                                  : entry.title,
-                            ),
-                            subtitle: Text(
-                              [
-                                '${entry.topic != null ? s.postThread : s.draftReply} · ${DateFormat.yMd().add_Hm().format(entry.updated)}',
-                                entry.text
-                                    .replaceAll(PostEditorToken.pattern, '')
-                                    .trim(),
-                                if (entry.reply?.draft.quote case final quote?)
-                                  s.draftQuote(quote.author),
-                                ...entry.names,
-                              ].where((text) => text.isNotEmpty).join('\n'),
-                              maxLines: 5,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            trailing: PlatformIconButton(
-                              icon: Icon(
-                                icons.pick(
-                                  Icons.delete_outline,
-                                  CupertinoIcons.trash,
-                                ),
-                                semanticLabel: s.draftDelete,
-                              ),
-                              onPressed: () => remove(entry),
-                            ),
-                            onTap: () => open(entry),
+      appBar: PlatformAppBar(title: Text(s.draftInbox)),
+      body: EasyRefresh(
+        header: EasyRefreshUtils.i18nClassicHeader(context),
+        onRefresh: load,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            if (failed) Text(s.replyDraftRestoreFailed),
+            if (busy && entries.isEmpty)
+              const Center(child: PlatformCircularProgressIndicator())
+            else if (!failed && entries.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(s.draftEmpty),
+              ),
+            for (final group in groups.values) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Text(
+                  '${group.first.forum.siteName} · ${group.first.uid == 0 ? s.draftUnknownAccount : userFor(group.first)?.username ?? 'UID ${group.first.uid}'}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              PlatformCard(
+                margin: EdgeInsets.zero,
+                child: Column(
+                  children: [
+                    for (final entry in group)
+                      PlatformListTile(
+                        leading: Icon(
+                          icons.pick(
+                            entry.topic != null ? Icons.edit_note : Icons.reply,
+                            entry.topic != null
+                                ? CupertinoIcons.doc_text
+                                : CupertinoIcons.reply,
                           ),
-                      ],
-                    ),
-                  ),
-                ],
-              ],
-            ),
+                        ),
+                        title: Text(
+                          entry.title.isEmpty
+                              ? entry.reply != null
+                                    ? '#${entry.reply!.tid}'
+                                    : s.draftUntitled
+                              : entry.title,
+                        ),
+                        subtitle: Text(
+                          [
+                            '${entry.topic != null ? s.postThread : s.draftReply} · ${DateFormat.yMd().add_Hm().format(entry.updated)}',
+                            entry.text
+                                .replaceAll(PostEditorToken.pattern, '')
+                                .trim(),
+                            if (entry.reply?.draft.quote case final quote?)
+                              s.draftQuote(quote.author),
+                            ...entry.names,
+                          ].where((text) => text.isNotEmpty).join('\n'),
+                          maxLines: 5,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: PlatformIconButton(
+                          icon: Icon(
+                            icons.pick(
+                              Icons.delete_outline,
+                              CupertinoIcons.trash,
+                            ),
+                            semanticLabel: s.draftDelete,
+                          ),
+                          onPressed: () => remove(entry),
+                        ),
+                        onTap: () => open(entry),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }

@@ -13,7 +13,7 @@ class FavoriteForumDao {
     required int uid,
   }) {
     return favoriteForumBox.values
-        .where((entry) => entry.discuz == discuz && entry.uid == uid)
+        .where((entry) => entry.discuz.isSameSite(discuz) && entry.uid == uid)
         .toList();
   }
 
@@ -42,7 +42,7 @@ class FavoriteForumDao {
   }) {
     for (final entry in favoriteForumBox.values) {
       if (entry.idKey == idInServer &&
-          entry.discuz == discuz &&
+          entry.discuz.isSameSite(discuz) &&
           entry.uid == uid) {
         return entry;
       }

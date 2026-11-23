@@ -12,6 +12,9 @@ class NewThread{
   @StringToIntConverter()
   int tid = 0;
 
+  @StringToIntConverter()
+  int fid = 0;
+
   @JsonKey(name: "readperm")
   @StringToIntConverter()
   int readPerm = 0;

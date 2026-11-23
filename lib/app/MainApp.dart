@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:adaptive_platform_ui/adaptive_platform_ui.dart' as liquid;
 import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:discuz_flutter/dao/DiscuzDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
@@ -32,6 +33,7 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:foldable/foldable.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
@@ -299,14 +301,16 @@ class _MyAppState extends State<MyApp> {
           textTheme: typography.white.useSystemChineseFont(Brightness.dark),
         );
 
-        if (themeColorEntity.visualStyle.effective == AppVisualStyle.material) {
-          materialThemeDataLight = withNeutralMaterialSurfaces(
-            materialThemeDataLight,
-          );
-          materialThemeDataDark = withNeutralMaterialSurfaces(
-            materialThemeDataDark,
-          );
-        }
+        final materialStyle =
+            themeColorEntity.visualStyle.effective == AppVisualStyle.material;
+        materialThemeDataLight = withForumColors(
+          materialThemeDataLight,
+          material: materialStyle,
+        );
+        materialThemeDataDark = withForumColors(
+          materialThemeDataDark,
+          material: materialStyle,
+        );
 
         // final materialThemeDataDark = ThemeData(
         //   colorScheme: ColorScheme.fromSeed(
@@ -446,6 +450,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   int _bottomNavigationbarIndex = 0;
   late List<Widget> bodies = [];
+  final _tabContentKey = GlobalKey();
+  final _coverTabs = OverlayPortalController()..show();
 
   //
   List<Discuz> _allDiscuzs = [];
@@ -770,7 +776,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         ];
 
         void selectBottomDestination(int index) {
-          if (index == _bottomNavigationbarIndex) return;
+          if (index == _bottomNavigationbarIndex ||
+              index >= bottomNavigationItems.length) {
+            return;
+          }
           VibrationUtils.vibrateWithClickIfPossible();
           setState(() {
             _bottomNavigationbarIndex = index;
@@ -778,6 +787,20 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         }
 
         final liquidGlass = usesLiquidGlass(context);
+        // The two-pane host has already consumed its horizontal safe area.
+        // Read the window inset to locate the outer display's system strip.
+        final window = liquidGlass
+            ? MediaQueryData.fromView(
+                View.of(context),
+                platformData: MediaQuery.of(context),
+              )
+            : null;
+        final coverPose = window == null
+            ? null
+            : liquid.DuoLayout.coverTabPose(
+                window.viewPadding,
+                DuoMediaQuery.statusOf(context),
+              );
         final mainMenuButton = selectedDiscuz == null
             ? null
             : PlatformIconButton(
@@ -804,31 +827,33 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 ),
               );
 
-        return PlatformScaffold(
-          bottomNavigationBar: PlatformBottomNavigationBar(
-            items: bottomNavigationItems,
-            liquidGlassSymbols: [
-              'house',
-              'bubble.left.and.bubble.right',
-              if (user != null) 'bell',
-              if (user != null) 'message',
-            ],
-            liquidGlassSelectedSymbols: [
-              'house.fill',
-              'bubble.left.and.bubble.right.fill',
-              if (user != null) 'bell.fill',
-              if (user != null) 'message.fill',
-            ],
-            selectedIndex: _bottomNavigationbarIndex,
-            selectedItemColor: Theme.of(context).colorScheme.primary,
-            unselectedItemColor: Theme.of(context).disabledColor,
-            liquidGlassSelectedItemColor: Theme.of(context).colorScheme.primary,
-            liquidGlassUnselectedItemColor: CupertinoColors.label
-                .resolveFrom(context)
-                .withValues(alpha: 0.62),
-            liquidGlassMinimizeOnScroll: false,
-            onTap: selectBottomDestination,
-          ),
+        final tabBar = PlatformBottomNavigationBar(
+          items: bottomNavigationItems,
+          liquidGlassSymbols: [
+            'house',
+            'bubble.left.and.bubble.right',
+            if (user != null) 'bell',
+            if (user != null) 'message',
+          ],
+          liquidGlassSelectedSymbols: [
+            'house.fill',
+            'bubble.left.and.bubble.right.fill',
+            if (user != null) 'bell.fill',
+            if (user != null) 'message.fill',
+          ],
+          selectedIndex: _bottomNavigationbarIndex,
+          selectedItemColor: Theme.of(context).colorScheme.primary,
+          unselectedItemColor: Theme.of(context).disabledColor,
+          liquidGlassSelectedItemColor: Theme.of(context).colorScheme.primary,
+          liquidGlassUnselectedItemColor: CupertinoColors.label
+              .resolveFrom(context)
+              .withValues(alpha: 0.62),
+          liquidGlassMinimizeOnScroll: false,
+          onTap: selectBottomDestination,
+        );
+        final scaffold = PlatformScaffold(
+          bottomNavigationBar: tabBar,
+          liquidGlassTabBarHidden: coverPose != null,
           appBar: PlatformAppBar(
             // Constrain the interactive title between the toolbar actions.
             // The native toolbar's title overlay otherwise spans the full row.
@@ -869,6 +894,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             leading: liquidGlass ? null : mainMenuButton,
           ),
           body: Column(
+            key: _tabContentKey,
             mainAxisSize: MainAxisSize.max,
             children: [
               Expanded(
@@ -921,6 +947,41 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 ),
             ],
           ),
+        );
+        return OverlayPortal(
+          controller: _coverTabs,
+          overlayLocation: OverlayChildLocation.rootOverlay,
+          overlayChildBuilder: (context) {
+            if (coverPose == null ||
+                !TickerMode.valuesOf(context).enabled ||
+                ModalRoute.of(context)?.isCurrent == false) {
+              return const SizedBox.shrink();
+            }
+            // The rail belongs in the window's reserved strip, outside the
+            // start pane. The pane stays mounted while the phone folds.
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(size: window!.size),
+              child: liquid.DuoPoseScope(
+                pose: coverPose,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: 0,
+                      bottom: 0,
+                      left: coverPose.onLeft ? 0 : null,
+                      right: coverPose.onLeft ? null : 0,
+                      width: coverPose.bandWidth,
+                      child: liquid.DuoVerticalBar(
+                        tabBar: tabBar.createLiquidGlassBottomNavigationBar(),
+                        regions: DuoMediaQuery.regionsOf(context),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+          child: liquid.DuoPoseScope(pose: null, child: scaffold),
         );
       },
     );

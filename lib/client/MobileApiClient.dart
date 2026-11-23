@@ -44,31 +44,37 @@ abstract class MobileApiClient {
   @Headers(<String, dynamic>{"Content-Type": "application/json"})
   Future<String> getCheckResultInString();
 
-  @POST("/api/mobile/index.php?version=4"
-      "&module=login&mod=logging&action=login"
-      "&loginfield=username&loginsubmit=yes"
-      "&cookietime=2592000")
+  @POST(
+    "/api/mobile/index.php?version=4"
+    "&module=login&mod=logging&action=login"
+    "&loginfield=username&loginsubmit=yes"
+    "&cookietime=2592000",
+  )
   @FormUrlEncoded()
   Future<LoginResult> sendLoginRequest(
-      @Field("username") String username,
-      @Field("password") String password,
-      // for captcha services
-      @Field("seccodehash") String captchaHash,
-      @Field("seccodemodid") String captchaType,
-      @Field("seccodeverify") String verification);
+    @Field("username") String username,
+    @Field("password") String password,
+    // for captcha services
+    @Field("seccodehash") String captchaHash,
+    @Field("seccodemodid") String captchaType,
+    @Field("seccodeverify") String verification,
+  );
 
-  @POST("/api/mobile/index.php?version=4"
-      "&module=login&mod=logging&action=login"
-      "&loginfield=username&loginsubmit=yes"
-      "&cookietime=2592000")
+  @POST(
+    "/api/mobile/index.php?version=4"
+    "&module=login&mod=logging&action=login"
+    "&loginfield=username&loginsubmit=yes"
+    "&cookietime=2592000",
+  )
   @FormUrlEncoded()
   Future<String> sendLoginRequestInString(
-      @Field("username") String username,
-      @Field("password") String password,
-      // for captcha services
-      @Field("seccodehash") String captchaHash,
-      @Field("seccodemodid") String captchaType,
-      @Field("seccodeverify") String verification);
+    @Field("username") String username,
+    @Field("password") String password,
+    // for captcha services
+    @Field("seccodehash") String captchaHash,
+    @Field("seccodemodid") String captchaType,
+    @Field("seccodeverify") String verification,
+  );
 
   @GET("/api/mobile/index.php?version=4&module=forumindex")
   Future<DiscuzIndexResult> getDiscuzPortalResult();
@@ -77,25 +83,40 @@ abstract class MobileApiClient {
   Future<String> getDiscuzPortalRaw();
 
   @GET("/api/mobile/index.php?version=4&module=forumdisplay")
-  Future<DisplayForumResult> displayForumResult(@Query("fid") String fid,
-      @Query("page") int page, @Queries() Map<String, dynamic> queries);
+  Future<DisplayForumResult> displayForumResult(
+    @Query("fid") String fid,
+    @Query("page") int page,
+    @Queries() Map<String, dynamic> queries,
+  );
 
   @GET("/api/mobile/index.php?version=4&module=forumdisplay")
-  Future<String> displayForumRaw(@Query("fid") String fid,
-      @Query("page") int page, @Queries() Map<String, dynamic> queries);
+  Future<String> displayForumRaw(
+    @Query("fid") String fid,
+    @Query("page") int page,
+    @Queries() Map<String, dynamic> queries,
+  );
 
   @GET("/api/mobile/index.php?version=4&module=viewthread&ppp=15")
-  Future<ViewThreadResult> viewThreadResult(@Query("tid") int tid,
-      @Query("page") int page, @Queries() Map<String, dynamic> queries);
+  Future<ViewThreadResult> viewThreadResult(
+    @Query("tid") int tid,
+    @Query("page") int page,
+    @Queries() Map<String, dynamic> queries,
+  );
 
   @GET("/api/mobile/index.php?version=4&module=viewthread&ppp=15")
-  Future<String> viewThreadRaw(@Query("tid") int tid, @Query("page") int page,
-      @Queries() Map<String, dynamic> queries);
+  Future<String> viewThreadRaw(
+    @Query("tid") int tid,
+    @Query("page") int page,
+    @Queries() Map<String, dynamic> queries,
+  );
 
   @GET("/api/mobile/index.php?version=4&module=viewthread")
-  Future<ViewThreadResult> viewThreadPage(@Query("tid") int tid,
-      @Query("page") int page, @Query("ppp") int ppp,
-      @Queries() Map<String, dynamic> queries);
+  Future<ViewThreadResult> viewThreadPage(
+    @Query("tid") int tid,
+    @Query("page") int page,
+    @Query("ppp") int ppp,
+    @Queries() Map<String, dynamic> queries,
+  );
 
   // map{
   // "seccodemodid", "forum::viewthread",
@@ -103,44 +124,50 @@ abstract class MobileApiClient {
   // "seccodeverify", CAPTCHA_CODE
   // }
   @POST(
-      "/api/mobile/index.php?version=4&module=sendreply&action=reply&replysubmit=yes&usesig=1&seccodemodid=forum::viewthread")
+    "/api/mobile/index.php?version=4&module=sendreply&action=reply&replysubmit=yes&usesig=1&seccodemodid=forum::viewthread",
+  )
   @FormUrlEncoded()
   Future<String> sendReplyRaw(
-      @Field() int fid,
-      @Field("tid") int tid,
-      @Field("formhash") String formhash,
-      @Field("message") String message,
-      // for captcha services
-      @Field("seccodehash") String captchaHash,
-      @Field("seccodemodid") String captchaType,
-      @Field("seccodeverify") String verification,
-      @Queries() Map<String, dynamic> queries
-      // @Body() Map<String, dynamic> map
-      );
+    @Field() int fid,
+    @Field("tid") int tid,
+    @Field("formhash") String formhash,
+    @Field("message") String message,
+    // for captcha services
+    @Field("seccodehash") String captchaHash,
+    @Field("seccodemodid") String captchaType,
+    @Field("seccodeverify") String verification,
+    @Queries() Map<String, dynamic> queries,
+    // @Body() Map<String, dynamic> map
+  );
 
   @POST(
-      "/api/mobile/index.php?version=4&module=sendreply&action=reply&replysubmit=yes&usesig=1&seccodemodid=forum::viewthread")
+    "/api/mobile/index.php?version=4&module=sendreply&action=reply&replysubmit=yes&usesig=1&seccodemodid=forum::viewthread",
+  )
   @FormUrlEncoded()
   Future<ApiResult> sendReplyResult(
-      @Field() int fid,
-      @Field("tid") int tid,
-      @Field("formhash") String formhash,
-      @Field("reppid") int? replyPostId,
-      @Query("repquote") int? replyPId,
-      @Field("noticetrimstr") String? notifyTriPostMessage,
-      @Field("message") String message,
-      // for captcha services
-      @Field("seccodehash") String captchaHash,
-      @Field("seccodemodid") String captchaType,
-      @Field("seccodeverify") String verification,
-      @Queries() Map<String, dynamic> queries);
+    @Field() int fid,
+    @Field("tid") int tid,
+    @Field("formhash") String formhash,
+    @Field("reppid") int? replyPostId,
+    @Query("repquote") int? replyPId,
+    @Field("noticetrimstr") String? notifyTriPostMessage,
+    @Field("message") String message,
+    // for captcha services
+    @Field("seccodehash") String captchaHash,
+    @Field("seccodemodid") String captchaType,
+    @Field("seccodeverify") String verification,
+    @Queries() Map<String, dynamic> queries,
+  );
 
   @GET("/api/mobile/index.php?version=4&module=mynotelist")
   Future<String> userNotificationRaw(@Query("page") int page);
 
   @GET("/api/mobile/index.php?version=4&module=mynotelist")
   Future<UserDiscuzNotificationResult> userNotificationResult(
-      @Query("page") int page);
+    @Query("page") int page, {
+    @Query('view') String? view,
+    @Query('type') String? type,
+  });
 
   @GET("/api/mobile/index.php?version=4&module=hotthread")
   Future<String> hotThreadRaw(@Query("page") int page);
@@ -152,22 +179,26 @@ abstract class MobileApiClient {
   Future<CaptchaResult> captchaResult(@Query("type") String type);
 
   @POST(
-      "/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes&action=votepoll")
+    "/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes&action=votepoll",
+  )
   @FormUrlEncoded()
   Future<ApiResult> votePoll(
-      @Query("fid") int fid,
-      @Query("tid") int tid,
-      @Field("formhash") String formHash,
-      @Field("pollanswers[]") List<String> checkedOptionId);
+    @Query("fid") int fid,
+    @Query("tid") int tid,
+    @Field("formhash") String formHash,
+    @Field("pollanswers[]") List<String> checkedOptionId,
+  );
 
   @POST(
-      "/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes&action=votepoll")
+    "/api/mobile/index.php?version=4&module=pollvote&pollsubmit=yes&action=votepoll",
+  )
   @FormUrlEncoded()
   Future<String> votePollRaw(
-      @Query("fid") int fid,
-      @Query("tid") int tid,
-      @Field("formhash") String formHash,
-      @Field("pollanswers[]") List<int> checkedOptionId);
+    @Query("fid") int fid,
+    @Query("tid") int tid,
+    @Field("formhash") String formHash,
+    @Field("pollanswers[]") List<int> checkedOptionId,
+  );
 
   @GET("/api/mobile/index.php?version=4&module=login")
   Future<CheckLoginResult> checkLoginResult();
@@ -183,29 +214,41 @@ abstract class MobileApiClient {
 
   @GET("/api/mobile/index.php?version=4&module=mypm")
   Future<PrivateMessagePortalResult> privateMessagePortalResult(
-      @Query("page") int page);
+    @Query("page") int page, {
+    @Query('filter') String? filter,
+  });
 
   @GET("/api/mobile/index.php?version=4&module=mypm&subop=view")
   Future<PrivateMessageDetailResult> privateMessageDetailResult(
-      @Query("touid") int toUid, @Query("page") int page);
+    @Query("touid") int toUid,
+    @Query("page") int page,
+  );
 
   @POST(
-      "/api/mobile/index.php?version=4&ac=pm&op=send&daterange=0&module=sendpm&pmsubmit=yes")
+    "/api/mobile/index.php?version=4&ac=pm&op=send&daterange=0&module=sendpm&pmsubmit=yes",
+  )
   @FormUrlEncoded()
-  Future<ApiResult> sendPrivateMessageResult(@Field("formhash") String formHash,
-      @Field("message") String message, @Field("touid") int toUid);
+  Future<ApiResult> sendPrivateMessageResult(
+    @Field("formhash") String formHash,
+    @Field("message") String message,
+    @Field("touid") int toUid,
+  );
 
   @GET("/api/mobile/index.php?version=4&module=publicpm")
   Future<PublicMessagePortalResult> publicMessagePortalResult(
-      @Query("page") int page);
+    @Query("page") int page,
+  );
 
   @GET("/api/mobile/index.php?version=4&module=myfavthread")
   Future<FavoriteThreadResult> favoriteThreadResult(@Query("page") int page);
 
   @MultiPart()
   @POST("/api/mobile/index.php?version=4&module=forumupload&type=image")
-  Future<String> uploadImage(@Part(name: "uid") int uid,
-      @Part(name: "hash") String uploadHash, @Part(name: "Filedata") File file);
+  Future<String> uploadImage(
+    @Part(name: "uid") int uid,
+    @Part(name: "hash") String uploadHash,
+    @Part(name: "Filedata") File file,
+  );
 
   @MultiPart()
   @POST("/api/mobile/index.php?version=4&module=forumupload&simple=1")
@@ -218,10 +261,13 @@ abstract class MobileApiClient {
 
   @GET("/api/mobile/index.php?version=4&module=checkpost")
   Future<CheckPostResult> checkPost(
-      @Query("fid") int? fid, @Query("tid") int? tid);
+    @Query("fid") int? fid,
+    @Query("tid") int? tid,
+  );
 
   @POST(
-      "/misc.php?mod=report&inajax=1&handlekey=miscreport120&reportsubmit=true")
+    "/misc.php?mod=report&inajax=1&handlekey=miscreport120&reportsubmit=true",
+  )
   @FormUrlEncoded()
   Future<String> reportContent(
     @Field("formhash") String formHash,
@@ -232,7 +278,8 @@ abstract class MobileApiClient {
   );
 
   @POST(
-      "/api/mobile/index.php?version=4&module=favthread&type=thread&ac=favorite&favoritesubmit=true")
+    "/api/mobile/index.php?version=4&module=favthread&type=thread&ac=favorite&favoritesubmit=true",
+  )
   @FormUrlEncoded()
   Future<ApiResult> favoriteThreadActionResult(
     @Field("formhash") String formhash,
@@ -240,7 +287,8 @@ abstract class MobileApiClient {
   );
 
   @POST(
-      "/api/mobile/index.php?version=4&module=favthread&type=thread&ac=favorite&deletesubmit=true&op=delete")
+    "/api/mobile/index.php?version=4&module=favthread&type=thread&ac=favorite&deletesubmit=true&op=delete",
+  )
   @FormUrlEncoded()
   Future<ApiResult> unfavoriteThreadActionResult(
     @Field("formhash") String formhash,
@@ -251,7 +299,8 @@ abstract class MobileApiClient {
   Future<FavoriteForumResult> favoriteForumResult(@Query("page") int page);
 
   @POST(
-      "/api/mobile/index.php?version=4&module=favforum&type=thread&ac=favorite&favoritesubmit=true")
+    "/api/mobile/index.php?version=4&module=favforum&type=thread&ac=favorite&favoritesubmit=true",
+  )
   @FormUrlEncoded()
   Future<ApiResult> favoriteForumActionResult(
     @Field("formhash") String formhash,
@@ -259,7 +308,8 @@ abstract class MobileApiClient {
   );
 
   @POST(
-      "/api/mobile/index.php?version=4&module=favforum&type=thread&ac=favorite&deletesubmit=true&op=delete")
+    "/api/mobile/index.php?version=4&module=favforum&type=thread&ac=favorite&deletesubmit=true&op=delete",
+  )
   @FormUrlEncoded()
   Future<ApiResult> unfavoriteForumActionResult(
     @Field("formhash") String formhash,
@@ -268,7 +318,9 @@ abstract class MobileApiClient {
 
   @GET("/api/mobile/index.php?version=4&module=newthreads&limit=20")
   Future<NewThreadResult> newThreadsResult(
-      @Query("fids") String fids, @Query("start") int start);
+    @Query("fids") String fids,
+    @Query("start") int start,
+  );
 
   // push notification
   @GET("/plugin.php?id=dhpush:token")
@@ -277,27 +329,30 @@ abstract class MobileApiClient {
   @POST("/plugin.php?id=dhpush:token")
   @FormUrlEncoded()
   Future<PostTokenResult> sendToken(
-      @Field("formhash") String formHash,
-      @Field("token") String token,
-      @Field("deviceName") String deviceName,
-      @Field("packageId") String packageId,
-      @Field("channel") String pushChannel);
-
-  @POST(
-      "/api/mobile/index.php?version=4&module=newthread&topicsubmit=yes&usesig=1")
-  @Headers(<String, dynamic>{"Content-Type": "application/x-www-form-urlencoded"})
-  Future<ApiResult> postNewThread(
-      @Body() Map<String, dynamic> fields);
-
-  @POST(
-      "/api/mobile/index.php?version=4&module=mobilesign&type=thread&ac=favorite&deletesubmit=true&op=delete")
-  @FormUrlEncoded()
-  Future<ApiResult> mobileSignResult(
-    @Field("hash") String formhash,
+    @Field("formhash") String formHash,
+    @Field("token") String token,
+    @Field("deviceName") String deviceName,
+    @Field("packageId") String packageId,
+    @Field("channel") String pushChannel,
   );
 
   @POST(
-      "/api/mobile/index.php?version=4&module=topicadmin&action=warn&modsubmit=yes&sendreasonpm=on")
+    "/api/mobile/index.php?version=4&module=newthread&topicsubmit=yes&usesig=1",
+  )
+  @Headers(<String, dynamic>{
+    "Content-Type": "application/x-www-form-urlencoded",
+  })
+  Future<ApiResult> postNewThread(@Body() Map<String, dynamic> fields);
+
+  @POST(
+    "/api/mobile/index.php?version=4&module=mobilesign&type=thread&ac=favorite&deletesubmit=true&op=delete",
+  )
+  @FormUrlEncoded()
+  Future<ApiResult> mobileSignResult(@Field("hash") String formhash);
+
+  @POST(
+    "/api/mobile/index.php?version=4&module=topicadmin&action=warn&modsubmit=yes&sendreasonpm=on",
+  )
   @FormUrlEncoded()
   Future<ApiResult> warnPostResult(
     @Field("formhash") String formhash,
@@ -309,28 +364,30 @@ abstract class MobileApiClient {
   );
 
   @POST(
-      "/api/mobile/index.php?version=4&module=topicadmin&action=banpost&modsubmit=yes&sendreasonpm=on")
+    "/api/mobile/index.php?version=4&module=topicadmin&action=banpost&modsubmit=yes&sendreasonpm=on",
+  )
   @FormUrlEncoded()
   Future<ApiResult> banPostResult(
-      @Field("formhash") String formhash,
-      @Field("fid") int fid,
-      @Field("tid") int tid,
-      @Field("topiclist[]") List<int> pids,
-      @Field("banned") int banned,
-      @Field("reason") String reason,
-      );
+    @Field("formhash") String formhash,
+    @Field("fid") int fid,
+    @Field("tid") int tid,
+    @Field("topiclist[]") List<int> pids,
+    @Field("banned") int banned,
+    @Field("reason") String reason,
+  );
 
   @POST(
-      "/api/mobile/index.php?version=4&module=topicadmin&action=delpost&modsubmit=yes&sendreasonpm=on")
+    "/api/mobile/index.php?version=4&module=topicadmin&action=delpost&modsubmit=yes&sendreasonpm=on",
+  )
   @FormUrlEncoded()
   Future<ApiResult> deletePostResult(
-      @Field("formhash") String formhash,
-      @Field("fid") int fid,
-      @Field("tid") int tid,
-      @Field("topiclist[]") List<int> pids,
-      @Field("warned") int warned,
-      @Field("reason") String reason,
-      );
+    @Field("formhash") String formhash,
+    @Field("fid") int fid,
+    @Field("tid") int tid,
+    @Field("topiclist[]") List<int> pids,
+    @Field("warned") int warned,
+    @Field("reason") String reason,
+  );
 }
 
 class _ForumParseErrorLogger implements ParseErrorLogger {

@@ -1,3 +1,5 @@
+import '../utility/forum_feed_filters.dart';
+
 import 'package:discuz_flutter/utility/pane_navigation.dart';
 
 import '../utility/DashboardPreferences.dart';
@@ -97,25 +99,33 @@ class _KeylolMobileTopicState extends State<KeylolMobileTopicWidget> {
     if (_isLoading) return const Center(child: LoadingStateWidget());
     if (_error != null) return ErrorCard(_error!, _loadTopics);
     if (_topics.isEmpty) return EmptyScreen();
-    return KeylolTopicTabs(
-      titles: _topics.map((topic) => topic.title).toList(),
-      topicBuilder: (context, topicIndex) {
-        final threads = _topics[topicIndex].threads;
-        return ListView.builder(
-          itemCount: threads.length,
-          itemBuilder: (context, index) {
-            final item = threads[index];
-            final threadType = ThreadType()..idNameMap = {'0': item.forum};
-            return ForumThreadWidget(
-              discuz,
-              source.user,
-              item.convertToForumThread(),
-              threadType,
-              widget.onSelectTid,
-            );
-          },
-        );
-      },
+    return withForumFeedFilters(
+      discuz,
+      source.user,
+      (context, rules) => KeylolTopicTabs(
+        titles: _topics.map((topic) => topic.title).toList(),
+        topicBuilder: (context, topicIndex) {
+          final threads = _topics[topicIndex].threads
+              .where(
+                (thread) => !hidesForumThread(rules, thread.tid, thread.title),
+              )
+              .toList();
+          return ListView.builder(
+            itemCount: threads.length,
+            itemBuilder: (context, index) {
+              final item = threads[index];
+              final threadType = ThreadType()..idNameMap = {'0': item.forum};
+              return ForumThreadWidget(
+                discuz,
+                source.user,
+                item.convertToForumThread(),
+                threadType,
+                widget.onSelectTid,
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

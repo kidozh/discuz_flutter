@@ -61,7 +61,7 @@ ThreadVariables _$ThreadVariablesFromJson(Map<String, dynamic> json) =>
       ..poll = json['special_poll'] == null
           ? null
           : Poll.fromJson(json['special_poll'] as Map<String, dynamic>)
-      ..debate = DebateInfo.parse(json['special_debate'])
+      ..tradeItems = TradeItem.parse(json['special_trade'])
       ..reward = RewardInfo.parse(json['special_reward'])
       ..activity = ActivityInfo.parse(json['special_activity'])
       ..threadSort = ThreadSortInfo.parse(json['threadsortshow'])
@@ -95,7 +95,7 @@ Map<String, dynamic> _$ThreadVariablesToJson(
   'ppp': instance.ppp,
   'page': instance.page,
   'special_poll': instance.poll?.toJson(),
-  'special_debate': instance.debate?.toJson(),
+  'special_trade': ThreadVariables._tradeItemsJson(instance.tradeItems),
   'special_reward': instance.reward?.toJson(),
   'special_activity': instance.activity?.toJson(),
   'threadsortshow': instance.threadSort?.toJson(),
@@ -133,6 +133,7 @@ DetailedThreadInfo _$DetailedThreadInfoFromJson(Map<String, dynamic> json) =>
       ..status = json['status'] as String? ?? '0'
       ..digest = json['digest'] as String? ?? '0'
       ..closed = const StringToBoolConverter().fromJson(json['closed'])
+      ..moderated = const StringToBoolConverter().fromJson(json['moderated'])
       ..allreplies = const StringToIntConverter().fromJson(json['allreplies'])
       ..freeMessage = json['freemessage'] as String? ?? ''
       ..replyCredit = discuzInt(json['replycredit'])
@@ -166,6 +167,7 @@ Map<String, dynamic> _$DetailedThreadInfoToJson(
   'status': instance.status,
   'digest': instance.digest,
   'closed': const StringToBoolConverter().toJson(instance.closed),
+  'moderated': const StringToBoolConverter().toJson(instance.moderated),
   'allreplies': const StringToIntConverter().toJson(instance.allreplies),
   'freemessage': instance.freeMessage,
   'replycredit': instance.replyCredit,

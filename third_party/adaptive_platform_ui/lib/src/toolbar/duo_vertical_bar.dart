@@ -84,6 +84,12 @@ class DuoPose {
 
 /// Layout decisions for iPhone Duo.
 abstract final class DuoLayout {
+  /// The folded cover's tab strip for an app that keeps its top toolbar.
+  static DuoPose? coverTabPose(EdgeInsets viewPadding, HingeStatus status) =>
+      status == HingeStatus.closed
+      ? resolvePose(viewPadding, SystemVerticalBarEdge.unknown)
+      : null;
+
   /// The Duo layout for a window, or null where bars stay horizontal.
   ///
   /// The safe-area insets decide where they name a side ([barSide]). The

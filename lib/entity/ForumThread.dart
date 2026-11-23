@@ -1,4 +1,5 @@
 import 'package:discuz_flutter/converter/SecondToDateTimeConverter.dart';
+import 'package:discuz_flutter/converter/StringToBoolConverter.dart';
 import 'package:discuz_flutter/converter/StringToIntConverter.dart';
 import 'package:discuz_flutter/utility/discuz_json.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -131,10 +132,21 @@ class ShortReply{
 
 @JsonSerializable(ignoreUnannotated: true)
 class AttachmentPreview{
+  @JsonKey()
   @StringToIntConverter()
   int aid=0, tid=0, pid=0, uid=0;
   @JsonKey(defaultValue: "")
   String dateline = "", filename = "", attachment="";
+  @JsonKey(fromJson: discuzString)
+  String url = '';
+  @JsonKey(name: 'aidencode', fromJson: discuzString)
+  String aidEncode = '';
+  @JsonKey()
+  @StringToBoolConverter()
+  bool remote = false;
+  @JsonKey()
+  @StringToIntConverter()
+  int price = 0;
   @StringToIntConverter()
   @JsonKey(name:"filesize",defaultValue: 0)
   int fileSize = 0;

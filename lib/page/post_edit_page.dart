@@ -191,6 +191,7 @@ class _PostEditPageState extends State<PostEditPage> {
       'expiration' => s.editPostPollDays,
       'visibilitypoll' => s.editPostPollVisibility,
       'overt' => s.editPostPollVoterList,
+      'tags' => s.forumThreadTagsHint,
       'activityclass' => s.activityCategory,
       'activityplace' => s.activityLocation,
       'starttimefrom[0]' || 'starttimefrom[1]' => s.activityStarts,

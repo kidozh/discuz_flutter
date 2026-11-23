@@ -50,6 +50,18 @@ class PrivateMessageCacheDao {
     );
   }
 
+  Future<void> removeConversation({
+    required String siteKey,
+    required int ownerUid,
+    required int peerUid,
+  }) => box.deleteAll(
+    findConversation(
+      siteKey: siteKey,
+      ownerUid: ownerUid,
+      peerUid: peerUid,
+    ).map((message) => message.key),
+  );
+
   Future<void> deleteExpired({
     Duration retention = const Duration(days: 30),
   }) async {
@@ -78,10 +90,7 @@ class PrivateMessageCacheDao {
     );
   }
 
-  int _compareNewestFirst(
-    PrivateMessageCache left,
-    PrivateMessageCache right,
-  ) {
+  int _compareNewestFirst(PrivateMessageCache left, PrivateMessageCache right) {
     if (left.pmId != 0 && right.pmId != 0 && left.pmId != right.pmId) {
       return right.pmId.compareTo(left.pmId);
     }

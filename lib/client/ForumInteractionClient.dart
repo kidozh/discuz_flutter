@@ -178,6 +178,7 @@ class ForumInteractionClient {
         contentType: body is FormData
             ? Headers.multipartFormDataContentType
             : Headers.formUrlEncodedContentType,
+        listFormat: ListFormat.multi,
         // Decode here so malformed replies don't fail inside Dio before we
         // can distinguish an empty response, an AJAX envelope and JSON.
         responseType: ResponseType.plain,
@@ -300,15 +301,59 @@ class ForumInteractionClient {
     return header == null ? null : header.querySelector('.replystick') != null;
   }
 
-  Future<List<Map<String, dynamic>>> myThreads(String type, int page) async {
-    if (!{'thread', 'reply'}.contains(type) || page < 1)
+  Future<List<Map<String, dynamic>>> myThreads(
+    String type,
+    int page, {
+    String? filter,
+    int? uid,
+  }) async {
+    if (!{'thread', 'reply', 'postcomment'}.contains(type) || page < 1) {
       throw ArgumentError('Invalid list');
-    final reply = await request('mythread', {'type': type, 'page': page});
+    }
+    final ForumReply reply;
+    try {
+      reply = await request('mythread', {
+        'type': type,
+        'page': page,
+        if (filter != null && type != 'postcomment') 'filter': filter,
+      });
+    } on DioException catch (error) {
+      final response = error.response;
+      final body = response?.data;
+      if (response?.statusCode == 503 && body is String &&
+          body.contains('mythread.php') && body.contains('array_values')) {
+        throw const ForumApiException('my_content_unavailable', '', fromForum: true);
+      }
+      rethrow;
+    }
     reply.requireData('data');
+    if (uid != null && discuzInt(reply.variables['member_uid']) != uid) {
+      throw const ForumApiException('account_changed', '');
+    }
     return forumRows(reply.variables['data'])
         .map(discuzMap)
         .where((row) => discuzInt(row['tid']) > 0)
         .toList();
+  }
+
+  Future<Map<int, String>> profileNames(Set<int> uids, {required int uid}) async {
+    final ids = uids.where((id) => id > 0).toList();
+    final names = <int, String>{};
+    for (var start = 0; start < ids.length; start += 30) {
+      final batch = ids.skip(start).take(30).toSet();
+      final reply = await request('profiles', {'uids': batch.join(',')});
+      reply.requireData('profiles');
+      if (discuzInt(reply.variables['member_uid']) != uid) {
+        throw const ForumApiException('account_changed', '');
+      }
+      for (final item in forumRows(reply.variables['profiles'])) {
+        final row = discuzMap(item);
+        final id = discuzInt(row['uid']);
+        final name = discuzString(row['username']).trim();
+        if (batch.contains(id) && name.isNotEmpty) names[id] = name;
+      }
+    }
+    return names;
   }
 
   Future<ForumReply> comments(int tid, int pid, int page) async {

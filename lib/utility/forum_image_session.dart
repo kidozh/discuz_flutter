@@ -105,11 +105,13 @@ class ForumImageSession {
     Uri uri,
     Directory directory, {
     String? filename,
+    void Function(int, int?)? onProgress,
   }) => downloadForumAttachment(
     uri,
     directory,
     forum: baseUrl,
     filename: filename,
+    onProgress: onProgress,
     policy: _policy,
     threadId: _threadId,
     isCurrent: () => _active,
@@ -159,6 +161,7 @@ Future<File> downloadForumAttachment(
   Directory directory, {
   required Uri forum,
   String? filename,
+  void Function(int, int?)? onProgress,
   ForumImageCookiePolicy policy = ForumImageCookiePolicy.never,
   int? threadId,
   bool Function()? isCurrent,
@@ -200,12 +203,14 @@ Future<File> downloadForumAttachment(
     _checkSession(isCurrent);
     final sink = file.openWrite();
     var received = 0;
+    final total = int.tryParse(response.headers.value(HttpHeaders.contentLengthHeader) ?? '');
     try {
       consuming = true;
       await sink.addStream(
         body.stream.map((bytes) {
           _checkSession(isCurrent);
           received += bytes.length;
+          onProgress?.call(received, total);
           return bytes;
         }),
       );

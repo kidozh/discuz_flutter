@@ -14,18 +14,21 @@ import 'package:path_provider/path_provider.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 
 import '../utility/forum_image_session.dart';
+import '../utility/forum_attachment_history.dart';
 import '../utility/forum_image_url.dart';
 import '../utility/forum_voice.dart';
 import 'forum_attachment_download.dart';
 import 'forum_voice_message.dart';
+import '../utility/material_surface_theme.dart';
 
 class AttachmentWidget extends StatelessWidget {
   final Discuz _discuz;
   final Attachment _attachment;
 
   final VoidCallback? onContentChanged;
-  final int? threadId;
+  final int? threadId, postId;
   final bool isListedImage;
+  final Uri? inlineThumbnail;
 
   const AttachmentWidget(
     this._discuz,
@@ -33,7 +36,9 @@ class AttachmentWidget extends StatelessWidget {
     super.key,
     this.onContentChanged,
     this.threadId,
+    this.postId,
     this.isListedImage = false,
+    this.inlineThumbnail,
   });
 
   @override
@@ -94,9 +99,9 @@ class AttachmentWidget extends StatelessWidget {
       _attachment.aidEncode,
       preview: true,
     );
-    final previewUrl = directUrl ?? protectedImage;
+    final previewUrl = inlineThumbnail ?? directUrl ?? protectedImage;
     if (isImage && previewUrl != null) {
-      final original = protectedImage ?? previewUrl;
+      final original = protectedImage ?? directUrl ?? previewUrl;
       return ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
@@ -146,6 +151,10 @@ class AttachmentWidget extends StatelessWidget {
     }
 
     final session = ForumImageSession.of(context, _discuz, threadId: tid);
+    final pid = _attachment.pid > 0 ? _attachment.pid : postId ?? 0;
+    final reference = tid != null && tid > 0 && _attachment.aid > 0
+        ? ForumAttachmentReference(tid, pid, _attachment.aid)
+        : null;
     if (!kIsWeb &&
         baseUrl != null &&
         downloadUrl != null &&
@@ -171,8 +180,9 @@ class AttachmentWidget extends StatelessWidget {
         save: () => downloadAndOpenForumAttachment(
           context,
           downloadUrl,
-          forum: baseUrl,
+          forum: _discuz,
           session: session,
+          reference: reference,
           filename: _attachment.filename,
         ),
       );
@@ -182,19 +192,16 @@ class AttachmentWidget extends StatelessWidget {
     final icons = PlatformIcons(context);
     final cupertino = isCupertino(context);
     final shape = BorderRadius.circular(12);
-    final surface = cupertino
-        ? CupertinoColors.tertiarySystemFill.resolveFrom(context)
-        : colors.surfaceContainerHighest;
-    final downloadColor = theme.brightness == Brightness.dark
-        ? colors.onSurface
-        : colors.primary;
+    final surface = colors.surfaceContainerHighest;
+    final downloadColor = readableForumForeground(colors.primary, surface);
     final onDownload = baseUrl == null || downloadUrl == null
         ? null
         : () => downloadAndOpenForumAttachment(
             context,
             downloadUrl,
-            forum: baseUrl,
+            forum: _discuz,
             session: session,
+            reference: reference,
             filename: _attachment.filename,
           );
     final row = Padding(

@@ -198,6 +198,7 @@ DiscuzError _forumMessage(
           'identifier_not_exists' ||
           'identifier_file_not_exists' => strings.forumApiUnavailable,
           'friend_status_off' ||
+          'favorite_status_off' ||
           'mobile_is_closed' ||
           'board_closed' ||
           'action_closed' => strings.forumFeatureDisabled,
@@ -208,12 +209,22 @@ DiscuzError _forumMessage(
           'login_before_enter_home' ||
           'login_before_enter' => strings.forumSignInRequired,
           'account_changed' => strings.forumAccountChanged,
+          'guide_status_off' ||
+          'my_content_unavailable' => strings.myContentUnavailable,
+          'favorite_sync_incomplete' => strings.favoriteSyncIncomplete,
+          'private_message_action_failed' => strings.privateMessageActionFailed,
+          'poll_voters_unavailable' => strings.pollVotersUnavailable,
+          'forum_announcements_unavailable' => strings.forumAnnouncementsUnavailable,
+          'thread_tags_unavailable' => strings.threadTagsUnavailable,
+          'thread_tags_invalid' => strings.threadTagsInvalid,
+          'paid_post_rules_changed' => strings.paidPostRulesChanged,
           'missing_formhash' ||
           'submit_invalid' ||
           'mobilesign_formhash_failed' => strings.forumFormExpired,
           'param_error' => strings.forumApiInvalidRequest,
           'submit_seccode_invalid' ||
           'submit_secqaa_invalid' => strings.forumCaptchaIncorrect,
+          'login_seccheck2' => strings.loginBrowserVerificationRequired,
           'login_invalid' ||
           'login_password_invalid' => strings.forumLoginRejected,
           'thread_nonexistence' ||
@@ -221,8 +232,9 @@ DiscuzError _forumMessage(
           'post_not_found' ||
           'attachment_nonexistence' ||
           'forum_nonexistence' => strings.forumContentUnavailable,
+          'forum_passwd_incorrect' => strings.boardPasswordWrong,
           'forum_passwd' ||
-          'forum_passwd_incorrect' => strings.forumPasswordRequired,
+          'forum_passwd_required' => strings.boardPasswordPrompt,
           'thread_closed' || 'post_thread_closed' => strings.forumThreadClosed,
           'post_flood_ctrl' ||
           'search_toomany' ||

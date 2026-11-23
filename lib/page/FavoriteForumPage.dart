@@ -1,10 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:discuz_flutter/JsonResult/FavoriteForumResult.dart';
-import 'package:discuz_flutter/client/MobileApiClient.dart';
+
+import '../client/ForumInteractionClient.dart';
+import '../client/favorite_sync.dart';
+
 import 'package:discuz_flutter/dao/FavoriteForumDao.dart';
 import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/DiscuzError.dart';
-import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
@@ -84,54 +87,45 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget> {
     final account = context.read<DiscuzAndUserNotifier>();
     final session = account.sessionIdentity;
     bool isCurrent() => mounted && identical(session, account.sessionIdentity);
+    final before = {
+      for (final row in dao.getFavoriteForumList(discuz, uid: user.uid))
+        row.idKey: row,
+    };
     _syncing = true;
+    Dio? dio;
     try {
-      final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
-      final client = MobileApiClient(dio, baseUrl: discuz.baseURL);
-      final favorites = <int, FavoriteForum>{};
-      var page = 1;
-      while (isCurrent()) {
-        final response = await client.favoriteForumResult(page++);
-        if (!isCurrent()) return IndicatorResult.fail;
-        final variables = response.variables;
-        final error = EasyRefreshUtils.responseError(
-          context,
-          response,
-          user,
-          variables.member_uid,
-        );
-        if (error != null) {
-          setState(() => _error = error);
-          return IndicatorResult.fail;
-        }
-        final previousCount = favorites.length;
-        for (final favorite in variables.pmList) {
-          favorites[favorite.id] = favorite;
-        }
-        if (favorites.length >= variables.count || variables.pmList.isEmpty) {
-          break;
-        }
-        if (favorites.length == previousCount) {
-          final strings = S.of(context);
-          setState(
-            () => _error = DiscuzError(strings.error, strings.loadFailed),
-          );
-          return IndicatorResult.fail;
-        }
-      }
-      for (final favorite in favorites.values) {
+      dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      final favorites = await loadFavoriteSnapshot(
+        ForumInteractionClient(dio, discuz.baseURL),
+        uid: user.uid,
+        threads: false,
+        isCurrent: isCurrent,
+      );
+      final decoded = favorites.map(
+        (id, row) => MapEntry(id, FavoriteForum.fromJson(row)),
+      );
+      for (final entry in decoded.entries) {
         if (!isCurrent()) return IndicatorResult.fail;
         final existing = dao.getFavoriteForumByFid(
-          favorite.id,
+          entry.key,
           discuz,
           uid: user.uid,
         );
-        final updated = favorite.toDb(discuz)..uid = user.uid;
+        if (!identical(before[entry.key], existing)) continue;
+        final updated = entry.value.toDb(discuz)..uid = user.uid;
         if (existing == null) {
           await dao.insertFavoriteForum(updated);
         } else {
           updated.date = existing.date;
           await dao.favoriteForumBox.put(existing.key, updated);
+        }
+      }
+      for (final old in before.values) {
+        if (!isCurrent()) return IndicatorResult.fail;
+        if (old.favid >= 0 &&
+            !decoded.containsKey(old.idKey) &&
+            identical(dao.favoriteForumBox.get(old.key), old)) {
+          await dao.removeFavoriteForum(old);
         }
       }
       if (!isCurrent()) return IndicatorResult.fail;
@@ -143,6 +137,7 @@ class FavoriteForumState extends State<FavoriteForumStatefulWidget> {
       }
       return IndicatorResult.fail;
     } finally {
+      dio?.close();
       _syncing = false;
     }
   }

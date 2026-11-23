@@ -1,5 +1,3 @@
-import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// Native presentation for HTML block quotes and Discuz reply excerpts.
@@ -11,9 +9,7 @@ class DiscuzQuoteBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final background = isCupertino(context)
-        ? CupertinoColors.tertiarySystemFill.resolveFrom(context)
-        : colors.surfaceContainerHighest;
+    final background = colors.surfaceContainerHighest;
     return Semantics(
       container: true,
       child: Container(

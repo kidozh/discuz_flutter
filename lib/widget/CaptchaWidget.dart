@@ -120,7 +120,13 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
     });
   }
 
-  Future<void> _loadCaptchaInfo() async {
+  Future<void> _loadCaptchaInfo() {
+    final future = _fetchCaptchaInfo();
+    widget.captchaController?._pendingCheck = future;
+    return future;
+  }
+
+  Future<void> _fetchCaptchaInfo() async {
     final request = ++_request;
     bool isCurrent() => mounted && request == _request;
     setState(() {
@@ -140,15 +146,21 @@ class CaptchaState extends State<CaptchaStatefulWidget> {
       ).captchaResult(type);
       if (!isCurrent()) return;
       final variables = value.variables;
+      if (type == 'login' && variables.securityQuestion.trim().isNotEmpty) {
+        widget.captchaController?._requiresBrowser = true;
+        return;
+      }
       if (value.getErrorString() != null && variables.secHash.isEmpty) {
         throw StateError(value.getErrorString()!);
       }
       if (variables.secHash.isEmpty) {
         _captchaRequired = false;
+        widget.captchaController?._requiredByCheck = false;
         _loadFailed = widget.captchaController?.requiredByServer == true;
         return;
       }
       setState(() => _captchaRequired = true);
+      widget.captchaController?._requiredByCheck = true;
       final uri = Uri.parse('${baseUrl}api/mobile/index.php').replace(
         queryParameters: {
           'module': 'seccode',
@@ -247,10 +259,27 @@ class CaptchaController extends ValueNotifier<CaptchaFields?> {
   CaptchaController(CaptchaFields value) : super(value);
 
   bool _requiredByServer = false;
+  bool _requiredByCheck = false;
+  bool _requiresBrowser = false;
+  Future<void>? _pendingCheck;
   bool get requiredByServer => _requiredByServer;
+  bool get requiresVerification => _requiredByServer || _requiredByCheck;
+  bool get requiresBrowser => _requiresBrowser;
+
+  Future<void> waitForCheck() async {
+    var pending = _pendingCheck;
+    while (pending != null) {
+      await pending;
+      if (identical(_pendingCheck, pending)) return;
+      pending = _pendingCheck;
+    }
+  }
 
   void reloadCaptcha({required bool requiredByServer}) {
     _requiredByServer = requiredByServer;
+    _requiredByCheck = false;
+    _requiresBrowser = false;
+    _pendingCheck = null;
     if (value == null) {
       notifyListeners();
     } else {

@@ -4,6 +4,7 @@ import 'package:discuz_flutter/database/AppDatabase.dart';
 import 'package:discuz_flutter/entity/Discuz.dart';
 import 'package:discuz_flutter/entity/FavoriteForumInDatabase.dart';
 import 'package:discuz_flutter/entity/FavoriteThreadInDatabase.dart';
+import 'package:discuz_flutter/entity/ViewThreadScrollDistance.dart';
 import 'package:discuz_flutter/generated/l10n.dart';
 import 'package:discuz_flutter/page/FavoriteForumPage.dart';
 import 'package:discuz_flutter/page/FavoriteThreadPage.dart';
@@ -39,6 +40,8 @@ void main() {
     Hive.registerAdapter(DiscuzAdapter());
     Hive.registerAdapter(FavoriteForumInDatabaseAdapter());
     Hive.registerAdapter(FavoriteThreadInDatabaseAdapter());
+    Hive.registerAdapter(ViewThreadScrollDistanceAdapter());
+    await AppDatabase.getViewThreadScrollDistanceDao();
     final forums = await AppDatabase.getFavoriteForumDao();
     final threads = await AppDatabase.getFavoriteThreadDao();
     final date = DateTime(2024);
@@ -67,6 +70,7 @@ void main() {
   tearDownAll(() async {
     AppDatabase.favoriteForumBox = null;
     AppDatabase.favoriteThreadBox = null;
+    AppDatabase.viewThreadScrollDistanceBox = null;
     await Hive.close();
     await directory.delete(recursive: true);
   });

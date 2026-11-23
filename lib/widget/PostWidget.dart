@@ -1,3 +1,4 @@
+import 'debate_side_label.dart';
 import '../page/post_edit_page.dart';
 
 import 'package:flutter/gestures.dart' show PointerDeviceKind;
@@ -76,6 +77,7 @@ class PostWidget extends StatelessWidget {
   int _authorId;
   String formhash;
   VoidCallback? onAuthorSelectedCallback;
+  final bool authorFilterSelected;
   JumpToPidCallback? jumpToPidCallback;
   Map<String, List<Comment>>? postCommentList;
   bool? ignoreFontCustomization = false;
@@ -87,6 +89,7 @@ class PostWidget extends StatelessWidget {
   final VoidCallback? onContentChanged;
   final int? commentCount;
   final RewardInfo? reward;
+  final DebateSide? debateSide;
   final bool isBestAnswer;
   final int sessionUid;
   final Future<void> Function()? onAddComment;
@@ -103,10 +106,12 @@ class PostWidget extends StatelessWidget {
     this.onContentChanged,
     this.commentCount,
     this.reward,
+    this.debateSide,
     this.isBestAnswer = false,
     this.sessionUid = 0,
     this.onAddComment,
     this.onAuthorSelectedCallback,
+    this.authorFilterSelected = false,
     this.postCommentList,
     this.ignoreFontCustomization,
     this.jumpToPidCallback,
@@ -122,6 +127,7 @@ class PostWidget extends StatelessWidget {
       this._authorId,
       this.formhash,
       onAuthorSelectedCallback: this.onAuthorSelectedCallback,
+      authorFilterSelected: authorFilterSelected,
       postCommentList: this.postCommentList,
       ignoreFontCustomization: this.ignoreFontCustomization,
       jumpToPidCallback: this.jumpToPidCallback,
@@ -133,6 +139,7 @@ class PostWidget extends StatelessWidget {
       onContentChanged: onContentChanged,
       commentCount: commentCount,
       reward: reward,
+      debateSide: debateSide,
       isBestAnswer: isBestAnswer,
       sessionUid: sessionUid,
       onAddComment: onAddComment,
@@ -146,6 +153,7 @@ class PostStatefulWidget extends StatefulWidget {
   int _authorId;
   String formhash;
   VoidCallback? onAuthorSelectedCallback;
+  final bool authorFilterSelected;
   JumpToPidCallback? jumpToPidCallback;
   Map<String, List<Comment>>? postCommentList;
   bool? ignoreFontCustomization = false;
@@ -157,6 +165,7 @@ class PostStatefulWidget extends StatefulWidget {
   final VoidCallback? onContentChanged;
   final int? commentCount;
   final RewardInfo? reward;
+  final DebateSide? debateSide;
   final bool isBestAnswer;
   final int sessionUid;
   final Future<void> Function()? onAddComment;
@@ -172,10 +181,12 @@ class PostStatefulWidget extends StatefulWidget {
     this.onContentChanged,
     this.commentCount,
     this.reward,
+    this.debateSide,
     this.isBestAnswer = false,
     this.sessionUid = 0,
     this.onAddComment,
     this.onAuthorSelectedCallback,
+    this.authorFilterSelected = false,
     this.postCommentList,
     this.ignoreFontCustomization,
     this.jumpToPidCallback,
@@ -765,6 +776,7 @@ class PostState extends State<PostStatefulWidget> {
       _discuz,
       _html,
       tid: this.tid,
+      pid: _post.pid,
       callback: jumpToPidCallback,
       padding: bodyPadding,
       styleAppSignature: true,
@@ -790,6 +802,7 @@ class PostState extends State<PostStatefulWidget> {
                   _discuz,
                   entry.value,
                   threadId: tid,
+                  postId: _post.pid,
                   isListedImage:
                       _post.imageIdList.contains(entry.key) ||
                       _post.imageIdList.contains('${entry.value.aid}'),
@@ -1026,16 +1039,16 @@ class PostState extends State<PostStatefulWidget> {
             );
           },
         ),
-        PopupMenuOption(
-          label: S.of(context).onlyViewAuthor,
-          onTap: (option) {
-            VibrationUtils.vibrateWithClickIfPossible();
-            if (onAuthorSelectedCallback != null) {
+        if (onAuthorSelectedCallback != null)
+          PopupMenuOption(
+            label: widget.authorFilterSelected
+                ? S.of(context).seeAllReplies
+                : S.of(context).communityOnlyThisAuthor,
+            onTap: (_) {
               VibrationUtils.vibrateWithClickIfPossible();
-              onAuthorSelectedCallback!();
-            }
-          },
-        ),
+              onAuthorSelectedCallback?.call();
+            },
+          ),
         if (context
                     .read<DiscuzNotificationProvider>()
                     .baseVariableResult
@@ -1422,6 +1435,14 @@ class PostState extends State<PostStatefulWidget> {
                   text: _post.author,
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
                 ),
+                if (widget.debateSide case final side?)
+                  WidgetSpan(
+                    alignment: PlaceholderAlignment.middle,
+                    child: Padding(
+                      padding: const EdgeInsetsDirectional.only(start: 6),
+                      child: DebateSideLabel(side),
+                    ),
+                  ),
                 if (groupTitle != "") getGroupWidgetSpan(context),
                 if (_authorId == _post.authorId)
                   TextSpan(

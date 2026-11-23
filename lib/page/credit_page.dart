@@ -1,3 +1,5 @@
+import '../client/forum_community.dart';
+import '../page/forum_community_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -7,6 +9,7 @@ import '../JsonResult/UserProfileResult.dart';
 import '../client/ForumInteractionClient.dart';
 import '../client/discuz_web_client.dart';
 import '../client/forum_web_features.dart';
+import '../client/forum_site_features.dart';
 import '../entity/Discuz.dart';
 import '../entity/DiscuzError.dart';
 import '../entity/User.dart';
@@ -18,6 +21,7 @@ import '../utility/forum_error.dart';
 import '../widget/ErrorCard.dart';
 import 'InternalWebviewBrowserPage.dart';
 import 'ViewThreadSliverPage.dart';
+import 'forum_feature_links.dart';
 
 class CreditOverviewCard extends StatelessWidget {
   const CreditOverviewCard(
@@ -202,6 +206,7 @@ class CreditPage extends StatefulWidget {
 class _CreditPageState extends State<CreditPage> {
   late final DiscuzAndUserNotifier account;
   late final Object session;
+  late final Future<List<bool>> _forumExtras;
   final scrollController = ScrollController();
   final entries = <CreditEntry>[];
   Uri? next;
@@ -224,6 +229,10 @@ class _CreditPageState extends State<CreditPage> {
     super.initState();
     account = context.read<DiscuzAndUserNotifier>();
     session = account.sessionIdentity;
+    _forumExtras = Future.wait([
+      for (final feature in [ForumSiteFeature.tasks, ForumSiteFeature.medals])
+        forumFeatureAvailable(session, widget.discuz, widget.user, feature),
+    ]);
     Future.microtask(load);
   }
 
@@ -411,6 +420,57 @@ class _CreditPageState extends State<CreditPage> {
                             widget.profile,
                             showUpgrade: true,
                           ),
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: FutureBuilder<List<bool>>(
+                          future: _forumExtras,
+                          builder: (context, snapshot) {
+                            final enabled = snapshot.data;
+                            if (enabled == null || !enabled.contains(true)) {
+                              return const SizedBox.shrink();
+                            }
+                            final icons = PlatformIcons(context);
+                            return Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                              child: PlatformCard(
+                                margin: EdgeInsets.zero,
+                                child: Column(
+                                  children: [
+                                    if (enabled[0])
+                                      PlatformListTile(
+                                        leading: Icon(icons.checkMarkCircled),
+                                        title: Text(s.forumTasks),
+                                        trailing: Icon(icons.forward, size: 17),
+                                        onTap: () => openForumTasks(
+                                          context,
+                                          widget.discuz,
+                                          widget.user,
+                                        ),
+                                      ),
+                                    if (enabled[0] && enabled[1])
+                                      const Divider(height: 1),
+                                    if (enabled[1])
+                                      PlatformListTile(
+                                        leading: Icon(
+                                          icons.pick(
+                                            Icons.workspace_premium_outlined,
+                                            CupertinoIcons.rosette,
+                                          ),
+                                        ),
+                                        title: Text(s.forumMedals),
+                                        trailing: Icon(icons.forward, size: 17),
+                                        onTap: () => openCommunity(
+                                          context,
+                                          widget.discuz,
+                                          CommunitySection.medals,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                       SliverPadding(

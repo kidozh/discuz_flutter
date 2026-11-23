@@ -4,6 +4,7 @@ import 'package:discuz_flutter/entity/User.dart';
 import 'package:discuz_flutter/utility/DiscuzCookieSessionManager.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:html/parser.dart' as html;
 import 'package:random_user_agents/random_user_agents.dart';
 
 import '../client/ForumInteractionClient.dart';
@@ -74,9 +75,20 @@ class NetworkUtils {
     return dio;
   }
 
-  static Future<Dio> getDioWithPersistCookieJar(User? user) async {
+  static final _guestForumCookies = <String, CookieJar>{};
+
+  static Future<Dio> getDioWithPersistCookieJar(
+    User? user, {
+    String? guestForum,
+  }) async {
     var dio = getDio();
     if (user == null) {
+      if (guestForum != null) {
+        addCookieManager(
+          dio,
+          _guestForumCookies.putIfAbsent(guestForum, CookieJar.new),
+        );
+      }
       return dio;
     }
     final cookieJar = await getPersistentCookieJarByUser(user);
@@ -119,6 +131,16 @@ class _ForumResponseTransformer extends FusedTransformer {
       body,
     );
     if (data is! String) return data;
+    if (options.uri.queryParameters['module'] == 'forumdisplay' &&
+        data.trimLeft().startsWith('<') &&
+        html.parse(data).querySelector('form input[type=password][name=pw]') !=
+            null) {
+      throw const ForumApiException(
+        'forum_passwd_required',
+        '',
+        fromForum: true,
+      );
+    }
     try {
       return ForumReply.decodePayload(data);
     } on ForumApiException catch (error) {

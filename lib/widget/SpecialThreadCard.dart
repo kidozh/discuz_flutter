@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:html/parser.dart' as html;
 import 'package:intl/intl.dart';
 
@@ -7,6 +8,7 @@ import '../generated/l10n.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
 import '../utility/best_answer_style.dart';
 import 'post_status_badges.dart';
+import 'debate_side_label.dart';
 
 /// Thread details and actions based on the current forum response.
 class SpecialThreadCard extends StatelessWidget {
@@ -14,6 +16,11 @@ class SpecialThreadCard extends StatelessWidget {
   final DebateInfo? debate;
   final ActivityInfo? activity;
   final ThreadSortInfo? threadSort;
+  final List<TradeItem> tradeItems;
+  final ValueChanged<int>? onOpenTrade;
+  final DebateSide? debateFilter;
+  final ValueChanged<DebateSide?>? onFilterDebate;
+  final ValueChanged<DebateSide>? onSupportDebate;
   final ValueChanged<int> onSelectPost;
   final VoidCallback onOpenWebsite;
   final VoidCallback? onActivityRegistration, onActivityReview;
@@ -23,6 +30,11 @@ class SpecialThreadCard extends StatelessWidget {
     this.debate,
     this.activity,
     this.threadSort,
+    this.tradeItems = const [],
+    this.onOpenTrade,
+    this.debateFilter,
+    this.onFilterDebate,
+    this.onSupportDebate,
     required this.onSelectPost,
     required this.onOpenWebsite,
     this.onActivityRegistration,
@@ -90,26 +102,83 @@ class SpecialThreadCard extends StatelessWidget {
     if (debate case final d?) {
       sections.add(
         section(s.forumFilterSpecialTypeDebate, [
-          for (final (label, point, votes) in [
-            (s.debateAffirm, d.affirm, d.affirmVotes),
-            (s.debateAgainst, d.against, d.againstVotes),
+          for (final (side, point, votes) in [
+            (DebateSide.affirm, d.affirm, d.affirmVotes),
+            (DebateSide.against, d.against, d.againstVotes),
           ])
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    [
-                      label,
-                      if (votes != null) s.debateVoteCount(votes),
-                    ].join(' · '),
-                    style: Theme.of(context).textTheme.titleSmall,
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: debateSideColor(context, side).withValues(alpha: .065),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          DebateSideLabel(side),
+                          const Spacer(),
+                          if (votes != null)
+                            Text(
+                              s.debateVoteCount(votes),
+                              style: Theme.of(context).textTheme.labelMedium
+                                  ?.copyWith(
+                                    color: debateSideColor(context, side),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 7),
+                      Text(_text(point)),
+                      if (onSupportDebate != null)
+                        Align(
+                          alignment: AlignmentDirectional.centerEnd,
+                          child: PlatformTextButton(
+                            alignment: AlignmentDirectional.centerEnd,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            onPressed: () => onSupportDebate!(side),
+                            child: Text(
+                              s.debateSupport,
+                              style: TextStyle(
+                                color: debateSideColor(context, side),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-                  Text(_text(point)),
-                ],
+                ),
               ),
             ),
+          if (onFilterDebate != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              s.debateFilterReplies,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+            Wrap(
+              spacing: 6,
+              runSpacing: 4,
+              children: [
+                for (final side in <DebateSide?>[null, ...DebateSide.values])
+                  PlatformChoiceChip(
+                    label: Text(
+                      side == null ? s.forumAll : debateSideName(s, side),
+                    ),
+                    selected: debateFilter == side,
+                    onSelected: (_) => onFilterDebate!(side),
+                  ),
+              ],
+            ),
+          ],
           if (d.end.isNotEmpty && d.end != '0')
             line(s.activityEnds, _time(d.end)),
           if (d.verdict.isNotEmpty) line(s.debateVerdict, d.verdict),
@@ -168,6 +237,34 @@ class SpecialThreadCard extends StatelessWidget {
             onPressed: onOpenWebsite,
             child: Text(s.specialOpenWebsite),
           ),
+        ]),
+      );
+    if (tradeItems.isNotEmpty)
+      sections.add(
+        section(s.tradeItems, [
+          for (final item in tradeItems)
+            PlatformListTile(
+              leading: Icon(
+                PlatformIcons(context)
+                    .pick(Icons.shopping_bag_outlined, CupertinoIcons.bag),
+              ),
+              title: Text(_text(item.title)),
+              subtitle: Text(
+                [
+                  if (item.price.isNotEmpty) '¥${item.price}',
+                  if (item.credit.isNotEmpty) '${item.credit} ${s.credit}',
+                  if (item.stock != null) '${s.tradeStock} ${item.stock}',
+                  if (item.days == -1) s.tradeExpired,
+                  if ((item.days ?? 0) > 0 || (item.hours ?? 0) > 0)
+                    '${s.tradeExpires} · ${Duration(days: item.days ?? 0, hours: item.hours ?? 0).inHours} h',
+                ].join(' · '),
+              ),
+              trailing: Icon(
+                PlatformIcons(context).forward,
+                semanticLabel: s.tradeOpenItem,
+              ),
+              onTap: onOpenTrade == null ? null : () => onOpenTrade!(item.pid),
+            ),
         ]),
       );
     if (sections.isEmpty) return const SizedBox.shrink();

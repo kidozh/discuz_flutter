@@ -9,6 +9,7 @@ import 'package:discuz_flutter/page/ForumGuidePage.dart';
 import 'package:discuz_flutter/page/ForumListsPage.dart';
 import 'package:discuz_flutter/provider/DiscuzAndUserNotifier.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -187,22 +188,26 @@ void main() {
       await tester.tap(find.text(S.current.guideRecentReplies));
       await tester.pumpAndSettle();
       expect(find.text('Topic 9 & discussion'), findsOneWidget);
-      await tester.tap(find.text(S.current.forumLoadMore));
+      final pagination = tester
+          .widget<EasyRefresh>(find.byType(EasyRefresh))
+          .onLoad!();
       await tester.pumpAndSettle();
       expect(find.text('Topic 9 & discussion'), findsOneWidget);
-      expect(find.text(S.current.forumNoMore), findsOneWidget);
+      expect(await pagination, IndicatorResult.noMore);
       expect(tester.takeException(), isNull);
     },
   );
   testWidgets(
     'unavailable guide provides a website entry and can be refreshed',
     (tester) async {
+      final requests = <RequestOptions>[];
       final api = client(
         (_) => {
           'Variables': {
             'extends': {'extendlist': []},
           },
         },
+        requests,
       );
       await tester.pumpWidget(
         host(ForumGuidePage(site, createClient: () async => api)),
@@ -210,7 +215,10 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text(S.current.forumApiUnavailable), findsOneWidget);
       expect(find.text(S.current.navigateToWebPage), findsOneWidget);
-      expect(find.text(S.current.refresh), findsOneWidget);
+      expect(find.text(S.current.refresh), findsNothing);
+      await tester.drag(find.byType(ListView), const Offset(0, 300));
+      await tester.pumpAndSettle();
+      expect(requests, hasLength(2));
     },
   );
   testWidgets(

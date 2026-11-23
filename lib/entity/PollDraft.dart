@@ -7,12 +7,14 @@ class PollDraft {
   final int maxChoices, days;
   final Map<int, ReplyDraftAttachment> images;
   final bool hideResults;
+  final bool publicVoters;
   const PollDraft(
     this.options,
     this.maxChoices,
     this.days, {
     this.images = const {},
     this.hideResults = false,
+    this.publicVoters = false,
   });
   bool get valid =>
       options.length >= 2 &&
@@ -29,7 +31,7 @@ class PollDraft {
     'polloptions': options.join('\n'),
     'maxchoices': '$maxChoices',
     'expiration': '$days',
-    'overt': '0',
+    'overt': publicVoters ? '1' : '0',
     if (hideResults) 'visibilitypoll': '1',
   };
   String encode() => jsonEncode({
@@ -37,6 +39,7 @@ class PollDraft {
     'maxChoices': maxChoices,
     'days': days,
     'hideResults': hideResults,
+    'publicVoters': publicVoters,
     'images': {for (final e in images.entries) '${e.key}': e.value.toJson()},
   });
   static PollDraft? decode(String value) {
@@ -48,6 +51,7 @@ class PollDraft {
         json['maxChoices'],
         json['days'],
         hideResults: json['hideResults'] == true,
+        publicVoters: json['publicVoters'] == true,
         images: {
           if (json['images'] is Map)
             for (final entry in (json['images'] as Map).entries)

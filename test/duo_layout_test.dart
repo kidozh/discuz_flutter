@@ -1,11 +1,13 @@
 import 'dart:ui';
 
+import 'package:adaptive_platform_ui/adaptive_platform_ui.dart' show DuoLayout;
 import 'package:discuz_flutter/utility/TwoPaneScaffold.dart';
 import 'package:discuz_flutter/utility/TwoPaneUtils.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:discuz_flutter/utility/platform_native_view_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:foldable/foldable.dart' show HingeStatus;
 
 DisplayFeature fold(Rect bounds, {bool flat = false}) => DisplayFeature(
   bounds: bounds,
@@ -55,6 +57,31 @@ class DraftPaneState extends State<DraftPane> {
 }
 
 void main() {
+  test('the main tabs use the status strip only on the closed Duo cover', () {
+    const sideStrip = EdgeInsets.only(right: 84, bottom: 34);
+    final cover = DuoLayout.coverTabPose(sideStrip, HingeStatus.closed);
+    expect(cover, isNotNull);
+    expect(cover!.onLeft, isFalse);
+    expect(cover.stripWidth, 84);
+    expect(cover.reservedBySystem, isTrue);
+
+    // The inner display in landscape can expose the same right-side inset.
+    for (final status in [
+      HingeStatus.fullyOpen,
+      HingeStatus.partiallyOpen,
+      HingeStatus.unknown,
+    ]) {
+      expect(DuoLayout.coverTabPose(sideStrip, status), isNull);
+    }
+    expect(
+      DuoLayout.coverTabPose(
+        const EdgeInsets.only(top: 62, bottom: 34),
+        HingeStatus.closed,
+      ),
+      isNull,
+    );
+  });
+
   testWidgets(
     'split panes use Flutter controls and retain appearance and state',
     (tester) async {

@@ -33,8 +33,23 @@ class UserProfileVariables extends BaseVariableResult {
   }
 
   UserProfileVariables();
-  factory UserProfileVariables.fromJson(Map<String, dynamic> json) =>
-      _$UserProfileVariablesFromJson(json);
+  factory UserProfileVariables.fromJson(Map<String, dynamic> json) {
+    final credits = json['extcredits'];
+    final indexed = credits is List
+        ? {
+            for (var index = 1; index < credits.length; index++)
+              '$index': credits[index],
+          }
+        : discuzMap(credits);
+    return _$UserProfileVariablesFromJson({
+      ...json,
+      'extcredits': {
+        for (final entry in indexed.entries)
+          if (entry.value is Map && entry.key != '0')
+            entry.key: discuzScalars(discuzMap(entry.value)),
+      },
+    });
+  }
 }
 
 class CreditUpgrade {

@@ -14,22 +14,23 @@ class DiscuzNotificationWidget extends StatelessWidget {
   final DiscuzNotification notification;
   final Discuz discuz;
   final ThreadSelectionCallback? onSelectTid;
+  final void Function(int tid, int pid)? onOpenReply;
 
   const DiscuzNotificationWidget(
     this.discuz,
     this.notification, {
     this.onSelectTid,
+    this.onOpenReply,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     final isNew = notification.isNew == '1';
-    return CupertinoSeparatedItem(
-        child: PlatformCard(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+    final target = notification.replyTarget(discuz);
+    final openReply = onOpenReply;
+    Widget content = Padding(
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-      color: isNew ? Theme.of(context).colorScheme.primaryContainer : null,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -48,11 +49,11 @@ class DiscuzNotificationWidget extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: notification.author.isEmpty
-                            ? Theme.of(context).colorScheme.primary
-                            : null,
-                      ),
+                    fontWeight: FontWeight.w700,
+                    color: notification.author.isEmpty
+                        ? Theme.of(context).colorScheme.primary
+                        : null,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -62,20 +63,38 @@ class DiscuzNotificationWidget extends StatelessWidget {
                   notification.dateline,
                 ),
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          DiscuzHtmlWidget(
-            discuz,
-            notification.note,
-            onSelectTid: onSelectTid,
-          ),
+          DiscuzHtmlWidget(discuz, notification.note, onSelectTid: onSelectTid),
         ],
       ),
-    ));
+    );
+    if (target != null && openReply != null) {
+      final (tid, pid) = target;
+      void open() => openReply(tid, pid);
+      content = Semantics(
+        button: true,
+        child: isCupertino(context)
+            ? GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: open,
+                child: content,
+              )
+            : InkWell(onTap: open, child: content),
+      );
+    }
+    return CupertinoSeparatedItem(
+      child: PlatformCard(
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        color: isNew ? Theme.of(context).colorScheme.primaryContainer : null,
+        clipBehavior: Clip.antiAlias,
+        child: content,
+      ),
+    );
   }
 
   Widget _buildAvatar(BuildContext context) {

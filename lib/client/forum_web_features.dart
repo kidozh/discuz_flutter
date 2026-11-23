@@ -7,6 +7,7 @@ typedef ForumSearchHit = ({
   int tid,
   String title,
   String board,
+  int? fid,
   String details,
   String excerpt,
   String attribution,
@@ -210,6 +211,16 @@ class ForumSearchClient {
         tid: link.tid,
         title: title.text.trim(),
         board: board?.text.trim() ?? '',
+        fid: int.tryParse(
+          web
+                  .siteLink(
+                    response.uri,
+                    board?.attributes['href'],
+                    'forum.php',
+                  )
+                  ?.queryParameters['fid'] ??
+              '',
+        ),
         details: paragraphs.firstOrNull?.text.trim() ?? '',
         excerpt: paragraphs.length > 1 ? paragraphs[1].text.trim() : '',
         attribution: paragraphs.length > 2

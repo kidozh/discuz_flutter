@@ -1,3 +1,15 @@
+import '../utility/forum_feed_filters.dart';
+import '../client/ForumInteractionClient.dart';
+import '../client/favorite_sync.dart';
+import '../client/forum_site_features.dart';
+import 'forum_account_actions.dart';
+import 'forum_feature_links.dart';
+import 'forum_browse_page.dart';
+import '../utility/discuz_json.dart';
+import '../entity/SpecialThread.dart';
+import 'rush_winners_page.dart';
+import '../widget/debate_side_label.dart';
+import '../widget/post_settings_sheet.dart';
 import '../utility/post_signature_service.dart';
 import '../utility/post_editor_controller.dart';
 import '../utility/reply_draft_store.dart';
@@ -92,6 +104,7 @@ import 'SettingPage.dart';
 import '../widget/SpecialThreadCard.dart';
 import '../widget/PostPermissionGate.dart';
 import '../utility/post_locator.dart';
+import 'thread_attachments_page.dart';
 
 class ViewThreadSliverPage extends StatelessWidget {
   Discuz discuz;
@@ -100,6 +113,7 @@ class ViewThreadSliverPage extends StatelessWidget {
   String? passedSubject;
   VoidCallback? onClosed;
   final int? initialPid;
+  final bool openLatestReply;
 
   ViewThreadSliverPage(
     this.discuz,
@@ -108,6 +122,7 @@ class ViewThreadSliverPage extends StatelessWidget {
     this.passedSubject,
     this.onClosed,
     this.initialPid,
+    this.openLatestReply = false,
   });
 
   @override
@@ -129,6 +144,7 @@ class ViewThreadSliverPage extends StatelessWidget {
         passedSubject: passedSubject,
         onClosed: onClosed,
         initialPid: initialPid,
+        openLatestReply: openLatestReply,
       ),
     );
   }
@@ -141,6 +157,7 @@ class ViewThreadStatefulSliverWidget extends StatefulWidget {
   final String? passedSubject;
   VoidCallback? onClosed;
   final int? initialPid;
+  final bool openLatestReply;
 
   ViewThreadStatefulSliverWidget(
     this.discuz,
@@ -150,6 +167,7 @@ class ViewThreadStatefulSliverWidget extends StatefulWidget {
     this.passedSubject,
     this.onClosed,
     this.initialPid,
+    this.openLatestReply = false,
   });
 
   @override
@@ -230,10 +248,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   final _readingRestorer = ReadingPositionRestorer();
   Completer<void>? _initialReadingLoad;
   late final Object _session;
+  bool _collectionsAvailable = false;
   int _contentGeneration = 0;
   int? _requestGeneration;
   bool _hasMore = true;
   bool _initialPidHandled = false;
+  ViewThreadScrollDistance? _readingProgress;
+  int? _verifiedReplies;
   bool _locatingPost = false;
   int _locateGeneration = 0;
   bool _focusedPage = false;
@@ -248,6 +269,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   late final ReplySubmissionController _replySubmission;
   SendReplyStatus get _sendReplyStatus => _replySubmission.status;
   ViewThreadQuery viewThreadQuery = ViewThreadQuery();
+  DebateSide _replyDebateSide = DebateSide.neutral;
+  bool _submittingDebateVote = false;
   Map<String, List<Comment>> postCommentList = {};
   final FocusNode _focusNode = FocusNode(debugLabel: "view_thread_textfield");
 
@@ -270,6 +293,16 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   void initState() {
     super.initState();
     _session = context.read<DiscuzAndUserNotifier>().sessionIdentity;
+    if (user case final currentUser?) {
+      final account = context.read<DiscuzAndUserNotifier>();
+      forumFeatureAvailable(
+        _session, discuz, currentUser, ForumSiteFeature.collections,
+      ).then((available) {
+        if (available && mounted && identical(_session, account.sessionIdentity)) {
+          setState(() => _collectionsAvailable = true);
+        }
+      });
+    }
     _replySubmission = ReplySubmissionController(
       _replyController,
       insertedAidList,
@@ -502,24 +535,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
       }
     });
 
-    _scrollController.addListener(() {
-      // save with distance
-      double offset = _scrollController.offset;
-      if (!_focusedPage &&
-          !_locatingPost &&
-          viewThreadScrollDistanceDao != null &&
-          !_readingRestorer.pending) {
-        ViewThreadScrollDistance element = ViewThreadScrollDistance(
-          tid,
-          offset,
-          discuz,
-          DateTime.now(),
-          viewThreadQuery.timeAscend,
-        );
-        _positionWriter.schedule(element);
-      }
-    });
-
     _replyController.addListener(() {
       //print("Get reply text ${_replyController.text} ${_replyController.text.isNotEmpty}");
       if (_replyController.text.isNotEmpty) {
@@ -552,10 +567,85 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   }
 
   void _savePositionWhenIdle() {
-    if (_readingRestorer.pending) return;
-    if (!_scrollController.positions.any((p) => p.isScrollingNotifier.value)) {
-      unawaited(_positionWriter.flush());
+    if (_readingRestorer.pending ||
+        _locatingPost ||
+        !_scrollController.hasClients ||
+        _scrollController.positions.any((p) => p.isScrollingNotifier.value)) {
+      return;
     }
+    _recordReadingPosition();
+    unawaited(_positionWriter.flush());
+  }
+
+  int? _visiblePostPid() {
+    int? bestIndex;
+    var bestTop = double.infinity;
+    for (final entry in _postAutoScrollController.tagMap.entries) {
+      if (!entry.value.mounted || entry.key >= _postList.length) continue;
+      final box = entry.value.context.findRenderObject();
+      if (box is! RenderBox || !box.attached || !box.hasSize) continue;
+      final RenderObject? viewport = RenderAbstractViewport.maybeOf(box);
+      if (viewport is! RenderBox || !viewport.hasSize) continue;
+      final top = box.localToGlobal(Offset.zero, ancestor: viewport).dy;
+      if (top + box.size.height > 0 &&
+          top < viewport.size.height &&
+          top < bestTop) {
+        bestIndex = entry.key;
+        bestTop = top;
+      }
+    }
+    return bestIndex == null ? null : _postList[bestIndex].pid;
+  }
+
+  void _recordReadingPosition({int? pid, bool updatePosition = true}) {
+    final dao = viewThreadScrollDistanceDao;
+    final replies = _verifiedReplies;
+    if (dao == null ||
+        replies == null ||
+        viewThreadQuery.authorId != 0 ||
+        viewThreadQuery.debateSide != null) {
+      return;
+    }
+    final ascend = viewThreadQuery.timeAscend;
+    final previous = _readingProgress?.isAscend == ascend
+        ? _readingProgress
+        : dao.findViewThreadCacheListByDiscuz(
+            discuz,
+            tid,
+            ascend,
+            uid: user?.uid ?? 0,
+          );
+    final visiblePid = updatePosition
+        ? pid ??
+              _visiblePostPid() ??
+              (_hasLazyFirstPost ? _postList.first.pid : null)
+        : null;
+    final offset = !updatePosition
+        ? previous?.offset ?? 0.0
+        : (!_focusedPage && _scrollController.hasClients
+              ? _scrollController.offset
+              : 0.0);
+    final checkpoint =
+        visiblePid ??
+        previous?.pid ??
+        (_postList.isEmpty ? null : _postList.first.pid);
+    if (previous?.pid == checkpoint &&
+        previous?.repliesAtRead == replies &&
+        previous?.offset == offset) {
+      return;
+    }
+    final progress = ViewThreadScrollDistance(
+      tid,
+      offset,
+      discuz,
+      DateTime.now(),
+      ascend,
+      uid: user?.uid ?? 0,
+      pid: checkpoint,
+      repliesAtRead: replies,
+    );
+    _readingProgress = progress;
+    _positionWriter.schedule(progress);
   }
 
   Future<void> _restoreReadingPositionWhenReady() async {
@@ -567,18 +657,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     if (!mounted || _readingRestorer.pending || !_scrollController.hasClients) {
       return;
     }
-    if (viewThreadScrollDistanceDao != null) {
-      _positionWriter.schedule(
-        ViewThreadScrollDistance(
-          tid,
-          _scrollController.offset,
-          discuz,
-          DateTime.now(),
-          viewThreadQuery.timeAscend,
-        ),
-      );
-      _savePositionWhenIdle();
-    }
+    _savePositionWhenIdle();
   }
 
   @override
@@ -642,28 +721,40 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     try {
       await _positionWriter.flush();
       if (!isCurrent()) return IndicatorResult.fail;
-      if (!_initialPidHandled && widget.initialPid != null) {
+      final hasCacheDao =
+          viewThreadCacheDao != null && viewThreadScrollDistanceDao != null;
+      try {
+        viewThreadScrollDistanceDao ??=
+            await AppDatabase.getViewThreadScrollDistanceDao();
+      } catch (error) {
+        log('Unable to open reading progress: $error');
+      }
+      if (!isCurrent()) return IndicatorResult.fail;
+      if (!_initialPidHandled &&
+          (widget.initialPid != null || widget.openLatestReply)) {
         _initialPidHandled = true;
-        final found = await scrollToPid(widget.initialPid!);
+        final pid = widget.openLatestReply
+            ? await _latestReplyPid()
+            : widget.initialPid;
+        if (!isCurrent()) return IndicatorResult.fail;
+        final found = pid != null && await scrollToPid(pid);
         if (found) return IndicatorResult.success;
-        if (!mounted || generation + 1 != _contentGeneration) {
+        if (!mounted ||
+            !identical(_session, account.sessionIdentity) ||
+            _contentGeneration > generation + 1) {
           return IndicatorResult.fail;
         }
         generation = _contentGeneration;
       }
 
       var firstPage = 1;
-      final hasCacheDao =
-          viewThreadCacheDao != null && viewThreadScrollDistanceDao != null;
       if (!hasCacheDao) {
         initialLoad = _initialReadingLoad = Completer<void>();
         try {
           final cacheDao = await AppDatabase.getViewThreadCacheDao();
-          final distanceDao =
-              await AppDatabase.getViewThreadScrollDistanceDao();
+          final distanceDao = viewThreadScrollDistanceDao;
           if (!isCurrent()) return IndicatorResult.fail;
           viewThreadCacheDao = cacheDao;
-          viewThreadScrollDistanceDao = distanceDao;
           final pages = cacheDao.findAllViewThreadCacheListByDiscuz(
             discuz,
             tid,
@@ -694,13 +785,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
               _isFirstLoading = false;
             });
             final offset = distanceDao
-                .findViewThreadCacheListByDiscuz(
+                ?.findViewThreadCacheListByDiscuz(
                   discuz,
                   tid,
                   viewThreadQuery.timeAscend,
+                  uid: user?.uid ?? 0,
                 )
                 ?.offset;
-            if (offset != null) {
+            if (offset != null && offset > 0) {
               _readingRestorer.schedule(offset);
               ToastUtils.showSuccessfulToast(
                 S.of(context).animateToLastReadingPosition,
@@ -716,7 +808,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
       if (!isCurrent()) return IndicatorResult.fail;
       return await _loadForumContent(
         refreshPage: firstPage,
-        clearCache: hasCacheDao && viewThreadQuery.authorId == 0,
+        clearCache:
+            hasCacheDao &&
+            viewThreadQuery.authorId == 0 &&
+            viewThreadQuery.debateSide == null,
       );
     } catch (error) {
       if (isCurrent())
@@ -733,6 +828,118 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     }
   }
 
+  void _filterDebate(DebateSide? side) {
+    if (side == viewThreadQuery.debateSide) return;
+    viewThreadQuery.debateSide = side;
+    viewThreadQuery.authorId = 0;
+    setNewViewThreadQuery(viewThreadQuery);
+  }
+
+  Future<void> _voteDebate(DebateSide side) async {
+    final viewer = user;
+    if (viewer == null || _submittingDebateVote) return;
+    final account = context.read<DiscuzAndUserNotifier>();
+    final session = account.sessionIdentity;
+    bool isCurrent() => mounted && identical(session, account.sessionIdentity);
+    final s = S.of(context);
+    setState(() => _submittingDebateVote = true);
+    try {
+      final confirmed = await showPostSettingsSheet<bool>(
+        context,
+        (sheet) => PostSettingsSheet(
+          title: s.debateSupport,
+          hasSave: true,
+          onSave: () => Navigator.pop(sheet, true),
+          children: [
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: DebateSideLabel(side),
+            ),
+            const SizedBox(height: 8),
+            Text(s.debateSupportConfirm),
+          ],
+        ),
+      );
+      if (!isCurrent() || confirmed != true) return;
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(viewer);
+      try {
+        final api = ForumInteractionClient(dio, discuz.baseURL);
+        final fresh = await api.request('viewthread', {'tid': tid, 'page': 1});
+        fresh.requireData('thread');
+        if (!isCurrent()) return;
+        final state = DebateInfo.parse(
+          fresh.variables['special_debate'],
+          viewer: viewer.uid,
+        );
+        if (discuzInt(fresh.variables['member_uid']) != viewer.uid ||
+            state == null ||
+            state.voted ||
+            state.ended ||
+            discuzPermission(discuzMap(fresh.variables['thread'])['closed']) ==
+                true) {
+          _controller.callRefresh();
+          return;
+        }
+        final result = await api.request(
+          'forummisc',
+          {'action': 'debatevote', 't': 'output', 'tid': tid},
+          body: {'stand': side.wire, 'formhash': fresh.variables['formhash']},
+        );
+        result.requireSuccess({'debate_poll_succeed'});
+      } finally {
+        dio.close();
+      }
+      if (isCurrent()) _controller.callRefresh();
+    } catch (error) {
+      if (isCurrent())
+        await showForumActionError(context, forumRequestError(s, error));
+    } finally {
+      if (mounted) setState(() => _submittingDebateVote = false);
+    }
+  }
+
+  Future<void> _openRushWinners() async {
+    final account = context.read<DiscuzAndUserNotifier>();
+    final session = account.sessionIdentity;
+    final pid = await Navigator.push<int>(
+      context,
+      platformPageRoute(
+        context: context,
+        builder: (_) => RushWinnersPage(discuz, user, tid),
+      ),
+    );
+    if (mounted && identical(session, account.sessionIdentity) && pid != null) {
+      await scrollToPid(pid);
+    }
+  }
+
+  void _openTrade(int pid) {
+    final target = Uri.parse(discuz.getBaseURLWithAfterfix())
+        .resolve('forum.php')
+        .replace(
+          queryParameters: {
+            'mod': 'viewthread',
+            'do': 'tradeinfo',
+            'tid': '$tid',
+            'pid': '$pid',
+            'mobile': 'no',
+          },
+        );
+    Navigator.push<void>(
+      context,
+      platformPageRoute(
+        context: context,
+        builder: (_) => InternalWebviewBrowserPage(discuz, user, '$target'),
+      ),
+    );
+  }
+
+  void _setAuthorFilter(int authorId) {
+    viewThreadQuery.debateSide = null;
+    viewThreadQuery.authorId = authorId;
+    setNewViewThreadQuery(viewThreadQuery);
+  }
+
   void setNewViewThreadQuery(ViewThreadQuery viewThreadQuery) {
     _contentGeneration++;
     _locateGeneration++;
@@ -746,6 +953,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
       this.viewThreadQuery = viewThreadQuery;
       _page = 1;
       _hasMore = true;
+      _isFirstLoading = true;
+      _error = null;
       _postList = [];
       postCommentList = {};
     });
@@ -783,7 +992,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
       fid: _viewThreadResult.threadVariables.fid,
     ),
     load: () async => MobileApiClient(
-      await NetworkUtils.getDioWithPersistCookieJar(user),
+      await NetworkUtils.getDioWithPersistCookieJar(
+        user,
+        guestForum: discuz.baseURL,
+      ),
       baseUrl: discuz.baseURL,
     ).checkPost(_viewThreadResult.threadVariables.fid, tid),
     child: child,
@@ -843,7 +1055,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     try {
       final value = await _replySubmission.submit(
         request: (draft) async {
-          final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+          final dio = await NetworkUtils.getDioWithPersistCookieJar(
+            user,
+            guestForum: discuz.baseURL,
+          );
           try {
             if (!isCurrent()) return null;
             final api = MobileApiClient(dio, baseUrl: discuz.baseURL);
@@ -884,6 +1099,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
             );
             if (!isCurrent()) return null;
             final attachments = {
+              if (_viewThreadResult.threadVariables.debate != null)
+                'stand':
+                    (_viewThreadResult.threadVariables.debate?.sideForAuthor(
+                              user.uid,
+                            ) ??
+                            _replyDebateSide)
+                        .wire,
               for (final aid in PostTextFieldUtils.getAttachmentAidList(source))
                 'attachnew[$aid][description]': '',
             };
@@ -959,7 +1181,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   late MobileApiClient client;
   bool dioLoaded = false;
   Future<void> _loadClient() async {
-    dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    dio = await NetworkUtils.getDioWithPersistCookieJar(
+      user,
+      guestForum: discuz.baseURL,
+    );
     if (!mounted) return;
     client = MobileApiClient(dio, baseUrl: discuz.baseURL);
 
@@ -968,95 +1193,63 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     });
   }
 
-  Future<void> favoriteThread() async {
-    FavoriteThreadDao favoriteThreadDao =
-        await AppDatabase.getFavoriteThreadDao();
-    await favoriteThreadDao.insertFavoriteThread(
-      FavoriteThreadInDatabase(
-        user == null ? 0 : 1,
-        user?.uid ?? _viewThreadResult.threadVariables.member_uid,
-        tid,
-        "tid",
-        _viewThreadResult.threadVariables.threadInfo.authorId,
-        _viewThreadResult.threadVariables.threadInfo.subject,
-        "",
-        _viewThreadResult.threadVariables.threadInfo.author,
-        _viewThreadResult.threadVariables.threadInfo.replies,
-        DateTime.now(),
-        discuz,
-      ),
-    );
-    if (mounted) setState(() {});
-    if (user == null) {
-      return;
-    }
-    client
-        .favoriteThreadActionResult(
-          _viewThreadResult.threadVariables.formHash,
-          tid,
-        )
-        .then((value) {
-          if (value.errorResult != null &&
-              value.errorResult!.key == "do_success") {
-            EasyLoading.showSuccess(
-              S
-                  .of(context)
-                  .discuzOperationMessage(
-                    value.errorResult!.key,
-                    value.errorResult!.content,
-                  ),
-            );
-          } else {
-            EasyLoading.showToast(
-              S
-                  .of(context)
-                  .discuzOperationMessage(
-                    value.errorResult!.key,
-                    value.errorResult!.content,
-                  ),
-            );
-          }
-        });
-  }
+  bool _changingFavorite = false;
 
-  Future<void> unfavoriteThread() async {
-    FavoriteThreadDao favoriteThreadDao =
-        await AppDatabase.getFavoriteThreadDao();
-    FavoriteThreadInDatabase? favoriteThreadInDatabase = favoriteThreadDao
-        .getFavoriteThreadByTid(tid, discuz, uid: user?.uid ?? 0);
-    if (favoriteThreadInDatabase != null) {
-      await favoriteThreadDao.removeFavoriteThread(favoriteThreadInDatabase);
-      if (mounted) setState(() {});
-      if (user == null) {
-        return;
+  Future<void> _changeFavorite(bool add) async {
+    if (_changingFavorite) return;
+    final account = context.read<DiscuzAndUserNotifier>();
+    bool current() => mounted && identical(_session, account.sessionIdentity);
+    final uid = user?.uid ?? 0;
+    setState(() => _changingFavorite = true);
+    Dio? requestDio;
+    try {
+      final dao = await AppDatabase.getFavoriteThreadDao();
+      if (!current()) return;
+      final previous = dao.getFavoriteThreadByTid(tid, discuz, uid: uid);
+      if (add == (previous != null)) return;
+      final variables = _viewThreadResult.threadVariables;
+      var favid = -1;
+      if (user != null && (add || (previous?.favid ?? -1) >= 0)) {
+        if (variables.member_uid != uid) {
+          throw const ForumApiException('not_loggedin', '', fromForum: true);
+        }
+        final activeDio = requestDio = await NetworkUtils.getDioWithPersistCookieJar(user);
+        favid = await changeServerFavorite(
+          ForumInteractionClient(activeDio, discuz.baseURL),
+          uid: uid,
+          threads: true,
+          target: tid,
+          add: add,
+          formhash: variables.formHash,
+          isCurrent: current,
+        );
       }
-      client
-          .unfavoriteThreadActionResult(
-            _viewThreadResult.threadVariables.formHash,
-            favoriteThreadInDatabase.favid,
-          )
-          .then((value) {
-            if (value.errorResult != null &&
-                value.errorResult!.key == "do_success") {
-              EasyLoading.showSuccess(
-                S
-                    .of(context)
-                    .discuzOperationMessage(
-                      value.errorResult!.key,
-                      value.errorResult!.content,
-                    ),
-              );
-            } else {
-              EasyLoading.showToast(
-                S
-                    .of(context)
-                    .discuzOperationMessage(
-                      value.errorResult!.key,
-                      value.errorResult!.content,
-                    ),
-              );
-            }
-          });
+      if (!current()) return;
+      final latest = dao.getFavoriteThreadByTid(tid, discuz, uid: uid);
+      if (add && latest == null) {
+        await dao.insertFavoriteThread(FavoriteThreadInDatabase(
+          favid,
+          uid,
+          tid,
+          'tid',
+          variables.threadInfo.authorId,
+          variables.threadInfo.subject,
+          '',
+          variables.threadInfo.author,
+          variables.threadInfo.replies,
+          DateTime.now(),
+          discuz,
+        ));
+      } else if (!add && latest != null) {
+        await dao.removeFavoriteThread(latest);
+      }
+    } catch (e) {
+      if (current()) {
+        EasyLoading.showError(forumRequestError(S.of(context), e).content);
+      }
+    } finally {
+      requestDio?.close();
+      if (mounted) setState(() => _changingFavorite = false);
     }
   }
 
@@ -1067,7 +1260,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
   Future<void> checkWithCacheResponse() async {}
 
   Future<Map<int, String>> _loadReplyCreditNames(int uid) async {
-    final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+    final dio = await NetworkUtils.getDioWithPersistCookieJar(
+      user,
+      guestForum: discuz.baseURL,
+    );
     try {
       final profile = await MobileApiClient(
         dio,
@@ -1104,11 +1300,16 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     final postsPerPage = focused ? _focusedPpp ?? 15 : 15;
     final timeAscend = viewThreadQuery.timeAscend;
     final authorId = viewThreadQuery.authorId;
+    final debateSide = viewThreadQuery.debateSide;
     final query = viewThreadQuery.generateForumQueriesMap();
+    Dio? requestDio;
     try {
-      final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+      requestDio = await NetworkUtils.getDioWithPersistCookieJar(
+        user,
+        guestForum: discuz.baseURL,
+      );
       final value = await MobileApiClient(
-        dio,
+        requestDio,
         baseUrl: discuz.baseURL,
       ).viewThreadPage(tid, requestedPage, postsPerPage, query);
       if (!isCurrent()) return IndicatorResult.fail;
@@ -1150,6 +1351,12 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
       }
 
       final replies = variables.threadInfo.replies;
+      if (authorId == 0 &&
+          debateSide == null &&
+          variables.threadInfo.tid == tid &&
+          variables.member_uid == (user?.uid ?? 0)) {
+        _verifiedReplies = replies;
+      }
       setState(() {
         _viewThreadResult = value;
         final profileUid = user?.uid ?? variables.threadInfo.authorId;
@@ -1181,6 +1388,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                   )
                 : _postList.length < replies + 1);
       });
+      if (authorId == 0 && debateSide == null) {
+        _recordReadingPosition(updatePosition: false);
+      }
       if (refreshPage != null) _controller.resetFooter();
 
       if (!historySaved &&
@@ -1214,15 +1424,13 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
         RewriteRuleUtils.putUserProfileRule(discuz, rewriteRule.userSpace);
       }
 
-      if (!focused && authorId == 0) {
+      if (!focused && authorId == 0 && debateSide == null) {
         try {
           if (clearCache) {
             await viewThreadCacheDao?.deleteAllViewThreadCacheByTid(
               discuz,
               tid,
             );
-            await viewThreadScrollDistanceDao
-                ?.deleteAllViewThreadScrollDistanceByTid(discuz, tid);
           }
           if (isCurrent())
             await _saveViewThreadCache(value, tid, requestedPage, timeAscend);
@@ -1246,8 +1454,89 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
         EasyLoading.showError(displayError.content);
       return IndicatorResult.fail;
     } finally {
+      requestDio?.close();
       if (_requestGeneration == generation) _requestGeneration = null;
     }
+  }
+
+  Future<int?> _latestReplyPid() async {
+    final account = context.read<DiscuzAndUserNotifier>();
+    bool isCurrent() => mounted && identical(_session, account.sessionIdentity);
+    try {
+      final dio = await NetworkUtils.getDioWithPersistCookieJar(
+        user,
+        guestForum: discuz.baseURL,
+      );
+      try {
+        final result = await MobileApiClient(
+          dio,
+          baseUrl: discuz.baseURL,
+        ).viewThreadPage(tid, 1, 15, {'ordertype': '1'});
+        if (!isCurrent()) return null;
+        final variables = result.threadVariables;
+        final error = EasyRefreshUtils.responseError(
+          context,
+          result,
+          user,
+          variables.member_uid,
+        );
+        if (error != null) {
+          EasyLoading.showError(error.content);
+          return null;
+        }
+        final pid = latestVisiblePostPid(variables.postList, tid: tid);
+        if (variables.threadInfo.tid == tid &&
+            variables.member_uid == (user?.uid ?? 0) &&
+            pid != null) {
+          return pid;
+        }
+      } finally {
+        dio.close();
+      }
+    } catch (error) {
+      if (isCurrent()) {
+        EasyLoading.showError(
+          EasyRefreshUtils.requestError(context, error).content,
+        );
+      }
+      return null;
+    }
+    if (isCurrent()) EasyLoading.showError(S.of(context).postLocateFailed);
+    return null;
+  }
+
+  Future<void> _openThreadRecord(String action) => pushDetailPage<void>(
+    context,
+    platformPageRoute(
+      context: context,
+      builder: (_) => InternalWebviewBrowserPage(
+        discuz,
+        user,
+        Uri.parse(discuz.getBaseURLWithAfterfix()).resolve('forum.php')
+            .replace(queryParameters: {'mod': 'misc', 'action': action, 'tid': '$tid', 'mobile': 'no'})
+            .toString(),
+      ),
+    ),
+  );
+
+  Future<void> _openAttachments() async {
+    var purchased = false;
+    final pid = await pushDetailPage<int>(
+      context,
+      platformPageRoute(
+        context: context,
+        iosTitle: S.of(context).threadAttachments,
+        builder: (_) => ThreadAttachmentsPage(
+          discuz: discuz,
+          user: user,
+          tid: tid,
+          onPurchased: () => purchased = true,
+        ),
+      ),
+    );
+    if (!mounted) return;
+    if (purchased) await _invalidateContent();
+    if (mounted && pid != null) await scrollToPid(pid);
   }
 
   Future<bool> scrollToPid(int pid) async {
@@ -1264,7 +1553,10 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
       if (index < 0) {
         final generation = ++_contentGeneration;
         setState(() => _locatingPost = true);
-        final dio = await NetworkUtils.getDioWithPersistCookieJar(user);
+        final dio = await NetworkUtils.getDioWithPersistCookieJar(
+          user,
+          guestForum: discuz.baseURL,
+        );
         final LocatedPostPage located;
         try {
           located = await PostLocator.locate(dio, discuz.baseURL, tid, pid);
@@ -1283,6 +1575,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
           setState(() => _error = error);
           return false;
         }
+        if (variables.member_uid != (user?.uid ?? 0)) return false;
+        _verifiedReplies = variables.threadInfo.replies;
         setState(() {
           _focusedPage = true;
           _focusedPpp = int.tryParse(located.result.threadVariables.ppp);
@@ -1313,6 +1607,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
         preferPosition: AutoScrollPosition.begin,
       );
       if (!isCurrent()) return false;
+      _recordReadingPosition(pid: pid);
+      unawaited(_positionWriter.flush());
       await _postAutoScrollController.highlight(index);
       return true;
     } catch (_) {
@@ -1372,15 +1668,19 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
         _controller.callRefresh();
       },
       asSliver: asSliver,
+      debateSide: post.first || post.anonymous || variables.debate == null
+          ? null
+          : viewThreadQuery.debateSide ??
+                variables.debate!.sideForPost(post.pid),
       onBodyReady: index == 0 ? _restoreReadingPositionWhenReady : null,
       tid: tid,
       fid: _viewThreadResult.threadVariables.fid,
-      onAuthorSelectedCallback: () {
-        viewThreadQuery.authorId = viewThreadQuery.authorId == 0
-            ? post.authorId
-            : 0;
-        setNewViewThreadQuery(viewThreadQuery);
-      },
+      onAuthorSelectedCallback: post.anonymous || post.authorId <= 0
+          ? null
+          : () => _setAuthorFilter(
+              viewThreadQuery.authorId == post.authorId ? 0 : post.authorId,
+            ),
+      authorFilterSelected: viewThreadQuery.authorId == post.authorId,
       postCommentList: postCommentList,
       ignoreFontCustomization: ignoreFontCustomization,
       jumpToPidCallback: (pid) {
@@ -1567,9 +1867,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
             onPressed: () async {
               VibrationUtils.vibrateWithClickIfPossible();
               if (favoriteThreadInDatabase == null) {
-                await favoriteThread();
+                await _changeFavorite(true);
               } else {
-                await unfavoriteThread();
+                await _changeFavorite(false);
               }
             },
             icon: Icon(
@@ -1602,9 +1902,73 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
             setNewViewThreadQuery(viewThreadQuery);
           },
         ),
-        PlatformPopupMenu(
+        ValueListenableBuilder(
+          valueListenable: forumFeedFilters(discuz, user),
+          builder: (context, rules, _) {
+            final muted = rules.any((rule) => rule['tid'] == tid);
+            return PlatformPopupMenu(
           icon: Icon(PlatformIcons(context).ellipsis, size: 24),
           options: [
+            PopupMenuOption(
+              label: muted ? S.of(context).forumUnmuteThread : S.of(context).forumMuteThread,
+              onTap: (_) async {
+                final store = forumFeedFilters(discuz, user);
+                final id = 'thread:$tid';
+                try {
+                  await (muted
+                      ? store.remove(id)
+                      : store.put({'id': id, 'tid': tid, 'label': loadedSubject}));
+                } catch (_) {
+                  if (context.mounted) EasyLoading.showError(S.of(context).forumLocalSaveFailed);
+                }
+              },
+            ),
+            if (viewThreadQuery.authorId != 0 || variables.threadInfo.authorId > 0)
+              PopupMenuOption(
+                label: viewThreadQuery.authorId != 0
+                    ? S.of(context).seeAllReplies
+                    : S.of(context).communityOnlyThreadAuthor,
+                onTap: (_) => _setAuthorFilter(
+                  viewThreadQuery.authorId != 0 ? 0 : variables.threadInfo.authorId,
+                ),
+              ),
+            PopupMenuOption(
+              label: S.of(context).threadAttachments,
+              onTap: (_) => _openAttachments(),
+            ),
+            if (loadedSubject.isNotEmpty)
+              PopupMenuOption(
+                label: S.of(context).forumThreadTags,
+                onTap: (_) => pushDetailPage(
+                  context,
+                  platformPageRoute(
+                    context: context,
+                    builder: (_) => ForumBrowsePage(discuz, tid: tid),
+                  ),
+                ),
+              ),
+            if (variables.threadInfo.moderated)
+              PopupMenuOption(
+                label: S.of(context).threadModerationHistory,
+                onTap: (_) => _openThreadRecord('viewthreadmod'),
+              ),
+            if (user != null && variables.member_uid == user.uid &&
+                variables.threadInfo.authorId == user.uid &&
+                variables.threadInfo.special == 0 && variables.threadInfo.price > 0)
+              PopupMenuOption(
+                label: S.of(context).threadBuyerHistory,
+                onTap: (_) => _openThreadRecord('viewpayments'),
+              ),
+            if (_collectionsAvailable && user != null && variables.member_uid == user.uid)
+              PopupMenuOption(
+                label: S.of(context).addToForumCollection,
+                onTap: (_) => openForumAccountPage(context, discuz, user, {
+                  'mod': 'collection',
+                  'action': 'edit',
+                  'op': 'addthread',
+                  'tid': '$tid',
+                }, file: 'forum.php'),
+              ),
             if (_viewThreadResult.threadVariables.isModerator > 0 &&
                 user != null)
               PopupMenuOption(
@@ -1667,6 +2031,8 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
               },
             ),
           ],
+            );
+          },
         ),
       ],
     );
@@ -1776,6 +2142,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                   _viewThreadResult.threadVariables.formHash,
                                   tid,
                                   _viewThreadResult.threadVariables.fid,
+                                  forum: discuz,
                                   onVoted: () => _controller.callRefresh(),
                                 );
                               },
@@ -1814,6 +2181,7 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                                 pool: thread.replyCredit,
                                 credit: thread.creditRule,
                                 rush: thread.rushReply,
+                                onOpenWinners: _openRushWinners,
                                 closed: threadClosed,
                                 creditName:
                                     names.data?[thread.creditRule?.creditType],
@@ -1824,6 +2192,32 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                         SliverToBoxAdapter(
                           child: SpecialThreadCard(
                             debate: _viewThreadResult.threadVariables.debate,
+                            debateFilter: viewThreadQuery.debateSide,
+                            onFilterDebate: _filterDebate,
+                            onSupportDebate:
+                                !threadClosed &&
+                                    !_submittingDebateVote &&
+                                    !_isFirstLoading &&
+                                    user != null &&
+                                    _viewThreadResult
+                                            .threadVariables
+                                            .member_uid ==
+                                        user!.uid &&
+                                    _viewThreadResult
+                                            .threadVariables
+                                            .debate
+                                            ?.ended ==
+                                        false &&
+                                    _viewThreadResult
+                                            .threadVariables
+                                            .debate
+                                            ?.voted ==
+                                        false
+                                ? _voteDebate
+                                : null,
+                            tradeItems:
+                                _viewThreadResult.threadVariables.tradeItems,
+                            onOpenTrade: _openTrade,
                             onActivityReview: canReviewActivity
                                 ? () => Navigator.push<void>(
                                     context,
@@ -1997,6 +2391,41 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            if (_viewThreadResult.threadVariables.debate
+                                case final debate?)
+                              if (!debate.ended)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                  ),
+                                  child: Wrap(
+                                    spacing: 5,
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    children: [
+                                      Text(S.of(context).debateReplySide),
+                                      for (final side in DebateSide.values)
+                                        PlatformChoiceChip(
+                                          label: DebateSideLabel(side),
+                                          selected:
+                                              (debate.sideForAuthor(
+                                                    replyUser.uid,
+                                                  ) ??
+                                                  _replyDebateSide) ==
+                                              side,
+                                          onSelected:
+                                              debate.sideForAuthor(
+                                                    replyUser.uid,
+                                                  ) ==
+                                                  null
+                                              ? (_) => setState(
+                                                  () => _replyDebateSide = side,
+                                                )
+                                              : null,
+                                        ),
+                                    ],
+                                  ),
+                                ),
                             // input fields
                             if (_viewThreadResult.threadVariables.member_uid !=
                                 0)
@@ -2462,12 +2891,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
 class ViewThreadQuery {
   int authorId = 0;
   bool timeAscend = true;
+  DebateSide? debateSide;
 
   Map<String, String> generateForumQueriesMap() {
     Map<String, String> queriesMap = {};
     if (authorId != 0) {
       queriesMap["authorid"] = authorId.toString();
     }
+    if (debateSide case final side?) queriesMap['stand'] = '${side.wire}';
     queriesMap["ordertype"] = timeAscend ? "0" : "1";
     return queriesMap;
   }

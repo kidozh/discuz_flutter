@@ -4,82 +4,51 @@ import '../entity/Discuz.dart';
 import '../entity/ViewThreadScrollDistance.dart';
 
 class ViewThreadScrollDistanceDao {
-  Box<ViewThreadScrollDistance> viewThreadScrollDistanceBox;
+  final Box<ViewThreadScrollDistance> viewThreadScrollDistanceBox;
   ViewThreadScrollDistanceDao(this.viewThreadScrollDistanceBox);
+
+  String _key(Discuz discuz, int uid, int tid, bool isAscend) =>
+      '${discuz.siteIdentity}|$uid|$tid|${isAscend ? 1 : 0}';
 
   ViewThreadScrollDistance? findViewThreadCacheListByDiscuz(
     Discuz discuz,
     int tid,
-    bool isAscend,
-  ) {
-    return viewThreadScrollDistanceBox.values
-        .where(
-          (element) =>
-              element.discuz == discuz &&
-              element.tid == tid &&
-              element.isAscend == isAscend,
-        )
-        .firstOrNull;
+    bool isAscend, {
+    required int uid,
+  }) => viewThreadScrollDistanceBox.get(_key(discuz, uid, tid, isAscend));
+
+  ViewThreadScrollDistance? latestProgress(Discuz discuz, int uid, int tid) {
+    final ascend = findViewThreadCacheListByDiscuz(discuz, tid, true, uid: uid);
+    final descend = findViewThreadCacheListByDiscuz(
+      discuz,
+      tid,
+      false,
+      uid: uid,
+    );
+    if (ascend == null) return descend;
+    if (descend == null) return ascend;
+    return descend.updateTime.isAfter(ascend.updateTime) ? descend : ascend;
   }
 
-  Future<void> insertViewThreadScrollDistance(
-    ViewThreadScrollDistance viewThreadCache,
-  ) {
-    // check with existing records
-    int existingThreadCacheRecordListLength = viewThreadScrollDistanceBox.values
-        .where(
-          (element) =>
-              element.discuz == viewThreadCache.discuz &&
-              element.tid == viewThreadCache.tid &&
-              element.isAscend == viewThreadCache.isAscend,
-        )
-        .length;
-
-    if (existingThreadCacheRecordListLength == 1) {
-      // replace it
-      ViewThreadScrollDistance element = viewThreadScrollDistanceBox.values
-          .where(
-            (element) =>
-                element.discuz == viewThreadCache.discuz &&
-                element.tid == viewThreadCache.tid &&
-                element.isAscend == viewThreadCache.isAscend,
-          )
-          .first;
-
-      return viewThreadScrollDistanceBox.put(element.key, viewThreadCache);
-    } else if (existingThreadCacheRecordListLength > 1) {
-      viewThreadScrollDistanceBox.values
-          .where(
-            (element) =>
-                element.discuz == viewThreadCache.discuz &&
-                element.tid == viewThreadCache.tid &&
-                element.isAscend == viewThreadCache.isAscend,
-          )
-          .forEach(
-            (element) => viewThreadScrollDistanceBox.delete(element.key),
-          );
-
-      return viewThreadScrollDistanceBox.add(viewThreadCache);
-    } else {
-      return viewThreadScrollDistanceBox.add(viewThreadCache);
+  Future<void> insertViewThreadScrollDistance(ViewThreadScrollDistance entry) {
+    final uid = entry.uid;
+    if (uid == null) return viewThreadScrollDistanceBox.add(entry);
+    final key = _key(entry.discuz, uid, entry.tid, entry.isAscend);
+    final existing = viewThreadScrollDistanceBox.get(key);
+    if (existing != null && existing.updateTime.isAfter(entry.updateTime)) {
+      return Future.value();
     }
+    return viewThreadScrollDistanceBox.put(key, entry);
   }
 
-  Future<void> deleteAllViewThreadScrollDistanceByTid(Discuz discuz, int tid) {
+  Future<void> deleteAllExpiredViewThreadCache() {
+    final cutoff = DateTime.now().subtract(const Duration(days: 7));
     final keys = viewThreadScrollDistanceBox.values
-        .where((entry) => entry.discuz == discuz && entry.tid == tid)
+        .where(
+          (entry) => entry.uid == null && entry.updateTime.isBefore(cutoff),
+        )
         .map((entry) => entry.key)
         .toList();
     return viewThreadScrollDistanceBox.deleteAll(keys);
-  }
-
-  Future<void> deleteAllExpiredViewThreadCache() async {
-    DateTime oneWeekAgo = DateTime.now().subtract(Duration(days: 7));
-
-    return viewThreadScrollDistanceBox.values
-        .where((element) => element.updateTime.isBefore(oneWeekAgo))
-        .forEach((element) {
-          viewThreadScrollDistanceBox.delete(element.key);
-        });
   }
 }

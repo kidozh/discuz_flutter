@@ -682,13 +682,15 @@ class PlatformAppBar {
   ) {
     if (widget is PlatformIconButton && widget.onPressed != null) {
       final iconWidget = widget.cupertinoIcon ?? widget.icon;
+      final icon = _iconForWidget(iconWidget);
       final symbol =
           widget.liquidGlassSymbol ?? _liquidGlassSymbolForWidget(iconWidget);
       if (symbol == null) return null;
       return liquid.AdaptiveAppBarAction(
         iosSymbol: symbol,
         iconWidget: iconWidget,
-        tintColor: _iconForWidget(iconWidget)?.color,
+        label: icon?.semanticLabel,
+        tintColor: icon?.color,
         onPressed: widget.onPressed!,
         spacerAfter: widget.liquidGlassFlexibleSpaceAfter
             ? liquid.ToolbarSpacerType.flexible
@@ -837,6 +839,7 @@ class PlatformScaffold extends StatelessWidget {
   final Color? backgroundColor;
   final PlatformAppBar? appBar;
   final PlatformBottomNavigationBar? bottomNavigationBar;
+  final bool liquidGlassTabBarHidden;
   final bool iosContentPadding;
   final bool iosContentBottomPadding;
 
@@ -846,6 +849,7 @@ class PlatformScaffold extends StatelessWidget {
     this.backgroundColor,
     this.appBar,
     this.bottomNavigationBar,
+    this.liquidGlassTabBarHidden = false,
     this.iosContentPadding = false,
     this.iosContentBottomPadding = false,
     super.key,
@@ -896,6 +900,7 @@ class PlatformScaffold extends StatelessWidget {
           appBar: liquidAppBar,
           bottomNavigationBar: bottomNavigationBar
               ?.createLiquidGlassBottomNavigationBar(),
+          tabBarHidden: liquidGlassTabBarHidden,
           minimizeBehavior:
               bottomNavigationBar?.liquidGlassMinimizeOnScroll == false
               ? liquid.TabBarMinimizeBehavior.never
@@ -1113,6 +1118,7 @@ class PlatformTextButton extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final AlignmentGeometry? alignment;
   final Color? color;
+  final String? semanticLabel;
 
   const PlatformTextButton({
     this.widgetKey,
@@ -1121,6 +1127,7 @@ class PlatformTextButton extends StatelessWidget {
     this.padding,
     this.alignment,
     this.color,
+    this.semanticLabel,
     super.key,
   });
 
@@ -1177,7 +1184,16 @@ class PlatformTextButton extends StatelessWidget {
     }
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
-      child: button,
+      child: semanticLabel == null
+          ? button
+          : Semantics(
+              button: true,
+              enabled: onPressed != null,
+              label: semanticLabel,
+              onTap: onPressed,
+              excludeSemantics: true,
+              child: button,
+            ),
     );
   }
 }
@@ -1804,6 +1820,7 @@ class PlatformLiquidGlassPageBackdrop extends StatelessWidget {
     if (!usesAppleTranslucentSurface(context)) return child;
 
     final colors = Theme.of(context).colorScheme;
+    final dark = colors.brightness == Brightness.dark;
     final background = CupertinoColors.systemGroupedBackground.resolveFrom(
       context,
     );
@@ -1817,12 +1834,12 @@ class PlatformLiquidGlassPageBackdrop extends StatelessWidget {
               end: Alignment.bottomRight,
               colors: [
                 Color.alphaBlend(
-                  colors.primary.withValues(alpha: 0.13),
+                  colors.primary.withValues(alpha: dark ? 0.10 : 0.055),
                   background,
                 ),
                 background,
                 Color.alphaBlend(
-                  colors.secondary.withValues(alpha: 0.11),
+                  colors.primary.withValues(alpha: dark ? 0.045 : 0.025),
                   background,
                 ),
               ],
@@ -1840,7 +1857,7 @@ class PlatformLiquidGlassPageBackdrop extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    colors.primary.withValues(alpha: 0.26),
+                    colors.primary.withValues(alpha: dark ? 0.18 : 0.12),
                     colors.primary.withValues(alpha: 0),
                   ],
                 ),
@@ -1859,8 +1876,8 @@ class PlatformLiquidGlassPageBackdrop extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    colors.secondary.withValues(alpha: 0.22),
-                    colors.secondary.withValues(alpha: 0),
+                    colors.primary.withValues(alpha: dark ? 0.10 : 0.065),
+                    colors.primary.withValues(alpha: 0),
                   ],
                 ),
               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../client/thread_post_options.dart';
 import '../generated/l10n.dart';
@@ -229,6 +230,121 @@ class _RushPostSheetState extends State<RushPostSheet> {
             s.rushSettingsInvalid,
             style: TextStyle(color: Theme.of(context).colorScheme.error),
           ),
+      ],
+    );
+  }
+}
+
+class ExtraThreadOptionsSheet extends StatefulWidget {
+  const ExtraThreadOptionsSheet(this.form, this.initial, {super.key});
+
+  final ExtraThreadOptions form;
+  final Map<String, String> initial;
+
+  @override
+  State<ExtraThreadOptionsSheet> createState() =>
+      _ExtraThreadOptionsSheetState();
+}
+
+class _ExtraThreadOptionsSheetState extends State<ExtraThreadOptionsSheet> {
+  late final Map<String, String> values = {
+    for (final entry in widget.initial.entries)
+      if (widget.form.available.contains(entry.key)) entry.key: entry.value,
+  };
+  final _dateFormat = DateFormat('yyyy-MM-dd HH:mm');
+  late final TextEditingController publishAt = TextEditingController(
+    text: _initialPublicationText(),
+  );
+  late final TextEditingController access = TextEditingController(
+    text: values['readperm'],
+  );
+  late final tags = TextEditingController(text: values['tags']);
+  bool invalid = false;
+
+  String _initialPublicationText() {
+    final date = DateTime.tryParse(values['cronpublishdate'] ?? '')?.toLocal();
+    return date == null ? '' : _dateFormat.format(date);
+  }
+
+  @override
+  void dispose() {
+    publishAt.dispose();
+    access.dispose();
+    tags.dispose();
+    super.dispose();
+  }
+
+  void save() {
+    final readingAccess = access.text.trim();
+    final publication = publishAt.text.trim();
+    values.remove('readperm');
+    values.remove('cronpublishdate');
+    values.remove('tags');
+    if (widget.form.available.contains('tags') && tags.text.trim().isNotEmpty) {
+      values['tags'] = tags.text;
+    }
+    if (widget.form.available.contains('readperm') &&
+        readingAccess.isNotEmpty) {
+      values['readperm'] = readingAccess;
+    }
+    if (widget.form.available.contains('cronpublishdate') &&
+        publication.isNotEmpty) {
+      final parsed = _dateFormat.tryParseStrict(publication);
+      if (parsed == null) {
+        setState(() => invalid = true);
+        return;
+      }
+      values['cronpublishdate'] = parsed.toUtc().toIso8601String();
+    }
+    if (widget.form.submission(values, DateTime.now()) == null) {
+      setState(() => invalid = true);
+      return;
+    }
+    Navigator.pop(context, values);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = S.of(context);
+    return PostSettingsSheet(
+      title: s.morePostSettings,
+      onSave: save,
+      hasSave: true,
+      children: [
+        for (final (name, label) in [
+          ('allownoticeauthor', s.postNotifyReplies),
+          ('isanonymous', s.postAnonymous),
+        ])
+          if (widget.form.available.contains(name))
+            PlatformListTile(
+              title: Text(label),
+              trailing: PlatformSwitch(
+                value: values[name] == '1',
+                onChanged: (checked) => setState(() {
+                  if (checked) {
+                    values[name] = '1';
+                  } else {
+                    values.remove(name);
+                  }
+                }),
+              ),
+            ),
+        if (widget.form.available.contains('readperm'))
+          PlatformTextField(
+            controller: access,
+            hintText: s.postReadPermission,
+            keyboardType: TextInputType.number,
+          ),
+        if (widget.form.available.contains('cronpublishdate'))
+          PlatformTextField(
+            controller: publishAt,
+            hintText: s.postScheduleTime,
+            keyboardType: TextInputType.datetime,
+          ),
+        if (widget.form.available.contains('tags'))
+          PlatformTextField(controller: tags, hintText: s.forumThreadTagsHint),
+        if (widget.form.available.isEmpty || invalid)
+          Text(s.postSettingsChanged),
       ],
     );
   }

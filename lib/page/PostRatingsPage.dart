@@ -1,12 +1,16 @@
 import '../widget/PostRatingsCard.dart';
+
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
 import 'package:html/parser.dart' as html;
+
 import '../entity/Discuz.dart';
 import '../entity/User.dart';
 import '../generated/l10n.dart';
 import '../provider/DiscuzAndUserNotifier.dart';
+import '../utility/EasyRefreshUtils.dart';
 import '../utility/NetworkUtils.dart';
 import '../utility/PlatformAdaptiveWidgets.dart';
 import 'InternalWebviewBrowserPage.dart';
@@ -60,7 +64,7 @@ class PostRatingsPage extends StatefulWidget {
 
 class _PostRatingsPageState extends State<PostRatingsPage> {
   PostRatings? result;
-  bool loading = true, failed = false;
+  bool loading = false, failed = false;
   Uri get url =>
       Uri.parse('${widget.discuz.baseURL.replaceAll(RegExp(r'/+$'), '')}/')
           .resolve('forum.php')
@@ -85,29 +89,35 @@ class _PostRatingsPageState extends State<PostRatingsPage> {
     load();
   }
 
-  Future<void> load() async {
+  Future<IndicatorResult> load() async {
+    if (loading || !sameAccount) return IndicatorResult.fail;
     setState(() {
       loading = true;
       failed = false;
     });
     try {
-      if (!sameAccount) return;
       final dio = await NetworkUtils.getDioWithPersistCookieJar(widget.user);
-      final response = await dio.getUri<String>(
-        url.replace(
-          queryParameters: {
-            ...url.queryParameters,
-            'inajax': '1',
-            'infloat': 'yes',
-            'mobile': 'no',
-          },
-        ),
-        options: Options(responseType: ResponseType.plain),
-      );
-      final parsed = PostRatings.parse(response.data ?? '');
-      if (mounted && sameAccount) result = parsed;
+      try {
+        final response = await dio.getUri<String>(
+          url.replace(
+            queryParameters: {
+              ...url.queryParameters,
+              'inajax': '1',
+              'infloat': 'yes',
+              'mobile': 'no',
+            },
+          ),
+          options: Options(responseType: ResponseType.plain),
+        );
+        if (!mounted || !sameAccount) return IndicatorResult.fail;
+        result = PostRatings.parse(response.data ?? '');
+        return IndicatorResult.success;
+      } finally {
+        dio.close();
+      }
     } catch (_) {
-      if (mounted) failed = true;
+      if (mounted && sameAccount) failed = true;
+      return IndicatorResult.fail;
     } finally {
       if (mounted) setState(() => loading = false);
     }
@@ -122,11 +132,6 @@ class _PostRatingsPageState extends State<PostRatingsPage> {
       appBar: PlatformAppBar(
         title: Text(s.postViewRatings),
         trailingActions: [
-          PlatformIconButton(
-            liquidGlassSymbol: 'arrow.clockwise',
-            icon: Icon(PlatformIcons(context).refresh),
-            onPressed: loading ? null : load,
-          ),
           PlatformIconButton(
             liquidGlassSymbol: 'safari',
             icon: const Icon(Icons.open_in_browser),
@@ -148,40 +153,43 @@ class _PostRatingsPageState extends State<PostRatingsPage> {
       ),
       body: !sameAccount
           ? Center(child: Text(s.forumAccountChanged))
-          : loading
-          ? const Center(child: PlatformCircularProgressIndicator())
-          : failed
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(s.postRatingsUnavailable),
-              ),
-            )
-          : CustomScrollView(
-              slivers: [
-                if (result?.records.isNotEmpty == true)
-                  PostRatingsCard(
-                    total: result!.total,
-                    rows: result!.records
-                        .map(
-                          (record) => [
-                            record.credit,
-                            record.author,
-                            record.date,
-                            if (record.reason.isNotEmpty) record.reason,
-                          ].join(' · '),
-                        )
-                        .toList(),
-                    asSliver: true,
-                  )
-                else
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(s.forumEmpty),
+          : EasyRefresh(
+              header: EasyRefreshUtils.i18nClassicHeader(context),
+              onRefresh: load,
+              child: CustomScrollView(
+                slivers: [
+                  if (result?.records.isNotEmpty == true)
+                    PostRatingsCard(
+                      total: result!.total,
+                      rows: result!.records
+                          .map(
+                            (record) => [
+                              record.credit,
+                              record.author,
+                              record.date,
+                              if (record.reason.isNotEmpty) record.reason,
+                            ].join(' · '),
+                          )
+                          .toList(),
+                      asSliver: true,
                     ),
-                  ),
-              ],
+                  if (failed || result?.records.isNotEmpty != true)
+                    SliverToBoxAdapter(
+                      child: loading && result == null
+                          ? const Center(
+                              child: PlatformCircularProgressIndicator(),
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Text(
+                                failed
+                                    ? s.postRatingsUnavailable
+                                    : s.forumEmpty,
+                              ),
+                            ),
+                    ),
+                ],
+              ),
             ),
     );
   }

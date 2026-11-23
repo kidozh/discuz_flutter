@@ -41,7 +41,8 @@ CaptchaVariable _$CaptchaVariableFromJson(Map<String, dynamic> json) =>
       ..isModerator = const StringToIntConverter().fromJson(json['ismoderator'])
       ..noticeCount = noticeFromJson(json['notice'])
       ..secHash = json['sechash'] as String? ?? ''
-      ..secCodeURL = json['seccode'] as String? ?? '';
+      ..secCodeURL = json['seccode'] as String? ?? ''
+      ..securityQuestion = json['secqaa'] as String? ?? '';
 
 Map<String, dynamic> _$CaptchaVariableToJson(CaptchaVariable instance) =>
     <String, dynamic>{
@@ -58,4 +59,5 @@ Map<String, dynamic> _$CaptchaVariableToJson(CaptchaVariable instance) =>
       'notice': instance.noticeCount,
       'sechash': instance.secHash,
       'seccode': instance.secCodeURL,
+      'secqaa': instance.securityQuestion,
     };

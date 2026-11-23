@@ -56,6 +56,8 @@ class ErrorCard extends StatelessWidget {
   final VoidCallback? onRefreshCallback;
   final bool? largeSize;
   final String? webpageUrl;
+  final IconData? icon;
+  final String? actionLabel;
 
   bool get _canReportIssue =>
       discuzError.reportable && errorType != ErrorType.userExpired;
@@ -121,7 +123,7 @@ class ErrorCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                getErrorIcon(context),
+                icon ?? getErrorIcon(context),
                 color: Theme.of(context).colorScheme.error,
                 size: 48,
               ),
@@ -153,21 +155,18 @@ class ErrorCard extends StatelessWidget {
                   ),
                 ),
               SizedBox(height: 16.0),
-              if (onRefreshCallback != null)
+              if (onRefreshCallback != null || actionLabel != null)
                 SizedBox(
                   width: double.infinity,
                   child: PlatformElevatedButton(
                     child: Text(
-                      S.of(context).retry,
+                      actionLabel ?? S.of(context).retry,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onPrimaryContainer,
                       ),
                     ),
                     color: Theme.of(context).colorScheme.primaryContainer,
-                    onPressed: () {
-                      VibrationUtils.vibrateWithClickIfPossible();
-                      onRefreshCallback!();
-                    },
+                    onPressed: _recoveryAction,
                   ),
                 ),
               if (_canReportIssue) _reportIssueAction(context),
@@ -176,9 +175,10 @@ class ErrorCard extends StatelessWidget {
         ),
       );
     } else {
+      final colors = Theme.of(context).colorScheme;
       return PlatformCard(
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        color: Theme.of(context).colorScheme.secondaryContainer,
+        color: colors.secondaryContainer,
         padding: const EdgeInsets.fromLTRB(16, 14, 12, 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,11 +188,16 @@ class ErrorCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
-                  getErrorIcon(context),
-                  color: Theme.of(context).colorScheme.secondary,
+                  icon ?? getErrorIcon(context),
+                  color: colors.onSecondaryContainer,
                 ),
                 const SizedBox(width: 12),
-                Expanded(child: Text(discuzError.content)),
+                Expanded(
+                  child: Text(
+                    discuzError.content,
+                    style: TextStyle(color: colors.onSecondaryContainer),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 8),
@@ -203,27 +208,20 @@ class ErrorCard extends StatelessWidget {
                 runSpacing: 4,
                 children: [
                   if (errorType != ErrorType.userExpired &&
-                      onRefreshCallback != null)
+                      (onRefreshCallback != null || actionLabel != null))
                     PlatformTextButton(
                       child: Text(
-                        S.of(context).retry,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
+                        actionLabel ?? S.of(context).retry,
+                        style: TextStyle(color: colors.onSecondaryContainer),
                       ),
-                      onPressed: () {
-                        VibrationUtils.vibrateWithClickIfPossible();
-                        onRefreshCallback!();
-                      },
+                      onPressed: _recoveryAction,
                     ),
                   if (errorType == ErrorType.userExpired)
                     // should directly re-login here
                     PlatformTextButton(
                       child: Text(
                         S.of(context).loginTitle,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
+                        style: TextStyle(color: colors.onSecondaryContainer),
                       ),
                       onPressed: () => _loginAgain(context),
                     ),
@@ -272,6 +270,15 @@ class ErrorCard extends StatelessWidget {
     }
   }
 
+  VoidCallback? get _recoveryAction {
+    final callback = onRefreshCallback;
+    if (callback == null) return null;
+    return () {
+      VibrationUtils.vibrateWithClickIfPossible();
+      callback();
+    };
+  }
+
   Future<void> _loginAgain(BuildContext context) async {
     VibrationUtils.vibrateWithClickIfPossible();
     final account = context.read<DiscuzAndUserNotifier>();
@@ -296,6 +303,8 @@ class ErrorCard extends StatelessWidget {
     this.largeSize,
     ErrorType? errorType,
     this.webpageUrl,
+    this.icon,
+    this.actionLabel,
   }) : errorType = errorType ?? discuzError.errorType;
 
   IconData getErrorIcon(BuildContext buildContext) {
