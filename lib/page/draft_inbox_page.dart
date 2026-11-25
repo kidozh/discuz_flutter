@@ -1,3 +1,6 @@
+import '../client/forum_web_content.dart';
+import 'forum_web_content_page.dart';
+
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
@@ -254,6 +257,7 @@ class _DraftInboxPageState extends State<DraftInboxPage> {
   Widget build(BuildContext context) {
     final s = S.of(context);
     final icons = PlatformIcons(context);
+    final account = context.watch<DiscuzAndUserNotifier>();
     final groups = <(String, int), List<DraftInboxEntry>>{};
     for (final entry in entries) {
       (groups[(entry.forum.siteIdentity, entry.uid)] ??= []).add(entry);
@@ -268,6 +272,17 @@ class _DraftInboxPageState extends State<DraftInboxPage> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            if (account.discuz case final forum?
+                when account.userFor(forum) != null)
+              PlatformListTile(
+                title: Text(s.myContentServerDrafts),
+                subtitle: Text(forum.siteName),
+                leading: Icon(
+                  icons.pick(Icons.cloud_outlined, CupertinoIcons.cloud),
+                ),
+                onTap: () =>
+                    openForumContent(context, forum, ForumContentKind.drafts),
+              ),
             if (failed) Text(s.replyDraftRestoreFailed),
             if (busy && entries.isEmpty)
               const Center(child: PlatformCircularProgressIndicator())

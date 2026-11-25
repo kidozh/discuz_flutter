@@ -186,7 +186,11 @@ class ForumCommunityClient {
     ];
     for (final anchor in anchors) {
       final item = _item(section, result.uri, anchor);
-      if (item == null) continue;
+      if (item == null ||
+          (item.kind == CommunityTarget.portalCategory &&
+              item.id == _id(params['catid']))) {
+        continue;
+      }
       items.putIfAbsent((
         item.kind,
         item.id ?? item.uri,
@@ -475,6 +479,16 @@ class ForumCommunityClient {
           _id(p['catid']) != null) {
         kind = CommunityTarget.portalCategory;
         id = _id(p['catid']);
+        final navigationTitle = anchor.nodes
+            .whereType<Text>()
+            .map((node) => node.text.trim())
+            .where((part) => part.isNotEmpty)
+            .join(' ');
+        if (navigationTitle.isNotEmpty) {
+          label = navigationTitle;
+          final subtitle = anchor.attributes['title']?.trim() ?? '';
+          if (subtitle != label) detail = subtitle;
+        }
       }
     } else if (section == CommunitySection.medals ||
         section == CommunitySection.myMedals) {

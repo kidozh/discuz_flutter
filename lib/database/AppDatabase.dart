@@ -17,8 +17,10 @@ import 'package:discuz_flutter/entity/ViewHistory.dart';
 import 'package:discuz_flutter/entity/ViewThreadCache.dart';
 import 'package:discuz_flutter/entity/ViewThreadScrollDistance.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utility/SecureStorageUtils.dart';
+import '../utility/encrypted_box_key.dart';
 
 import '../dao/AiRuleDao.dart';
 import '../dao/BlockUserDao.dart';
@@ -82,7 +84,6 @@ class AppDatabase {
     await getDiscuzConfigBox();
     await getViewThreadCacheBox();
     await getViewThreadScrollDistanceBox();
-    await getPrivateMessageCacheDao();
   }
 
   static Future<BlockUserDao> getBlockUserDao() async {
@@ -218,11 +219,10 @@ class AppDatabase {
     ViewThreadScrollDistanceDao viewThreadScrollDistanceDao =
         await getViewThreadScrollDistanceDao();
     ViewThreadCacheDao viewThreadCacheDao = await getViewThreadCacheDao();
-    PrivateMessageCacheDao privateMessageCacheDao =
-        await getPrivateMessageCacheDao();
     viewThreadScrollDistanceDao.deleteAllExpiredViewThreadCache();
     viewThreadCacheDao.deleteAllExpiredViewThreadCache();
-    privateMessageCacheDao.deleteExpired();
+    final privateMessageCacheDao = await getPrivateMessageCacheDao();
+    await privateMessageCacheDao.deleteExpired();
   }
 
   static Future<Box<AiRule>> getAiRuleBox() async {
@@ -240,14 +240,56 @@ class AppDatabase {
   }
 
   static Future<PrivateMessageCacheDao> getPrivateMessageCacheDao() async {
-    if (privateMessageCacheBox == null) {
-      final cipher = await SecureStorageUtils.getPrivateMessageCacheCipher();
-      privateMessageCacheBox = await Hive.openBox<PrivateMessageCache>(
-        '${hiveBoxPrefix}_private_message_cache_v2',
-        encryptionCipher: cipher,
-        crashRecovery: false,
-      );
+    final cached = privateMessageCacheBox;
+    if (cached?.isOpen == true) return PrivateMessageCacheDao(cached!);
+    final opening = _privateMessageOpening ??= _openPrivateMessageCache();
+    try {
+      return PrivateMessageCacheDao(privateMessageCacheBox = await opening);
+    } finally {
+      if (identical(_privateMessageOpening, opening)) {
+        _privateMessageOpening = null;
+      }
     }
-    return PrivateMessageCacheDao(privateMessageCacheBox!);
+  }
+
+  static const _privateMessageStoreSelection = 'active_private_message_store';
+  static const _privateMessageNoticeSeen = 'private_message_recovery_seen';
+  static Future<Box<PrivateMessageCache>>? _privateMessageOpening;
+
+  static Future<Box<PrivateMessageCache>> _openPrivateMessageCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    Future<Box<PrivateMessageCache>> open(String? store) =>
+        SecureStorageUtils.openEncryptedBox<PrivateMessageCache>(
+          boxName: '${hiveBoxPrefix}_${store ?? 'private_message_cache_v2'}',
+          keyName: SecureStorageUtils.private_message_cache_storage_key,
+          store: store,
+        );
+
+    try {
+      return await open(prefs.getString(_privateMessageStoreSelection));
+    } on UnreadableEncryptedStore {
+      final store = 'private_messages_${DateTime.now().microsecondsSinceEpoch}';
+      final replacement = await open(store);
+      try {
+        if (!await prefs.setString(_privateMessageStoreSelection, store)) {
+          throw StateError('Unable to select the recovered private-message cache');
+        }
+      } catch (_) {
+        await replacement.close();
+        rethrow;
+      }
+      return replacement;
+    }
+  }
+
+  static Future<String?> pendingPrivateMessageRecoveryNotice() async {
+    final prefs = await SharedPreferences.getInstance();
+    final active = prefs.getString(_privateMessageStoreSelection);
+    return active == prefs.getString(_privateMessageNoticeSeen) ? null : active;
+  }
+
+  static Future<void> acknowledgePrivateMessageRecovery(String store) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_privateMessageNoticeSeen, store);
   }
 }

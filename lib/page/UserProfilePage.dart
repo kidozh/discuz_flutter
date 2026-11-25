@@ -1,3 +1,8 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
+import '../client/forum_settings_forms.dart';
+import 'forum_settings_form_page.dart';
+import '../client/forum_web_content.dart';
+import 'forum_web_content_page.dart';
 import '../page/forum_community_page.dart';
 import 'credit_page.dart';
 import 'UploadAvatarPage.dart';
@@ -28,7 +33,6 @@ import 'package:provider/provider.dart';
 import '../entity/DiscuzError.dart';
 import '../utility/EasyRefreshUtils.dart';
 import '../utility/UserPreferencesUtils.dart';
-import 'ExploreWebsiteScaffordPage.dart';
 import 'PrivateMessageDetailPage.dart';
 
 class UserProfilePage extends StatelessWidget {
@@ -378,6 +382,16 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                     ),
                   ),
                 ),
+                if (context.watch<DiscuzAndUserNotifier>().userFor(discuz)?.uid == uid)
+                  PlatformListTile(
+                    title: Text(S.of(context).forumEditProfile),
+                    leading: Icon(PlatformIcons(context).pick(Icons.edit_outlined, CupertinoIcons.pencil)),
+                    onTap: () async {
+                      if (await openForumSettingsForm(context, discuz, ForumSettingsKind.profile) == true && context.mounted) {
+                        await _loadUserProfile();
+                      }
+                    },
+                  ),
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.all(10.0),
@@ -416,11 +430,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                                           .user,
                                       type: 'thread',
                                     )
-                                  : ExploreWebsiteScaffordPage(
-                                      initialURL:
-                                          discuz.baseURL +
-                                          "/home.php?mod=space&uid=${uid}&do=thread&view=me&type=thread&from=space",
-                                    ),
+                                  : ForumWebContentPage(discuz, ForumContentKind.memberThreads, id: uid),
                             ),
                           );
                         },
@@ -458,11 +468,7 @@ class UserProfileState extends State<UserProfileStatefulWidget> {
                                           .user,
                                       type: 'reply',
                                     )
-                                  : ExploreWebsiteScaffordPage(
-                                      initialURL:
-                                          discuz.baseURL +
-                                          "/home.php?mod=space&uid=${uid}&do=thread&view=me&type=reply&from=space",
-                                    ),
+                                  : ForumWebContentPage(discuz, ForumContentKind.memberReplies, id: uid),
                             ),
                           );
                         },

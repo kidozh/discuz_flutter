@@ -1,5 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'encrypted_box_key.dart';
+
 import 'dart:developer';
 
 import 'package:discuz_flutter/entity/DiscuzAuthentication.dart';
@@ -17,7 +19,7 @@ enum AuthenticationStatus {
   device_not_supported,
   could_not_authenticate,
   failed,
-  success
+  success,
 }
 
 class SecureStorageUtils {
@@ -53,7 +55,9 @@ class SecureStorageUtils {
     final bool isDeviceSupported = await auth.isDeviceSupported();
     final bool canAuthenticate =
         canAuthenticateWithBiometrics && isDeviceSupported;
-    log("can auth with bio? ${canAuthenticateWithBiometrics} is device supported ${isDeviceSupported}");
+    log(
+      "can auth with bio? ${canAuthenticateWithBiometrics} is device supported ${isDeviceSupported}",
+    );
     return canAuthenticate;
   }
 
@@ -114,27 +118,40 @@ class SecureStorageUtils {
     return _openPasswordStore(prefs.getString(_passwordStoreSelection));
   }
 
-  static Future<Box<DiscuzAuthentication>> _openPasswordStore(
-      String? store) async {
+  static Future<Box<DiscuzAuthentication>> _openPasswordStore(String? store) =>
+      openEncryptedBox<DiscuzAuthentication>(
+        boxName: '${discuzAuthentificationKey}_${store ?? 'password'}',
+        keyName: discuz_password_storage_key,
+        store: store,
+      );
+
+  static Future<Box<T>> openEncryptedBox<T>({
+    required String boxName,
+    required String keyName,
+    String? store,
+  }) async {
     final secureStorage = FlutterSecureStorage(
       aOptions: migrationAndroidOptions(store),
     );
-    final keyName = store == null
-        ? discuz_password_storage_key
-        : '${discuz_password_storage_key}_$store';
-    final boxName = store == null
-        ? '${discuzAuthentificationKey}_password'
-        : '${discuzAuthentificationKey}_$store';
-    final encryptionBase64Key = await readEncryptedBoxKey(
-      read: () => secureStorage.read(key: keyName),
-      write: (value) => secureStorage.write(key: keyName, value: value),
-      boxExists: () => Hive.boxExists(boxName),
-      generate: Hive.generateSecureKey,
-    );
-
-    return Hive.openBox<DiscuzAuthentication>(boxName,
-        encryptionCipher: HiveAesCipher(encryptionBase64Key),
-        crashRecovery: false);
+    final scopedKey = store == null ? keyName : '${keyName}_$store';
+    try {
+      final encryptionKey = await readEncryptedBoxKey(
+        read: () => secureStorage.read(key: scopedKey),
+        write: (value) => secureStorage.write(key: scopedKey, value: value),
+        boxExists: () => Hive.boxExists(boxName),
+        generate: Hive.generateSecureKey,
+      );
+      return await Hive.openBox<T>(
+        boxName,
+        encryptionCipher: HiveAesCipher(encryptionKey),
+        crashRecovery: false,
+      );
+    } catch (error, stackTrace) {
+      if (isUnrecoverableEncryptionError(error)) {
+        Error.throwWithStackTrace(const UnreadableEncryptedStore(), stackTrace);
+      }
+      rethrow;
+    }
   }
 
   /// Called only after explicit confirmation. Never deletes the previous store.
@@ -158,32 +175,5 @@ class SecureStorageUtils {
     Box<DiscuzAuthentication> discuzAuthentificationBox =
         await getDiscuzAuthenticationBox();
     return DiscuzAuthenticationDao(discuzAuthentificationBox);
-  }
-
-  static Future<HiveCipher>? _privateMessageCipher;
-
-  static Future<HiveCipher> getPrivateMessageCacheCipher() async {
-    final pending = _privateMessageCipher;
-    if (pending != null) return pending;
-    final opening = _readPrivateMessageCacheCipher();
-    _privateMessageCipher = opening;
-    try {
-      return await opening;
-    } finally {
-      _privateMessageCipher = null;
-    }
-  }
-
-  static Future<HiveCipher> _readPrivateMessageCacheCipher() async {
-    final storage = getFlutterSecureStorage();
-    final key = await readEncryptedBoxKey(
-      read: () => storage.read(key: private_message_cache_storage_key),
-      write: (value) =>
-          storage.write(key: private_message_cache_storage_key, value: value),
-      boxExists: () =>
-          Hive.boxExists('discuz_flutter_private_message_cache_v2'),
-      generate: Hive.generateSecureKey,
-    );
-    return HiveAesCipher(key);
   }
 }

@@ -201,7 +201,7 @@ class TestFlightBannerContentState extends State<TestFlightBannerContent> {
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 30),
-            if (widget.version == '2.0.23') ...[
+            if (widget.version == '2.0.24') ...[
               const _WelcomeWhatsNew(),
               const SizedBox(height: 16),
             ],
@@ -353,30 +353,30 @@ class _WelcomeWhatsNew extends StatelessWidget {
               ),
               for (final (icon, title, detail) in [
                 (
-                  icons.pick(Icons.history, CupertinoIcons.clock),
-                  s.savedSearches,
-                  s.welcomeSavedSearchesDetail,
+                  icons.pick(Icons.menu, CupertinoIcons.line_horizontal_3),
+                  s.menuDrawerTitle,
+                  s.welcomeDrawerDetail,
                 ),
                 (
                   icons.pick(
-                    Icons.filter_list,
-                    CupertinoIcons.line_horizontal_3_decrease,
+                    Icons.how_to_vote_outlined,
+                    CupertinoIcons.chart_bar,
                   ),
-                  s.forumContentFilters,
-                  s.welcomeContentFiltersDetail,
+                  s.forumMyParticipation,
+                  s.welcomeParticipationDetail,
                 ),
                 (
-                  icons.pick(Icons.event_outlined, CupertinoIcons.calendar),
-                  s.forumMyActivities,
-                  s.welcomeMyActivitiesDetail,
+                  icons.pick(Icons.drafts_outlined, CupertinoIcons.doc_text),
+                  s.draftInbox,
+                  s.welcomeForumDraftsDetail,
                 ),
                 (
                   icons.pick(
-                    Icons.download_for_offline_outlined,
-                    CupertinoIcons.arrow_down_circle,
+                    Icons.article_outlined,
+                    CupertinoIcons.news,
                   ),
-                  s.attachmentDownloadHistory,
-                  s.welcomeAttachmentDownloadsDetail,
+                  s.portalArticleComments,
+                  s.welcomePortalDetail,
                 ),
               ])
                 Row(

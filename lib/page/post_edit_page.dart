@@ -28,11 +28,13 @@ class PostEditPage extends StatefulWidget {
     this.fid,
     this.tid,
     this.pid, {
+    this.serverDraft = false,
     super.key,
   });
   final Discuz discuz;
   final User user;
   final int fid, tid, pid;
+  final bool serverDraft;
 
   @override
   State<PostEditPage> createState() => _PostEditPageState();
@@ -86,6 +88,7 @@ class _PostEditPageState extends State<PostEditPage> {
           fid: widget.fid,
           tid: widget.tid,
           pid: widget.pid,
+          serverDraft: widget.serverDraft,
         ),
       );
     } finally {
@@ -119,7 +122,7 @@ class _PostEditPageState extends State<PostEditPage> {
     }
   }
 
-  Future<void> save() async {
+  Future<void> save({bool keepDraft = false}) async {
     final original = form;
     if (!current || busy || original == null) return;
     final s = S.of(context);
@@ -129,6 +132,21 @@ class _PostEditPageState extends State<PostEditPage> {
             subject.text.trim().isEmpty)) {
       setState(() => error = DiscuzError('post_edit_empty', s.editPostEmpty));
       return;
+    }
+    if (widget.serverDraft && !keepDraft) {
+      var confirmed = false;
+      await showPlatformAlert(
+        context: context,
+        title: s.publishForumDraft,
+        actions: [
+          PlatformAlertAction(label: s.cancel, isCancelAction: true),
+          PlatformAlertAction(
+            label: s.forumConfirm,
+            onPressed: () => confirmed = true,
+          ),
+        ],
+      );
+      if (!confirmed || !current || busy) return;
     }
     if (removed.isNotEmpty) {
       var confirmed = false;
@@ -168,6 +186,7 @@ class _PostEditPageState extends State<PostEditPage> {
           newAttachments: newIds,
           removeAttachments: removeIds,
           isCurrent: () => current,
+          keepDraft: keepDraft,
         ),
       );
       if (!current) return;
@@ -378,9 +397,16 @@ class _PostEditPageState extends State<PostEditPage> {
                         maxLines: field.key == 'extfield' ? 3 : 1,
                       ),
                     ],
+                  if (widget.serverDraft && existing.fields.containsKey('save'))
+                    PlatformTextButton(
+                      onPressed: editable ? () => save(keepDraft: true) : null,
+                      child: Text(s.saveForumDraft),
+                    ),
                   PlatformTextButton(
-                    onPressed: editable ? save : null,
-                    child: Text(s.editPostSave),
+                    onPressed: editable ? () => save() : null,
+                    child: Text(
+                      widget.serverDraft ? s.publishForumDraft : s.editPostSave,
+                    ),
                   ),
                 ],
                 if (busy)

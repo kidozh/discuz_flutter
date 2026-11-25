@@ -1,6 +1,7 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart' show Theme;
 
 import '../JsonResult/BaseResult.dart';
 import '../entity/DiscuzError.dart';
@@ -46,9 +47,13 @@ class EasyRefreshUtils {
         hapticFeedback: true,
       );
     }
+    final theme = Theme.of(context);
     return ClassicHeader(
       position: position,
       safeArea: safeArea,
+      iconTheme: theme.iconTheme,
+      textStyle: theme.textTheme.titleMedium,
+      messageStyle: theme.textTheme.bodySmall,
       dragText: S.of(context).easyRefreshClassicHeaderDragText,
       armedText: S.of(context).easyRefreshClassicHeaderArmedText,
       readyText: S.of(context).easyRefreshClassicHeaderReadyText,
@@ -72,8 +77,12 @@ class EasyRefreshUtils {
         emptyWidget: const SizedBox.shrink(),
       );
     }
+    final theme = Theme.of(context);
     return ClassicFooter(
       safeArea: safeArea,
+      iconTheme: theme.iconTheme,
+      textStyle: theme.textTheme.titleMedium,
+      messageStyle: theme.textTheme.bodySmall,
       dragText: S.of(context).easyRefreshClassicFooterDragText,
       armedText: S.of(context).easyRefreshClassicFooterArmedText,
       readyText: S.of(context).easyRefreshClassicFooterReadyText,

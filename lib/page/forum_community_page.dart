@@ -1,3 +1,8 @@
+import '../client/forum_settings_forms.dart';
+import 'forum_settings_form_page.dart';
+import '../client/forum_web_content.dart';
+import 'forum_web_content_page.dart';
+
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
@@ -310,6 +315,14 @@ class _ForumCommunityPageState extends State<ForumCommunityPage> {
           params: {'mod': 'list', 'catid': '${row.id}'},
         );
       case CommunityTarget.article:
+        if (row.id case final aid?) {
+          await openForumContent(
+            context,
+            widget.forum,
+            ForumContentKind.article,
+            id: aid,
+          );
+        }
       case CommunityTarget.web:
         await _web(row.uri);
     }
@@ -422,17 +435,31 @@ class _ForumCommunityPageState extends State<ForumCommunityPage> {
                     ),
                   ),
           ),
+        if (user != null && (page.canManage || page.canLeave))
+          PlatformListTile(
+            title: Text(s.forumInviteFriends),
+            onTap: () => openForumSettingsForm(
+              context,
+              widget.forum,
+              ForumSettingsKind.invite,
+              fid: fid,
+            ),
+          ),
         if (page.canManage) ...[
           _section(CommunitySection.groupRequests, params: {'fid': '$fid'}),
           PlatformListTile(
             title: Text(s.communityManageGroup),
-            onTap: () => _web(
-              _website('forum.php', {
-                'mod': 'group',
-                'action': 'manage',
-                'fid': '$fid',
-              }),
-            ),
+            onTap: () async {
+              if (await openForumSettingsForm(
+                        context,
+                        widget.forum,
+                        ForumSettingsKind.group,
+                        fid: fid,
+                      ) ==
+                      true &&
+                  current)
+                await _load();
+            },
           ),
         ],
       ],
@@ -839,9 +866,16 @@ class _ForumRelationshipActionsState extends State<ForumRelationshipActions> {
 }
 
 class ForumCommunityEntry extends StatefulWidget {
-  const ForumCommunityEntry(this.forum, this.section, {super.key});
+  const ForumCommunityEntry(
+    this.forum,
+    this.section, {
+    this.tileBuilder,
+    super.key,
+  });
   final Discuz forum;
   final CommunitySection section;
+  final Widget Function(String title, IconData icon, VoidCallback onTap)?
+  tileBuilder;
 
   @override
   State<ForumCommunityEntry> createState() => _ForumCommunityEntryState();
@@ -872,30 +906,36 @@ class _ForumCommunityEntryState extends State<ForumCommunityEntry> {
       future: available,
       builder: (context, snapshot) {
         if (snapshot.data != true) return const SizedBox.shrink();
+        final title = _sectionTitle(S.of(context), widget.section);
+        final icon = switch (widget.section) {
+          CommunitySection.groups => icons.groupSolid,
+          CommunitySection.groupSearch => icons.pick(
+            Icons.search,
+            CupertinoIcons.search,
+          ),
+          CommunitySection.followingFeed => icons.pick(
+            Icons.dynamic_feed_outlined,
+            CupertinoIcons.person_crop_circle,
+          ),
+          CommunitySection.rankings => icons.pick(
+            Icons.leaderboard_outlined,
+            CupertinoIcons.chart_bar,
+          ),
+          CommunitySection.portal => icons.pick(
+            Icons.article_outlined,
+            CupertinoIcons.news,
+          ),
+          _ => icons.forward,
+        };
+        void open() => openCommunity(context, widget.forum, widget.section);
+
+        final tileBuilder = widget.tileBuilder;
+        if (tileBuilder != null) return tileBuilder(title, icon, open);
         return PlatformListTile(
-          title: Text(_sectionTitle(S.of(context), widget.section)),
-          leading: Icon(switch (widget.section) {
-            CommunitySection.groups => icons.groupSolid,
-            CommunitySection.groupSearch => icons.pick(
-              Icons.search,
-              CupertinoIcons.search,
-            ),
-            CommunitySection.followingFeed => icons.pick(
-              Icons.dynamic_feed_outlined,
-              CupertinoIcons.person_crop_circle,
-            ),
-            CommunitySection.rankings => icons.pick(
-              Icons.leaderboard_outlined,
-              CupertinoIcons.chart_bar,
-            ),
-            CommunitySection.portal => icons.pick(
-              Icons.article_outlined,
-              CupertinoIcons.news,
-            ),
-            _ => icons.forward,
-          }),
+          title: Text(title),
+          leading: Icon(icon),
           trailing: Icon(icons.forward, size: 17),
-          onTap: () => openCommunity(context, widget.forum, widget.section),
+          onTap: open,
         );
       },
     );

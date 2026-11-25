@@ -43,7 +43,7 @@ class DiscuzWebClient {
 
   Future<({Uri uri, Document document, String source})> read(
     Uri uri, {
-    Map<String, dynamic>? body,
+    Object? body,
   }) async {
     var target = uri;
     var data = body;
@@ -53,7 +53,7 @@ class DiscuzWebClient {
         data: data,
         options: Options(
           method: data == null ? 'GET' : 'POST',
-          contentType: data == null ? null : Headers.formUrlEncodedContentType,
+          contentType: data == null || data is FormData ? null : Headers.formUrlEncodedContentType,
           responseType: ResponseType.plain,
           followRedirects: false,
           validateStatus: (status) =>

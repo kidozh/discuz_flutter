@@ -47,10 +47,12 @@ class PostEditClient {
     required this.fid,
     required this.tid,
     required this.pid,
+    this.serverDraft = false,
   });
 
   final DiscuzWebClient web;
   final int uid, fid, tid, pid;
+  final bool serverDraft;
   static const _handler = 'disflyedit';
 
   static Uri websiteUri(Uri base, int fid, int tid, int pid) => base
@@ -77,6 +79,10 @@ class PostEditClient {
     final hash = discuzString(reply.variables['formhash']);
     if (hash.isEmpty || discuzInt(reply.variables['member_uid']) != uid) {
       throw const ForumApiException('not_loggedin', '', fromForum: true);
+    }
+    if (serverDraft &&
+        discuzInt(discuzMap(reply.variables['thread'])['displayorder']) != -4) {
+      throw const ForumApiException('edit_post_changed', '', fromForum: true);
     }
     final post = forumRows(reply.variables['postlist'])
         .map(discuzMap)
@@ -236,8 +242,12 @@ class PostEditClient {
     required Set<String> newAttachments,
     required Set<String> removeAttachments,
     required bool Function() isCurrent,
+    bool keepDraft = false,
   }) async {
     final fresh = await load();
+    if (keepDraft && (!serverDraft || !fresh.fields.containsKey('save'))) {
+      throw const ForumApiException('edit_post_changed', '', fromForum: true);
+    }
     if (!isCurrent()) throw const ForumApiException('account_changed', '');
     if (fresh.snapshot != original.snapshot ||
         !fresh.attachments.keys.toSet().containsAll(removeAttachments)) {
@@ -251,7 +261,11 @@ class PostEditClient {
     if (patches['tags'] case final value?) {
       final tags = forumThreadTags(value);
       if (tags == null) {
-        throw const ForumApiException('thread_tags_invalid', '', fromForum: true);
+        throw const ForumApiException(
+          'thread_tags_invalid',
+          '',
+          fromForum: true,
+        );
       }
       patches['tags'] = tags;
     }
@@ -272,6 +286,8 @@ class PostEditClient {
       if (fresh.hasSubject) 'subject': subject.trim(),
       'message': message,
       'wysiwyg': '0',
+      if (serverDraft && keepDraft && fresh.fields.containsKey('save'))
+        'save': '1',
       'delattachop': removeAttachments.isEmpty ? '0' : '1',
       for (final aid in PostTextFieldUtils.getAttachmentAidList(message))
         if (newAttachments.contains(aid)) 'attachnew[$aid][description]': '',
@@ -337,7 +353,9 @@ class PostEditClient {
         }
         throw const ForumApiException('edit_post_verify', '', fromForum: true);
       }
-      return (moderated: target.queryParameters['mod'] != 'viewthread');
+      return (
+        moderated: !keepDraft && target.queryParameters['mod'] != 'viewthread',
+      );
     } catch (_) {
       if (removalSubmitted) {
         throw const ForumApiException(

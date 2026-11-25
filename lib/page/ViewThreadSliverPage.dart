@@ -1,3 +1,5 @@
+import '../client/forum_web_content.dart';
+import 'forum_web_content_page.dart';
 import '../utility/forum_feed_filters.dart';
 import '../client/ForumInteractionClient.dart';
 import '../client/favorite_sync.dart';
@@ -913,26 +915,9 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     }
   }
 
-  void _openTrade(int pid) {
-    final target = Uri.parse(discuz.getBaseURLWithAfterfix())
-        .resolve('forum.php')
-        .replace(
-          queryParameters: {
-            'mod': 'viewthread',
-            'do': 'tradeinfo',
-            'tid': '$tid',
-            'pid': '$pid',
-            'mobile': 'no',
-          },
-        );
-    Navigator.push<void>(
-      context,
-      platformPageRoute(
-        context: context,
-        builder: (_) => InternalWebviewBrowserPage(discuz, user, '$target'),
-      ),
-    );
-  }
+  void _openTrade(int pid) => openForumContent(
+    context, discuz, ForumContentKind.tradeItem, id: tid, pid: pid,
+  );
 
   void _setAuthorFilter(int authorId) {
     viewThreadQuery.debateSide = null;
@@ -1505,20 +1490,6 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
     return null;
   }
 
-  Future<void> _openThreadRecord(String action) => pushDetailPage<void>(
-    context,
-    platformPageRoute(
-      context: context,
-      builder: (_) => InternalWebviewBrowserPage(
-        discuz,
-        user,
-        Uri.parse(discuz.getBaseURLWithAfterfix()).resolve('forum.php')
-            .replace(queryParameters: {'mod': 'misc', 'action': action, 'tid': '$tid', 'mobile': 'no'})
-            .toString(),
-      ),
-    ),
-  );
-
   Future<void> _openAttachments() async {
     var purchased = false;
     final pid = await pushDetailPage<int>(
@@ -1938,6 +1909,11 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
             ),
             if (loadedSubject.isNotEmpty)
               PopupMenuOption(
+                label: S.of(context).forumRelatedThreads,
+                onTap: (_) => openForumContent(context, discuz, ForumContentKind.relatedThreads, id: tid),
+              ),
+            if (loadedSubject.isNotEmpty)
+              PopupMenuOption(
                 label: S.of(context).forumThreadTags,
                 onTap: (_) => pushDetailPage(
                   context,
@@ -1950,14 +1926,14 @@ class _ViewThreadSliverState extends State<ViewThreadStatefulSliverWidget>
             if (variables.threadInfo.moderated)
               PopupMenuOption(
                 label: S.of(context).threadModerationHistory,
-                onTap: (_) => _openThreadRecord('viewthreadmod'),
+                onTap: (_) => openForumContent(context, discuz, ForumContentKind.moderation, id: tid),
               ),
             if (user != null && variables.member_uid == user.uid &&
                 variables.threadInfo.authorId == user.uid &&
                 variables.threadInfo.special == 0 && variables.threadInfo.price > 0)
               PopupMenuOption(
                 label: S.of(context).threadBuyerHistory,
-                onTap: (_) => _openThreadRecord('viewpayments'),
+                onTap: (_) => openForumContent(context, discuz, ForumContentKind.buyers, id: tid),
               ),
             if (_collectionsAvailable && user != null && variables.member_uid == user.uid)
               PopupMenuOption(

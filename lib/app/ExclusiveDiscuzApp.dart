@@ -17,6 +17,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:discuz_flutter/utility/PlatformAdaptiveWidgets.dart';
 import 'package:provider/provider.dart';
 
+import '../widget/private_message_storage_notice.dart';
+
 class ExclusiveDiscuzApp extends StatefulWidget {
   final String initialPlatformName;
   final Discuz discuz;
@@ -215,7 +217,9 @@ class _ExclusiveDiscuzAppState extends State<ExclusiveDiscuzApp> {
                   return null;
                 },
                 builder: ToastUtils.easyLoadingBuilder(),
-                home: ExclusiveDiscuzPortalPage(widget.discuz),
+                home: PrivateMessageStorageNotice(
+                  child: ExclusiveDiscuzPortalPage(widget.discuz),
+                ),
               ),
             );
           },

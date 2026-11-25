@@ -209,6 +209,8 @@ DiscuzError _forumMessage(
           'login_before_enter_home' ||
           'login_before_enter' => strings.forumSignInRequired,
           'account_changed' => strings.forumAccountChanged,
+          'forum_form_changed' => strings.forumSettingsChanged,
+          'forum_settings_unconfirmed' => strings.forumSettingsUnconfirmed,
           'guide_status_off' ||
           'my_content_unavailable' => strings.myContentUnavailable,
           'favorite_sync_incomplete' => strings.favoriteSyncIncomplete,

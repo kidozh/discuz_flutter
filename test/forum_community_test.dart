@@ -49,6 +49,29 @@ const _groupSearchForm = '''
 
 void main() {
   test(
+    'portal navigation separates descriptions and omits the current category',
+    () async {
+      final client = _client(
+        (_) => '''
+<div id="ct"><div class="mn"><a href="portal.php?mod=view&aid=11">Town news</a></div></div>
+<ul id="nv"><li><a href="portal.php?mod=list&catid=6" title="Events and articles">Town<span>Events and articles</span></a></li></ul>
+''',
+      );
+      final index = await client.load(CommunitySection.portal, const {});
+      final category = index.items.singleWhere(
+        (item) => item.kind == CommunityTarget.portalCategory,
+      );
+      expect(category.title, 'Town');
+      expect(category.detail, 'Events and articles');
+      final list = await client.load(CommunitySection.portal, {
+        'mod': 'list',
+        'catid': '6',
+      });
+      expect(list.items.single.kind, CommunityTarget.article);
+    },
+  );
+
+  test(
     'my activities keeps organized and registered lists and paging separate',
     () async {
       final client = _client((request) {

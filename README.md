@@ -69,7 +69,7 @@ Read more: [Apple translation and summaries](docs/apple_post_translation.md) · 
 
 ## Development
 
-Use Flutter **3.47.0+** and Dart **3.13.0+**; CI currently pins Flutter **3.47.5**. Android builds use Java 17 and Android SDK 37. iOS development requires macOS and Xcode; full iPhone Duo display support requires Xcode / iOS SDK **27.1+**. See the [Duo toolchain and adaptation notes](docs/iphone_duo_adaptation.md).
+Use Flutter **3.50.1+** and Dart **3.14.0+**; CI currently pins Flutter **3.50.1**. Android builds use Java 17 and Android SDK 37. iOS development requires macOS and Xcode; full iPhone Duo display support requires Xcode / iOS SDK **27.1+**. See the [Duo toolchain and adaptation notes](docs/iphone_duo_adaptation.md).
 
 ```sh
 git clone https://github.com/kidozh/discuz_flutter.git

@@ -806,6 +806,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "draftReply": MessageLookupByLibrary.simpleMessage("回帖"),
     "draftUnknownAccount": MessageLookupByLibrary.simpleMessage("旧草稿，账号未记录"),
     "draftUntitled": MessageLookupByLibrary.simpleMessage("未命名草稿"),
+    "drawerAccountAndForum": MessageLookupByLibrary.simpleMessage("账号与论坛"),
+    "drawerBrowseForum": MessageLookupByLibrary.simpleMessage("浏览论坛"),
+    "drawerMyContent": MessageLookupByLibrary.simpleMessage("我的内容"),
+    "drawerPreferences": MessageLookupByLibrary.simpleMessage("偏好与隐私"),
+    "drawerSwitchAccount": MessageLookupByLibrary.simpleMessage("切换账号"),
     "duplicatedPost": MessageLookupByLibrary.simpleMessage("重复发帖"),
     "dynamicSchemeVariant": MessageLookupByLibrary.simpleMessage("色调变体"),
     "dynamicSchemeVariantContentDescription":
@@ -1014,6 +1019,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumConfirm": MessageLookupByLibrary.simpleMessage("确认"),
     "forumConfirmPurchase": MessageLookupByLibrary.simpleMessage("确认购买"),
     "forumContentFilters": MessageLookupByLibrary.simpleMessage("内容过滤"),
+    "forumContentJoined": MessageLookupByLibrary.simpleMessage("我参与的"),
     "forumContentUnavailable": MessageLookupByLibrary.simpleMessage(
       "该内容无法访问，可能已被删除或正在审核。",
     ),
@@ -1026,6 +1032,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumDnsFailure": MessageLookupByLibrary.simpleMessage(
       "无法解析服务器地址。请检查站点地址和网络连接。",
     ),
+    "forumEditProfile": MessageLookupByLibrary.simpleMessage("编辑个人资料"),
     "forumEmpty": MessageLookupByLibrary.simpleMessage("暂无内容"),
     "forumFeatureDisabled": MessageLookupByLibrary.simpleMessage(
       "论坛已关闭此功能，或暂时停止访问。",
@@ -1056,6 +1063,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumFormExpired": MessageLookupByLibrary.simpleMessage(
       "论坛未接受当前会话或表单。请先刷新页面再提交。",
     ),
+    "forumGroupChangeIcon": MessageLookupByLibrary.simpleMessage("选择群组图标"),
     "forumGuide": MessageLookupByLibrary.simpleMessage("论坛导读"),
     "forumHttpForbidden": MessageLookupByLibrary.simpleMessage(
       "服务器拒绝访问（HTTP 403）。请确认访问权限，或在浏览器中打开站点。",
@@ -1076,6 +1084,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "服务器要求登录（HTTP 401）。请重新登录，或在浏览器中打开站点。",
     ),
     "forumInformation": MessageLookupByLibrary.simpleMessage("板块信息"),
+    "forumInviteFriends": MessageLookupByLibrary.simpleMessage("邀请好友"),
     "forumLoadFailed": MessageLookupByLibrary.simpleMessage("加载失败，请重试"),
     "forumLoadMore": MessageLookupByLibrary.simpleMessage("加载更多"),
     "forumLocalSaveFailed": MessageLookupByLibrary.simpleMessage("无法保存到此设备"),
@@ -1083,6 +1092,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "论坛拒绝了登录。请检查账号和密码。",
     ),
     "forumMedals": MessageLookupByLibrary.simpleMessage("论坛勋章"),
+    "forumMemberContent": MessageLookupByLibrary.simpleMessage("用户帖子"),
     "forumModerationCenter": MessageLookupByLibrary.simpleMessage("版主工作台"),
     "forumModerationRecycleBin": MessageLookupByLibrary.simpleMessage("主题回收站"),
     "forumModerationReplies": MessageLookupByLibrary.simpleMessage("待审核回复"),
@@ -1091,8 +1101,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumMuteThread": MessageLookupByLibrary.simpleMessage("静音此帖"),
     "forumMutedThreads": MessageLookupByLibrary.simpleMessage("已静音帖子"),
     "forumMyActivities": MessageLookupByLibrary.simpleMessage("我的活动"),
+    "forumMyDebates": MessageLookupByLibrary.simpleMessage("我的辩论"),
+    "forumMyParticipation": MessageLookupByLibrary.simpleMessage("我的参与"),
+    "forumMyPolls": MessageLookupByLibrary.simpleMessage("我的投票"),
     "forumMyReplies": MessageLookupByLibrary.simpleMessage("我的回复"),
+    "forumMyRewards": MessageLookupByLibrary.simpleMessage("我的悬赏"),
     "forumMyThreads": MessageLookupByLibrary.simpleMessage("我的主题"),
+    "forumMyTrades": MessageLookupByLibrary.simpleMessage("我的交易"),
     "forumNoMore": MessageLookupByLibrary.simpleMessage("已加载全部"),
     "forumNoMutedThreads": MessageLookupByLibrary.simpleMessage("还没有静音的帖子"),
     "forumNotRecommended": MessageLookupByLibrary.simpleMessage("已踩"),
@@ -1102,6 +1117,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumPermissionDenied": MessageLookupByLibrary.simpleMessage(
       "论坛未授予当前账号执行此操作的权限。",
     ),
+    "forumProfileBasic": MessageLookupByLibrary.simpleMessage("基本资料"),
+    "forumProfileContact": MessageLookupByLibrary.simpleMessage("联系方式"),
+    "forumProfileEducation": MessageLookupByLibrary.simpleMessage("教育经历"),
+    "forumProfileOther": MessageLookupByLibrary.simpleMessage("个人信息"),
+    "forumProfileWork": MessageLookupByLibrary.simpleMessage("工作经历"),
     "forumPurchasePrice": MessageLookupByLibrary.simpleMessage("价格"),
     "forumPurchaseUnavailable": MessageLookupByLibrary.simpleMessage(
       "余额不足或报价无效，请刷新后重试",
@@ -1113,6 +1133,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumRecommend": MessageLookupByLibrary.simpleMessage("赞"),
     "forumRecommended": MessageLookupByLibrary.simpleMessage("已赞"),
     "forumRefresh": MessageLookupByLibrary.simpleMessage("刷新"),
+    "forumRelatedThreads": MessageLookupByLibrary.simpleMessage("相关帖子"),
     "forumReplies": MessageLookupByLibrary.simpleMessage("回复"),
     "forumReplyThreadsHint": MessageLookupByLibrary.simpleMessage(
       "这里显示你回复过的主题，点击进入主题查看。",
@@ -1120,6 +1141,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumResponseProcessingTimeout": MessageLookupByLibrary.simpleMessage(
       "App 处理服务器返回的数据时超时。",
     ),
+    "forumRewardOpen": MessageLookupByLibrary.simpleMessage("未解决"),
+    "forumRewardResolved": MessageLookupByLibrary.simpleMessage("已解决"),
     "forumRewardSolved": MessageLookupByLibrary.simpleMessage("已解决"),
     "forumRewardStatus": MessageLookupByLibrary.simpleMessage("悬赏状态"),
     "forumRewardUnsolved": MessageLookupByLibrary.simpleMessage("待解决"),
@@ -1132,6 +1155,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumSearchWeb": MessageLookupByLibrary.simpleMessage("搜索论坛"),
     "forumSecurityChallenge": MessageLookupByLibrary.simpleMessage(
       "站点要求完成浏览器验证。请在浏览器中打开站点后继续。",
+    ),
+    "forumSettingsChanged": MessageLookupByLibrary.simpleMessage(
+      "论坛表单已变化，请刷新后重新核对。",
+    ),
+    "forumSettingsSaved": MessageLookupByLibrary.simpleMessage("论坛已确认提交"),
+    "forumSettingsUnconfirmed": MessageLookupByLibrary.simpleMessage(
+      "论坛尚未确认变更，请先在网页核对结果。",
     ),
     "forumSignInRequired": MessageLookupByLibrary.simpleMessage("请先登录当前论坛"),
     "forumSortPosts": MessageLookupByLibrary.simpleMessage("过滤排序帖子"),
@@ -1147,6 +1177,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumThreadTagsHint": MessageLookupByLibrary.simpleMessage(
       "标签（逗号分隔，最多 5 个）",
     ),
+    "forumTradeBought": MessageLookupByLibrary.simpleMessage("买入记录"),
+    "forumTradeSold": MessageLookupByLibrary.simpleMessage("卖出记录"),
     "forumUnexpectedError": MessageLookupByLibrary.simpleMessage(
       "操作遇到了意外错误。请重试。",
     ),
@@ -1541,11 +1573,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordIsEmpty": MessageLookupByLibrary.simpleMessage("密码为空"),
     "passwordRecoveryCreate": MessageLookupByLibrary.simpleMessage("创建新密码库"),
     "passwordRecoveryMessage": MessageLookupByLibrary.simpleMessage(
-      "旧密码库无法打开或迁移。是否创建一个新的空密码库？之后需要重新输入并保存密码。旧的加密数据会保留，但不再自动使用。",
+      "本地密码库已损坏或密钥不可用。可以创建一个新的空密码库，再重新输入并保存密码。旧的加密数据会保留。",
     ),
     "passwordRecoveryTitle": MessageLookupByLibrary.simpleMessage("无法读取已保存的密码"),
     "passwordSaveFailed": MessageLookupByLibrary.simpleMessage(
       "可以继续登录，但本次密码未能保存。",
+    ),
+    "passwordStorageUnavailable": MessageLookupByLibrary.simpleMessage(
+      "暂时无法访问本地密码库，请解锁设备后重试。",
     ),
     "pictureBedActive": MessageLookupByLibrary.simpleMessage("已启用"),
     "pictureBedAgreeToService": MessageLookupByLibrary.simpleMessage("我同意"),
@@ -1613,7 +1648,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "pollVotersUnavailable": MessageLookupByLibrary.simpleMessage(
       "论坛暂未提供该选项的参与人名单。",
     ),
+    "portalAllComments": MessageLookupByLibrary.simpleMessage("查看全部评论"),
+    "portalAnonymousComment": MessageLookupByLibrary.simpleMessage("匿名"),
+    "portalArticleComments": MessageLookupByLibrary.simpleMessage("文章评论"),
     "portalNoHotThreads": MessageLookupByLibrary.simpleMessage("暂无热帖"),
+    "portalRelatedArticles": MessageLookupByLibrary.simpleMessage("相关文章"),
     "post": MessageLookupByLibrary.simpleMessage("发帖"),
     "postAddComment": MessageLookupByLibrary.simpleMessage("发表点评"),
     "postAgainst": MessageLookupByLibrary.simpleMessage("反对"),
@@ -1702,6 +1741,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "privateMessageIgnoreList": MessageLookupByLibrary.simpleMessage(
       "拒收名单与接收设置",
     ),
+    "privateMessageRecoveryMessage": MessageLookupByLibrary.simpleMessage(
+      "旧的加密缓存无法迁移，已启用新缓存。打开会话时会从论坛重新加载私信。旧的加密数据仍保存在此设备上。",
+    ),
+    "privateMessageRecoveryTitle": MessageLookupByLibrary.simpleMessage(
+      "本地私信缓存已损坏",
+    ),
     "progressButtonLoginFailed": MessageLookupByLibrary.simpleMessage("登陆失败"),
     "progressButtonLoginSuccess": MessageLookupByLibrary.simpleMessage("登陆成功！"),
     "progressButtonLogining": MessageLookupByLibrary.simpleMessage("登陆中..."),
@@ -1710,6 +1755,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "progressButtonReplySuccess": MessageLookupByLibrary.simpleMessage("回帖成功"),
     "publicMessage": MessageLookupByLibrary.simpleMessage("公共消息"),
     "publishAt": MessageLookupByLibrary.simpleMessage(" 发帖于 "),
+    "publishForumDraft": MessageLookupByLibrary.simpleMessage("发布论坛草稿"),
     "pullToRefresh": MessageLookupByLibrary.simpleMessage("拉动刷新"),
     "pushChannel": MessageLookupByLibrary.simpleMessage("推送渠道"),
     "pushChannelAPN": MessageLookupByLibrary.simpleMessage("Apple 推送通知服务"),
@@ -1889,6 +1935,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "rushStopFloorInput": MessageLookupByLibrary.simpleMessage("封楼楼层"),
     "rushWinnerList": MessageLookupByLibrary.simpleMessage("中奖楼层"),
     "sample": MessageLookupByLibrary.simpleMessage("示例"),
+    "saveForumDraft": MessageLookupByLibrary.simpleMessage("继续保存为论坛草稿"),
     "saveImageSuccessfully": MessageLookupByLibrary.simpleMessage(
       "成功保存图片至此设备中.",
     ),
@@ -2243,17 +2290,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "websiteNotLogined": MessageLookupByLibrary.simpleMessage(
       "在网页中没有完成登录，请登陆后点击右上方登录按钮完成录入。",
     ),
-    "welcomeAttachmentDownloadsDetail": MessageLookupByLibrary.simpleMessage(
-      "打开已下载文件、重试失败下载，或跳回原楼层。",
+    "welcomeDrawerDetail": MessageLookupByLibrary.simpleMessage(
+      "搜索和发帖现在位于菜单顶部，匿名浏览时可从账号卡片登录。",
     ),
-    "welcomeContentFiltersDetail": MessageLookupByLibrary.simpleMessage(
-      "静音单个帖子，或在整个论坛及指定版块设置屏蔽词。",
+    "welcomeForumDraftsDetail": MessageLookupByLibrary.simpleMessage(
+      "在草稿箱编辑、继续保存或发布论坛网页保存的草稿。",
     ),
-    "welcomeMyActivitiesDetail": MessageLookupByLibrary.simpleMessage(
-      "从菜单查看发起和报名的活动。",
+    "welcomeParticipationDetail": MessageLookupByLibrary.simpleMessage(
+      "在菜单里查看参与的投票、辩论、悬赏和交易。",
     ),
-    "welcomeSavedSearchesDetail": MessageLookupByLibrary.simpleMessage(
-      "保存常用预设，下次恢复版块、作者、时间和排序。",
+    "welcomePortalDetail": MessageLookupByLibrary.simpleMessage(
+      "查看并发表门户文章评论，也可以点开相关文章和帖子标签。",
     ),
     "welcomeSubtitle": MessageLookupByLibrary.simpleMessage(
       "谈坛是支持Discuz X论坛的第三方客户端，欢迎使用我们的服务。",

@@ -2906,41 +2906,41 @@ class S {
     );
   }
 
-  /// `Save a preset and bring back its board, author, time and sorting.`
-  String get welcomeSavedSearchesDetail {
+  /// `Search and post from the top of the menu. Sign in from the account card when browsing as a guest.`
+  String get welcomeDrawerDetail {
     return Intl.message(
-      'Save a preset and bring back its board, author, time and sorting.',
-      name: 'welcomeSavedSearchesDetail',
+      'Search and post from the top of the menu. Sign in from the account card when browsing as a guest.',
+      name: 'welcomeDrawerDetail',
       desc: '',
       args: [],
     );
   }
 
-  /// `Mute a thread, or block a keyword across a forum or in a single board.`
-  String get welcomeContentFiltersDetail {
+  /// `Find your polls, debates, rewards and trades in the menu.`
+  String get welcomeParticipationDetail {
     return Intl.message(
-      'Mute a thread, or block a keyword across a forum or in a single board.',
-      name: 'welcomeContentFiltersDetail',
+      'Find your polls, debates, rewards and trades in the menu.',
+      name: 'welcomeParticipationDetail',
       desc: '',
       args: [],
     );
   }
 
-  /// `Find activities you organized or signed up for in the menu.`
-  String get welcomeMyActivitiesDetail {
+  /// `Edit, save or publish drafts you saved on the forum website.`
+  String get welcomeForumDraftsDetail {
     return Intl.message(
-      'Find activities you organized or signed up for in the menu.',
-      name: 'welcomeMyActivitiesDetail',
+      'Edit, save or publish drafts you saved on the forum website.',
+      name: 'welcomeForumDraftsDetail',
       desc: '',
       args: [],
     );
   }
 
-  /// `Open downloaded files, retry failed downloads or return to the original reply.`
-  String get welcomeAttachmentDownloadsDetail {
+  /// `Read and post article comments, and open related articles or topic tags.`
+  String get welcomePortalDetail {
     return Intl.message(
-      'Open downloaded files, retry failed downloads or return to the original reply.',
-      name: 'welcomeAttachmentDownloadsDetail',
+      'Read and post article comments, and open related articles or topic tags.',
+      name: 'welcomePortalDetail',
       desc: '',
       args: [],
     );
@@ -7046,6 +7046,56 @@ class S {
     return Intl.message('Menu', name: 'menuDrawerTitle', desc: '', args: []);
   }
 
+  /// `My content`
+  String get drawerMyContent {
+    return Intl.message(
+      'My content',
+      name: 'drawerMyContent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Browse forum`
+  String get drawerBrowseForum {
+    return Intl.message(
+      'Browse forum',
+      name: 'drawerBrowseForum',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Accounts and forums`
+  String get drawerAccountAndForum {
+    return Intl.message(
+      'Accounts and forums',
+      name: 'drawerAccountAndForum',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Preferences and privacy`
+  String get drawerPreferences {
+    return Intl.message(
+      'Preferences and privacy',
+      name: 'drawerPreferences',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Switch account`
+  String get drawerSwitchAccount {
+    return Intl.message(
+      'Switch account',
+      name: 'drawerSwitchAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Post thread`
   String get postThread {
     return Intl.message('Post thread', name: 'postThread', desc: '', args: []);
@@ -7956,10 +8006,10 @@ class S {
     );
   }
 
-  /// `The existing password store could not be opened or migrated. Create a new empty password store? You will need to enter and save your passwords again. The old encrypted data will be kept, but will no longer be used automatically.`
+  /// `The local password store is damaged or its encryption key is unavailable. Create an empty password store and save your passwords again. The old encrypted data will be kept.`
   String get passwordRecoveryMessage {
     return Intl.message(
-      'The existing password store could not be opened or migrated. Create a new empty password store? You will need to enter and save your passwords again. The old encrypted data will be kept, but will no longer be used automatically.',
+      'The local password store is damaged or its encryption key is unavailable. Create an empty password store and save your passwords again. The old encrypted data will be kept.',
       name: 'passwordRecoveryMessage',
       desc: '',
       args: [],
@@ -7971,6 +8021,36 @@ class S {
     return Intl.message(
       'Create new store',
       name: 'passwordRecoveryCreate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The local password store is temporarily unavailable. Unlock your device and try again.`
+  String get passwordStorageUnavailable {
+    return Intl.message(
+      'The local password store is temporarily unavailable. Unlock your device and try again.',
+      name: 'passwordStorageUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Local private-message data is damaged`
+  String get privateMessageRecoveryTitle {
+    return Intl.message(
+      'Local private-message data is damaged',
+      name: 'privateMessageRecoveryTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The old encrypted cache could not be migrated. A new cache is ready. Messages will reload from the forum when you open a conversation. The old encrypted data is kept on this device.`
+  String get privateMessageRecoveryMessage {
+    return Intl.message(
+      'The old encrypted cache could not be migrated. A new cache is ready. Messages will reload from the forum when you open a conversation. The old encrypted data is kept on this device.',
+      name: 'privateMessageRecoveryMessage',
       desc: '',
       args: [],
     );
@@ -12095,6 +12175,271 @@ class S {
     return Intl.message(
       'Could not open the file',
       name: 'downloadedFileOpenFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Member posts`
+  String get forumMemberContent {
+    return Intl.message(
+      'Member posts',
+      name: 'forumMemberContent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My participation`
+  String get forumMyParticipation {
+    return Intl.message(
+      'My participation',
+      name: 'forumMyParticipation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My polls`
+  String get forumMyPolls {
+    return Intl.message('My polls', name: 'forumMyPolls', desc: '', args: []);
+  }
+
+  /// `My debates`
+  String get forumMyDebates {
+    return Intl.message(
+      'My debates',
+      name: 'forumMyDebates',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My bounties`
+  String get forumMyRewards {
+    return Intl.message(
+      'My bounties',
+      name: 'forumMyRewards',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Participated`
+  String get forumContentJoined {
+    return Intl.message(
+      'Participated',
+      name: 'forumContentJoined',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open`
+  String get forumRewardOpen {
+    return Intl.message('Open', name: 'forumRewardOpen', desc: '', args: []);
+  }
+
+  /// `Resolved`
+  String get forumRewardResolved {
+    return Intl.message(
+      'Resolved',
+      name: 'forumRewardResolved',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Related threads`
+  String get forumRelatedThreads {
+    return Intl.message(
+      'Related threads',
+      name: 'forumRelatedThreads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Article comments`
+  String get portalArticleComments {
+    return Intl.message(
+      'Article comments',
+      name: 'portalArticleComments',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Anonymous`
+  String get portalAnonymousComment {
+    return Intl.message(
+      'Anonymous',
+      name: 'portalAnonymousComment',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My trades`
+  String get forumMyTrades {
+    return Intl.message('My trades', name: 'forumMyTrades', desc: '', args: []);
+  }
+
+  /// `Sales`
+  String get forumTradeSold {
+    return Intl.message('Sales', name: 'forumTradeSold', desc: '', args: []);
+  }
+
+  /// `Purchases`
+  String get forumTradeBought {
+    return Intl.message(
+      'Purchases',
+      name: 'forumTradeBought',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Publish forum draft`
+  String get publishForumDraft {
+    return Intl.message(
+      'Publish forum draft',
+      name: 'publishForumDraft',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save as forum draft`
+  String get saveForumDraft {
+    return Intl.message(
+      'Save as forum draft',
+      name: 'saveForumDraft',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit profile`
+  String get forumEditProfile {
+    return Intl.message(
+      'Edit profile',
+      name: 'forumEditProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invite friends`
+  String get forumInviteFriends {
+    return Intl.message(
+      'Invite friends',
+      name: 'forumInviteFriends',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose group icon`
+  String get forumGroupChangeIcon {
+    return Intl.message(
+      'Choose group icon',
+      name: 'forumGroupChangeIcon',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Submitted to the forum`
+  String get forumSettingsSaved {
+    return Intl.message(
+      'Submitted to the forum',
+      name: 'forumSettingsSaved',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Basic information`
+  String get forumProfileBasic {
+    return Intl.message(
+      'Basic information',
+      name: 'forumProfileBasic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Contact details`
+  String get forumProfileContact {
+    return Intl.message(
+      'Contact details',
+      name: 'forumProfileContact',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Education`
+  String get forumProfileEducation {
+    return Intl.message(
+      'Education',
+      name: 'forumProfileEducation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Work`
+  String get forumProfileWork {
+    return Intl.message('Work', name: 'forumProfileWork', desc: '', args: []);
+  }
+
+  /// `Personal information`
+  String get forumProfileOther {
+    return Intl.message(
+      'Personal information',
+      name: 'forumProfileOther',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The forum settings changed. Refresh and review the fields.`
+  String get forumSettingsChanged {
+    return Intl.message(
+      'The forum settings changed. Refresh and review the fields.',
+      name: 'forumSettingsChanged',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The forum did not confirm the change. Open the webpage to check before trying again.`
+  String get forumSettingsUnconfirmed {
+    return Intl.message(
+      'The forum did not confirm the change. Open the webpage to check before trying again.',
+      name: 'forumSettingsUnconfirmed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Related articles`
+  String get portalRelatedArticles {
+    return Intl.message(
+      'Related articles',
+      name: 'portalRelatedArticles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View all comments`
+  String get portalAllComments {
+    return Intl.message(
+      'View all comments',
+      name: 'portalAllComments',
       desc: '',
       args: [],
     );

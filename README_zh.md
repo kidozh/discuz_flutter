@@ -69,7 +69,7 @@ Apple Watch 配套应用支持 watchOS 10 起。首次选择论坛和登录需�
 
 ## 本地开发
 
-使用 Flutter **3.47.0+**、Dart **3.13.0+**，CI 当前固定为 Flutter **3.47.5**。Android 构建使用 Java 17 和 Android SDK 37。iOS 开发需要 macOS 与 Xcode；完整 iPhone Duo 屏幕支持需要 Xcode / iOS SDK **27.1+**，详见 [Duo 工具链与适配说明](docs/iphone_duo_adaptation.md)。
+使用 Flutter **3.50.1+**、Dart **3.14.0+**，CI 当前固定为 Flutter **3.50.1**。Android 构建使用 Java 17 和 Android SDK 37。iOS 开发需要 macOS 与 Xcode；完整 iPhone Duo 屏幕支持需要 Xcode / iOS SDK **27.1+**，详见 [Duo 工具链与适配说明](docs/iphone_duo_adaptation.md)。
 
 ```sh
 git clone https://github.com/kidozh/discuz_flutter.git

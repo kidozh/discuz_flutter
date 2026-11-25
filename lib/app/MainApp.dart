@@ -1,4 +1,5 @@
 import '../widget/forum_home_title.dart';
+import '../widget/private_message_storage_notice.dart';
 
 import 'dart:async';
 import 'dart:developer';
@@ -413,7 +414,9 @@ class _MyAppState extends State<MyApp> {
                   ],
                   supportedLocales: S.delegate.supportedLocales,
                   builder: ToastUtils.easyLoadingBuilder(),
-                  home: MainTwoPanePage(navigatorKey: this.navigatorKey),
+                  home: PrivateMessageStorageNotice(
+                    child: MainTwoPanePage(navigatorKey: navigatorKey),
+                  ),
                 ),
               ),
             );

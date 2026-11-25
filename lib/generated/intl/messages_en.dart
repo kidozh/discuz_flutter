@@ -1023,6 +1023,17 @@ class MessageLookup extends MessageLookupByLibrary {
       "Older drafts, account unknown",
     ),
     "draftUntitled": MessageLookupByLibrary.simpleMessage("Untitled draft"),
+    "drawerAccountAndForum": MessageLookupByLibrary.simpleMessage(
+      "Accounts and forums",
+    ),
+    "drawerBrowseForum": MessageLookupByLibrary.simpleMessage("Browse forum"),
+    "drawerMyContent": MessageLookupByLibrary.simpleMessage("My content"),
+    "drawerPreferences": MessageLookupByLibrary.simpleMessage(
+      "Preferences and privacy",
+    ),
+    "drawerSwitchAccount": MessageLookupByLibrary.simpleMessage(
+      "Switch account",
+    ),
     "duplicatedPost": MessageLookupByLibrary.simpleMessage("Duplicated Posts"),
     "dynamicSchemeVariant": MessageLookupByLibrary.simpleMessage(
       "Scheme variant",
@@ -1317,6 +1328,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumContentFilters": MessageLookupByLibrary.simpleMessage(
       "Content filters",
     ),
+    "forumContentJoined": MessageLookupByLibrary.simpleMessage("Participated"),
     "forumContentUnavailable": MessageLookupByLibrary.simpleMessage(
       "This content is unavailable. It may have been removed or may still be under review.",
     ),
@@ -1333,6 +1345,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumDnsFailure": MessageLookupByLibrary.simpleMessage(
       "Could not look up the server address. Check the site address and your network connection.",
     ),
+    "forumEditProfile": MessageLookupByLibrary.simpleMessage("Edit profile"),
     "forumEmpty": MessageLookupByLibrary.simpleMessage("No content yet"),
     "forumFeatureDisabled": MessageLookupByLibrary.simpleMessage(
       "The forum has disabled this feature or temporarily closed access.",
@@ -1385,6 +1398,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumFormExpired": MessageLookupByLibrary.simpleMessage(
       "The forum rejected the current session or form. Refresh the page before submitting again.",
     ),
+    "forumGroupChangeIcon": MessageLookupByLibrary.simpleMessage(
+      "Choose group icon",
+    ),
     "forumGuide": MessageLookupByLibrary.simpleMessage("Forum guide"),
     "forumHttpForbidden": MessageLookupByLibrary.simpleMessage(
       "The server refused access (HTTP 403). Check your permissions or open the site in a browser.",
@@ -1405,6 +1421,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "The server requires sign-in (HTTP 401). Sign in again or open the site in a browser.",
     ),
     "forumInformation": MessageLookupByLibrary.simpleMessage("Forum info."),
+    "forumInviteFriends": MessageLookupByLibrary.simpleMessage(
+      "Invite friends",
+    ),
     "forumLoadFailed": MessageLookupByLibrary.simpleMessage(
       "Could not load. Please try again.",
     ),
@@ -1416,6 +1435,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "The forum rejected the login. Check your account and password.",
     ),
     "forumMedals": MessageLookupByLibrary.simpleMessage("Forum medals"),
+    "forumMemberContent": MessageLookupByLibrary.simpleMessage("Member posts"),
     "forumModerationCenter": MessageLookupByLibrary.simpleMessage(
       "Moderation center",
     ),
@@ -1434,8 +1454,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumMuteThread": MessageLookupByLibrary.simpleMessage("Mute thread"),
     "forumMutedThreads": MessageLookupByLibrary.simpleMessage("Muted threads"),
     "forumMyActivities": MessageLookupByLibrary.simpleMessage("My activities"),
+    "forumMyDebates": MessageLookupByLibrary.simpleMessage("My debates"),
+    "forumMyParticipation": MessageLookupByLibrary.simpleMessage(
+      "My participation",
+    ),
+    "forumMyPolls": MessageLookupByLibrary.simpleMessage("My polls"),
     "forumMyReplies": MessageLookupByLibrary.simpleMessage("My replies"),
+    "forumMyRewards": MessageLookupByLibrary.simpleMessage("My bounties"),
     "forumMyThreads": MessageLookupByLibrary.simpleMessage("My threads"),
+    "forumMyTrades": MessageLookupByLibrary.simpleMessage("My trades"),
     "forumNoMore": MessageLookupByLibrary.simpleMessage("All loaded"),
     "forumNoMutedThreads": MessageLookupByLibrary.simpleMessage(
       "No muted threads",
@@ -1447,6 +1474,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumPermissionDenied": MessageLookupByLibrary.simpleMessage(
       "The forum did not grant your account permission for this action.",
     ),
+    "forumProfileBasic": MessageLookupByLibrary.simpleMessage(
+      "Basic information",
+    ),
+    "forumProfileContact": MessageLookupByLibrary.simpleMessage(
+      "Contact details",
+    ),
+    "forumProfileEducation": MessageLookupByLibrary.simpleMessage("Education"),
+    "forumProfileOther": MessageLookupByLibrary.simpleMessage(
+      "Personal information",
+    ),
+    "forumProfileWork": MessageLookupByLibrary.simpleMessage("Work"),
     "forumPurchasePrice": MessageLookupByLibrary.simpleMessage("Price"),
     "forumPurchaseUnavailable": MessageLookupByLibrary.simpleMessage(
       "Insufficient balance or invalid quote. Refresh and try again.",
@@ -1458,6 +1496,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumRecommend": MessageLookupByLibrary.simpleMessage("Like"),
     "forumRecommended": MessageLookupByLibrary.simpleMessage("Liked"),
     "forumRefresh": MessageLookupByLibrary.simpleMessage("Refresh"),
+    "forumRelatedThreads": MessageLookupByLibrary.simpleMessage(
+      "Related threads",
+    ),
     "forumReplies": MessageLookupByLibrary.simpleMessage("replies"),
     "forumReplyThreadsHint": MessageLookupByLibrary.simpleMessage(
       "These are threads you replied to. Open a thread to read it.",
@@ -1465,6 +1506,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumResponseProcessingTimeout": MessageLookupByLibrary.simpleMessage(
       "The app took too long to process the server response.",
     ),
+    "forumRewardOpen": MessageLookupByLibrary.simpleMessage("Open"),
+    "forumRewardResolved": MessageLookupByLibrary.simpleMessage("Resolved"),
     "forumRewardSolved": MessageLookupByLibrary.simpleMessage("Solved"),
     "forumRewardStatus": MessageLookupByLibrary.simpleMessage("Reward status"),
     "forumRewardUnsolved": MessageLookupByLibrary.simpleMessage("Unsolved"),
@@ -1477,6 +1520,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumSearchWeb": MessageLookupByLibrary.simpleMessage("Search forum"),
     "forumSecurityChallenge": MessageLookupByLibrary.simpleMessage(
       "The site requires browser verification. Open it in a browser to continue.",
+    ),
+    "forumSettingsChanged": MessageLookupByLibrary.simpleMessage(
+      "The forum settings changed. Refresh and review the fields.",
+    ),
+    "forumSettingsSaved": MessageLookupByLibrary.simpleMessage(
+      "Submitted to the forum",
+    ),
+    "forumSettingsUnconfirmed": MessageLookupByLibrary.simpleMessage(
+      "The forum did not confirm the change. Open the webpage to check before trying again.",
     ),
     "forumSignInRequired": MessageLookupByLibrary.simpleMessage(
       "Sign in to this forum first",
@@ -1496,6 +1548,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "forumThreadTagsHint": MessageLookupByLibrary.simpleMessage(
       "Tags (comma-separated, up to 5)",
     ),
+    "forumTradeBought": MessageLookupByLibrary.simpleMessage("Purchases"),
+    "forumTradeSold": MessageLookupByLibrary.simpleMessage("Sales"),
     "forumUnexpectedError": MessageLookupByLibrary.simpleMessage(
       "An unexpected error interrupted the operation. Please try again.",
     ),
@@ -1998,13 +2052,16 @@ class MessageLookup extends MessageLookupByLibrary {
       "Create new store",
     ),
     "passwordRecoveryMessage": MessageLookupByLibrary.simpleMessage(
-      "The existing password store could not be opened or migrated. Create a new empty password store? You will need to enter and save your passwords again. The old encrypted data will be kept, but will no longer be used automatically.",
+      "The local password store is damaged or its encryption key is unavailable. Create an empty password store and save your passwords again. The old encrypted data will be kept.",
     ),
     "passwordRecoveryTitle": MessageLookupByLibrary.simpleMessage(
       "Saved passwords could not be read",
     ),
     "passwordSaveFailed": MessageLookupByLibrary.simpleMessage(
       "Login can continue, but the password could not be saved.",
+    ),
+    "passwordStorageUnavailable": MessageLookupByLibrary.simpleMessage(
+      "The local password store is temporarily unavailable. Unlock your device and try again.",
     ),
     "pictureBedActive": MessageLookupByLibrary.simpleMessage("Active"),
     "pictureBedAgreeToService": MessageLookupByLibrary.simpleMessage("Agree"),
@@ -2085,8 +2142,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "pollVotersUnavailable": MessageLookupByLibrary.simpleMessage(
       "The forum has not made the voter list available for this option.",
     ),
+    "portalAllComments": MessageLookupByLibrary.simpleMessage(
+      "View all comments",
+    ),
+    "portalAnonymousComment": MessageLookupByLibrary.simpleMessage("Anonymous"),
+    "portalArticleComments": MessageLookupByLibrary.simpleMessage(
+      "Article comments",
+    ),
     "portalNoHotThreads": MessageLookupByLibrary.simpleMessage(
       "No popular threads yet",
+    ),
+    "portalRelatedArticles": MessageLookupByLibrary.simpleMessage(
+      "Related articles",
     ),
     "post": MessageLookupByLibrary.simpleMessage("Post"),
     "postAddComment": MessageLookupByLibrary.simpleMessage("Add comment"),
@@ -2200,6 +2267,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "privateMessageIgnoreList": MessageLookupByLibrary.simpleMessage(
       "Ignore list and messaging settings",
     ),
+    "privateMessageRecoveryMessage": MessageLookupByLibrary.simpleMessage(
+      "The old encrypted cache could not be migrated. A new cache is ready. Messages will reload from the forum when you open a conversation. The old encrypted data is kept on this device.",
+    ),
+    "privateMessageRecoveryTitle": MessageLookupByLibrary.simpleMessage(
+      "Local private-message data is damaged",
+    ),
     "progressButtonLoginFailed": MessageLookupByLibrary.simpleMessage(
       "Login Failed",
     ),
@@ -2218,6 +2291,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "publicMessage": MessageLookupByLibrary.simpleMessage("Public"),
     "publishAt": MessageLookupByLibrary.simpleMessage(" published at "),
+    "publishForumDraft": MessageLookupByLibrary.simpleMessage(
+      "Publish forum draft",
+    ),
     "pullToRefresh": MessageLookupByLibrary.simpleMessage("Pull to refresh"),
     "pushChannel": MessageLookupByLibrary.simpleMessage("Channel"),
     "pushChannelAPN": MessageLookupByLibrary.simpleMessage(
@@ -2449,6 +2525,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "rushStopFloorInput": MessageLookupByLibrary.simpleMessage("Closing floor"),
     "rushWinnerList": MessageLookupByLibrary.simpleMessage("Winning replies"),
     "sample": MessageLookupByLibrary.simpleMessage("Sample"),
+    "saveForumDraft": MessageLookupByLibrary.simpleMessage(
+      "Save as forum draft",
+    ),
     "saveImageSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Save Image to device successfully.",
     ),
@@ -2963,17 +3042,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "websiteNotLogined": MessageLookupByLibrary.simpleMessage(
       "You haven\'t login in the website, please try after you actually login.",
     ),
-    "welcomeAttachmentDownloadsDetail": MessageLookupByLibrary.simpleMessage(
-      "Open downloaded files, retry failed downloads or return to the original reply.",
+    "welcomeDrawerDetail": MessageLookupByLibrary.simpleMessage(
+      "Search and post from the top of the menu. Sign in from the account card when browsing as a guest.",
     ),
-    "welcomeContentFiltersDetail": MessageLookupByLibrary.simpleMessage(
-      "Mute a thread, or block a keyword across a forum or in a single board.",
+    "welcomeForumDraftsDetail": MessageLookupByLibrary.simpleMessage(
+      "Edit, save or publish drafts you saved on the forum website.",
     ),
-    "welcomeMyActivitiesDetail": MessageLookupByLibrary.simpleMessage(
-      "Find activities you organized or signed up for in the menu.",
+    "welcomeParticipationDetail": MessageLookupByLibrary.simpleMessage(
+      "Find your polls, debates, rewards and trades in the menu.",
     ),
-    "welcomeSavedSearchesDetail": MessageLookupByLibrary.simpleMessage(
-      "Save a preset and bring back its board, author, time and sorting.",
+    "welcomePortalDetail": MessageLookupByLibrary.simpleMessage(
+      "Read and post article comments, and open related articles or topic tags.",
     ),
     "welcomeSubtitle": MessageLookupByLibrary.simpleMessage(
       "Welcome to use our Services.",
